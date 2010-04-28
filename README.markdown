@@ -8,15 +8,19 @@ MongoDB Object Mapper.
     require '/path/to/doctrine/lib/Doctrine/Common/ClassLoader.php';
 
     use Doctrine\Common\ClassLoader,
-        Doctrine\ODM\MongoDB\EntityManager;
+        Doctrine\ODM\MongoDB\EntityManager,
+        Doctrine\ODM\MongoDB\Mongo;
 
     $classLoader = new ClassLoader('Doctrine\ODM', __DIR__ . '/../lib');
+    $classLoader->register();
+
+    $classLoader = new ClassLoader('Doctrine', '/path/to/doctrine/lib');
     $classLoader->register();
 
     $classLoader = new ClassLoader('Entities', __DIR__);
     $classLoader->register();
 
-    $em = new EntityManager(new Mongo());
+    $em = EntityManager::create(new Mongo());
 
 ## Defining Entities
 
