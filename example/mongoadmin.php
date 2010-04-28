@@ -129,6 +129,25 @@ if (isset($_POST['save'])) {
               <a href="<?php echo $_SERVER['PHP_SELF'] ?>?database=<?php echo $_REQUEST['database'] ?>"><?php echo $_REQUEST['database'] ?></a> >> 
               <?php echo $_REQUEST['collection'] ?>
             </h2>
+            <?php
+            $max = 20;
+            $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1;
+            $limit = $max;
+            $skip = ($page - 1) * $max;
+            $cursor = $mongo
+                ->selectDB($_REQUEST['database'])
+                ->selectCollection($_REQUEST['collection'])
+                ->find()
+                ->limit($limit)
+                ->skip($skip);
+            $total = $cursor->count();
+            $pages = round($total / $max);
+            ?>
+            <p>
+              <?php echo $pages ?> pages. Go to page 
+              <input type="text" name="page" size="4" value="<?php echo $page ?>" onChange="javascript: location.href = '<?php echo $_SERVER['PHP_SELF'] . '?database=' . $_REQUEST['database'] . '&collection=' . $_REQUEST['collection'] ?>&page=' + this.value;" />
+              <input type="button" name="go" value="Go" />
+            </p>
             <table>
               <thead>
                 <th>ID</th>
@@ -136,7 +155,7 @@ if (isset($_POST['save'])) {
                 <th></th>
               </thead>
               <tbody>
-                <?php foreach ($mongo->selectDB($_REQUEST['database'])->selectCollection($_REQUEST['collection'])->find() as $document): ?>
+                <?php foreach ($cursor as $document): ?>
                   <tr>
                     <td><a href="<?php echo $_SERVER['PHP_SELF'] . '?database=' . $_REQUEST['database'] . '&collection=' . $_REQUEST['collection'] ?>&id=<?php echo (string) $document['_id'] ?>"><?php echo (string) $document['_id'] ?></a></td>
                     <td>
@@ -179,13 +198,15 @@ if (isset($_POST['save'])) {
           $prepared = prepareEditValue($document);
           $value = var_export($prepared, true);
           ?>
+          <h3>View Document</h3>
           <pre><code><?php print_r($prepared) ?></code></pre>
           <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="POST">
             <?php foreach ($_REQUEST as $k => $v): ?>
               <input type="hidden" name="<?php echo $k ?>" value="<?php echo $v ?>" />
             <?php endforeach; ?>
+            <h3>Edit Document</h3>
             <textarea style="margin-left: 30px; margin-right: 30px; margin-bottom: 30px; width: 94%; height: 100%;" name="value"><?php echo $value ?></textarea>
-            <input type="submit" name="save" value="Save" />
+            <p><input type="submit" name="save" value="Save" /></p>
           </form>
         <?php endif; ?>
       </div>
