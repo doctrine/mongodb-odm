@@ -31,6 +31,7 @@ final class Entity extends Annotation
 
 final class Field extends Annotation
 {
+    public $id;
     public $name;
     public $targetEntity;
     public $embedded;
