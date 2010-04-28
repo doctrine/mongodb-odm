@@ -8,8 +8,11 @@ MongoDB Object Mapper.
     require '/path/to/doctrine/lib/Doctrine/Common/ClassLoader.php';
 
     use Doctrine\Common\ClassLoader,
+        Doctrine\Common\Annotations\AnnotationReader,
         Doctrine\ODM\MongoDB\EntityManager,
-        Doctrine\ODM\MongoDB\Mongo;
+        Doctrine\ODM\MongoDB\Mongo,
+        Doctrine\ODM\MongoDB\Configuration,
+        Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
     $classLoader = new ClassLoader('Doctrine\ODM', __DIR__ . '/../lib');
     $classLoader->register();
@@ -20,7 +23,13 @@ MongoDB Object Mapper.
     $classLoader = new ClassLoader('Entities', __DIR__);
     $classLoader->register();
 
-    $em = EntityManager::create(new Mongo());
+    $config = new Configuration();
+
+    $reader = new AnnotationReader();
+    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
+    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Entities'));
+
+    $em = EntityManager::create(new Mongo(), $config);
 
 ## Defining Entities
 
@@ -28,51 +37,40 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
 
     namespace Entities;
 
+    /** @Entity(db="my_database", collection="users") */
     class User
     {
+        /** @Field(id="true")
         public $id;
+
+        /** @Field */
         public $username;
+
+        /** @Field */
         public $password;
+
+        /** @Field(embedded="true", type="one", targetEntity="Account") */
         public $account;
+
+        /** @Field(reference="true", type="one", targetEntity="Profile")
         public $profile;
-
-        public static function loadMetadata($class)
-        {
-            $class->setDB('my_database');
-            $class->setCollection('users');
-
-            // stored as an embedded object on the user document
-            $class->mapOneEmbedded(array(
-                'fieldName' => 'profile',
-                'targetEntity' => 'Profile'
-            ));
-            // mapManyEmbedded() also exists
-
-            // stored in the accounts collection and the reference is lazily loaded
-            $class->mapOneAssociation(array(
-                'fieldName' => 'account',
-                'targetEntity' => 'Account'
-            ));
-            // mapManyAssociation() also exists
-        }
     }
-    
+
+    // Not mapped since it's only embedded in User
     class Profile
     {
         public $firstName;
         public $lastName;
     }
 
+    /** @Entity(db="my_database", collection="accounts") */
     class Account
     {
+        /** @Field(id="true")
         public $id;
-        public $name;
 
-        public static function loadMetadata($class)
-        {
-            $class->setDB('my_database');
-            $class->setCollection('accounts');
-        }
+        /** @Field */
+        public $name;
     }
 
 ## Persisting Entities
