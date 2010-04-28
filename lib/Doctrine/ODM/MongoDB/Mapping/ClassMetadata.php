@@ -88,14 +88,14 @@ class ClassMetadata
 
     public function mapManyEmbedded(array $mapping)
     {
-        $mapping['embeddedDocument'] = true;
+        $mapping['embedded'] = true;
         $mapping['type'] = 'many';
         $this->mapField($mapping);
     }
 
     public function mapOneEmbedded(array $mapping)
     {
-        $mapping['embeddedDocument'] = true;
+        $mapping['embedded'] = true;
         $mapping['type'] = 'one';
         $this->mapField($mapping);
     }

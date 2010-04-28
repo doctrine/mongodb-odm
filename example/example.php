@@ -6,6 +6,8 @@ use Doctrine\Common\ClassLoader,
     Doctrine\ODM\MongoDB\EntityManager,
     Doctrine\ODM\MongoDB\Mongo,
     Doctrine\ODM\MongoDB\Configuration,
+    Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver,
+    Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver,
     Entities\User,
     Entities\Address,
     Entities\Profile,
@@ -18,10 +20,16 @@ $classLoader->register();
 $classLoader = new ClassLoader('Doctrine', '/Users/jwage/Sites/doctrine2git/lib');
 $classLoader->register();
 
+$classLoader = new ClassLoader('Symfony', '/Users/jwage/Sites/doctrine2git/lib/vendor');
+$classLoader->register();
+
 $classLoader = new ClassLoader('Entities', __DIR__);
 $classLoader->register();
 
 $config = new Configuration();
+$config->setMetadataDriverImpl(new XmlDriver(__DIR__ . '/xml'));
+//$config->setMetadataDriverImpl(new YamlDriver(__DIR__ . '/yaml'));
+
 $em = EntityManager::create(new Mongo(), $config);
 
 $account = new Account();

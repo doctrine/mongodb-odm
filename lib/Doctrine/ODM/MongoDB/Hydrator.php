@@ -28,7 +28,7 @@ class Hydrator
     public function hydrate(ClassMetadata $metadata, $entity, $data)
     {
         foreach ($metadata->fieldMappings as $mapping) {
-            if (isset($data[$mapping['fieldName']]) && isset($mapping['embeddedDocument'])) {
+            if (isset($data[$mapping['fieldName']]) && isset($mapping['embedded'])) {
                 $embeddedMetadata = $this->_em->getClassMetadata($mapping['targetEntity']);
                 $embeddedEntity = $embeddedMetadata->newInstance();
                 if ($mapping['type'] === 'many') {

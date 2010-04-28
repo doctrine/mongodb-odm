@@ -335,7 +335,7 @@ class UnitOfWork
                 continue;
             }
 
-            if (isset($mapping['embeddedDocument'])) {
+            if (isset($mapping['embedded'])) {
                 if ($mapping['type'] === 'many') {
                     $values[$field] = array();
                     foreach ($value as $key => $document) {

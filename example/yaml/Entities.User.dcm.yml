@@ -1,0 +1,26 @@
+Entities\User:
+  db: entities
+  collection: user
+  fields:
+    addresses:
+      fieldName: addresses
+      targetEntity: Entities\Address
+      embedded: true
+      type: many
+    profile:
+      fieldName: profile
+      targetEntity: Entities\Profile
+      embedded: true
+      type: one
+    account:
+      fieldName: account
+      targetEntity: Entities\Account
+      reference: true
+      cascadeDelete: true
+      type: one
+    phonenumbers:
+      fieldName: phonenumbers
+      targetEntity: Entities\Phonenumber
+      reference: true
+      cascadeDelete: true
+      type: many
