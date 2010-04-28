@@ -135,6 +135,11 @@ class EntityManager
         return new Query($this, $className);
     }
 
+    public function save($entity)
+    {
+        $this->_unitOfWork->save($entity);
+    }
+
     public function persist($entity)
     {
         $this->_unitOfWork->persist($entity);
