@@ -4,6 +4,8 @@ require '/Users/jwage/Sites/doctrine2git/lib/Doctrine/Common/ClassLoader.php';
 
 use Doctrine\Common\ClassLoader,
     Doctrine\ODM\MongoDB\EntityManager,
+    Doctrine\ODM\MongoDB\Mongo,
+    Doctrine\ODM\MongoDB\Configuration,
     Entities\User,
     Entities\Address,
     Entities\Profile,
@@ -13,10 +15,14 @@ use Doctrine\Common\ClassLoader,
 $classLoader = new ClassLoader('Doctrine\ODM', __DIR__ . '/../lib');
 $classLoader->register();
 
+$classLoader = new ClassLoader('Doctrine', '/Users/jwage/Sites/doctrine2git/lib');
+$classLoader->register();
+
 $classLoader = new ClassLoader('Entities', __DIR__);
 $classLoader->register();
 
-$em = new EntityManager(new Mongo());
+$config = new Configuration();
+$em = EntityManager::create(new Mongo(), $config);
 
 $account = new Account();
 $account->setName('Test Account');

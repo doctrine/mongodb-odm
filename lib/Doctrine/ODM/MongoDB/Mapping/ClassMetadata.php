@@ -149,4 +149,29 @@ class ClassMetadata
         }
         return clone $this->prototype;
     }
+
+    public function __sleep()
+    {
+        $serialized = array(
+            'name',
+            'db',
+            'collection',
+            'fieldMappings',
+            'fieldMappings',
+            'identifier'
+        );
+
+        return $serialized;
+    }
+
+    public function __wakeup()
+    {
+        $this->reflClass = new \ReflectionClass($this->name);
+
+        foreach ($this->fieldMappings as $field => $mapping) {
+            $reflField = $this->reflClass->getProperty($field);
+            $reflField->setAccessible(true);
+            $this->reflFields[$field] = $reflField;
+        }
+    }
 }

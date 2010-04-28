@@ -4,17 +4,23 @@ require_once 'PHPUnit/Framework.php';
 require_once '/Users/jwage/Sites/doctrine2git/lib/Doctrine/Common/ClassLoader.php';
 
 use Doctrine\Common\ClassLoader,
+    Doctrine\Common\Cache\ApcCache,
     Doctrine\ODM\MongoDB\EntityManager,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+    Doctrine\ODM\MongoDB\Configuration,
+    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+    Doctrine\ODM\MongoDB\Mongo;
 
 $classLoader = new ClassLoader('Doctrine\ODM', __DIR__ . '/../lib');
+$classLoader->register();
+
+$classLoader = new ClassLoader('Doctrine', '/Users/jwage/Sites/doctrine2git/lib');
 $classLoader->register();
 
 class FunctionalTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->em = new EntityManager(new \Mongo());
+        $this->em = EntityManager::create(new Mongo());
     }
 
     public function tearDown()

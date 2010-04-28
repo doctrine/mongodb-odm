@@ -2,26 +2,42 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Mongo,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory,
-    Doctrine\ODM\MongoDB\Query;
+    Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
+    Doctrine\ODM\MongoDB\Query,
+    Doctrine\ODM\MongoDB\Mongo;
 
 class EntityManager
 {
     private $_mongo;
+    private $_config;
     private $_metadataFactory;
     private $_unitOfWork;
     private $_hydrator;
     private $_entityDBs = array();
     private $_entityCollections = array();
 
-    public function __construct(Mongo $mongo)
+    protected function __construct(Mongo $mongo, Configuration $config = null)
     {
         $this->_mongo = $mongo;
-        $this->_metadataFactory = new ClassMetadataFactory($this);
+        $this->_config = $config ? $config : new Configuration();
         $this->_hydrator = new Hydrator($this);
         $this->_unitOfWork = new UnitOfWork($this);
+        $this->_metadataFactory = new ClassMetadataFactory($this);
+        if ($cacheDriver = $this->_config->getMetadataCacheImpl()) {
+            $this->_metadataFactory->setCacheDriver($cacheDriver);
+        }
+    }
+
+    public static function create(Mongo $mongo, Configuration $config = null)
+    {
+        return new self($mongo, $config);
+    }
+
+    public function getConfiguration()
+    {
+        return $this->_config;
     }
 
     public function getMongo()
