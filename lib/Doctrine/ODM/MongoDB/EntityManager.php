@@ -165,6 +165,27 @@ class EntityManager
         $this->_unitOfWork->commit();
     }
 
+    public function mapReduce($entityName, $map, $reduce, array $query = array(), array $options = array())
+    {
+        $class = $this->getClassMetadata($entityName);
+        $db = $this->getEntityDB($entityName);
+        if (is_string($map)) {
+            $map = new \MongoCode($map);
+        }
+        if (is_string($reduce)) {
+            $reduce = new \MongoCode($reduce);
+        }
+        $command = array(
+            'mapreduce' => $class->getCollection(),
+            'map' => $map,
+            'reduce' => $reduce,
+            'query' => $query
+        );
+        $command = array_merge($command, $options);
+        $result = $db->command($command);
+        return $db->selectCollection($result['result'])->find();
+    }
+
     public function findByID($entityName, $id)
     {
         $metadata = $this->getClassMetadata($entityName);

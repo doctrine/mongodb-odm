@@ -51,11 +51,7 @@ class CursorProxy implements \Iterator
 
     public function getResults()
     {
-        $results = array();
-        foreach ($this as $entity) {
-            $results[] = $entity;
-        }
-        return $results;
+        return iterator_to_array($this);
     }
 
     public function __call($method, $arguments)
