@@ -2,8 +2,6 @@
 
 namespace Entities;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-
 /** @Entity */
 class User
 {
