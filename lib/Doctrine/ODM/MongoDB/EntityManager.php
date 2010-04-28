@@ -212,7 +212,7 @@ class EntityManager
         $collection = $this->getEntityCollection($entityName);
         $result = $collection->findOne($query, $fields);
         if ($result !== null) {
-            return $this->_unitOfWork->getOrCreateEntity($entityName);
+            return $this->_unitOfWork->getOrCreateEntity($entityName, (array) $result);
         } else {
             return false;
         }
