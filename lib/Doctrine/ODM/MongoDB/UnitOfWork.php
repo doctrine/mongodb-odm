@@ -28,32 +28,40 @@ class UnitOfWork
         $this->_commitOrderCalculator = new CommitOrderCalculator();
     }
 
-    public function getOrCreateEntity($className, array $data = array())
+    public function getOrCreateEntity($className, array $data = array(), array $hints = array())
     {
         $class = $this->_em->getClassMetadata($className);
         
         $id = isset($data['_id']) ? (string) $data['_id'] : null;
-        if ($id && isset($this->_identityMap[$id])) {
-            $entity = $this->_identityMap[$id];
+        if ($id && isset($this->_identityMap[$className][$id])) {
+            $entity = $this->_identityMap[$className][$id];
+            $overrideLocalValues = isset($hints[Query::HINT_REFRESH]) ? true : false;
         } else {
             $entity = $class->newInstance();
             $oid = spl_object_hash($entity);
             $this->_entityStates[$oid] = self::STATE_MANAGED;
             $this->_originalEntityData[$oid] = $data;
-            $this->_identityMap[$id] = $entity;
+            $this->_identityMap[$className][$id] = $entity;
+            $overrideLocalValues = true;
         }
-        $this->_hydrator->hydrate($class, $entity, $data);
+        if ($overrideLocalValues === true) {
+            $this->_hydrator->hydrate($class, $entity, $data);
+        }
         return $entity;
     }
 
-    public function getEntityState($entity)
+    public function getEntityState($entity, $assume = null)
     {
         $oid = spl_object_hash($entity);
         if ( ! isset($this->_entityStates[$oid])) {
-            if ($this->_em->getClassMetadata(get_class($entity))->getIdentifierValue($entity)) {
-                $this->_entityStates[$oid] = self::STATE_DETACHED;
+            if ($assume === null) {
+                if ($this->_em->getClassMetadata(get_class($entity))->getIdentifierValue($entity)) {
+                    $this->_entityStates[$oid] = self::STATE_DETACHED;
+                } else {
+                    $this->_entityStates[$oid] = self::STATE_NEW;
+                }
             } else {
-                $this->_entityStates[$oid] = self::STATE_NEW;
+                $this->_entityStates[$oid] = $assume;
             }
         }
         return $this->_entityStates[$oid];
@@ -61,12 +69,93 @@ class UnitOfWork
 
     public function detach($entity)
     {
+        $visited = array();
+        $this->_doDetach($entity, $visited);
     }
+
+    public function removeFromIdentityMap($entity)
+    {
+        $oid = spl_object_hash($entity);
+        $class = $this->_em->getClassMetadata(get_class($entity));
+        $id = $class->getIdentifierValue($entity);
+        
+        if ( ! $id) {
+            throw new \InvalidArgumentException('The given entity has no identity.');
+        }
+        $className = $class->name;
+        if (isset($this->_identityMap[$className][$id])) {
+            unset($this->_identityMap[$className][$id]);
+            $this->_entityStates[$oid] = self::STATE_DETACHED;
+            return true;
+        }
+
+        return false;
+    }
+
+    private function _doDetach($entity, array &$visited)
+    {
+        $oid = spl_object_hash($entity);
+        if (isset($visited[$oid])) {
+            return;
+        }
+
+        $visited[$oid] = $entity;
+
+        switch ($this->getEntityState($entity, self::STATE_DETACHED)) {
+            case self::STATE_MANAGED:
+                $this->removeFromIdentityMap($entity);
+                unset(
+                    $this->_entityInsertions[$oid],
+                    $this->_entityUpdates[$oid],
+                    $this->_entityDeletions[$oid],
+                    $this->_entityIdentifiers[$oid],
+                    $this->_entityStates[$oid],
+                    $this->_originalEntityData[$oid]
+                );
+                break;
+            case self::STATE_NEW:
+            case self::STATE_DETACHED:
+                return;
+        }
+        
+        $this->_cascadeDetach($entity, $visited);
+    }
+
+    private function _cascadeDetach($entity, array &$visited)
+    {
+        $class = $this->_em->getClassMetadata(get_class($entity));
+        foreach ($class->fieldMappings as $mapping) {
+            if ( ! isset($mapping['reference'])) {
+                continue;
+            }
+
+            $relatedEntities = $class->reflFields[$mapping['fieldName']]->getValue($entity);
+            if ( ! $relatedEntities || (is_array($relatedEntities) && isset($relatedEntities['$ref']))) {
+                continue;
+            }
+
+            if (is_array($relatedEntities)) {
+                foreach ($relatedEntities as $entity) {
+                    if (is_array($entity) && isset($entity['$ref'])) {
+                        continue;
+                    }
+                    $this->_doDetach($entity, $visited);
+                }
+            } else {
+                $this->_doDetach($relatedEntities, $visited);
+            }
+        }
+    }
+
 
     public function refresh($entity)
     {
         $className = get_class($entity);
-        $result = $this->_em->findByID($className, $this->_em->getClassMetadata($className)->getIdentifierValue($entity));
+        $class = $this->_em->getClassMetadata($className);
+        $result = $this->_em->createQuery($className)
+            ->where($class->identifier, $class->getIdentifierValue($entity))
+            ->refresh()
+            ->getSingleResult();
         if ($result === false) {
             throw new \InvalidArgumentException('Could not refresh entity because it does not exist anymore.');
         }
@@ -202,30 +291,32 @@ class UnitOfWork
 
     public function computeChangeSets()
     {
-        foreach ($this->_identityMap as $id => $entity) {
-            $oid = spl_object_hash($entity);
-            $class = $this->_em->getClassMetadata(get_class($entity));
-            $state = $this->getEntityState($entity);
-            if (isset($this->_entityDeletions[$oid])) {
-                continue;
-            }
-            if ( ! isset($this->_originalEntityData[$oid])) {
-                continue;
-            }
-            $originalData = $this->_originalEntityData[$oid];
-            $changed = false;
-            foreach ($originalData as $key => $value) {
-                if ($key === '_id') {
+        foreach ($this->_identityMap as $className => $entities) {
+            $class = $this->_em->getClassMetadata($className);
+            foreach ($entities as $id => $entity) {
+                $oid = spl_object_hash($entity);
+                $state = $this->getEntityState($entity);
+                if (isset($this->_entityDeletions[$oid])) {
                     continue;
                 }
-                if ($value !== $class->getFieldValue($entity, $key)) {
-                    $changed = true;
+                if ( ! isset($this->_originalEntityData[$oid])) {
+                    continue;
                 }
+                $originalData = $this->_originalEntityData[$oid];
+                $changed = false;
+                foreach ($originalData as $key => $value) {
+                    if ($key === '_id') {
+                        continue;
+                    }
+                    if ($value !== $class->getFieldValue($entity, $key)) {
+                        $changed = true;
+                    }
+                }
+                if ($state === self::STATE_MANAGED && $changed === true) {
+                    $this->_entityUpdates[$oid] = $entity;
+                }
+                $this->persist($entity);
             }
-            if ($state === self::STATE_MANAGED && $changed === true) {
-                $this->_entityUpdates[$oid] = $entity;
-            }
-            $this->persist($entity);
         }
     }
 
@@ -261,8 +352,9 @@ class UnitOfWork
                     $ref = $this->_em->getEntityCollection($mapping['targetEntity'])->createDBRef($value);
                     $values[$field] = $ref;
                 } else {
+                    $collection = $this->_em->getEntityCollection($mapping['targetEntity']);
                     foreach ($value as $v) {
-                        $ref = $this->_em->getEntityCollection($mapping['targetEntity'])->createDBRef($this->_buildFieldValuesForSave($v));
+                        $ref = $collection->createDBRef($this->_buildFieldValuesForSave($v));
                         $values[$field][] = $ref;
                     }
                 }
@@ -313,7 +405,6 @@ class UnitOfWork
             }
             $entities = $insertions[$class->name];
             $collection = $this->_em->getEntityCollection($class->name);
-            $metadata = $this->_em->getClassMetadata($class->name);
 
             $inserts = array();
             foreach ($entities as $oid => $entity) {
@@ -325,8 +416,8 @@ class UnitOfWork
             foreach ($inserts as $oid => $values) {
                 $entity = $insertions[$class->name][$oid];
                 $id = (string) $values['_id'];
-                $metadata->setIdentifierValue($entity, $id);
-                $this->_identityMap[$id] = $entity;
+                $class->setIdentifierValue($entity, $id);
+                $this->_identityMap[$class->name][$id] = $entity;
             }
         }
 

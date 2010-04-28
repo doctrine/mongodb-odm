@@ -20,6 +20,11 @@ class Hydrator
         $this->_hints[$hint] = $hint;
     }
 
+    public function getHints()
+    {
+        return $this->_hints;
+    }
+
     public function hydrate(ClassMetadata $metadata, $entity, $data)
     {
         foreach ($metadata->fieldMappings as $mapping) {

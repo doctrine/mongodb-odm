@@ -13,6 +13,8 @@ class EntityManager
     private $_metadataFactory;
     private $_unitOfWork;
     private $_hydrator;
+    private $_entityDBs = array();
+    private $_entityCollections = array();
 
     public function __construct(Mongo $mongo)
     {
@@ -49,19 +51,29 @@ class EntityManager
 
     public function getEntityDB($className)
     {
-        if ($db = $this->getClassMetadata($className)->getDB()) {
-            return $this->_mongo->selectDB($db);
+        if ( ! isset($this->_entityDBs[$className])) {
+            if ($db = $this->getClassMetadata($className)->getDB()) {
+                $this->_entityDBs[$className] = $this->_mongo->selectDB($db);
+            }
         }
-        throw MongoDBException::entityNotMappedToDB($className);
+        if ( ! isset($this->_entityDBs[$className])) {
+            throw MongoDBException::entityNotMappedToDB($className);
+        }
+        return $this->_entityDBs[$className];
     }
 
     public function getEntityCollection($className)
     {
-        $metadata = $this->getClassMetadata($className);
-        if ($collection = $metadata->getCollection()) {
-            return $this->_mongo->selectDB($metadata->getDB())->selectCollection($collection);
+        if ( ! isset($this->_entityCollections[$className])) {
+            $metadata = $this->getClassMetadata($className);
+            if ($collection = $metadata->getCollection()) {
+                $this->_entityCollections[$className] = $this->_mongo->selectDB($metadata->getDB())->selectCollection($collection);
+            }
         }
-        throw MongoDBException::entityNotMappedToCollection($className);
+        if ( ! isset($this->_entityCollections[$className])) {
+            throw MongoDBException::entityNotMappedToCollection($className);
+        }
+        return $this->_entityCollections[$className];
     }
 
     public function loadEntityAssociation($entity, $name)
@@ -136,7 +148,7 @@ class EntityManager
     {
         $metadata = $this->getClassMetadata($entityName);
         $collection = $this->getEntityCollection($entityName);
-        $result = $collection->findOne(new \MongoId($id));
+        $result = $collection->findOne(array('_id' => new \MongoId($id)));
         if ($result !== null) {
             return $this->_unitOfWork->getOrCreateEntity($entityName, (array) $result);
         } else {

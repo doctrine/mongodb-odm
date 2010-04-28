@@ -68,7 +68,8 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $user = $this->_createTestUser();
 
         $query = $this->em->createQuery('User')
-            ->where('id', $user->id);
+            ->where('id', $user->id)
+            ->refresh();
         $user = $query->getSingleResult();
 
         $this->assertEquals('profiles', $user->profile['$ref']);
@@ -160,6 +161,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
 
         $user2 = $this->em->createQuery('User')
             ->where('id', $user->id)
+            ->refresh()
             ->getSingleResult();
     
         $this->assertTrue($user2->groups[0]['$id'] instanceof \MongoId);
@@ -204,6 +206,23 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         exit;
         $this->assertFalse((bool) $account);
         */
+    }
+
+    public function testDetach()
+    {
+        $user = new User();
+        $user->username = 'jon';
+        $user->password = 'changeme';
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $user->username = 'whoop';
+        $this->em->detach($user);
+        $this->em->flush();
+        $this->em->clear();
+
+        $user2 = $this->em->findByID('User', $user->id);
+        $this->assertEquals('jon', $user2->username);
     }
 }
 

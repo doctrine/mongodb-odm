@@ -16,6 +16,8 @@ class Query
     private $_limit = null;
     private $_skip = null;
 
+    const HINT_REFRESH = 1;
+
     public function __construct(EntityManager $em, $className = null)
     {
         $this->_em = $em;
@@ -37,10 +39,17 @@ class Query
         return $this;
     }
 
+    public function refresh()
+    {
+        $this->_hydrator->hint(self::HINT_REFRESH);
+        return $this;
+    }
+
     public function from($className)
     {
         $this->_className = $className;
         $this->_class = $this->_em->getClassMetadata($className);
+        return $this;
     }
 
     public function loadAssociation($fieldName)
