@@ -24,16 +24,6 @@ abstract class AbstractFileDriver implements Driver
         return $this->_paths;
     }
 
-    public function setFileExtension($fileExtension)
-    {
-        $this->_fileExtension = $fileExtension;
-    }
-
-    public function getFileExtension()
-    {
-        return $this->_fileExtension;
-    }
-
     public function getElement($className)
     {
         if ($file = $this->_findMappingFile($className)) {

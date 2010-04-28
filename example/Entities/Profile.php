@@ -4,8 +4,10 @@ namespace Entities;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+/** @Entity */
 class Profile
 {
+    /** @Field */
     private $name;
 
     public function getName()

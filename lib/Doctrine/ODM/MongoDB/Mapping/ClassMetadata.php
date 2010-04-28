@@ -43,6 +43,11 @@ class ClassMetadata
         $this->setCollection($collection);
     }
 
+    public function getReflectionClass()
+    {
+        return $this->reflClass;
+    }
+
     public function getName()
     {
         return $this->name;

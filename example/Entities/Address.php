@@ -4,11 +4,19 @@ namespace Entities;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+/** @Entity */
 class Address
 {
+    /** @Field */
     private $address;
+
+    /** @Field */
     private $city;
+
+    /** @Field */
     private $state;
+
+    /** @Field */
     private $zipcode;
 
     public function getAddress()

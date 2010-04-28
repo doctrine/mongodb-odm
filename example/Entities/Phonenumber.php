@@ -2,9 +2,13 @@
 
 namespace Entities;
 
+/** @Entity */
 class Phonenumber
 {
+    /** @Field */
     private $id;
+
+    /** @Field */
     private $phonenumber;
 
     public function __construct($phonenumber = null)

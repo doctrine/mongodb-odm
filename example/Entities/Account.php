@@ -4,9 +4,13 @@ namespace Entities;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+/** @Entity */
 class Account
 {
+    /** @Field */
     private $id;
+
+    /** @Field */
     private $name;
 
     public function getId()

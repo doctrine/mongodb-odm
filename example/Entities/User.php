@@ -4,37 +4,29 @@ namespace Entities;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+/** @Entity */
 class User
 {
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-        $metadata->mapManyEmbedded(array(
-            'fieldName' => 'addresses',
-            'targetEntity' => 'Entities\Address'
-        ));
-        $metadata->mapOneEmbedded(array(
-            'fieldName' => 'profile',
-            'targetEntity' => 'Entities\Profile'
-        ));
-        $metadata->mapOneAssociation(array(
-            'fieldName' => 'account',
-            'targetEntity' => 'Entities\Account',
-            'cascadeDelete' => true
-        ));
-        $metadata->mapManyAssociation(array(
-            'fieldName' => 'phonenumbers',
-            'targetEntity' => 'Entities\Phonenumber',
-            'cascadeDelete' => true
-        ));
-    }
-
+    /** @Field */
     private $id;
+
+    /** @Field */
     private $username;
+
+    /** @Field */
     private $password;
-    private $addresses = array();
-    private $profile;
-    private $account;
+
+    /** @Field(embedded="true", targetEntity="Entities\Phonenumber", type="many", cascadeDelete="true") */
     private $phonenumbers = array();
+
+    /** @Field(embedded="true", targetEntity="Entities\Address", type="many") */
+    private $addresses = array();
+
+    /** @Field(reference="true", targetEntity="Entities\Profile", type="one") */
+    private $profile;
+
+    /** @Field(reference="true", targetEntity="Entities\Account", cascadeDelete="true") */
+    private $account;
 
     public function getId()
     {

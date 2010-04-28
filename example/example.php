@@ -3,11 +3,14 @@
 require '/Users/jwage/Sites/doctrine2git/lib/Doctrine/Common/ClassLoader.php';
 
 use Doctrine\Common\ClassLoader,
+    Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ODM\MongoDB\EntityManager,
     Doctrine\ODM\MongoDB\Mongo,
     Doctrine\ODM\MongoDB\Configuration,
+    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
     Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver,
     Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver,
+    Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
     Entities\User,
     Entities\Address,
     Entities\Profile,
@@ -27,8 +30,14 @@ $classLoader = new ClassLoader('Entities', __DIR__);
 $classLoader->register();
 
 $config = new Configuration();
-$config->setMetadataDriverImpl(new XmlDriver(__DIR__ . '/xml'));
+
+$reader = new AnnotationReader();
+$reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
+$config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Entities'));
+
+//$config->setMetadataDriverImpl(new XmlDriver(__DIR__ . '/xml'));
 //$config->setMetadataDriverImpl(new YamlDriver(__DIR__ . '/yaml'));
+//$config->setMetadataDriverImpl(new PHPDriver());
 
 $em = EntityManager::create(new Mongo(), $config);
 
