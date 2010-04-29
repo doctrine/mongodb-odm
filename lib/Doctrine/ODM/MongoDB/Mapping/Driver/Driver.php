@@ -6,5 +6,5 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 interface Driver
 {
-    function loadMetadataForClass($className, ClassMetadata $class);
+    public function loadMetadataForClass($className, ClassMetadata $class);
 }
