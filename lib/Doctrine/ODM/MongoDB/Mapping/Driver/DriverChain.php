@@ -7,8 +7,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class DriverChain implements Driver {
-
+class DriverChain implements Driver
+{
     private $_drivers = array();
 
     public function addDriver(Driver $nestedDriver, $namespace)
@@ -30,5 +30,4 @@ class DriverChain implements Driver {
             }
         }
     }
-
 }
