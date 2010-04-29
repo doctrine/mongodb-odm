@@ -23,10 +23,8 @@ class DriverChain implements Driver {
 
     public function loadMetadataForClass($className, ClassMetadata $class)
     {
-        foreach ($this->_drivers as $namespace => $driver)
-        {
-            if (strpos($className, $namespace) === 0)
-            {
+        foreach ($this->_drivers as $namespace => $driver) {
+            if (strpos($className, $namespace) === 0) {
                 $driver->loadMetadataForClass($className, $metadata);
                 return;
             }
