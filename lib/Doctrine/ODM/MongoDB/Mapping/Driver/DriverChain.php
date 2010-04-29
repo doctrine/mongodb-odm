@@ -1,6 +1,8 @@
 <?php
 
-namespace Doctrine\ORM\Mapping\Driver;
+namespace Doctrine\ODM\MongoDB\Mapping\Driver;
+
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
