@@ -194,7 +194,7 @@ class EntityManager
         if ($result !== null) {
             return $this->_unitOfWork->getOrCreateEntity($entityName, (array) $result);
         } else {
-            return false;
+            return null;
         }
     }
 
@@ -214,7 +214,7 @@ class EntityManager
         if ($result !== null) {
             return $this->_unitOfWork->getOrCreateEntity($entityName, (array) $result);
         } else {
-            return false;
+            return null;
         }
     }
 
