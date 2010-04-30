@@ -230,16 +230,6 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $user2 = $this->em->findByID('User', $user->id);
         $this->assertEquals('jon', $user2->username);
     }
-
-    public function testSingleSave()
-    {
-        $user = new User();
-        $user->username = 'singlejwage';
-        $user->password = 'singlepassword';
-        $this->em->save($user);
-
-        $this->assertTrue($user->id !== '');
-    }
 }
 
 class User

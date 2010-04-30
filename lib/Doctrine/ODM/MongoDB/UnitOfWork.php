@@ -161,12 +161,6 @@ class UnitOfWork
         }
     }
 
-    public function save($entity)
-    {
-        $this->persist($entity);
-        $this->commit();
-    }
-
     public function persist($entity)
     {
         $visited = array();
