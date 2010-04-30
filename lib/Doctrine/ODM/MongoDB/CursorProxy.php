@@ -8,7 +8,7 @@ use MongoCursor,
 
 class CursorProxy implements \Iterator
 {
-    private $_em;
+    private $_dm;
     private $_uow;
     private $_class;
     private $_mongoCursor;
