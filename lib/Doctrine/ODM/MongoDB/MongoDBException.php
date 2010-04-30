@@ -9,13 +9,13 @@ class MongoDBException extends \Exception
         return new self(sprintf(sprintf('Could not find mapping file "%s" for class "%s".', $fileName, $className)));
     }
 
-    public static function entityNotMappedToDB($className)
+    public static function documentNotMappedToDB($className)
     {
-        return new self(sprintf('The "%s" entity is not mapped to a MongoDB database.', $className));
+        return new self(sprintf('The "%s" document is not mapped to a MongoDB database.', $className));
     }
 
-    public static function entityNotMappedToCollection($className)
+    public static function documentNotMappedToCollection($className)
     {
-        return new self(sprintf('The "%s" entity is not mapped to a MongoDB database collection.', $className));
+        return new self(sprintf('The "%s" document is not mapped to a MongoDB database collection.', $className));
     }
 }

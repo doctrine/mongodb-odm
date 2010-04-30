@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use Doctrine\ODM\MongoDB\EntityManager,
+use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\Common\Cache\Cache;
 
@@ -13,9 +13,9 @@ class ClassMetadataFactory
     private $_driver;
     private $_cacheDriver;
 
-    public function __construct(EntityManager $em)
+    public function __construct(DocumentManager $em)
     {
-        $this->_em = $em;
+        $this->_dm = $em;
         $this->_driver = $em->getConfiguration()->getMetadataDriverImpl();
     }
 

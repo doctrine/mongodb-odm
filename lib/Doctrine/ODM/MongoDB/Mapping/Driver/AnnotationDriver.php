@@ -36,13 +36,13 @@ class AnnotationDriver implements Driver
 
         $classAnnotations = $this->_reader->getClassAnnotations($reflClass);
         
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\Entity'])) {
-            $entityAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\Entity'];
-            if ($entityAnnot->db) {
-                $class->setDB($entityAnnot->db);
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\Document'])) {
+            $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\Document'];
+            if ($documentAnnot->db) {
+                $class->setDB($documentAnnot->db);
             }
-            if ($entityAnnot->collection) {
-                $class->setCollection($entityAnnot->collection);
+            if ($documentAnnot->collection) {
+                $class->setCollection($documentAnnot->collection);
             }
         }
         

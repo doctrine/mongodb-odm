@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\ODM\MongoDB\EntityManager,
+use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Hydrator;
 
 class Query
@@ -18,19 +18,19 @@ class Query
 
     const HINT_REFRESH = 1;
 
-    public function __construct(EntityManager $em, $className = null)
+    public function __construct(DocumentManager $em, $className = null)
     {
-        $this->_em = $em;
+        $this->_dm = $em;
         $this->_hydrator = $em->getHydrator();
         if ($className !== null) {
             $this->_className = $className;
-            $this->_class = $this->_em->getClassMetadata($className);
+            $this->_class = $this->_dm->getClassMetadata($className);
         }
     }
 
-    public function getEntityManager()
+    public function getDocumentManager()
     {
-        return $this->_em;
+        return $this->_dm;
     }
 
     public function hint($hint)
@@ -48,7 +48,7 @@ class Query
     public function from($className)
     {
         $this->_className = $className;
-        $this->_class = $this->_em->getClassMetadata($className);
+        $this->_class = $this->_dm->getClassMetadata($className);
         return $this;
     }
 
@@ -191,10 +191,10 @@ class Query
 
     public function iterate()
     {
-        $metadata = $this->_em->getClassMetadata($this->_className);
-        $collection = $this->_em->getEntityCollection($this->_className);
+        $metadata = $this->_dm->getClassMetadata($this->_className);
+        $collection = $this->_dm->getDocumentCollection($this->_className);
         $cursor = $collection->find($this->_where, $this->_select);
-        $cursorProxy = new CursorProxy($this->_em, $this->_hydrator, $metadata, $cursor);
+        $cursorProxy = new CursorProxy($this->_dm, $this->_hydrator, $metadata, $cursor);
         $cursorProxy->limit($this->_limit);
         $cursorProxy->skip($this->_skip);
         $cursorProxy->sort($this->_sort);

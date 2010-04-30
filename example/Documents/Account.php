@@ -1,8 +1,8 @@
 <?php
 
-namespace Entities;
+namespace Documents;
 
-/** @Entity */
+/** @Document */
 class Account
 {
     /** @Field */

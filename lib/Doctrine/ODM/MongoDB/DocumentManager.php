@@ -8,15 +8,15 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Query,
     Doctrine\ODM\MongoDB\Mongo;
 
-class EntityManager
+class DocumentManager
 {
     private $_mongo;
     private $_config;
     private $_metadataFactory;
     private $_unitOfWork;
     private $_hydrator;
-    private $_entityDBs = array();
-    private $_entityCollections = array();
+    private $_documentDBs = array();
+    private $_documentCollections = array();
 
     protected function __construct(Mongo $mongo, Configuration $config = null)
     {
@@ -65,67 +65,67 @@ class EntityManager
         return $this->_metadataFactory->getMetadataFor($className);
     }
 
-    public function getEntityDB($className)
+    public function getDocumentDB($className)
     {
-        if ( ! isset($this->_entityDBs[$className])) {
+        if ( ! isset($this->_documentDBs[$className])) {
             if ($db = $this->getClassMetadata($className)->getDB()) {
-                $this->_entityDBs[$className] = $this->_mongo->selectDB($db);
+                $this->_documentDBs[$className] = $this->_mongo->selectDB($db);
             }
         }
-        if ( ! isset($this->_entityDBs[$className])) {
-            throw MongoDBException::entityNotMappedToDB($className);
+        if ( ! isset($this->_documentDBs[$className])) {
+            throw MongoDBException::documentNotMappedToDB($className);
         }
-        return $this->_entityDBs[$className];
+        return $this->_documentDBs[$className];
     }
 
-    public function getEntityCollection($className)
+    public function getDocumentCollection($className)
     {
-        if ( ! isset($this->_entityCollections[$className])) {
+        if ( ! isset($this->_documentCollections[$className])) {
             $metadata = $this->getClassMetadata($className);
             if ($collection = $metadata->getCollection()) {
-                $this->_entityCollections[$className] = $this->_mongo->selectDB($metadata->getDB())->selectCollection($collection);
+                $this->_documentCollections[$className] = $this->_mongo->selectDB($metadata->getDB())->selectCollection($collection);
             }
         }
-        if ( ! isset($this->_entityCollections[$className])) {
-            throw MongoDBException::entityNotMappedToCollection($className);
+        if ( ! isset($this->_documentCollections[$className])) {
+            throw MongoDBException::documentNotMappedToCollection($className);
         }
-        return $this->_entityCollections[$className];
+        return $this->_documentCollections[$className];
     }
 
-    public function loadEntityAssociation($entity, $name)
+    public function loadDocumentAssociation($document, $name)
     {
-        $className = get_class($entity);
+        $className = get_class($document);
         $class = $this->getClassMetadata($className);
         $mapping = $class->fieldMappings[$name];
         if ($mapping['type'] === 'one') {
-            $reference = $class->getFieldValue($entity, $name);
+            $reference = $class->getFieldValue($document, $name);
             if ($reference && ! is_object($reference)) {
-                $reference = $this->getEntityCollection($mapping['targetEntity'])->getDBRef($reference);
-                $targetClass = $this->getClassMetadata($mapping['targetEntity']);
-                $reference = $this->_unitOfWork->getOrCreateEntity($mapping['targetEntity'], (array) $reference);
-                $class->setFieldValue($entity, $name, $reference);
+                $reference = $this->getDocumentCollection($mapping['targetDocument'])->getDBRef($reference);
+                $targetClass = $this->getClassMetadata($mapping['targetDocument']);
+                $reference = $this->_unitOfWork->getOrCreateDocument($mapping['targetDocument'], (array) $reference);
+                $class->setFieldValue($document, $name, $reference);
             }
         } else {
-            $referenceArray = $class->getFieldValue($entity, $name);
+            $referenceArray = $class->getFieldValue($document, $name);
             foreach ($referenceArray as $key => $reference) {
                 if ($reference && ! is_object($reference)) {
-                    $reference = $this->getEntityCollection($mapping['targetEntity'])->getDBRef($reference);
-                    $targetClass = $this->getClassMetadata($mapping['targetEntity']);
-                    $reference = $this->_unitOfWork->getOrCreateEntity($mapping['targetEntity'], (array) $reference);
+                    $reference = $this->getDocumentCollection($mapping['targetDocument'])->getDBRef($reference);
+                    $targetClass = $this->getClassMetadata($mapping['targetDocument']);
+                    $reference = $this->_unitOfWork->getOrCreateDocument($mapping['targetDocument'], (array) $reference);
                     $referenceArray[$key] = $reference;
                 }
             }
-            $class->setFieldValue($entity, $name, $referenceArray);
+            $class->setFieldValue($document, $name, $referenceArray);
         }
     }
 
-    public function loadEntityAssociations($entity)
+    public function loadDocumentAssociations($document)
     {
-        $className = get_class($entity);
+        $className = get_class($document);
         $class = $this->getClassMetadata($className);
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['reference'])) {
-                $this->loadEntityAssociation($entity, $mapping['fieldName']);
+                $this->loadDocumentAssociation($document, $mapping['fieldName']);
             }
         }
     }
@@ -135,24 +135,24 @@ class EntityManager
         return new Query($this, $className);
     }
 
-    public function persist($entity)
+    public function persist($document)
     {
-        $this->_unitOfWork->persist($entity);
+        $this->_unitOfWork->persist($document);
     }
 
-    public function remove($entity)
+    public function remove($document)
     {
-        $this->_unitOfWork->remove($entity);
+        $this->_unitOfWork->remove($document);
     }
 
-    public function detach($entity)
+    public function detach($document)
     {
-        $this->_unitOfWork->detach($entity);
+        $this->_unitOfWork->detach($document);
     }
 
-    public function refresh($entity)
+    public function refresh($document)
     {
-        $this->_unitOfWork->refresh($entity);
+        $this->_unitOfWork->refresh($document);
     }
 
     public function flush()
@@ -160,10 +160,10 @@ class EntityManager
         $this->_unitOfWork->commit();
     }
 
-    public function mapReduce($entityName, $map, $reduce, array $query = array(), array $options = array())
+    public function mapReduce($documentName, $map, $reduce, array $query = array(), array $options = array())
     {
-        $class = $this->getClassMetadata($entityName);
-        $db = $this->getEntityDB($entityName);
+        $class = $this->getClassMetadata($documentName);
+        $db = $this->getDocumentDB($documentName);
         if (is_string($map)) {
             $map = new \MongoCode($map);
         }
@@ -181,33 +181,33 @@ class EntityManager
         return $db->selectCollection($result['result'])->find();
     }
 
-    public function findByID($entityName, $id)
+    public function findByID($documentName, $id)
     {
-        $metadata = $this->getClassMetadata($entityName);
-        $collection = $this->getEntityCollection($entityName);
+        $metadata = $this->getClassMetadata($documentName);
+        $collection = $this->getDocumentCollection($documentName);
         $result = $collection->findOne(array('_id' => new \MongoId($id)));
         if ($result !== null) {
-            return $this->_unitOfWork->getOrCreateEntity($entityName, (array) $result);
+            return $this->_unitOfWork->getOrCreateDocument($documentName, (array) $result);
         } else {
             return null;
         }
     }
 
-    public function find($entityName, array $query = array(), array $fields = array())
+    public function find($documentName, array $query = array(), array $fields = array())
     {
-        $metadata = $this->getClassMetadata($entityName);
-        $collection = $this->getEntityCollection($entityName);
+        $metadata = $this->getClassMetadata($documentName);
+        $collection = $this->getDocumentCollection($documentName);
         $cursor = $collection->find($query, $fields);
         return new CursorProxy($this, $this->_hydrator, $metadata, $cursor);
     }
 
-    public function findOne($entityName, array $query = array(), array $fields = array())
+    public function findOne($documentName, array $query = array(), array $fields = array())
     {
-        $metadata = $this->getClassMetadata($entityName);
-        $collection = $this->getEntityCollection($entityName);
+        $metadata = $this->getClassMetadata($documentName);
+        $collection = $this->getDocumentCollection($documentName);
         $result = $collection->findOne($query, $fields);
         if ($result !== null) {
-            return $this->_unitOfWork->getOrCreateEntity($entityName, (array) $result);
+            return $this->_unitOfWork->getOrCreateDocument($documentName, (array) $result);
         } else {
             return null;
         }

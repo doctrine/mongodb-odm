@@ -119,32 +119,32 @@ class ClassMetadata
         $this->mapField($mapping);
     }
 
-    public function setIdentifierValue($entity, $id)
+    public function setIdentifierValue($document, $id)
     {
-        $this->reflFields[$this->identifier]->setValue($entity, $id);
+        $this->reflFields[$this->identifier]->setValue($document, $id);
     }
 
-    public function getIdentifierValue($entity)
+    public function getIdentifierValue($document)
     {
-        return (string) $this->reflFields[$this->identifier]->getValue($entity);
+        return (string) $this->reflFields[$this->identifier]->getValue($document);
     }
 
-    public function getIdentifierObject($entity)
+    public function getIdentifierObject($document)
     {
-        return new \MongoId($this->getIdentifierValue($entity));
+        return new \MongoId($this->getIdentifierValue($document));
     }
 
-    public function setFieldValue($entity, $field, $value)
+    public function setFieldValue($document, $field, $value)
     {
         if (!$field) {
             throw new \InvalidArgumentException('test');
         }
-        $this->reflFields[$field]->setValue($entity, $value);
+        $this->reflFields[$field]->setValue($document, $value);
     }
 
-    public function getFieldValue($entity, $field)
+    public function getFieldValue($document, $field)
     {
-        return $this->reflFields[$field]->getValue($entity);
+        return $this->reflFields[$field]->getValue($document);
     }
 
     public function newInstance()

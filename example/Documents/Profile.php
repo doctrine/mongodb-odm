@@ -1,12 +1,20 @@
 <?php
 
-namespace Entities;
+namespace Documents;
 
-/** @Entity */
+/** @Document */
 class Profile
 {
+    /** @Field(id=true) */
+    private $id;
+
     /** @Field */
     private $name;
+
+    public function getId()
+    {
+      return $this->id;
+    }
 
     public function getName()
     {

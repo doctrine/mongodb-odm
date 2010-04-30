@@ -9,7 +9,7 @@ MongoDB Object Mapper.
 
     use Doctrine\Common\ClassLoader,
         Doctrine\Common\Annotations\AnnotationReader,
-        Doctrine\ODM\MongoDB\EntityManager,
+        Doctrine\ODM\MongoDB\DocumentManager,
         Doctrine\ODM\MongoDB\Mongo,
         Doctrine\ODM\MongoDB\Configuration,
         Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
@@ -20,24 +20,24 @@ MongoDB Object Mapper.
     $classLoader = new ClassLoader('Doctrine', '/path/to/doctrine/lib');
     $classLoader->register();
 
-    $classLoader = new ClassLoader('Entities', __DIR__);
+    $classLoader = new ClassLoader('Documents', __DIR__);
     $classLoader->register();
 
     $config = new Configuration();
 
     $reader = new AnnotationReader();
     $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
-    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Entities'));
+    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
-    $em = EntityManager::create(new Mongo(), $config);
+    $em = DocumentManager::create(new Mongo(), $config);
 
-## Defining Entities
+## Defining Documents
 
 Now you are ready to start defining PHP 5.3 classes and persisting them to MongoDB:
 
-    namespace Entities;
+    namespace Documents;
 
-    /** @Entity(db="my_database", collection="users") */
+    /** @Document(db="my_database", collection="users") */
     class User
     {
         /** @Field(id="true")
@@ -49,10 +49,10 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
         /** @Field */
         public $password;
 
-        /** @Field(reference="true", type="one", targetEntity="Account") */
+        /** @Field(reference="true", type="one", targetDocument="Account") */
         public $account;
 
-        /** @Field(embedded="true", type="one", targetEntity="Profile")
+        /** @Field(embedded="true", type="one", targetDocument="Profile")
         public $profile;
     }
 
@@ -63,7 +63,7 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
         public $lastName;
     }
 
-    /** @Entity(db="my_database", collection="accounts") */
+    /** @Document(db="my_database", collection="accounts") */
     class Account
     {
         /** @Field(id="true")
@@ -73,7 +73,7 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
         public $name;
     }
 
-## Persisting Entities
+## Persisting Documents
 
 Create a new instance, set some of the properties and persist it:
 
@@ -91,7 +91,7 @@ Create a new instance, set some of the properties and persist it:
     $em->persist($user);
     $em->flush();
 
-## Querying for Entities
+## Querying for Documents
 
 You can query MongoDB by creating and building a new query with the createQuery()
 method or you can directly use the traditional find() and findOne() methods directly.
@@ -120,24 +120,24 @@ select the username:
     
     $users = $query->execute();
 
-If you want to just find an entity by its identifier you can use the findByID()
+If you want to just find an document by its identifier you can use the findByID()
 method:
 
     $user = $em->findByID('User', 'the_string_id');
 
-You may want to load the associations for an entity, you can do this with the 
-loadEntityAssociations() method:
+You may want to load the associations for an document, you can do this with the 
+loadDocumentAssociations() method:
 
-    $em->loadEntityAssociations($user);
+    $em->loadDocumentAssociations($user);
 
 Now you can access the ->account property and get an Account instance:
 
     echo $user->account->name; // Test Account
 
-If you only want to load a specific association you can use the loadEntityAssociation($name)
+If you only want to load a specific association you can use the loadDocumentAssociation($name)
 method:
 
-    $em->loadEntityAssociation($user, 'account');
+    $em->loadDocumentAssociation($user, 'account');
 
 To automatically load the association during hydration you can specify the 
 association to load on a query with the loadAssociation() method:

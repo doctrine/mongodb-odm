@@ -23,7 +23,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Annotations\Annotation;
 
-final class Entity extends Annotation
+final class Document extends Annotation
 {
     public $db;
     public $collection;
@@ -33,7 +33,7 @@ final class Field extends Annotation
 {
     public $id;
     public $name;
-    public $targetEntity;
+    public $targetDocument;
     public $embedded;
     public $reference;
     public $cascadeDelete;

@@ -40,10 +40,10 @@ class XmlDriver extends AbstractFileDriver
         $result = array();
         $xmlElement = simplexml_load_file($file);
 
-        if (isset($xmlElement->entity)) {
-            foreach ($xmlElement->entity as $entityElement) {
-                $entityName = (string)$entityElement['name'];
-                $result[$entityName] = $entityElement;
+        if (isset($xmlElement->document)) {
+            foreach ($xmlElement->document as $documentElement) {
+                $documentName = (string)$documentElement['name'];
+                $result[$documentName] = $documentElement;
             }
         }
 

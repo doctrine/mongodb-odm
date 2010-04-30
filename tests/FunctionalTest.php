@@ -5,7 +5,7 @@ require_once '/Users/jwage/Sites/doctrine2git/lib/Doctrine/Common/ClassLoader.ph
 
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Cache\ApcCache,
-    Doctrine\ODM\MongoDB\EntityManager,
+    Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mongo;
@@ -20,14 +20,14 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->em = EntityManager::create(new Mongo());
+        $this->dm = DocumentManager::create(new Mongo());
     }
 
     public function tearDown()
     {
-        $entities = array('User', 'Account', 'Profile', 'Address', 'Group', 'Phonenumber');
-        foreach ($entities as $entity) {
-            $this->em->getEntityCollection($entity)->drop();
+        $documents = array('User', 'Account', 'Profile', 'Address', 'Group', 'Phonenumber');
+        foreach ($documents as $document) {
+            $this->dm->getDocumentCollection($document)->drop();
         }
     }
 
@@ -40,8 +40,8 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $user->profile->firstName = 'Jonathan';
         $user->profile->lastName = 'Wage';
         
-        $this->em->persist($user);
-        $this->em->flush();
+        $this->dm->persist($user);
+        $this->dm->flush();
 
         return $user;
     }
@@ -57,13 +57,13 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
     public function testIdentityMap()
     {
         $user = $this->_createTestUser();
-        $query = $this->em->createQuery('User')
+        $query = $this->dm->createQuery('User')
             ->where('id', $user->id);
 
         $user = $query->getSingleResult();
         $this->assertSame($user, $user);
 
-        $this->em->clear();
+        $this->dm->clear();
 
         $user2 = $query->getSingleResult();
         $this->assertNotSame($user, $user2);
@@ -73,7 +73,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
     {
         $user = $this->_createTestUser();
 
-        $query = $this->em->createQuery('User')
+        $query = $this->dm->createQuery('User')
             ->where('id', $user->id)
             ->refresh();
         $user = $query->getSingleResult();
@@ -81,7 +81,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('profiles', $user->profile['$ref']);
         $this->assertTrue($user->profile['$id'] instanceof \MongoId);
 
-        $this->em->loadEntityAssociation($user, 'profile');
+        $this->dm->loadDocumentAssociation($user, 'profile');
         $this->assertEquals('Jonathan', $user->profile->firstName);
         $this->assertEquals('Wage', $user->profile->lastName);
     }
@@ -89,7 +89,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
     public function testLoadAssociationInQuery()
     {
         $user = $this->_createTestUser();
-        $query = $this->em->createQuery('User')
+        $query = $this->dm->createQuery('User')
             ->where('id', $user->id)
             ->loadAssociation('profile');
         $user4 = $query->getSingleResult();
@@ -107,10 +107,10 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $user->address->state = 'TN';
         $user->address->zipcode = '37209';
 
-        $this->em->flush();
-        $this->em->clear();
+        $this->dm->flush();
+        $this->dm->clear();
 
-        $user2 = $this->em->createQuery('User')
+        $user2 = $this->dm->createQuery('User')
             ->where('id', $user->id)
             ->getSingleResult();
         $this->assertEquals($user->address, $user2->address);
@@ -122,12 +122,13 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $user->phonenumbers[] = new Phonenumber('6155139185');
         $user->phonenumbers[] = new Phonenumber('6153303769');
         
-        $this->em->flush();
-        $this->em->clear();
+        $this->dm->flush();
+        $this->dm->clear();
 
-        $user2 = $this->em->createQuery('User')
+        $user2 = $this->dm->createQuery('User')
             ->where('id', $user->id)
             ->getSingleResult();
+
         $this->assertEquals($user->phonenumbers, $user2->phonenumbers);
     }
 
@@ -138,12 +139,12 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $user->account = new Account();
         $user->account->name = 'Test Account';
 
-        $this->em->flush();
-        $this->em->clear();
+        $this->dm->flush();
+        $this->dm->clear();
 
         $accountId = $user->account->id;
 
-        $user2 = $this->em->createQuery('User')
+        $user2 = $this->dm->createQuery('User')
             ->where('id', $user->id)
             ->loadAssociation('account')
             ->getSingleResult();
@@ -159,21 +160,21 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $user->groups[] = new Group('Group 1');
         $user->groups[] = new Group('Group 2');
 
-        $this->em->flush();
-        $this->em->clear();
+        $this->dm->flush();
+        $this->dm->clear();
 
         $this->assertTrue(isset($user->groups[0]->id));
         $this->assertTrue(isset($user->groups[1]->id));
 
-        $user2 = $this->em->createQuery('User')
+        $user2 = $this->dm->createQuery('User')
             ->where('id', $user->id)
             ->refresh()
             ->getSingleResult();
-    
+ 
         $this->assertTrue($user2->groups[0]['$id'] instanceof \MongoId);
         $this->assertTrue($user2->groups[1]['$id'] instanceof \MongoId);
 
-        $this->em->loadEntityAssociation($user2, 'groups');
+        $this->dm->loadDocumentAssociation($user2, 'groups');
 
         $this->assertTrue($user2->groups[0] instanceof Group);
         $this->assertTrue($user2->groups[1] instanceof Group);
@@ -187,31 +188,20 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $user->account = new Account();
         $user->account->name = 'Jon Test Account';
 
-        $this->em->persist($user);
-        $this->em->flush();
+        $this->dm->persist($user);
+        $this->dm->flush();
 
         $user->account->name = 'w00t';
-        $this->em->flush();
+        $this->dm->flush();
 
-        $this->em->refresh($user);
-        $this->em->loadEntityAssociation($user, 'account');
+        $this->dm->refresh($user);
+        $this->dm->loadDocumentAssociation($user, 'account');
         
         $this->assertEquals('w00t', $user->account->name);
 
-        $this->em->remove($user);
-        $this->em->flush();
-        $this->em->clear();
-
-        /*
-        $user = $this->em->findByID('User', $user->id);
-        print_r($user);
-        exit;
-
-        $account = $this->em->findByID('Account', $user->account->id);
-        print_r($account);
-        exit;
-        $this->assertFalse((bool) $account);
-        */
+        $this->dm->remove($user);
+        $this->dm->flush();
+        $this->dm->clear();
     }
 
     public function testDetach()
@@ -219,15 +209,15 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $user = new User();
         $user->username = 'jon';
         $user->password = 'changeme';
-        $this->em->persist($user);
-        $this->em->flush();
+        $this->dm->persist($user);
+        $this->dm->flush();
 
         $user->username = 'whoop';
-        $this->em->detach($user);
-        $this->em->flush();
-        $this->em->clear();
+        $this->dm->detach($user);
+        $this->dm->flush();
+        $this->dm->clear();
 
-        $user2 = $this->em->findByID('User', $user->id);
+        $user2 = $this->dm->findByID('User', $user->id);
         $this->assertEquals('jon', $user2->username);
     }
 }
@@ -250,25 +240,25 @@ class User
 
         $class->mapOneEmbedded(array(
             'fieldName' => 'address',
-            'targetEntity' => 'Address'
+            'targetDocument' => 'Address'
         ));
         $class->mapManyEmbedded(array(
             'fieldName' => 'phonenumbers', 
-            'targetEntity' => 'Phonenumber'
+            'targetDocument' => 'Phonenumber'
         ));
         $class->mapOneAssociation(array(
             'fieldName' => 'profile',
-            'targetEntity' => 'Profile',
+            'targetDocument' => 'Profile',
             'cascadeDelete' => true
         ));
         $class->mapOneAssociation(array(
             'fieldName' => 'account',
-            'targetEntity' => 'Account',
+            'targetDocument' => 'Account',
             'cascadeDelete' => true
         ));
         $class->mapManyAssociation(array(
             'fieldName' => 'groups',
-            'targetEntity' => 'Group'
+            'targetDocument' => 'Group'
         ));
     }
 }

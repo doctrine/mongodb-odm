@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\ODM\MongoDB\EntityManager,
+use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\CommitOrderCalculator;
 
 class UnitOfWork
@@ -14,103 +14,103 @@ class UnitOfWork
 
     private $_em;
     private $_hydrator;
-    private $_originalEntityData = array();
-    private $_entityStates = array();
-    private $_entityInsertions = array();
-    private $_entityUpdates = array();
-    private $_entityDeletions = array();
+    private $_originalDocumentData = array();
+    private $_documentStates = array();
+    private $_documentInsertions = array();
+    private $_documentUpdates = array();
+    private $_documentDeletions = array();
     private $_identityMap = array();
 
-    public function __construct(EntityManager $em)
+    public function __construct(DocumentManager $em)
     {
-        $this->_em = $em;
+        $this->_dm = $em;
         $this->_hydrator = $em->getHydrator();
         $this->_commitOrderCalculator = new CommitOrderCalculator();
     }
 
-    public function getOrCreateEntity($className, array $data = array(), array $hints = array())
+    public function getOrCreateDocument($className, array $data = array(), array $hints = array())
     {
-        $class = $this->_em->getClassMetadata($className);
+        $class = $this->_dm->getClassMetadata($className);
         
         $id = isset($data['_id']) ? (string) $data['_id'] : null;
         if ($id && isset($this->_identityMap[$className][$id])) {
-            $entity = $this->_identityMap[$className][$id];
+            $document = $this->_identityMap[$className][$id];
             $overrideLocalValues = isset($hints[Query::HINT_REFRESH]) ? true : false;
         } else {
-            $entity = $class->newInstance();
-            $oid = spl_object_hash($entity);
-            $this->_entityStates[$oid] = self::STATE_MANAGED;
-            $this->_originalEntityData[$oid] = $data;
-            $this->_identityMap[$className][$id] = $entity;
+            $document = $class->newInstance();
+            $oid = spl_object_hash($document);
+            $this->_documentStates[$oid] = self::STATE_MANAGED;
+            $this->_originalDocumentData[$oid] = $data;
+            $this->_identityMap[$className][$id] = $document;
             $overrideLocalValues = true;
         }
         if ($overrideLocalValues === true) {
-            $this->_hydrator->hydrate($class, $entity, $data);
+            $this->_hydrator->hydrate($class, $document, $data);
         }
-        return $entity;
+        return $document;
     }
 
-    public function getEntityState($entity, $assume = null)
+    public function getDocumentState($document, $assume = null)
     {
-        $oid = spl_object_hash($entity);
-        if ( ! isset($this->_entityStates[$oid])) {
+        $oid = spl_object_hash($document);
+        if ( ! isset($this->_documentStates[$oid])) {
             if ($assume === null) {
-                if ($this->_em->getClassMetadata(get_class($entity))->getIdentifierValue($entity)) {
-                    $this->_entityStates[$oid] = self::STATE_DETACHED;
+                if ($this->_dm->getClassMetadata(get_class($document))->getIdentifierValue($document)) {
+                    $this->_documentStates[$oid] = self::STATE_DETACHED;
                 } else {
-                    $this->_entityStates[$oid] = self::STATE_NEW;
+                    $this->_documentStates[$oid] = self::STATE_NEW;
                 }
             } else {
-                $this->_entityStates[$oid] = $assume;
+                $this->_documentStates[$oid] = $assume;
             }
         }
-        return $this->_entityStates[$oid];
+        return $this->_documentStates[$oid];
     }
 
-    public function detach($entity)
+    public function detach($document)
     {
         $visited = array();
-        $this->_doDetach($entity, $visited);
+        $this->_doDetach($document, $visited);
     }
 
-    public function removeFromIdentityMap($entity)
+    public function removeFromIdentityMap($document)
     {
-        $oid = spl_object_hash($entity);
-        $class = $this->_em->getClassMetadata(get_class($entity));
-        $id = $class->getIdentifierValue($entity);
+        $oid = spl_object_hash($document);
+        $class = $this->_dm->getClassMetadata(get_class($document));
+        $id = $class->getIdentifierValue($document);
         
         if ( ! $id) {
-            throw new \InvalidArgumentException('The given entity has no identity.');
+            throw new \InvalidArgumentException('The given document has no id.');
         }
         $className = $class->name;
         if (isset($this->_identityMap[$className][$id])) {
             unset($this->_identityMap[$className][$id]);
-            $this->_entityStates[$oid] = self::STATE_DETACHED;
+            $this->_documentStates[$oid] = self::STATE_DETACHED;
             return true;
         }
 
         return false;
     }
 
-    private function _doDetach($entity, array &$visited)
+    private function _doDetach($document, array &$visited)
     {
-        $oid = spl_object_hash($entity);
+        $oid = spl_object_hash($document);
         if (isset($visited[$oid])) {
             return;
         }
 
-        $visited[$oid] = $entity;
+        $visited[$oid] = $document;
 
-        switch ($this->getEntityState($entity, self::STATE_DETACHED)) {
+        switch ($this->getDocumentState($document, self::STATE_DETACHED)) {
             case self::STATE_MANAGED:
-                $this->removeFromIdentityMap($entity);
+                $this->removeFromIdentityMap($document);
                 unset(
-                    $this->_entityInsertions[$oid],
-                    $this->_entityUpdates[$oid],
-                    $this->_entityDeletions[$oid],
-                    $this->_entityIdentifiers[$oid],
-                    $this->_entityStates[$oid],
-                    $this->_originalEntityData[$oid]
+                    $this->_documentInsertions[$oid],
+                    $this->_documentUpdates[$oid],
+                    $this->_documentDeletions[$oid],
+                    $this->_documentIdentifiers[$oid],
+                    $this->_documentStates[$oid],
+                    $this->_originalDocumentData[$oid]
                 );
                 break;
             case self::STATE_NEW:
@@ -118,132 +118,132 @@ class UnitOfWork
                 return;
         }
         
-        $this->_cascadeDetach($entity, $visited);
+        $this->_cascadeDetach($document, $visited);
     }
 
-    private function _cascadeDetach($entity, array &$visited)
+    private function _cascadeDetach($document, array &$visited)
     {
-        $class = $this->_em->getClassMetadata(get_class($entity));
+        $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
             if ( ! isset($mapping['reference'])) {
                 continue;
             }
 
-            $relatedEntities = $class->reflFields[$mapping['fieldName']]->getValue($entity);
-            if ( ! $relatedEntities || (is_array($relatedEntities) && isset($relatedEntities['$ref']))) {
+            $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+            if ( ! $relatedDocuments || (is_array($relatedDocuments) && isset($relatedDocuments['$ref']))) {
                 continue;
             }
 
-            if (is_array($relatedEntities)) {
-                foreach ($relatedEntities as $entity) {
-                    if (is_array($entity) && isset($entity['$ref'])) {
+            if (is_array($relatedDocuments)) {
+                foreach ($relatedDocuments as $document) {
+                    if (is_array($document) && isset($document['$ref'])) {
                         continue;
                     }
-                    $this->_doDetach($entity, $visited);
+                    $this->_doDetach($document, $visited);
                 }
             } else {
-                $this->_doDetach($relatedEntities, $visited);
+                $this->_doDetach($relatedDocuments, $visited);
             }
         }
     }
 
 
-    public function refresh($entity)
+    public function refresh($document)
     {
-        $className = get_class($entity);
-        $class = $this->_em->getClassMetadata($className);
-        $result = $this->_em->createQuery($className)
-            ->where($class->identifier, $class->getIdentifierValue($entity))
+        $className = get_class($document);
+        $class = $this->_dm->getClassMetadata($className);
+        $result = $this->_dm->createQuery($className)
+            ->where($class->identifier, $class->getIdentifierValue($document))
             ->refresh()
             ->getSingleResult();
         if ($result === false) {
-            throw new \InvalidArgumentException('Could not refresh entity because it does not exist anymore.');
+            throw new \InvalidArgumentException('Could not refresh document because it does not exist anymore.');
         }
     }
 
-    public function persist($entity)
+    public function persist($document)
     {
         $visited = array();
-        $this->_doPersist($entity, $visited);
+        $this->_doPersist($document, $visited);
     }
 
-    public function _doPersist($entity, array &$visited)
+    public function _doPersist($document, array &$visited)
     {
-        $oid = spl_object_hash($entity);
+        $oid = spl_object_hash($document);
         if (isset($visited[$oid])) {
             return;
         }
 
-        $visited[$oid] = $entity;
+        $visited[$oid] = $document;
 
-        $state = $this->getEntityState($entity);
+        $state = $this->getDocumentState($document);
         switch ($state) {
             case self::STATE_NEW:
-                $this->_entityStates[$oid] = self::STATE_MANAGED;
-                $this->_entityInsertions[$oid] = $entity;
+                $this->_documentStates[$oid] = self::STATE_MANAGED;
+                $this->_documentInsertions[$oid] = $document;
                 break;
             case self::STATE_REMOVED:
-                unset($this->_entityDeletions[$oid]);
+                unset($this->_documentDeletions[$oid]);
                 break;
         }
         
-        $this->_cascadePersist($entity, $visited);
+        $this->_cascadePersist($document, $visited);
     }
 
-    public function _cascadePersist($entity, array &$visited)
+    public function _cascadePersist($document, array &$visited)
     {
-        $class = $this->_em->getClassMetadata(get_class($entity));
+        $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
             if ( ! isset($mapping['reference'])) {
                 continue;
             }
 
-            $relatedEntities = $class->reflFields[$mapping['fieldName']]->getValue($entity);
-            if ( ! $relatedEntities || (is_array($relatedEntities) && isset($relatedEntities['$ref']))) {
+            $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+            if ( ! $relatedDocuments || (is_array($relatedDocuments) && isset($relatedDocuments['$ref']))) {
                 continue;
             }
 
-            if (is_array($relatedEntities)) {
-                foreach ($relatedEntities as $entity) {
-                    if (is_array($entity) && isset($entity['$ref'])) {
+            if (is_array($relatedDocuments)) {
+                foreach ($relatedDocuments as $document) {
+                    if (is_array($document) && isset($document['$ref'])) {
                         continue;
                     }
-                    $this->_doPersist($entity, $visited);
+                    $this->_doPersist($document, $visited);
                 }
             } else {
-                $this->_doPersist($relatedEntities, $visited);
+                $this->_doPersist($relatedDocuments, $visited);
             }
         }
     }
 
-    public function remove($entity)
+    public function remove($document)
     {
         $visited = array();
-        $this->_doRemove($entity, $visited);
+        $this->_doRemove($document, $visited);
     }
 
-    private function _doRemove($entity, array &$visited)
+    private function _doRemove($document, array &$visited)
     {
-        $oid = spl_object_hash($entity);
+        $oid = spl_object_hash($document);
         if (isset($visited[$oid])) {
             return;
         }
 
-        $visited[$oid] = $entity;
+        $visited[$oid] = $document;
 
-        $state = $this->getEntityState($entity);
+        $state = $this->getDocumentState($document);
         switch ($state) {
             case self::STATE_MANAGED:
-                $this->_entityDeletions[$oid] = $entity;
+                $this->_documentDeletions[$oid] = $document;
                 break;
         }
 
-        $this->_cascadeRemove($entity, $visited);
+        $this->_cascadeRemove($document, $visited);
     }
 
-    private function _cascadeRemove($entity, array &$visited)
+    private function _cascadeRemove($document, array &$visited)
     {
-        $class = $this->_em->getClassMetadata(get_class($entity));
+        $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
             if ( ! isset($mapping['reference'])) {
                 continue;
@@ -252,20 +252,20 @@ class UnitOfWork
                 continue;
             }
 
-            $relatedEntities = $class->reflFields[$mapping['fieldName']]->getValue($entity);
-            if ( ! $relatedEntities || (is_array($relatedEntities) && isset($relatedEntities['$ref']))) {
+            $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+            if ( ! $relatedDocuments || (is_array($relatedDocuments) && isset($relatedDocuments['$ref']))) {
                 continue;
             }
 
-            if (is_array($relatedEntities)) {
-                foreach ($relatedEntities as $entity) {
-                    if (isset($entity['$ref'])) {
+            if (is_array($relatedDocuments)) {
+                foreach ($relatedDocuments as $document) {
+                    if (isset($document['$ref'])) {
                         continue;
                     }
-                    $this->_doRemove($entity, $visited);
+                    $this->_doRemove($document, $visited);
                 }
             } else {
-                $this->_doRemove($relatedEntities, $visited);
+                $this->_doRemove($relatedDocuments, $visited);
             }
         }
     }
@@ -274,9 +274,9 @@ class UnitOfWork
     {
         $this->computeChangeSets();
 
-        if ( ! ($this->_entityInsertions ||
-                $this->_entityDeletions ||
-                $this->_entityUpdates)) {
+        if ( ! ($this->_documentInsertions ||
+                $this->_documentDeletions ||
+                $this->_documentUpdates)) {
             return; // Nothing to do.
         }
 
@@ -284,45 +284,45 @@ class UnitOfWork
         $this->_executeUpdates();
         $this->_executeDeletions();
 
-        $this->_entityInsertions =
-        $this->_entityUpdates =
-        $this->_entityDeletions = array();
+        $this->_documentInsertions =
+        $this->_documentUpdates =
+        $this->_documentDeletions = array();
     }
 
     public function computeChangeSets()
     {
-        foreach ($this->_identityMap as $className => $entities) {
-            $class = $this->_em->getClassMetadata($className);
-            foreach ($entities as $id => $entity) {
-                $oid = spl_object_hash($entity);
-                $state = $this->getEntityState($entity);
-                if (isset($this->_entityDeletions[$oid])) {
+        foreach ($this->_identityMap as $className => $documents) {
+            $class = $this->_dm->getClassMetadata($className);
+            foreach ($documents as $id => $document) {
+                $oid = spl_object_hash($document);
+                $state = $this->getDocumentState($document);
+                if (isset($this->_documentDeletions[$oid])) {
                     continue;
                 }
-                if ( ! isset($this->_originalEntityData[$oid])) {
+                if ( ! isset($this->_originalDocumentData[$oid])) {
                     continue;
                 }
-                $originalData = $this->_originalEntityData[$oid];
+                $originalData = $this->_originalDocumentData[$oid];
                 $changed = false;
                 foreach ($originalData as $key => $value) {
                     if ($key === '_id') {
                         continue;
                     }
-                    if ($value !== $class->getFieldValue($entity, $key)) {
+                    if ($value !== $class->getFieldValue($document, $key)) {
                         $changed = true;
                     }
                 }
                 if ($state === self::STATE_MANAGED && $changed === true) {
-                    $this->_entityUpdates[$oid] = $entity;
+                    $this->_documentUpdates[$oid] = $document;
                 }
-                $this->persist($entity);
+                $this->persist($document);
             }
         }
     }
 
-    private function _buildFieldValuesForSave($entity)
+    private function _buildFieldValuesForSave($document)
     {
-        $metadata = $this->_em->getClassMetadata(get_class($entity));
+        $metadata = $this->_dm->getClassMetadata(get_class($document));
         $values = array();
         foreach ($metadata->fieldMappings as $field => $mapping) {
             if (isset($mapping['id'])) {
@@ -330,7 +330,7 @@ class UnitOfWork
             }
 
             $reflProp = $metadata->reflFields[$field];
-            $value = $reflProp->getValue($entity);
+            $value = $reflProp->getValue($document);
             if ( ! $value) {
                 continue;
             }
@@ -338,8 +338,8 @@ class UnitOfWork
             if (isset($mapping['embedded'])) {
                 if ($mapping['type'] === 'many') {
                     $values[$field] = array();
-                    foreach ($value as $key => $document) {
-                        $values[$field][$key] = $this->_buildFieldValuesForSave($document);
+                    foreach ($value as $v) {
+                        $values[$field][] = $this->_buildFieldValuesForSave($v);
                     }
                 } else {
                     $values[$field] = $this->_buildFieldValuesForSave($value);
@@ -349,10 +349,10 @@ class UnitOfWork
                     if (is_object($value)) {
                         $value = $this->_buildFieldValuesForSave($value);
                     }
-                    $ref = $this->_em->getEntityCollection($mapping['targetEntity'])->createDBRef($value);
+                    $ref = $this->_dm->getDocumentCollection($mapping['targetDocument'])->createDBRef($value);
                     $values[$field] = $ref;
                 } else {
-                    $collection = $this->_em->getEntityCollection($mapping['targetEntity']);
+                    $collection = $this->_dm->getDocumentCollection($mapping['targetDocument']);
                     foreach ($value as $v) {
                         $ref = $collection->createDBRef($this->_buildFieldValuesForSave($v));
                         $values[$field][] = $ref;
@@ -363,7 +363,7 @@ class UnitOfWork
             }
         }
         if ($metadata->identifier) {
-            if ($id = $metadata->getIdentifierObject($entity)) {
+            if ($id = $metadata->getIdentifierObject($document)) {
                 $values['_id'] = $id;
             }
         }
@@ -372,16 +372,16 @@ class UnitOfWork
 
     private function _executeInsertions()
     {
-        if ( ! $this->_entityInsertions) {
+        if ( ! $this->_documentInsertions) {
             return;
         }
 
         $classes = array();
         $insertions = array();
-        foreach ($this->_entityInsertions as $oid => $entity) {
-            $className = get_class($entity);
-            $insertions[$className][$oid] = $entity;
-            $class = $this->_em->getClassMetadata($className);
+        foreach ($this->_documentInsertions as $oid => $document) {
+            $className = get_class($document);
+            $insertions[$className][$oid] = $document;
+            $class = $this->_dm->getClassMetadata($className);
             $this->_commitOrderCalculator->addClass($class);
             $classes[] = $class;
         }
@@ -391,7 +391,7 @@ class UnitOfWork
                  if ( ! isset($mapping['reference'])) {
                      continue;
                  }
-                 $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
                  $this->_commitOrderCalculator->addClass($targetClass);
                  $this->_commitOrderCalculator->addDependency($targetClass, $class);
              }
@@ -403,21 +403,21 @@ class UnitOfWork
             if ( ! isset($insertions[$class->name])) {
                 continue;
             }
-            $entities = $insertions[$class->name];
-            $collection = $this->_em->getEntityCollection($class->name);
+            $documents = $insertions[$class->name];
+            $collection = $this->_dm->getDocumentCollection($class->name);
 
             $inserts = array();
-            foreach ($entities as $oid => $entity) {
-                $values = $this->_buildFieldValuesForSave($entity);
+            foreach ($documents as $oid => $document) {
+                $values = $this->_buildFieldValuesForSave($document);
                 $inserts[$oid] = $values;
-                $this->_originalEntityData[$oid] = $values;
+                $this->_originalDocumentData[$oid] = $values;
             }
             $collection->batchInsert($inserts);
             foreach ($inserts as $oid => $values) {
-                $entity = $insertions[$class->name][$oid];
+                $document = $insertions[$class->name][$oid];
                 $id = (string) $values['_id'];
-                $class->setIdentifierValue($entity, $id);
-                $this->_identityMap[$class->name][$id] = $entity;
+                $class->setIdentifierValue($document, $id);
+                $this->_identityMap[$class->name][$id] = $document;
             }
         }
 
@@ -426,23 +426,23 @@ class UnitOfWork
 
     private function _executeUpdates()
     {
-        foreach ($this->_entityUpdates as $oid => $entity) {
-            $className = get_class($entity);
-            $metadata = $this->_em->getClassMetadata($className);
-            $collection = $this->_em->getEntityCollection($className);
-            $values = $this->_buildFieldValuesForSave($entity);
+        foreach ($this->_documentUpdates as $oid => $document) {
+            $className = get_class($document);
+            $metadata = $this->_dm->getClassMetadata($className);
+            $collection = $this->_dm->getDocumentCollection($className);
+            $values = $this->_buildFieldValuesForSave($document);
             $collection->save($values);
         }
     }
 
     private function _executeDeletions()
     {
-        foreach ($this->_entityDeletions as $oid => $entity) {
-            $className = get_class($entity);
-            $metadata = $this->_em->getClassMetadata($className);
-            $collection = $this->_em->getEntityCollection($className);
+        foreach ($this->_documentDeletions as $oid => $document) {
+            $className = get_class($document);
+            $metadata = $this->_dm->getClassMetadata($className);
+            $collection = $this->_dm->getDocumentCollection($className);
             $collection->remove(
-                array('_id' => $metadata->getIdentifierObject($entity)),
+                array('_id' => $metadata->getIdentifierObject($document)),
                 array('justOne' => true)
             );
         }
@@ -451,11 +451,11 @@ class UnitOfWork
     public function clear()
     {
         $this->_identityMap =
-        $this->_originalEntityData =
-        $this->_entityStates =
-        $this->_entityInsertions =
-        $this->_entityUpdates =
-        $this->_entityDeletions = array();
+        $this->_originalDocumentData =
+        $this->_documentStates =
+        $this->_documentInsertions =
+        $this->_documentUpdates =
+        $this->_documentDeletions = array();
         $this->_commitOrderCalculator->clear();
     }
 }

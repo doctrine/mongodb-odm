@@ -1,20 +1,12 @@
 <?php
 
-namespace Entities;
+namespace Documents;
 
-/** @Entity */
 class Address
 {
-    /** @Field */
     private $address;
-
-    /** @Field */
     private $city;
-
-    /** @Field */
     private $state;
-
-    /** @Field */
     private $zipcode;
 
     public function getAddress()

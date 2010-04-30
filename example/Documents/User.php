@@ -1,8 +1,8 @@
 <?php
 
-namespace Entities;
+namespace Documents;
 
-/** @Entity */
+/** @Document */
 class User
 {
     /** @Field */
@@ -14,16 +14,16 @@ class User
     /** @Field */
     private $password;
 
-    /** @Field(embedded="true", targetEntity="Entities\Phonenumber", type="many", cascadeDelete="true") */
+    /** @Field(embedded="true", targetDocument="Documents\Phonenumber", type="many", cascadeDelete="true") */
     private $phonenumbers = array();
 
-    /** @Field(embedded="true", targetEntity="Entities\Address", type="many") */
+    /** @Field(embedded="true", targetDocument="Documents\Address", type="many") */
     private $addresses = array();
 
-    /** @Field(reference="true", targetEntity="Entities\Profile", type="one") */
+    /** @Field(reference="true", targetDocument="Documents\Profile", type="one") */
     private $profile;
 
-    /** @Field(reference="true", targetEntity="Entities\Account", cascadeDelete="true") */
+    /** @Field(reference="true", targetDocument="Documents\Account", cascadeDelete="true") */
     private $account;
 
     public function getId()

@@ -13,10 +13,10 @@ class CursorProxy implements \Iterator
     private $_class;
     private $_mongoCursor;
 
-    public function __construct(EntityManager $em, Hydrator $hydrator, ClassMetadata $class, MongoCursor $mongoCursor)
+    public function __construct(DocumentManager $em, Hydrator $hydrator, ClassMetadata $class, MongoCursor $mongoCursor)
     {
-        $this->_em = $em;
-        $this->_uow = $this->_em->getUnitOfWork();
+        $this->_dm = $em;
+        $this->_uow = $this->_dm->getUnitOfWork();
         $this->_hydrator = $hydrator;
         $this->_class = $class;
         $this->_mongoCursor = $mongoCursor;
@@ -25,8 +25,8 @@ class CursorProxy implements \Iterator
     public function current()
     {
         $current = $this->_mongoCursor->current();
-        $entity = $this->_uow->getOrCreateEntity($this->_class->name, (array) $current, $this->_hydrator->getHints());
-        return $entity;
+        $document = $this->_uow->getOrCreateDocument($this->_class->name, (array) $current, $this->_hydrator->getHints());
+        return $document;
     }
 
     public function next()
