@@ -13,9 +13,9 @@ class CursorProxy implements \Iterator
     private $_class;
     private $_mongoCursor;
 
-    public function __construct(DocumentManager $em, Hydrator $hydrator, ClassMetadata $class, MongoCursor $mongoCursor)
+    public function __construct(DocumentManager $dm, Hydrator $hydrator, ClassMetadata $class, MongoCursor $mongoCursor)
     {
-        $this->_dm = $em;
+        $this->_dm = $dm;
         $this->_uow = $this->_dm->getUnitOfWork();
         $this->_hydrator = $hydrator;
         $this->_class = $class;

@@ -3,16 +3,18 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Query,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+    Doctrine\ODM\MongoDB\PersistentCollection,
+    Doctrine\Common\Collections\ArrayCollection;
 
 class Hydrator
 {
     private $_em;
     private $_hints = array();
 
-    public function __construct(DocumentManager $em)
+    public function __construct(DocumentManager $dm)
     {
-        $this->_dm = $em;
+        $this->_dm = $dm;
     }
 
     public function hint($hint)
@@ -32,9 +34,9 @@ class Hydrator
                 $embeddedMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 $embeddedDocument = $embeddedMetadata->newInstance();
                 if ($mapping['type'] === 'many') {
-                    $documents = array();
-                    foreach ($data[$mapping['fieldName']] as $key => $doc) {
-                        $documents[$key] = $this->hydrate($embeddedMetadata, clone $embeddedDocument, $doc);
+                    $documents = new ArrayCollection();
+                    foreach ($data[$mapping['fieldName']] as $doc) {
+                        $documents->add($this->hydrate($embeddedMetadata, clone $embeddedDocument, $doc));
                     }
                     $metadata->setFieldValue($document, $mapping['fieldName'], $documents);
                 } else {

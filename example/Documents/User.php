@@ -23,7 +23,7 @@ class User
     /** @Field(reference="true", targetDocument="Documents\Profile", type="one") */
     private $profile;
 
-    /** @Field(reference="true", targetDocument="Documents\Account", cascadeDelete="true") */
+    /** @Field(reference="true", targetDocument="Documents\Account", cascadeDelete="true", type="one") */
     private $account;
 
     public function getId()

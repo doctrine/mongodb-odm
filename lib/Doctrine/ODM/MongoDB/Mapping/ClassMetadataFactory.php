@@ -13,10 +13,10 @@ class ClassMetadataFactory
     private $_driver;
     private $_cacheDriver;
 
-    public function __construct(DocumentManager $em)
+    public function __construct(DocumentManager $dm)
     {
-        $this->_dm = $em;
-        $this->_driver = $em->getConfiguration()->getMetadataDriverImpl();
+        $this->_dm = $dm;
+        $this->_driver = $dm->getConfiguration()->getMetadataDriverImpl();
     }
 
     public function setCacheDriver(Cache $cacheDriver)

@@ -18,10 +18,10 @@ class Query
 
     const HINT_REFRESH = 1;
 
-    public function __construct(DocumentManager $em, $className = null)
+    public function __construct(DocumentManager $dm, $className = null)
     {
-        $this->_dm = $em;
-        $this->_hydrator = $em->getHydrator();
+        $this->_dm = $dm;
+        $this->_hydrator = $dm->getHydrator();
         if ($className !== null) {
             $this->_className = $className;
             $this->_class = $this->_dm->getClassMetadata($className);

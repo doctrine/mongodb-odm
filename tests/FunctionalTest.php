@@ -229,9 +229,15 @@ class User
     public $password;
     public $address;
     public $profile;
-    public $phonenumbers = array();
-    public $groups = array();
+    public $phonenumbers;
+    public $groups;
     public $account;
+
+    public function __construct()
+    {
+        $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     public static function loadMetadata(ClassMetadata $class)
     {

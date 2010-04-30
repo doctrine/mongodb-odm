@@ -39,7 +39,7 @@ $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documen
 //$config->setMetadataDriverImpl(new YamlDriver(__DIR__ . '/yaml'));
 //$config->setMetadataDriverImpl(new PHPDriver());
 
-$em = DocumentManager::create(new Mongo(), $config);
+$dm = DocumentManager::create(new Mongo(), $config);
 
 $account = new Account();
 $account->setName('Test Account');
@@ -62,12 +62,14 @@ $address->setZipcode('30303');
 
 $user->addAddress($address);
 
-$em->persist($user);
-$em->flush();
+$dm->persist($user);
+$dm->flush();
 
-$query = $em->createQuery('Documents\User')
+$query = $dm->createQuery('Documents\User')
     ->loadAssociation('account')
     ->loadAssociation('phonenumbers')
+    ->loadAssociation('profile')
+    ->refresh()
     ->where('id', $user->getId());
 
 $user = $query->getSingleResult();

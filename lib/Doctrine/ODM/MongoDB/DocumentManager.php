@@ -6,7 +6,9 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory,
     Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
     Doctrine\ODM\MongoDB\Query,
-    Doctrine\ODM\MongoDB\Mongo;
+    Doctrine\ODM\MongoDB\Mongo,
+    Doctrine\ODM\MongoDB\PersistentCollection,
+    Doctrine\Common\Collections\ArrayCollection;
 
 class DocumentManager
 {
@@ -97,25 +99,26 @@ class DocumentManager
         $className = get_class($document);
         $class = $this->getClassMetadata($className);
         $mapping = $class->fieldMappings[$name];
+        $targetClass = $this->getClassMetadata($mapping['targetDocument']);
+
         if ($mapping['type'] === 'one') {
             $reference = $class->getFieldValue($document, $name);
             if ($reference && ! is_object($reference)) {
                 $reference = $this->getDocumentCollection($mapping['targetDocument'])->getDBRef($reference);
-                $targetClass = $this->getClassMetadata($mapping['targetDocument']);
                 $reference = $this->_unitOfWork->getOrCreateDocument($mapping['targetDocument'], (array) $reference);
                 $class->setFieldValue($document, $name, $reference);
             }
         } else {
             $referenceArray = $class->getFieldValue($document, $name);
+            $collection = new PersistentCollection($this, $targetClass, new ArrayCollection());
             foreach ($referenceArray as $key => $reference) {
                 if ($reference && ! is_object($reference)) {
                     $reference = $this->getDocumentCollection($mapping['targetDocument'])->getDBRef($reference);
-                    $targetClass = $this->getClassMetadata($mapping['targetDocument']);
                     $reference = $this->_unitOfWork->getOrCreateDocument($mapping['targetDocument'], (array) $reference);
-                    $referenceArray[$key] = $reference;
                 }
+                $collection->add($reference);
             }
-            $class->setFieldValue($document, $name, $referenceArray);
+            $class->setFieldValue($document, $name, $collection);
         }
     }
 

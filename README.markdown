@@ -29,7 +29,7 @@ MongoDB Object Mapper.
     $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
     $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
-    $em = DocumentManager::create(new Mongo(), $config);
+    $dm = DocumentManager::create(new Mongo(), $config);
 
 ## Defining Documents
 
@@ -88,8 +88,8 @@ Create a new instance, set some of the properties and persist it:
     $user->account = new Account();
     $user->account->name = 'Test Account';
 
-    $em->persist($user);
-    $em->flush();
+    $dm->persist($user);
+    $dm->flush();
 
 ## Querying for Documents
 
@@ -100,14 +100,14 @@ method or you can directly use the traditional find() and findOne() methods dire
 
 Here is an example where we use the createQuery() method to create and build a new query:
 
-    $query = $em->createQuery('User')
+    $query = $dm->createQuery('User')
         ->where('username', 'jwage');
 
     $user = $query->getSingleResult();
 
 The where functionality can search within embedded documents properties:
 
-    $query = $em->createQuery('User')
+    $query = $dm->createQuery('User')
         ->where('profile.lastName', 'Wage');
 
     $users = $query->execute();
@@ -115,7 +115,7 @@ The where functionality can search within embedded documents properties:
 You can limit which fields are selected with the select() method. Here we only
 select the username:
 
-    $query = $em->createQuery('User')
+    $query = $dm->createQuery('User')
         ->select('username');
     
     $users = $query->execute();
@@ -123,12 +123,12 @@ select the username:
 If you want to just find an document by its identifier you can use the findByID()
 method:
 
-    $user = $em->findByID('User', 'the_string_id');
+    $user = $dm->findByID('User', 'the_string_id');
 
 You may want to load the associations for an document, you can do this with the 
 loadDocumentAssociations() method:
 
-    $em->loadDocumentAssociations($user);
+    $dm->loadDocumentAssociations($user);
 
 Now you can access the ->account property and get an Account instance:
 
@@ -137,12 +137,12 @@ Now you can access the ->account property and get an Account instance:
 If you only want to load a specific association you can use the loadDocumentAssociation($name)
 method:
 
-    $em->loadDocumentAssociation($user, 'account');
+    $dm->loadDocumentAssociation($user, 'account');
 
 To automatically load the association during hydration you can specify the 
 association to load on a query with the loadAssociation() method:
 
-    $query = $em->createQuery('User')
+    $query = $dm->createQuery('User')
         ->loadAssociation('account');
     
     $users = $query->execute();
@@ -155,11 +155,11 @@ association to load on a query with the loadAssociation() method:
 In addition to the Doctrine Query object you can use the traditional MongoDB API
 you typically see:
 
-    $user = $em->findOne('User', array('username' => 'jwage'));
+    $user = $dm->findOne('User', array('username' => 'jwage'));
 
 You can search the users collection using the find() method:
 
-    $users = $em->find('User');
+    $users = $dm->find('User');
     
     foreach ($users as $user) {
         echo $user->username;
@@ -167,4 +167,4 @@ You can search the users collection using the find() method:
 
 To find by the ID using findOne():
 
-    $user = $em->findOne('User', array('_id' => new MongoId('the_string_id')));
+    $user = $dm->findOne('User', array('_id' => new MongoId('the_string_id')));

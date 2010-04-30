@@ -3,7 +3,8 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\CommitOrderCalculator;
+    Doctrine\ODM\MongoDB\CommitOrderCalculator,
+    Doctrine\Common\Collections\Collection;
 
 class UnitOfWork
 {
@@ -21,10 +22,10 @@ class UnitOfWork
     private $_documentDeletions = array();
     private $_identityMap = array();
 
-    public function __construct(DocumentManager $em)
+    public function __construct(DocumentManager $dm)
     {
-        $this->_dm = $em;
-        $this->_hydrator = $em->getHydrator();
+        $this->_dm = $dm;
+        $this->_hydrator = $dm->getHydrator();
         $this->_commitOrderCalculator = new CommitOrderCalculator();
     }
 
@@ -130,13 +131,13 @@ class UnitOfWork
             }
 
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-            if ( ! $relatedDocuments || (is_array($relatedDocuments) && isset($relatedDocuments['$ref']))) {
+            if ( ! $relatedDocuments || isset($relatedDocuments['$ref'])) {
                 continue;
             }
 
-            if (is_array($relatedDocuments)) {
+            if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 foreach ($relatedDocuments as $document) {
-                    if (is_array($document) && isset($document['$ref'])) {
+                    if (isset($document['$ref'])) {
                         continue;
                     }
                     $this->_doDetach($document, $visited);
@@ -203,7 +204,7 @@ class UnitOfWork
                 continue;
             }
 
-            if (is_array($relatedDocuments)) {
+            if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 foreach ($relatedDocuments as $document) {
                     if (is_array($document) && isset($document['$ref'])) {
                         continue;
@@ -257,9 +258,9 @@ class UnitOfWork
                 continue;
             }
 
-            if (is_array($relatedDocuments)) {
+            if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 foreach ($relatedDocuments as $document) {
-                    if (isset($document['$ref'])) {
+                    if (is_array($document) && isset($document['$ref'])) {
                         continue;
                     }
                     $this->_doRemove($document, $visited);
