@@ -12,6 +12,7 @@ class ClassMetadata
     public $prototype;
     public $fieldMappings;
     public $identifier;
+    public $indexes = array();
 
     public function __construct($name)
     {
@@ -41,6 +42,19 @@ class ClassMetadata
 
         $this->setDB($database);
         $this->setCollection($collection);
+    }
+
+    public function addIndex($keys, $options)
+    {
+        $this->indexes[] = array(
+            'keys' => array_map(function($value) { return strtolower($value) == 'asc' ? 1 : -1; }, $keys),
+            'options' => $options
+        );
+    }
+
+    public function getIndexes()
+    {
+        return $this->indexes;
     }
 
     public function getReflectionClass()

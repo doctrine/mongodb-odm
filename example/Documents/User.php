@@ -2,7 +2,10 @@
 
 namespace Documents;
 
-/** @Document */
+/** @Document(indexes={
+  *   @Index(keys={"username"="desc"}, options={"unique"=true})
+  * })
+  */
 class User
 {
     /** @Id */

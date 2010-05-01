@@ -37,7 +37,15 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
 
     namespace Documents;
 
-    /** @Document(db="my_database", collection="users") */
+    /**
+     * @Document(
+     *   db="my_database",
+     *   collection="users",
+     *   indexes={
+     *     @Index(keys={"username"="desc"}, options={"unique"=true})
+     *   }
+     * )
+     */
     class User
     {
         /** @Id

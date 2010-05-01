@@ -21,6 +21,11 @@ class YamlDriver extends AbstractFileDriver
         if (isset($element['collection'])) {
             $class->setCollection($element['collection']);
         }
+        if (isset($element['indexes'])) {
+            foreach($element['indexes'] as $index) {
+                $class->addIndex($index['keys'], $index['options']);
+            }
+        }
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $fieldName => $mapping) {
                 if ( ! isset($mapping['fieldName'])) {

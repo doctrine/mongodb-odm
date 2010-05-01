@@ -70,7 +70,7 @@ class DocumentManager
     public function getDocumentDB($className)
     {
         if ( ! isset($this->_documentDBs[$className])) {
-            if ($db = $this->getClassMetadata($className)->getDB()) {
+            if ($db = $this->_metadataFactory->getMetadataFor($className)->getDB()) {
                 $this->_documentDBs[$className] = $this->_mongo->selectDB($db);
             }
         }
@@ -83,7 +83,7 @@ class DocumentManager
     public function getDocumentCollection($className)
     {
         if ( ! isset($this->_documentCollections[$className])) {
-            $metadata = $this->getClassMetadata($className);
+            $metadata = $this->_metadataFactory->getMetadataFor($className);
             if ($collection = $metadata->getCollection()) {
                 $this->_documentCollections[$className] = $this->_mongo->selectDB($metadata->getDB())->selectCollection($collection);
             }
@@ -161,6 +161,21 @@ class DocumentManager
     public function flush()
     {
         $this->_unitOfWork->commit();
+    }
+
+    public function ensureDocumentIndexes($class)
+    {
+        if ($indexes = $class->getIndexes()) {
+            $collection = $this->getDocumentCollection($class->name);
+            foreach ($indexes as $index) {
+                $collection->ensureIndex($index['keys'], $index['options']);
+            }
+        }
+    }
+
+    public function deleteDocumentIndexes($documentName)
+    {
+        return $this->getDocumentCollection($documentName)->deleteIndexes();
     }
 
     public function mapReduce($documentName, $map, $reduce, array $query = array(), array $options = array())

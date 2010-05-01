@@ -27,6 +27,13 @@ final class Document extends Annotation
 {
     public $db;
     public $collection;
+    public $indexes = array();
+}
+
+final class Index extends Annotation
+{
+    public $keys = array();
+    public $options = array();
 }
 
 final class Field extends Annotation

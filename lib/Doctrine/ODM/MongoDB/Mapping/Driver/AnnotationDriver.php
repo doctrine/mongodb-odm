@@ -44,6 +44,11 @@ class AnnotationDriver implements Driver
             if ($documentAnnot->collection) {
                 $class->setCollection($documentAnnot->collection);
             }
+            if ($documentAnnot->indexes) {
+                foreach($documentAnnot->indexes as $index) {
+                    $class->addIndex($index->keys, $index->options);
+                }
+            }
         }
 
         foreach ($reflClass->getProperties() as $property) {

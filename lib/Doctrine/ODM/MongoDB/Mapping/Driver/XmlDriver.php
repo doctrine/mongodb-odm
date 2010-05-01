@@ -21,6 +21,11 @@ class XmlDriver extends AbstractFileDriver
         if (isset($xmlRoot['collection'])) {
             $class->setCollection((string) $xmlRoot['collection']);
         }
+        if (isset($xmlRoot['indexes'])) {
+            foreach($xmlRoot['indexes'] as $index) {
+                $class->addIndex((array) $index['keys'], (array) $index['options']);
+            }
+        }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
                 $mapping = array();
