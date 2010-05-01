@@ -51,8 +51,9 @@ $user = new User();
 $user->setProfile($profile);
 $user->setAccount($account);
 $user->setUsername('jwage');
-$user->setPassword('jwage');
+$user->setPassword('test');
 $user->addPhonenumber(new Phonenumber('6155139185'));
+$user->addPhonenumber(new Phonenumber('5555555555'));
 
 $address = new Address();
 $address->setAddress('475 Buckhead Ave. Apt 2107');
@@ -64,12 +65,11 @@ $user->addAddress($address);
 
 $dm->persist($user);
 $dm->flush();
+$dm->clear();
 
 $query = $dm->createQuery('Documents\User')
     ->loadAssociation('account')
-    ->loadAssociation('phonenumbers')
     ->loadAssociation('profile')
-    ->refresh()
     ->where('id', $user->getId());
 
 $user = $query->getSingleResult();

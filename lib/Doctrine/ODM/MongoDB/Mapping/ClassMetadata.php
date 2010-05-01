@@ -80,6 +80,9 @@ class ClassMetadata
 
     public function mapField(array $mapping)
     {
+        if ( ! isset($mapping['name'])) {
+            $mapping['name'] = $mapping['fieldName'];
+        }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
 
         $reflProp = $this->reflClass->getProperty($mapping['fieldName']);

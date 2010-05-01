@@ -196,19 +196,23 @@ class DocumentManager
         }
     }
 
-    public function find($documentName, array $query = array(), array $fields = array())
+    public function find($documentName, array $query = array(), array $select = array())
     {
         $metadata = $this->getClassMetadata($documentName);
+        $query = $this->_prepareFieldNames($metadata, $query);
+        $select = $this->_prepareFieldNames($metadata, $select);
         $collection = $this->getDocumentCollection($documentName);
-        $cursor = $collection->find($query, $fields);
+        $cursor = $collection->find($query, $select);
         return new CursorProxy($this, $this->_hydrator, $metadata, $cursor);
     }
 
-    public function findOne($documentName, array $query = array(), array $fields = array())
+    public function findOne($documentName, array $query = array(), array $select = array())
     {
         $metadata = $this->getClassMetadata($documentName);
+        $query = $this->_prepareFieldNames($metadata, $query);
+        $select = $this->_prepareFieldNames($metadata, $select);
         $collection = $this->getDocumentCollection($documentName);
-        $result = $collection->findOne($query, $fields);
+        $result = $collection->findOne($query, $select);
         if ($result !== null) {
             return $this->_unitOfWork->getOrCreateDocument($documentName, (array) $result);
         } else {
@@ -219,5 +223,19 @@ class DocumentManager
     public function clear()
     {
         $this->_unitOfWork->clear();
+    }
+
+    private function _prepareFieldNames(ClassMetadata $class, $query)
+    {
+        $prepared = array();
+        foreach ($query as $key => $value) {
+            if (isset($class->fieldMappings[$key])) {
+                $name = $class->fieldMappings[$key]['name'];
+                $prepared[$name] = $value;
+            } else {
+                $prepared[$key] = $value;
+            }
+        }
+        return $prepared;
     }
 }

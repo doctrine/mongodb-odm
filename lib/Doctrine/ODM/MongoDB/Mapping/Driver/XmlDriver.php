@@ -28,8 +28,6 @@ class XmlDriver extends AbstractFileDriver
                 foreach ($attributes as $key => $value) {
                     $mapping[$key] = (string) $value;
                 }
-                $mapping['fieldName'] = $mapping['name'];
-                unset($mapping['name']);
                 $class->mapField($mapping);
             }
         }

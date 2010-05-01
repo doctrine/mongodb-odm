@@ -5,7 +5,7 @@ namespace Documents;
 /** @Document */
 class Account
 {
-    /** @Field */
+    /** @Id */
     private $id;
 
     /** @Field */

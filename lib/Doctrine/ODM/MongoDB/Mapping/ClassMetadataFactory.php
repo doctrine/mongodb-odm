@@ -4,11 +4,12 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+    Doctrine\ODM\MongoDB\MongoDBException,
     Doctrine\Common\Cache\Cache;
 
 class ClassMetadataFactory
 {
-    private $_em;
+    private $_dm;
     private $_loadedMetadata;
     private $_driver;
     private $_cacheDriver;

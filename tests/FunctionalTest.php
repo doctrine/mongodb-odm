@@ -220,6 +220,29 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
         $user2 = $this->dm->findByID('User', $user->id);
         $this->assertEquals('jon', $user2->username);
     }
+
+    public function testAliases()
+    {
+        $user = new User();
+        $user->aliasTest = 'w00t';
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $user2 = $this->dm->getDocumentCollection('User')->findOne(array('_id' => new MongoId($user->id)));
+        $this->assertEquals('w00t', $user2[0]);
+
+        $user->aliasTest = 'ok';
+        $this->dm->flush();
+
+        $user2 = $this->dm->getDocumentCollection('User')->findOne(array('_id' => new MongoId($user->id)));
+        $this->assertEquals('ok', $user2[0]);
+
+        $user = $this->dm->createQuery('User')
+            ->where('aliasTest', 'ok')
+            ->getSingleResult();
+
+        $this->assertTrue($user instanceof User);
+    }
 }
 
 class User
@@ -232,6 +255,7 @@ class User
     public $phonenumbers;
     public $groups;
     public $account;
+    public $aliasTest;
 
     public function __construct()
     {
@@ -243,6 +267,11 @@ class User
     {
         $class->setDB('doctrine_odm_tests');
         $class->setCollection('users');
+
+        $class->mapField(array(
+            'name' => 0,
+            'fieldName' => 'aliasTest'
+        ));
 
         $class->mapOneEmbedded(array(
             'fieldName' => 'address',

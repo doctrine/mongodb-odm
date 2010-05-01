@@ -22,8 +22,11 @@ class YamlDriver extends AbstractFileDriver
             $class->setCollection($element['collection']);
         }
         if (isset($element['fields'])) {
-            foreach ($element['fields'] as $field) {
-                $class->mapField($field);
+            foreach ($element['fields'] as $fieldName => $mapping) {
+                if ( ! isset($mapping['fieldName'])) {
+                    $mapping['fieldName'] = $fieldName;
+                }
+                $class->mapField($mapping);
             }
         }
     }

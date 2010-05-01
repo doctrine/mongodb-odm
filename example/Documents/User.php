@@ -5,7 +5,7 @@ namespace Documents;
 /** @Document */
 class User
 {
-    /** @Field */
+    /** @Id */
     private $id;
 
     /** @Field */
@@ -14,16 +14,16 @@ class User
     /** @Field */
     private $password;
 
-    /** @Field(embedded="true", targetDocument="Documents\Phonenumber", type="many", cascadeDelete="true") */
+    /** @EmbedMany(targetDocument="Documents\Phonenumber") */
     private $phonenumbers = array();
 
-    /** @Field(embedded="true", targetDocument="Documents\Address", type="many") */
+    /** @EmbedMany(targetDocument="Documents\Address") */
     private $addresses = array();
 
-    /** @Field(reference="true", targetDocument="Documents\Profile", type="one") */
+    /** @ReferenceOne(targetDocument="Documents\Profile", cascadeDelete="true") */
     private $profile;
 
-    /** @Field(reference="true", targetDocument="Documents\Account", cascadeDelete="true", type="one") */
+    /** @ReferenceOne(targetDocument="Documents\Account", cascadeDelete="true") */
     private $account;
 
     public function getId()

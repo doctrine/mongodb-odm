@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
 
 class Query
 {
-    private $_em;
+    private $_dm;
     private $_className;
     private $_class;
     private $_select = array();
@@ -58,10 +58,9 @@ class Query
         return $this;
     }
 
-    public function select($fieldName)
+    public function select($fieldName = null)
     {
-        $this->_select = array();
-        $this->_select[] = $fieldName;
+        $this->_select = func_get_args();
         return $this;
     }
 
@@ -191,10 +190,7 @@ class Query
 
     public function iterate()
     {
-        $metadata = $this->_dm->getClassMetadata($this->_className);
-        $collection = $this->_dm->getDocumentCollection($this->_className);
-        $cursor = $collection->find($this->_where, $this->_select);
-        $cursorProxy = new CursorProxy($this->_dm, $this->_hydrator, $metadata, $cursor);
+        $cursorProxy = $this->_dm->find($this->_className, $this->_where, $this->_select);
         $cursorProxy->limit($this->_limit);
         $cursorProxy->skip($this->_skip);
         $cursorProxy->sort($this->_sort);

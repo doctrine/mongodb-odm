@@ -13,7 +13,7 @@ class UnitOfWork
     const STATE_DETACHED = 3;
     const STATE_REMOVED = 4;
 
-    private $_em;
+    private $_dm;
     private $_hydrator;
     private $_originalDocumentData = array();
     private $_documentStates = array();
@@ -36,17 +36,18 @@ class UnitOfWork
         $id = isset($data['_id']) ? (string) $data['_id'] : null;
         if ($id && isset($this->_identityMap[$className][$id])) {
             $document = $this->_identityMap[$className][$id];
+            $oid = spl_object_hash($document);
             $overrideLocalValues = isset($hints[Query::HINT_REFRESH]) ? true : false;
         } else {
             $document = $class->newInstance();
             $oid = spl_object_hash($document);
             $this->_documentStates[$oid] = self::STATE_MANAGED;
-            $this->_originalDocumentData[$oid] = $data;
             $this->_identityMap[$className][$id] = $document;
             $overrideLocalValues = true;
         }
         if ($overrideLocalValues === true) {
-            $this->_hydrator->hydrate($class, $document, $data);
+            $data = $this->_hydrator->hydrate($class, $document, $data);
+            $this->_originalDocumentData[$oid] = $data;
         }
         return $document;
     }
@@ -323,6 +324,7 @@ class UnitOfWork
 
     private function _buildFieldValuesForSave($document)
     {
+        $oid = spl_object_hash($document);
         $metadata = $this->_dm->getClassMetadata(get_class($document));
         $values = array();
         foreach ($metadata->fieldMappings as $field => $mapping) {
@@ -330,7 +332,7 @@ class UnitOfWork
                 continue;
             }
 
-            $reflProp = $metadata->reflFields[$field];
+            $reflProp = $metadata->reflFields[$mapping['fieldName']];
             $value = $reflProp->getValue($document);
             if ( ! $value) {
                 continue;
@@ -338,12 +340,12 @@ class UnitOfWork
 
             if (isset($mapping['embedded'])) {
                 if ($mapping['type'] === 'many') {
-                    $values[$field] = array();
+                    $values[$mapping['name']] = array();
                     foreach ($value as $v) {
-                        $values[$field][] = $this->_buildFieldValuesForSave($v);
+                        $values[$mapping['name']][] = $this->_buildFieldValuesForSave($v);
                     }
                 } else {
-                    $values[$field] = $this->_buildFieldValuesForSave($value);
+                    $values[$mapping['name']] = $this->_buildFieldValuesForSave($value);
                 }
             } else if (isset($mapping['reference'])) {
                 if ($mapping['type'] === 'one') {
@@ -351,16 +353,19 @@ class UnitOfWork
                         $value = $this->_buildFieldValuesForSave($value);
                     }
                     $ref = $this->_dm->getDocumentCollection($mapping['targetDocument'])->createDBRef($value);
-                    $values[$field] = $ref;
+                    $values[$mapping['name']] = $ref;
                 } else {
                     $collection = $this->_dm->getDocumentCollection($mapping['targetDocument']);
                     foreach ($value as $v) {
                         $ref = $collection->createDBRef($this->_buildFieldValuesForSave($v));
-                        $values[$field][] = $ref;
+                        $values[$mapping['name']][] = $ref;
                     }
                 }
             } else {
-                $values[$field] = $value;
+                $values[$mapping['name']] = $value;
+            }
+            if (isset($values[$mapping['name']])) {
+                $this->_originalDocumentData[$oid][$mapping['fieldName']] = $values[$mapping['name']];
             }
         }
         if ($metadata->identifier) {
@@ -389,12 +394,11 @@ class UnitOfWork
 
         foreach ($classes as $class) {
             foreach ($class->fieldMappings as $mapping) {
-                 if ( ! isset($mapping['reference'])) {
-                     continue;
+                 if (isset($mapping['reference']) && $mapping['reference']) {
+                     $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
+                     $this->_commitOrderCalculator->addClass($targetClass);
+                     $this->_commitOrderCalculator->addDependency($targetClass, $class);
                  }
-                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                 $this->_commitOrderCalculator->addClass($targetClass);
-                 $this->_commitOrderCalculator->addDependency($targetClass, $class);
              }
         }
 
@@ -411,7 +415,6 @@ class UnitOfWork
             foreach ($documents as $oid => $document) {
                 $values = $this->_buildFieldValuesForSave($document);
                 $inserts[$oid] = $values;
-                $this->_originalDocumentData[$oid] = $values;
             }
             $collection->batchInsert($inserts);
             foreach ($inserts as $oid => $values) {

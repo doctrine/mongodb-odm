@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Query,
 
 class Hydrator
 {
-    private $_em;
+    private $_dm;
     private $_hints = array();
 
     public function __construct(DocumentManager $dm)
@@ -30,28 +30,38 @@ class Hydrator
     public function hydrate(ClassMetadata $metadata, $document, $data)
     {
         foreach ($metadata->fieldMappings as $mapping) {
-            if (isset($data[$mapping['fieldName']]) && isset($mapping['embedded'])) {
+            if (isset($data[$mapping['name']]) && isset($mapping['embedded'])) {
                 $embeddedMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 $embeddedDocument = $embeddedMetadata->newInstance();
                 if ($mapping['type'] === 'many') {
                     $documents = new ArrayCollection();
-                    foreach ($data[$mapping['fieldName']] as $doc) {
-                        $documents->add($this->hydrate($embeddedMetadata, clone $embeddedDocument, $doc));
+                    foreach ($data[$mapping['name']] as $docArray) {
+                        $doc = clone $embeddedDocument;
+                        $this->hydrate($embeddedMetadata, $doc, $docArray);
+                        $documents->add($doc);
                     }
                     $metadata->setFieldValue($document, $mapping['fieldName'], $documents);
+                    $value = $documents;
                 } else {
-                    $metadata->setFieldValue($document, $mapping['fieldName'], $this->hydrate($embeddedMetadata, clone $embeddedDocument, $data[$mapping['fieldName']]));
+                    $value = clone $embeddedDocument;
+                    $this->hydrate($embeddedMetadata, $value, $data[$mapping['name']]);
+                    $metadata->setFieldValue($document, $mapping['fieldName'], $value);
                 }
-            } else if (isset($data[$mapping['fieldName']])) {
-                $metadata->setFieldValue($document, $mapping['fieldName'], $data[$mapping['fieldName']]);
+            } else if (isset($data[$mapping['name']])) {
+                $value = $data[$mapping['name']];
+                $metadata->setFieldValue($document, $mapping['fieldName'], $value);
             }
             if (isset($mapping['reference']) && isset($this->_hints['load_association_' . $mapping['fieldName']])) {
                 $this->_dm->loadDocumentAssociation($document, $mapping['fieldName']);
+            }
+            if (isset($value)) {
+                $data[$mapping['fieldName']] = $value;
+                unset($data[$mapping['name']]);
             }
         }
         if (isset($data['_id'])) {
             $metadata->setIdentifierValue($document, (string) $data['_id']);
         }
-        return $document;
+        return $data;
     }
 }

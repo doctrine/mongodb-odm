@@ -5,7 +5,7 @@ namespace Documents;
 /** @Document */
 class Profile
 {
-    /** @Field(id=true) */
+    /** @Id */
     private $id;
 
     /** @Field */

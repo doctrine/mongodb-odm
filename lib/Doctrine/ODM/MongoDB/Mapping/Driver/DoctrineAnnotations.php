@@ -31,11 +31,44 @@ final class Document extends Annotation
 
 final class Field extends Annotation
 {
-    public $id;
+    public $name;
+}
+
+final class Id extends Annotation
+{
+    public $id = true;
+}
+
+final class EmbedOne extends Annotation
+{
+    public $type = 'one';
+    public $embedded = true;
     public $name;
     public $targetDocument;
-    public $embedded;
-    public $reference;
-    public $cascadeDelete;
-    public $type;
+}
+
+final class EmbedMany extends Annotation
+{
+    public $type = 'many';
+    public $embedded = true;
+    public $name;
+    public $targetDocument;
+}
+
+final class ReferenceOne extends Annotation
+{
+    public $type = 'one';
+    public $reference = true;
+    public $name;
+    public $targetDocument;
+    public $cascadeDelete = false;
+}
+
+final class ReferenceMany extends Annotation
+{
+    public $type = 'many';
+    public $reference = true;
+    public $name;
+    public $targetDocument;
+    public $cascadeDelete = false;
 }

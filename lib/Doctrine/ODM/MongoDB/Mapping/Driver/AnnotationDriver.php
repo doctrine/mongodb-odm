@@ -45,13 +45,17 @@ class AnnotationDriver implements Driver
                 $class->setCollection($documentAnnot->collection);
             }
         }
-        
+
         foreach ($reflClass->getProperties() as $property) {
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
             
-            if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Driver\Field')) {
-                $mapping = array_merge($mapping, (array) $fieldAnnot);
+            $types = array('Id', 'Field', 'EmbedOne', 'EmbedMany', 'ReferenceOne', 'ReferenceMany');
+            foreach ($types as $type) {
+                if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Driver\\' . $type)) {
+                    $mapping = array_merge($mapping, (array) $fieldAnnot);
+                    break;
+                }
             }
             $class->mapField($mapping);
         }

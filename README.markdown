@@ -40,7 +40,7 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
     /** @Document(db="my_database", collection="users") */
     class User
     {
-        /** @Field(id="true")
+        /** @Id
         public $id;
 
         /** @Field */
@@ -49,10 +49,10 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
         /** @Field */
         public $password;
 
-        /** @Field(reference="true", type="one", targetDocument="Account") */
+        /** @ReferenceOne(targetDocument="Account") */
         public $account;
 
-        /** @Field(embedded="true", type="one", targetDocument="Profile")
+        /** @EmbedOne(targetDocument="Profile")
         public $profile;
     }
 
@@ -66,7 +66,7 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
     /** @Document(db="my_database", collection="accounts") */
     class Account
     {
-        /** @Field(id="true")
+        /** @Id
         public $id;
 
         /** @Field */
