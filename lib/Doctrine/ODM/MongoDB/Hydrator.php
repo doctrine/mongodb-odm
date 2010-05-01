@@ -29,6 +29,7 @@ class Hydrator
 
     public function hydrate(ClassMetadata $metadata, $document, $data)
     {
+        $values = array();
         foreach ($metadata->fieldMappings as $mapping) {
             if (isset($data[$mapping['name']]) && isset($mapping['embedded'])) {
                 $embeddedMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
@@ -55,13 +56,12 @@ class Hydrator
                 $this->_dm->loadDocumentAssociation($document, $mapping['fieldName']);
             }
             if (isset($value)) {
-                $data[$mapping['fieldName']] = $value;
-                unset($data[$mapping['name']]);
+                $values[$mapping['fieldName']] = $value;
             }
         }
         if (isset($data['_id'])) {
             $metadata->setIdentifierValue($document, (string) $data['_id']);
         }
-        return $data;
+        return $values;
     }
 }

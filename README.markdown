@@ -176,3 +176,164 @@ You can search the users collection using the find() method:
 To find by the ID using findOne():
 
     $user = $dm->findOne('User', array('_id' => new MongoId('the_string_id')));
+
+## Storing Files
+
+The PHP Mongo extension provides a nice and convenient way to store files in chunks
+of data with the [MongoGridFS](http://us.php.net/manual/en/class.mongogridfs.php).
+
+It uses two database collections, one to store the metadata for the file, and another
+to store the contents of the file. The contents are stored in chunks to avoid
+going over the maximum allowed size of a MongoDB document.
+
+You can easily setup a Document that is stored using the MongoGridFS:
+
+    <?php
+
+    namespace Documents;
+
+    /** @Document */
+    class Image
+    {
+        /** @Id */
+        private $id;
+
+        /** @Field */
+        private $name;
+
+        /** @File */
+        private $file;
+
+        /** @Field */
+        private $uploadDate;
+
+        /** @Field */
+        private $length;
+
+        /** @Field */
+        private $chunkSize;
+
+        /** @Field */
+        private $md5;
+
+        public function getId()
+        {
+            return $id;
+        }
+
+        public function setName($name)
+        {
+            $this->name = $name;
+        }
+
+        public function getName()
+        {
+            return $this->name;
+        }
+
+        public function getFile()
+        {
+            return $this->file;
+        }
+
+        public function setFile($file)
+        {
+            $this->file = $file;
+        }
+    }
+
+Notice how we annotated the $file property with @File. This is what tells the
+Document that it is is to be stored using the MongoGridFS and the MongoGridFSFile
+instance is placed in the $file property for you to access the actual file itself.
+
+First you need to create a new Image:
+
+    $image = new Image();
+    $image->setName('Test image');
+    $image->setFile('/path/to/image.png');
+
+    $dm->persist($image);
+    $dm->flush();
+
+Now you can later query for the Image and render it:
+
+    $image = $dm->createQuery('Documents\Image')
+        ->where('name', 'Test image')
+        ->getSingleResult();
+
+    header('Content-type: image/png;');
+    echo $image->getFile()->getBytes();
+
+You can of course make associations to this Image document from another document.
+Imagine you had a Profile document and you wanted every Profile to have a profile
+image:
+
+    namespace Documents;
+
+    <?php
+
+    namespace Documents;
+
+    /** @Document */
+    class Profile
+    {
+        /** @Id */
+        private $id;
+
+        /** @Field */
+        private $name;
+
+        /** @ReferenceOne(targetDocument="Documents\Image") */
+        private $image;
+
+        public function getId()
+        {
+          return $this->id;
+        }
+
+        public function getName()
+        {
+            return $this->name;
+        }
+
+        public function setName($name)
+        {
+            $this->name = $name;
+        }
+
+        public function getImage()
+        {
+            return $this->image;
+        }
+
+        public function setImage(Image $image)
+        {
+            $this->image = $image;
+        }
+    }
+
+Now you can create a new Profile and give it an Image:
+
+    $image = new Image();
+    $image->setName('Test image');
+    $image->setFile('/path/to/image.png');
+
+    $profile = new Profile();
+    $profile->setName('Jonathan H. Wage');
+    $profile->setImage($image);
+
+    $dm->persist($profile);
+    $dm->flush();
+
+If you want to query for the Profile and load the Image association in a query
+you can use:
+
+    $profile = $dm->createQuery('Profile')
+        ->loadAssociation('image')
+        ->where('name', 'Jonathan H. Wage')
+        ->getSingleResult();
+
+    $image = $profile->getImage();
+
+    header('Content-type: image/png;');
+    echo $image->getFile()->getBytes();

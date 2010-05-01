@@ -41,6 +41,11 @@ final class Field extends Annotation
     public $name;
 }
 
+final class File extends Annotation
+{
+    public $file = true;
+}
+
 final class Id extends Annotation
 {
     public $id = true;

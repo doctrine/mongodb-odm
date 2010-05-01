@@ -2,18 +2,17 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use MongoCursor,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Hydrator;
 
-class CursorProxy implements \Iterator
+class MongoCursor implements \Iterator
 {
     private $_dm;
     private $_uow;
     private $_class;
     private $_mongoCursor;
 
-    public function __construct(DocumentManager $dm, Hydrator $hydrator, ClassMetadata $class, MongoCursor $mongoCursor)
+    public function __construct(DocumentManager $dm, Hydrator $hydrator, ClassMetadata $class, \MongoCursor $mongoCursor)
     {
         $this->_dm = $dm;
         $this->_uow = $this->_dm->getUnitOfWork();
@@ -24,8 +23,14 @@ class CursorProxy implements \Iterator
 
     public function current()
     {
-        $current = $this->_mongoCursor->current();
-        $document = $this->_uow->getOrCreateDocument($this->_class->name, (array) $current, $this->_hydrator->getHints());
+        if ($this->_mongoCursor instanceof \MongoGridFSCursor) {
+            $file = $this->_mongoCursor->current();
+            $current = $file->file;
+            $current[$this->_class->file] = $file;
+        } else {
+            $current = $this->_mongoCursor->current();
+        }
+        $document = $this->_uow->getOrCreateDocument($this->_class->name, $current, $this->_hydrator->getHints());
         return $document;
     }
 

@@ -12,6 +12,7 @@ class ClassMetadata
     public $prototype;
     public $fieldMappings;
     public $identifier;
+    public $file;
     public $indexes = array();
 
     public function __construct($name)
@@ -47,7 +48,9 @@ class ClassMetadata
     public function addIndex($keys, $options)
     {
         $this->indexes[] = array(
-            'keys' => array_map(function($value) { return strtolower($value) == 'asc' ? 1 : -1; }, $keys),
+            'keys' => array_map(function($value) {
+                return strtolower($value) == 'asc' ? 1 : -1;
+            }, $keys),
             'options' => $options
         );
     }
@@ -92,6 +95,16 @@ class ClassMetadata
         return $this->collection ? true : false;
     }
 
+    public function isFile()
+    {
+        return $this->file ? true :false;
+    }
+
+    public function getFile()
+    {
+        return $this->file;
+    }
+
     public function mapField(array $mapping)
     {
         if ( ! isset($mapping['name'])) {
@@ -103,9 +116,18 @@ class ClassMetadata
         $reflProp->setAccessible(true);
         $this->reflFields[$mapping['fieldName']] = $reflProp;
 
+        if (isset($mapping['file']) && $mapping['file'] === true) {
+            $this->file = $mapping['fieldName'];
+        }
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $this->identifier = $mapping['fieldName'];
         }
+    }
+
+    public function mapFile(array $mapping)
+    {
+        $mapping['file'] = true;
+        $this->mapField($mapping);
     }
 
     public function mapManyEmbedded(array $mapping)
@@ -148,7 +170,9 @@ class ClassMetadata
 
     public function getIdentifierObject($document)
     {
-        return new \MongoId($this->getIdentifierValue($document));
+        if ($id = $this->getIdentifierValue($document)) {
+            return new \MongoId($id);
+        }
     }
 
     public function setFieldValue($document, $field, $value)

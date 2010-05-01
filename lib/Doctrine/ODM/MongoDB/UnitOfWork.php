@@ -408,6 +408,7 @@ class UnitOfWork
             if ( ! isset($insertions[$class->name])) {
                 continue;
             }
+            $isFile = $class->isFile();
             $documents = $insertions[$class->name];
             $collection = $this->_dm->getDocumentCollection($class->name);
 
@@ -422,6 +423,12 @@ class UnitOfWork
                 $id = (string) $values['_id'];
                 $class->setIdentifierValue($document, $id);
                 $this->_identityMap[$class->name][$id] = $document;
+
+                // We get back information when saving files so we need to hydrate
+                // it back into the document
+                if ($isFile) {
+                    $this->_hydrator->hydrate($class, $document, $values);
+                }
             }
         }
 
@@ -436,6 +443,9 @@ class UnitOfWork
             $collection = $this->_dm->getDocumentCollection($className);
             $values = $this->_buildFieldValuesForSave($document);
             $collection->save($values);
+            if ($metadata->isFile()) {
+                $this->_hydrator->hydrate($metadata, $document, $values);
+            }
         }
     }
 

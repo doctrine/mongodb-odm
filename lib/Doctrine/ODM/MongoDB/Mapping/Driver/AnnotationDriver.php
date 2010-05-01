@@ -55,7 +55,7 @@ class AnnotationDriver implements Driver
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
             
-            $types = array('Id', 'Field', 'EmbedOne', 'EmbedMany', 'ReferenceOne', 'ReferenceMany');
+            $types = array('Id', 'File', 'Field', 'EmbedOne', 'EmbedMany', 'ReferenceOne', 'ReferenceMany');
             foreach ($types as $type) {
                 if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Driver\\' . $type)) {
                     $mapping = array_merge($mapping, (array) $fieldAnnot);

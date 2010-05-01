@@ -15,7 +15,8 @@ use Doctrine\Common\ClassLoader,
     Documents\Address,
     Documents\Profile,
     Documents\Account,
-    Documents\Phonenumber;
+    Documents\Phonenumber,
+    Documents\Image;
 
 $classLoader = new ClassLoader('Doctrine\ODM', __DIR__ . '/../lib');
 $classLoader->register();
@@ -41,6 +42,47 @@ $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documen
 
 $dm = DocumentManager::create(new Mongo(), $config);
 
+/*
+$image = new Image();
+$image->setName('testing');
+$image->setFile('/Users/jwage/Desktop/Photo_1.jpg');
+
+$dm->persist($image);
+$dm->flush();
+*/
+
+/*
+$image = $dm->findByID('Documents\Image', '4bdc5a008ead0e6e4c010000');
+
+$profile = new Profile();
+$profile->setName('Jonathan H. Wage');
+$profile->setImage($image);
+
+$dm->persist($profile);
+$dm->flush();
+
+print_r($profile);
+exit;
+*/
+
+$profile = $dm->createQuery('Documents\Profile')
+    ->loadAssociation('image')
+    ->where('id', '4bdc647b8ead0e2c4f010000')
+    ->getSingleResult();
+
+//$image->setFile('/Users/jwage/Desktop/test.png');
+//$dm->flush();
+
+$image = $profile->getImage();
+
+header('Content-type: image/png;');
+echo ($image->getFile()->getBytes());
+exit;
+//echo $image->getFile()->getBytes();
+
+//print_r($image);
+
+/*
 $account = new Account();
 $account->setName('Test Account');
 
@@ -75,3 +117,4 @@ $query = $dm->createQuery('Documents\User')
 $user = $query->getSingleResult();
 
 print_r($user);
+*/

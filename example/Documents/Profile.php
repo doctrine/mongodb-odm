@@ -11,6 +11,9 @@ class Profile
     /** @Field */
     private $name;
 
+    /** @ReferenceOne(targetDocument="Documents\Image") */
+    private $image;
+
     public function getId()
     {
       return $this->id;
@@ -24,5 +27,15 @@ class Profile
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    public function setImage(Image $image)
+    {
+        $this->image = $image;
     }
 }

@@ -69,29 +69,36 @@ class DocumentManager
 
     public function getDocumentDB($className)
     {
-        if ( ! isset($this->_documentDBs[$className])) {
-            if ($db = $this->_metadataFactory->getMetadataFor($className)->getDB()) {
-                $this->_documentDBs[$className] = $this->_mongo->selectDB($db);
-            }
+        $db = $this->_metadataFactory->getMetadataFor($className)->getDB();
+        if ($db && ! isset($this->_documentDBs[$db])) {
+            $database = $this->_mongo->selectDB($db);
+            $this->_documentDBs[$db] = new MongoDB($database);
         }
-        if ( ! isset($this->_documentDBs[$className])) {
+        if ( ! isset($this->_documentDBs[$db])) {
             throw MongoDBException::documentNotMappedToDB($className);
         }
-        return $this->_documentDBs[$className];
+        return $this->_documentDBs[$db];
     }
 
     public function getDocumentCollection($className)
     {
-        if ( ! isset($this->_documentCollections[$className])) {
-            $metadata = $this->_metadataFactory->getMetadataFor($className);
-            if ($collection = $metadata->getCollection()) {
-                $this->_documentCollections[$className] = $this->_mongo->selectDB($metadata->getDB())->selectCollection($collection);
+        $metadata = $this->_metadataFactory->getMetadataFor($className);
+        $collection = $metadata->getCollection();
+        $db = $metadata->getDB();
+        $key = $db . '.' . $collection;
+        if ($collection && ! isset($this->_documentCollections[$key])) {
+            if ($metadata->isFile()) {
+                $collection = $this->_mongo->selectDB($metadata->getDB())->getGridFS($collection);
+            } else {
+                $collection = $this->_mongo->selectDB($metadata->getDB())->selectCollection($collection);
             }
+            $mongoCollection = new MongoCollection($collection, $metadata);
+            $this->_documentCollections[$key] = $mongoCollection;
         }
-        if ( ! isset($this->_documentCollections[$className])) {
+        if ( ! isset($this->_documentCollections[$key])) {
             throw MongoDBException::documentNotMappedToCollection($className);
         }
-        return $this->_documentCollections[$className];
+        return $this->_documentCollections[$key];
     }
 
     public function loadDocumentAssociation($document, $name)
@@ -105,7 +112,7 @@ class DocumentManager
             $reference = $class->getFieldValue($document, $name);
             if ($reference && ! is_object($reference)) {
                 $reference = $this->getDocumentCollection($mapping['targetDocument'])->getDBRef($reference);
-                $reference = $this->_unitOfWork->getOrCreateDocument($mapping['targetDocument'], (array) $reference);
+                $reference = $this->_unitOfWork->getOrCreateDocument($mapping['targetDocument'], $reference);
                 $class->setFieldValue($document, $name, $reference);
             }
         } else {
@@ -114,7 +121,7 @@ class DocumentManager
             foreach ($referenceArray as $key => $reference) {
                 if ($reference && ! is_object($reference)) {
                     $reference = $this->getDocumentCollection($mapping['targetDocument'])->getDBRef($reference);
-                    $reference = $this->_unitOfWork->getOrCreateDocument($mapping['targetDocument'], (array) $reference);
+                    $reference = $this->_unitOfWork->getOrCreateDocument($mapping['targetDocument'], $reference);
                 }
                 $collection->add($reference);
             }
@@ -205,7 +212,7 @@ class DocumentManager
         $collection = $this->getDocumentCollection($documentName);
         $result = $collection->findOne(array('_id' => new \MongoId($id)));
         if ($result !== null) {
-            return $this->_unitOfWork->getOrCreateDocument($documentName, (array) $result);
+            return $this->_unitOfWork->getOrCreateDocument($documentName, $result);
         } else {
             return null;
         }
@@ -218,7 +225,7 @@ class DocumentManager
         $select = $this->_prepareFieldNames($metadata, $select);
         $collection = $this->getDocumentCollection($documentName);
         $cursor = $collection->find($query, $select);
-        return new CursorProxy($this, $this->_hydrator, $metadata, $cursor);
+        return new MongoCursor($this, $this->_hydrator, $metadata, $cursor);
     }
 
     public function findOne($documentName, array $query = array(), array $select = array())
@@ -229,7 +236,7 @@ class DocumentManager
         $collection = $this->getDocumentCollection($documentName);
         $result = $collection->findOne($query, $select);
         if ($result !== null) {
-            return $this->_unitOfWork->getOrCreateDocument($documentName, (array) $result);
+            return $this->_unitOfWork->getOrCreateDocument($documentName, $result);
         } else {
             return null;
         }
