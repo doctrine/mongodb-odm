@@ -21,7 +21,6 @@ class UnitOfWork
     private $_documentInsertions = array();
     private $_documentUpdates = array();
     private $_documentDeletions = array();
-    private $_documentIdentifiers = array();
     private $_identityMap = array();
 
     public function __construct(DocumentManager $dm)
