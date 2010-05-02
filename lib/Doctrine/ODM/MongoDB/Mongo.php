@@ -9,7 +9,7 @@ class Mongo
     public function __construct($server = null, array $options = array())
     {
         if ($server instanceof \Mongo) {
-            $this->_mongo = $mongo;
+            $this->_mongo = $server;
         } else if ($server !== null) {
             $this->_mongo = new \Mongo($server, $options);
         } else {
