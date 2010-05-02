@@ -208,7 +208,6 @@ class DocumentManager
 
     public function findByID($documentName, $id)
     {
-        $metadata = $this->getClassMetadata($documentName);
         $collection = $this->getDocumentCollection($documentName);
         $result = $collection->findOne(array('_id' => new \MongoId($id)));
         if ($result !== null) {
