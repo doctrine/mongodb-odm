@@ -25,7 +25,7 @@ class DriverChain implements Driver
     {
         foreach ($this->_drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {
-                $driver->loadMetadataForClass($className, $metadata);
+                $driver->loadMetadataForClass($className, $class);
                 return;
             }
         }
