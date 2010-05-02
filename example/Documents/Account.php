@@ -13,7 +13,7 @@ class Account
 
     public function getId()
     {
-        return $id;
+        return $this->id;
     }
 
     public function setName($name)
