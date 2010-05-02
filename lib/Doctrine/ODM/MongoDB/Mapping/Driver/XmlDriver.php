@@ -29,12 +29,12 @@ class XmlDriver extends AbstractFileDriver
 
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
-            $metadata->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
+            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
         }
 
         if (isset($xmlRoot->{'discriminator-field'})) {
             $discrField = $xmlRoot->{'discriminator-field'};
-            $metadata->setDiscriminatorField(array(
+            $class->setDiscriminatorField(array(
                 'name' => (string) $discrField['name'],
                 'fieldName' => (string) $discrField['fieldName'],
             ));
@@ -45,7 +45,7 @@ class XmlDriver extends AbstractFileDriver
             foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} AS $discrMapElement) {
                 $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
             }
-            $metadata->setDiscriminatorMap($map);
+            $class->setDiscriminatorMap($map);
         }
 
         if (isset($xmlRoot->inheritance['type'])) {
