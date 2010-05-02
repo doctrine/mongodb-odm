@@ -49,7 +49,7 @@ class XmlDriver extends AbstractFileDriver
         }
 
         if (isset($xmlRoot->inheritance['type'])) {
-            $class->discriminatorMap = $xmlRoot['inheritance']
+            $class->discriminatorMap = $xmlRoot['inheritance'];
         }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
