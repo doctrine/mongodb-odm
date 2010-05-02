@@ -28,7 +28,7 @@ class Image
 
     public function getId()
     {
-        return $id;
+        return $this->id;
     }
 
     public function setName($name)

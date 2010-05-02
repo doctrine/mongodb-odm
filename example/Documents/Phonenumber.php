@@ -4,6 +4,7 @@ namespace Documents;
 
 class Phonenumber
 {
+    private $id;
     private $phonenumber;
 
     public function __construct($phonenumber = null)

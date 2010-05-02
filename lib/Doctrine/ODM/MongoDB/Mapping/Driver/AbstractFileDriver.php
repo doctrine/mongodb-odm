@@ -29,9 +29,8 @@ abstract class AbstractFileDriver implements Driver
         if ($file = $this->_findMappingFile($className)) {
             $result = $this->_loadMappingFile($file);
             return $result[$className];
-        } else {
-            return false;
         }
+        return false;
     }
 
     protected function _findMappingFile($className)

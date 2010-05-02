@@ -36,9 +36,11 @@ class CommitOrderCalculator
     {
         // Check whether we need to do anything. 0 or 1 node is easy.
         $nodeCount = count($this->_classes);
-        if ($nodeCount == 0) {
+        if ($nodeCount === 0) {
             return array();
-        } else if ($nodeCount == 1) {
+        }
+
+        if ($nodeCount === 1) {
             return array_values($this->_classes);
         }
         

@@ -28,9 +28,8 @@ class MongoCollection
                 $a[$key] = $array;
             }
             return $a;
-        } else {
-            return $this->_mongoCollection->batchInsert($a, $options);
         }
+        return $this->_mongoCollection->batchInsert($a, $options);
     }
 
     public function saveFile(array &$a)
@@ -64,18 +63,16 @@ class MongoCollection
             $data = $file->file;
             $data[$this->_class->file] = $file;
             return $data;
-        } else {
-            return $this->_mongoCollection->getDBRef($reference);
         }
+        return $this->_mongoCollection->getDBRef($reference);
     }
 
     public function save(array &$a, array $options = array())
     {
         if ($this->_class->isFile()) {
             return $this->saveFile($a);
-        } else {
-            return $this->_mongoCollection->save($a, $options);
         }
+        return $this->_mongoCollection->save($a, $options);
     }
 
     public function find(array $query = array(), array $fields = array())
@@ -90,9 +87,8 @@ class MongoCollection
             $data = $file->file;
             $data[$this->_class->file] = $file;
             return $data;
-        } else {
-            return $this->_mongoCollection->findOne($query, $fields);
         }
+        return $this->_mongoCollection->findOne($query, $fields);
     }
 
     public function __call($method, $arguments)

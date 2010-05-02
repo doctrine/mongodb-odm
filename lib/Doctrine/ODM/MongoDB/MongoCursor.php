@@ -69,8 +69,7 @@ class MongoCursor implements \Iterator
         $return = call_user_func_array(array($this->_mongoCursor, $method), $arguments);
         if ($return === $this->_mongoCursor) {
             return $this;
-        } else {
-            return $return;
         }
+        return $return;
     }
 }

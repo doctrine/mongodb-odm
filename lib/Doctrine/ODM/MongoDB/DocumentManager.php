@@ -208,14 +208,12 @@ class DocumentManager
 
     public function findByID($documentName, $id)
     {
-        $metadata = $this->getClassMetadata($documentName);
         $collection = $this->getDocumentCollection($documentName);
         $result = $collection->findOne(array('_id' => new \MongoId($id)));
         if ($result !== null) {
             return $this->_unitOfWork->getOrCreateDocument($documentName, $result);
-        } else {
-            return null;
         }
+        return null;
     }
 
     public function find($documentName, array $query = array(), array $select = array())
@@ -237,9 +235,8 @@ class DocumentManager
         $result = $collection->findOne($query, $select);
         if ($result !== null) {
             return $this->_unitOfWork->getOrCreateDocument($documentName, $result);
-        } else {
-            return null;
         }
+        return null;
     }
 
     public function clear()
