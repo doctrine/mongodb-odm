@@ -35,7 +35,7 @@ class AnnotationDriver implements Driver
         $reflClass = $class->getReflectionClass();
 
         $classAnnotations = $this->_reader->getClassAnnotations($reflClass);
-        
+
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\Document'])) {
             $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\Document'];
             if ($documentAnnot->db) {
@@ -49,6 +49,25 @@ class AnnotationDriver implements Driver
                     $class->addIndex($index->keys, $index->options);
                 }
             }
+
+            if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\InheritanceType'])) {
+                $inheritanceTypeAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\InheritanceType'];
+                $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
+            }
+
+            if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\DiscriminatorField'])) {
+                $discrFieldAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\DiscriminatorField'];
+                $class->setDiscriminatorField(array(
+                    'name' => $discrFieldAnnot->name,
+                    'fieldName' => $discrFieldAnnot->fieldName,
+                ));
+            }
+
+            if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\DiscriminatorMap'])) {
+                $discrMapAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\DiscriminatorMap'];
+                $class->setDiscriminatorMap($discrMapAnnot->value);
+            }
+
         }
 
         foreach ($reflClass->getProperties() as $property) {

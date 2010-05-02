@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\CommitOrderCalculator,
+    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\Common\Collections\Collection;
 
 class UnitOfWork
@@ -32,7 +33,14 @@ class UnitOfWork
     public function getOrCreateDocument($className, array $data = array(), array $hints = array())
     {
         $class = $this->_dm->getClassMetadata($className);
-        
+
+        if (isset($data[$class->discriminatorField['name']])) {
+            $discriminatorValue = $data[$class->discriminatorField['name']];
+            if (isset($class->discriminatorMap[$discriminatorValue])) {
+                $class = $this->_dm->getClassMetadata($class->discriminatorMap[$discriminatorValue]);
+                $className = $class->name;
+            }
+        }
         $id = isset($data['_id']) ? (string) $data['_id'] : null;
         if ($id && isset($this->_identityMap[$className][$id])) {
             $document = $this->_identityMap[$className][$id];
@@ -110,7 +118,6 @@ class UnitOfWork
                     $this->_documentInsertions[$oid],
                     $this->_documentUpdates[$oid],
                     $this->_documentDeletions[$oid],
-                    $this->_documentIdentifiers[$oid],
                     $this->_documentStates[$oid],
                     $this->_originalDocumentData[$oid]
                 );
@@ -367,6 +374,10 @@ class UnitOfWork
             if (isset($values[$mapping['name']])) {
                 $this->_originalDocumentData[$oid][$mapping['fieldName']] = $values[$mapping['name']];
             }
+        }
+        if ($metadata->discriminatorField && $metadata->discriminatorValue) {
+            $values[$metadata->discriminatorField['fieldName']] = $metadata->discriminatorValue;
+            //$metadata->setFieldValue($document, $metadata->discriminatorField['fieldName'], $metadata->discriminatorValue);
         }
         if ($metadata->identifier) {
             if ($id = $metadata->getIdentifierObject($document)) {

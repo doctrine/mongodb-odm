@@ -26,6 +26,31 @@ class XmlDriver extends AbstractFileDriver
                 $class->addIndex((array) $index['keys'], (array) $index['options']);
             }
         }
+
+        if (isset($xmlRoot['inheritance-type'])) {
+            $inheritanceType = (string) $xmlRoot['inheritance-type'];
+            $metadata->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
+        }
+
+        if (isset($xmlRoot->{'discriminator-field'})) {
+            $discrField = $xmlRoot->{'discriminator-field'};
+            $metadata->setDiscriminatorField(array(
+                'name' => (string) $discrField['name'],
+                'fieldName' => (string) $discrField['fieldName'],
+            ));
+        }
+
+        if (isset($xmlRoot->{'discriminator-map'})) {
+            $map = array();
+            foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} AS $discrMapElement) {
+                $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
+            }
+            $metadata->setDiscriminatorMap($map);
+        }
+
+        if (isset($xmlRoot->inheritance['type'])) {
+            $class->discriminatorMap = $xmlRoot['inheritance']
+        }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
                 $mapping = array();
@@ -45,7 +70,7 @@ class XmlDriver extends AbstractFileDriver
 
         if (isset($xmlElement->document)) {
             foreach ($xmlElement->document as $documentElement) {
-                $documentName = (string)$documentElement['name'];
+                $documentName = (string) $documentElement['name'];
                 $result[$documentName] = $documentElement;
             }
         }

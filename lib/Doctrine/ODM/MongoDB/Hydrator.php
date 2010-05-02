@@ -52,8 +52,8 @@ class Hydrator
                 $value = $data[$mapping['name']];
                 $metadata->setFieldValue($document, $mapping['fieldName'], $value);
             }
-            if (isset($mapping['reference']) && isset($this->_hints['load_association_' . $mapping['fieldName']])) {
-                $this->_dm->loadDocumentAssociation($document, $mapping['fieldName']);
+            if (isset($mapping['reference']) && isset($this->_hints['load_reference_' . $mapping['fieldName']])) {
+                $this->_dm->loadDocumentReference($document, $mapping['fieldName']);
             }
             if (isset($value)) {
                 $values[$mapping['fieldName']] = $value;

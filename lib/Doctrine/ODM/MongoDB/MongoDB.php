@@ -11,6 +11,11 @@ class MongoDB
         $this->_mongoDB = $mongoDB;
     }
 
+    public function getMongoDB()
+    {
+        return $this->_mongoDB;
+    }
+
     public function __call($method, $arguments)
     {
         return call_user_func_array(array($this->_mongoDB, $method), $arguments);

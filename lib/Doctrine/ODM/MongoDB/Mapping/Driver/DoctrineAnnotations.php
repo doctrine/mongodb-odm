@@ -30,6 +30,20 @@ final class Document extends Annotation
     public $indexes = array();
 }
 
+final class Inheritance extends Annotation
+{
+    public $type = 'NONE';
+    public $discriminatorMap = array();
+    public $discriminatorField;
+}
+
+final class InheritanceType extends Annotation {}
+final class DiscriminatorField extends Annotation {
+    public $name;
+    public $fieldName;
+}
+final class DiscriminatorMap extends Annotation {}
+
 final class Index extends Annotation
 {
     public $keys = array();

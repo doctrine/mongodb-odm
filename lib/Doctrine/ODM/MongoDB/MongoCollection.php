@@ -6,30 +6,30 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 class MongoCollection
 {
-    private $_collection;
+    private $_mongoCollection;
     private $_class;
 
-    public function __construct(\MongoCollection $collection, ClassMetadata $class)
+    public function __construct(\MongoCollection $mongoCollection, ClassMetadata $class)
     {
-        $this->_collection = $collection;
+        $this->_mongoCollection = $mongoCollection;
         $this->_class = $class;
     }
 
-    public function getCollection()
+    public function getMongoCollection()
     {
-        return $this->_collection;
+        return $this->_mongoCollection;
     }
 
     public function batchInsert(array &$a, array $options = array())
     {
-        if ($this->_collection instanceof \MongoGridFS) {
+        if ($this->_mongoCollection instanceof \MongoGridFS) {
             foreach ($a as $key => $array) {
                 $this->saveFile($array);
                 $a[$key] = $array;
             }
             return $a;
         } else {
-            return $this->_collection->batchInsert($a, $options);
+            return $this->_mongoCollection->batchInsert($a, $options);
         }
     }
 
@@ -38,14 +38,19 @@ class MongoCollection
         $fileName = $this->_class->fieldMappings[$this->_class->file]['name'];
         $file = $a[$fileName];
         unset($a[$fileName]);
-        if (file_exists($file)) {
-            $this->_collection->chunks->remove(array('files_id' => $a['_id']));
-            $id = $this->_collection->storeFile($file, $a);
-        } else if (is_string($file)) {
-            $this->_collection->chunks->remove(array('files_id' => $a['_id']));
-            $id = $this->_collection->storeBytes($file, $a);
+        if ($file instanceof \MongoGridFSFile) {
+            $this->_mongoCollection->save($a);
+        } else {
+            if (isset($a['_id'])) {
+                $this->_mongoCollection->chunks->remove(array('files_id' => $a['_id']));
+            }
+            if (file_exists($file)) {
+                $id = $this->_mongoCollection->storeFile($file, $a);
+            } else if (is_string($file)) {
+                $id = $this->_mongoCollection->storeBytes($file, $a);
+            }
+            $file = $this->_mongoCollection->findOne(array('_id' => $id));
         }
-        $file = $this->_collection->findOne(array('_id' => $id));
         $a = $file->file;
         $a[$fileName] = $file;
         return $a;
@@ -54,13 +59,13 @@ class MongoCollection
     public function getDBRef(array $reference)
     {
         if ($this->_class->isFile()) {
-            $ref = $this->_collection->getDBRef($reference);
-            $file = $this->_collection->findOne(array('_id' => $ref['_id']));
+            $ref = $this->_mongoCollection->getDBRef($reference);
+            $file = $this->_mongoCollection->findOne(array('_id' => $ref['_id']));
             $data = $file->file;
             $data[$this->_class->file] = $file;
             return $data;
         } else {
-            return $this->_collection->getDBRef($reference);
+            return $this->_mongoCollection->getDBRef($reference);
         }
     }
 
@@ -69,29 +74,29 @@ class MongoCollection
         if ($this->_class->isFile()) {
             return $this->saveFile($a);
         } else {
-            return $this->_collection->save($a, $options);
+            return $this->_mongoCollection->save($a, $options);
         }
     }
 
     public function find(array $query = array(), array $fields = array())
     {
-        return $this->_collection->find($query, $fields);
+        return $this->_mongoCollection->find($query, $fields);
     }
 
     public function findOne(array $query = array(), array $fields = array())
     {
-        if ($this->_collection instanceof \MongoGridFS) {
-            $file = $this->_collection->findOne($query);
+        if ($this->_mongoCollection instanceof \MongoGridFS) {
+            $file = $this->_mongoCollection->findOne($query);
             $data = $file->file;
             $data[$this->_class->file] = $file;
             return $data;
         } else {
-            return $this->_collection->findOne($query, $fields);
+            return $this->_mongoCollection->findOne($query, $fields);
         }
     }
 
     public function __call($method, $arguments)
     {
-        return call_user_func_array(array($this->_collection, $method), $arguments);
+        return call_user_func_array(array($this->_mongoCollection, $method), $arguments);
     }
 }

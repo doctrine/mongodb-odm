@@ -21,6 +21,11 @@ class MongoCursor implements \Iterator
         $this->_mongoCursor = $mongoCursor;
     }
 
+    public function getMongoCursor()
+    {
+        return $this->_mongoCursor;
+    }
+
     public function current()
     {
         if ($this->_mongoCursor instanceof \MongoGridFSCursor) {

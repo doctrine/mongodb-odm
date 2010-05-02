@@ -5,29 +5,32 @@ namespace Documents;
 /** @Document(indexes={
   *   @Index(keys={"username"="desc"}, options={"unique"=true})
   * })
+  * @InheritanceType("SINGLE_COLLECTION")
+  * @DiscriminatorField(fieldName="type")
+  * @DiscriminatorMap({"moderator"="Documents\Moderator", "admin"="Documents\Admin"})
   */
 class User
 {
     /** @Id */
-    private $id;
+    protected $id;
 
     /** @Field */
-    private $username;
+    protected $username;
 
     /** @Field */
-    private $password;
+    protected $password;
 
     /** @EmbedMany(targetDocument="Documents\Phonenumber") */
-    private $phonenumbers = array();
+    protected $phonenumbers = array();
 
     /** @EmbedMany(targetDocument="Documents\Address") */
-    private $addresses = array();
+    protected $addresses = array();
 
     /** @ReferenceOne(targetDocument="Documents\Profile", cascadeDelete="true") */
-    private $profile;
+    protected $profile;
 
     /** @ReferenceOne(targetDocument="Documents\Account", cascadeDelete="true") */
-    private $account;
+    protected $account;
 
     public function getId()
     {

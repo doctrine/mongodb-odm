@@ -101,7 +101,7 @@ class DocumentManager
         return $this->_documentCollections[$key];
     }
 
-    public function loadDocumentAssociation($document, $name)
+    public function loadDocumentReference($document, $name)
     {
         $className = get_class($document);
         $class = $this->getClassMetadata($className);
@@ -129,13 +129,13 @@ class DocumentManager
         }
     }
 
-    public function loadDocumentAssociations($document)
+    public function loadDocumentReferences($document)
     {
         $className = get_class($document);
         $class = $this->getClassMetadata($className);
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['reference'])) {
-                $this->loadDocumentAssociation($document, $mapping['fieldName']);
+                $this->loadDocumentReference($document, $mapping['fieldName']);
             }
         }
     }

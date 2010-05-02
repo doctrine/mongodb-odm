@@ -26,6 +26,19 @@ class YamlDriver extends AbstractFileDriver
                 $class->addIndex($index['keys'], $index['options']);
             }
         }
+        if (isset($element['inheritanceType'])) {
+            $metadata->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
+        }
+        if (isset($element['discriminatorColumn'])) {
+            $discrColumn = $element['discriminatorColumn'];
+            $metadata->setDiscriminatorColumn(array(
+                'name' => $discrColumn['name'],
+                'fieldName' => $discrColumn['fieldName']
+            ));
+        }
+        if (isset($element['discriminatorMap'])) {
+            $metadata->setDiscriminatorMap($element['discriminatorMap']);
+        }
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $fieldName => $mapping) {
                 if ( ! isset($mapping['fieldName'])) {

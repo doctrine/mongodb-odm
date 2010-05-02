@@ -81,6 +81,62 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
         public $name;
     }
 
+## Inheritance Mapping
+
+If you want to take advantage of inheritance you will need to specify some 
+mapping information for your documents:
+
+### Single Collection Inheritance
+
+Each Document is stored in a single collection where a discriminator field is
+automatically populated to keep track of what classes created each document
+in the database:
+
+    namespace Documents;
+
+    /**
+     * @Document
+     * @InheritanceType("SINGLE_COLLECTION")
+     * @DiscriminatorField(fieldName="type")
+     * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
+     */
+    class Person
+    {
+        // ...
+    }
+
+    /**
+     * @Document
+     */
+    class Employee extends Person
+    {
+        // ...
+    }
+
+### Collection Per Class Inheritance
+
+Each Document is stored in its own collection:
+
+    namespace Documents;
+    
+    /**
+     * @Document
+     * @InheritanceType("COLLECTION_PER_CLASS")
+     * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
+     */
+    class Person
+    {
+        // ...
+    }
+
+    /**
+     * @Document
+     */
+    class Employee extends Person
+    {
+        // ...
+    }
+    
 ## Persisting Documents
 
 Create a new instance, set some of the properties and persist it:
@@ -133,25 +189,25 @@ method:
 
     $user = $dm->findByID('User', 'the_string_id');
 
-You may want to load the associations for an document, you can do this with the 
-loadDocumentAssociations() method:
+You may want to load the references for an document, you can do this with the 
+loadDocumentReferences() method:
 
-    $dm->loadDocumentAssociations($user);
+    $dm->loadDocumentReferences($user);
 
 Now you can access the ->account property and get an Account instance:
 
     echo $user->account->name; // Test Account
 
-If you only want to load a specific association you can use the loadDocumentAssociation($name)
+If you only want to load a specific reference you can use the loadDocumentReference($name)
 method:
 
-    $dm->loadDocumentAssociation($user, 'account');
+    $dm->loadDocumentReference($user, 'account');
 
-To automatically load the association during hydration you can specify the 
-association to load on a query with the loadAssociation() method:
+To automatically load the reference during hydration you can specify the 
+reference to load on a query with the loadReference() method:
 
     $query = $dm->createQuery('User')
-        ->loadAssociation('account');
+        ->loadReference('account');
     
     $users = $query->execute();
     foreach ($users as $user) {
@@ -264,7 +320,7 @@ Now you can later query for the Image and render it:
     header('Content-type: image/png;');
     echo $image->getFile()->getBytes();
 
-You can of course make associations to this Image document from another document.
+You can of course make references to this Image document from another document.
 Imagine you had a Profile document and you wanted every Profile to have a profile
 image:
 
@@ -325,11 +381,11 @@ Now you can create a new Profile and give it an Image:
     $dm->persist($profile);
     $dm->flush();
 
-If you want to query for the Profile and load the Image association in a query
+If you want to query for the Profile and load the Image reference in a query
 you can use:
 
     $profile = $dm->createQuery('Profile')
-        ->loadAssociation('image')
+        ->loadReference('image')
         ->where('name', 'Jonathan H. Wage')
         ->getSingleResult();
 
