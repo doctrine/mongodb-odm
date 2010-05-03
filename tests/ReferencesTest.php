@@ -7,7 +7,8 @@ use Documents\Address,
     Documents\Phonenumber,
     Documents\Account,
     Documents\Group,
-    Documents\User;
+    Documents\User,
+    Doctrine\ODM\MongoDB\PersistentCollection;
 
 class ReferencesTest extends BaseTest
 {
@@ -108,15 +109,15 @@ class ReferencesTest extends BaseTest
     public function testManyReference()
     {
         $user = new \Documents\User();
-        $groups = $user->getGroups();
-
-        $groups->add(new Group('Group 1'));
-        $groups->add(new Group('Group 2'));
+        $user->addGroup(new Group('Group 1'));
+        $user->addGroup(new Group('Group 2'));
 
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->dm->clear();
 
+        $groups = $user->getGroups();
+
+        $this->assertTrue($groups instanceof PersistentCollection);
         $this->assertTrue($groups[0]->getId() !== '');
         $this->assertTrue($groups[1]->getId() !== '');
 
@@ -126,6 +127,7 @@ class ReferencesTest extends BaseTest
 
         $groups = $user2->getGroups();
 
+        $this->assertTrue($groups instanceof PersistentCollection);
         $this->assertTrue($groups[0] instanceof Group);
         $this->assertTrue($groups[1] instanceof Group);
 

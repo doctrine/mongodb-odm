@@ -39,7 +39,7 @@ class User
     public function __construct()
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groups = array();
     }
 
     public function getId()
