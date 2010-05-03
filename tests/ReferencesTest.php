@@ -128,5 +128,15 @@ class ReferencesTest extends BaseTest
 
         $this->assertTrue($groups[0] instanceof Group);
         $this->assertTrue($groups[1] instanceof Group);
+
+        unset($groups[0]);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user3 = $this->dm->createQuery('Documents\User')
+            ->where('id', $user->getId())
+            ->getSingleResult();
+        $this->assertEquals(1, count($user2->getGroups()));
     }
 }
