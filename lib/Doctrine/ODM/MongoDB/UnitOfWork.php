@@ -1,4 +1,21 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\ODM\MongoDB;
 
@@ -8,6 +25,16 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\Common\Collections\Collection;
 
+/**
+ * The UnitOfWork is responsible for tracking changes to objects during an
+ * "object-level" transaction and for writing out changes to the database
+ * in the correct order.
+ *
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since       1.0
+ * @version     $Revision: 4930 $
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ */
 class UnitOfWork
 {
     /**
@@ -201,7 +228,7 @@ class UnitOfWork
             }
         }
 
-        // Entity deletions come last and need to be in reverse commit order
+        // Document deletions come last and need to be in reverse commit order
         if ($this->_documentDeletions) {
             for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
                 $this->_executeDeletions($commitOrder[$i]);
@@ -1023,7 +1050,7 @@ class UnitOfWork
                 }
                 break;
             default:
-                throw ORMException::invalidDocumentState($documentState);
+                throw MongoDBException::invalidDocumentState($documentState);
         }
         
         $this->_cascadePersist($document, $visited);
@@ -1070,9 +1097,9 @@ class UnitOfWork
                 $this->scheduleForDelete($document);
                 break;
             case self::STATE_DETACHED:
-                throw ORMException::detachedDocumentCannotBeRemoved();
+                throw MongoDBException::detachedDocumentCannotBeRemoved();
             default:
-                throw ORMException::invalidDocumentState($documentState);
+                throw MongoDBException::invalidDocumentState($documentState);
         }
 
         $this->_cascadeRemove($document, $visited);
@@ -1096,8 +1123,6 @@ class UnitOfWork
      * @param object $document
      * @param array $visited
      * @return object The managed copy of the document.
-     * @throws OptimisticLockException If the document uses optimistic locking through a version
-     *         attribute and the version check against the managed copy fails.
      * @throws InvalidArgumentException If the document instance is NEW.
      */
     private function _doMerge($document, array &$visited, $prevManagedCopy = null, $mapping = null)
@@ -1130,15 +1155,6 @@ class UnitOfWork
             if ($managedCopy === null) {
                 throw new \InvalidArgumentException('New document detected during merge.'
                         . ' Persist the new document before merging.');
-            }
-
-            if ($class->isVersioned) {
-                $managedCopyVersion = $class->reflFields[$class->versionField]->getValue($managedCopy);
-                $documentVersion = $class->reflFields[$class->versionField]->getValue($document);
-                // Throw exception if versions dont match.
-                if ($managedCopyVersion != $documentVersion) {
-                    throw OptimisticLockException::lockFailed();
-                }
             }
 
             // Merge state of $document into existing (managed) document

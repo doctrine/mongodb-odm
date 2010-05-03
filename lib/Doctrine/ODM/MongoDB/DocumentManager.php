@@ -1,4 +1,21 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\ODM\MongoDB;
 
@@ -11,16 +28,74 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
     Doctrine\Common\Collections\ArrayCollection;
 
+/**
+ * The DocumentManager class is the central access point for managing the
+ * persistence of documents.
+ *
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.com
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ */
 class DocumentManager
 {
+    /**
+     * The Doctrine Mongo wrapper instance
+     *
+     * @var Doctrine\ODM\MongoDB\Mongo
+     */
     private $_mongo;
+
+    /**
+     * The used Configuration.
+     *
+     * @var Doctrine\ODM\MongoDB\Configuration
+     */
     private $_config;
+
+    /**
+     * The metadata factory, used to retrieve the ORM metadata of document classes.
+     *
+     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     */
     private $_metadataFactory;
+
+    /**
+     * The UnitOfWork used to coordinate object-level transactions.
+     *
+     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     */
     private $_unitOfWork;
+
+    /**
+     * The Document hydrator instance.
+     *
+     * @var Doctrine\ODM\MongoDB\Hydrator
+     */
     private $_hydrator;
+
+    /**
+     * Array of cached MongoDB instances that are lazily loaded.
+     *
+     * @var array
+     */
     private $_documentDBs = array();
+
+    /**
+     * Array of cached MongoCollection instances that are lazily loaded.
+     *
+     * @var array
+     */
     private $_documentCollections = array();
 
+    /**
+     * Creates a new Document that operates on the given Mongo connection
+     * and uses the given Configuration.
+     *
+     * @param Doctrine\ODM\MongoDB\Mongo $mongo
+     * @param Doctrine\ODM\MongoDB\Configuration $config
+     */
     protected function __construct(Mongo $mongo, Configuration $config = null)
     {
         $this->_mongo = $mongo;
@@ -37,6 +112,13 @@ class DocumentManager
                 $config->getAutoGenerateProxyClasses());
     }
 
+    /**
+     * Creates a new Document that operates on the given Mongo connection
+     * and uses the given Configuration.
+     *
+     * @param Doctrine\ODM\MongoDB\Mongo $mongo
+     * @param Doctrine\ODM\MongoDB\Configuration $config
+     */
     public static function create(Mongo $mongo, Configuration $config = null)
     {
         return new self($mongo, $config);
@@ -52,26 +134,55 @@ class DocumentManager
         return $this->_mongo;
     }
 
+    /**
+     * Gets the metadata factory used to gather the metadata of classes.
+     *
+     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     */
     public function getMetadataFactory()
     {
         return $this->_metadataFactory;
     }
 
+    /**
+     * Gets the UnitOfWork used by the DocumentManager to coordinate operations.
+     *
+     * @return Doctrine\ODM\MongoDB\UnitOfWork
+     */
     public function getUnitOfWork()
     {
         return $this->_unitOfWork;
     }
 
+    /**
+     * Gets the Hydrator used by the DocumentManager to hydrate document arrays
+     * to document objects.
+     *
+     * @return Doctrine\ODM\MongoDB\Hydrator
+     */
     public function getHydrator()
     {
         return $this->_hydrator;
     }
  
+    /**
+     * Returns the metadata for a class.
+     *
+     * @param string $className The class name.
+     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @internal Performance-sensitive method.
+     */
     public function getClassMetadata($className)
     {
         return $this->_metadataFactory->getMetadataFor($className);
     }
 
+    /**
+     * Returns the MongoDB instance for a class.
+     *
+     * @param string $className The class name.
+     * @return Doctrine\ODM\MongoDB\MongoDB
+     */
     public function getDocumentDB($className)
     {
         $db = $this->_metadataFactory->getMetadataFor($className)->getDB();
@@ -85,6 +196,12 @@ class DocumentManager
         return $this->_documentDBs[$db];
     }
 
+    /**
+     * Returns the MongoCollection instance for a class.
+     *
+     * @param string $className The class name.
+     * @return Doctrine\ODM\MongoDB\MongoCollection
+     */
     public function getDocumentCollection($className)
     {
         $metadata = $this->_metadataFactory->getMetadataFor($className);
@@ -106,31 +223,107 @@ class DocumentManager
         return $this->_documentCollections[$key];
     }
 
+    /**
+     * Create a new Query instance for a class.
+     *
+     * @param string $className The class name.
+     * @return Document\ODM\MongoDB\Query
+     */
     public function createQuery($className = null)
     {
         return new Query($this, $className);
     }
 
+    /**
+     * Tells the DocumentManager to make an instance managed and persistent.
+     *
+     * The document will be entered into the database at or before transaction
+     * commit or as a result of the flush operation.
+     * 
+     * NOTE: The persist operation always considers documents that are not yet known to
+     * this DocumentManager as NEW. Do not pass detached documents to the persist operation.
+     *
+     * @param object $document The instance to make managed and persistent.
+     */
     public function persist($document)
     {
+        if ( ! is_object($document)) {
+            throw new \InvalidArgumentException(gettype($document));
+        }
         $this->_unitOfWork->persist($document);
     }
 
+    /**
+     * Removes a document instance.
+     *
+     * A removed document will be removed from the database at or before transaction commit
+     * or as a result of the flush operation.
+     *
+     * @param object $document The document instance to remove.
+     */
     public function remove($document)
     {
+        if ( ! is_object($document)) {
+            throw new \InvalidArgumentException(gettype($document));
+        }
         $this->_unitOfWork->remove($document);
     }
 
-    public function detach($document)
-    {
-        $this->_unitOfWork->detach($document);
-    }
-
+    /**
+     * Refreshes the persistent state of a document from the database,
+     * overriding any local changes that have not yet been persisted.
+     *
+     * @param object $document The document to refresh.
+     */
     public function refresh($document)
     {
+        if ( ! is_object($document)) {
+            throw new \InvalidArgumentException(gettype($document));
+        }
         $this->_unitOfWork->refresh($document);
     }
 
+    /**
+     * Detaches a document from the DocumentManager, causing a managed document to
+     * become detached.  Unflushed changes made to the document if any
+     * (including removal of the document), will not be synchronized to the database.
+     * Documents which previously referenced the detached document will continue to
+     * reference it.
+     *
+     * @param object $document The document to detach.
+     */
+    public function detach($document)
+    {
+        if ( ! is_object($document)) {
+            throw new \InvalidArgumentException(gettype($document));
+        }
+        $this->_unitOfWork->detach($document);
+    }
+
+    /**
+     * Merges the state of a detached document into the persistence context
+     * of this DocumentManager and returns the managed copy of the document.
+     * The document passed to merge will not become associated/managed with this DocumentManager.
+     *
+     * @param object $document The detached document to merge into the persistence context.
+     * @return object The managed copy of the document.
+     */
+    public function merge($document)
+    {
+        if ( ! is_object($document)) {
+            throw new \InvalidArgumentException(gettype($document));
+        }
+        return $this->_unitOfWork->merge($document);
+    }
+
+    /**
+     * Loads a given document by its ID refreshing the values with the data from
+     * the database if the document already exists in the identity map.
+     *
+     * @param string $documentName The document name to load.
+     * @param string $id  The id the document to load.
+     * @return object $document  The loaded document.
+     */
     public function loadByID($documentName, $id)
     {
         $collection = $this->getDocumentCollection($documentName);
@@ -138,6 +331,15 @@ class DocumentManager
         return $this->load($documentName, $id, $result);
     }
 
+    /**
+     * Loads data for a document id refreshing and overriding any local values
+     * if the document already exists in the identity map.
+     *
+     * @param string $documentName  The document name to load.
+     * @param string $id  The id of the document being loaded.
+     * @param string $data  The data to load into the document.
+     * @return object $document The loaded document.
+     */
     public function load($documentName, $id, $data)
     {
         if ($data !== null) {
@@ -147,6 +349,11 @@ class DocumentManager
         return false;
     }
 
+    /**
+     * Flushes all changes to objects that have been queued up to now to the database.
+     * This effectively synchronizes the in-memory state of managed objects with the
+     * database.
+     */
     public function flush()
     {
         $this->_unitOfWork->commit();
@@ -188,24 +395,6 @@ class DocumentManager
         return $db->selectCollection($result['result'])->find();
     }
 
-    public function findByID($documentName, $id)
-    {
-        $collection = $this->getDocumentCollection($documentName);
-        $result = $collection->findOne(array('_id' => new \MongoId($id)));
-        if ($result !== null) {
-            return $this->_unitOfWork->getOrCreateDocument($documentName, $result);
-        }
-        return null;
-    }
-
-    public function find($documentName, array $query = array(), array $select = array())
-    {
-        $metadata = $this->getClassMetadata($documentName);
-        $collection = $this->getDocumentCollection($documentName);
-        $cursor = $collection->find($query, $select);
-        return new MongoCursor($this, $this->_hydrator, $metadata, $cursor);
-    }
-
     /**
      * Gets a reference to the document identified by the given type and identifier
      * without actually loading it.
@@ -230,6 +419,48 @@ class DocumentManager
         return $document;
     }
 
+    /**
+     * Finds a Document by its identifier.
+     *
+     * @param string $documentName The document to find.
+     * @param array $query The query to execute.
+     * @param array $select The fields to select.
+     * @return Doctrine\ODM\MongoDB\MongoCursor
+     */
+    public function findByID($documentName, $id)
+    {
+        $collection = $this->getDocumentCollection($documentName);
+        $result = $collection->findOne(array('_id' => new \MongoId($id)));
+        if ($result !== null) {
+            return $this->_unitOfWork->getOrCreateDocument($documentName, $result);
+        }
+        return null;
+    }
+
+    /**
+     * Find documents with the given query and select fields.
+     *
+     * @param string $documentName The document to find.
+     * @param array $query The query criteria.
+     * @param array $select The fields to select.
+     * @return Doctrine\ODM\MongoDB\MongoCursor
+     */
+    public function find($documentName, array $query = array(), array $select = array())
+    {
+        $metadata = $this->getClassMetadata($documentName);
+        $collection = $this->getDocumentCollection($documentName);
+        $cursor = $collection->find($query, $select);
+        return new MongoCursor($this, $this->_hydrator, $metadata, $cursor);
+    }
+
+    /**
+     * Find a single document with the given query and select fields.
+     *
+     * @param string $documentName The document to find.
+     * @param array $query The query criteria.
+     * @param array $select The fields to select
+     * @return object $document
+     */
     public function findOne($documentName, array $query = array(), array $select = array())
     {
         $metadata = $this->getClassMetadata($documentName);
@@ -241,6 +472,12 @@ class DocumentManager
         return null;
     }
 
+    /**
+     * Clears the DocumentManager. All documents that are currently managed
+     * by this DocumentManager become detached.
+     *
+     * @param string $documentName
+     */
     public function clear()
     {
         $this->_unitOfWork->clear();

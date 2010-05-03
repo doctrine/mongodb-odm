@@ -23,13 +23,14 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\AssociationMapping;
 
+
 /**
  * This factory is used to create proxy objects for documents at runtime.
  *
- * @author Roman Borschel <roman@code-factory.org>
- * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @since 2.0
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since       1.0
+ * @version     $Revision: 4930 $
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class ProxyFactory
 {

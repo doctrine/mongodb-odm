@@ -24,6 +24,7 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase
 
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Proxies');
+        //$config->setMetadataCacheImpl(new ApcCache());
 
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');

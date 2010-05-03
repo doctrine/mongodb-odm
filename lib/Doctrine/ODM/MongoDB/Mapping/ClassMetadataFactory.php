@@ -1,4 +1,21 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
@@ -7,24 +24,58 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\MongoDBException,
     Doctrine\Common\Cache\Cache;
 
+/**
+ * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
+ * metadata mapping informations of a class which describes how a class should be mapped
+ * to a document database.
+ *
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.com
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ */
 class ClassMetadataFactory
 {
+    /** The DocumentManager instance */
     private $_dm;
+
+    /** THe array of loaded ClassMetadata instances */
     private $_loadedMetadata;
+
+    /** The used metadata driver. */
     private $_driver;
+
+    /** The used cache driver. */
     private $_cacheDriver;
 
+    /**
+     * Creates a new factory instance that uses the given DocumentManager instance.
+     *
+     * @param $dm  The DocumentManager instance
+     */
     public function __construct(DocumentManager $dm)
     {
         $this->_dm = $dm;
         $this->_driver = $dm->getConfiguration()->getMetadataDriverImpl();
     }
 
+    /**
+     * Sets the cache driver used by the factory to cache ClassMetadata instances.
+     *
+     * @param Doctrine\Common\Cache\Cache $cacheDriver
+     */
     public function setCacheDriver(Cache $cacheDriver)
     {
         $this->_cacheDriver = $cacheDriver;
     }
 
+    /**
+     * Gets the class metadata descriptor for a class.
+     *
+     * @param string $className The name of the class.
+     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     */
     public function getMetadataFor($className)
     {
         if ( ! isset($this->_loadedMetadata[$className])) {
@@ -46,6 +97,13 @@ class ClassMetadataFactory
         return $this->_loadedMetadata[$className];
     }
 
+    /**
+     * Loads the metadata of the class in question and all it's ancestors whose metadata
+     * is still not loaded.
+     *
+     * @param string $name The name of the class for which the metadata should get loaded.
+     * @param array  $tables The metadata collection to which the loaded metadata is added.
+     */
     private function _loadMetadata($className)
     {
         $loaded = array();
@@ -118,11 +176,23 @@ class ClassMetadataFactory
         $this->_loadedMetadata[$className] = $class;
     }
 
+    /**
+     * Creates a new ClassMetadata instance for the given class name.
+     *
+     * @param string $className
+     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     */
     protected function _newClassMetadataInstance($className)
     {
         return new ClassMetadata($className);
     }
 
+    /**
+     * Get array of parent classes for the given entity class
+     *
+     * @param string $name
+     * @return array $parentClasses
+     */
     protected function _getParentClasses($name)
     {
         // Collect parent classes, ignoring transient (not-mapped) classes.
@@ -133,6 +203,12 @@ class ClassMetadataFactory
         return $parentClasses;
     }
 
+    /**
+     * Adds inherited fields to the subclass mapping.
+     *
+     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $subClass
+     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $parentClass
+     */
     private function _addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
