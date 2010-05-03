@@ -32,11 +32,14 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 class MongoCollection
 {
-    /** The PHP MongoCollection being wrapped */
+    /** The PHP MongoCollection being wrapped. */
     private $_mongoCollection;
 
-    /** The ClassMetadata instance for this collection */
+    /** The ClassMetadata instance for this collection. */
     private $_class;
+
+    /** A callable for logging statements. */
+    private $_loggerCallable;
 
     /**
      * Create a new MongoCollection instance that wraps a PHP MongoCollection instance
@@ -44,11 +47,29 @@ class MongoCollection
      *
      * @param MongoCollection $mongoColleciton The MongoCollection instance.
      * @param ClassMetadata $class The ClassMetadata instance.
+     * @param DocumentManager $dm The DocumentManager instance.
      */
-    public function __construct(\MongoCollection $mongoCollection, ClassMetadata $class)
+    public function __construct(\MongoCollection $mongoCollection, ClassMetadata $class, DocumentManager $dm)
     {
         $this->_mongoCollection = $mongoCollection;
         $this->_class = $class;
+        $this->_loggerCallable = $dm->getConfiguration()->getLoggerCallable();
+    }
+
+    /**
+     * Log something using the configured logger callable.
+     *
+     * @param array $log The array of data to log.
+     */
+    public function log(array $log)
+    {
+        if ( ! $this->_loggerCallable) {
+            return;
+        }
+        $log['class'] = $this->_class->name;
+        $log['db'] = $this->_class->db;
+        $log['collection'] = $this->_class->collection;
+        call_user_func_array($this->_loggerCallable, array($log));
     }
 
     /**
@@ -71,6 +92,13 @@ class MongoCollection
             }
             return $a;
         }
+        if ($this->_loggerCallable) {
+            $this->log(array(
+                'batchInsert' => true,
+                'num' => count($a),
+                'data' => $a
+            ));
+        }
         return $this->_mongoCollection->batchInsert($a, $options);
     }
 
@@ -90,16 +118,43 @@ class MongoCollection
             $id = $a['_id'];
             unset($a['_id']);
             $set = array('$set' => $a);
+
+            if ($this->_loggerCallable) {
+                $this->log(array(
+                    'updating' => true,
+                    'file' => true,
+                    'id' => $id,
+                    'set' => $set
+                ));
+            }
+
             $this->_mongoCollection->update(array('_id' => $id), $set);
         } else {
             if (isset($a['_id'])) {
                 $this->_mongoCollection->chunks->remove(array('files_id' => $a['_id']));
             }
             if (file_exists($file)) {
+                if ($this->_loggerCallable) {
+                    $this->log(array(
+                        'storing' => true,
+                        'file' => $file,
+                        'document' => $a
+                    ));
+                }
+
                 $id = $this->_mongoCollection->storeFile($file, $a);
             } else if (is_string($file)) {
+                if ($this->_loggerCallable) {
+                    $this->log(array(
+                        'storing' => true,
+                        'bytes' => true,
+                        'document' => $a
+                    ));
+                }
+
                 $id = $this->_mongoCollection->storeBytes($file, $a);
             }
+
             $file = $this->_mongoCollection->findOne(array('_id' => $id));
         }
         $a = $file->file;
@@ -110,6 +165,13 @@ class MongoCollection
     /** @override */
     public function getDBRef(array $reference)
     {
+        if ($this->_loggerCallable) {
+            $this->log(array(
+                'get' => true,
+                'reference' => $reference,
+            ));
+        }
+
         if ($this->_class->isFile()) {
             $ref = $this->_mongoCollection->getDBRef($reference);
             $file = $this->_mongoCollection->findOne(array('_id' => $ref['_id']));
@@ -123,6 +185,13 @@ class MongoCollection
     /** @override */
     public function save(array &$a, array $options = array())
     {
+        if ($this->_loggerCallable) {
+            $this->log(array(
+                'save' => true,
+                'document' => $a,
+                'options' => $options
+            ));
+        }
         if ($this->_class->isFile()) {
             return $this->saveFile($a);
         }
@@ -132,12 +201,27 @@ class MongoCollection
     /** @override */
     public function find(array $query = array(), array $fields = array())
     {
+        if ($this->_loggerCallable) {
+            $this->log(array(
+                'find' => true,
+                'query' => $query,
+                'fields' => $fields
+            ));
+        }
         return $this->_mongoCollection->find($query, $fields);
     }
 
     /** @override */
     public function findOne(array $query = array(), array $fields = array())
     {
+        if ($this->_loggerCallable) {
+            $this->log(array(
+                'findOne' => true,
+                'query' => $query,
+                'fields' => $fields
+            ));
+        }
+
         if ($this->_mongoCollection instanceof \MongoGridFS) {
             $file = $this->_mongoCollection->findOne($query);
             $data = $file->file;

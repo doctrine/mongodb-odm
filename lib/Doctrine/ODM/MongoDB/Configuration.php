@@ -157,4 +157,25 @@ class Configuration
     {
         $this->_attributes['proxyNamespace'] = $ns;
     }
+
+    /**
+     * Set the logger callable.
+     *
+     * @param mixed $loggerCallable The logger callable.
+     */
+    public function setLoggerCallable($loggerCallable)
+    {
+        $this->_attributes['loggerCallable'] = $loggerCallable;
+    }
+
+    /**
+     * Gets the logger callable.
+     *
+     * @return mixed $loggerCallable The logger callable.
+     */
+    public function getLoggerCallable()
+    {
+        return isset($this->_attributes['loggerCallable']) ?
+                $this->_attributes['loggerCallable'] : null;
+    }
 }
