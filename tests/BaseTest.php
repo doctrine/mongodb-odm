@@ -22,6 +22,9 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase
     {
         $config = new Configuration();
 
+        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setProxyNamespace('Proxies');
+
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
@@ -33,6 +36,7 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase
     {
         $documents = array(
             'Documents\User',
+            'Documents\SpecialUser',
             'Documents\Account',
             'Documents\Profile',
             'Documents\Address',
@@ -43,20 +47,5 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase
         foreach ($documents as $document) {
             $this->dm->getDocumentCollection($document)->drop();
         }
-    }
-
-    protected function _createTestUser()
-    {
-        $user = new User();
-        $user->username = 'jwage';
-        $user->password = 'changeme';
-        $user->profile = new Profile();
-        $user->profile->firstName = 'Jonathan';
-        $user->profile->lastName = 'Wage';
-        
-        $this->dm->persist($user);
-        $this->dm->flush();
-
-        return $user;
     }
 }

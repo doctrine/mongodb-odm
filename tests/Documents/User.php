@@ -13,35 +13,107 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 class User
 {
     /** @Id */
-    public $id;
+    protected $id;
 
     /** @Field */
-    public $username;
+    protected $username;
 
     /** @Field */
-    public $password;
+    protected $password;
 
     /** @EmbedOne(targetDocument="Address") */
-    public $address;
+    protected $address;
 
     /** @ReferenceOne(targetDocument="Profile") */
-    public $profile;
+    protected $profile;
 
     /** @EmbedMany(targetDocument="Phonenumber") */
-    public $phonenumbers;
+    protected $phonenumbers;
 
     /** @ReferenceMany(targetDocument="Group") */
-    public $groups;
+    protected $groups;
 
     /** @ReferenceOne(targetDocument="Account", cascadeDelete=true) */
-    public $account;
-
-    /** @Field(name=0) */
-    public $aliasTest;
+    protected $account;
 
     public function __construct()
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    public function setAddress(Address $address)
+    {
+        $this->address = $address;
+    }
+
+    public function setProfile(Profile $profile)
+    {
+        $this->profile = $profile;
+    }
+
+    public function getProfile()
+    {
+        return $this->profile;
+    }
+
+    public function setAccount(Account $account)
+    {
+        $this->account = $account;
+    }
+
+    public function getAccount()
+    {
+        return $this->account;
+    }
+
+    public function getPhonenumbers()
+    {
+        return $this->phonenumbers;
+    }
+
+    public function addPhonenumber(Phonenumber $phonenumber)
+    {
+        $this->phonenumbers[] = $phonenumber;
+    }
+
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    public function addGroup(Group $group)
+    {
+        $this->groups[] = $group;
     }
 }

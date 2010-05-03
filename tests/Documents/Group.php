@@ -8,13 +8,28 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 class Group
 {
     /** @Id */
-    public $id;
+    private $id;
 
-    /** @Name */
-    public $name;
+    /** @Field */
+    private $name;
 
     public function __construct($name = null)
     {
         $this->name = $name;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 }

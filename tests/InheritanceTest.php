@@ -6,30 +6,31 @@ class InheritanceTest extends BaseTest
 {
     public function testIdentifiersAreSet()
     {
+        $profile = new \Documents\Profile();
+        $profile->setFirstName('Jon');
+
         $user = new \Documents\SpecialUser();
-        $user->username = 'specialuser';
-        $user->profile = new \Documents\Profile();
-        $user->profile->firstName = 'Jon';
+        $user->setUsername('specialuser');
+        $user->setProfile($profile);
+
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertTrue(isset($user->id));
-        $this->assertTrue(isset($user->profile->profileId));
+        $this->assertTrue($user->getId() !== '');
+        $this->assertTrue($user->getProfile()->getProfileId() !== '');
 
         $query = $this->dm->createQuery('Documents\SpecialUser')
-            ->where('id', $user->id)
-            ->loadReference('profile')
-            ->refresh();
+            ->where('id', $user->getId());
 
         $user = $query->getSingleResult();
         
-        $user->profile->lastName = 'Wage';
+        $user->getProfile()->setLastName('Wage');
         $this->dm->flush();
         $this->dm->clear();
         
         $user = $query->getSingleResult();
-        $this->assertEquals('Wage', $user->profile->lastName);
+        $this->assertEquals('Wage', $user->getProfile()->getLastName());
         $this->assertTrue($user instanceof Documents\SpecialUser);
     }
 }

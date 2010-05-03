@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Query,
     Doctrine\ODM\MongoDB\Mongo,
     Doctrine\ODM\MongoDB\PersistentCollection,
+    Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
     Doctrine\Common\Collections\ArrayCollection;
 
 class DocumentManager
@@ -25,11 +26,15 @@ class DocumentManager
         $this->_mongo = $mongo;
         $this->_config = $config ? $config : new Configuration();
         $this->_hydrator = new Hydrator($this);
-        $this->_unitOfWork = new UnitOfWork($this);
         $this->_metadataFactory = new ClassMetadataFactory($this);
         if ($cacheDriver = $this->_config->getMetadataCacheImpl()) {
             $this->_metadataFactory->setCacheDriver($cacheDriver);
         }
+        $this->_unitOfWork = new UnitOfWork($this);
+        $this->_proxyFactory = new ProxyFactory($this,
+                $config->getProxyDir(),
+                $config->getProxyNamespace(),
+                $config->getAutoGenerateProxyClasses());
     }
 
     public static function create(Mongo $mongo, Configuration $config = null)
@@ -101,45 +106,6 @@ class DocumentManager
         return $this->_documentCollections[$key];
     }
 
-    public function loadDocumentReference($document, $name)
-    {
-        $className = get_class($document);
-        $class = $this->getClassMetadata($className);
-        $mapping = $class->fieldMappings[$name];
-        $targetClass = $this->getClassMetadata($mapping['targetDocument']);
-
-        if ($mapping['type'] === 'one') {
-            $reference = $class->getFieldValue($document, $name);
-            if ($reference && ! is_object($reference)) {
-                $reference = $this->getDocumentCollection($mapping['targetDocument'])->getDBRef($reference);
-                $reference = $this->_unitOfWork->getOrCreateDocument($mapping['targetDocument'], $reference);
-                $class->setFieldValue($document, $name, $reference);
-            }
-        } else {
-            $referenceArray = $class->getFieldValue($document, $name);
-            $collection = new PersistentCollection($this, $targetClass, new ArrayCollection());
-            foreach ($referenceArray as $key => $reference) {
-                if ($reference && ! is_object($reference)) {
-                    $reference = $this->getDocumentCollection($mapping['targetDocument'])->getDBRef($reference);
-                    $reference = $this->_unitOfWork->getOrCreateDocument($mapping['targetDocument'], $reference);
-                }
-                $collection->add($reference);
-            }
-            $class->setFieldValue($document, $name, $collection);
-        }
-    }
-
-    public function loadDocumentReferences($document)
-    {
-        $className = get_class($document);
-        $class = $this->getClassMetadata($className);
-        foreach ($class->fieldMappings as $mapping) {
-            if (isset($mapping['reference'])) {
-                $this->loadDocumentReference($document, $mapping['fieldName']);
-            }
-        }
-    }
-
     public function createQuery($className = null)
     {
         return new Query($this, $className);
@@ -163,6 +129,22 @@ class DocumentManager
     public function refresh($document)
     {
         $this->_unitOfWork->refresh($document);
+    }
+
+    public function loadByID($documentName, $id)
+    {
+        $collection = $this->getDocumentCollection($documentName);
+        $result = $collection->findOne(array('_id' => new \MongoId($id)));
+        return $this->load($documentName, $id, $result);
+    }
+
+    public function load($documentName, $id, $data)
+    {
+        if ($data !== null) {
+            $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
+            return $this->_unitOfWork->getOrCreateDocument($documentName, $data, $hints);
+        }
+        return false;
     }
 
     public function flush()
@@ -219,18 +201,38 @@ class DocumentManager
     public function find($documentName, array $query = array(), array $select = array())
     {
         $metadata = $this->getClassMetadata($documentName);
-        $query = $this->_prepareFieldNames($metadata, $query);
-        $select = $this->_prepareFieldNames($metadata, $select);
         $collection = $this->getDocumentCollection($documentName);
         $cursor = $collection->find($query, $select);
         return new MongoCursor($this, $this->_hydrator, $metadata, $cursor);
     }
 
+    /**
+     * Gets a reference to the document identified by the given type and identifier
+     * without actually loading it.
+     *
+     * If partial objects are allowed, this method will return a partial object that only
+     * has its identifier populated. Otherwise a proxy is returned that automatically
+     * loads itself on first access.
+     *
+     * @return object The document reference.
+     */
+    public function getReference($documentName, $identifier)
+    {
+        $class = $this->_metadataFactory->getMetadataFor($documentName);
+
+        // Check identity map first, if its already in there just return it.
+        if ($document = $this->_unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
+            return $document;
+        }
+        $document = $this->_proxyFactory->getProxy($class->name, $identifier);
+        $this->_unitOfWork->registerManaged($document, $identifier, array());
+
+        return $document;
+    }
+
     public function findOne($documentName, array $query = array(), array $select = array())
     {
         $metadata = $this->getClassMetadata($documentName);
-        $query = $this->_prepareFieldNames($metadata, $query);
-        $select = $this->_prepareFieldNames($metadata, $select);
         $collection = $this->getDocumentCollection($documentName);
         $result = $collection->findOne($query, $select);
         if ($result !== null) {
@@ -242,19 +244,5 @@ class DocumentManager
     public function clear()
     {
         $this->_unitOfWork->clear();
-    }
-
-    private function _prepareFieldNames(ClassMetadata $class, $query)
-    {
-        $prepared = array();
-        foreach ($query as $key => $value) {
-            if (isset($class->fieldMappings[$key])) {
-                $name = $class->fieldMappings[$key]['name'];
-                $prepared[$name] = $value;
-            } else {
-                $prepared[$key] = $value;
-            }
-        }
-        return $prepared;
     }
 }

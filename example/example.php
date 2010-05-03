@@ -21,7 +21,9 @@ use Doctrine\Common\ClassLoader,
     Documents\Comment,
     Documents\MyComment,
     Documents\Page,
-    Documents\BlogPost;
+    Documents\BlogPost,
+    Documents\Song,
+    Documents\Configuration as ConfigurationDoc;
 
 $classLoader = new ClassLoader('Doctrine\ODM', __DIR__ . '/../lib');
 $classLoader->register();
@@ -37,6 +39,9 @@ $classLoader->register();
 
 $config = new Configuration();
 
+$config->setProxyDir(__DIR__ . '/Proxies');
+$config->setProxyNamespace('Proxies');
+
 $reader = new AnnotationReader();
 $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
 $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
@@ -47,22 +52,22 @@ $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documen
 
 $dm = DocumentManager::create(new Mongo(), $config);
 
-/*
-$user = new Admin();
+$profile = new Profile();
+$profile->setName('Jonathan H. Wage');
+$profile->addSong(new Song('Testinfuckckcg'));
+
+$user = new User();
 $user->setUsername('jwage');
+$user->setPassword('changeme');
+$user->addPhonenumber(new Phonenumber('6155139185'));
+$user->setProfile($profile);
+
+$configuration = new ConfigurationDoc();
+$configuration->setTimezone('Eastern');
+$configuration->setTheme('doctrine');
+
+$user->setConfiguration($configuration);
+
 $dm->persist($user);
+
 $dm->flush();
-
-print_r($user);
-
-$blogPost = new BlogPost();
-$blogPost->setTeaser('test');
-
-$dm->persist($blogPost);
-$dm->flush();
-
-print_r($blogPost);
-*/
-
-$blogPost = $dm->findByID('Documents\Page', '4bdcfe408ead0e3978010000');
-print_r($blogPost);

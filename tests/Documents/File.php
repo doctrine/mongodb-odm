@@ -8,23 +8,36 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 class File
 {
     /** @Id */
-    public $id;
+    private $id;
 
     /** @Field */
-    public $name;
+    private $name;
 
     /** @File */
-    public $file;
+    private $file;
 
-    /** @Field */
-    public $uploadDate;
+    public function getId()
+    {
+        return $this->id;
+    }
 
-    /** @Field */
-    public $length;
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-    /** @Field */
-    public $chunkSize;
+    public function getName()
+    {
+        return $this->name;
+    }
 
-    /** @Field */
-    public $md5;
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    public function setFile($file)
+    {
+        $this->file = $file;
+    }
 }

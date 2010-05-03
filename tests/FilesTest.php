@@ -10,26 +10,26 @@ class FilesTest extends BaseTest
     public function testFiles()
     {
         $image = new File();
-        $image->name = 'Test';
-        $image->file = __DIR__ . '/file.txt';
+        $image->setName('Test');
+        $image->setFile(__DIR__ . '/file.txt');
 
         $profile = new Profile();
-        $profile->firstName = 'Jon';
-        $profile->lastName = 'Wage';
-        $profile->image = $image;
+        $profile->setFirstName('Jon');
+        $profile->setLastName('Wage');
+        $profile->setImage($image);
 
         $this->dm->persist($profile);
         $this->dm->flush();
 
-        $this->assertEquals('These are the bytes...', $image->file->getBytes());
+        $this->assertEquals('These are the bytes...', $image->getFile()->getBytes());
 
-        $image->name = 'testing';
+        $image->setName('testing');
         $this->dm->flush();
         $this->dm->clear();
 
-        $image = $this->dm->findByID('Documents\File', $image->id);
+        $image = $this->dm->findByID('Documents\File', $image->getId());
 
-        $this->assertEquals('testing', $image->name);
-        $this->assertEquals('These are the bytes...', $image->file->getBytes());
+        $this->assertEquals('testing', $image->getName());
+        $this->assertEquals('These are the bytes...', $image->getFile()->getBytes());
     }
 }

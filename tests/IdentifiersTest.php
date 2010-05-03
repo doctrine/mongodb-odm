@@ -6,17 +6,25 @@ class IdentifiersTest extends BaseTest
 {
     public function testIdentifiersAreSet()
     {
-        $user = $this->_createTestUser();
-        
-        $this->assertTrue(isset($user->id));
-        $this->assertTrue(isset($user->profile->profileId));
+        $user = new \Documents\User();
+        $user->setUsername('jwage');
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->assertTrue($user->getId() !== '');
     }
 
     public function testIdentityMap()
     {
-        $user = $this->_createTestUser();
+        $user = new \Documents\User();
+        $user->setUsername('jwage');
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
         $query = $this->dm->createQuery('Documents\User')
-            ->where('id', $user->id);
+            ->where('id', $user->getId());
 
         $user = $query->getSingleResult();
         $this->assertSame($user, $user);

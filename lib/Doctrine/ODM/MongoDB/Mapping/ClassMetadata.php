@@ -65,6 +65,18 @@ class ClassMetadata
         $this->setCollection($collection);
     }
 
+    /**
+     * Checks whether a field is part of the identifier/primary key field(s).
+     *
+     * @param string $fieldName  The field name
+     * @return boolean  TRUE if the field is part of the table identifier/primary key field(s),
+     *                  FALSE otherwise.
+     */
+    public function isIdentifier($fieldName)
+    {
+        return $this->identifier === $fieldName ? true : false;
+    }
+
     public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
@@ -130,6 +142,27 @@ class ClassMetadata
         return $this->reflClass;
     }
 
+    /**
+     * Gets the ReflectionPropertys of the mapped class.
+     *
+     * @return array An array of ReflectionProperty instances.
+     */
+    public function getReflectionProperties()
+    {
+        return $this->reflFields;
+    }
+
+    /**
+     * Gets a ReflectionProperty for a specific field of the mapped class.
+     *
+     * @param string $name
+     * @return ReflectionProperty
+     */
+    public function getReflectionProperty($name)
+    {
+        return $this->reflFields[$name];
+    }
+
     public function getName()
     {
         return $this->name;
@@ -177,9 +210,6 @@ class ClassMetadata
 
     public function mapField(array $mapping)
     {
-        if ( ! isset($mapping['name'])) {
-            $mapping['name'] = $mapping['fieldName'];
-        }
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
             $mapping = array_merge($mapping, $this->fieldMappings[$mapping['fieldName']]);
         }
@@ -236,6 +266,43 @@ class ClassMetadata
         $this->mapField($mapping);
     }
 
+    /**
+     * Checks whether the class has a mapped association with the given field name.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    public function hasAssociation($fieldName)
+    {
+        return isset($this->fieldMappings[$fieldName]['reference']);
+    }
+
+    /**
+     * Checks whether the class has a mapped association for the specified field
+     * and if yes, checks whether it is a single-valued association (to-one).
+     *
+     * @param string $fieldName
+     * @return boolean TRUE if the association exists and is single-valued, FALSE otherwise.
+     */
+    public function isSingleValuedReference($fieldName)
+    {
+        return isset($this->fieldMappings[$fieldName]['reference']) &&
+                $this->fieldMappings[$fieldName]['type'] === 'one';
+    }
+
+    /**
+     * Checks whether the class has a mapped association for the specified field
+     * and if yes, checks whether it is a collection-valued association (to-many).
+     *
+     * @param string $fieldName
+     * @return boolean TRUE if the association exists and is collection-valued, FALSE otherwise.
+     */
+    public function isCollectionValuedReference($fieldName)
+    {
+        return isset($this->fieldMappings[$fieldName]['reference']) &&
+                $this->fieldMappings[$fieldName]['type'] === 'many';
+    }
+
     public function setIdentifierValue($document, $id)
     {
         $this->reflFields[$this->identifier]->setValue($document, $id);
@@ -266,6 +333,9 @@ class ClassMetadata
 
     public function getFieldValue($document, $field)
     {
+        if ( ! isset($this->reflFields[$field])) {
+            throw new \Exception('test');
+        }
         return $this->reflFields[$field]->getValue($document);
     }
 
@@ -306,7 +376,6 @@ class ClassMetadata
             'name',
             'db',
             'collection',
-            'fieldMappings',
             'fieldMappings',
             'identifier'
         );

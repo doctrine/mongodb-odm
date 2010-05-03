@@ -8,14 +8,49 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 class Profile
 {
     /** @Id */
-    public $profileId;
+    private $profileId;
 
     /** @Field */
-    public $firstName;
+    private $firstName;
 
     /** @Field */
-    public $lastName;
+    private $lastName;
 
     /** @ReferenceOne(targetDocument="File") */
-    public $image;
+    private $image;
+
+    public function getProfileId()
+    {
+        return $this->profileId;
+    }
+
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+    }
+
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
+    }
+
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    public function setImage(File $image)
+    {
+        $this->image = $image;
+    }
+
+    public function getImage()
+    {
+        return $this->image;
+    }
 }

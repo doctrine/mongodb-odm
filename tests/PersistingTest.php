@@ -22,22 +22,21 @@ class PersistingTest extends BaseTest
 {
     public function testCascadeInsertUpdateAndRemove()
     {
+        $account = new Account();
+        $account->setName('Jon Test Account');
+
         $user = new User();
-        $user->username = 'jon';
-        $user->password = 'changeme';
-        $user->account = new Account();
-        $user->account->name = 'Jon Test Account';
+        $user->setUsername('jon');
+        $user->setPassword('changeme');
+        $user->setAccount($account);
 
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $user->account->name = 'w00t';
+        $account->setName('w00t');
         $this->dm->flush();
 
-        $this->dm->refresh($user);
-        $this->dm->loadDocumentReference($user, 'account');
-        
-        $this->assertEquals('w00t', $user->account->name);
+        $this->assertEquals('w00t', $user->getAccount()->getName());
 
         $this->dm->remove($user);
         $this->dm->flush();
@@ -47,17 +46,17 @@ class PersistingTest extends BaseTest
     public function testDetach()
     {
         $user = new User();
-        $user->username = 'jon';
-        $user->password = 'changeme';
+        $user->setUsername('jon');
+        $user->setPassword('changeme');
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $user->username = 'whoop';
+        $user->setUsername('whoop');
         $this->dm->detach($user);
         $this->dm->flush();
         $this->dm->clear();
 
-        $user2 = $this->dm->findByID('Documents\User', $user->id);
-        $this->assertEquals('jon', $user2->username);
+        $user2 = $this->dm->findByID('Documents\User', $user->getId());
+        $this->assertEquals('jon', $user2->getUsername());
     }
 }

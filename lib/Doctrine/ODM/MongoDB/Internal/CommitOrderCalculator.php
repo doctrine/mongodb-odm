@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\ODM\MongoDB;
+namespace Doctrine\ODM\MongoDB\Internal;
 
 class CommitOrderCalculator
 {

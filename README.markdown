@@ -189,31 +189,6 @@ method:
 
     $user = $dm->findByID('User', 'the_string_id');
 
-You may want to load the references for an document, you can do this with the 
-loadDocumentReferences() method:
-
-    $dm->loadDocumentReferences($user);
-
-Now you can access the ->account property and get an Account instance:
-
-    echo $user->account->name; // Test Account
-
-If you only want to load a specific reference you can use the loadDocumentReference($name)
-method:
-
-    $dm->loadDocumentReference($user, 'account');
-
-To automatically load the reference during hydration you can specify the 
-reference to load on a query with the loadReference() method:
-
-    $query = $dm->createQuery('User')
-        ->loadReference('account');
-    
-    $users = $query->execute();
-    foreach ($users as $user) {
-        echo $user->account->name."\n";
-    }
-
 ### Traditional MongoDB API
 
 In addition to the Doctrine Query object you can use the traditional MongoDB API
@@ -385,7 +360,6 @@ If you want to query for the Profile and load the Image reference in a query
 you can use:
 
     $profile = $dm->createQuery('Profile')
-        ->loadReference('image')
         ->where('name', 'Jonathan H. Wage')
         ->getSingleResult();
 

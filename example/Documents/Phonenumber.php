@@ -4,17 +4,11 @@ namespace Documents;
 
 class Phonenumber
 {
-    private $id;
     private $phonenumber;
 
     public function __construct($phonenumber = null)
     {
         $this->phonenumber = $phonenumber;
-    }
-
-    public function getId()
-    {
-        return $this->id;
     }
 
     public function getPhonenumber()

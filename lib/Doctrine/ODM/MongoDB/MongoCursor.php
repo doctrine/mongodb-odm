@@ -35,7 +35,7 @@ class MongoCursor implements \Iterator
         } else {
             $current = $this->_mongoCursor->current();
         }
-        $document = $this->_uow->getOrCreateDocument($this->_class->name, $current, $this->_hydrator->getHints());
+        $document = $this->_uow->getOrCreateDocument($this->_class->name, $current);
         return $document;
     }
 

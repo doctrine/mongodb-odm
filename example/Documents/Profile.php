@@ -14,6 +14,14 @@ class Profile
     /** @ReferenceOne(targetDocument="Documents\Image") */
     private $image;
 
+    /** @ReferenceMany(targetDocument="Documents\Song") */
+    protected $songs;
+
+    public function __construct()
+    {
+        $this->songs = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
     public function getId()
     {
       return $this->id;
@@ -37,5 +45,15 @@ class Profile
     public function setImage(Image $image)
     {
         $this->image = $image;
+    }
+
+    public function addSong(Song $song)
+    {
+        $this->songs[] = $song;
+    }
+
+    public function getSongs()
+    {
+        return $this->songs;
     }
 }

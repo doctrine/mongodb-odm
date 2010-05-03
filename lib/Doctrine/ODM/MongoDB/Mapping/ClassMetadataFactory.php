@@ -94,6 +94,30 @@ class ClassMetadataFactory
         return $loaded;
     }
 
+    /**
+     * Checks whether the factory has the metadata for a class loaded already.
+     * 
+     * @param string $className
+     * @return boolean TRUE if the metadata of the class in question is already loaded, FALSE otherwise.
+     */
+    public function hasMetadataFor($className)
+    {
+        return isset($this->_loadedMetadata[$className]);
+    }
+
+    /**
+     * Sets the metadata descriptor for a specific class.
+     * 
+     * NOTE: This is only useful in very special cases, like when generating proxy classes.
+     *
+     * @param string $className
+     * @param ClassMetadata $class
+     */
+    public function setMetadataFor($className, $class)
+    {
+        $this->_loadedMetadata[$className] = $class;
+    }
+
     protected function _newClassMetadataInstance($className)
     {
         return new ClassMetadata($className);

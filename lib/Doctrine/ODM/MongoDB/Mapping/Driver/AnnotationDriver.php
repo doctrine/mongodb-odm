@@ -58,7 +58,6 @@ class AnnotationDriver implements Driver
             if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\DiscriminatorField'])) {
                 $discrFieldAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Driver\DiscriminatorField'];
                 $class->setDiscriminatorField(array(
-                    'name' => $discrFieldAnnot->name,
                     'fieldName' => $discrFieldAnnot->fieldName,
                 ));
             }

@@ -52,7 +52,6 @@ final class Index extends Annotation
 
 final class Field extends Annotation
 {
-    public $name;
 }
 
 final class File extends Annotation
@@ -69,7 +68,6 @@ final class EmbedOne extends Annotation
 {
     public $type = 'one';
     public $embedded = true;
-    public $name;
     public $targetDocument;
 }
 
@@ -77,7 +75,6 @@ final class EmbedMany extends Annotation
 {
     public $type = 'many';
     public $embedded = true;
-    public $name;
     public $targetDocument;
 }
 
@@ -85,7 +82,6 @@ final class ReferenceOne extends Annotation
 {
     public $type = 'one';
     public $reference = true;
-    public $name;
     public $targetDocument;
     public $cascadeDelete = false;
 }
@@ -94,7 +90,6 @@ final class ReferenceMany extends Annotation
 {
     public $type = 'many';
     public $reference = true;
-    public $name;
     public $targetDocument;
     public $cascadeDelete = false;
 }

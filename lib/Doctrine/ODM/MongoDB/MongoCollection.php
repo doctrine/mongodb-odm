@@ -34,11 +34,14 @@ class MongoCollection
 
     public function saveFile(array &$a)
     {
-        $fileName = $this->_class->fieldMappings[$this->_class->file]['name'];
+        $fileName = $this->_class->fieldMappings[$this->_class->file]['fieldName'];
         $file = $a[$fileName];
         unset($a[$fileName]);
         if ($file instanceof \MongoGridFSFile) {
-            $this->_mongoCollection->save($a);
+            $id = $a['_id'];
+            unset($a['_id']);
+            $set = array('$set' => $a);
+            $this->_mongoCollection->update(array('_id' => $id), $set);
         } else {
             if (isset($a['_id'])) {
                 $this->_mongoCollection->chunks->remove(array('files_id' => $a['_id']));
@@ -51,7 +54,7 @@ class MongoCollection
             $file = $this->_mongoCollection->findOne(array('_id' => $id));
         }
         $a = $file->file;
-        $a[$fileName] = $file;
+        $a[$this->_class->file] = $file;
         return $a;
     }
 
@@ -93,6 +96,8 @@ class MongoCollection
 
     public function __call($method, $arguments)
     {
-        return call_user_func_array(array($this->_mongoCollection, $method), $arguments);
+        if (method_exists($this->_mongoCollection, $method)) {
+            return call_user_func_array(array($this->_mongoCollection, $method), $arguments);
+        }
     }
 }

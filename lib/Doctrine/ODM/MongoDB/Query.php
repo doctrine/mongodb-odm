@@ -15,7 +15,7 @@ class Query
     private $_sort = array();
     private $_limit = null;
     private $_skip = null;
-    private $_cursorHints = array();
+    private $_hints = array();
     private $_immortal = false;
     private $_snapshot = false;
     private $_slaveOkay = false;
@@ -55,33 +55,15 @@ class Query
         return $this;
     }
 
-    public function hint($hint)
+    public function hint($keyPattern)
     {
-        $this->_hydrator->hint($hint);
-        return $this;
-    }
-
-    public function cursorHint($keyPattern)
-    {
-        $this->_cursorHints[] = $keyPattern;
-    }
-
-    public function refresh()
-    {
-        $this->_hydrator->hint(self::HINT_REFRESH);
-        return $this;
+        $this->_hints[] = $keyPattern;
     }
 
     public function from($className)
     {
         $this->_className = $className;
         $this->_class = $this->_dm->getClassMetadata($className);
-        return $this;
-    }
-
-    public function loadReference($fieldName)
-    {
-        $this->_hydrator->hint('load_reference_' . $fieldName);
         return $this;
     }
 
@@ -231,7 +213,7 @@ class Query
         if ($this->_snapshot) {
             $cursor->snapshot();
         }
-        foreach ($this->_cursorHints as $keyPattern) {
+        foreach ($this->_hints as $keyPattern) {
             $cursor->hint($keyPattern);
         }
         return $cursor;

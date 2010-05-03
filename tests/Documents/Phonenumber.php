@@ -6,10 +6,20 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 class Phonenumber
 {
-    public $number;
+    private $phonenumber;
 
-    public function __construct($number)
+    public function __construct($phonenumber = null)
     {
-        $this->number = $number;
+        $this->phonenumber = $phonenumber;
+    }
+
+    public function getPhonenumber()
+    {
+        return $this->phonenumber;
+    }
+
+    public function setPhonenumber($phonenumber)
+    {
+        $this->phonenumber = $phonenumber;
     }
 }

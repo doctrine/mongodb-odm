@@ -6,118 +6,127 @@ use Documents\Address,
     Documents\Profile,
     Documents\Phonenumber,
     Documents\Account,
-    Documents\Group;
+    Documents\Group,
+    Documents\User;
 
-class ReferencesFunctionalTest extends BaseTest
+class ReferencesTest extends BaseTest
 {
     public function testLazyLoadReference()
     {
-        $user = $this->_createTestUser();
+        $user = new User();
+        $profile = new Profile();
+        $profile->setFirstName('Jonathan');
+        $profile->setLastName('Wage');
+        $user->setProfile($profile);
+        $user->setUsername('jwage');
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
 
         $query = $this->dm->createQuery('Documents\User')
-            ->where('id', $user->id)
-            ->refresh();
+            ->where('id', $user->getId());
+
         $user = $query->getSingleResult();
 
-        $this->assertEquals('profiles', $user->profile['$ref']);
-        $this->assertTrue($user->profile['$id'] instanceof \MongoId);
+        $profile = $user->getProfile();
 
-        $this->dm->loadDocumentReference($user, 'profile');
-        $this->assertEquals('Jonathan', $user->profile->firstName);
-        $this->assertEquals('Wage', $user->profile->lastName);
-    }
+        $this->assertTrue($profile instanceof \Proxies\DocumentsProfileProxy);
 
-    public function testLoadReferenceInQuery()
-    {
-        $user = $this->_createTestUser();
-        $query = $this->dm->createQuery('Documents\User')
-            ->where('id', $user->id)
-            ->loadReference('profile');
-        $user4 = $query->getSingleResult();
+        $profile->getFirstName();
 
-        $this->assertEquals('Jonathan', $user4->profile->firstName);
-        $this->assertEquals('Wage', $user4->profile->lastName);
+        $this->assertEquals('Jonathan', $profile->getFirstName());
+        $this->assertEquals('Wage', $profile->getLastName());
+        
     }
 
     public function testOneEmbeddedReference()
     {
-        $user = $this->_createTestUser();
-        $user->address = new Address();
-        $user->address->address = '6512 Mercomatic Ct.';
-        $user->address->city = 'Nashville';
-        $user->address->state = 'TN';
-        $user->address->zipcode = '37209';
+        $address = new Address();
+        $address->setAddress('6512 Mercomatic Ct.');
+        $address->setCity('Nashville');
+        $address->setState('TN');
+        $address->setZipcode('37209');
+
+        $user = new User();
+        $user->setUsername('jwage');
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $user->setAddress($address);
 
         $this->dm->flush();
         $this->dm->clear();
 
         $user2 = $this->dm->createQuery('Documents\User')
-            ->where('id', $user->id)
+            ->where('id', $user->getId())
             ->getSingleResult();
-        $this->assertEquals($user->address, $user2->address);
+        $this->assertEquals($user->getAddress(), $user2->getAddress());
     }
 
     public function testManyEmbeddedReference()
     {
-        $user = $this->_createTestUser();
-        $user->phonenumbers[] = new Phonenumber('6155139185');
-        $user->phonenumbers[] = new Phonenumber('6153303769');
-    
+        $user = new \Documents\User();
+        $user->addPhonenumber(new Phonenumber('6155139185'));
+        $user->addPhonenumber(new Phonenumber('6153303769'));
+
+        $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
 
         $user2 = $this->dm->createQuery('Documents\User')
-            ->where('id', $user->id)
+            ->where('id', $user->getId())
             ->getSingleResult();
 
-        $this->assertEquals($user->phonenumbers, $user2->phonenumbers);
+        $this->assertEquals($user->getPhonenumbers(), $user2->getPhonenumbers());
     }
 
     public function testOneReference()
     {
-        $user = $this->_createTestUser();
+        $account = new Account();
+        $account->setName('Test Account');
 
-        $user->account = new Account();
-        $user->account->name = 'Test Account';
+        $user = new User();
+        $user->setUsername('jwage');
+        $user->setAccount($account);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
 
         $this->dm->flush();
         $this->dm->clear();
 
-        $accountId = $user->account->id;
+        $accountId = $user->getAccount()->getId();
 
         $user2 = $this->dm->createQuery('Documents\User')
-            ->where('id', $user->id)
-            ->loadReference('account')
+            ->where('id', $user->getId())
             ->getSingleResult();
 
-        $this->assertEquals($user->account, $user2->account);
-        $this->assertEquals($accountId, $user2->account->id);
     }
 
     public function testManyReference()
     {
-        $user = $this->_createTestUser();
+        $user = new \Documents\User();
+        $groups = $user->getGroups();
 
-        $user->groups[] = new Group('Group 1');
-        $user->groups[] = new Group('Group 2');
+        $groups->add(new Group('Group 1'));
+        $groups->add(new Group('Group 2'));
 
+        $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertTrue(isset($user->groups[0]->id));
-        $this->assertTrue(isset($user->groups[1]->id));
+        $this->assertTrue($groups[0]->getId() !== '');
+        $this->assertTrue($groups[1]->getId() !== '');
 
         $user2 = $this->dm->createQuery('Documents\User')
-            ->where('id', $user->id)
-            ->refresh()
+            ->where('id', $user->getId())
             ->getSingleResult();
 
-        $this->assertTrue($user2->groups[0]['$id'] instanceof \MongoId);
-        $this->assertTrue($user2->groups[1]['$id'] instanceof \MongoId);
+        $groups = $user2->getGroups();
 
-        $this->dm->loadDocumentReference($user2, 'groups');
-
-        $this->assertTrue($user2->groups[0] instanceof Group);
-        $this->assertTrue($user2->groups[1] instanceof Group);
+        $this->assertTrue($groups[0] instanceof Group);
+        $this->assertTrue($groups[1] instanceof Group);
     }
 }

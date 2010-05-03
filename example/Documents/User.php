@@ -20,6 +20,11 @@ class User
     /** @Field */
     protected $password;
 
+    /**
+     * @EmbedOne(targetDocument="Documents\Configuration")
+     */
+    protected $configuration;
+
     /** @EmbedMany(targetDocument="Documents\Phonenumber") */
     protected $phonenumbers = array();
 
@@ -60,6 +65,16 @@ class User
     public function getAddresses()
     {
         return $this->addresses;
+    }
+
+    public function setConfiguration(Configuration $configuration)
+    {
+        $this->configuration = $configuration;
+    }
+
+    public function getConfiguration()
+    {
+        return $this->configuration;
     }
 
     public function addAddress(Address $address)

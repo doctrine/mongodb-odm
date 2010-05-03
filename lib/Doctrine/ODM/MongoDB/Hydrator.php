@@ -5,38 +5,28 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Query,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\Common\Collections\ArrayCollection;
+    Doctrine\Common\Collections\ArrayCollection,
+    Doctrine\Common\Collections\Collection;
 
 class Hydrator
 {
     private $_dm;
-    private $_hints = array();
 
     public function __construct(DocumentManager $dm)
     {
         $this->_dm = $dm;
     }
 
-    public function hint($hint)
-    {
-        $this->_hints[$hint] = $hint;
-    }
-
-    public function getHints()
-    {
-        return $this->_hints;
-    }
-
     public function hydrate(ClassMetadata $metadata, $document, $data)
     {
         $values = array();
         foreach ($metadata->fieldMappings as $mapping) {
-            if (isset($data[$mapping['name']]) && isset($mapping['embedded'])) {
+            if (isset($data[$mapping['fieldName']]) && isset($mapping['embedded'])) {
                 $embeddedMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 $embeddedDocument = $embeddedMetadata->newInstance();
                 if ($mapping['type'] === 'many') {
                     $documents = new ArrayCollection();
-                    foreach ($data[$mapping['name']] as $docArray) {
+                    foreach ($data[$mapping['fieldName']] as $docArray) {
                         $doc = clone $embeddedDocument;
                         $this->hydrate($embeddedMetadata, $doc, $docArray);
                         $documents->add($doc);
@@ -45,15 +35,31 @@ class Hydrator
                     $value = $documents;
                 } else {
                     $value = clone $embeddedDocument;
-                    $this->hydrate($embeddedMetadata, $value, $data[$mapping['name']]);
+                    $this->hydrate($embeddedMetadata, $value, $data[$mapping['fieldName']]);
                     $metadata->setFieldValue($document, $mapping['fieldName'], $value);
                 }
-            } else if (isset($data[$mapping['name']])) {
-                $value = $data[$mapping['name']];
+            } else if (isset($data[$mapping['fieldName']])) {
+                $value = $data[$mapping['fieldName']];
                 $metadata->setFieldValue($document, $mapping['fieldName'], $value);
             }
-            if (isset($mapping['reference']) && isset($this->_hints['load_reference_' . $mapping['fieldName']])) {
-                $this->_dm->loadDocumentReference($document, $mapping['fieldName']);
+            if (isset($mapping['reference'])) {
+                $targetMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
+                $targetDocument = $targetMetadata->newInstance();
+                $value = isset($data[$mapping['fieldName']]) ? $data[$mapping['fieldName']] : null;
+                if ($mapping['type'] === 'one' && isset($value['$id'])) {
+                    $id = (string) $value['$id'];
+                    $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
+                    $metadata->setFieldValue($document, $mapping['fieldName'], $proxy);
+                } else if ($mapping['type'] === 'many' && (is_array($value) || $value instanceof Collection)) {
+                    $documents = new PersistentCollection($this->_dm, $targetMetadata, new ArrayCollection());
+                    $documents->setInitialized(false);
+                    foreach ($value as $v) {
+                        $id = (string) $v['$id'];
+                        $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
+                        $documents->add($proxy);
+                    }
+                    $metadata->setFieldValue($document, $mapping['fieldName'], $documents);
+                }
             }
             if (isset($value)) {
                 $values[$mapping['fieldName']] = $value;
