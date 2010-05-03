@@ -30,6 +30,11 @@ namespace Doctrine\ODM\MongoDB;
  */
 class MongoDBException extends \Exception
 {
+    public static function invalidFindByCall($documentName, $fieldName, $method)
+    {
+        return new self(sprintf('Invalid find by call %s::$fieldName (%s)', $documentName, $fieldName, $method));
+    }
+
     public static function removedDocumentInCollectionDetected($document, $mapping)
     {
         return new self(sprintf('Removed document in collection detected "%s"', get_class($document), $mapping['fieldName']));

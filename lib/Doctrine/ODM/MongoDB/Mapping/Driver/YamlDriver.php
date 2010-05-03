@@ -55,6 +55,9 @@ class YamlDriver extends AbstractFileDriver
         if (isset($element['collection'])) {
             $class->setCollection($element['collection']);
         }
+        if (isset($element['repositoryClass'])) {
+            $class->setCustomRepositoryClass($element['repositoryClass']);
+        }
         if (isset($element['indexes'])) {
             foreach($element['indexes'] as $index) {
                 $class->addIndex($index['keys'], $index['options']);
