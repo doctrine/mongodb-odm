@@ -24,6 +24,8 @@ MongoDB Object Mapper.
     $classLoader->register();
 
     $config = new Configuration();
+    $config->setProxyDir(__DIR__ . '/Proxies');
+    $config->setProxyNamespace('Proxies');
 
     $reader = new AnnotationReader();
     $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
