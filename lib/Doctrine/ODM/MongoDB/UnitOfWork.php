@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\Common\Collections\Collection;
+    Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
