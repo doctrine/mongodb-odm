@@ -23,7 +23,8 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
-    Doctrine\Common\Collections\Collection;
+    Doctrine\Common\Collections\Collection,
+    Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -437,6 +438,10 @@ class UnitOfWork
         if ($value instanceof PersistentCollection && $value->isDirty()) {
             $this->_collectionUpdates[] = $value;
             $this->_visitedCollections[] = $value;
+        }
+
+        if ( ! $mapping['isCascadePersist']) {
+            return; // "Persistence by reachability" only if persist cascade specified
         }
 
         // Look through the documents, and in any of their reference, for transient
@@ -1247,13 +1252,15 @@ class UnitOfWork
                 } else {
                     $mapping2 = $class->fieldMappings[$name];
                     if ($mapping2['type'] === 'one') {
-                        $other = $class->reflFields[$name]->getValue($document); //TODO: Just $prop->getValue($document)?
-                        if ($other !== null) {
-                            $targetClass = $this->_dm->getClassMetadata($mapping2['targetDocument']);
-                            $id = $targetClass->getIdentifierValue($other);
-                            $proxy = $this->_dm->getProxyFactory()->getProxy($mapping2['targetDocument'], $id);
-                            $prop->setValue($managedCopy, $proxy);
-                            $this->registerManaged($proxy, $id, array());
+                        if ( ! $assoc2['isCascadeMerge']) {
+                            $other = $class->reflFields[$name]->getValue($document); //TODO: Just $prop->getValue($document)?
+                            if ($other !== null) {
+                                $targetClass = $this->_dm->getClassMetadata($mapping2['targetDocument']);
+                                $id = $targetClass->getIdentifierValue($other);
+                                $proxy = $this->_dm->getProxyFactory()->getProxy($mapping2['targetDocument'], $id);
+                                $prop->setValue($managedCopy, $proxy);
+                                $this->registerManaged($proxy, $id, array());
+                            }
                         }
                     } else {
                         $coll = new PersistentCollection($this->_dm,
@@ -1261,7 +1268,7 @@ class UnitOfWork
                                 new ArrayCollection
                                 );
                         $coll->setOwner($managedCopy, $mapping2);
-                        $coll->setInitialized($mapping2->isCascadeMerge);
+                        $coll->setInitialized($mapping2['isCascadeMerge']);
                         $prop->setValue($managedCopy, $coll);
                     }
                 }
@@ -1375,7 +1382,7 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
+            if ( ! isset($mapping['reference']) || ! $mapping['isCascadeRefresh']) {
                 continue;
             }
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1403,7 +1410,7 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
+            if ( ! isset($mapping['reference']) || ! $mapping['isCascadeDetach']) {
                 continue;
             }
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1432,7 +1439,7 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
+            if ( ! isset($mapping['reference']) || ! $mapping['isCascadeMerge']) {
                 continue;
             }
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1461,10 +1468,9 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
+            if ( ! isset($mapping['reference']) || ! $mapping['isCascadePersist']) {
                 continue;
             }
-
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
             if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
                 if ($relatedDocuments instanceof PersistentCollection) {
@@ -1490,7 +1496,7 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
+            if ( ! isset($mapping['reference']) || ! $mapping['isCascadeRemove']) {
                 continue;
             }
             //TODO: If $document instanceof Proxy => Initialize ?

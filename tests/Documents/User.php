@@ -24,16 +24,16 @@ class User
     /** @EmbedOne(targetDocument="Address") */
     protected $address;
 
-    /** @ReferenceOne(targetDocument="Profile") */
+    /** @ReferenceOne(targetDocument="Profile", cascade={"all"}) */
     protected $profile;
 
     /** @EmbedMany(targetDocument="Phonenumber") */
     protected $phonenumbers;
 
-    /** @ReferenceMany(targetDocument="Group") */
+    /** @ReferenceMany(targetDocument="Group", cascade={"all"}) */
     protected $groups;
 
-    /** @ReferenceOne(targetDocument="Account", cascadeDelete=true) */
+    /** @ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
     public function __construct()

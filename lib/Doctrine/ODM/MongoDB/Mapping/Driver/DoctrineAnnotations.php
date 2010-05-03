@@ -84,7 +84,7 @@ final class ReferenceOne extends Annotation
     public $type = 'one';
     public $reference = true;
     public $targetDocument;
-    public $cascadeDelete = false;
+    public $cascade;
 }
 
 final class ReferenceMany extends Annotation
@@ -92,7 +92,7 @@ final class ReferenceMany extends Annotation
     public $type = 'many';
     public $reference = true;
     public $targetDocument;
-    public $cascadeDelete = false;
+    public $cascade;
 }
 
 /* Annotations for lifecycle callbacks */
