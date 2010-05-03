@@ -175,6 +175,11 @@ class UnitOfWork
      */
     private $_evm;
 
+    /**
+     * The Hydrator used for hydrating array Mongo documents to Doctrine object documents.
+     *
+     * @var string
+     */
     private $_hydrator;
 
     /**
