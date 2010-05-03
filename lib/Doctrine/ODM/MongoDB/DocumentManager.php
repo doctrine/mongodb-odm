@@ -420,37 +420,29 @@ class DocumentManager
     }
 
     /**
-     * Finds a Document by its identifier.
+     * Find a single document by its identifier or multiple by a given criteria.
      *
      * @param string $documentName The document to find.
-     * @param array $query The query to execute.
+     * @param mixed $query A single identifier or an array of criteria.
      * @param array $select The fields to select.
-     * @return Doctrine\ODM\MongoDB\MongoCursor
+     * @return Doctrine\ODM\MongoDB\MongoCursor $cursor
+     * @return array $document
      */
-    public function findByID($documentName, $id)
+    public function find($documentName, $query = array(), array $select = array())
     {
-        $collection = $this->getDocumentCollection($documentName);
-        $result = $collection->findOne(array('_id' => new \MongoId($id)));
-        if ($result !== null) {
-            return $this->_unitOfWork->getOrCreateDocument($documentName, $result);
+        if (is_string($query)) {
+            $collection = $this->getDocumentCollection($documentName);
+            $result = $collection->findOne(array('_id' => new \MongoId($query)));
+            if ($result !== null) {
+                return $this->_unitOfWork->getOrCreateDocument($documentName, $result);
+            }
+            return null;
+        } else {
+            $metadata = $this->getClassMetadata($documentName);
+            $collection = $this->getDocumentCollection($documentName);
+            $cursor = $collection->find($query, $select);
+            return new MongoCursor($this, $this->_hydrator, $metadata, $cursor);
         }
-        return null;
-    }
-
-    /**
-     * Find documents with the given query and select fields.
-     *
-     * @param string $documentName The document to find.
-     * @param array $query The query criteria.
-     * @param array $select The fields to select.
-     * @return Doctrine\ODM\MongoDB\MongoCursor
-     */
-    public function find($documentName, array $query = array(), array $select = array())
-    {
-        $metadata = $this->getClassMetadata($documentName);
-        $collection = $this->getDocumentCollection($documentName);
-        $cursor = $collection->find($query, $select);
-        return new MongoCursor($this, $this->_hydrator, $metadata, $cursor);
     }
 
     /**

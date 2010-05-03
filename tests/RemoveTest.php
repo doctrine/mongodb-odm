@@ -28,10 +28,10 @@ class RemoveTest extends BaseTest
         $this->dm->remove($user);
         $this->dm->flush();
 
-        $account = $this->dm->findByID('Documents\Account', $account->getId());
+        $account = $this->dm->find('Documents\Account', $account->getId());
         $this->assertNull($account);
 
-        $user = $this->dm->findByID('Documents\User', $user->getId());
+        $user = $this->dm->find('Documents\User', $user->getId());
         $this->assertNull($user);
     }
 }

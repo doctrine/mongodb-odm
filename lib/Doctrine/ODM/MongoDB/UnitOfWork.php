@@ -1274,7 +1274,7 @@ class UnitOfWork
 
         $class = $this->_dm->getClassMetadata(get_class($document));
         if ($this->getDocumentState($document) == self::STATE_MANAGED) {
-            $this->_dm->findByID($class->name, $this->_documentIdentifiers[$oid], true);
+            $this->_dm->find($class->name, $this->_documentIdentifiers[$oid], true);
         } else {
             throw new \InvalidArgumentException("Document is not MANAGED.");
         }

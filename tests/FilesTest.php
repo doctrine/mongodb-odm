@@ -27,7 +27,7 @@ class FilesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $image = $this->dm->findByID('Documents\File', $image->getId());
+        $image = $this->dm->find('Documents\File', $image->getId());
 
         $this->assertEquals('testing', $image->getName());
         $this->assertEquals('These are the bytes...', $image->getFile()->getBytes());

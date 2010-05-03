@@ -186,10 +186,10 @@ select the username:
     
     $users = $query->execute();
 
-If you want to just find an document by its identifier you can use the findByID()
+If you want to just find an document by its identifier you can use the find()
 method:
 
-    $user = $dm->findByID('User', 'the_string_id');
+    $user = $dm->find('User', 'the_string_id');
 
 ### Traditional MongoDB API
 

@@ -56,7 +56,7 @@ class PersistingTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user2 = $this->dm->findByID('Documents\User', $user->getId());
+        $user2 = $this->dm->find('Documents\User', $user->getId());
         $this->assertEquals('jon', $user2->getUsername());
     }
 }
