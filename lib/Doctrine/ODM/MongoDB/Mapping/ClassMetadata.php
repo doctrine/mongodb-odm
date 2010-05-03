@@ -88,12 +88,12 @@ class ClassMetadata
     public $indexes = array();
 
     /**
-     * READ-ONLY: The name of the entity class.
+     * READ-ONLY: The name of the document class.
      */
     public $name;
 
     /**
-     * READ-ONLY: The namespace the entity class is contained in.
+     * READ-ONLY: The namespace the document class is contained in.
      *
      * @var string
      * @todo Not really needed. Usage could be localized.
@@ -101,9 +101,9 @@ class ClassMetadata
     public $namespace;
 
     /**
-     * READ-ONLY: The name of the entity class that is at the root of the mapped entity inheritance
-     * hierarchy. If the entity is not part of a mapped inheritance hierarchy this is the same
-     * as {@link $entityName}.
+     * READ-ONLY: The name of the document class that is at the root of the mapped document inheritance
+     * hierarchy. If the document is not part of a mapped inheritance hierarchy this is the same
+     * as {@link $documentName}.
      *
      * @var string
      */
@@ -154,8 +154,8 @@ class ClassMetadata
      * The name of the field in the Document.
      *
      * - <b>id</b> (boolean, optional)
-     * Marks the field as the primary key of the entity. Multiple fields of an
-     * entity can have the id attribute, forming a composite key.
+     * Marks the field as the primary key of the document. Multiple fields of an
+     * document can have the id attribute, forming a composite key.
      *
      * @var array
      */
@@ -259,6 +259,67 @@ class ClassMetadata
     public function setInheritanceType($type)
     {
         $this->inheritanceType = $type;
+    }
+
+    /**
+     * Dispatches the lifecycle event of the given document to the registered
+     * lifecycle callbacks and lifecycle listeners.
+     *
+     * @param string $event The lifecycle event.
+     * @param Document $document The Document on which the event occured.
+     */
+    public function invokeLifecycleCallbacks($lifecycleEvent, $document)
+    {
+        foreach ($this->lifecycleCallbacks[$lifecycleEvent] as $callback) {
+            $document->$callback();
+        }
+    }
+
+    /**
+     * Whether the class has any attached lifecycle listeners or callbacks for a lifecycle event.
+     *
+     * @param string $lifecycleEvent
+     * @return boolean
+     */
+    public function hasLifecycleCallbacks($lifecycleEvent)
+    {
+        return isset($this->lifecycleCallbacks[$lifecycleEvent]);
+    }
+
+    /**
+     * Gets the registered lifecycle callbacks for an event.
+     *
+     * @param string $event
+     * @return array
+     */
+    public function getLifecycleCallbacks($event)
+    {
+        return isset($this->lifecycleCallbacks[$event]) ? $this->lifecycleCallbacks[$event] : array();
+    }
+
+    /**
+     * Adds a lifecycle callback for entities of this class.
+     *
+     * Note: If the same callback is registered more than once, the old one
+     * will be overridden.
+     *
+     * @param string $callback
+     * @param string $event
+     */
+    public function addLifecycleCallback($callback, $event)
+    {
+        $this->lifecycleCallbacks[$event][] = $callback;
+    }
+
+    /**
+     * Sets the lifecycle callbacks for entities of this class.
+     * Any previously registered callbacks are overwritten.
+     *
+     * @param array $callbacks
+     */
+    public function setLifecycleCallbacks(array $callbacks)
+    {
+        $this->lifecycleCallbacks = $callbacks;
     }
 
     /**

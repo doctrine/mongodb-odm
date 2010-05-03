@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\MongoDBException,
+    Doctrine\ODM\MongoDB\Events,
     Doctrine\Common\Cache\Cache;
 
 /**
@@ -40,14 +41,20 @@ class ClassMetadataFactory
     /** The DocumentManager instance */
     private $_dm;
 
-    /** THe array of loaded ClassMetadata instances */
+    /** The array of loaded ClassMetadata instances */
     private $_loadedMetadata;
 
     /** The used metadata driver. */
     private $_driver;
 
+    /** The event manager instance */
+    private $_evm;
+
     /** The used cache driver. */
     private $_cacheDriver;
+
+    /** Whether factory has been lazily initialized yet */
+    private $_initialized = false;
 
     /**
      * Creates a new factory instance that uses the given DocumentManager instance.
@@ -57,7 +64,17 @@ class ClassMetadataFactory
     public function __construct(DocumentManager $dm)
     {
         $this->_dm = $dm;
-        $this->_driver = $dm->getConfiguration()->getMetadataDriverImpl();
+    }
+
+    /**
+     * Lazy initialization of this stuff, especially the metadata driver,
+     * since these are not needed at all when a metadata cache is active.
+     */
+    private function _initialize()
+    {
+        $this->_driver = $this->_dm->getConfiguration()->getMetadataDriverImpl();
+        $this->_evm = $this->_dm->getEventManager();
+        $this->_initialized = true;
     }
 
     /**
@@ -65,9 +82,29 @@ class ClassMetadataFactory
      *
      * @param Doctrine\Common\Cache\Cache $cacheDriver
      */
-    public function setCacheDriver(Cache $cacheDriver)
+    public function setCacheDriver($cacheDriver)
     {
         $this->_cacheDriver = $cacheDriver;
+    }
+
+    /**
+     * Gets the cache driver used by the factory to cache ClassMetadata instances.
+     *
+     * @return Doctrine\Common\Cache\Cache
+     */
+    public function getCacheDriver()
+    {
+        return $this->_cacheDriver;
+    }
+
+    /**
+     * Gets the array of loaded ClassMetadata instances.
+     *
+     * @return array $loadedMetadata The loaded metadata.
+     */
+    public function getLoadedMetadata()
+    {
+        return $this->_loadedMetadata;
     }
 
     /**
@@ -106,6 +143,10 @@ class ClassMetadataFactory
      */
     private function _loadMetadata($className)
     {
+        if ( ! $this->_initialized) {
+            $this->_initialize();
+        }
+
         $loaded = array();
 
         $parentClasses = $this->_getParentClasses($className);
@@ -139,6 +180,11 @@ class ClassMetadataFactory
             }
 
             $class->setParentClasses($visited);
+
+            if ($this->_evm->hasListeners(Events::loadClassMetadata)) {
+                $eventArgs = new \Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs($class);
+                $this->_evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+            }
 
             $this->_loadedMetadata[$className] = $class;
 

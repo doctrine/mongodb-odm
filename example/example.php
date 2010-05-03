@@ -43,7 +43,7 @@ $config->setProxyDir(__DIR__ . '/Proxies');
 $config->setProxyNamespace('Proxies');
 
 $reader = new AnnotationReader();
-$reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
+$reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
 $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
 //$config->setMetadataDriverImpl(new XmlDriver(__DIR__ . '/xml'));

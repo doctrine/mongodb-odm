@@ -168,6 +168,13 @@ class UnitOfWork
      */
     private $_orphanRemovals = array();
 
+    /**
+     * The EventManager used for dispatching events.
+     *
+     * @var EventManager
+     */
+    private $_evm;
+
     private $_hydrator;
 
     /**
@@ -178,6 +185,7 @@ class UnitOfWork
     public function __construct(DocumentManager $dm)
     {
         $this->_dm = $dm;
+        $this->_evm = $dm->getEventManager();
         $this->_hydrator = $dm->getHydrator();
     }
 
@@ -212,7 +220,12 @@ class UnitOfWork
                 $this->remove($orphan);
             }
         }
-        
+
+        // Raise onFlush
+        if ($this->_evm->hasListeners(Events::onFlush)) {
+            $this->_evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->_dm));
+        }
+
         // Now we need a commit order to maintain referential integrity
         $commitOrder = $this->_getCommitOrder();
 
@@ -437,6 +450,13 @@ class UnitOfWork
             $state = $this->getDocumentState($entry, self::STATE_NEW);
             $oid = spl_object_hash($entry);
             if ($state == self::STATE_NEW) {
+                if (isset($targetClass->lifecycleCallbacks[Events::prePersist])) {
+                    $targetClass->invokeLifecycleCallbacks(Events::prePersist, $document);
+                }
+                if ($this->_evm->hasListeners(Events::prePersist)) {
+                    $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($document, $this->_dm));
+                }
+
                 $this->_documentStates[$oid] = self::STATE_MANAGED;
 
                 $this->_documentInsertions[$oid] = $entry;
@@ -450,7 +470,7 @@ class UnitOfWork
             // during changeset calculation anyway, since they are in the identity map.
         }
     }
-    
+
     /**
      * INTERNAL:
      * Computes the changeset of an individual document, independently of the
@@ -472,11 +492,6 @@ class UnitOfWork
         if ( ! isset($this->_documentStates[$oid]) || $this->_documentStates[$oid] != self::STATE_MANAGED) {
             throw new \InvalidArgumentException('Document must be managed.');
         }
-        
-        /* TODO: Just return if changetracking policy is NOTIFY?
-        if ($class->isChangeTrackingNotify()) {
-            return;
-        }*/
 
         if ( ! $class->isInheritanceTypeNone()) {
             $class = $this->_dm->getClassMetadata(get_class($document));
@@ -518,15 +533,19 @@ class UnitOfWork
     {
         $className = $class->name;
         $collection = $this->_dm->getDocumentCollection($className);
+
+        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postPersist]);
+        $hasListeners = $this->_evm->hasListeners(Events::postPersist);
+        if ($hasLifecycleCallbacks || $hasListeners) {
+            $documents = array();
+        }
+
         $inserts = array();
         foreach ($this->_documentInsertions as $oid => $document) {
             if (get_class($document) === $className) {
-                $changeset = $this->getDocumentChangeSet($document);
-                if ($changeset) {
-                    foreach ($changeset as $fieldName => $values) {
-                        $changeset[$fieldName] = $values[1];
-                    }
-                    $inserts[$oid] = $changeset;
+                $inserts[$oid] = $this->_prepareInsert($class, $document);
+                if ($hasLifecycleCallbacks || $hasListeners) {
+                    $documents[] = $document;
                 }
             }
         }
@@ -535,7 +554,6 @@ class UnitOfWork
             return;
         }
 
-        $this->_prepareInserts($class, $this->_documentInsertions, $inserts);
         $collection->batchInsert($inserts);
 
         foreach ($inserts as $oid => $changeset) {
@@ -550,10 +568,21 @@ class UnitOfWork
                 $this->_hydrator->hydrate($class, $document, $changeset);
             }
         }
+
+        if ($hasLifecycleCallbacks || $hasListeners) {
+            foreach ($documents as $document) {
+                if ($hasLifecycleCallbacks) {
+                    $class->invokeLifecycleCallbacks(Events::postPersist, $document);
+                }
+                if ($hasListeners) {
+                    $this->_evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->_dm));
+                }
+            }
+        }
     }
 
     /**
-     * Executes all document updates for documents of the specified type.
+     * Executes all entity updates for documents of the specified type.
      *
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      */
@@ -561,83 +590,109 @@ class UnitOfWork
     {
         $className = $class->name;
         $collection = $this->_dm->getDocumentCollection($className);
-        $updates = array();
+
+        $hasPreUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::preUpdate]);
+        $hasPreUpdateListeners = $this->_evm->hasListeners(Events::preUpdate);
+        $hasPostUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postUpdate]);
+        $hasPostUpdateListeners = $this->_evm->hasListeners(Events::postUpdate);
+
         foreach ($this->_documentUpdates as $oid => $document) {
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
-                $changeset = $this->getDocumentChangeSet($document);
-                if ($changeset) {
-                    foreach ($changeset as $fieldName => $values) {
-                        $changeset[$fieldName] = $values[1];
-                    }
-                    $updates[$oid] = $changeset;
+                if ($hasPreUpdateLifecycleCallbacks) {
+                    $class->invokeLifecycleCallbacks(Events::preUpdate, $document);
+                    $this->recomputeSingleDocumentChangeSet($class, $document);
+                }
+                
+                if ($hasPreUpdateListeners) {
+                    $this->_evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
+                        $document, $this->_dm, $this->_documentChangeSets[$oid])
+                    );
+                }
+
+                $update = $this->_prepareUpdate($class, $document);
+                $collection->save($update);
+                unset($this->_documentUpdates[$oid]);
+
+                if ($hasPostUpdateLifecycleCallbacks) {
+                    $class->invokeLifecycleCallbacks(Events::postUpdate, $document);
+                }
+                if ($hasPostUpdateListeners) {
+                    $this->_evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->_dm));
                 }
             }
         }
+    }
 
-        if ( ! $updates) {
-            return;
+    /**
+     * Prepare array of data for the given ClassMetadata and Document instance
+     * that can be inserted to Mongo.
+     *
+     * @return array $insert The document to insert.
+     */
+    private function _prepareInsert($class, $document)
+    {
+        return $this->_prepareUpdate($class, $document);
+    }
+
+    /**
+     * Prepare array of data for the given ClassMetadata and Document instance
+     * that can be updated in Mongo.
+     *
+     * @package array $update The document to update.
+     */
+    private function _prepareUpdate($class, $document)
+    {
+        $oid = spl_object_hash($document);
+        $changeset = $this->getDocumentChangeSet($document);
+        foreach ($changeset as $fieldName => $values) {
+            $changeset[$fieldName] = $values[1];
         }
-
-        $this->_prepareUpdates($class, $this->_documentUpdates, $updates);
-        foreach ($updates as $oid => $changeset) {
+        if (isset($this->_documentIdentifiers[$oid])) {
             $changeset['_id'] = new \MongoId($this->_documentIdentifiers[$oid]);
-            $collection->save($changeset);
-            unset($this->_documentUpdates[$oid]);
         }
-    }
-
-    private function _prepareUpdates($class, $documents, array &$updates)
-    {
-        $this->_prepareInserts($class, $documents, $updates);
-    }
-
-    private function _prepareInserts($class, $documents, array &$inserts)
-    {
-        foreach ($inserts as $oid => $changeset) {
-            $document = $documents[$oid];
-            foreach ($class->fieldMappings as $mapping) {
-                if (isset($mapping['reference'])) {
-                    $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                    if ($mapping['type'] === 'many' && isset($changeset[$mapping['fieldName']])) {
-                        $inserts[$oid][$mapping['fieldName']] = array();
-                        $coll = $changeset[$mapping['fieldName']];
-                        foreach ($coll as $key => $doc) {
-                            $ref = array(
-                                '$ref' => $targetClass->getCollection(),
-                                '$id' => $targetClass->getIdentifierValue($doc)
-                            );
-                            $inserts[$oid][$mapping['fieldName']][$key] = $ref;
-                        }
-                    } else if (isset($changeset[$mapping['fieldName']])) {
-                        $doc = $changeset[$mapping['fieldName']];
-                        $id = $targetClass->getIdentifierValue($doc);
-                        $inserts[$oid][$mapping['fieldName']] = array();
+        foreach ($class->fieldMappings as $mapping) {
+            if (isset($mapping['reference'])) {
+                $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
+                if ($mapping['type'] === 'many' && isset($changeset[$mapping['fieldName']])) {
+                    $coll = $changeset[$mapping['fieldName']];
+                    $changeset[$mapping['fieldName']] = array();
+                    foreach ($coll as $key => $doc) {
                         $ref = array(
                             '$ref' => $targetClass->getCollection(),
-                            '$id' => $id
+                            '$id' => $targetClass->getIdentifierValue($doc)
                         );
-                        $inserts[$oid][$mapping['fieldName']] = $ref;
+                        $changeset[$mapping['fieldName']][$key] = $ref;
                     }
-                } else if (isset($mapping['embedded'])) {
-                    $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                    if ($mapping['type'] === 'many' && isset($changeset[$mapping['fieldName']])) {
-                        $inserts[$oid][$mapping['fieldName']] = array();
-                        $coll = $changeset[$mapping['fieldName']];
-                        foreach ($coll as $key => $doc) {
-                            foreach ($targetClass->fieldMappings as $targetFieldMapping) {
-                                $inserts[$oid][$mapping['fieldName']][$key][$targetFieldMapping['fieldName']] = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
-                            }
-                        }
-                    } else if (isset($changeset[$mapping['fieldName']])) {
-                        $doc = $changeset[$mapping['fieldName']];
-                        $inserts[$oid][$mapping['fieldName']] = array();
+                } else if (isset($changeset[$mapping['fieldName']])) {
+                    $doc = $changeset[$mapping['fieldName']];
+                    $id = $targetClass->getIdentifierValue($doc);
+                    $changeset[$mapping['fieldName']] = array();
+                    $ref = array(
+                        '$ref' => $targetClass->getCollection(),
+                        '$id' => $id
+                    );
+                    $changeset[$mapping['fieldName']] = $ref;
+                }
+            } else if (isset($mapping['embedded'])) {
+                $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
+                if ($mapping['type'] === 'many' && isset($changeset[$mapping['fieldName']])) {
+                    $coll = $changeset[$mapping['fieldName']];
+                    $changeset[$mapping['fieldName']] = array();
+                    foreach ($coll as $key => $doc) {
                         foreach ($targetClass->fieldMappings as $targetFieldMapping) {
-                            $inserts[$oid][$mapping['fieldName']][$targetFieldMapping['fieldName']] = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
+                            $changeset[$mapping['fieldName']][$key][$targetFieldMapping['fieldName']] = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
                         }
+                    }
+                } else if (isset($changeset[$mapping['fieldName']])) {
+                    $doc = $changeset[$mapping['fieldName']];
+                    $changeset[$mapping['fieldName']] = array();
+                    foreach ($targetClass->fieldMappings as $targetFieldMapping) {
+                        $changeset[$mapping['fieldName']][$targetFieldMapping['fieldName']] = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
                     }
                 }
             }
         }
+        return $changeset;
     }
 
     /**
@@ -647,6 +702,9 @@ class UnitOfWork
      */
     private function _executeDeletions($class)
     {
+        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postRemove]);
+        $hasListeners = $this->_evm->hasListeners(Events::postRemove);
+
         $className = $class->name;
         $collection = $this->_dm->getDocumentCollection($className);
         foreach ($this->_documentDeletions as $oid => $document) {
@@ -660,6 +718,13 @@ class UnitOfWork
                 // Document with this $oid after deletion treated as NEW, even if the $oid
                 // is obtained by a new document because the old one went out of scope.
                 $this->_documentStates[$oid] = self::STATE_NEW;
+
+                if ($hasLifecycleCallbacks) {
+                    $class->invokeLifecycleCallbacks(Events::postRemove, $document);
+                }
+                if ($hasListeners) {
+                    $this->_evm->dispatchEvent(Events::postRemove, new LifecycleEventArgs($document, $this->_dm));
+                }
             }
         }
     }
@@ -1033,6 +1098,13 @@ class UnitOfWork
                 $this->scheduleForDirtyCheck($document);
                 break;
             case self::STATE_NEW:
+                if (isset($class->lifecycleCallbacks[Events::prePersist])) {
+                    $class->invokeLifecycleCallbacks(Events::prePersist, $document);
+                }
+                if ($this->_evm->hasListeners(Events::prePersist)) {
+                    $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($document, $this->_dm));
+                }
+
                 $this->_documentStates[$oid] = self::STATE_MANAGED;
                 
                 $this->scheduleForInsert($document);
@@ -1094,6 +1166,12 @@ class UnitOfWork
                 // nothing to do
                 break;
             case self::STATE_MANAGED:
+                if (isset($class->lifecycleCallbacks[Events::preRemove])) {
+                    $class->invokeLifecycleCallbacks(Events::preRemove, $document);
+                }
+                if ($this->_evm->hasListeners(Events::preRemove)) {
+                    $this->_evm->dispatchEvent(Events::preRemove, new LifecycleEventArgs($document, $this->_dm));
+                }
                 $this->scheduleForDelete($document);
                 break;
             case self::STATE_DETACHED:
@@ -1504,9 +1582,14 @@ class UnitOfWork
             $this->_identityMap[$class->rootDocumentName][$id] = $document;
             $overrideLocalValues = true;
         }
-
         if ($overrideLocalValues) {
             $this->_hydrator->hydrate($class, $document, $data);
+        }
+        if (isset($class->lifecycleCallbacks[Events::postLoad])) {
+            $class->invokeLifecycleCallbacks(Events::postLoad, $document);
+        }
+        if ($this->_evm->hasListeners(Events::postLoad)) {
+            $this->_evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->_dm));
         }
         return $document;
     }

@@ -26,7 +26,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mongo,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
-    Doctrine\Common\Collections\ArrayCollection;
+    Doctrine\Common\Collections\ArrayCollection,
+    Doctrine\Common\EventManager;
 
 /**
  * The DocumentManager class is the central access point for managing the
@@ -69,6 +70,13 @@ class DocumentManager
     private $_unitOfWork;
 
     /**
+     * The event manager that is the central point of the event system.
+     *
+     * @var Doctrine\Common\EventManager
+     */
+    private $_eventManager;
+
+    /**
      * The Document hydrator instance.
      *
      * @var Doctrine\ODM\MongoDB\Hydrator
@@ -95,11 +103,13 @@ class DocumentManager
      *
      * @param Doctrine\ODM\MongoDB\Mongo $mongo
      * @param Doctrine\ODM\MongoDB\Configuration $config
+     * @param Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(Mongo $mongo, Configuration $config = null)
+    protected function __construct(Mongo $mongo, Configuration $config = null, EventManager $eventManager = null)
     {
         $this->_mongo = $mongo;
         $this->_config = $config ? $config : new Configuration();
+        $this->_eventManager = $eventManager ? $eventManager : new EventManager();
         $this->_hydrator = new Hydrator($this);
         $this->_metadataFactory = new ClassMetadataFactory($this);
         if ($cacheDriver = $this->_config->getMetadataCacheImpl()) {
@@ -122,6 +132,29 @@ class DocumentManager
     public static function create(Mongo $mongo, Configuration $config = null)
     {
         return new self($mongo, $config);
+    }
+
+    /**
+     * Determines whether an entity instance is managed in this DocumentManager.
+     *
+     * @param object $entity
+     * @return boolean TRUE if this DocumentManager currently manages the given document, FALSE otherwise.
+     */
+    public function contains($document)
+    {
+        return $this->_unitOfWork->isScheduledForInsert($document) ||
+               $this->_unitOfWork->isInIdentityMap($document) &&
+               ! $this->_unitOfWork->isScheduledForDelete($document);
+    }
+
+    /**
+     * Gets the EventManager used by the DocumentManager.
+     *
+     * @return Doctrine\Common\EventManager
+     */
+    public function getEventManager()
+    {
+        return $this->_eventManager;
     }
 
     public function getConfiguration()

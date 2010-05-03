@@ -27,7 +27,7 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase
         //$config->setMetadataCacheImpl(new ApcCache());
 
         $reader = new AnnotationReader();
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
+        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
         $this->dm = DocumentManager::create(new Mongo(), $config);

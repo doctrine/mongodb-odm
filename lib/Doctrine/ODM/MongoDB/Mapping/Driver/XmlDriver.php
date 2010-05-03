@@ -95,6 +95,11 @@ class XmlDriver extends AbstractFileDriver
                 $class->mapField($mapping);
             }
         }
+        if (isset($xmlRoot->{'lifecycle-callbacks'})) {
+            foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
+                $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ORM\Events::' . (string) $lifecycleCallback['type']));
+            }
+        }
     }
 
     protected function _loadMappingFile($file)

@@ -81,6 +81,13 @@ class YamlDriver extends AbstractFileDriver
                 $class->mapField($mapping);
             }
         }
+        if (isset($element['lifecycleCallbacks'])) {
+            foreach ($element['lifecycleCallbacks'] as $type => $methods) {
+                foreach ($methods as $method) {
+                    $class->addLifecycleCallback($method, constant('Doctrine\ORM\Events::' . $type));
+                }
+            }
+        }
     }
 
     protected function _loadMappingFile($file)
