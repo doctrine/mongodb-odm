@@ -234,7 +234,7 @@ class ClassMetadataFactory
     }
 
     /**
-     * Get array of parent classes for the given entity class
+     * Get array of parent classes for the given document class
      *
      * @param string $name
      * @return array $parentClasses

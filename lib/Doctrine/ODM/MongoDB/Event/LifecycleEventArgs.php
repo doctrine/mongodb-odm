@@ -34,30 +34,30 @@ use Doctrine\Common\EventArgs;
 class LifecycleEventArgs extends EventArgs
 {
     /**
-     * @var EntityManager
+     * @var DocumentManager
      */
     private $_em;
 
     /**
      * @var object
      */
-    private $_entity;
+    private $_document;
     
-    public function __construct($entity, $em)
+    public function __construct($document, $em)
     {
-        $this->_entity = $entity;
+        $this->_document = $document;
         $this->_em = $em;
     }
     
-    public function getEntity()
+    public function getDocument()
     {
-        return $this->_entity;
+        return $this->_document;
     }
 
     /**
-     * @return EntityManager
+     * @return DocumentManager
      */
-    public function getEntityManager()
+    public function getDocumentManager()
     {
         return $this->_em;
     }

@@ -110,7 +110,7 @@ class ClassMetadata
     public $rootDocumentName;
 
     /**
-     * The name of the custom repository class used for the entity class.
+     * The name of the custom repository class used for the document class.
      * (Optional).
      *
      * @var string
@@ -280,7 +280,7 @@ class ClassMetadata
     }
 
     /**
-     * Registers a custom repository class for the entity class.
+     * Registers a custom repository class for the document class.
      *
      * @param string $mapperClassName  The class name of the custom mapper.
      */
