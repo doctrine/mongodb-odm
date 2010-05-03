@@ -63,6 +63,13 @@ class DocumentManager
     private $_metadataFactory;
 
     /**
+     * The DocumentRepository instances.
+     *
+     * @var array
+     */
+    private $_repositories = array();
+
+    /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
      * @var Doctrine\ODM\MongoDB\UnitOfWork
@@ -247,7 +254,7 @@ class DocumentManager
             } else {
                 $collection = $this->_mongo->selectDB($metadata->getDB())->selectCollection($collection);
             }
-            $mongoCollection = new MongoCollection($collection, $metadata);
+            $mongoCollection = new MongoCollection($collection, $metadata, $this);
             $this->_documentCollections[$key] = $mongoCollection;
         }
         if ( ! isset($this->_documentCollections[$key])) {
@@ -347,6 +354,32 @@ class DocumentManager
             throw new \InvalidArgumentException(gettype($document));
         }
         return $this->_unitOfWork->merge($document);
+    }
+
+    /**
+     * Gets the repository for a document class.
+     *
+     * @param string $documentName  The name of the Document.
+     * @return DocumentRepository  The repository.
+     */
+    public function getRepository($documentName)
+    {
+        if (isset($this->_repositories[$documentName])) {
+            return $this->_repositories[$documentName];
+        }
+
+        $metadata = $this->getClassMetadata($documentName);
+        $customRepositoryClassName = $metadata->customRepositoryClassName;
+
+        if ($customRepositoryClassName !== null) {
+            $repository = new $customRepositoryClassName($this, $metadata);
+        } else {
+            $repository = new DocumentRepository($this, $metadata);
+        }
+
+        $this->_repositories[$documentName] = $repository;
+
+        return $repository;
     }
 
     /**
@@ -459,23 +492,11 @@ class DocumentManager
      * @param mixed $query A single identifier or an array of criteria.
      * @param array $select The fields to select.
      * @return Doctrine\ODM\MongoDB\MongoCursor $cursor
-     * @return array $document
+     * @return object $document
      */
     public function find($documentName, $query = array(), array $select = array())
     {
-        if (is_string($query)) {
-            $collection = $this->getDocumentCollection($documentName);
-            $result = $collection->findOne(array('_id' => new \MongoId($query)));
-            if ($result !== null) {
-                return $this->_unitOfWork->getOrCreateDocument($documentName, $result);
-            }
-            return null;
-        } else {
-            $metadata = $this->getClassMetadata($documentName);
-            $collection = $this->getDocumentCollection($documentName);
-            $cursor = $collection->find($query, $select);
-            return new MongoCursor($this, $this->_hydrator, $metadata, $cursor);
-        }
+        return $this->getRepository($documentName)->find($query, $select);
     }
 
     /**
@@ -488,13 +509,7 @@ class DocumentManager
      */
     public function findOne($documentName, array $query = array(), array $select = array())
     {
-        $metadata = $this->getClassMetadata($documentName);
-        $collection = $this->getDocumentCollection($documentName);
-        $result = $collection->findOne($query, $select);
-        if ($result !== null) {
-            return $this->_unitOfWork->getOrCreateDocument($documentName, $result);
-        }
-        return null;
+        return $this->getRepository($documentName)->findOne($query, $select);
     }
 
     /**

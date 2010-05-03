@@ -110,6 +110,14 @@ class ClassMetadata
     public $rootDocumentName;
 
     /**
+     * The name of the custom repository class used for the entity class.
+     * (Optional).
+     *
+     * @var string
+     */
+    public $customRepositoryClassName;
+
+    /**
      * READ-ONLY: The names of the parent classes (ancestors).
      *
      * @var array
@@ -252,6 +260,16 @@ class ClassMetadata
     }
 
     /**
+     * Checks whether the class has a (mapped) field with a certain name.
+     *
+     * @return boolean
+     */
+    public function hasField($fieldName)
+    {
+        return isset($this->fieldMappings[$fieldName]);
+    }
+
+    /**
      * Sets the inheritance type used by the class and it's subclasses.
      *
      * @param integer $type
@@ -259,6 +277,16 @@ class ClassMetadata
     public function setInheritanceType($type)
     {
         $this->inheritanceType = $type;
+    }
+
+    /**
+     * Registers a custom repository class for the entity class.
+     *
+     * @param string $mapperClassName  The class name of the custom mapper.
+     */
+    public function setCustomRepositoryClass($repositoryClassName)
+    {
+        $this->customRepositoryClassName = $repositoryClassName;
     }
 
     /**
