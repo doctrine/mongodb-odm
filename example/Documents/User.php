@@ -2,29 +2,40 @@
 
 namespace Documents;
 
-/** @Document */
+/** @Document(indexes={
+  *   @Index(keys={"username"="desc"}, options={"unique"=true})
+  * })
+  * @InheritanceType("SINGLE_COLLECTION")
+  * @DiscriminatorField(fieldName="type")
+  * @DiscriminatorMap({"moderator"="Documents\Moderator", "admin"="Documents\Admin"})
+  */
 class User
 {
-    /** @Field */
-    private $id;
+    /** @Id */
+    protected $id;
 
     /** @Field */
-    private $username;
+    protected $username;
 
     /** @Field */
-    private $password;
+    protected $password;
 
-    /** @Field(embedded="true", targetDocument="Documents\Phonenumber", type="many", cascadeDelete="true") */
-    private $phonenumbers = array();
+    /**
+     * @EmbedOne(targetDocument="Documents\Configuration")
+     */
+    protected $configuration;
 
-    /** @Field(embedded="true", targetDocument="Documents\Address", type="many") */
-    private $addresses = array();
+    /** @EmbedMany(targetDocument="Documents\Phonenumber") */
+    protected $phonenumbers = array();
 
-    /** @Field(reference="true", targetDocument="Documents\Profile", type="one") */
-    private $profile;
+    /** @EmbedMany(targetDocument="Documents\Address") */
+    protected $addresses = array();
 
-    /** @Field(reference="true", targetDocument="Documents\Account", cascadeDelete="true", type="one") */
-    private $account;
+    /** @ReferenceOne(targetDocument="Documents\Profile", cascadeDelete="true") */
+    protected $profile;
+
+    /** @ReferenceOne(targetDocument="Documents\Account", cascadeDelete="true") */
+    protected $account;
 
     public function getId()
     {
@@ -54,6 +65,16 @@ class User
     public function getAddresses()
     {
         return $this->addresses;
+    }
+
+    public function setConfiguration(Configuration $configuration)
+    {
+        $this->configuration = $configuration;
+    }
+
+    public function getConfiguration()
+    {
+        return $this->configuration;
     }
 
     public function addAddress(Address $address)

@@ -1,0 +1,62 @@
+<?php
+
+require_once 'TestInit.php';
+
+use Doctrine\Common\ClassLoader,
+    Doctrine\Common\Cache\ApcCache,
+    Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\ODM\MongoDB\DocumentManager,
+    Doctrine\ODM\MongoDB\Configuration,
+    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+    Doctrine\ODM\MongoDB\Mongo,
+    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
+    Documents\Account,
+    Documents\Address,
+    Documents\Group,
+    Documents\Phonenumber,
+    Documents\Profile,
+    Documents\File,
+    Documents\User;
+
+class PersistingTest extends BaseTest
+{
+    public function testCascadeInsertUpdateAndRemove()
+    {
+        $account = new Account();
+        $account->setName('Jon Test Account');
+
+        $user = new User();
+        $user->setUsername('jon');
+        $user->setPassword('changeme');
+        $user->setAccount($account);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $account->setName('w00t');
+        $this->dm->flush();
+
+        $this->assertEquals('w00t', $user->getAccount()->getName());
+
+        $this->dm->remove($user);
+        $this->dm->flush();
+        $this->dm->clear();
+    }
+
+    public function testDetach()
+    {
+        $user = new User();
+        $user->setUsername('jon');
+        $user->setPassword('changeme');
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $user->setUsername('whoop');
+        $this->dm->detach($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user2 = $this->dm->find('Documents\User', $user->getId());
+        $this->assertEquals('jon', $user2->getUsername());
+    }
+}

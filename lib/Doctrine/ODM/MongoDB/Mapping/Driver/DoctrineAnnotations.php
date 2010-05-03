@@ -19,7 +19,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Driver;
+namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Annotations\Annotation;
 
@@ -27,15 +27,79 @@ final class Document extends Annotation
 {
     public $db;
     public $collection;
+    public $indexes = array();
+}
+
+final class Inheritance extends Annotation
+{
+    public $type = 'NONE';
+    public $discriminatorMap = array();
+    public $discriminatorField;
+}
+
+final class InheritanceType extends Annotation {}
+final class DiscriminatorField extends Annotation {
+    public $name;
+    public $fieldName;
+}
+final class DiscriminatorMap extends Annotation {}
+
+final class Index extends Annotation
+{
+    public $keys = array();
+    public $options = array();
 }
 
 final class Field extends Annotation
 {
-    public $id;
-    public $name;
-    public $targetDocument;
-    public $embedded;
-    public $reference;
-    public $cascadeDelete;
-    public $type;
 }
+
+final class File extends Annotation
+{
+    public $file = true;
+}
+
+final class Id extends Annotation
+{
+    public $id = true;
+}
+
+final class EmbedOne extends Annotation
+{
+    public $type = 'one';
+    public $embedded = true;
+    public $targetDocument;
+}
+
+final class EmbedMany extends Annotation
+{
+    public $type = 'many';
+    public $embedded = true;
+    public $targetDocument;
+}
+
+final class ReferenceOne extends Annotation
+{
+    public $type = 'one';
+    public $reference = true;
+    public $targetDocument;
+    public $cascadeDelete = false;
+}
+
+final class ReferenceMany extends Annotation
+{
+    public $type = 'many';
+    public $reference = true;
+    public $targetDocument;
+    public $cascadeDelete = false;
+}
+
+/* Annotations for lifecycle callbacks */
+final class HasLifecycleCallbacks extends Annotation {}
+final class PrePersist extends Annotation {}
+final class PostPersist extends Annotation {}
+final class PreUpdate extends Annotation {}
+final class PostUpdate extends Annotation {}
+final class PreRemove extends Annotation {}
+final class PostRemove extends Annotation {}
+final class PostLoad extends Annotation {}

@@ -11,11 +11,6 @@ class Phonenumber
         $this->phonenumber = $phonenumber;
     }
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
     public function getPhonenumber()
     {
         return $this->phonenumber;

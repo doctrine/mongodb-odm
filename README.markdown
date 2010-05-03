@@ -24,9 +24,11 @@ MongoDB Object Mapper.
     $classLoader->register();
 
     $config = new Configuration();
+    $config->setProxyDir(__DIR__ . '/Proxies');
+    $config->setProxyNamespace('Proxies');
 
     $reader = new AnnotationReader();
-    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
+    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
     $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
     $dm = DocumentManager::create(new Mongo(), $config);
@@ -37,10 +39,18 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
 
     namespace Documents;
 
-    /** @Document(db="my_database", collection="users") */
+    /**
+     * @Document(
+     *   db="my_database",
+     *   collection="users",
+     *   indexes={
+     *     @Index(keys={"username"="desc"}, options={"unique"=true})
+     *   }
+     * )
+     */
     class User
     {
-        /** @Field(id="true")
+        /** @Id
         public $id;
 
         /** @Field */
@@ -49,10 +59,10 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
         /** @Field */
         public $password;
 
-        /** @Field(reference="true", type="one", targetDocument="Account") */
+        /** @ReferenceOne(targetDocument="Account") */
         public $account;
 
-        /** @Field(embedded="true", type="one", targetDocument="Profile")
+        /** @EmbedOne(targetDocument="Profile")
         public $profile;
     }
 
@@ -66,13 +76,69 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
     /** @Document(db="my_database", collection="accounts") */
     class Account
     {
-        /** @Field(id="true")
+        /** @Id
         public $id;
 
         /** @Field */
         public $name;
     }
 
+## Inheritance Mapping
+
+If you want to take advantage of inheritance you will need to specify some 
+mapping information for your documents:
+
+### Single Collection Inheritance
+
+Each Document is stored in a single collection where a discriminator field is
+automatically populated to keep track of what classes created each document
+in the database:
+
+    namespace Documents;
+
+    /**
+     * @Document
+     * @InheritanceType("SINGLE_COLLECTION")
+     * @DiscriminatorField(fieldName="type")
+     * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
+     */
+    class Person
+    {
+        // ...
+    }
+
+    /**
+     * @Document
+     */
+    class Employee extends Person
+    {
+        // ...
+    }
+
+### Collection Per Class Inheritance
+
+Each Document is stored in its own collection:
+
+    namespace Documents;
+    
+    /**
+     * @Document
+     * @InheritanceType("COLLECTION_PER_CLASS")
+     * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
+     */
+    class Person
+    {
+        // ...
+    }
+
+    /**
+     * @Document
+     */
+    class Employee extends Person
+    {
+        // ...
+    }
+    
 ## Persisting Documents
 
 Create a new instance, set some of the properties and persist it:
@@ -120,35 +186,10 @@ select the username:
     
     $users = $query->execute();
 
-If you want to just find an document by its identifier you can use the findByID()
+If you want to just find an document by its identifier you can use the find()
 method:
 
-    $user = $dm->findByID('User', 'the_string_id');
-
-You may want to load the associations for an document, you can do this with the 
-loadDocumentAssociations() method:
-
-    $dm->loadDocumentAssociations($user);
-
-Now you can access the ->account property and get an Account instance:
-
-    echo $user->account->name; // Test Account
-
-If you only want to load a specific association you can use the loadDocumentAssociation($name)
-method:
-
-    $dm->loadDocumentAssociation($user, 'account');
-
-To automatically load the association during hydration you can specify the 
-association to load on a query with the loadAssociation() method:
-
-    $query = $dm->createQuery('User')
-        ->loadAssociation('account');
-    
-    $users = $query->execute();
-    foreach ($users as $user) {
-        echo $user->account->name."\n";
-    }
+    $user = $dm->find('User', 'the_string_id');
 
 ### Traditional MongoDB API
 
@@ -168,3 +209,163 @@ You can search the users collection using the find() method:
 To find by the ID using findOne():
 
     $user = $dm->findOne('User', array('_id' => new MongoId('the_string_id')));
+
+## Storing Files
+
+The PHP Mongo extension provides a nice and convenient way to store files in chunks
+of data with the [MongoGridFS](http://us.php.net/manual/en/class.mongogridfs.php).
+
+It uses two database collections, one to store the metadata for the file, and another
+to store the contents of the file. The contents are stored in chunks to avoid
+going over the maximum allowed size of a MongoDB document.
+
+You can easily setup a Document that is stored using the MongoGridFS:
+
+    <?php
+
+    namespace Documents;
+
+    /** @Document */
+    class Image
+    {
+        /** @Id */
+        private $id;
+
+        /** @Field */
+        private $name;
+
+        /** @File */
+        private $file;
+
+        /** @Field */
+        private $uploadDate;
+
+        /** @Field */
+        private $length;
+
+        /** @Field */
+        private $chunkSize;
+
+        /** @Field */
+        private $md5;
+
+        public function getId()
+        {
+            return $id;
+        }
+
+        public function setName($name)
+        {
+            $this->name = $name;
+        }
+
+        public function getName()
+        {
+            return $this->name;
+        }
+
+        public function getFile()
+        {
+            return $this->file;
+        }
+
+        public function setFile($file)
+        {
+            $this->file = $file;
+        }
+    }
+
+Notice how we annotated the $file property with @File. This is what tells the
+Document that it is is to be stored using the MongoGridFS and the MongoGridFSFile
+instance is placed in the $file property for you to access the actual file itself.
+
+First you need to create a new Image:
+
+    $image = new Image();
+    $image->setName('Test image');
+    $image->setFile('/path/to/image.png');
+
+    $dm->persist($image);
+    $dm->flush();
+
+Now you can later query for the Image and render it:
+
+    $image = $dm->createQuery('Documents\Image')
+        ->where('name', 'Test image')
+        ->getSingleResult();
+
+    header('Content-type: image/png;');
+    echo $image->getFile()->getBytes();
+
+You can of course make references to this Image document from another document.
+Imagine you had a Profile document and you wanted every Profile to have a profile
+image:
+
+    namespace Documents;
+
+    <?php
+
+    namespace Documents;
+
+    /** @Document */
+    class Profile
+    {
+        /** @Id */
+        private $id;
+
+        /** @Field */
+        private $name;
+
+        /** @ReferenceOne(targetDocument="Documents\Image") */
+        private $image;
+
+        public function getId()
+        {
+          return $this->id;
+        }
+
+        public function getName()
+        {
+            return $this->name;
+        }
+
+        public function setName($name)
+        {
+            $this->name = $name;
+        }
+
+        public function getImage()
+        {
+            return $this->image;
+        }
+
+        public function setImage(Image $image)
+        {
+            $this->image = $image;
+        }
+    }
+
+Now you can create a new Profile and give it an Image:
+
+    $image = new Image();
+    $image->setName('Test image');
+    $image->setFile('/path/to/image.png');
+
+    $profile = new Profile();
+    $profile->setName('Jonathan H. Wage');
+    $profile->setImage($image);
+
+    $dm->persist($profile);
+    $dm->flush();
+
+If you want to query for the Profile and load the Image reference in a query
+you can use:
+
+    $profile = $dm->createQuery('Profile')
+        ->where('name', 'Jonathan H. Wage')
+        ->getSingleResult();
+
+    $image = $profile->getImage();
+
+    header('Content-type: image/png;');
+    echo $image->getFile()->getBytes();

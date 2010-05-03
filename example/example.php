@@ -15,7 +15,15 @@ use Doctrine\Common\ClassLoader,
     Documents\Address,
     Documents\Profile,
     Documents\Account,
-    Documents\Phonenumber;
+    Documents\Phonenumber,
+    Documents\Image,
+    Documents\Admin,
+    Documents\Comment,
+    Documents\MyComment,
+    Documents\Page,
+    Documents\BlogPost,
+    Documents\Song,
+    Documents\Configuration as ConfigurationDoc;
 
 $classLoader = new ClassLoader('Doctrine\ODM', __DIR__ . '/../lib');
 $classLoader->register();
@@ -31,8 +39,11 @@ $classLoader->register();
 
 $config = new Configuration();
 
+$config->setProxyDir(__DIR__ . '/Proxies');
+$config->setProxyNamespace('Proxies');
+
 $reader = new AnnotationReader();
-$reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\Driver\\');
+$reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
 $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
 //$config->setMetadataDriverImpl(new XmlDriver(__DIR__ . '/xml'));
@@ -41,37 +52,22 @@ $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documen
 
 $dm = DocumentManager::create(new Mongo(), $config);
 
-$account = new Account();
-$account->setName('Test Account');
-
 $profile = new Profile();
 $profile->setName('Jonathan H. Wage');
+$profile->addSong(new Song('Testinfuckckcg'));
 
 $user = new User();
-$user->setProfile($profile);
-$user->setAccount($account);
 $user->setUsername('jwage');
-$user->setPassword('jwage');
+$user->setPassword('changeme');
 $user->addPhonenumber(new Phonenumber('6155139185'));
+$user->setProfile($profile);
 
-$address = new Address();
-$address->setAddress('475 Buckhead Ave. Apt 2107');
-$address->setCity('Atlanta');
-$address->setState('Georgia');
-$address->setZipcode('30303');
+$configuration = new ConfigurationDoc();
+$configuration->setTimezone('Eastern');
+$configuration->setTheme('doctrine');
 
-$user->addAddress($address);
+$user->setConfiguration($configuration);
 
 $dm->persist($user);
+
 $dm->flush();
-
-$query = $dm->createQuery('Documents\User')
-    ->loadAssociation('account')
-    ->loadAssociation('phonenumbers')
-    ->loadAssociation('profile')
-    ->refresh()
-    ->where('id', $user->getId());
-
-$user = $query->getSingleResult();
-
-print_r($user);

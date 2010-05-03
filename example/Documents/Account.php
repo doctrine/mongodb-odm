@@ -5,7 +5,7 @@ namespace Documents;
 /** @Document */
 class Account
 {
-    /** @Field */
+    /** @Id */
     private $id;
 
     /** @Field */
@@ -13,7 +13,7 @@ class Account
 
     public function getId()
     {
-        return $id;
+        return $this->id;
     }
 
     public function setName($name)
