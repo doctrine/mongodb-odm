@@ -37,6 +37,6 @@ class IdType implements Type
 
     public function convertToPHPValue($value)
     {
-        return (string) $value);
+        return (string) $value;
     }
 }
