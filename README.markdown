@@ -1,9 +1,31 @@
 # Experimental Doctrine MongoDB Object Mapper
 
 The Doctrine\ODM\Mongo namespace is an experimental project for a PHP 5.3 
-MongoDB Object Mapper.
+MongoDB Object Mapper. It allows you to easily write PHP 5 classes and map them
+to collections in MongoDB. You just work with your objects like normal and Doctrine
+will transparently persist them to Mongo.
+
+This project implements the same "style" of the Doctrine 2 ORM project interface 
+so it will look very familiar to you and it has lots of the same features and 
+implementations.
+
+Features:
+
+* Transparent document persistence.
+* Map one or many embedded documents.
+* Map one or many referenced documents.
+* Create references between documents in different databases.
+* Map documents with Annotations, XML, YAML or plain old PHP code.
+* Documents can be stored on the [MongoGridFS](http://www.php.net/MongoGridFS).
+* Collection per class(concrete) and single collection inheritance supported.
+* Map your Doctrine 2 ORM Entities to the ODM and use mixed data stores.
+* Inserts are performed using [MongoCollection::batchInsert()](http://us.php.net/manual/en/mongocollection.batchinsert.php)
+* Updates are performed using $set instead of saving the entire document.
 
 ## Setup
+
+The setup for the ODM is very similar to that of Doctrine 2 ORM. You'll quickly
+notice that the "style" of the ODM is identical to the ORM.
 
     require '/path/to/doctrine/lib/Doctrine/Common/ClassLoader.php';
 
@@ -51,36 +73,116 @@ Now you are ready to start defining PHP 5.3 classes and persisting them to Mongo
     class User
     {
         /** @Id
-        public $id;
+        private $id;
 
         /** @Field */
-        public $username;
+        private $username;
 
         /** @Field */
-        public $password;
+        private $password;
 
         /** @ReferenceOne(targetDocument="Account") */
-        public $account;
+        private $account;
 
         /** @EmbedOne(targetDocument="Profile")
-        public $profile;
+        private $profile;
+
+        public function getId()
+        {
+            return $this->id;
+        }
+
+        public function setUsername($username)
+        {
+            $this->username = $username;
+        }
+
+        public function getUsername()
+        {
+            return $this->username;
+        }
+
+        public function setPassword($password)
+        {
+            $this->password = $password;
+        }
+
+        public function getPassword()
+        {
+            return $this->password;
+        }
+
+        public function getAccount()
+        {
+            return $this->account;
+        }
+
+        public function setAccount(Account $account)
+        {
+            $this->account = $account;
+        }
+
+        public function getProfile()
+        {
+            return $this->profile;
+        }
+
+        public function setProfile(Profile $profile)
+        {
+            $this->profile = $profile;
+        }
     }
 
     // Not mapped since it's only embedded in User
     class Profile
     {
-        public $firstName;
-        public $lastName;
+        private $firstName;
+        private $lastName;
+
+        public function getFirstName()
+        {
+            return $this->firstName;
+        }
+
+        public function setFirstName($firstName)
+        {
+            $this->firstName = $firstName;
+        }
+
+        public function getLastName()
+        {
+            return $this->lastName;
+        }
+
+        public function setLastName($lastName)
+        {
+            $this->lastName = $lastName;
+        }
     }
 
     /** @Document(db="my_database", collection="accounts") */
     class Account
     {
         /** @Id
-        public $id;
+        private $id;
 
         /** @Field */
-        public $name;
+        private $name;
+
+        public function getId()
+        {
+            return $this->id;
+        }
+
+        public function getName()
+        {
+            return $this->name;
+        }
+
+        public function setName($name)
+        {
+            $this->name = $name;
+        }
     }
 
 ## Inheritance Mapping
@@ -191,6 +293,15 @@ method:
 
     $user = $dm->find('User', 'the_string_id');
 
+The references for a document are lazily loaded via proxy and collection classes.
+
+    $profile = $user->getProfile(); // proxy and no query to database has been made yet
+    
+    echo $profile->getName(); // queries the database and lazily loads the document
+
+It works the same way for a collection of references. It will lazily fetch the
+collection with one query initializing all proxies in the collection.
+
 ### Traditional MongoDB API
 
 In addition to the Doctrine Query object you can use the traditional MongoDB API
@@ -249,27 +360,27 @@ You can easily setup a Document that is stored using the MongoGridFS:
         /** @Field */
         private $md5;
 
-        public function getId()
+        private function getId()
         {
             return $id;
         }
 
-        public function setName($name)
+        private function setName($name)
         {
             $this->name = $name;
         }
 
-        public function getName()
+        private function getName()
         {
             return $this->name;
         }
 
-        public function getFile()
+        private function getFile()
         {
             return $this->file;
         }
 
-        public function setFile($file)
+        private function setFile($file)
         {
             $this->file = $file;
         }
@@ -319,27 +430,27 @@ image:
         /** @ReferenceOne(targetDocument="Documents\Image") */
         private $image;
 
-        public function getId()
+        private function getId()
         {
           return $this->id;
         }
 
-        public function getName()
+        private function getName()
         {
             return $this->name;
         }
 
-        public function setName($name)
+        private function setName($name)
         {
             $this->name = $name;
         }
 
-        public function getImage()
+        private function getImage()
         {
             return $this->image;
         }
 
-        public function setImage(Image $image)
+        private function setImage(Image $image)
         {
             $this->image = $image;
         }

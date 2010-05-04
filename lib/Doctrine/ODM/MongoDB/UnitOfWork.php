@@ -678,7 +678,8 @@ class UnitOfWork
                         }
                         $ref = array(
                             '$ref' => $targetClass->getCollection(),
-                            '$id' => $this->_documentIdentifiers[$docOid]
+                            '$id' => $this->_documentIdentifiers[$docOid],
+                            '$db' => $targetClass->getDB()
                         );
                         $changeset[$mapping['fieldName']][] = $ref;
                     }
@@ -690,7 +691,8 @@ class UnitOfWork
                         $id = $this->_documentIdentifiers[$docOid];
                         $ref = array(
                             '$ref' => $targetClass->getCollection(),
-                            '$id' => $id
+                            '$id' => $id,
+                            '$db' => $targetClass->getDB()
                         );
                         $changeset[$mapping['fieldName']] = $ref;
                     }
