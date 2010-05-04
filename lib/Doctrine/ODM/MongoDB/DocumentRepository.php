@@ -216,7 +216,7 @@ class DocumentRepository
     /**
      * @return string
      */
-    protected function getDocumentName()
+    public function getDocumentName()
     {
         return $this->_documentName;
     }
@@ -224,7 +224,7 @@ class DocumentRepository
     /**
      * @return DocumentManager
      */
-    protected function getDocumentManager()
+    public function getDocumentManager()
     {
         return $this->_dm;
     }
@@ -232,7 +232,7 @@ class DocumentRepository
     /**
      * @return Mapping\ClassMetadata
      */
-    protected function getClassMetadata()
+    public function getClassMetadata()
     {
         return $this->_class;
     }
