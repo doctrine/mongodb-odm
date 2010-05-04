@@ -31,10 +31,10 @@ class User
     /** @EmbedMany(targetDocument="Documents\Address") */
     protected $addresses = array();
 
-    /** @ReferenceOne(targetDocument="Documents\Profile", cascadeDelete="true") */
+    /** @ReferenceOne(targetDocument="Documents\Profile", cascade={"all"}) */
     protected $profile;
 
-    /** @ReferenceOne(targetDocument="Documents\Account", cascadeDelete="true") */
+    /** @ReferenceOne(targetDocument="Documents\Account", cascade={"all"}) */
     protected $account;
 
     public function getId()

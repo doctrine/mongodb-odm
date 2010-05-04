@@ -1,0 +1,87 @@
+<?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
+
+namespace Doctrine\ODM\MongoDB\Mapping;
+
+/**
+ * Types class used for retrieving Mongo type instances and processing values.
+ *
+ * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    	www.doctrine-project.org
+ * @since   	1.0
+ * @version     $Revision$
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ */
+class Types
+{
+    /**
+     * Array of string types mapped to their type class.
+     */
+    private static $_typeMap = array(
+        'id' => 'Doctrine\ODM\MongoDB\Mapping\Types\IdType',
+        'boolean' => 'Doctrine\ODM\MongoDB\Mapping\Types\BooleanType',
+        'int' => 'Doctrine\ODM\MongoDB\Mapping\Types\IntType',
+        'float' => 'Doctrine\ODM\MongoDB\Mapping\Types\FloatType',
+        'string' => 'Doctrine\ODM\MongoDB\Mapping\Types\StringType',
+        'date' => 'Doctrine\ODM\MongoDB\Mapping\Types\DateType',
+        'key' => 'Doctrine\ODM\MongoDB\Mapping\Types\KeyType',
+        'timestamp' => 'Doctrine\ODM\MongoDB\Mapping\Types\TimestampType',
+        'bin' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataType',
+        'bin_func' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataFuncType',
+        'bin_uuid' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataUUIDType',
+        'bin_md5' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataMD5Type',
+        'custom' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataCustomType',
+        'file' => 'Doctrine\ODM\MongoDB\Mapping\Types\FileType'
+    );
+
+    /**
+     * Array of instantiated type classes.
+     */
+    private static $_types = array();
+
+    /**
+     * Register a new type in the type map.
+     *
+     * @param string $name The name of the type.
+     * @param string $class The class name.
+     */
+    public static function registerType($name, $class)
+    {
+        self::$_typeMap[$name] = $class;
+    }
+
+    /**
+     * Get a Type instance.
+     *
+     * @param string $type The type name.
+     * @return Doctrine\ODM\MongoDB\Mapping\Types\Type $type
+     * @throws InvalidArgumentException
+     */
+    public static function getType($type)
+    {
+        if ( ! isset(self::$_typeMap[$type])) {
+            throw new \InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
+        }
+        if ( ! isset(self::$_types[$type])) {
+            $className = self::$_typeMap[$type];
+            self::$_types[$type] = new $className;
+        }
+        return self::$_types[$type];
+    }
+}

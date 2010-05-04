@@ -142,9 +142,9 @@ class DocumentManager
     }
 
     /**
-     * Determines whether an entity instance is managed in this DocumentManager.
+     * Determines whether an document instance is managed in this DocumentManager.
      *
-     * @param object $entity
+     * @param object $document
      * @return boolean TRUE if this DocumentManager currently manages the given document, FALSE otherwise.
      */
     public function contains($document)

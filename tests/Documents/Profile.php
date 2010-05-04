@@ -16,7 +16,7 @@ class Profile
     /** @Field */
     private $lastName;
 
-    /** @ReferenceOne(targetDocument="File") */
+    /** @ReferenceOne(targetDocument="File", cascade={"all"}) */
     private $image;
 
     public function getProfileId()

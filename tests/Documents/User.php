@@ -15,31 +15,35 @@ class User
     /** @Id */
     protected $id;
 
-    /** @Field */
+    /** @Field(type="string") */
     protected $username;
 
-    /** @Field */
+    /** @BinMD5 */
     protected $password;
+
+    /** @Date */
+    protected $createdAt;
 
     /** @EmbedOne(targetDocument="Address") */
     protected $address;
 
-    /** @ReferenceOne(targetDocument="Profile") */
+    /** @ReferenceOne(targetDocument="Profile", cascade={"all"}) */
     protected $profile;
 
     /** @EmbedMany(targetDocument="Phonenumber") */
     protected $phonenumbers;
 
-    /** @ReferenceMany(targetDocument="Group") */
+    /** @ReferenceMany(targetDocument="Group", cascade={"all"}) */
     protected $groups;
 
-    /** @ReferenceOne(targetDocument="Account", cascadeDelete=true) */
+    /** @ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
     public function __construct()
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groups = array();
+        $this->createdAt = new \DateTime();
     }
 
     public function getId()
@@ -65,6 +69,16 @@ class User
     public function getPassword()
     {
         return $this->password;
+    }
+
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 
     public function getAddress()

@@ -43,7 +43,7 @@ class Mongo
     {
         if ($server instanceof \Mongo) {
             $this->_mongo = $server;
-        } else if ($server !== null) {
+        } elseif ($server !== null) {
             $this->_mongo = new \Mongo($server, $options);
         } else {
             $this->_mongo = new \Mongo();

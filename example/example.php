@@ -39,6 +39,13 @@ $classLoader->register();
 
 $config = new Configuration();
 
+/*
+$config->setLoggerCallable(function(array $log) {
+    print_r($log);
+});
+$config->setMetadataCacheImpl(new ApcCache());
+*/
+
 $config->setProxyDir(__DIR__ . '/Proxies');
 $config->setProxyNamespace('Proxies');
 

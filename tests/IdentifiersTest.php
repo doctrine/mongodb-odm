@@ -8,6 +8,7 @@ class IdentifiersTest extends BaseTest
     {
         $user = new \Documents\User();
         $user->setUsername('jwage');
+        $user->setPassword('test');
 
         $this->dm->persist($user);
         $this->dm->flush();

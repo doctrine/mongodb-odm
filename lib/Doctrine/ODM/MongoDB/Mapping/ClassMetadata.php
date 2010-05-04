@@ -110,7 +110,7 @@ class ClassMetadata
     public $rootDocumentName;
 
     /**
-     * The name of the custom repository class used for the entity class.
+     * The name of the custom repository class used for the document class.
      * (Optional).
      *
      * @var string
@@ -280,7 +280,7 @@ class ClassMetadata
     }
 
     /**
-     * Registers a custom repository class for the entity class.
+     * Registers a custom repository class for the document class.
      *
      * @param string $mapperClassName  The class name of the custom mapper.
      */
@@ -545,22 +545,42 @@ class ClassMetadata
             $mapping = array_merge($mapping, $this->fieldMappings[$mapping['fieldName']]);
         }
 
+        if ( ! isset($mapping['type'])) {
+            $mapping['type'] = 'string';
+        }
+
         if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
         }
-
-        $this->fieldMappings[$mapping['fieldName']] = $mapping;
 
         $reflProp = $this->reflClass->getProperty($mapping['fieldName']);
         $reflProp->setAccessible(true);
         $this->reflFields[$mapping['fieldName']] = $reflProp;
 
+        if (isset($mapping['cascade']) && in_array('all', $mapping['cascade'])) {
+            unset($mapping['all']);
+            $default = true;
+        } else {
+            $default = false;
+        }
+        $mapping['isCascadeRemove'] = $default;
+        $mapping['isCascadePersist'] = $default;
+        $mapping['isCascadeRefresh'] = $default;
+        $mapping['isCascadeMerge'] = $default;
+        $mapping['isCascadeDetach'] = $default;
+        if (isset($mapping['cascade']) && is_array($mapping['cascade'])) {
+            foreach ($mapping['cascade'] as $cascade) {
+                $mapping['isCascade' . ucfirst($cascade)] = true;
+            }
+        }
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
         }
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $this->identifier = $mapping['fieldName'];
         }
+
+        $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
 
     /**
@@ -571,6 +591,7 @@ class ClassMetadata
     public function mapFile(array $mapping)
     {
         $mapping['file'] = true;
+        $mapping['type'] = 'file';
         $this->mapField($mapping);
     }
 

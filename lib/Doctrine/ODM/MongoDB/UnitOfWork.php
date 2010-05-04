@@ -23,6 +23,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
+    Doctrine\ODM\MongoDB\Mapping\Types,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\Collections\ArrayCollection;
 
@@ -356,7 +357,7 @@ class UnitOfWork
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
                 if (is_object($orgValue) && $orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
-                } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+                } elseif ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 }
 
@@ -440,6 +441,10 @@ class UnitOfWork
             $this->_visitedCollections[] = $value;
         }
 
+        if ( ! $mapping['isCascadePersist']) {
+            return; // "Persistence by reachability" only if persist cascade specified
+        }
+
         // Look through the documents, and in any of their reference, for transient
         // enities, recursively. ("Persistence by reachability")
         if ($mapping['type'] === 'one') {
@@ -447,7 +452,7 @@ class UnitOfWork
                 return; // Ignore uninitialized proxy objects
             }
             $value = array($value);
-        } else if ($value instanceof PersistentCollection) {
+        } elseif ($value instanceof PersistentCollection) {
             $value = $value->unwrap();
         }
         
@@ -469,7 +474,7 @@ class UnitOfWork
 
                 $this->computeChangeSet($targetClass, $entry);
                 
-            } else if ($state == self::STATE_REMOVED) {
+            } elseif ($state == self::STATE_REMOVED) {
                 throw MongoDBException::removedDocumentInCollectionDetected($document, $mapping);
             }
             // MANAGED associated documents are already taken into account
@@ -517,7 +522,7 @@ class UnitOfWork
             $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
             if (is_object($orgValue) && $orgValue !== $actualValue) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
-            } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+            } elseif ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
         }
@@ -588,7 +593,7 @@ class UnitOfWork
     }
 
     /**
-     * Executes all entity updates for documents of the specified type.
+     * Executes all document updates for documents of the specified type.
      *
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      */
@@ -616,7 +621,11 @@ class UnitOfWork
                 }
 
                 $update = $this->_prepareUpdate($class, $document);
-                $collection->save($update);
+                $id = $update['_id'];
+                unset($update['_id']);
+
+                $collection->update(array('_id' => $id), array('$set' => $update));
+                
                 unset($this->_documentUpdates[$oid]);
 
                 if ($hasPostUpdateLifecycleCallbacks) {
@@ -663,23 +672,32 @@ class UnitOfWork
                     $coll = $changeset[$mapping['fieldName']];
                     $changeset[$mapping['fieldName']] = array();
                     foreach ($coll as $key => $doc) {
+                        $docOid = spl_object_hash($doc);
+                        if ( ! isset($this->_documentIdentifiers[$docOid])) {
+                            continue;
+                        }
                         $ref = array(
                             '$ref' => $targetClass->getCollection(),
-                            '$id' => $targetClass->getIdentifierValue($doc)
+                            '$id' => $this->_documentIdentifiers[$docOid],
+                            '$db' => $targetClass->getDB()
                         );
-                        $changeset[$mapping['fieldName']][$key] = $ref;
+                        $changeset[$mapping['fieldName']][] = $ref;
                     }
-                } else if (isset($changeset[$mapping['fieldName']])) {
+                } elseif (isset($changeset[$mapping['fieldName']])) {
                     $doc = $changeset[$mapping['fieldName']];
-                    $id = $targetClass->getIdentifierValue($doc);
+                    $docOid = spl_object_hash($doc);
                     $changeset[$mapping['fieldName']] = array();
-                    $ref = array(
-                        '$ref' => $targetClass->getCollection(),
-                        '$id' => $id
-                    );
-                    $changeset[$mapping['fieldName']] = $ref;
+                    if (isset($this->_documentIdentifiers[$docOid])) {
+                        $id = $this->_documentIdentifiers[$docOid];
+                        $ref = array(
+                            '$ref' => $targetClass->getCollection(),
+                            '$id' => $id,
+                            '$db' => $targetClass->getDB()
+                        );
+                        $changeset[$mapping['fieldName']] = $ref;
+                    }
                 }
-            } else if (isset($mapping['embedded'])) {
+            } elseif (isset($mapping['embedded'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 if ($mapping['type'] === 'many' && isset($changeset[$mapping['fieldName']])) {
                     $coll = $changeset[$mapping['fieldName']];
@@ -689,13 +707,15 @@ class UnitOfWork
                             $changeset[$mapping['fieldName']][$key][$targetFieldMapping['fieldName']] = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
                         }
                     }
-                } else if (isset($changeset[$mapping['fieldName']])) {
+                } elseif (isset($changeset[$mapping['fieldName']])) {
                     $doc = $changeset[$mapping['fieldName']];
                     $changeset[$mapping['fieldName']] = array();
                     foreach ($targetClass->fieldMappings as $targetFieldMapping) {
                         $changeset[$mapping['fieldName']][$targetFieldMapping['fieldName']] = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
                     }
                 }
+            } elseif (isset($changeset[$mapping['fieldName']])) {
+                $changeset[$mapping['fieldName']] = Types::getType($mapping['type'])->convertToDatabaseValue($changeset[$mapping['fieldName']]);
             }
         }
         return $changeset;
@@ -1248,13 +1268,15 @@ class UnitOfWork
                 } else {
                     $mapping2 = $class->fieldMappings[$name];
                     if ($mapping2['type'] === 'one') {
-                        $other = $class->reflFields[$name]->getValue($document); //TODO: Just $prop->getValue($document)?
-                        if ($other !== null) {
-                            $targetClass = $this->_dm->getClassMetadata($mapping2['targetDocument']);
-                            $id = $targetClass->getIdentifierValue($other);
-                            $proxy = $this->_dm->getProxyFactory()->getProxy($mapping2['targetDocument'], $id);
-                            $prop->setValue($managedCopy, $proxy);
-                            $this->registerManaged($proxy, $id, array());
+                        if ( ! $assoc2['isCascadeMerge']) {
+                            $other = $class->reflFields[$name]->getValue($document); //TODO: Just $prop->getValue($document)?
+                            if ($other !== null) {
+                                $targetClass = $this->_dm->getClassMetadata($mapping2['targetDocument']);
+                                $id = $targetClass->getIdentifierValue($other);
+                                $proxy = $this->_dm->getProxyFactory()->getProxy($mapping2['targetDocument'], $id);
+                                $prop->setValue($managedCopy, $proxy);
+                                $this->registerManaged($proxy, $id, array());
+                            }
                         }
                     } else {
                         $coll = new PersistentCollection($this->_dm,
@@ -1262,7 +1284,7 @@ class UnitOfWork
                                 new ArrayCollection
                                 );
                         $coll->setOwner($managedCopy, $mapping2);
-                        $coll->setInitialized($mapping2->isCascadeMerge);
+                        $coll->setInitialized($mapping2['isCascadeMerge']);
                         $prop->setValue($managedCopy, $coll);
                     }
                 }
@@ -1376,7 +1398,7 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
+            if ( ! isset($mapping['reference']) || ! $mapping['isCascadeRefresh']) {
                 continue;
             }
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1388,7 +1410,7 @@ class UnitOfWork
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->_doRefresh($relatedDocument, $visited);
                 }
-            } else if ($relatedDocuments !== null) {
+            } elseif ($relatedDocuments !== null) {
                 $this->_doRefresh($relatedDocuments, $visited);
             }
         }
@@ -1404,7 +1426,7 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
+            if ( ! isset($mapping['reference']) || ! $mapping['isCascadeDetach']) {
                 continue;
             }
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1416,7 +1438,7 @@ class UnitOfWork
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->_doDetach($relatedDocument, $visited);
                 }
-            } else if ($relatedDocuments !== null) {
+            } elseif ($relatedDocuments !== null) {
                 $this->_doDetach($relatedDocuments, $visited);
             }
         }
@@ -1433,7 +1455,7 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
+            if ( ! isset($mapping['reference']) || ! $mapping['isCascadeMerge']) {
                 continue;
             }
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1445,7 +1467,7 @@ class UnitOfWork
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->_doMerge($relatedDocument, $visited, $managedCopy, $mapping);
                 }
-            } else if ($relatedDocuments !== null) {
+            } elseif ($relatedDocuments !== null) {
                 $this->_doMerge($relatedDocuments, $visited, $managedCopy, $mapping);
             }
         }
@@ -1462,10 +1484,9 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
+            if ( ! isset($mapping['reference']) || ! $mapping['isCascadePersist']) {
                 continue;
             }
-
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
             if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
                 if ($relatedDocuments instanceof PersistentCollection) {
@@ -1475,7 +1496,7 @@ class UnitOfWork
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->_doPersist($relatedDocument, $visited);
                 }
-            } else if ($relatedDocuments !== null) {
+            } elseif ($relatedDocuments !== null) {
                 $this->_doPersist($relatedDocuments, $visited);
             }
         }
@@ -1491,7 +1512,7 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
+            if ( ! isset($mapping['reference']) || ! $mapping['isCascadeRemove']) {
                 continue;
             }
             //TODO: If $document instanceof Proxy => Initialize ?
@@ -1501,7 +1522,7 @@ class UnitOfWork
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->_doRemove($relatedDocument, $visited);
                 }
-            } else if ($relatedDocuments !== null) {
+            } elseif ($relatedDocuments !== null) {
                 $this->_doRemove($relatedDocuments, $visited);
             }
         }

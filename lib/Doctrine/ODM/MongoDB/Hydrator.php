@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Query,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\PersistentCollection,
+    Doctrine\ODM\MongoDB\Mapping\Types,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection;
 
@@ -67,7 +68,10 @@ class Hydrator
     {
         $values = array();
         foreach ($metadata->fieldMappings as $mapping) {
-            if (isset($data[$mapping['fieldName']]) && isset($mapping['embedded'])) {
+            if ( ! isset($data[$mapping['fieldName']])) {
+                continue;
+            }
+            if (isset($mapping['embedded'])) {
                 $embeddedMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 $embeddedDocument = $embeddedMetadata->newInstance();
                 if ($mapping['type'] === 'many') {
@@ -84,11 +88,7 @@ class Hydrator
                     $this->hydrate($embeddedMetadata, $value, $data[$mapping['fieldName']]);
                     $metadata->setFieldValue($document, $mapping['fieldName'], $value);
                 }
-            } else if (isset($data[$mapping['fieldName']])) {
-                $value = $data[$mapping['fieldName']];
-                $metadata->setFieldValue($document, $mapping['fieldName'], $value);
-            }
-            if (isset($mapping['reference'])) {
+            } elseif (isset($mapping['reference'])) {
                 $targetMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 $targetDocument = $targetMetadata->newInstance();
                 $value = isset($data[$mapping['fieldName']]) ? $data[$mapping['fieldName']] : null;
@@ -96,7 +96,7 @@ class Hydrator
                     $id = (string) $value['$id'];
                     $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
                     $metadata->setFieldValue($document, $mapping['fieldName'], $proxy);
-                } else if ($mapping['type'] === 'many' && (is_array($value) || $value instanceof Collection)) {
+                } elseif ($mapping['type'] === 'many' && (is_array($value) || $value instanceof Collection)) {
                     $documents = new PersistentCollection($this->_dm, $targetMetadata, new ArrayCollection());
                     $documents->setInitialized(false);
                     foreach ($value as $v) {
@@ -106,6 +106,10 @@ class Hydrator
                     }
                     $metadata->setFieldValue($document, $mapping['fieldName'], $documents);
                 }
+            } else {
+                $value = $data[$mapping['fieldName']];
+                $value = Types::getType($mapping['type'])->convertToPHPValue($value);
+                $metadata->setFieldValue($document, $mapping['fieldName'], $value);
             }
             if (isset($value)) {
                 $values[$mapping['fieldName']] = $value;

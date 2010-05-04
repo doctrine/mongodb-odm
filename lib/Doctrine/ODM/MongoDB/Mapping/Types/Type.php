@@ -15,50 +15,21 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
-*/
+ */
 
-namespace Doctrine\ODM\MongoDB\Event;
-
-use Doctrine\Common\EventArgs;
+namespace Doctrine\ODM\MongoDB\Mapping\Types;
 
 /**
- * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
- * of entities.
+ * The Type interface.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
- * @since       1.0
+ * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    	www.doctrine-project.org
+ * @since   	1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class LifecycleEventArgs extends EventArgs
+interface Type
 {
-    /**
-     * @var DocumentManager
-     */
-    private $_em;
-
-    /**
-     * @var object
-     */
-    private $_document;
-    
-    public function __construct($document, $em)
-    {
-        $this->_document = $document;
-        $this->_em = $em;
-    }
-    
-    public function getDocument()
-    {
-        return $this->_document;
-    }
-
-    /**
-     * @return DocumentManager
-     */
-    public function getDocumentManager()
-    {
-        return $this->_em;
-    }
+    function convertToDatabaseValue($value);
+    function convertToPHPValue($value);
 }
