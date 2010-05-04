@@ -545,6 +545,10 @@ class ClassMetadata
             $mapping = array_merge($mapping, $this->fieldMappings[$mapping['fieldName']]);
         }
 
+        if ( ! isset($mapping['type'])) {
+            $mapping['type'] = 'string';
+        }
+
         if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
         }
@@ -587,6 +591,7 @@ class ClassMetadata
     public function mapFile(array $mapping)
     {
         $mapping['file'] = true;
+        $mapping['type'] = 'file';
         $this->mapField($mapping);
     }
 

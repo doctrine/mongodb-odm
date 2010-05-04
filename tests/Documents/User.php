@@ -15,11 +15,14 @@ class User
     /** @Id */
     protected $id;
 
-    /** @Field */
+    /** @Field(type="string") */
     protected $username;
 
-    /** @Field */
+    /** @BinMD5 */
     protected $password;
+
+    /** @Date */
+    protected $createdAt;
 
     /** @EmbedOne(targetDocument="Address") */
     protected $address;
@@ -40,6 +43,7 @@ class User
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->groups = array();
+        $this->createdAt = new \DateTime();
     }
 
     public function getId()
@@ -65,6 +69,11 @@ class User
     public function getPassword()
     {
         return $this->password;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 
     public function getAddress()

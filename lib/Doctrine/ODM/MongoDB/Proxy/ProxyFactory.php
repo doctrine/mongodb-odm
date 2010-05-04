@@ -179,7 +179,7 @@ class ProxyFactory
                     // We need to pick the type hint class too
                     if (($paramClass = $param->getClass()) !== null) {
                         $parameterString .= '\\' . $paramClass->getName() . ' ';
-                    } else if ($param->isArray()) {
+                    } elseif ($param->isArray()) {
                         $parameterString .= 'array ';
                     }
 

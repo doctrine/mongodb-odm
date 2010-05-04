@@ -23,6 +23,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
+    Doctrine\ODM\MongoDB\Mapping\Types,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\Collections\ArrayCollection;
 
@@ -356,7 +357,7 @@ class UnitOfWork
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
                 if (is_object($orgValue) && $orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
-                } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+                } elseif ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 }
 
@@ -451,7 +452,7 @@ class UnitOfWork
                 return; // Ignore uninitialized proxy objects
             }
             $value = array($value);
-        } else if ($value instanceof PersistentCollection) {
+        } elseif ($value instanceof PersistentCollection) {
             $value = $value->unwrap();
         }
         
@@ -473,7 +474,7 @@ class UnitOfWork
 
                 $this->computeChangeSet($targetClass, $entry);
                 
-            } else if ($state == self::STATE_REMOVED) {
+            } elseif ($state == self::STATE_REMOVED) {
                 throw MongoDBException::removedDocumentInCollectionDetected($document, $mapping);
             }
             // MANAGED associated documents are already taken into account
@@ -521,7 +522,7 @@ class UnitOfWork
             $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
             if (is_object($orgValue) && $orgValue !== $actualValue) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
-            } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+            } elseif ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
         }
@@ -592,7 +593,7 @@ class UnitOfWork
     }
 
     /**
-     * Executes all entity updates for documents of the specified type.
+     * Executes all document updates for documents of the specified type.
      *
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      */
@@ -667,23 +668,30 @@ class UnitOfWork
                     $coll = $changeset[$mapping['fieldName']];
                     $changeset[$mapping['fieldName']] = array();
                     foreach ($coll as $key => $doc) {
+                        $docOid = spl_object_hash($doc);
+                        if ( ! isset($this->_documentIdentifiers[$docOid])) {
+                            continue;
+                        }
                         $ref = array(
                             '$ref' => $targetClass->getCollection(),
-                            '$id' => $targetClass->getIdentifierValue($doc)
+                            '$id' => $this->_documentIdentifiers[$docOid]
                         );
-                        $changeset[$mapping['fieldName']][$key] = $ref;
+                        $changeset[$mapping['fieldName']][] = $ref;
                     }
-                } else if (isset($changeset[$mapping['fieldName']])) {
+                } elseif (isset($changeset[$mapping['fieldName']])) {
                     $doc = $changeset[$mapping['fieldName']];
-                    $id = $targetClass->getIdentifierValue($doc);
+                    $docOid = spl_object_hash($doc);
                     $changeset[$mapping['fieldName']] = array();
-                    $ref = array(
-                        '$ref' => $targetClass->getCollection(),
-                        '$id' => $id
-                    );
-                    $changeset[$mapping['fieldName']] = $ref;
+                    if (isset($this->_documentIdentifiers[$docOid])) {
+                        $id = $this->_documentIdentifiers[$docOid];
+                        $ref = array(
+                            '$ref' => $targetClass->getCollection(),
+                            '$id' => $id
+                        );
+                        $changeset[$mapping['fieldName']] = $ref;
+                    }
                 }
-            } else if (isset($mapping['embedded'])) {
+            } elseif (isset($mapping['embedded'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 if ($mapping['type'] === 'many' && isset($changeset[$mapping['fieldName']])) {
                     $coll = $changeset[$mapping['fieldName']];
@@ -693,13 +701,15 @@ class UnitOfWork
                             $changeset[$mapping['fieldName']][$key][$targetFieldMapping['fieldName']] = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
                         }
                     }
-                } else if (isset($changeset[$mapping['fieldName']])) {
+                } elseif (isset($changeset[$mapping['fieldName']])) {
                     $doc = $changeset[$mapping['fieldName']];
                     $changeset[$mapping['fieldName']] = array();
                     foreach ($targetClass->fieldMappings as $targetFieldMapping) {
                         $changeset[$mapping['fieldName']][$targetFieldMapping['fieldName']] = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
                     }
                 }
+            } elseif (isset($changeset[$mapping['fieldName']])) {
+                $changeset[$mapping['fieldName']] = Types::getType($mapping['type'])->convertToDatabaseValue($changeset[$mapping['fieldName']]);
             }
         }
         return $changeset;
@@ -1394,7 +1404,7 @@ class UnitOfWork
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->_doRefresh($relatedDocument, $visited);
                 }
-            } else if ($relatedDocuments !== null) {
+            } elseif ($relatedDocuments !== null) {
                 $this->_doRefresh($relatedDocuments, $visited);
             }
         }
@@ -1422,7 +1432,7 @@ class UnitOfWork
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->_doDetach($relatedDocument, $visited);
                 }
-            } else if ($relatedDocuments !== null) {
+            } elseif ($relatedDocuments !== null) {
                 $this->_doDetach($relatedDocuments, $visited);
             }
         }
@@ -1451,7 +1461,7 @@ class UnitOfWork
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->_doMerge($relatedDocument, $visited, $managedCopy, $mapping);
                 }
-            } else if ($relatedDocuments !== null) {
+            } elseif ($relatedDocuments !== null) {
                 $this->_doMerge($relatedDocuments, $visited, $managedCopy, $mapping);
             }
         }
@@ -1480,7 +1490,7 @@ class UnitOfWork
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->_doPersist($relatedDocument, $visited);
                 }
-            } else if ($relatedDocuments !== null) {
+            } elseif ($relatedDocuments !== null) {
                 $this->_doPersist($relatedDocuments, $visited);
             }
         }
@@ -1506,7 +1516,7 @@ class UnitOfWork
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->_doRemove($relatedDocument, $visited);
                 }
-            } else if ($relatedDocuments !== null) {
+            } elseif ($relatedDocuments !== null) {
                 $this->_doRemove($relatedDocuments, $visited);
             }
         }

@@ -11,10 +11,10 @@ class Profile
     /** @Field */
     private $name;
 
-    /** @ReferenceOne(targetDocument="Documents\Image") */
+    /** @ReferenceOne(targetDocument="Documents\Image", cascade={"all"}) */
     private $image;
 
-    /** @ReferenceMany(targetDocument="Documents\Song") */
+    /** @ReferenceMany(targetDocument="Documents\Song", cascade={"all"}) */
     protected $songs;
 
     public function __construct()

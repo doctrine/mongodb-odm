@@ -37,9 +37,9 @@ final class Inheritance extends Annotation
     public $discriminatorMap = array();
     public $discriminatorField;
 }
-
 final class InheritanceType extends Annotation {}
-final class DiscriminatorField extends Annotation {
+final class DiscriminatorField extends Annotation
+{
     public $name;
     public $fieldName;
 }
@@ -51,18 +51,66 @@ final class Index extends Annotation
     public $options = array();
 }
 
-final class Field extends Annotation
-{
-}
-
-final class File extends Annotation
-{
-    public $file = true;
-}
-
 final class Id extends Annotation
 {
     public $id = true;
+}
+final class Field extends Annotation
+{
+    public $type = 'string';
+}
+final class Boolean extends Annotation
+{
+    public $type = 'boolean';
+}
+final class Int extends Annotation
+{
+    public $type = 'int';
+}
+final class Float extends Annotation
+{
+    public $type = 'float';
+}
+final class String extends Annotation
+{
+    public $type = 'string';
+}
+final class Date extends Annotation
+{
+    public $type = 'date';
+}
+final class Key extends Annotation
+{
+    public $type = 'key';
+}
+final class Timestamp extends Annotation
+{
+    public $type = 'timestamp';
+}
+final class Bin extends Annotation
+{
+    public $type = 'bin';
+}
+final class BinFunc extends Annotation
+{
+    public $type = 'bin_func';
+}
+final class BinUUID extends Annotation
+{
+    public $type = 'bin_uuid';
+}
+final class BinMD5 extends Annotation
+{
+    public $type = 'bin_md5';
+}
+final class BinCustom extends Annotation
+{
+    public $type = 'bin_custom';
+}
+final class File extends Annotation
+{
+    public $type = 'file';
+    public $file = true;
 }
 
 final class EmbedOne extends Annotation
@@ -71,14 +119,12 @@ final class EmbedOne extends Annotation
     public $embedded = true;
     public $targetDocument;
 }
-
 final class EmbedMany extends Annotation
 {
     public $type = 'many';
     public $embedded = true;
     public $targetDocument;
 }
-
 final class ReferenceOne extends Annotation
 {
     public $type = 'one';
@@ -86,7 +132,6 @@ final class ReferenceOne extends Annotation
     public $targetDocument;
     public $cascade;
 }
-
 final class ReferenceMany extends Annotation
 {
     public $type = 'many';

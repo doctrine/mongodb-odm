@@ -190,7 +190,7 @@ class DocumentRepository
         if (substr($method, 0, 6) == 'findBy') {
             $by = substr($method, 6, strlen($method));
             $method = 'findBy';
-        } else if (substr($method, 0, 9) == 'findOneBy') {
+        } elseif (substr($method, 0, 9) == 'findOneBy') {
             $by = substr($method, 9, strlen($method));
             $method = 'findOneBy';
         } else {

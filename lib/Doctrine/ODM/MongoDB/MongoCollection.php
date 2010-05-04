@@ -143,7 +143,7 @@ class MongoCollection
                 }
 
                 $id = $this->_mongoCollection->storeFile($file, $a);
-            } else if (is_string($file)) {
+            } elseif (is_string($file)) {
                 if ($this->_loggerCallable) {
                     $this->log(array(
                         'storing' => true,
