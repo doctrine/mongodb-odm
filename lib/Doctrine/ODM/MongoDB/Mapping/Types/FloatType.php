@@ -37,6 +37,6 @@ class FloatType implements Type
 
     public function convertToPHPValue($value)
     {
-        return (float) $value);
+        return (float) $value;
     }
 }

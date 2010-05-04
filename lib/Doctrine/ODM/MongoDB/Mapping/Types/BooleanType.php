@@ -37,6 +37,6 @@ class BooleanType implements Type
 
     public function convertToPHPValue($value)
     {
-        return (boolean) $value);
+        return (boolean) $value;
     }
 }

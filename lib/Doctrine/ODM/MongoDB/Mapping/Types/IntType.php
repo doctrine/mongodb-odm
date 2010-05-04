@@ -37,6 +37,6 @@ class IntType implements Type
 
     public function convertToPHPValue($value)
     {
-        return (integer) $value);
+        return (integer) $value;
     }
 }
