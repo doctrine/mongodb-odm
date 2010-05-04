@@ -246,15 +246,17 @@ Each Document is stored in its own collection:
 Create a new instance, set some of the properties and persist it:
 
     $user = new User();
-    $user->username = 'jwage';
-    $user->password = 'changeme';
+    $user->setUsername('jwage');
+    $user->setPassword('changeme');
 
-    $user->profile = new Profile();
-    $user->profile->firstName = 'Jonathan';
-    $user->profile->lastName = 'Wage';
+    $profile = new Profile();
+    $profile->setFirstName('Jonathan');
+    $profile->setLastName('Wage');
+    $user->setProfile($profile);
 
-    $user->account = new Account();
-    $user->account->name = 'Test Account';
+    $account = new Account();
+    $account->setName('Test Account');
+    $user->setAccount($account);
 
     $dm->persist($user);
     $dm->flush();
