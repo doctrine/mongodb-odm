@@ -480,3 +480,18 @@ you can use:
 
     header('Content-type: image/png;');
     echo $image->getFile()->getBytes();
+
+## Logging
+
+If you want to turn on logging and receive information about queries made to the
+database you can do so on your Doctrine\ODM\MongoDB\Configuration instance we 
+configured at the start of this document:
+
+    // ...
+
+    $config->setLoggerCallable(function(array $log) {
+        print_r($log);
+    });
+
+You can register any PHP callable and it will be notified with a single argument
+that is an array of information about the query being sent to the database.
