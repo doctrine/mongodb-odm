@@ -621,7 +621,11 @@ class UnitOfWork
                 }
 
                 $update = $this->_prepareUpdate($class, $document);
-                $collection->save($update);
+                $id = $update['_id'];
+                unset($update['_id']);
+
+                $collection->update(array('_id' => $id), array('$set' => $update));
+                
                 unset($this->_documentUpdates[$oid]);
 
                 if ($hasPostUpdateLifecycleCallbacks) {

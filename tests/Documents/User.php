@@ -71,6 +71,11 @@ class User
         return $this->password;
     }
 
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
+
     public function getCreatedAt()
     {
         return $this->createdAt;
