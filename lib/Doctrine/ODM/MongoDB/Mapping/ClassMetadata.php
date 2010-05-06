@@ -557,7 +557,7 @@ class ClassMetadata
         $reflProp->setAccessible(true);
         $this->reflFields[$mapping['fieldName']] = $reflProp;
 
-        if (isset($mapping['cascade']) && in_array('all', $mapping['cascade'])) {
+        if (isset($mapping['cascade']) && in_array('all', (array) $mapping['cascade'])) {
             unset($mapping['all']);
             $default = true;
         } else {
