@@ -672,28 +672,15 @@ class UnitOfWork
                     $coll = $changeset[$mapping['fieldName']];
                     $changeset[$mapping['fieldName']] = array();
                     foreach ($coll as $key => $doc) {
-                        $docOid = spl_object_hash($doc);
-                        if ( ! isset($this->_documentIdentifiers[$docOid])) {
-                            continue;
+                        $ref = $this->_prepareRefArray($targetClass, $doc);
+                        if (isset ($ref)) {
+                            $changeset[$mapping['fieldName']][] = $ref;
                         }
-                        $ref = array(
-                            '$ref' => $targetClass->getCollection(),
-                            '$id' => $this->_documentIdentifiers[$docOid],
-                            '$db' => $targetClass->getDB()
-                        );
-                        $changeset[$mapping['fieldName']][] = $ref;
                     }
                 } elseif (isset($changeset[$mapping['fieldName']])) {
                     $doc = $changeset[$mapping['fieldName']];
-                    $docOid = spl_object_hash($doc);
-                    $changeset[$mapping['fieldName']] = array();
-                    if (isset($this->_documentIdentifiers[$docOid])) {
-                        $id = $this->_documentIdentifiers[$docOid];
-                        $ref = array(
-                            '$ref' => $targetClass->getCollection(),
-                            '$id' => $id,
-                            '$db' => $targetClass->getDB()
-                        );
+                    $ref = $this->_prepareRefArray($targetClass, $doc);
+                    if (isset ($ref)) {
                         $changeset[$mapping['fieldName']] = $ref;
                     }
                 }
@@ -719,6 +706,21 @@ class UnitOfWork
             }
         }
         return $changeset;
+    }
+
+    protected function _prepareRefArray($class, $doc)
+    {
+        $docOid = spl_object_hash($doc);
+        if (isset($this->_documentIdentifiers[$docOid])) {
+            $id = $this->_documentIdentifiers[$docOid];
+            $ref = array(
+                '$ref' => $class->getCollection(),
+                '$id' => $id,
+                '$db' => $class->getDB()
+            );
+            return $ref;
+        }
+        return null;
     }
 
     /**
