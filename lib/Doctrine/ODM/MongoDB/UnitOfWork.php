@@ -672,30 +672,11 @@ class UnitOfWork
                     $coll = $changeset[$mapping['fieldName']];
                     $changeset[$mapping['fieldName']] = array();
                     foreach ($coll as $key => $doc) {
-                        $docOid = spl_object_hash($doc);
-                        if ( ! isset($this->_documentIdentifiers[$docOid])) {
-                            continue;
-                        }
-                        $ref = array(
-                            '$ref' => $targetClass->getCollection(),
-                            '$id' => $this->_documentIdentifiers[$docOid],
-                            '$db' => $targetClass->getDB()
-                        );
-                        $changeset[$mapping['fieldName']][] = $ref;
+                        $changeset[$mapping['fieldName']][] = $this->_generateRefArray($targetClass, $doc);
                     }
                 } elseif (isset($changeset[$mapping['fieldName']])) {
                     $doc = $changeset[$mapping['fieldName']];
-                    $docOid = spl_object_hash($doc);
-                    $changeset[$mapping['fieldName']] = array();
-                    if (isset($this->_documentIdentifiers[$docOid])) {
-                        $id = $this->_documentIdentifiers[$docOid];
-                        $ref = array(
-                            '$ref' => $targetClass->getCollection(),
-                            '$id' => $id,
-                            '$db' => $targetClass->getDB()
-                        );
-                        $changeset[$mapping['fieldName']] = $ref;
-                    }
+                    $changeset[$mapping['fieldName']] = $this->_generateRefArray($targetClass, $doc);
                 }
             } elseif (isset($mapping['embedded'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
@@ -704,7 +685,28 @@ class UnitOfWork
                     $changeset[$mapping['fieldName']] = array();
                     foreach ($coll as $key => $doc) {
                         foreach ($targetClass->fieldMappings as $targetFieldMapping) {
-                            $changeset[$mapping['fieldName']][$key][$targetFieldMapping['fieldName']] = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
+                            if (isset($targetFieldMapping['reference'])) {
+                                $changeset[$mapping['fieldName']][$key][$targetFieldMapping['fieldName']] = array();
+                                $referencedClass = $this->_dm->getClassMetadata($targetFieldMapping['targetDocument']);
+                                if ($targetFieldMapping['type'] === 'many') {
+                                    $referencedDocs = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
+                                    if ($referencedDocs instanceof Collection || is_array($referencedDocs)) {
+                                        if ($referencedDocs instanceof PersistentCollection) {
+                                            // Unwrap so that foreach() does not initialize
+                                            $referencedDocs = $referencedDocs->unwrap();
+                                        }
+                                        foreach ($referencedDocs as $referencedDoc) {
+                                            $referencedClass = $this->_dm->getClassMetadata($referencedDoc);
+                                            $changeset[$mapping['fieldName']][$key][$targetFieldMapping['fieldName']][] = $this->_generateRefArray($referencedClass, $referencedDoc);
+                                        }
+                                    }
+                                } else {
+                                    $referencedDoc = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
+                                    $changeset[$mapping['fieldName']][$key][$targetFieldMapping['fieldName']] = $this->_generateRefArray($referencedClass, $referencedDoc);
+                                }
+                            } else {
+                                $changeset[$mapping['fieldName']][$key][$targetFieldMapping['fieldName']] = $targetClass->getFieldValue($doc, $targetFieldMapping['fieldName']);
+                            }
                         }
                     }
                 } elseif (isset($changeset[$mapping['fieldName']])) {
@@ -719,6 +721,19 @@ class UnitOfWork
             }
         }
         return $changeset;
+    }
+
+    private function _generateRefArray($targetClass, $doc) {
+        $docOid = spl_object_hash($doc);
+        if ( ! isset($this->_documentIdentifiers[$docOid])) {
+            return array();
+        }
+        $ref = array(
+            '$ref' => $targetClass->getCollection(),
+            '$id' => $this->_documentIdentifiers[$docOid],
+            '$db' => $targetClass->getDB()
+        );
+        return $ref;
     }
 
     /**
@@ -1485,6 +1500,20 @@ class UnitOfWork
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
             if ( ! isset($mapping['reference']) || ! $mapping['isCascadePersist']) {
+                if (isset($mapping['embedded'])) {
+                    $embeddedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                    if (($embeddedDocuments instanceof Collection || is_array($embeddedDocuments))) {
+                        if ($embeddedDocuments instanceof PersistentCollection) {
+                            // Unwrap so that foreach() does not initialize
+                            $embeddedDocuments = $embeddedDocuments->unwrap();
+                        }
+                        foreach ($embeddedDocuments as $embeddedDocument) {
+                            $this->_cascadePersist($embeddedDocument, $visited);
+                        }
+                    } elseif ($embeddedDocuments !== null) {
+                        $this->_cascadePersist($embeddedDocuments, $visited);
+                    }
+                }
                 continue;
             }
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
