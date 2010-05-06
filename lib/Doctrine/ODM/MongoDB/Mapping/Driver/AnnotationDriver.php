@@ -27,9 +27,9 @@ require __DIR__ . '/DoctrineAnnotations.php';
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       1.0
+ * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    	www.doctrine-project.org
+ * @since   	1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
@@ -141,10 +141,10 @@ class AnnotationDriver implements Driver
             foreach ($types as $type) {
                 if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\\' . $type)) {
                     $mapping = array_merge($mapping, (array) $fieldAnnot);
-                    $class->mapField($mapping);
                     break;
                 }
             }
+            $class->mapField($mapping);
         }
 
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\HasLifecycleCallbacks'])) {
