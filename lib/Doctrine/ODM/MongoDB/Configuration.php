@@ -24,7 +24,15 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\Driver,
     Doctrine\Common\Cache\Cache;
 
 /**
- * Configuration class for the DocumentManager
+ * Configuration class for the DocumentManager. When setting up your DocumentManager
+ * you can optionally specify an instance of this class as the second argument.
+ * If you do not pass a configuration object, a blank one will be created for you.
+ *
+ *     <?php
+ *
+ *     $config = new Configuration();
+ *     $em = DocumentManager::create(new Mongo(), $config);
+ *
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com

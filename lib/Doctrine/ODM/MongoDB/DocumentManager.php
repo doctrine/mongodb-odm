@@ -33,6 +33,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
  * The DocumentManager class is the central access point for managing the
  * persistence of documents.
  *
+ *     <?php
+ *
+ *     $config = new Configuration();
+ *     $em = DocumentManager::create(new Mongo(), $config);
+ *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
