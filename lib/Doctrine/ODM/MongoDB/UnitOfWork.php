@@ -704,6 +704,13 @@ class UnitOfWork
         return $changeset;
     }
 
+    /**
+     * returns the reference representation to be stored in mongodb
+     * or null if not applicable
+     * @param ClassMetadata $class
+     * @param Document $doc
+     * @return array|null
+     */
     private function _prepareDocReference($class, $doc)
     {
         $docOid = spl_object_hash($doc);
@@ -719,6 +726,13 @@ class UnitOfWork
         return null;
     }
 
+    /**
+     * prepares array of values to be stored in mongo
+     * to represent embedded object
+     * @param ClassMetadata $class
+     * @param Document $doc
+     * @return array
+     */
     private function _prepareDocEmbeded($class, $doc)
     {
         $changeset = array();
