@@ -49,8 +49,12 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
 
         $this->dm->persist($product);
         $this->dm->flush();
+		foreach ($currencies as $currency) {
+			$this->dm->detach($currency);
+		}
+		$this->dm->detach($product);
 
-        unset ($currency, $product);
+        unset ($currencies, $product);
     }
 
     public function tearDown()
@@ -71,8 +75,11 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($products));
 
         $products->valid() ?: $products->next();
-        
+
         $product = $products->current();
+        $price =  $product->getOption('small')->getPrice(true);
+        $currency = $price->getCurrency();
+        $this->assertTrue($currency instanceof Currency);
         $this->assertEquals(3, count($product->getOptions()));
         $this->assertEquals(12.99, $product->getOption('small')->getPrice());
 
@@ -92,8 +99,8 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
         $product = $products->current();
         $price =  $product->getOption('small')->getPrice(true);
         $currency = $price->getCurrency();
-        $this->assertNotNull($currency->getId());
         $this->assertTrue($currency instanceof Currency);
+        $this->assertNotNull($currency->getId());
         $this->assertEquals($currency, $this->dm->findOne('Documents\Ecommerce\Currency', array('name' => Currency::USD)));
     }
 
