@@ -673,14 +673,14 @@ class UnitOfWork
                     $changeset[$mapping['fieldName']] = array();
                     foreach ($coll as $key => $doc) {
                         $ref = $this->_prepareDocReference($targetClass, $doc);
-                        if (isset ($ref)) {
+                        if (isset($ref)) {
                             $changeset[$mapping['fieldName']][] = $ref;
                         }
                     }
                 } elseif (isset($changeset[$mapping['fieldName']])) {
                     $doc = $changeset[$mapping['fieldName']];
                     $ref = $this->_prepareDocReference($targetClass, $doc);
-                    if (isset ($ref)) {
+                    if (isset($ref)) {
                         $changeset[$mapping['fieldName']] = $ref;
                     }
                 }
@@ -707,10 +707,10 @@ class UnitOfWork
     private function _prepareDocReference($class, $doc)
     {
         $docOid = spl_object_hash($doc);
-        if (!isset ($this->_documentIdentifiers[$docOid])) {
+        if (!isset($this->_documentIdentifiers[$docOid])) {
             $this->_executeInserts($class);
         }
-        if (isset ($this->_documentIdentifiers[$docOid])) {
+        if (isset($this->_documentIdentifiers[$docOid])) {
             $id = $this->_documentIdentifiers[$docOid];
             $ref = array(
                 '$ref' => $class->getCollection(),
@@ -727,12 +727,12 @@ class UnitOfWork
         $changeset = array();
         foreach ($class->fieldMappings as $mapping) {
             $rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
-            if (isset ($mapping['embedded']) || isset ($mapping['reference'])) {
+            if (isset($mapping['embedded']) || isset($mapping['reference'])) {
                 $document = $rawValue;
                 $classMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if (isset ($mapping['embedded'])) {
+                if (isset($mapping['embedded'])) {
                     $value = $this->_prepareDocEmbeded($classMetadata, $document);
-                } elseif (isset ($mapping['reference'])) {
+                } elseif (isset($mapping['reference'])) {
                     $value = $this->_prepareDocReference($classMetadata, $document);
                 }
             } else {
@@ -1424,31 +1424,31 @@ class UnitOfWork
                 continue;
             }
             if (isset($mapping['embedded'])) {
-				$relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-				if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-					if ($relatedDocuments instanceof PersistentCollection) {
-						// Unwrap so that foreach() does not initialize
-						$relatedDocuments = $relatedDocuments->unwrap();
-					}
-					foreach ($relatedDocuments as $relatedDocument) {
-						$this->_cascadeRefresh($relatedDocument, $visited);
-					}
-				} elseif ($relatedDocuments !== null) {
-					$this->_cascadeRefresh($relatedDocuments, $visited);
-				}
+                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+                    if ($relatedDocuments instanceof PersistentCollection) {
+                        // Unwrap so that foreach() does not initialize
+                        $relatedDocuments = $relatedDocuments->unwrap();
+                    }
+                    foreach ($relatedDocuments as $relatedDocument) {
+                        $this->_cascadeRefresh($relatedDocument, $visited);
+                    }
+                } elseif ($relatedDocuments !== null) {
+                    $this->_cascadeRefresh($relatedDocuments, $visited);
+                }
             } elseif (isset($mapping['reference'])) {
-				$relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-				if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-					if ($relatedDocuments instanceof PersistentCollection) {
-						// Unwrap so that foreach() does not initialize
-						$relatedDocuments = $relatedDocuments->unwrap();
-					}
-					foreach ($relatedDocuments as $relatedDocument) {
-						$this->_doRefresh($relatedDocument, $visited);
-					}
-				} elseif ($relatedDocuments !== null) {
-					$this->_doRefresh($relatedDocuments, $visited);
-				}
+                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+                    if ($relatedDocuments instanceof PersistentCollection) {
+                        // Unwrap so that foreach() does not initialize
+                        $relatedDocuments = $relatedDocuments->unwrap();
+                    }
+                    foreach ($relatedDocuments as $relatedDocument) {
+                        $this->_doRefresh($relatedDocument, $visited);
+                    }
+                } elseif ($relatedDocuments !== null) {
+                    $this->_doRefresh($relatedDocuments, $visited);
+                }
             }
         }
     }
@@ -1463,35 +1463,35 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if (!isset ($mapping['embedded']) && (!isset ($mapping['reference']) || ! $mapping['isCascadeDetach'])) {
+            if (!isset($mapping['embedded']) && (!isset($mapping['reference']) || ! $mapping['isCascadeDetach'])) {
                 continue;
             }
             if (isset($mapping['embedded'])) {
-				$relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-				if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-					if ($relatedDocuments instanceof PersistentCollection) {
-						// Unwrap so that foreach() does not initialize
-						$relatedDocuments = $relatedDocuments->unwrap();
-					}
-					foreach ($relatedDocuments as $relatedDocument) {
-						$this->_cascadeDetach($relatedDocument, $visited);
-					}
-				} elseif ($relatedDocuments !== null) {
-					$this->_cascadeDetach($relatedDocuments, $visited);
-				}
+                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+                    if ($relatedDocuments instanceof PersistentCollection) {
+                        // Unwrap so that foreach() does not initialize
+                        $relatedDocuments = $relatedDocuments->unwrap();
+                    }
+                    foreach ($relatedDocuments as $relatedDocument) {
+                        $this->_cascadeDetach($relatedDocument, $visited);
+                    }
+                } elseif ($relatedDocuments !== null) {
+                    $this->_cascadeDetach($relatedDocuments, $visited);
+                }
             } elseif (isset($mapping['reference'])) {
-				$relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-				if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-					if ($relatedDocuments instanceof PersistentCollection) {
-						// Unwrap so that foreach() does not initialize
-						$relatedDocuments = $relatedDocuments->unwrap();
-					}
-					foreach ($relatedDocuments as $relatedDocument) {
-						$this->_doDetach($relatedDocument, $visited);
-					}
-				} elseif ($relatedDocuments !== null) {
-					$this->_doDetach($relatedDocuments, $visited);
-				}
+                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+                    if ($relatedDocuments instanceof PersistentCollection) {
+                        // Unwrap so that foreach() does not initialize
+                        $relatedDocuments = $relatedDocuments->unwrap();
+                    }
+                    foreach ($relatedDocuments as $relatedDocument) {
+                        $this->_doDetach($relatedDocument, $visited);
+                    }
+                } elseif ($relatedDocuments !== null) {
+                    $this->_doDetach($relatedDocuments, $visited);
+                }
             }
         }
     }
@@ -1507,35 +1507,35 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if (!isset ($mapping['embedded']) && (!isset ($mapping['reference']) || ! $mapping['isCascadeMerge'])) {
+            if (!isset($mapping['embedded']) && (!isset($mapping['reference']) || ! $mapping['isCascadeMerge'])) {
                 continue;
             }
             if (isset($mapping['embedded'])) {
-				$relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-				if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-					if ($relatedDocuments instanceof PersistentCollection) {
-						// Unwrap so that foreach() does not initialize
-						$relatedDocuments = $relatedDocuments->unwrap();
-					}
-					foreach ($relatedDocuments as $relatedDocument) {
-						$this->_cascadeMerge($relatedDocument, $visited);
-					}
-				} elseif ($relatedDocuments !== null) {
-					$this->_cascadeMerge($relatedDocuments, $visited);
-				}
+                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+                    if ($relatedDocuments instanceof PersistentCollection) {
+                        // Unwrap so that foreach() does not initialize
+                        $relatedDocuments = $relatedDocuments->unwrap();
+                    }
+                    foreach ($relatedDocuments as $relatedDocument) {
+                        $this->_cascadeMerge($relatedDocument, $visited);
+                    }
+                } elseif ($relatedDocuments !== null) {
+                    $this->_cascadeMerge($relatedDocuments, $visited);
+                }
             } elseif (isset($mapping['reference'])) {
-				$relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-				if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-					if ($relatedDocuments instanceof PersistentCollection) {
-						// Unwrap so that foreach() does not initialize
-						$relatedDocuments = $relatedDocuments->unwrap();
-					}
-					foreach ($relatedDocuments as $relatedDocument) {
-						$this->_doMerge($relatedDocument, $visited);
-					}
-				} elseif ($relatedDocuments !== null) {
-					$this->_doMerge($relatedDocuments, $visited);
-				}
+                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+                    if ($relatedDocuments instanceof PersistentCollection) {
+                        // Unwrap so that foreach() does not initialize
+                        $relatedDocuments = $relatedDocuments->unwrap();
+                    }
+                    foreach ($relatedDocuments as $relatedDocument) {
+                        $this->_doMerge($relatedDocument, $visited);
+                    }
+                } elseif ($relatedDocuments !== null) {
+                    $this->_doMerge($relatedDocuments, $visited);
+                }
             }
         }
     }
@@ -1551,35 +1551,35 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if (!isset ($mapping['embedded']) && (!isset ($mapping['reference']) || !$mapping['isCascadePersist'])) {
+            if (!isset($mapping['embedded']) && (!isset($mapping['reference']) || !$mapping['isCascadePersist'])) {
                 continue;
             }
             if (isset($mapping['embedded'])) {
-				$relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-				if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-					if ($relatedDocuments instanceof PersistentCollection) {
-						// Unwrap so that foreach() does not initialize
-						$relatedDocuments = $relatedDocuments->unwrap();
-					}
-					foreach ($relatedDocuments as $relatedDocument) {
-						$this->_cascadePersist($relatedDocument, $visited);
-					}
-				} elseif ($relatedDocuments !== null) {
-					$this->_cascadePersist($relatedDocuments, $visited);
-				}
+                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+                    if ($relatedDocuments instanceof PersistentCollection) {
+                        // Unwrap so that foreach() does not initialize
+                        $relatedDocuments = $relatedDocuments->unwrap();
+                    }
+                    foreach ($relatedDocuments as $relatedDocument) {
+                        $this->_cascadePersist($relatedDocument, $visited);
+                    }
+                } elseif ($relatedDocuments !== null) {
+                    $this->_cascadePersist($relatedDocuments, $visited);
+                }
             } elseif (isset($mapping['reference'])) {
-				$relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-				if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-					if ($relatedDocuments instanceof PersistentCollection) {
-						// Unwrap so that foreach() does not initialize
-						$relatedDocuments = $relatedDocuments->unwrap();
-					}
-					foreach ($relatedDocuments as $relatedDocument) {
-						$this->_doPersist($relatedDocument, $visited);
-					}
-				} elseif ($relatedDocuments !== null) {
-					$this->_doPersist($relatedDocuments, $visited);
-				}
+                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+                    if ($relatedDocuments instanceof PersistentCollection) {
+                        // Unwrap so that foreach() does not initialize
+                        $relatedDocuments = $relatedDocuments->unwrap();
+                    }
+                    foreach ($relatedDocuments as $relatedDocument) {
+                        $this->_doPersist($relatedDocument, $visited);
+                    }
+                } elseif ($relatedDocuments !== null) {
+                    $this->_doPersist($relatedDocuments, $visited);
+                }
             }
         }
     }
@@ -1594,35 +1594,35 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if (!isset ($mapping['embedded']) && (!isset ($mapping['reference']) || ! $mapping['isCascadeRemove'])) {
+            if (!isset($mapping['embedded']) && (!isset($mapping['reference']) || ! $mapping['isCascadeRemove'])) {
                 continue;
             }
             if (isset($mapping['embedded'])) {
-				$relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-				if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-					if ($relatedDocuments instanceof PersistentCollection) {
-						// Unwrap so that foreach() does not initialize
-						$relatedDocuments = $relatedDocuments->unwrap();
-					}
-					foreach ($relatedDocuments as $relatedDocument) {
-						$this->_cascadeRemove($relatedDocument, $visited);
-					}
-				} elseif ($relatedDocuments !== null) {
-					$this->_cascadeRemove($relatedDocuments, $visited);
-				}
+                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+                    if ($relatedDocuments instanceof PersistentCollection) {
+                        // Unwrap so that foreach() does not initialize
+                        $relatedDocuments = $relatedDocuments->unwrap();
+                    }
+                    foreach ($relatedDocuments as $relatedDocument) {
+                        $this->_cascadeRemove($relatedDocument, $visited);
+                    }
+                } elseif ($relatedDocuments !== null) {
+                    $this->_cascadeRemove($relatedDocuments, $visited);
+                }
             } elseif (isset($mapping['reference'])) {
-				$relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-				if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-					if ($relatedDocuments instanceof PersistentCollection) {
-						// Unwrap so that foreach() does not initialize
-						$relatedDocuments = $relatedDocuments->unwrap();
-					}
-					foreach ($relatedDocuments as $relatedDocument) {
-						$this->_doRemove($relatedDocument, $visited);
-					}
-				} elseif ($relatedDocuments !== null) {
-					$this->_doRemove($relatedDocuments, $visited);
-				}
+                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+                    if ($relatedDocuments instanceof PersistentCollection) {
+                        // Unwrap so that foreach() does not initialize
+                        $relatedDocuments = $relatedDocuments->unwrap();
+                    }
+                    foreach ($relatedDocuments as $relatedDocument) {
+                        $this->_doRemove($relatedDocument, $visited);
+                    }
+                } elseif ($relatedDocuments !== null) {
+                    $this->_doRemove($relatedDocuments, $visited);
+                }
             }
         }
     }
