@@ -32,7 +32,7 @@ class Option
      * @param StockItem $stockItem
      */
     public function __construct($name, Money $money, StockItem $stockItem)
-        {
+    {
         $this->name = (string) $name;
         if (empty ($this->name)) {
             throw new \InvalidArgumentException('option name cannot be empty');
