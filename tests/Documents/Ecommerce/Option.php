@@ -55,8 +55,11 @@ class Option
     /**
      * @return float
      */
-    public function getPrice()
+    public function getPrice($object = false)
     {
+		if (true === $object) {
+			return $this->money;
+		}
         return $this->money->getAmount();
     }
 
