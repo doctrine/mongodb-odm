@@ -8,48 +8,48 @@ namespace Documents\Ecommerce;
 class Currency
 {
 
-	const
+    const
         USD   = 'USD',
         EURO  = 'EURO',
         JPN   = 'JPN';
 
-	/**
-	 * @Id
-	 */
-	protected $id;
+    /**
+     * @Id
+     */
+    protected $id;
 
-	/**
-	 * @String
-	 */
-	protected $name;
+    /**
+     * @String
+     */
+    protected $name;
 
     /**
      * @Float
      */
     protected $multiplier;
 
-	public function __construct($name, $multiplier = 1)
+    public function __construct($name, $multiplier = 1)
     {
-		$name = (string) $name;
-		if (!in_array($name, self::getAll())) {
-			throw new \InvalidArgumentException(
+        $name = (string) $name;
+        if (!in_array($name, self::getAll())) {
+            throw new \InvalidArgumentException(
                 'Currency must be one of ' . implode(', ', self::getAll()) .
-				$name . 'given'
-			);
-		}
-		$this->name = $name;
-		$this->setMultiplier($multiplier);
-	}
+                $name . 'given'
+            );
+        }
+        $this->name = $name;
+        $this->setMultiplier($multiplier);
+    }
 
     public function getId()
     {
         return $this->id;
     }
 
-	public function getName()
+    public function getName()
     {
-		return $this->name;
-	}
+        return $this->name;
+    }
 
     public function getMultiplier()
     {
@@ -67,13 +67,13 @@ class Currency
         $this->multiplier = $multiplier;
     }
 
-	public static function getAll()
+    public static function getAll()
     {
-		return array(
-			self::USD,
-			self::EURO,
-			self::JPN,
-		);
-	}
+        return array(
+            self::USD,
+            self::EURO,
+            self::JPN,
+        );
+    }
 
 }

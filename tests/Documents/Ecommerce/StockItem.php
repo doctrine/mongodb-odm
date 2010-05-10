@@ -8,73 +8,73 @@ namespace Documents\Ecommerce;
 class StockItem
 {
 
-	/**
-	 * @Id
-	 */
-	private $id;
+    /**
+     * @Id
+     */
+    private $id;
 
-	/**
-	 * @String
-	 */
+    /**
+     * @String
+     */
     private $name;
 
-	/**
-	 * @Int
-	 */
+    /**
+     * @Int
+     */
     private $inventory;
-	
-	/**
-	 * @EmbedOne(targetDocument="Documents\Ecommerce\Money")
-	 */
-	private $cost;
-	
-	public function getId()
-    {
-		return $this->id;
-	}
 
-	public function  __construct($name = null, $cost = null, $inventory = null)
-    {
-		if (null !== $name) {
-			$this->setName($name);
-		}
-		if (null !== $cost) {
-			$this->setCost($cost);
-		}
-		if (null !== $inventory) {
-			$this->setInventory($inventory);
-		}
-	}
+    /**
+     * @EmbedOne(targetDocument="Documents\Ecommerce\Money")
+     */
+    private $cost;
 
-	public function setName($name)
+    public function getId()
     {
-		$this->name = (string) $name;
-		return $this;
-	}
-	
-	public function getName()
-    {
-		return $this->name;
-	}
+        return $this->id;
+    }
 
-	public function setCost(Money $cost)
+    public function  __construct($name = null, $cost = null, $inventory = null)
     {
-		$this->cost = $cost;
-	}
+        if (null !== $name) {
+            $this->setName($name);
+        }
+        if (null !== $cost) {
+            $this->setCost($cost);
+        }
+        if (null !== $inventory) {
+            $this->setInventory($inventory);
+        }
+    }
 
-	public function getCost()
+    public function setName($name)
     {
-		return $this->cost->getAmount();
-	}
+        $this->name = (string) $name;
+        return $this;
+    }
 
-	public function setInventory($inventory)
+    public function getName()
     {
-		$this->inventory = (int) $inventory;
-		return $this;
-	}
+        return $this->name;
+    }
 
-	public function getInventory()
+    public function setCost(Money $cost)
     {
-		return $this->inventory;
-	}
+        $this->cost = $cost;
+    }
+
+    public function getCost()
+    {
+        return $this->cost->getAmount();
+    }
+
+    public function setInventory($inventory)
+    {
+        $this->inventory = (int) $inventory;
+        return $this;
+    }
+
+    public function getInventory()
+    {
+        return $this->inventory;
+    }
 }
