@@ -707,9 +707,6 @@ class UnitOfWork
     private function _prepareDocReference($class, $doc)
     {
         $docOid = spl_object_hash($doc);
-        if (!isset($this->_documentIdentifiers[$docOid])) {
-            $this->_executeInserts($class);
-        }
         if (isset($this->_documentIdentifiers[$docOid])) {
             $id = $this->_documentIdentifiers[$docOid];
             $ref = array(
