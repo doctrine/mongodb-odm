@@ -84,17 +84,17 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(12.99 * 2, $product->getOption('small')->getPrice());
     }
 
-	public function testMoneyDocumentsAvailableForReference()
-	{
+    public function testMoneyDocumentsAvailableForReference()
+    {
         $products = $this->dm->find('Documents\Ecommerce\ConfigurableProduct');
         $products->valid() ?: $products->next();
 
         $product = $products->current();
-		$price =  $product->getOption('small')->getPrice(true);
-		$currency = $price->getCurrency();
-		$this->assertNotNull($currency->getId());
-		$this->assertTrue($currency instanceof Currency);
-		$this->assertEquals($currency, $this->dm->findOne('Documents\Ecommerce\Currency', array('name' => Currency::USD)));
-	}
+        $price =  $product->getOption('small')->getPrice(true);
+        $currency = $price->getCurrency();
+        $this->assertNotNull($currency->getId());
+        $this->assertTrue($currency instanceof Currency);
+        $this->assertEquals($currency, $this->dm->findOne('Documents\Ecommerce\Currency', array('name' => Currency::USD)));
+    }
 
 }
