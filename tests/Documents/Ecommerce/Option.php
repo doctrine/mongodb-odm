@@ -8,64 +8,64 @@ namespace Documents\Ecommerce;
 class Option
 {
 
-	/**
-	 * @String
-	 * @var string
+    /**
+     * @String
+     * @var string
      */
-	protected $name;
+    protected $name;
 
-	/**
-	 * @EmbedOne(targetDocument="Documents\Ecommerce\Money")
-	 * @var float
-	 */
-	protected $money;
+    /**
+     * @EmbedOne(targetDocument="Documents\Ecommerce\Money")
+     * @var float
+     */
+    protected $money;
 
-	/**
-	 * @ReferenceOne(targetDocument="Documents\Ecommerce\StockItem", cascade="all")
-	 * @var Documents\StockItem
-	 */
-	protected $stockItem;
+    /**
+     * @ReferenceOne(targetDocument="Documents\Ecommerce\StockItem", cascade="all")
+     * @var Documents\StockItem
+     */
+    protected $stockItem;
 
-	/**
-	 * @param string $name
-	 * @param float $price
-	 * @param StockItem $stockItem
-	 */
-	public function __construct($name, Money $money, StockItem $stockItem)
+    /**
+     * @param string $name
+     * @param float $price
+     * @param StockItem $stockItem
+     */
+    public function __construct($name, Money $money, StockItem $stockItem)
         {
-		$this->name = (string) $name;
-		if (empty ($this->name)) {
-			throw new \InvalidArgumentException('option name cannot be empty');
-		}
-		$this->money = $money;
-		if (empty ($this->money)) {
-			throw new \InvalidArgumentException('option price cannot be empty');
-		}
-		$this->stockItem = $stockItem;
-	}
+        $this->name = (string) $name;
+        if (empty ($this->name)) {
+            throw new \InvalidArgumentException('option name cannot be empty');
+        }
+        $this->money = $money;
+        if (empty ($this->money)) {
+            throw new \InvalidArgumentException('option price cannot be empty');
+        }
+        $this->stockItem = $stockItem;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+    /**
+     * @return string
+     */
+    public function getName()
     {
-		return $this->name;
-	}
+        return $this->name;
+    }
 
-	/**
-	 * @return float
-	 */
-	public function getPrice()
+    /**
+     * @return float
+     */
+    public function getPrice()
     {
-		return $this->money->getAmount();
-	}
+        return $this->money->getAmount();
+    }
 
-	/**
-	 * @return StockItem
-	 */
-	public function getStockItem()
+    /**
+     * @return StockItem
+     */
+    public function getStockItem()
     {
-		return $this->stockItem;
-	}
+        return $this->stockItem;
+    }
 
 }
