@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<doctrine-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				  xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-				  http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                  http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-	<document name="TestDocuments\User" db="documents" collection="users">
-		<field name="id" id="true" />
-		<field name="username" type="string" />
-		<field name="createdAt" type="date" />
-		<embed-one target-document="Documents\Address" field="address" />
-		<!--<field name="profile" targetDocument="Documents\Profile" reference="true" type="one" cascade="all" />-->
-		<reference-one target-document="Documents\Profile" field="profile">
-			<cascade>
-				<all />
-			</cascade>
-		</reference-one>
-		<embed-many target-document="Documents\Phonenumber" field="phonenumbers" />
-		<reference-many target-document="Documents\Group" field="groups">
-			<cascade>
-				<all />
-			</cascade>
-		</reference-many>
-		<reference-one target-document="Documents\Account" field="account">
-			<cascade>
-				<all />
-			</cascade>
-		</reference-one>
-	</document>
-</doctrine-mapping>
+    <document name="TestDocuments\User" db="documents" collection="users">
+        <field name="id" id="true" />
+        <field name="username" type="string" />
+        <field name="createdAt" type="date" />
+        <embed-one target-document="Documents\Address" field="address" />
+        <!--<field name="profile" targetDocument="Documents\Profile" reference="true" type="one" cascade="all" />-->
+        <reference-one target-document="Documents\Profile" field="profile">
+            <cascade>
+                <all />
+            </cascade>
+        </reference-one>
+        <embed-many target-document="Documents\Phonenumber" field="phonenumbers" />
+        <reference-many target-document="Documents\Group" field="groups">
+            <cascade>
+                <all />
+            </cascade>
+        </reference-many>
+        <reference-one target-document="Documents\Account" field="account">
+            <cascade>
+                <all />
+            </cascade>
+        </reference-one>
+    </document>
+</doctrine-mongo-mapping>
