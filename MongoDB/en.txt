@@ -1,5 +1,6 @@
 + Introduction
 + XML Mapping
++ YML Mapping
 + Inheritance
 + Storing Files
 + Querying for Documents

@@ -36,7 +36,7 @@ It is recommended to put all XML mapping documents in a single folder but you ca
 As a quick start, here is a small example document that makes use of several common elements:
 
     [xml]
-    // Doctrine.Tests.ORM.Mapping.User.dcm.xml
+    // Documents.User.dcm.xml
     <?xml version="1.0" encoding="UTF-8"?>
 
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
