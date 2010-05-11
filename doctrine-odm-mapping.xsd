@@ -23,15 +23,10 @@
   <xs:complexType name="document">
     <xs:sequence>
       <xs:element name="field" type="odm:field" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="indexes" type="odm:indexes" minOccurs="0"/>
-      <xs:element name="unique-constraints" type="odm:unique-constraints" minOccurs="0"/>
-      <xs:element name="discriminator-column" type="odm:discriminator-column" minOccurs="0"/>
-      <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
-      <xs:element name="lifecycle-callbacks" type="odm:lifecycle-callbacks" minOccurs="0" maxOccurs="1" />
       <xs:element name="embed-one" type="odm:embed-one" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="one-to-many" type="odm:one-to-many" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element name="many-to-one" type="odm:many-to-one" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element name="many-to-many" type="odm:many-to-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="db" type="xs:NMTOKEN" />
     <xs:attribute name="collection" type="xs:NMTOKEN" />
