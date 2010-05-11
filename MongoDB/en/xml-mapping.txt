@@ -44,7 +44,7 @@ As a quick start, here is a small example document that makes use of several com
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                               /Users/robo/dev/php/Doctrine/doctrine-mapping.xsd">
 
-        <entity name="Documents\User" db="documents" collection="users">
+        <document name="Documents\User" db="documents" collection="users">
 		    <field name="id" id="true" />
 			<field name="username" type="string" />
 			<field name="createdAt" type="date" />
@@ -53,7 +53,7 @@ As a quick start, here is a small example document that makes use of several com
 			<field name="phonenumbers" targetDocument="Documents\Phonenumber" embedded="true" type="many" />
             <field name="group" targetDocument="Documents\Group" reference="true" type="many" cascade="all" />
             <field name="account" targetDocument="Documents\Account" reference="true" type="one" cascade="all" />
-        </entity>
+        </document>
     </doctrine-mapping>
 
  Be aware that class-names specified in the XML files should be fully qualified.
