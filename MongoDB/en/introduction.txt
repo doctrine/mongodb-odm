@@ -1,7 +1,7 @@
 Doctrine MongoDB Object Document Mapper is built for PHP 5.3.0+ and provides 
 transparent persistence for PHP objects.
 
-Features overview:
+## Features Overview
 
 * Transparent persistence.
 * Map one or many embedded documents.
@@ -13,3 +13,60 @@ Features overview:
 * Map your Doctrine 2 ORM Entities to the ODM and use mixed data stores.
 * Inserts are performed using [MongoCollection::batchInsert()](http://us.php.net/manual/en/mongocollection.batchinsert.php)
 * Updates are performed using $set instead of saving the entire document.
+
+## Setup
+
+The setup for the MongoDB ODM is very similar to that of Doctrine 2 ORM. You'll
+quickly notice that the "style" of the ODM is pretty much identical to the ORM.
+
+First you need to require the `ClassLoader` from the `Doctrine\Common` namespace:
+
+    [php]
+    require '/path/to/doctrine/lib/Doctrine/Common/ClassLoader.php';
+
+Now lets tell PHP what namespaces and classes we want to use:
+
+    [php]
+    // ...
+
+    use Doctrine\Common\ClassLoader,
+        Doctrine\Common\Annotations\AnnotationReader,
+        Doctrine\ODM\MongoDB\DocumentManager,
+        Doctrine\ODM\MongoDB\Mongo,
+        Doctrine\ODM\MongoDB\Configuration,
+        Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+
+Next we need to setup the `ClassLoader` instances for all of the classes we need
+to autoload:
+
+    [php]
+    // ...
+
+    // ODM Classes
+    $classLoader = new ClassLoader('Doctrine\ODM', '/path/to/doctrine/odm/lib');
+    $classLoader->register();
+
+    // Common Classes
+    $classLoader = new ClassLoader('Doctrine\Common', '/path/to/doctrine/lib');
+    $classLoader->register();
+
+    // Document classes
+    $classLoader = new ClassLoader('Documents', '/path/to/documents');
+    $classLoader->register();
+
+Now we can configure the ODM and create our `DocumentManager` instance:
+
+    [php]
+    // ...
+
+    $config = new Configuration();
+    $config->setProxyDir('/path/to/generate/proxies');
+    $config->setProxyNamespace('Proxies');
+
+    $reader = new AnnotationReader();
+    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+
+    $dm = DocumentManager::create(new Mongo(), $config);
+
+That is it! Your `DocumentManager` instance is ready to be used!
