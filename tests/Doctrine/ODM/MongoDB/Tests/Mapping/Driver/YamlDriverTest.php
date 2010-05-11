@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver,
+use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 require_once 'TestInit.php';
@@ -11,13 +11,12 @@ require_once 'fixtures/User.php';
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
-class XmlDriverTest extends \PHPUnit_Framework_TestCase
-{
+class YamlDriverTest extends \PHPUnit_Framework_TestCase {
 
-    public function testCreateXmlDriver()
-    {
-        $xmlDriver = new XmlDriver(
-            __DIR__ . '/fixtures/xml'
+	public function testCreateYmlDriver()
+	{
+        $xmlDriver = new YamlDriver(
+            __DIR__ . '/fixtures/yaml'
         );
         $classMetadata = new ClassMetadata('TestDocuments\User');
         $xmlDriver->loadMetadataForClass('TestDocuments\User', $classMetadata);
@@ -26,33 +25,33 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'id'               => true,
             'name'             => 'id',
             'type'             => 'string',
-            'isCascadeDetach'  => false,
-            'isCascadeMerge'   => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeRemove'  => false,
+            'isCascadeDetach'  => '',
+            'isCascadeMerge'   => '',
+            'isCascadePersist' => '',
+            'isCascadeRefresh' => '',
+            'isCascadeRemove'  => '',
         ), $classMetadata->fieldMappings['id']);
 
         $this->assertEquals(array(
             'fieldName'        => 'username',
             'name'             => 'username',
             'type'             => 'string',
-            'isCascadeDetach'  => false,
-            'isCascadeMerge'   => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeRemove'  => false,
+            'isCascadeDetach'  => '',
+            'isCascadeMerge'   => '',
+            'isCascadePersist' => '',
+            'isCascadeRefresh' => '',
+            'isCascadeRemove'  => '',
         ), $classMetadata->fieldMappings['username']);
 
         $this->assertEquals(array(
             'fieldName'        => 'createdAt',
             'name'             => 'createdAt',
             'type'             => 'date',
-            'isCascadeDetach'  => false,
-            'isCascadeMerge'   => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeRemove'  => false,
+            'isCascadeDetach'  => '',
+            'isCascadeMerge'   => '',
+            'isCascadePersist' => '',
+            'isCascadeRefresh' => '',
+            'isCascadeRemove'  => '',
         ), $classMetadata->fieldMappings['createdAt']);
 
         $this->assertEquals(array(
@@ -61,11 +60,11 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'type'             => 'one',
             'embedded'         => true,
             'targetDocument'   => 'Documents\Address',
-            'isCascadeDetach'  => false,
-            'isCascadeMerge'   => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeRemove'  => false,
+            'isCascadeDetach'  => '',
+            'isCascadeMerge'   => '',
+            'isCascadePersist' => '',
+            'isCascadeRefresh' => '',
+            'isCascadeRemove'  => '',
         ), $classMetadata->fieldMappings['address']);
 
         $this->assertEquals(array(
@@ -74,11 +73,11 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'type'             => 'many',
             'embedded'         => true,
             'targetDocument'   => 'Documents\Phonenumber',
-            'isCascadeDetach'  => false,
-            'isCascadeMerge'   => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeRemove'  => false,
+            'isCascadeDetach'  => '',
+            'isCascadeMerge'   => '',
+            'isCascadePersist' => '',
+            'isCascadeRefresh' => '',
+            'isCascadeRemove'  => '',
         ), $classMetadata->fieldMappings['phonenumbers']);
 
         $this->assertEquals(array(
@@ -122,6 +121,6 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRefresh' => true,
             'isCascadeRemove'  => true,
         ), $classMetadata->fieldMappings['groups']);
-    }
+	}
 
 }

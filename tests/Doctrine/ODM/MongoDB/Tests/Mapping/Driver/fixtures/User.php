@@ -1,6 +1,6 @@
 <?php
 
-namespace XmlDocuments;
+namespace TestDocuments;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 

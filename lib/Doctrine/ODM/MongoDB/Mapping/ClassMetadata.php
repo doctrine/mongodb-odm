@@ -544,6 +544,7 @@ class ClassMetadata
         if (isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
         }
+		$mapping['name'] = $mapping['fieldName'];
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
             $mapping = array_merge($mapping, $this->fieldMappings[$mapping['fieldName']]);
         }
