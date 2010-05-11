@@ -37,33 +37,22 @@ As a quick start, here is a small example document that makes use of several com
         createdAt:
           fieldName: createdAt
           type: date
+      embedOne:
         address:
-          fieldName: address
-          targetEntity: Documents\Address
-          embedded: true
-          type: one
-        profile:
-          fieldName: profile
-          targetEntity: Documents\Profile
-          reference: true
-          cascade: all
-          type: one
+          targetDocument: Documents\Address
+      embedMany:
         phonenumbers:
-          fieldName: phonenumbers
-          targetEntity: Documents\Phonenumber
-          embedded: true
-          type: many
-        group:
-          fieldName: group
-          targetEntity: Documents\Group
-          reference: true
+          targetDocument: Documents\Phonenumber
+      referenceOne:
+        profile:
+          targetDocument: Documents\Profile
           cascade: all
-          type: many
         account:
-          fieldName: account
-          targetEntity: Documents\Account
-          reference: true
+          targetDocument: Documents\Account
           cascade: all
-          type: one
+      referenceMany:
+        groups:
+          targetDocument: Documents\Group
+          cascade: all
 
 Be aware that class-names specified in the YAML files should be fully qualified.
