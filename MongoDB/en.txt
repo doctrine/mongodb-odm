@@ -1,5 +1,6 @@
 + Introduction
-+ Defining Documents
++ XML Mapping
++ YML Mapping
 + Inheritance
 + Storing Files with MongoGridFS
 + Querying for Documents
