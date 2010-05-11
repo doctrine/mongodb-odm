@@ -7,7 +7,7 @@ going over the maximum allowed size of a MongoDB document.
 
 You can easily setup a Document that is stored using the MongoGridFS:
 
-    <?php
+    [php]
 
     namespace Documents;
 
@@ -67,6 +67,7 @@ instance is placed in the $file property for you to access the actual file itsel
 
 First you need to create a new Image:
 
+    [php]
     $image = new Image();
     $image->setName('Test image');
     $image->setFile('/path/to/image.png');
@@ -76,6 +77,7 @@ First you need to create a new Image:
 
 Now you can later query for the Image and render it:
 
+    [php]
     $image = $dm->createQuery('Documents\Image')
         ->where('name', 'Test image')
         ->getSingleResult();
@@ -87,9 +89,7 @@ You can of course make references to this Image document from another document.
 Imagine you had a Profile document and you wanted every Profile to have a profile
 image:
 
-    namespace Documents;
-
-    <?php
+    [php]
 
     namespace Documents;
 
@@ -133,6 +133,7 @@ image:
 
 Now you can create a new Profile and give it an Image:
 
+    [php]
     $image = new Image();
     $image->setName('Test image');
     $image->setFile('/path/to/image.png');
@@ -147,6 +148,7 @@ Now you can create a new Profile and give it an Image:
 If you want to query for the Profile and load the Image reference in a query
 you can use:
 
+    [php]
     $profile = $dm->createQuery('Profile')
         ->where('name', 'Jonathan H. Wage')
         ->getSingleResult();
