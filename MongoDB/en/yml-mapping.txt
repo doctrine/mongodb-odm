@@ -23,7 +23,7 @@ It is recommended to put all YAML mapping documents in a single folder but you c
 As a quick start, here is a small example document that makes use of several common elements:
 
     [yml]
-    // Documents.User.dcm.yml
+    # Documents.User.dcm.yml
     Documents\User:
       db: documents
       collection: user
