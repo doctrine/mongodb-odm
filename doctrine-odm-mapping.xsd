@@ -78,4 +78,11 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:simpleType name="inheritance-type">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="SINGLE_COLLECTION"/>
+      <xs:enumeration value="COLLECTION_PER_CLASS"/>
+    </xs:restriction>
+  </xs:simpleType>
+
 </xs:schema>
