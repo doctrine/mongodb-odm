@@ -4,39 +4,24 @@ namespace XmlDocuments;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-/**
- * @Document(db="doctrine_odm_tests", collection="users")
- * @InheritanceType("COLLECTION_PER_CLASS")
- * @DiscriminatorField(fieldName="type")
- * @DiscriminatorMap({"special"="Documents\SpecialUser"})
- */
 class User
 {
-    /** @Id */
     protected $id;
 
-    /** @Field(type="string") */
     protected $username;
 
-    /** @BinMD5 */
     protected $password;
 
-    /** @Date */
     protected $createdAt;
 
-    /** @EmbedOne(targetDocument="Address") */
     protected $address;
 
-    /** @ReferenceOne(targetDocument="Profile", cascade={"all"}) */
     protected $profile;
 
-    /** @EmbedMany(targetDocument="Phonenumber") */
     protected $phonenumbers;
 
-    /** @ReferenceMany(targetDocument="Group", cascade={"all"}) */
     protected $groups;
 
-    /** @ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
     public function __construct()

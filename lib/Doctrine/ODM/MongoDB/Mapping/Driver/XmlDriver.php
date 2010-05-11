@@ -24,9 +24,9 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
- * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    	www.doctrine-project.org
- * @since   	1.0
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.org
+ * @since       1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
@@ -85,78 +85,80 @@ class XmlDriver extends AbstractFileDriver
         if (isset($xmlRoot->inheritance['type'])) {
             $class->discriminatorMap = $xmlRoot['inheritance'];
         }
-		
+
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
                 $mapping = array();
                 $attributes = $field->attributes();
                 foreach ($attributes as $key => $value) {
                     $mapping[$key] = (string) $value;
-					$booleanAttributes = array('id', 'reference', 'embed');
-					if (in_array($key, $booleanAttributes)) {
-						$mapping[$key] = ('true' === $mapping[$key]) ? true : false;
-					}
+                    $booleanAttributes = array('id', 'reference', 'embed');
+                    if (in_array($key, $booleanAttributes)) {
+                        $mapping[$key] = ('true' === $mapping[$key]) ? true : false;
+                    }
                 }
                 $class->mapField($mapping);
             }
         }
         if (isset($xmlRoot->{'embed-one'})) {
-			foreach ($xmlRoot->{'embed-one'} as $embed) {
-				$mapping = $this->_getMappingFromEmbed($embed, 'one');
+            foreach ($xmlRoot->{'embed-one'} as $embed) {
+                $mapping = $this->_getMappingFromEmbed($embed, 'one');
                 $class->mapField($mapping);
-			}
-		}
+            }
+        }
         if (isset($xmlRoot->{'embed-many'})) {
-			foreach ($xmlRoot->{'embed-many'} as $embed) {
-				$mapping = $this->_getMappingFromEmbed($embed, 'many');
+            foreach ($xmlRoot->{'embed-many'} as $embed) {
+                $mapping = $this->_getMappingFromEmbed($embed, 'many');
                 $class->mapField($mapping);
-			}
-		}
-		if (isset($xmlRoot->{'reference-many'})) {
-			foreach ($xmlRoot->{'reference-many'} as $reference) {
-				$mapping = $this->_getMappingFromReference($reference, 'many');
-				$class->mapField($mapping);
-			}
-		}
-		if (isset($xmlRoot->{'reference-one'})) {
-			foreach ($xmlRoot->{'reference-one'} as $reference) {
-				$mapping = $this->_getMappingFromReference($reference, 'one');
-				$class->mapField($mapping);
-			}
-		}
-	if (isset($xmlRoot->{'lifecycle-callbacks'})) {
+            }
+        }
+        if (isset($xmlRoot->{'reference-many'})) {
+            foreach ($xmlRoot->{'reference-many'} as $reference) {
+                $mapping = $this->_getMappingFromReference($reference, 'many');
+                $class->mapField($mapping);
+            }
+        }
+        if (isset($xmlRoot->{'reference-one'})) {
+            foreach ($xmlRoot->{'reference-one'} as $reference) {
+                $mapping = $this->_getMappingFromReference($reference, 'one');
+                $class->mapField($mapping);
+            }
+        }
+        if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
                 $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ORM\Events::' . (string) $lifecycleCallback['type']));
             }
         }
     }
 
-	private function _getMappingFromEmbed($embed, $type) {
-		$attributes = $embed->attributes();
-		$mapping = array(
-			'type'           => $type,
-			'embedded'       => true,
-			'targetDocument' => (string) $attributes['target-document'],
-			'name'           => (string) $attributes['field'],
-		);
-		return $mapping;
-	}
+    private function _getMappingFromEmbed($embed, $type)
+    {
+        $attributes = $embed->attributes();
+        $mapping = array(
+            'type'           => $type,
+            'embedded'       => true,
+            'targetDocument' => (string) $attributes['target-document'],
+            'name'           => (string) $attributes['field'],
+        );
+        return $mapping;
+    }
 
-	private function _getMappingFromReference($reference, $type) {
-		$cascade = array_keys((array) $reference->cascade);
-		if (1 === count($cascade)) {
-			$cascade = current($cascade) ?: next($cascade);
-		}
-		$attributes = $reference->attributes();
-		$mapping = array(
-			'cascade'        => $cascade,
-			'type'           => $type,
-			'reference'      => true,
-			'targetDocument' => (string) $attributes['target-document'],
-			'name'           => (string) $attributes['field'],
-		);
-		return $mapping;
-	}
+    private function _getMappingFromReference($reference, $type)
+    {
+        $cascade = array_keys((array) $reference->cascade);
+        if (1 === count($cascade)) {
+            $cascade = current($cascade) ?: next($cascade);
+        }
+        $attributes = $reference->attributes();
+        $mapping = array(
+            'cascade'        => $cascade,
+            'type'           => $type,
+            'reference'      => true,
+            'targetDocument' => (string) $attributes['target-document'],
+            'name'           => (string) $attributes['field'],
+        );
+        return $mapping;
+    }
 
     protected function _loadMappingFile($file)
     {
