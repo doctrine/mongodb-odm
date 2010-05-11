@@ -57,9 +57,9 @@ class Option
      */
     public function getPrice($object = false)
     {
-		if (true === $object) {
-			return $this->money;
-		}
+        if (true === $object) {
+            return $this->money;
+        }
         return $this->money->getAmount();
     }
 
