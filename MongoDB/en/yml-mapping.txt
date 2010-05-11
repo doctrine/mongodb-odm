@@ -18,7 +18,6 @@ It is recommended to put all YAML mapping documents in a single folder but you c
     $driver = new YamlDriver(array('/path/to/files'));
     $config->setMetadataDriverImpl($driver);
 
-
 ++ Example
 
 As a quick start, here is a small example document that makes use of several common elements:
@@ -67,4 +66,4 @@ As a quick start, here is a small example document that makes use of several com
           cascade: all
           type: one
 
- Be aware that class-names specified in the YAML files should be fully qualified.
+Be aware that class-names specified in the YAML files should be fully qualified.

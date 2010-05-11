@@ -17,7 +17,7 @@ The XML mapping document of a class is loaded on-demand the first time it is req
  * Each document/mapped superclass must get its own dedicated XML mapping document.
  * The name of the mapping document must consist of the fully qualified name of the class, where namespace separators are replaced by dots (.).
  * All mapping documents should get the extension ".dcm.xml" to identify it as a Doctrine mapping file. This is more of a convention and you are not forced to do this. You can change the file extension easily enough.
- 
+
 -
 
     [php]
@@ -29,7 +29,6 @@ It is recommended to put all XML mapping documents in a single folder but you ca
     // $config instanceof Doctrine\ORM\Configuration
     $driver = new XmlDriver(array('/path/to/files'));
     $config->setMetadataDriverImpl($driver);
-
 
 ++ Example
 
@@ -56,4 +55,4 @@ As a quick start, here is a small example document that makes use of several com
         </document>
     </doctrine-mapping>
 
- Be aware that class-names specified in the XML files should be fully qualified.
+Be aware that class-names specified in the XML files should be fully qualified.
