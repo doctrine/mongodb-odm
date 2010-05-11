@@ -275,6 +275,6 @@ Execute the query and return a single result:
 Iterate over the cursor hydrating one document at a time:
 
     [php]
-    foreach ($query->iterator() as $user) {
+    foreach ($query->iterate() as $user) {
         
     }
