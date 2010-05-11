@@ -80,6 +80,20 @@ class ConfigurableProduct
         return $this->_findOption($name);
     }
 
+    public function removeOption($name)
+    {
+        if(null === ($option = $this->_findOption($name))) {
+            throw new \InvalidArgumentException('option ' . $name . ' doesn\'t exist');
+        }
+        if ($this->options instanceof \Doctrine\Common\Collections\Collection) {
+            $index = $this->options->indexOf($option);
+        } else {
+            $index = array_search($option, $this->options);
+        }
+        unset ($this->options[$index]);
+        return $this;
+    }
+
     public function hasOption($name)
     {
         return null !== $this->_findOption($name);

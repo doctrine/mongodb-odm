@@ -49,10 +49,10 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
 
         $this->dm->persist($product);
         $this->dm->flush();
-		foreach ($currencies as $currency) {
-			$this->dm->detach($currency);
-		}
-		$this->dm->detach($product);
+        foreach ($currencies as $currency) {
+            $this->dm->detach($currency);
+        }
+        $this->dm->detach($product);
 
         unset ($currencies, $product);
     }
@@ -71,12 +71,7 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
 
     public function testEmbedding()
     {
-        $products = $this->dm->find('Documents\Ecommerce\ConfigurableProduct');
-        $this->assertEquals(1, count($products));
-
-        $products->valid() ?: $products->next();
-
-        $product = $products->current();
+        $product = $this->getProduct();
         $price =  $product->getOption('small')->getPrice(true);
         $currency = $price->getCurrency();
         $this->assertTrue($currency instanceof Currency);
@@ -93,15 +88,35 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
 
     public function testMoneyDocumentsAvailableForReference()
     {
-        $products = $this->dm->find('Documents\Ecommerce\ConfigurableProduct');
-        $products->valid() ?: $products->next();
-
-        $product = $products->current();
+        $product = $this->getProduct();
         $price =  $product->getOption('small')->getPrice(true);
         $currency = $price->getCurrency();
         $this->assertTrue($currency instanceof Currency);
         $this->assertNotNull($currency->getId());
         $this->assertEquals($currency, $this->dm->findOne('Documents\Ecommerce\Currency', array('name' => Currency::USD)));
+    }
+
+    public function testRemoveOption()
+    {
+        $product = $this->getProduct();
+
+        $this->assertEquals(3, count($product->getOptions()));
+        $product->removeOption('small');
+        $this->assertEquals(2, count($product->getOptions()));
+        $this->dm->flush();
+        $this->dm->detach($product);
+        unset ($product);
+        $this->assertFalse(isset($product));
+
+        $product = $this->getProduct();
+        $this->assertEquals(2, count($product->getOptions()));
+    }
+
+    protected function getProduct()
+    {
+        $products = $this->dm->find('Documents\Ecommerce\ConfigurableProduct');
+        $products->valid() ?: $products->next();
+        return $products->current();
     }
 
 }
