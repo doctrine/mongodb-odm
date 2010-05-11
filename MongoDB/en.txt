@@ -1,5 +1,5 @@
 + Introduction
-+ Defining Documents
++ XML Mapping
 + Inheritance
 + Storing Files
 + Querying for Documents
