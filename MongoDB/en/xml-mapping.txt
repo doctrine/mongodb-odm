@@ -45,12 +45,12 @@ As a quick start, here is a small example document that makes use of several com
                               /Users/robo/dev/php/Doctrine/doctrine-mapping.xsd">
 
         <document name="Documents\User" db="documents" collection="users">
-		    <field name="id" id="true" />
-			<field name="username" type="string" />
-			<field name="createdAt" type="date" />
+            <field name="id" id="true" />
+            <field name="username" type="string" />
+            <field name="createdAt" type="date" />
             <field name="address" targetDocument="Documents\Address" embedded="true" type="one" />
             <field name="profile" targetDocument="Documents\Profile" reference="true" type="one" cascade="all" />
-			<field name="phonenumbers" targetDocument="Documents\Phonenumber" embedded="true" type="many" />
+            <field name="phonenumbers" targetDocument="Documents\Phonenumber" embedded="true" type="many" />
             <field name="group" targetDocument="Documents\Group" reference="true" type="many" cascade="all" />
             <field name="account" targetDocument="Documents\Account" reference="true" type="one" cascade="all" />
         </document>
