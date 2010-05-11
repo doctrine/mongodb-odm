@@ -29,15 +29,15 @@ As a quick start, here is a small example document that makes use of several com
       db: documents
       collection: user
       fields:
-	    id:
-		  fieldName: id
-		  id: true
-		username:
-		  fieldName: username
-		  type: string
-		createdAt:
-		  fieldName: createdAt
-		  type: date
+        id:
+          fieldName: id
+          id: true
+        username:
+          fieldName: username
+          type: string
+        createdAt:
+          fieldName: createdAt
+          type: date
         address:
           fieldName: address
           targetEntity: Documents\Address
@@ -47,7 +47,7 @@ As a quick start, here is a small example document that makes use of several com
           fieldName: profile
           targetEntity: Documents\Profile
           reference: true
-		  cascade: all
+          cascade: all
           type: one
         phonenumbers:
           fieldName: phonenumbers
