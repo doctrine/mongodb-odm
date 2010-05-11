@@ -84,6 +84,30 @@ class YamlDriver extends AbstractFileDriver
                 $class->mapField($mapping);
             }
         }
+		if (isset($element['embedOne'])) {
+			foreach ($element['embedOne'] as $fieldName => $embed) {
+				$mapping = $this->_getMappingFromEmbed($fieldName, $embed, 'one');
+                $class->mapField($mapping);
+			}
+		}
+		if (isset($element['embedMany'])) {
+			foreach ($element['embedMany'] as $fieldName => $embed) {
+				$mapping = $this->_getMappingFromEmbed($fieldName, $embed, 'many');
+                $class->mapField($mapping);
+			}
+		}
+		if (isset($element['referenceOne'])) {
+			foreach ($element['referenceOne'] as $fieldName => $reference) {
+				$mapping = $this->_getMappingFromReference($fieldName, $reference, 'one');
+                $class->mapField($mapping);
+			}
+		}
+		if (isset($element['referenceMany'])) {
+			foreach ($element['referenceMany'] as $fieldName => $reference) {
+				$mapping = $this->_getMappingFromReference($fieldName, $reference, 'many');
+                $class->mapField($mapping);
+			}
+		}
         if (isset($element['lifecycleCallbacks'])) {
             foreach ($element['lifecycleCallbacks'] as $type => $methods) {
                 foreach ($methods as $method) {
@@ -91,6 +115,29 @@ class YamlDriver extends AbstractFileDriver
                 }
             }
         }
+    }
+
+    private function _getMappingFromEmbed($fieldName, $embed, $type)
+    {
+		$mapping = array(
+			'name'           => $fieldName,
+			'embedded'       => true,
+			'type'           => $type,
+			'targetDocument' => $embed['targetDocument'],
+		);
+        return $mapping;
+    }
+
+    private function _getMappingFromReference($fieldName, $reference, $type)
+    {
+		$mapping = array(
+			'cascade'        => isset($reference['cascade']) ? $reference['cascade'] : null,
+			'type'           => $type,
+			'reference'      => true,
+			'targetDocument' => $reference['targetDocument'],
+			'name'           => $fieldName,
+		);
+        return $mapping;
     }
 
     protected function _loadMappingFile($file)

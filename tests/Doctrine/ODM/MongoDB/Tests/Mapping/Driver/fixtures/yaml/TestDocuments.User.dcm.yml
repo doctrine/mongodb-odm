@@ -11,31 +11,20 @@ TestDocuments\User:
     createdAt:
       fieldName: createdAt
       type: date
+  embedOne:
     address:
-      fieldName: address
       targetDocument: Documents\Address
-      embedded: true
-      type: one
-    profile:
-      fieldName: profile
-      targetDocument: Documents\Profile
-      reference: true
-      cascade: all
-      type: one
+  embedMany:
     phonenumbers:
-      fieldName: phonenumbers
       targetDocument: Documents\Phonenumber
-      embedded: true
-      type: many
-    groups:
-      fieldName: groups
-      targetDocument: Documents\Group
-      reference: true
+  referenceOne:
+    profile:
+      targetDocument: Documents\Profile
       cascade: all
-      type: many
     account:
-      fieldName: account
       targetDocument: Documents\Account
-      reference: true
       cascade: all
-      type: one
+  referenceMany:
+    groups:
+      targetDocument: Documents\Group
+      cascade: all
