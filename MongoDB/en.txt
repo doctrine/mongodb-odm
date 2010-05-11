@@ -1,6 +1,6 @@
 + Introduction
 + Defining Documents
 + Inheritance
-+ Storing Files
++ Storing Files with MongoGridFS
 + Querying for Documents
 + Logging
