@@ -819,21 +819,38 @@ class UnitOfWork
 
         // Calculate dependencies for new nodes
         foreach ($newNodes as $class) {
-            foreach ($class->fieldMappings as $mapping) {
-                if ( ! isset($mapping['reference'])) {
-                    continue;
-                }
-                if ($mapping['type'] === 'one') {
-                    $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                    if ( ! $calc->hasClass($targetClass->name)) {
-                        $calc->addClass($targetClass);
-                    }
-                    $calc->addDependency($targetClass, $class);
-                }
-            }
+            $this->_addDependencies($class, $calc);
         }
 
         return $calc->getCommitOrder();
+    }
+
+    /**
+     * Add dependencies recursively through embedded documents. Embedded documents
+     * may have references to other documents so those need to be saved first.
+     *
+     * @param ClassMetadata $class
+     * @param CommitOrderCalculator $calc
+     */
+    private function _addDependencies($class, $calc)
+    {
+        foreach ($class->fieldMappings as $mapping) {
+            if (isset($mapping['reference'])) {
+                $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
+                if ( ! $calc->hasClass($targetClass->name)) {
+                    $calc->addClass($targetClass);
+                }
+                $calc->addDependency($targetClass, $class);
+            }
+            if (isset($mapping['embedded'])) {
+                $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
+                if ( ! $calc->hasClass($targetClass->name)) {
+                    $calc->addClass($targetClass);
+                }
+                $calc->addDependency($targetClass, $class);
+                $this->_addDependencies($targetClass, $calc);
+            }
+        }
     }
 
     /**
