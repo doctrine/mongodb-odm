@@ -51,7 +51,7 @@ Any value hold inside this variable will be saved to and loaded from the documen
 
 Required attributes:
 
-* type - Name of the Doctrine ODM Type which is converted between PHP and Database representation.
+* type - Name of the Doctrine ODM Type which is converted between PHP and Database representation. Can be one of: string, boolean, int, float, date, key, timestamp, bin, bin_func, bin_uuid, bin_md5, bin_custom
 
 Optional attributes:
 
@@ -122,45 +122,24 @@ Optional attributes:
 Example:
 
     /**
-     * @Entity(repositoryClass="MyProject\UserRepository")
+     * @Document(db="documents", collection="users", repositoryClass="MyProject\UserRepository")
      */
     class User
     {
         //...
     }
 
-<a name="ann_generatedvalue"></a>
-+++ @GeneratedValue
-
-Specifies which strategy is used for identifier generation for an instance variable which is annotated by [@Id](#ann_id).
-This annotation is optional and only has meaning when used in conjunction with @Id.
-
-If this annotation is not specified with @Id the NONE strategy is used as default.
-
-Required attributes:
-
-* strategy - Set the name of the identifier generation strategy. Valid values are AUTO, SEQUENCE, TABLE, IDENTITY and NONE.
-
-Example:
-
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @generatedValue(strategy="IDENTITY")
-     */
-    protected $id = null;
-
-<a name="ann_haslifecyclecallbacks"></a>
+<a name="ann_has_lifecycle_callbacks"></a>
 +++ @HasLifecycleCallbacks
 
-Annotation which has to be set on the entity-class PHP DocBlock to notify Doctrine that this entity has entity life-cycle
+Annotation which has to be set on the document-class PHP DocBlock to notify Doctrine that this document has document life-cycle
 callback annotations set on at least one of its methods. Using @PostLoad, @PrePersist, @PostPersist, @PreRemove, @PostRemove,
 @PreUpdate or @PostUpdate without this marker annotation will make Doctrine ignore the callbacks.
 
 Example:
 
     /**
-     * @Entity
+     * @document
      * @HasLifecycleCallbacks
      */
     class User
@@ -171,59 +150,66 @@ Example:
         public function sendOptinMail() {}
     }
 
-<a name="ann_indexes"></a>
+<a name="ann_index"></a>
 +++ @Index
 
-Annotation is used inside the [@Table](#ann_table) annotation on the entity-class level. It allows to hint the
-SchemaTool to generate a database index on the specified table columns. It only has meaning in the SchemaTool
-schema generation context.
+Annotation is used inside the [@Document](#ann_document) annotation on the class level. It allows to hint the
+MongoDB to generate a database index on the specified document fields.
 
 Required attributes:
 
-* name - Name of the Index
-* columns - Array of columns.
+* keys - Fields to index
+* options - Array of MongoCollection options.
 
 Example:
 
     /**
-     * @Entity
-     * @Table(name="ecommerce_products",indexes={@index(name="search_idx", columns={"name", "email"})})
+     * @Document(
+     *   db="my_database",
+     *   collection="users",
+     *   indexes={
+     *     @Index(keys={"username"="desc"}, options={"unique"=true})
+     *   }
+     * )
      */
-    class ECommerceProduct
+    class User
     {
+        //...
     }
 
 <a name="ann_id"></a>
 +++ @Id
 
-The annotated instance variable will be marked as entity identifier, the primary key in the database.
-This annotation is a marker only and has no required or optional attributes. For entites that have multiple
-identifier columns each column has to be marked with @Id.
+The annotated instance variable will be marked as document identifier.
+This annotation is a marker only and has no required or optional attributes.
 
 Example:
 
     /**
-     * @Id
-     * @Column(type="integer")
+     * @Document
      */
-    protected $id = null;
-
-<a name="ann_inheritancetype"></a>
+    class User
+    {
+        /**
+         * @Id
+         */
+        protected $id;
+    }
+<a name="ann_inheritance_type"></a>
 +++ @InheritanceType
 
 In an inheritance hierachy you have to use this annotation on the topmost/super class to define which
-strategy should be used for inheritance. Currently Single Table and Class Table Inheritance are supported.
+strategy should be used for inheritance. Currently SINGLE_COLLECTION and COLLECTION_PER_CLASS are supported.
 
-This annotation has always been used in conjunction with the [@DiscriminatorMap](#ann_discriminatormap) and
-[@DiscriminatorColumn](#ann_discriminatorcolumn) annotations.
+This annotation has always been used in conjunction with the [@DiscriminatorMap](#ann_discriminator_map) and
+[@DiscriminatorField](#ann_discriminator_field) annotations.
 
 Examples:
 
     /**
-     * @Entity
-     * @InheritanceType("SINGLE_TABLE")
-     * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+     * @Document
+     * @InheritanceType("COLLECTION_PER_CLASS")
+     * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
      */
     class Person
     {
@@ -231,309 +217,108 @@ Examples:
     }
 
     /**
-     * @Entity
-     * @InheritanceType("JOINED")
-     * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+     * @Document
+     * @InheritanceType("SINGLE_COLLECTION")
+     * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
      */
     class Person
     {
         // ...
     }
 
-<a name="ann_joincolumn"></a>
-+++ @JoinColumn
+<a name="ann_reference_many"></a>
++++ @ReferenceMany
 
-This annotation is used in the context of relations in [@ManyToOne](#ann_manytoone), [@OneToOne](#ann_onetoone) fields
-and in the Context of [@JoinTable](#ann_jointable) nested inside a @ManyToMany. This annotation is not required.
-If its not specified the attributes *name* and *referencedColumnName* are infered from the table and primary key names.
+Defines that the annotated instance variable holds a collection of related documents.
 
 Required attributes:
 
-* name - Column name that holds the foreign key identifier for this relation. In the context of @JoinTable it specifies the column name in the join table.
-* referencedColumnName - Name of the primary key identifier that is used for joining of this relation.
-
-Optional attributes:
-
-* unique - Determines if this relation exclusive between the affected entities and should be enforced so on the database constraint level. Defaults to false.
-* nullable - Determine if the related entity is required, or if null is an allowed state for the relation. Defaults to true.
-* onDelete - Cascade Action (Database-level)
-* onUpdate - Cascade Action (Database-level)
-* columnDefinition - DDL SQL snippet that starts after the column name and specificies the complete (non-portable!) column definition. This attribute allows to make use of advanced RMDBS features. Using this attribute on @JoinColumn is necessary if you need slightly different column definitions for joining columns, for example regarding NULL/NOT NULL defaults. However by default a "columnDefinition" attribute on [@Column](#ann_column) also sets the related @JoinColumn's columnDefinition. This is necessary to make foreign keys work.
-
-Example:
-
-    /**
-     * @OneToOne(targetEntity="Customer")
-     * @JoinColumn(name="customer_id", referencedColumnName="id")
-     */
-    private $customer;
-
-<a name="ann_joincolumns"></a>
-+++ @JoinColumns
-
-An array of @JoinColumn annotations for a [@ManyToOne](#ann_manytoone) or [@OneToOne](#ann_onetoone) relation
-with an entity that has multiple identifiers.
-
-<a name="ann_jointable"></a>
-+++ @JoinTable
-
-Using [@OneToMany](#ann_onetomany) or [@ManyToMany](#ann_manytomany) on the owning side of the relation requires to specifiy
-the @JoinTable annotation which describes the details of the database join table. If you do not specify @JoinTable on
-these relations reasonable mapping defaults apply using the affected table and the column names.
-
-Required attributes:
-
-* name - Database name of the join-table
-* joinColumns - An array of @JoinColumn annotations describing the join-relation between the owning entites table and the join table.
-* inverseJoinColumns - An array of @JoinColumn annotations describing the join-relation between the inverse entities table and the join table.
-
-Optional attributes:
-
-* schema - Database schema name of this table.
-
-Example:
-
-    /**
-     * @ManyToMany(targetEntity="Phonenumber")
-     * @JoinTable(name="users_phonenumbers",
-     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="phonenumber_id", referencedColumnName="id", unique=true)}
-     * )
-     */
-    public $phonenumbers;
-
-<a name="ann_manytoone"></a>
-+++ @ManyToOne
-
-Defines that the annotated instance variable holds a reference that describes a many-to-one relationship between two entities.
-
-Required attributes:
-
-* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace.
+* targetDocument - A full class name of the target document.
 
 Optional attributes:
 
 * cascade - Cascade Option
-* fetch - One of LAZY or EAGER
 
 Example:
 
     /**
-     * @ManyToOne(targetEntity="Cart", cascade="ALL", fetch="EAGER")
+     * @ReferenceMany(targetDocument="Documents\PhoneNumber", cascade="all")
+     */
+    private $phones;
+
+<a name="ann_reference_one"></a>
++++ @ReferenceOne
+
+Defines an instance variable holds a related document instance.
+
+Required attributes:
+
+* targetDocument - A full class name of the target document.
+
+Optional attributes:
+
+* cascade - Cascade Option
+
+Example:
+
+    /**
+     * @ReferenceOne(targetDocument="Documents\ShoppingCart", cascade="all")
      */
     private $cart;
 
-<a name="ann_manytomany"></a>
-+++ @ManyToMany
+<a name="ann_embed_one"></a>
++++ @EmbedOne
 
-Defines an instance variable holds a many-to-many relationship between two entities. [@JoinTable](#ann_jointable)
-is an additional, optional annotation that has reasonable default configuration values using the table
-and names of the two related entities.
+The @EmbedOne annotation works almost exactly as the [@ReferenceOne](#ann_reference_one), except that internally,
+the document is embedded in the parent document in MongoDB. From MongoDB docs:
 
-Required attributes:
-
-* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace.
-
-Optional attributes:
-
-* mappedBy - This option specifies the property name on the targetEntity that is the owning side of this relation. Its a required attribute for the inverse side of a relationship.
-* cascade - Cascade Option
-* fetch - One of LAZY or EAGER
-
-Example:
-
-    /**
-     * Owning Side
-     *
-     * @ManyToMany(targetEntity="Group")
-     * @JoinTable(name="user_groups",
-     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
-     *      )
-     */
-    private $groups;
-
-    /**
-     * Inverse Side
-     *
-     * @ManyToMany(targetEntity="User", mappedBy="groups")
-     */
-    private $features;
-
-<a name="ann_mappedsuperclass"></a>
-+++ @MappedSuperclass
-
-An mapped superclass is an abstract or concrete class that provides persistent entity state and mapping information
-for its subclasses, but which is not itself an entity. This annotation is specified on the Class docblock
-and has no additional attributes.
-
-The @MappedSuperclass annotation cannot be used in conjunction with @Entity. See the Inheritance Mapping
-section for [more details on the restrictions of mapped superclasses](/../inheritance-mapping#mapped-superclasses).
-
-<a name="ann_onetoone"></a>
-+++ @OnetoOne
-
-The @OneToOne annotation works almost exactly as the [@ManyToOne](#ann_manytoone) with one additional option
-that can be specified. The configuration defaults for [@JoinColumn](#ann_joincolumn) using the target entity table and primary key column names
-apply here too.
+> The key question in Mongo schema design is "does this object merit its own collection, or rather should it embed in objects in other collections?" In relational databases, each sub-item of interest typically becomes a separate table (unless denormalizing for performance). In Mongo, this is not recommended - embedding objects is much more efficient. Data is then colocated on disk; client-server turnarounds to the database are eliminated. So in general the question to ask is, "why would I not want to embed this object?"
 
 Required attributes:
 
-* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace.
+* targetDocument - A full class name of the target document.
 
-Optional attributes:
+<a name="ann_embed_many"></a>
++++ @EmbedMany
 
-* cascade - Cascade Option
-* fetch - One of LAZY or EAGER
-* orphanRemoval - Boolean that specifies if orphans, inverse OneToOne entities that are not connected to any
-owning instance, should be removed by Doctrine. Defaults to false.
+This annotation is simmilar to [@EmbedOne](#ann_embed_one), but instead of embedding one document, it informs MongoDB to embed a collection of documents
 
-<a name="ann_onetomany"></a>
-+++ @OneToMany
+Required attributes:
 
-<a name="ann_orderby"></a>
-+++ @OrderBy
+* targetDocument - A full class name of the target document.
 
-Optional annotation that can be specified with a [@ManyToMany](#ann_manytomany) or [@OneToMany](#ann_onetomany)
-annotation to specify by which criteria the collection should be retrieved from the database by using an ORDER BY
-clause.
-
-This annotation requires a single non-attributed value with an DQL snippet:
-
-Example:
-
-    /**
-     * @ManyToMany(targetEntity="Group")
-     * @OrderBy({"name" = "ASC"})
-     */
-    private $groups;
-
-The DQL Snippet in OrderBy is only allowed to consist of unqualified,
-unquoted field names and of an optional ASC/DESC positional statement.
-Multiple Fields are separated by a comma (,). The referenced field
-names have to exist on the `targetEntity` class of the `@ManyToMany` or
-`@OneToMany` annotation.
-
-<a name="ann_postload"></a>
+<a name="ann_post_load"></a>
 +++ @PostLoad
 
-Marks a method on the entity to be called as a @PostLoad event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
+Marks a method on the document to be called as a @PostLoad event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-<a name="ann_postpersist"></a>
+<a name="ann_post_persist"></a>
 +++ @PostPersist
 
-Marks a method on the entity to be called as a @PostPersist event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
+Marks a method on the document to be called as a @PostPersist event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-<a name="ann_postremove"></a>
+<a name="ann_post_remove"></a>
 +++ @PostRemove
 
-Marks a method on the entity to be called as a @PostRemove event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
+Marks a method on the document to be called as a @PostRemove event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-<a name="ann_postupdate"></a>
+<a name="ann_post_update"></a>
 +++ @PostUpdate
 
-Marks a method on the entity to be called as a @PostUpdate event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
+Marks a method on the document to be called as a @PostUpdate event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-<a name="ann_prepersist"></a>
+<a name="ann_pre_persist"></a>
 +++ @PrePersist
 
-Marks a method on the entity to be called as a @PrePersist event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
+Marks a method on the document to be called as a @PrePersist event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
 <a name="ann_preremove"></a>
 +++ @PreRemove
 
-Marks a method on the entity to be called as a @PreRemove event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
+Marks a method on the document to be called as a @PreRemove event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
 <a name="ann_preupdate"></a>
 +++ @PreUpdate
 
-Marks a method on the entity to be called as a @PreUpdate event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
+Marks a method on the document to be called as a @PreUpdate event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-<a name="ann_sequencegenerator"></a>
-+++ @SequenceGenerator
-
-For the use with @generatedValue(strategy="SEQUENCE") this annotation allows to specifiy details about the sequence,
-such as the increment size and initial values of the sequence.
-
-Required attributes:
-
-* sequenceName - Name of the sequence
-
-Optional attributes:
-
-* allocationSize - Increment the sequence by the allocation size when its fetched. A value larger than 1 allows to optimize for scenarios where you create more than one new entity per request. Defaults to 10
-* initialValue - Where does the sequence start, defaults to 1.
-
-Example:
-
-    /**
-     * @Id
-     * @GeneratedValue(strategy="SEQUENCE")
-     * @Column(type="integer")
-     * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
-     */
-    protected $id = null;
-
-<a name="ann_table"></a>
-+++ @Table
-
-Annotation describes the table an entity is persisted in. It is placed on the entity-class PHP DocBlock and is optional.
-If it is not specified the table name will default to the entities unqualified classname.
-
-Required attributes:
-
-* name - Name of the table
-
-Optional attributes:
-
-* schema - Database schema name of this table.
-* indexes - Array of @Index annotations
-* uniqueConstraints - Array of @UniqueConstraint annotations.
-
-Example:
-
-    /**
-     * @Entity
-     * @Table(name="user",
-     *      uniqueConstraints={@UniqueConstraint(name="user_unique",columns={"username"})},
-     *      indexes={@Index(name="user_idx", columns={"email"})}
-     * )
-     */
-    class User { }
-
-<a name="ann_uniqueconstraint"></a>
-+++ @UniqueConstraint
-
-Annotation is used inside the [@Table](#ann_table) annotation on the entity-class level. It allows to hint the
-SchemaTool to generate a database unique constraint on the specified table columns. It only has meaning in the SchemaTool
-schema generation context.
-
-Required attributes:
-
-* name - Name of the Index
-* columns - Array of columns.
-
-Example:
-
-    /**
-     * @Entity
-     * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"})})
-     */
-    class ECommerceProduct
-    {
-    }
-
-<a name="ann_version"></a>
-+++ @Version
-
-Marker annotation that defines a specified column as version attribute used in an optimistic locking scenario.
-It only works on [@Column](#ann_column) annotations that have the type integer or datetime.
-
-Example:
-
-    /**
-     * @column(type="integer")
-     * @version
-     */
-    protected $version;
