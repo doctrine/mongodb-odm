@@ -41,7 +41,66 @@
 <a name="ann_bin"></a>
 +++ @Bin
 
+Alias of [@Field](#ann_field), with "type" attribute set to "bin".
+Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::BYTE_ARRAY type.
 
+<a name="ann_bin_custom"></a>
++++ @BinCustom
+
+Alias of [@Field](#ann_field), with "type" attribute set to "bin_custom".
+Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::CUSTOM type.
+
+<a name="ann_bin_func"></a>
++++ @BinFunc
+
+Alias of [@Field](#ann_field), with "type" attribute set to "bin_func".
+Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::FUNC type.
+
+<a name="ann_bin_md5"></a>
++++ @BinMD5
+
+Alias of [@Field](#ann_field), with "type" attribute set to "bin_md5".
+Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::MD5 type.
+
+<a name="ann_bin_uuid"></a>
++++ @BinUUID
+
+Alias of [@Field](#ann_field), with "type" attribute set to "bin_uuid".
+Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::UUID type.
+
+<a name="ann_boolean"></a>
++++ @Boolean
+
+Alias of [@Field](#ann_field), with "type" attribute set to "boolean"
+
+<a name="ann_date"></a>
++++ @Date
+
+Alias of [@Field](#ann_field), with "type" attribute set to "date"
+Converts value to [MongoDate](http://www.php.net/manual/en/class.mongodate.php).
+
+<a name="ann_file"></a>
++++ @File
+
+Tells ODM that the property is a file, must be set to a existing file path before saving to MongoDB
+Will be instantiated as instance of [MongoGridFSFile](http://www.php.net/manual/en/class.mongogridfsfile.php) class upon retreival
+
+<a name="ann_float"></a>
++++ @Float
+
+Alias of [@Field](#ann_field), with "type" attribute set to "float"
+
+<a name="ann_int"></a>
++++ @Int
+
+Alias of [@Field](#ann_field), with "type" attribute set to "int"
+
+<a name="ann_key"></a>
++++ @Key
+
+Alias of [@Field](#ann_field), with "type" attribute set to "key"
+It is then converted to [MongoMaxKey](http://www.php.net/manual/en/class.mongomaxkey.php) or
+[MongoMinKey](http://www.php.net/manual/en/class.mongominkey.php), if the value evaluates to true or false respectively.
 
 <a name="ann_field"></a>
 +++ @Field
