@@ -112,13 +112,13 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, count($product->getOptions()));
     }
 
-	public function testDoesNotSaveUnannotatedFields()
-	{
-		$product = $this->getProduct();
+    public function testDoesNotSaveUnannotatedFields()
+    {
+        $product = $this->getProduct();
 
-		$product->selectOption('small');
-		$this->dm->flush();
-	}
+        $product->selectOption('small');
+        $this->dm->flush();
+    }
 
     protected function getProduct()
     {
