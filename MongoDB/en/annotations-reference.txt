@@ -118,6 +118,7 @@ Optional attributes:
 
 Examples:
 
+    [php]
     /**
      * @Field(type="string")
      */
@@ -151,6 +152,7 @@ an array as only argument which defines which class should be saved under which 
 are the database value and values are the classes, either as fully- or as unqualified class names depending
 if the classes are in the namespace or not.
 
+    [php]
     /**
      * @Document
      * @InheritanceType("SINGLE_COLLECTION")
@@ -180,6 +182,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @Document(db="documents", collection="users", repositoryClass="MyProject\UserRepository")
      */
@@ -197,8 +200,9 @@ callback annotations set on at least one of its methods. Using @PostLoad, @PrePe
 
 Example:
 
+    [php]
     /**
-     * @document
+     * @Document
      * @HasLifecycleCallbacks
      */
     class User
@@ -222,6 +226,7 @@ Required attributes:
 
 Example:
 
+    [php]
     /**
      * @Document(
      *   db="my_database",
@@ -244,6 +249,7 @@ This annotation is a marker only and has no required or optional attributes.
 
 Example:
 
+    [php]
     /**
      * @Document
      */
@@ -254,6 +260,7 @@ Example:
          */
         protected $id;
     }
+
 <a name="ann_inheritance_type"></a>
 +++ @InheritanceType
 
@@ -265,6 +272,7 @@ This annotation has always been used in conjunction with the [@DiscriminatorMap]
 
 Examples:
 
+    [php]
     /**
      * @Document
      * @InheritanceType("COLLECTION_PER_CLASS")
@@ -300,6 +308,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @ReferenceMany(targetDocument="Documents\PhoneNumber", cascade="all")
      */
@@ -320,6 +329,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @ReferenceOne(targetDocument="Documents\ShoppingCart", cascade="all")
      */
