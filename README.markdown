@@ -3,6 +3,7 @@
 Below you can find the available documentation:
 
 * [Introduction](http://github.com/jwage/odm-documentation/blob/master/MongoDB/en/introduction.txt)
+* [Annotations Reference](http://github.com/jwage/odm-documentation/blob/master/MongoDB/en/annotations-reference.txt)
 * [XML Mapping](http://github.com/jwage/odm-documentation/blob/master/MongoDB/en/xml-mapping.txt)
 * [YML Mapping](http://github.com/jwage/odm-documentation/blob/master/MongoDB/en/yml-mapping.txt)
 * [Inheritance](http://github.com/jwage/odm-documentation/blob/master/MongoDB/en/inheritance.txt)
