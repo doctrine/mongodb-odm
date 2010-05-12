@@ -81,7 +81,7 @@ Alias of [@Field](#ann_field), with "type" attribute set to "date"
 Converts value to [MongoDate](http://www.php.net/manual/en/class.mongodate.php).
 
 <a name="ann_discriminator_field"></a>
-+++ @DiscrimnatorField
++++ @DiscriminatorField
 
 This annotation is a required annotation for the topmost/super class of an inheritance hierachy. It specifies
 the details of the field which saves the name of the class, which the document is actually instantiated as.
@@ -281,13 +281,6 @@ Example:
 
 Alias of [@Field](#ann_field), with "type" attribute set to "int"
 
-<a name="ann_key"></a>
-+++ @Key
-
-Alias of [@Field](#ann_field), with "type" attribute set to "key"
-It is then converted to [MongoMaxKey](http://www.php.net/manual/en/class.mongomaxkey.php) or
-[MongoMinKey](http://www.php.net/manual/en/class.mongominkey.php), if the value evaluates to true or false respectively.
-
 <a name="ann_inheritance_type"></a>
 +++ @InheritanceType
 
@@ -319,6 +312,13 @@ Examples:
     {
         // ...
     }
+
+<a name="ann_key"></a>
++++ @Key
+
+Alias of [@Field](#ann_field), with "type" attribute set to "key"
+It is then converted to [MongoMaxKey](http://www.php.net/manual/en/class.mongomaxkey.php) or
+[MongoMinKey](http://www.php.net/manual/en/class.mongominkey.php), if the value evaluates to true or false respectively.
 
 <a name="ann_post_load"></a>
 +++ @PostLoad
