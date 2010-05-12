@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 class Phonenumber
 {
+    /** @String */
     private $phonenumber;
 
     public function __construct($phonenumber = null)

@@ -6,9 +6,16 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 class Address
 {
+    /** @String */
     private $address;
+
+    /** @String */
     private $city;
+
+    /** @String */
     private $state;
+
+    /** @String */
     private $zipcode;
 
     public function getAddress()
