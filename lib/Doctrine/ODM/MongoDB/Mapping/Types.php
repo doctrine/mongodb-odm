@@ -47,7 +47,8 @@ class Types
         'bin_uuid' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataUUIDType',
         'bin_md5' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataMD5Type',
         'custom' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataCustomType',
-        'file' => 'Doctrine\ODM\MongoDB\Mapping\Types\FileType'
+        'file' => 'Doctrine\ODM\MongoDB\Mapping\Types\FileType',
+        'hash' => 'Doctrine\ODM\MongoDB\Mapping\Types\HashType',
     );
 
     /**
