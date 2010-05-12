@@ -17,6 +17,7 @@
 * [@Field](#ann_field)
 * [@File](#ann_file)
 * [@Float](#ann_float)
+* [@Hash](#ann_hash)
 * [@HasLifecycleCallbacks](#ann_has_lifecycle_callbacks)
 * [@Id](#ann_id)
 * [@Index](#ann_index)
@@ -79,61 +80,6 @@ Alias of [@Field](#ann_field), with "type" attribute set to "boolean"
 Alias of [@Field](#ann_field), with "type" attribute set to "date"
 Converts value to [MongoDate](http://www.php.net/manual/en/class.mongodate.php).
 
-<a name="ann_file"></a>
-+++ @File
-
-Tells ODM that the property is a file, must be set to a existing file path before saving to MongoDB
-Will be instantiated as instance of [MongoGridFSFile](http://www.php.net/manual/en/class.mongogridfsfile.php) class upon retreival
-
-<a name="ann_float"></a>
-+++ @Float
-
-Alias of [@Field](#ann_field), with "type" attribute set to "float"
-
-<a name="ann_int"></a>
-+++ @Int
-
-Alias of [@Field](#ann_field), with "type" attribute set to "int"
-
-<a name="ann_key"></a>
-+++ @Key
-
-Alias of [@Field](#ann_field), with "type" attribute set to "key"
-It is then converted to [MongoMaxKey](http://www.php.net/manual/en/class.mongomaxkey.php) or
-[MongoMinKey](http://www.php.net/manual/en/class.mongominkey.php), if the value evaluates to true or false respectively.
-
-<a name="ann_field"></a>
-+++ @Field
-
-Marks an annotated instance variable as "persistent". It has to be inside the instance variables PHP DocBlock comment.
-Any value hold inside this variable will be saved to and loaded from the document store as part of the lifecycle of the instance variables document-class.
-
-Required attributes:
-
-* type - Name of the Doctrine ODM Type which is converted between PHP and Database representation. Can be one of: string, boolean, int, float, date, key, timestamp, bin, bin_func, bin_uuid, bin_md5, bin_custom
-
-Optional attributes:
-
-* name - By default the property name is used for the mongodb field name also, however the 'name' attribute allows you to specify the field name.
-
-Examples:
-
-    [php]
-    /**
-     * @Field(type="string")
-     */
-    protected $username;
-
-    /**
-     * @Field(type="string" name="origin")
-     */
-    protected $country;
-
-    /**
-     * @Column(type="float")
-     */
-    protected $height;
-
 <a name="ann_discriminator_field"></a>
 +++ @DiscrimnatorField
 
@@ -168,7 +114,6 @@ if the classes are in the namespace or not.
         // ...
     }
 
-
 <a name="ann_document"></a>
 +++ @Document
 
@@ -191,6 +136,70 @@ Example:
         //...
     }
 
+<a name="ann_embed_many"></a>
++++ @EmbedMany
+
+This annotation is simmilar to [@EmbedOne](#ann_embed_one), but instead of embedding one document, it informs MongoDB to embed a collection of documents
+
+Required attributes:
+
+* targetDocument - A full class name of the target document.
+
+<a name="ann_embed_one"></a>
++++ @EmbedOne
+
+The @EmbedOne annotation works almost exactly as the [@ReferenceOne](#ann_reference_one), except that internally,
+the document is embedded in the parent document in MongoDB. From MongoDB docs:
+
+> The key question in Mongo schema design is "does this object merit its own collection, or rather should it embed in objects in other collections?" In relational databases, each sub-item of interest typically becomes a separate table (unless denormalizing for performance). In Mongo, this is not recommended - embedding objects is much more efficient. Data is then colocated on disk; client-server turnarounds to the database are eliminated. So in general the question to ask is, "why would I not want to embed this object?"
+
+Required attributes:
+
+* targetDocument - A full class name of the target document.
+
+<a name="ann_field"></a>
++++ @Field
+
+Marks an annotated instance variable as "persistent". It has to be inside the instance variables PHP DocBlock comment.
+Any value hold inside this variable will be saved to and loaded from the document store as part of the lifecycle of the instance variables document-class.
+
+Required attributes:
+
+* type - Name of the Doctrine ODM Type which is converted between PHP and Database representation. Can be one of: string, boolean, int, float, hash, date, key, timestamp, bin, bin_func, bin_uuid, bin_md5, bin_custom
+
+Optional attributes:
+
+* name - By default the property name is used for the mongodb field name also, however the 'name' attribute allows you to specify the field name.
+
+Examples:
+
+    [php]
+    /**
+     * @Field(type="string")
+     */
+    protected $username;
+
+    /**
+     * @Field(type="string" name="origin")
+     */
+    protected $country;
+
+    /**
+     * @Column(type="float")
+     */
+    protected $height;
+
+<a name="ann_file"></a>
++++ @File
+
+Tells ODM that the property is a file, must be set to a existing file path before saving to MongoDB
+Will be instantiated as instance of [MongoGridFSFile](http://www.php.net/manual/en/class.mongogridfsfile.php) class upon retreival
+
+<a name="ann_float"></a>
++++ @Float
+
+Alias of [@Field](#ann_field), with "type" attribute set to "float"
+
 <a name="ann_has_lifecycle_callbacks"></a>
 +++ @HasLifecycleCallbacks
 
@@ -211,6 +220,32 @@ Example:
          * @PostPersist
          */
         public function sendOptinMail() {}
+    }
+
+<a name="ann_hash"></a>
++++ @Hash
+
+Alias of [@Field](#ann_field), with "type" attribute set to "hash".
+Stores and retrieves the value as array.
+
+<a name="ann_id"></a>
++++ @Id
+
+The annotated instance variable will be marked as document identifier.
+This annotation is a marker only and has no required or optional attributes.
+
+Example:
+
+    [php]
+    /**
+     * @Document
+     */
+    class User
+    {
+        /**
+         * @Id
+         */
+        protected $id;
     }
 
 <a name="ann_index"></a>
@@ -241,25 +276,17 @@ Example:
         //...
     }
 
-<a name="ann_id"></a>
-+++ @Id
+<a name="ann_int"></a>
++++ @Int
 
-The annotated instance variable will be marked as document identifier.
-This annotation is a marker only and has no required or optional attributes.
+Alias of [@Field](#ann_field), with "type" attribute set to "int"
 
-Example:
+<a name="ann_key"></a>
++++ @Key
 
-    [php]
-    /**
-     * @Document
-     */
-    class User
-    {
-        /**
-         * @Id
-         */
-        protected $id;
-    }
+Alias of [@Field](#ann_field), with "type" attribute set to "key"
+It is then converted to [MongoMaxKey](http://www.php.net/manual/en/class.mongomaxkey.php) or
+[MongoMinKey](http://www.php.net/manual/en/class.mongominkey.php), if the value evaluates to true or false respectively.
 
 <a name="ann_inheritance_type"></a>
 +++ @InheritanceType
@@ -292,6 +319,41 @@ Examples:
     {
         // ...
     }
+
+<a name="ann_post_load"></a>
++++ @PostLoad
+
+Marks a method on the document to be called as a @PostLoad event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
+
+<a name="ann_post_persist"></a>
++++ @PostPersist
+
+Marks a method on the document to be called as a @PostPersist event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
+
+<a name="ann_post_remove"></a>
++++ @PostRemove
+
+Marks a method on the document to be called as a @PostRemove event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
+
+<a name="ann_post_update"></a>
++++ @PostUpdate
+
+Marks a method on the document to be called as a @PostUpdate event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
+
+<a name="ann_pre_persist"></a>
++++ @PrePersist
+
+Marks a method on the document to be called as a @PrePersist event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
+
+<a name="ann_preremove"></a>
++++ @PreRemove
+
+Marks a method on the document to be called as a @PreRemove event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
+
+<a name="ann_preupdate"></a>
++++ @PreUpdate
+
+Marks a method on the document to be called as a @PreUpdate event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
 <a name="ann_reference_many"></a>
 +++ @ReferenceMany
@@ -334,60 +396,4 @@ Example:
      * @ReferenceOne(targetDocument="Documents\ShoppingCart", cascade="all")
      */
     private $cart;
-
-<a name="ann_embed_one"></a>
-+++ @EmbedOne
-
-The @EmbedOne annotation works almost exactly as the [@ReferenceOne](#ann_reference_one), except that internally,
-the document is embedded in the parent document in MongoDB. From MongoDB docs:
-
-> The key question in Mongo schema design is "does this object merit its own collection, or rather should it embed in objects in other collections?" In relational databases, each sub-item of interest typically becomes a separate table (unless denormalizing for performance). In Mongo, this is not recommended - embedding objects is much more efficient. Data is then colocated on disk; client-server turnarounds to the database are eliminated. So in general the question to ask is, "why would I not want to embed this object?"
-
-Required attributes:
-
-* targetDocument - A full class name of the target document.
-
-<a name="ann_embed_many"></a>
-+++ @EmbedMany
-
-This annotation is simmilar to [@EmbedOne](#ann_embed_one), but instead of embedding one document, it informs MongoDB to embed a collection of documents
-
-Required attributes:
-
-* targetDocument - A full class name of the target document.
-
-<a name="ann_post_load"></a>
-+++ @PostLoad
-
-Marks a method on the document to be called as a @PostLoad event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
-
-<a name="ann_post_persist"></a>
-+++ @PostPersist
-
-Marks a method on the document to be called as a @PostPersist event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
-
-<a name="ann_post_remove"></a>
-+++ @PostRemove
-
-Marks a method on the document to be called as a @PostRemove event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
-
-<a name="ann_post_update"></a>
-+++ @PostUpdate
-
-Marks a method on the document to be called as a @PostUpdate event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
-
-<a name="ann_pre_persist"></a>
-+++ @PrePersist
-
-Marks a method on the document to be called as a @PrePersist event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
-
-<a name="ann_preremove"></a>
-+++ @PreRemove
-
-Marks a method on the document to be called as a @PreRemove event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
-
-<a name="ann_preupdate"></a>
-+++ @PreUpdate
-
-Marks a method on the document to be called as a @PreUpdate event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
