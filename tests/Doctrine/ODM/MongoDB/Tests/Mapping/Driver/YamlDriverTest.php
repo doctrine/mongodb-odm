@@ -11,8 +11,8 @@ require_once 'fixtures/User.php';
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
-class YamlDriverTest extends \PHPUnit_Framework_TestCase {
-
+class YamlDriverTest extends \PHPUnit_Framework_TestCase
+{
 	public function testCreateYmlDriver()
 	{
         $xmlDriver = new YamlDriver(

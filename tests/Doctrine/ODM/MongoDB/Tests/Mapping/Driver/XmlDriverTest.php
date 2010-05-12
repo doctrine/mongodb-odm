@@ -13,7 +13,6 @@ require_once 'fixtures/User.php';
  */
 class XmlDriverTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testCreateXmlDriver()
     {
         $xmlDriver = new XmlDriver(

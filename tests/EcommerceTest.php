@@ -19,7 +19,6 @@ use Doctrine\Common\ClassLoader,
 
 class EcommerceTest extends PHPUnit_Framework_TestCase
 {
-
     protected $dm;
 
     public function setUp()
@@ -54,7 +53,7 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
         }
         $this->dm->detach($product);
 
-        unset ($currencies, $product);
+        unset($currencies, $product);
     }
 
     public function tearDown()
