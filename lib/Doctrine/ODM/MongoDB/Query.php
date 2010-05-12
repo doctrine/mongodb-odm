@@ -165,9 +165,12 @@ class Query
      * @param string $fieldName
      * @return Query $this
      */
-    public function addSelect($fieldName)
+    public function addSelect($fieldName = null)
     {
-        $this->_select[] = $fieldName;
+        $select = func_get_args();
+        foreach ($select as $fieldName) {
+            $this->_select[] = $fieldName;
+        }
         return $this;
     }
 
