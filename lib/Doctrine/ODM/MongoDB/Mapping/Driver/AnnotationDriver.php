@@ -141,10 +141,10 @@ class AnnotationDriver implements Driver
             foreach ($types as $type) {
                 if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\\' . $type)) {
                     $mapping = array_merge($mapping, (array) $fieldAnnot);
+                    $class->mapField($mapping);
                     break;
                 }
             }
-            $class->mapField($mapping);
         }
 
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\HasLifecycleCallbacks'])) {
