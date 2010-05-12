@@ -59,6 +59,10 @@ final class Field extends Annotation
 {
     public $type = 'string';
 }
+final class Hash extends Annotation
+{
+    public $type = 'hash';
+}
 final class Boolean extends Annotation
 {
     public $type = 'boolean';
