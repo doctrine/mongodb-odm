@@ -1,5 +1,5 @@
 ﻿Doctrine 2 is a project that aims to handle the persistence of the domain model in a non-interfering way.
-Non-relational or no-sql databases like MongoDB give you flexibility of building data store arround your object model and not vise versa.
+Non-relational or no-sql databases like MongoDB give you flexibility of building data store around your object model and not vise versa.
 You can read more on the initial configuration and setup in [Introduction to MongoDB Object Document Mapper](/projects/mongodb_odm/1.0/docs/reference/introduction/en#introduction)
 This section will give you a basic overview of what could be accomplished using Doctrine2 ODM.
 
@@ -31,13 +31,13 @@ For the above mentioned example, something as simple as this could be modeled:
     }
 
 > **CAUTION**
-> This is only a prototype, please don't use public properties with Doctrine 2 at all,
-> the "Queries for Application Use-Cases" section shows you why. In combination with proxies
-> public properties can make up for pretty nasty bugs.
+> This is only a prototype, you should not use public properties with Doctrine 2
+> at all. You should always use private or protected properties and access them
+> using public getters and setters.
 
 ## Persistent Models
 
-To make the above classes persistent, all we need to do is to add some annotations and identifiers arround them:
+To make the above classes persistent, all we need to do is to add some annotations and identifiers around them:
 
     [php]
     /**
