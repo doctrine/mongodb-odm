@@ -17,7 +17,7 @@ For the above mentioned example, something as simple as this could be modeled:
     [php]
     class User
     {
-        public $username;
+        public $name;
         public $email;
         public $posts = array();
         
