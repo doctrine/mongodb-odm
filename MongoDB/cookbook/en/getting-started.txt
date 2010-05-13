@@ -22,6 +22,7 @@ For the above mentioned example, something as simple as this could be modeled:
         public $posts = array();
         
     }
+
     class BlogPost
     {
         public $title;
@@ -29,7 +30,7 @@ For the above mentioned example, something as simple as this could be modeled:
         public $createdAt;
     }
 
-> **WARNING**
+> **CAUTION**
 > This is only a prototype, please don't use public properties with Doctrine 2 at all,
 > the "Queries for Application Use-Cases" section shows you why. In combination with proxies
 > public properties can make up for pretty nasty bugs.
@@ -60,6 +61,7 @@ To make the above classes persistent, all we need to do is to add some annotatio
         public $posts = array();
         
     }
+
     /**
      * @Document(database="test_database", collection="blog_posts")
      */
@@ -139,4 +141,3 @@ Loading the model, when you know id is easy:
         echo $post->body . PHP_EOL;
         echo 'By ' . $loadedUser->name . ' on ' . $post->createdAt . PHP_EOL;
     }
-
