@@ -1,6 +1,6 @@
 ﻿Doctrine 2 is a project that aims to handle the persistence of the domain model in a non-interfering way.
 Non-relational or no-sql databases like MongoDB give you flexibility of building data store around your object model and not vise versa.
-You can read more on the initial configuration and setup in [Introduction to MongoDB Object Document Mapper](/projects/mongodb_odm/1.0/docs/reference/introduction/en#introduction)
+You can read more on the initial configuration and setup in [Introduction to MongoDB Object Document Mapper](/projects/mongodb_odm/1.0/docs/reference/introduction/en#introduction).
 This section will give you a basic overview of what could be accomplished using Doctrine2 ODM.
 
 ## Example Model: Simple Blog
@@ -128,6 +128,38 @@ Here is how you would use your models now:
     $dm->flush();
 
 Now if you did everything correctly, you should have those two objects stored in MongoDB in correct collections and databases.
+You can use the [php-mongodb-admin project, hosted on github](http://github.com/jwage/php-mongodb-admin) to look at your 'blog_posts' collection, where you will see only one document:
+
+    Array
+    (
+        [_id] => 4bec5869fdc212081d000000
+        [title] => My First Blog Post
+        [body] => MongoDB + Doctrine 2 ODM = awesomeness!
+        [createdAt] => MongoDate Object
+            (
+                [sec] => 1273723200
+                [usec] => 0
+            )
+    )
+
+And you 'users' collection would consist of the following:
+
+    Array
+    (
+        [_id] => 4bec5869fdc212081d010000
+        [name] => Bulat S.
+        [email] => email@example.com
+        [posts] => Array
+            (
+                [0] => Array
+                    (
+                        [$ref] => blog_posts
+                        [$id] => 4bec5869fdc212081d000000
+                        [$db] => test_database
+                    )
+            )
+    )
+
 To retreive the user, you will need its ID:
 
     [php]
