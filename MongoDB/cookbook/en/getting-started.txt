@@ -119,7 +119,7 @@ Here is how you would use your models now:
     $post = new BlogPost();
     $post->title = 'My First Blog Post';
     $post->body = 'MongoDB + Doctrine 2 ODM = awesomeness!';
-    $post->createdAt = date('l jS \of F Y h:i:s A');
+    $post->createdAt = date('Y-m-d');
     
     // calling $dm->persist($post) is not necessary, since $user will "cascade" $user->posts changes
     $user->posts[] = $post;
@@ -143,5 +143,5 @@ Loading the model, when you know id is easy:
     foreach ($loadedUser->posts as $post) {
         echo $post->title . PHP_EOL;
         echo $post->body . PHP_EOL;
-        echo 'By ' . $loadedUser->name . ' on ' . $post->createdAt . PHP_EOL;
+        echo 'By ' . $loadedUser->name . ' on ' . $post->createdAt->format('Y-m-d') . PHP_EOL;
     }
