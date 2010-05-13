@@ -34,6 +34,8 @@ For the above mentioned example, something as simple as this could be modeled:
 > the "Queries for Application Use-Cases" section shows you why. In combination with proxies
 > public properties can make up for pretty nasty bugs.
 
+## Persistent Models
+
 To make the above classes persistent, all we need to do is to add some annotations and identifiers arround them:
 
     [php]
@@ -96,6 +98,8 @@ Now all we need to do is to properly instantiate the DocumentManager instance([I
     $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
     $dm = DocumentManager::create(new Mongo(), $config);
+
+## Usage
 
 Here is how you would use your models now:
 
