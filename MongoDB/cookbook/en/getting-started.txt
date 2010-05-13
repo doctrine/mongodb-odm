@@ -41,7 +41,7 @@ To make the above classes persistent, all we need to do is to add some annotatio
 
     [php]
     /**
-     * @Document(database="test_database", collection="users")
+     * @Document(db="test_database", collection="users")
      */
     class User
     {
@@ -65,7 +65,7 @@ To make the above classes persistent, all we need to do is to add some annotatio
     }
 
     /**
-     * @Document(database="test_database", collection="blog_posts")
+     * @Document(db="test_database", collection="blog_posts")
      */
     class BlogPost
     {
