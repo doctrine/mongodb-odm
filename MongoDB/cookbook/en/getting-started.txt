@@ -1,0 +1,142 @@
+﻿Doctrine 2 is a project that aims to handle the persistence of the domain model in a non-interfering way.
+Non-relational or no-sql databases like MongoDB give you flexibility of building data store arround your object model and not vise versa.
+You can read more on the initial configuration and setup in [Introduction to MongoDB Object Document Mapper](/projects/mongodb_odm/1.0/docs/reference/introduction/en#introduction)
+This section will give you a basic overview of what could be accomplished using Doctrine2 ODM.
+
+## Example Model: Simple Blog
+
+To create the simplest example, let's assume the following:
+
+* Blog has a user.
+* Blog user can make blog posts
+
+## A first prototype
+
+For the above mentioned example, something as simple as this could be modeled:
+
+    [php]
+    class User
+    {
+        public $username;
+        public $email;
+        public $posts = array();
+        
+    }
+    class BlogPost
+    {
+        public $title;
+        public $body;
+        public $createdAt;
+    }
+
+> **WARNING**
+> This is only a prototype, please don't use public properties with Doctrine 2 at all,
+> the "Queries for Application Use-Cases" section shows you why. In combination with proxies
+> public properties can make up for pretty nasty bugs.
+
+To make the above classes persistent, all we need to do is to add some annotations and identifiers arround them:
+
+    [php]
+    /**
+     * @Document(database="test_database", collection="users")
+     */
+    class User
+    {
+        /**
+         * @Id
+         */
+        public $id;
+        /**
+         * @String
+         */
+        public $name;
+        /**
+         * @String
+         */
+        public $email;
+        /**
+         * @ReferenceMany(targetDocument="BlogPost", cascade="all")
+         */
+        public $posts = array();
+        
+    }
+    /**
+     * @Document(database="test_database", collection="blog_posts")
+     */
+    class BlogPost
+    {
+        /**
+         * @Id
+         */
+        public $id;
+        /**
+         * @String
+         */
+        public $title;
+        /**
+         * @String
+         */
+        public $body;
+        /**
+         * @Date
+         */
+        public $createdAt;
+    }
+
+That's it, we have our models, and we can save and retreive them.
+Now all we need to do is to properly instantiate the DocumentManager instance([Introduction to MongoDB Object Document Mapper](/projects/mongodb_odm/1.0/docs/reference/introduction/en#introduction)):
+
+    [php]
+    $config = new Configuration();
+    $config->setProxyDir('/path/to/generate/proxies');
+    $config->setProxyNamespace('Proxies');
+
+    $reader = new AnnotationReader();
+    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+
+    $dm = DocumentManager::create(new Mongo(), $config);
+
+Here is how you would use your models now:
+
+    [php]
+    // ...
+    // create user
+    $user = new User();
+    $user->name = 'Bulat S.';
+    $user->email = 'email@example.com';
+    
+    // tell Doctrine 2 to save $user on the next flush()
+    $dm->persist($user);
+    
+    // create blog post
+    $post = new BlogPost();
+    $post->title = 'My First Blog Post';
+    $post->body = 'MongoDB + Doctrine 2 ODM = awesomeness!';
+    $post->createdAt = date('l jS \of F Y h:i:s A');
+    
+    // calling $dm->persist($post) is not necessary, since $user will "cascade" $user->posts changes
+    $user->posts[] = $post;
+    
+    // store everything to MongoDB
+    $dm->flush();
+
+Now if you did everything correctly, you should have those two objects stored in MongoDB in correct collections and databases.
+To retreive the user, you will need its ID:
+
+    [php]
+    // ...
+    $userId = $user->id;
+
+Loading the model, when you know id is easy:
+
+    [php]
+    // ...
+    $loadedUser = $dm->find('User', $userId);
+    
+    foreach ($loadedUser->posts as $post) {
+        echo $post->title . PHP_EOL;
+        echo $post->body . PHP_EOL;
+        echo 'By ' . $loadedUser->name . ' on ' . $post->createdAt . PHP_EOL;
+    }
+
