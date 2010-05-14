@@ -112,14 +112,15 @@ class CommitOrderCalculator
         $this->_relatedClasses[$fromClass->name][] = $toClass;
     }
     
-	public function hasDependency($fromClass, $toClass) {
-		if (!isset($this->_relatedClasses[$fromClass->name])) {
-			return false;
-		}
+    public function hasDependency($fromClass, $toClass)
+    {
+        if (!isset($this->_relatedClasses[$fromClass->name])) {
+            return false;
+        }
 
-		return in_array($toClass, $this->_relatedClasses[$fromClass->name]);
-	}
-	
+        return in_array($toClass, $this->_relatedClasses[$fromClass->name]);
+    }
+
     public function hasClass($className)
     {
         return isset($this->_classes[$className]);

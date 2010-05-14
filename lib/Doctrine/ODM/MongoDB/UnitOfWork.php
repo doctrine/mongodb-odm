@@ -686,17 +686,8 @@ class UnitOfWork
                 }
             } elseif (isset($mapping['embedded'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if ($mapping['type'] === 'many' && isset($changeset[$mapping['fieldName']])) {
-                    $coll = $changeset[$mapping['fieldName']];
-                    $changeset[$mapping['fieldName']] = array();
-                    foreach ($coll as $key => $doc) {
-                        $changeset[$mapping['fieldName']][$key] = $this->_prepareDocEmbeded($targetClass, $doc);
-                    }
-                } elseif (isset($changeset[$mapping['fieldName']])) {
-                    $doc = $changeset[$mapping['fieldName']];
-                    $changeset[$mapping['fieldName']] = array();
-                    $changeset[$mapping['fieldName']] = $this->_prepareDocEmbeded($targetClass, $doc);
-                }
+				$doc = $changeset[$mapping['fieldName']];
+				$changeset[$mapping['fieldName']] = $this->_prepareDocEmbeded($targetClass, $doc);
             } elseif (isset($changeset[$mapping['fieldName']])) {
                 $changeset[$mapping['fieldName']] = Types::getType($mapping['type'])->convertToDatabaseValue($changeset[$mapping['fieldName']]);
             }
@@ -736,35 +727,43 @@ class UnitOfWork
     private function _prepareDocEmbeded($class, $doc)
     {
         $changeset = array();
-        foreach ($class->fieldMappings as $mapping) {
-            $rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
-            if (isset($mapping['embedded']) || isset($mapping['reference'])) {
-                $document = $rawValue;
-                $classMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if (isset($mapping['embedded']) && $document) {
-					if ($mapping['type'] == 'many') {
-						$value = array();
-						foreach ($document as $doc) {
-							$value[] = $this->_prepareDocEmbeded($classMetadata, $doc);
+		if (is_array($doc) || $doc instanceof Collection) {
+			foreach ($doc as $val) {
+				$changeset[] = $this->_prepareDocEmbeded($class, $val);
+			}
+		} else {
+			foreach ($class->fieldMappings as $mapping) {
+				$rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
+				if (!isset($rawValue)) {
+					continue;
+				}
+				if (isset($mapping['embedded']) || isset($mapping['reference'])) {
+					$classMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
+					if (isset($mapping['embedded'])) {
+						if ($mapping['type'] == 'many') {
+							$value = array();
+							foreach ($rawValue as $doc) {
+								$value[] = $this->_prepareDocEmbeded($classMetadata, $doc);
+							}
+						} elseif ($mapping['type'] == 'one') {
+							$value = $this->_prepareDocEmbeded($classMetadata, $rawValue);
 						}
-					} else {
-						$value = $this->_prepareDocEmbeded($classMetadata, $document);
-					}
-                } elseif (isset($mapping['reference'])) {
-					if ($mapping['type'] == 'many') {
- 						$value = array();
-						foreach ($document as $doc) {
-							$value[] = $this->_prepareDocReference($classMetadata, $doc);
+					} elseif (isset($mapping['reference'])) {
+						if ($mapping['type'] == 'many') {
+							 $value = array();
+							foreach ($rawValue as $doc) {
+								$value[] = $this->_prepareDocReference($classMetadata, $doc);
+							}
+						} else {
+							$value = $this->_prepareDocReference($classMetadata, $rawValue);
 						}
-					} else {
-						$value = $this->_prepareDocReference($classMetadata, $document);
 					}
-                }
-            } else {
-                $value = Types::getType($mapping['type'])->convertToDatabaseValue($rawValue);
-            }
-            $changeset[$mapping['fieldName']] = $value;
-        }
+				} else {
+					$value = Types::getType($mapping['type'])->convertToDatabaseValue($rawValue);
+				}
+				$changeset[$mapping['fieldName']] = $value;
+			}
+		}
         return $changeset;
     }
 
@@ -863,9 +862,10 @@ class UnitOfWork
                 }
                 $calc->addDependency($targetClass, $class);
 
-				if (!$calc->hasDependency($targetClass, $class)) {
-	                $this->_addDependencies($targetClass, $calc);
-				}
+                // prevent recursion
+                if (!$calc->hasDependency($targetClass, $class)) {
+                    $this->_addDependencies($targetClass, $calc);
+                }
             }
         }
     }
