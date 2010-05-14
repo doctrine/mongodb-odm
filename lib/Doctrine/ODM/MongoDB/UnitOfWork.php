@@ -686,8 +686,10 @@ class UnitOfWork
                 }
             } elseif (isset($mapping['embedded'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                $doc = $changeset[$mapping['fieldName']];
-                $changeset[$mapping['fieldName']] = $this->_prepareDocEmbeded($targetClass, $doc);
+                if (isset($changeset[$mapping['fieldName']])) {
+                    $doc = $changeset[$mapping['fieldName']];
+                    $changeset[$mapping['fieldName']] = $this->_prepareDocEmbeded($targetClass, $doc);
+                }
             } elseif (isset($changeset[$mapping['fieldName']])) {
                 $changeset[$mapping['fieldName']] = Types::getType($mapping['type'])->convertToDatabaseValue($changeset[$mapping['fieldName']]);
             }
@@ -853,19 +855,20 @@ class UnitOfWork
                 if ( ! $calc->hasClass($targetClass->name)) {
                     $calc->addClass($targetClass);
                 }
-                $calc->addDependency($targetClass, $class);
+                if (!$calc->hasDependency($targetClass, $class)) {
+                    $calc->addDependency($targetClass, $class);
+                }
             }
             if (isset($mapping['embedded'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 if ( ! $calc->hasClass($targetClass->name)) {
                     $calc->addClass($targetClass);
                 }
-                $calc->addDependency($targetClass, $class);
-
-                // prevent recursion
                 if (!$calc->hasDependency($targetClass, $class)) {
-                    $this->_addDependencies($targetClass, $calc);
+                    $calc->addDependency($targetClass, $class);
                 }
+
+                $this->_addDependencies($targetClass, $calc);
             }
         }
     }
