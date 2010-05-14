@@ -741,10 +741,24 @@ class UnitOfWork
             if (isset($mapping['embedded']) || isset($mapping['reference'])) {
                 $document = $rawValue;
                 $classMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if (isset($mapping['embedded'])) {
-                    $value = $this->_prepareDocEmbeded($classMetadata, $document);
+                if (isset($mapping['embedded']) && $document) {
+					if ($mapping['type'] == 'many') {
+						$value = array();
+						foreach ($document as $doc) {
+							$value[] = $this->_prepareDocEmbeded($classMetadata, $doc);
+						}
+					} else {
+						$value = $this->_prepareDocEmbeded($classMetadata, $document);
+					}
                 } elseif (isset($mapping['reference'])) {
-                    $value = $this->_prepareDocReference($classMetadata, $document);
+					if ($mapping['type'] == 'many') {
+ 						$value = array();
+						foreach ($document as $doc) {
+							$value[] = $this->_prepareDocReference($classMetadata, $doc);
+						}
+					} else {
+						$value = $this->_prepareDocReference($classMetadata, $document);
+					}
                 }
             } else {
                 $value = Types::getType($mapping['type'])->convertToDatabaseValue($rawValue);
@@ -848,7 +862,10 @@ class UnitOfWork
                     $calc->addClass($targetClass);
                 }
                 $calc->addDependency($targetClass, $class);
-                $this->_addDependencies($targetClass, $calc);
+
+				if (!$calc->hasDependency($targetClass, $class)) {
+	                $this->_addDependencies($targetClass, $calc);
+				}
             }
         }
     }
