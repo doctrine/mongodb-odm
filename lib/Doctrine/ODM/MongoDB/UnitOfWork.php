@@ -686,8 +686,8 @@ class UnitOfWork
                 }
             } elseif (isset($mapping['embedded'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-				$doc = $changeset[$mapping['fieldName']];
-				$changeset[$mapping['fieldName']] = $this->_prepareDocEmbeded($targetClass, $doc);
+                $doc = $changeset[$mapping['fieldName']];
+                $changeset[$mapping['fieldName']] = $this->_prepareDocEmbeded($targetClass, $doc);
             } elseif (isset($changeset[$mapping['fieldName']])) {
                 $changeset[$mapping['fieldName']] = Types::getType($mapping['type'])->convertToDatabaseValue($changeset[$mapping['fieldName']]);
             }
@@ -727,43 +727,43 @@ class UnitOfWork
     private function _prepareDocEmbeded($class, $doc)
     {
         $changeset = array();
-		if (is_array($doc) || $doc instanceof Collection) {
-			foreach ($doc as $val) {
-				$changeset[] = $this->_prepareDocEmbeded($class, $val);
-			}
-		} else {
-			foreach ($class->fieldMappings as $mapping) {
-				$rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
-				if (!isset($rawValue)) {
-					continue;
-				}
-				if (isset($mapping['embedded']) || isset($mapping['reference'])) {
-					$classMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
-					if (isset($mapping['embedded'])) {
-						if ($mapping['type'] == 'many') {
-							$value = array();
-							foreach ($rawValue as $doc) {
-								$value[] = $this->_prepareDocEmbeded($classMetadata, $doc);
-							}
-						} elseif ($mapping['type'] == 'one') {
-							$value = $this->_prepareDocEmbeded($classMetadata, $rawValue);
-						}
-					} elseif (isset($mapping['reference'])) {
-						if ($mapping['type'] == 'many') {
-							 $value = array();
-							foreach ($rawValue as $doc) {
-								$value[] = $this->_prepareDocReference($classMetadata, $doc);
-							}
-						} else {
-							$value = $this->_prepareDocReference($classMetadata, $rawValue);
-						}
-					}
-				} else {
-					$value = Types::getType($mapping['type'])->convertToDatabaseValue($rawValue);
-				}
-				$changeset[$mapping['fieldName']] = $value;
-			}
-		}
+        if (is_array($doc) || $doc instanceof Collection) {
+            foreach ($doc as $val) {
+                $changeset[] = $this->_prepareDocEmbeded($class, $val);
+            }
+        } else {
+            foreach ($class->fieldMappings as $mapping) {
+                $rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
+                if (!isset($rawValue)) {
+                    continue;
+                }
+                if (isset($mapping['embedded']) || isset($mapping['reference'])) {
+                    $classMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
+                    if (isset($mapping['embedded'])) {
+                        if ($mapping['type'] == 'many') {
+                            $value = array();
+                            foreach ($rawValue as $doc) {
+                                $value[] = $this->_prepareDocEmbeded($classMetadata, $doc);
+                            }
+                        } elseif ($mapping['type'] == 'one') {
+                            $value = $this->_prepareDocEmbeded($classMetadata, $rawValue);
+                        }
+                    } elseif (isset($mapping['reference'])) {
+                        if ($mapping['type'] == 'many') {
+                             $value = array();
+                            foreach ($rawValue as $doc) {
+                                $value[] = $this->_prepareDocReference($classMetadata, $doc);
+                            }
+                        } else {
+                            $value = $this->_prepareDocReference($classMetadata, $rawValue);
+                        }
+                    }
+                } else {
+                    $value = Types::getType($mapping['type'])->convertToDatabaseValue($rawValue);
+                }
+                $changeset[$mapping['fieldName']] = $value;
+            }
+        }
         return $changeset;
     }
 
