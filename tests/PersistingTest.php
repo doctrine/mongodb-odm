@@ -43,6 +43,26 @@ class PersistingTest extends BaseTest
         $this->dm->clear();
     }
 
+    public function testUpdate()
+    {
+      $user = new User();
+      $user->setUsername('jon');
+      $user->setPassword('changeme');
+
+      $this->dm->persist($user);
+      $this->dm->flush();
+      $this->dm->clear();
+
+      $user = $this->dm->find('Documents\User', $user->getId());
+      $user->setUsername('w00t');
+      $this->dm->flush();
+      $this->dm->clear();
+
+      $user = $this->dm->find('Documents\User', $user->getId());
+
+      $this->assertEquals('w00t', $user->getUsername());
+    }
+
     public function testDetach()
     {
         $user = new User();
