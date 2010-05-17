@@ -181,7 +181,8 @@ class ClassMetadataFactory
                 $class->setCollection($parent->getCollection());
             }
 
-            $class->setDB($this->_dm->formatDBName($class->getDB()));
+            $db = $class->getDB() ?: $this->_dm->getConfiguration()->getDefaultDB();
+            $class->setDB($this->_dm->formatDBName($db));
 
             $class->setParentClasses($visited);
 
