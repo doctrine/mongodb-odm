@@ -2,8 +2,9 @@
 
 namespace Documents\Ecommerce;
 
-class Money {
-
+/** @EmbeddedDocument */
+class Money
+{
     /**
      * @Float
      */
@@ -40,5 +41,4 @@ class Money {
     {
         $this->currency = $currency;
     }
-
 }

@@ -167,6 +167,28 @@ class Configuration
     }
 
     /**
+     * Sets the default DB to use for all Documents that do not specify
+     * a database.
+     *
+     * @param string $defaultDB
+     */
+    public function setDefaultDB($defaultDB)
+    {
+        $this->_attributes['defaultDB'] = $defaultDB;
+    }
+
+    /**
+     * Gets the default DB to use for all Documents that do not specify a database.
+     *
+     * @return string $defaultDB
+     */
+    public function getDefaultDB()
+    {
+        return isset($this->_attributes['defaultDB']) ?
+            $this->_attributes['defaultDB'] : null;
+    }
+
+    /**
      * Set the logger callable.
      *
      * @param mixed $loggerCallable The logger callable.

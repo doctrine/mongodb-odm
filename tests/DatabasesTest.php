@@ -1,5 +1,7 @@
 <?php
 
+require_once 'TestInit.php';
+
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Cache\ApcCache,
     Doctrine\Common\Annotations\AnnotationReader,
@@ -8,50 +10,58 @@ use Doctrine\Common\ClassLoader,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mongo,
     Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
-    Documents\Account,
-    Documents\Address,
-    Documents\Group,
-    Documents\Phonenumber,
-    Documents\Profile,
-    Documents\File,
-    Documents\User;
+    Documents\Ecommerce\ConfigurableProduct,
+    Documents\Ecommerce\StockItem,
+    Documents\Ecommerce\Currency,
+    Documents\Ecommerce\Money,
+    Documents\Ecommerce\Option;
 
-abstract class BaseTest extends PHPUnit_Framework_TestCase
+class DatabasesTest extends PHPUnit_Framework_TestCase
 {
+    protected $dm;
+
     public function setUp()
     {
         $config = new Configuration();
 
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Proxies');
-        $config->setDefaultDB('doctrine_odm_tests');
-
-        /*
-        $config->setLoggerCallable(function(array $log) {
-            print_r($log);
-        });
-        $config->setMetadataCacheImpl(new ApcCache());
-        */
 
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+        $config->setDefaultDB('testing');
 
         $this->dm = DocumentManager::create(new Mongo(), $config);
     }
 
-    public function tearDown()
+    public function testDefaultDatabase()
     {
-        $documents = array(
-            'Documents\User',
-            'Documents\SpecialUser',
-            'Documents\Account',
-            'Documents\Profile',
-            'Documents\Group',
-            'Documents\File'
-        );
-        foreach ($documents as $document) {
-            $this->dm->getDocumentCollection($document)->drop();
-        }
+        $this->assertEquals('testing', $this->dm->getDocumentDB('DefaultDatabaseTest')->getName());
+    }
+}
+
+/** @Document(collection="test") */
+class DefaultDatabaseTest
+{
+    /** @Id */
+    private $id;
+
+    /** @String */
+    private $name;
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 }

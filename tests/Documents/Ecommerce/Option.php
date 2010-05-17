@@ -7,7 +7,6 @@ namespace Documents\Ecommerce;
  */
 class Option
 {
-
     /**
      * @String
      * @var string
@@ -70,5 +69,4 @@ class Option
     {
         return $this->stockItem;
     }
-
 }
