@@ -180,6 +180,10 @@ class ClassMetadataFactory
                 $class->setDB($parent->getDB());
                 $class->setCollection($parent->getCollection());
             }
+            else
+            {
+                $class->setDB($this->_dm->realDbNameFor($class->getDB()));
+            }
 
             $class->setParentClasses($visited);
 

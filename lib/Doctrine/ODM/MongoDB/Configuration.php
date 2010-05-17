@@ -55,6 +55,8 @@ class Configuration
     public function __construct()
     {
         $this->_attributes['metadataDriverImpl'] = new PHPDriver();
+        $this->_attributes['prefix_db_name'] = 
+            $this->_attributes['suffix_db_name'] = '';
     }
 
     /**
@@ -207,5 +209,37 @@ class Configuration
     {
         return isset($this->_attributes['loggerCallable']) ?
                 $this->_attributes['loggerCallable'] : null;
+    }
+    /**
+     * Set prefix for db name
+     */
+    public function setPrefixDbName($prefix = '')
+    {
+        $this->_attributes['prefix_db_name'] = $prefix;
+    }
+    /**
+     * Get prefix for db name
+     *
+     * @return string 
+     */
+    public function getPrefixDbName()
+    {
+        return $this->_attributes['prefix_db_name'];
+    }
+    /**
+     * Set suffix for db name
+     */
+    public function setSuffixDbName($suffix = '')
+    {
+        $this->_attributes['suffix_db_name'] = $suffix;
+    }
+    /**
+     * Get suffix for db name
+     *
+     * @return string
+     */
+    public function getSuffixDbName()
+    {
+        return $this->_attributes['suffix_db_name'];
     }
 }
