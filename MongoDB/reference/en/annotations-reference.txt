@@ -14,6 +14,7 @@
 * [@DiscriminatorMap](#ann_discriminator_map)
 * [@EmbedMany](#ann_embed_many)
 * [@EmbedOne](#ann_embed_one)
+* [@EmbeddedDocument](#ann_embedded_document)
 * [@Field](#ann_field)
 * [@File](#ann_file)
 * [@Float](#ann_float)
@@ -25,6 +26,7 @@
 * [@InheritanceType](#ann_inheritance_type)
 * [@Int](#ann_int)
 * [@Key](#ann_key)
+* [@MappedSuperclass](#ann_mapped_superclass)
 * [@PostLoad](#ann_post_load)
 * [@PostPersist](#ann_post_persist)
 * [@PostRemove](#ann_post_remove)
@@ -156,6 +158,76 @@ the document is embedded in the parent document in MongoDB. From MongoDB docs:
 Required attributes:
 
 * targetDocument - A full class name of the target document.
+
+<a name="ann_embedded_document"></a>
++++ @EmbeddedDocument
+
+Marks the document as embeddable. Without this annotation, you cannot embed non-document objects.
+
+    [php]
+    <?php
+	class Money
+	{
+	    /**
+		 * @Float
+		 */
+	    protected $amount
+		
+		public function __construct($amount)
+		{
+			$this->amount = (float) $amount;
+		}
+		//...
+	}
+	
+	/**
+	 * @Document(db="finance", collection="wallets")
+	 */
+	class Wallet
+	{
+		/**
+		 * @EmbedOne(targetDocument="Money")
+		 */
+		protected $money;
+		
+		public function setMoney(Money $money)
+		{
+			$this->money = $money;
+		}
+		//...
+	}
+	//...
+	$wallet = new Wallet();
+	$wallet->setMoney(new Money(34.39));
+	$dm->persist($wallet);
+	$dm->flush();
+
+The code above wouldn't store the money object.
+In order for the above code to work, you should have:
+
+    [php]
+	<?php
+	/**
+	 * @Document
+	 */
+	class Money
+	{
+	//...
+	}
+
+or
+
+    [php]
+	<?php
+	/**
+	 * @EmbeddedDocument
+	 */
+	class Money
+	{
+	//...
+	}
+
+The difference is that @EmbeddedDocument cannot be stored without a parent @Document and cannot specify its own db or collection attributes.
 
 <a name="ann_field"></a>
 +++ @Field
@@ -319,6 +391,11 @@ Examples:
 Alias of [@Field](#ann_field), with "type" attribute set to "key"
 It is then converted to [MongoMaxKey](http://www.php.net/manual/en/class.mongomaxkey.php) or
 [MongoMinKey](http://www.php.net/manual/en/class.mongominkey.php), if the value evaluates to true or false respectively.
+
+<a name="ann_mapped_superclass"></a>
++++ @MappedSuperclass
+
+The annotation is used to specify classes that are parents of document classes and should not be managed [read more at](http://www.doctrine-project.org/projects/mongodb_odm/1.0/docs/reference/inheritance/en)
 
 <a name="ann_post_load"></a>
 +++ @PostLoad
