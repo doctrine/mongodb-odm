@@ -2,24 +2,80 @@
 
 require_once 'TestInit.php';
 
-use Documents\Account;
+use Documents\Account, 
+    Documents\User,
+    Documents\SpecialUser;
 
 class DbNameTest extends BaseTest
 {
-    public function testPrefixAndSuffixForDbName()
+    public function testPrefixDbName()
     {
-        $accountClass = get_class(new Account);
+        $this->dm->getConfiguration()->setPrefixDBName('test_');
 
-        $db1 = $this->dm->getDocumentDB($accountClass);
+        $meta = $this->getMetaData();
 
-        $this->dm->getConfiguration()->setPrefixDbName('test_');
-        $db2 = $this->dm->getDocumentDB($accountClass);
+        $expectedDbName = 'test_doctrine_odm_tests';
 
-        $this->dm->getConfiguration()->setSuffixDbName('_test');
-        $db3 = $this->dm->getDocumentDB($accountClass);
+        $this->assertEquals($meta['account']->getDB(),     $expectedDbName);
+        $this->assertEquals($meta['user']->getDB(),        $expectedDbName);
+        $this->assertEquals($meta['specialUser']->getDB(), $expectedDbName);
+    }
 
-        $this->assertTrue($db1 !== $db2);
-        $this->assertTrue($db1 !== $db3);
-        $this->assertTrue($db2 !== $db3);
+    public function testSuffixDbName()
+    {
+        $this->dm->getConfiguration()->setSuffixDBName('_test');
+
+        $meta = $this->getMetaData();
+
+        $expectedDbName = 'doctrine_odm_tests_test';
+
+        $this->assertEquals($meta['account']->getDB(),     $expectedDbName);
+        $this->assertEquals($meta['user']->getDB(),        $expectedDbName);
+        $this->assertEquals($meta['specialUser']->getDB(), $expectedDbName);
+    }
+
+    public function testPrefixAndSuffixDbName()
+    {
+        $this->dm->getConfiguration()->setPrefixDBName('test_');
+        $this->dm->getConfiguration()->setSuffixDBName('_test');
+
+        $meta = $this->getMetaData();
+
+        $expectedDbName = 'test_doctrine_odm_tests_test';
+
+        $this->assertEquals($meta['account']->getDB(),     $expectedDbName);
+        $this->assertEquals($meta['user']->getDB(),        $expectedDbName);
+        $this->assertEquals($meta['specialUser']->getDB(), $expectedDbName);
+    }
+
+    public function testPersist()
+    {
+        $this->dm->getConfiguration()->setPrefixDBName('test_');
+
+        $account = new Account();
+        $account->setName('test');
+
+        $this->dm->persist($account);
+        $this->dm->flush();
+
+        $this->assertTrue(!is_null($account->getId()));
+
+        $mongo = $this->dm->getMongo()->getMongo();
+
+        $testAccount = $mongo->test_doctrine_odm_tests
+            ->accounts
+            ->findOne(array('_id' => new \MongoId($account->getId())));
+
+        $this->assertTrue(is_array($testAccount));
+        $this->assertEquals($account->getId(), (string)$testAccount['_id']);
+    }
+
+    protected function getMetaData()
+    {
+        return array(
+            'account'     => $this->dm->getClassMetadata('Documents\Account'),
+            'user'        => $this->dm->getClassMetadata('Documents\User'),
+            'specialUser' => $this->dm->getClassMetadata('Documents\SpecialUser')
+        );
     }
 }

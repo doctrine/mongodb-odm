@@ -576,12 +576,12 @@ class DocumentManager
         }
     }
 
-    public function realDbNameFor($dbName)
+    public function formatDBName($dbName)
     {
         return sprintf('%s%s%s', 
-            $this->_config->getPrefixDbName(), 
+            $this->_config->getPrefixDBName(), 
             $dbName,
-            $this->_config->getSuffixDbName()
+            $this->_config->getSuffixDBName()
         );
     }
 }
