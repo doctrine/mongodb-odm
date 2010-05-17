@@ -60,8 +60,10 @@ class YamlDriver extends AbstractFileDriver
             if (isset($element['repositoryClass'])) {
                 $class->setCustomRepositoryClass($element['repositoryClass']);
             }
-        } else if ($element['type'] == 'mappedSuperclass') {
+        } elseif ($element['type'] === 'mappedSuperclass') {
             $class->isMappedSuperclass = true;
+        } elseif ($element['type'] === 'embeddedDocument') {
+            $class->isEmbeddedDocument = true;
         }
         if (isset($element['indexes'])) {
             foreach($element['indexes'] as $index) {
