@@ -46,6 +46,7 @@ class PersistingTest extends BaseTest
     public function testUpdate()
     {
       $user = new User();
+      $user->setInheritedProperty('cool');
       $user->setUsername('jon');
       $user->setPassword('changeme');
 
@@ -61,6 +62,7 @@ class PersistingTest extends BaseTest
       $user = $this->dm->find('Documents\User', $user->getId());
 
       $this->assertEquals('w00t', $user->getUsername());
+      $this->assertEquals('cool', $user->getInheritedProperty());
     }
 
     public function testDetach()
