@@ -114,7 +114,7 @@ class CommitOrderCalculator
     
     public function hasDependency($fromClass, $toClass)
     {
-        if (!isset($this->_relatedClasses[$fromClass->name])) {
+        if ( ! isset($this->_relatedClasses[$fromClass->name])) {
             return false;
         }
 

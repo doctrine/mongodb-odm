@@ -262,7 +262,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
 
     private function _load()
     {
-        if (!$this->__isInitialized__ && $this->__dm) {
+        if ( ! $this->__isInitialized__ && $this->__dm) {
             $this->__isInitialized__ = true;
             if ($this->__dm->loadByID(get_class($this), $this->__identifier, true) === null) {
                 throw new \Doctrine\ODM\MongoDB\DocumentNotFoundException();
@@ -276,7 +276,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
 
     public function __sleep()
     {
-        if (!$this->__isInitialized__) {
+        if ( ! $this->__isInitialized__) {
             throw new \RuntimeException("Not fully loaded proxy can not be serialized.");
         }
         <sleepImpl>
