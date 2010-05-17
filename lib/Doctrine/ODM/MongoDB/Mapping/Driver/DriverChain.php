@@ -25,9 +25,9 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * The DriverChain allows you to add multiple other mapping drivers for
  * certain namespaces
  *
- * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    	www.doctrine-project.org
- * @since   	1.0
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.org
+ * @since       1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>

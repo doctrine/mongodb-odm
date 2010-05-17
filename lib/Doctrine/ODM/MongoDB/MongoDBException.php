@@ -22,9 +22,9 @@ namespace Doctrine\ODM\MongoDB;
 /**
  * Class for all exceptions related to the Doctrine MongoDB ODM
  *
- * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    	www.doctrine-project.org
- * @since   	1.0
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.org
+ * @since       1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */

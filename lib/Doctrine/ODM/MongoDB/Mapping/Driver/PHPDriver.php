@@ -25,9 +25,9 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * The PHPDriver invokes a static PHP function on the document class itself passing
  * a ClassMetadata instance for you to manually populate with mapping information.
  *
- * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    	www.doctrine-project.org
- * @since   	1.0
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.org
+ * @since       1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */

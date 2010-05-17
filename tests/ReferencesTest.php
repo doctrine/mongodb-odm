@@ -38,7 +38,7 @@ class ReferencesTest extends BaseTest
 
         $this->assertEquals('Jonathan', $profile->getFirstName());
         $this->assertEquals('Wage', $profile->getLastName());
-        
+
     }
 
     public function testOneEmbeddedReference()

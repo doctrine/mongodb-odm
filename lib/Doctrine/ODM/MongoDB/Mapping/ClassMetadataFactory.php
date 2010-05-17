@@ -192,7 +192,9 @@ class ClassMetadataFactory
 
             $parent = $class;
 
-            array_unshift($visited, $className);
+            if ( ! $class->isMappedSuperclass) {
+                array_unshift($visited, $className);
+            }
 
             $loaded[] = $className;
         }

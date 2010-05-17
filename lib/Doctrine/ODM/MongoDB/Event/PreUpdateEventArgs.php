@@ -72,7 +72,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      */
     public function getOldValue($field)
     {
-    	$this->_assertValidField($field);
+        $this->_assertValidField($field);
 
         return $this->_documentChangeSet[$field][0];
     }
@@ -105,7 +105,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
 
     private function _assertValidField($field)
     {
-    	if (!isset($this->_documentChangeSet[$field])) {
+        if ( ! isset($this->_documentChangeSet[$field])) {
             throw new \InvalidArgumentException(
                 "Field '".$field."' is not a valid field of the document ".
                 "'".get_class($this->getDocument())."' in PreInsertUpdateEventArgs."
