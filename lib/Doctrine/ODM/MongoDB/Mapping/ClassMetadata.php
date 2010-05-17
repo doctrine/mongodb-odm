@@ -214,6 +214,13 @@ class ClassMetadata
     public $isMappedSuperclass = false;
 
     /**
+     * READ-ONLY: Whether this class describes the mapping of a embedded document.
+     *
+     * @var boolean
+     */
+    public $isEmbeddedDocument = false;
+
+    /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
      *
@@ -231,15 +238,10 @@ class ClassMetadata
             $e = array_map(function($value) {
                 return strtolower($value);
             }, $e);
-
             $collection = array_pop($e);
-            $database = implode('_', $e);
         } else {
-            $database = 'doctrine';
             $collection = strtolower($documentName);
         }
-
-        $this->setDB($database);
         $this->setCollection($collection);
     }
 

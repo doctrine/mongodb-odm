@@ -43,6 +43,11 @@ class MongoDB
         $this->_mongoDB = $mongoDB;
     }
 
+    public function getName()
+    {
+        return (string) $this->_mongoDB;
+    }
+
     /**
      * Get the MongoDB instance being wrapped.
      *

@@ -231,6 +231,7 @@ class DocumentManager
     public function getDocumentDB($className)
     {
         $db = $this->_metadataFactory->getMetadataFor($className)->getDB();
+        $db = $db ? $db : $this->_config->getDefaultDB();
         if ($db && ! isset($this->_documentDBs[$db])) {
             $database = $this->_mongo->selectDB($db);
             $this->_documentDBs[$db] = new MongoDB($database);
@@ -255,9 +256,9 @@ class DocumentManager
         $key = $db . '.' . $collection;
         if ($collection && ! isset($this->_documentCollections[$key])) {
             if ($metadata->isFile()) {
-                $collection = $this->_mongo->selectDB($metadata->getDB())->getGridFS($collection);
+                $collection = $this->getDocumentDB($className)->getGridFS($collection);
             } else {
-                $collection = $this->_mongo->selectDB($metadata->getDB())->selectCollection($collection);
+                $collection = $this->getDocumentDB($className)->selectCollection($collection);
             }
             $mongoCollection = new MongoCollection($collection, $metadata, $this);
             $this->_documentCollections[$key] = $mongoCollection;

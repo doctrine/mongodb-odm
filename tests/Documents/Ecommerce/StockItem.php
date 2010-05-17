@@ -7,7 +7,6 @@ namespace Documents\Ecommerce;
  */
 class StockItem
 {
-
     /**
      * @Id
      */

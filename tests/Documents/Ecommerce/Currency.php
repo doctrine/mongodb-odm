@@ -7,7 +7,6 @@ namespace Documents\Ecommerce;
  */
 class Currency
 {
-
     const
         USD   = 'USD',
         EURO  = 'EURO',
@@ -75,5 +74,4 @@ class Currency
             self::JPN,
         );
     }
-
 }

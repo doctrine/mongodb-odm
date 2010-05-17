@@ -837,7 +837,13 @@ class UnitOfWork
             $this->_addDependencies($class, $calc);
         }
 
-        return $calc->getCommitOrder();
+        $classes = $calc->getCommitOrder();
+        foreach ($classes as $key => $class) {
+            if ($class->isEmbeddedDocument) {
+                unset($classes[$key]);
+            }
+        }
+        return array_values($classes);
     }
 
     /**

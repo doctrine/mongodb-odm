@@ -128,6 +128,8 @@ class AnnotationDriver implements Driver
 
         } else if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass'])) {
             $class->isMappedSuperclass = true;
+        } else if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\EmbeddedDocument'])) {
+            $class->isEmbeddedDocument = true;
         }
 
         foreach ($reflClass->getProperties() as $property) {
