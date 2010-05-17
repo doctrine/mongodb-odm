@@ -51,7 +51,7 @@
   </xs:complexType>
 
   <xs:complexType name="reference-one">
-	<xs:sequence>
+    <xs:sequence>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
     </xs:sequence>
     <xs:attribute name="target-document" type="xs:NMTOKEN" use="required" />
@@ -59,7 +59,7 @@
   </xs:complexType>
 
   <xs:complexType name="reference-many">
-	<xs:sequence>
+    <xs:sequence>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
     </xs:sequence>
     <xs:attribute name="target-document" type="xs:NMTOKEN" use="required" />

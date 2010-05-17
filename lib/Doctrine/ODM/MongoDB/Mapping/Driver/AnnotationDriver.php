@@ -127,6 +127,8 @@ class AnnotationDriver implements Driver
                 $class->setDiscriminatorMap($discrMapAnnot->value);
             }
 
+        } else if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass'])) {
+            $metadata->isMappedSuperclass = true;
         }
 
         foreach ($reflClass->getProperties() as $property) {

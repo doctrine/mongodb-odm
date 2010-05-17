@@ -30,6 +30,7 @@ final class Document extends Annotation
     public $repositoryClass;
     public $indexes = array();
 }
+final class MappedSuperclass extends Annotation {}
 
 final class Inheritance extends Annotation
 {
