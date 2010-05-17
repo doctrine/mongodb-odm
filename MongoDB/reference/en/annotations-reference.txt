@@ -166,66 +166,66 @@ Marks the document as embeddable. Without this annotation, you cannot embed non-
 
     [php]
     <?php
-	class Money
-	{
-	    /**
-		 * @Float
-		 */
-	    protected $amount
-		
-		public function __construct($amount)
-		{
-			$this->amount = (float) $amount;
-		}
-		//...
-	}
-	
-	/**
-	 * @Document(db="finance", collection="wallets")
-	 */
-	class Wallet
-	{
-		/**
-		 * @EmbedOne(targetDocument="Money")
-		 */
-		protected $money;
-		
-		public function setMoney(Money $money)
-		{
-			$this->money = $money;
-		}
-		//...
-	}
-	//...
-	$wallet = new Wallet();
-	$wallet->setMoney(new Money(34.39));
-	$dm->persist($wallet);
-	$dm->flush();
+    class Money
+    {
+        /**
+         * @Float
+         */
+        protected $amount
+        
+        public function __construct($amount)
+        {
+            $this->amount = (float) $amount;
+        }
+        //...
+    }
+    
+    /**
+     * @Document(db="finance", collection="wallets")
+     */
+    class Wallet
+    {
+        /**
+         * @EmbedOne(targetDocument="Money")
+         */
+        protected $money;
+        
+        public function setMoney(Money $money)
+        {
+            $this->money = $money;
+        }
+        //...
+    }
+    //...
+    $wallet = new Wallet();
+    $wallet->setMoney(new Money(34.39));
+    $dm->persist($wallet);
+    $dm->flush();
 
 The code above wouldn't store the money object.
 In order for the above code to work, you should have:
 
     [php]
-	<?php
-	/**
-	 * @Document
-	 */
-	class Money
-	{
-	//...
-	}
+    <?php
+    /**
+     * @Document
+     */
+    class Money
+    {
+    //...
+    }
 
 or
 
     [php]
-	<?php
-	/**
-	 * @EmbeddedDocument
-	 */
-	class Money
-	{
-	//...
-	}
+    <?php
+    /**
+     * @EmbeddedDocument
+     */
+    class Money
+    {
+    //...
+    }
 
 The difference is that @EmbeddedDocument cannot be stored without a parent @Document and cannot specify its own db or collection attributes.
 
