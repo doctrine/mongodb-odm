@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * @DiscriminatorField(fieldName="type")
  * @DiscriminatorMap({"special"="Documents\SpecialUser"})
  */
-class User
+class User extends BaseDocument
 {
     /** @Id */
     protected $id;
