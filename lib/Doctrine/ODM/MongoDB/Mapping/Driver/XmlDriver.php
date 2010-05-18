@@ -53,8 +53,10 @@ class XmlDriver extends AbstractFileDriver
             if (isset($xmlRoot['repository-class'])) {
                 $class->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
             }
-        } else if ($xmlRoot->getName() == 'mapped-superclass') {
+        } elseif ($xmlRoot->getName() == 'mapped-superclass') {
             $class->isMappedSuperclass = true;
+        } elseif ($xmlRoot->getName() == 'embedded-document') {
+            $class->isEmbeddedDocument = true;
         }
 
         if (isset($xmlRoot['db'])) {
