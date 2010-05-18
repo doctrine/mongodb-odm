@@ -523,10 +523,13 @@ class Query
      */
     public function getCursor()
     {
-        if ($this->_mapReduce) {
+        if (isset($this->_mapReduce['map']) && $this->_mapReduce['reduce']) {
             $cursor = $this->_dm->mapReduce($this->_className, $this->_mapReduce['map'], $this->_mapReduce['reduce'], $this->_where, isset($this->_mapReduce['options']) ? $this->_mapReduce['options'] : array());
             $cursor->hydrate(false);
         } else {
+            if (isset($this->_mapReduce['reduce'])) {
+                $this->_where['$where'] = $this->_mapReduce['reduce'];
+            }
             $cursor = $this->_dm->find($this->_className, $this->_where, $this->_select);
             $cursor->hydrate($this->_hydrate);
         }

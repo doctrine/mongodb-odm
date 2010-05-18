@@ -23,5 +23,11 @@ class QueryTest extends BaseTest
             ->where('$where', "function() { return this.username == 'boo' }");
         $user = $query->getSingleResult();
         $this->assertEquals('boo', $user->getUsername());
+
+        $query = $this->dm->createQuery('Documents\User')
+            ->reduce("function() { return this.username == 'boo' }");
+        $user = $query->getSingleResult();
+        $this->assertEquals('boo', $user->getUsername());
+
     }
 }
