@@ -117,9 +117,12 @@ class DocumentManager
      * @param Doctrine\ODM\MongoDB\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(Mongo $mongo, Configuration $config = null, EventManager $eventManager = null)
+    protected function __construct(Mongo $mongo = null, Configuration $config = null, EventManager $eventManager = null)
     {
-        $this->_mongo = $mongo;
+        if (is_string($mongo) || $mongo instanceof \Mongo) {
+            $mongo = new Mongo($mongo);
+        }
+        $this->_mongo = $mongo ? $mongo : new Mongo();
         $this->_config = $config ? $config : new Configuration();
         $this->_eventManager = $eventManager ? $eventManager : new EventManager();
         $this->_hydrator = new Hydrator($this);

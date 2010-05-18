@@ -108,24 +108,20 @@ class AnnotationDriver implements Driver
                     $class->addIndex($index->keys, $index->options);
                 }
             }
-
             if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'])) {
                 $inheritanceTypeAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'];
                 $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
             }
-
             if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorField'])) {
                 $discrFieldAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorField'];
                 $class->setDiscriminatorField(array(
                     'fieldName' => $discrFieldAnnot->fieldName,
                 ));
             }
-
             if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorMap'])) {
                 $discrMapAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorMap'];
                 $class->setDiscriminatorMap($discrMapAnnot->value);
             }
-
         } else if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass'])) {
             $class->isMappedSuperclass = true;
         } else if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\EmbeddedDocument'])) {

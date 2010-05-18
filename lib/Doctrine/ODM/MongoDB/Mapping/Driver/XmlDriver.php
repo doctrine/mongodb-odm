@@ -58,7 +58,6 @@ class XmlDriver extends AbstractFileDriver
         } elseif ($xmlRoot->getName() == 'embedded-document') {
             $class->isEmbeddedDocument = true;
         }
-
         if (isset($xmlRoot['db'])) {
             $class->setDB((string) $xmlRoot['db']);
         }
@@ -91,7 +90,6 @@ class XmlDriver extends AbstractFileDriver
         if (isset($xmlRoot->inheritance['type'])) {
             $class->discriminatorMap = $xmlRoot['inheritance'];
         }
-
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
                 $mapping = array();
