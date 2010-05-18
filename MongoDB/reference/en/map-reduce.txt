@@ -4,11 +4,11 @@ functionality and improves the user friendliness of it as well.
 > **SIDEBAR**
 > From MongoDB.org:
 >
-> "Map/reduce in MongoDB is useful for batch manipulation of data and aggregation
+> Map/reduce in MongoDB is useful for batch manipulation of data and aggregation
 > operations. It is similar in spirit to using something like Hadoop with all
 > input coming from a collection and output going to a collection. Often, in a
 > situation where you would have used GROUP BY in SQL, map/reduce is the right
-> tool in MongoDB."
+> tool in MongoDB.
 
 Imagine a situation where you had an application with a document named `Event`:
 
