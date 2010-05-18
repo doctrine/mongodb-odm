@@ -41,6 +41,8 @@ class MongoCursor implements \Iterator
     private $_class;
     /** The PHP MongoCursor being wrapped */
     private $_mongoCursor;
+    /** Whether or not to try and hydrate the returned data */
+    private $_hydrate = true;
 
     /**
      * Create a new MongoCursor which wraps around a given PHP MongoCursor.
@@ -69,6 +71,17 @@ class MongoCursor implements \Iterator
         return $this->_mongoCursor;
     }
 
+    /**
+     * Whether or not to try and hydrate the returned data
+     *
+     * @param boolean $bool
+     */
+    public function hydrate($bool)
+    {
+        $this->_hydrate = $bool;
+        return $this;
+    }
+
     /** @override */
     public function current()
     {
@@ -79,8 +92,11 @@ class MongoCursor implements \Iterator
         } else {
             $current = $this->_mongoCursor->current();
         }
-        $document = $this->_uow->getOrCreateDocument($this->_class->name, $current);
-        return $document;
+        if ($this->_hydrate) {
+            return $this->_uow->getOrCreateDocument($this->_class->name, $current);
+        } else {
+            return $current;
+        }
     }
 
     /** @proxy */

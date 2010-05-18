@@ -163,12 +163,18 @@ class MapReduceTest extends PHPUnit_Framework_TestCase
 
         $results = $this->dm->mapReduce('Documents\Ecommerce\ConfigurableProduct', $map, $reduce);
 		$this->assertEquals(10, $results->count());
+		
+		$results = $this->dm->createQuery('Documents\Ecommerce\ConfigurableProduct')
+		    ->mapReduce($map, $reduce)
+		    ->getCursor();
+		$this->assertEquals(10, $results->count());
     }
 
 	/**
 	 * @expectedException RuntimeException
 	 */
-	public function testMapReduceError() {
+	public function testMapReduceError()
+	{
         $map = 'function() {
 			for(i = 0; i <= this.options.length; i++) {
 				emit(this.name.fetch(), { count: 1 });
@@ -190,4 +196,3 @@ class MapReduceTest extends PHPUnit_Framework_TestCase
         $results = $this->dm->mapReduce('Documents\Ecommerce\ConfigurableProduct', $map, $reduce);
 	}
 }
-

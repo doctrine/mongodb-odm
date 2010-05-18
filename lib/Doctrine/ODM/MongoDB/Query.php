@@ -57,6 +57,10 @@ class Query
     private $_snapshot = false;
     /** Pass slaveOkaye to cursor */
     private $_slaveOkay = false;
+    /** Whether or not to try and hydrate the returned data */
+    private $_hydrate = true;
+    /** Map reduce information */
+    private $_mapReduce = array();
 
     const HINT_REFRESH = 1;
 
@@ -84,6 +88,17 @@ class Query
     public function getDocumentManager()
     {
         return $this->_dm;
+    }
+
+    /**
+     * Whether or not to try and hydrate the returned data
+     *
+     * @param boolean $bool
+     */
+    public function hydrate($bool)
+    {
+        $this->_hydrate = $bool;
+        return $this;
     }
 
     /**
@@ -413,6 +428,16 @@ class Query
         return $this;
     }
 
+    public function mapReduce($map, $reduce, array $options = array())
+    {
+        $this->_mapReduce = array(
+            'map' => $map,
+            'reduce' => $reduce,
+            'options' => $options
+        );
+        return $this;
+    }
+
     /**
      * Execute the query and return an array of results
      *
@@ -454,12 +479,17 @@ class Query
      */
     public function getCursor()
     {
-        $cursor = $this->_dm->find($this->_className, $this->_where, $this->_select);
+        if ($this->_mapReduce) {
+            $cursor = $this->_dm->mapReduce($this->_className, $this->_mapReduce['map'], $this->_mapReduce['reduce'], $this->_where, $this->_mapReduce['options']);
+        } else {
+            $cursor = $this->_dm->find($this->_className, $this->_where, $this->_select);
+        }
         $cursor->limit($this->_limit);
         $cursor->skip($this->_skip);
         $cursor->sort($this->_sort);
         $cursor->immortal($this->_immortal);
         $cursor->slaveOkay($this->_slaveOkay);
+        $cursor->hydrate($this->_hydrate);
         if ($this->_snapshot) {
             $cursor->snapshot();
         }
