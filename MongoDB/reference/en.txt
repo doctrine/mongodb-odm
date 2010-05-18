@@ -5,4 +5,5 @@
 + Inheritance
 + Storing Files with MongoGridFS
 + Querying for Documents
++ Map Reduce
 + Logging
