@@ -164,7 +164,6 @@ class MapReduceTest extends PHPUnit_Framework_TestCase
         $cursor = $this->dm->mapReduce('Documents\Ecommerce\ConfigurableProduct', $map, $reduce);
 		$this->assertEquals(10, $cursor->count());
 
-
 		$cursor = $this->dm->createQuery('Documents\Ecommerce\ConfigurableProduct')
 		    ->mapReduce($map, $reduce)
 		    ->getCursor();
