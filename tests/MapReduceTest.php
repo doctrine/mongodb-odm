@@ -161,13 +161,16 @@ class MapReduceTest extends PHPUnit_Framework_TestCase
             };
         }';
 
-        $results = $this->dm->mapReduce('Documents\Ecommerce\ConfigurableProduct', $map, $reduce);
-		$this->assertEquals(10, $results->count());
-		
-		$results = $this->dm->createQuery('Documents\Ecommerce\ConfigurableProduct')
+        $cursor = $this->dm->mapReduce('Documents\Ecommerce\ConfigurableProduct', $map, $reduce);
+		$this->assertEquals(10, $cursor->count());
+
+
+		$cursor = $this->dm->createQuery('Documents\Ecommerce\ConfigurableProduct')
 		    ->mapReduce($map, $reduce)
 		    ->getCursor();
-		$this->assertEquals(10, $results->count());
+		$this->assertEquals(10, $cursor->count());
+		$results = $cursor->getResults();
+		$this->assertTrue(is_array($results['product_0']));
     }
 
 	/**

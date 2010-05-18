@@ -430,6 +430,7 @@ class Query
 
     public function mapReduce($map, $reduce, array $options = array())
     {
+        $this->_hydrate = false;
         $this->_mapReduce = array(
             'map' => $map,
             'reduce' => $reduce,
