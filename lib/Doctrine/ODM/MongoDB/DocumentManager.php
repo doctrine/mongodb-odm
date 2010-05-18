@@ -464,6 +464,9 @@ class DocumentManager
         );
         $command = array_merge($command, $options);
         $result = $db->command($command);
+        if ( ! $result['ok']) {
+            throw new \RuntimeException($result['errmsg']);
+        }
         return $db->selectCollection($result['result'])->find();
     }
 
