@@ -428,14 +428,57 @@ class Query
         return $this;
     }
 
+    /**
+     * Specify a map reduce operation for this query.
+     *
+     * @param mixed $map
+     * @param mixed $reduce 
+     * @param array $options 
+     * @return Query
+     */
     public function mapReduce($map, $reduce, array $options = array())
     {
-        $this->_hydrate = false;
         $this->_mapReduce = array(
             'map' => $map,
             'reduce' => $reduce,
             'options' => $options
         );
+        return $this;
+    }
+
+    /**
+     * Specify a map operation for this query.
+     *
+     * @param string $map
+     * @return Query
+     */
+    public function map($map)
+    {
+        $this->_mapReduce['map'] = $map;
+        return $this;
+    }
+
+    /**
+     * Specify a reduce operation for this query.
+     *
+     * @param string $reduce
+     * @return Query
+     */
+    public function reduce($reduce)
+    {
+        $this->_mapReduce['reduce'] = $reduce;
+        return $this;
+    }
+
+    /**
+     * Specify the map reduce array of options for this query.
+     *
+     * @param array $options
+     * @return Query
+     */
+    public function mapReduceOptions(array $options)
+    {
+        $this->_mapReduce['options'] = $options;
         return $this;
     }
 
@@ -481,16 +524,17 @@ class Query
     public function getCursor()
     {
         if ($this->_mapReduce) {
-            $cursor = $this->_dm->mapReduce($this->_className, $this->_mapReduce['map'], $this->_mapReduce['reduce'], $this->_where, $this->_mapReduce['options']);
+            $cursor = $this->_dm->mapReduce($this->_className, $this->_mapReduce['map'], $this->_mapReduce['reduce'], $this->_where, isset($this->_mapReduce['options']) ? $this->_mapReduce['options'] : array());
+            $cursor->hydrate(false);
         } else {
             $cursor = $this->_dm->find($this->_className, $this->_where, $this->_select);
+            $cursor->hydrate($this->_hydrate);
         }
         $cursor->limit($this->_limit);
         $cursor->skip($this->_skip);
         $cursor->sort($this->_sort);
         $cursor->immortal($this->_immortal);
         $cursor->slaveOkay($this->_slaveOkay);
-        $cursor->hydrate($this->_hydrate);
         if ($this->_snapshot) {
             $cursor->snapshot();
         }

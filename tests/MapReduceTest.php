@@ -12,7 +12,9 @@ use Doctrine\Common\Annotations\AnnotationReader,
     Documents\Ecommerce\StockItem,
     Documents\Ecommerce\Currency,
     Documents\Ecommerce\Money,
-    Documents\Ecommerce\Option;
+    Documents\Ecommerce\Option,
+    Documents\User,
+    Documents\Event;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
@@ -27,6 +29,7 @@ class MapReduceTest extends PHPUnit_Framework_TestCase
 
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Proxies');
+        $config->setDefaultDB('doctrine_odm_tests');
 
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
@@ -135,6 +138,8 @@ class MapReduceTest extends PHPUnit_Framework_TestCase
             'Documents\Ecommerce\ConfigurableProduct',
             'Documents\Ecommerce\StockItem',
             'Documents\Ecommerce\Currency',
+            'Documents\User',
+            'Documents\Event'
         );
         foreach ($documents as $document) {
             $this->dm->getDocumentCollection($document)->drop();
@@ -172,6 +177,48 @@ class MapReduceTest extends PHPUnit_Framework_TestCase
 		$this->assertTrue(is_array($results['product_0']));
     }
 
+    public function testMapReduce2()
+    {
+        $user = new User();
+        $user->setUsername('bob');
+
+        $event1 = new Event();
+        $event1->setUser($user);
+        $event1->setType('sale');
+        $event1->setTitle('Test 1');
+
+        $event2 = new Event();
+        $event2->setUser($user);
+        $event2->setType('sale');
+        $event2->setTitle('Test 2');
+
+        $event3 = new Event();
+        $event3->setUser($user);
+        $event3->setType('sale');
+        $event3->setTitle('Test 2');
+
+        $this->dm->persist($user);
+        $this->dm->persist($event1);
+        $this->dm->persist($event2);
+        $this->dm->persist($event3);
+        $this->dm->flush();
+
+        $query = $this->dm->createQuery('Documents\Event')
+            ->where('type', 'sale')
+            ->map('function() { emit(this.user.$id, 1); }')
+            ->reduce("function(k, vals) {
+                var sum = 0;
+                for (var i in vals) {
+                    sum += vals[i]; 
+                }
+                return sum;
+            }");
+
+        $user2 = $query->getSingleResult();
+        $this->assertEquals($user->getId(), $user2['_id']);
+        $this->assertEquals(3, $user2['value']);
+    }
+
 	/**
 	 * @expectedException RuntimeException
 	 */
@@ -186,7 +233,7 @@ class MapReduceTest extends PHPUnit_Framework_TestCase
         $reduce = 'function(product, values) {
 			var total = 0
 			values.forEach(function(value){
-			    total+= value.count;
+			    total += value.count;
 			});
             return {
                 product: product,
