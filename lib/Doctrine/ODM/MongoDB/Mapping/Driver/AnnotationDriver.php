@@ -101,7 +101,7 @@ class AnnotationDriver implements Driver
                 $class->setCollection($documentAnnot->collection);
             }
             if ($documentAnnot->repositoryClass) {
-                $metadata->setCustomRepositoryClass($documentAnnot->repositoryClass);
+                $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
             }
             if ($documentAnnot->indexes) {
                 foreach($documentAnnot->indexes as $index) {
