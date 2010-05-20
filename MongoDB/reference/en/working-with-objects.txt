@@ -200,6 +200,7 @@ Here is an example where we add a new comment to an article:
 
 Or you can set a single reference:
 
+    [php]
     $address = new Address();
     // ...
 
@@ -216,6 +217,7 @@ to do so, by key and by element. Here are some examples:
 
 Or you can remove a single reference:
 
+    [php]
     $user->setAddress(null);
 
 When working with collections, keep in mind that a Collection is essentially an ordered map (just like a PHP array).
