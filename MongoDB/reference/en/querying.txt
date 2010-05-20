@@ -372,7 +372,7 @@ atomic one:
     [php]
     $dm->createQuery('User')
         ->set('username', 'jwage', false)
-        ->set('password, 'password', false)
+        ->set('password', 'password', false)
         // ... set other remaining fields
         ->where('username', 'jwage')
         ->execute();
@@ -502,7 +502,7 @@ Read more about the [$pull modifier](http://www.mongodb.org/display/DOCS/Updatin
 
     [php]
     $dm->createQuery('Article')
-        ->pullAll('tags', array('tag1', 'tag2))
+        ->pullAll('tags', array('tag1', 'tag2'))
         ->execute();
 
 Read more about the [$pullAll modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24pullAll) in the Mongo docs.
