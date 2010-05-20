@@ -12,6 +12,20 @@ The `Query` object supports four types of queries:
 
 This section will show examples for the different types of queries.
 
+++ Finding Documents
+
+You can use the traditional `find()` and `findOne()` methods to find documents
+just like you would if you weren't using Doctrine. The only difference is that the
+methods return objects instead of arrays:
+
+    [php]
+    $users = $dm->find('User', array('type' => 'admin'));
+
+And you can use the `findOne()` method to find a single user:
+
+    [php]
+    $user = $dm->findOne('User', array('username' => 'jwage'));
+
 ++ Creating Query Objects
 
 You can easily create a new `Query` object with the `DocumentManager::createQuery()`
