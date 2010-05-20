@@ -28,7 +28,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class BooleanType implements Type
+class BooleanType extends Type
 {
     public function convertToDatabaseValue($value)
     {

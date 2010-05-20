@@ -28,7 +28,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class TimestampType implements Type
+class TimestampType  extends Type
 {
     public function convertToDatabaseValue($value)
     {

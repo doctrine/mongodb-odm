@@ -110,6 +110,11 @@ class DocumentManager
     private $_documentCollections = array();
 
     /**
+     * Whether the DocumentManager is closed or not.
+     */
+    private $_closed = false;
+
+    /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
@@ -143,10 +148,11 @@ class DocumentManager
      *
      * @param Doctrine\ODM\MongoDB\Mongo $mongo
      * @param Doctrine\ODM\MongoDB\Configuration $config
+     * @param Doctrine\Common\EventManager $eventManager
      */
-    public static function create(Mongo $mongo, Configuration $config = null)
+    public static function create(Mongo $mongo, Configuration $config = null, EventManager $eventManager = null)
     {
-        return new self($mongo, $config);
+        return new self($mongo, $config, $eventManager);
     }
 
     /**
@@ -235,6 +241,7 @@ class DocumentManager
     {
         $db = $this->_metadataFactory->getMetadataFor($className)->getDB();
         $db = $db ? $db : $this->_config->getDefaultDB();
+        $db = $db ? $db : 'doctrine';
         if ($db && ! isset($this->_documentDBs[$db])) {
             $database = $this->_mongo->selectDB($db);
             $this->_documentDBs[$db] = new MongoDB($database);
@@ -299,6 +306,7 @@ class DocumentManager
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
+        $this->_errorIfClosed();
         $this->_unitOfWork->persist($document);
     }
 
@@ -315,6 +323,7 @@ class DocumentManager
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
+        $this->_errorIfClosed();
         $this->_unitOfWork->remove($document);
     }
 
@@ -329,6 +338,7 @@ class DocumentManager
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
+        $this->_errorIfClosed();
         $this->_unitOfWork->refresh($document);
     }
 
@@ -362,6 +372,7 @@ class DocumentManager
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
+        $this->_errorIfClosed();
         return $this->_unitOfWork->merge($document);
     }
 
@@ -434,6 +445,7 @@ class DocumentManager
      */
     public function flush()
     {
+        $this->_errorIfClosed();
         $this->_unitOfWork->commit();
     }
 
@@ -539,5 +551,28 @@ class DocumentManager
     public function clear()
     {
         $this->_unitOfWork->clear();
+    }
+
+    /**
+     * Closes the DocumentManager. All documents that are currently managed
+     * by this DocumentManager become detached. The DocumentManager may no longer
+     * be used after it is closed.
+     */
+    public function close()
+    {
+        $this->clear();
+        $this->_closed = true;
+    }
+
+    /**
+     * Throws an exception if the EntityManager is closed or currently not active.
+     *
+     * @throws ORMException If the EntityManager is closed.
+     */
+    private function _errorIfClosed()
+    {
+        if ($this->_closed) {
+            throw MongoDBException::documentManagerClosed();
+        }
     }
 }

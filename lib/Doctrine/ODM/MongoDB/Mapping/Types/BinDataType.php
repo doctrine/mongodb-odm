@@ -28,7 +28,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class BinDataType implements Type
+class BinDataType extends Type
 {
     public function convertToDatabaseValue($value)
     {

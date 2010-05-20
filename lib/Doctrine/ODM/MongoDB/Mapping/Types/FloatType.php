@@ -28,7 +28,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class FloatType implements Type
+class FloatType extends Type
 {
     public function convertToDatabaseValue($value)
     {

@@ -757,6 +757,17 @@ class Query
     }
 
     /**
+     * Proxy to execute() method
+     *
+     * @param array $options 
+     * @return Query
+     */
+    public function getResult(array $options = array())
+    {
+        return $this->execute($options);
+    }
+
+    /**
      * Execute the query and return an array of results
      *
      * @param array $options

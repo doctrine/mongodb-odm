@@ -58,6 +58,11 @@ class MongoDB
         return $this->_mongoDB;
     }
 
+    public function selectCollection($collection)
+    {
+        return $this->_mongoDB->selectCollection($collection);
+    }
+
     /** @proxy */
     public function __call($method, $arguments)
     {

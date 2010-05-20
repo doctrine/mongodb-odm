@@ -23,7 +23,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
-    Doctrine\ODM\MongoDB\Mapping\Types,
+    Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\Collections\ArrayCollection;
 
@@ -691,7 +691,7 @@ class UnitOfWork
                     $changeset[$mapping['fieldName']] = $this->_prepareDocEmbeded($targetClass, $doc);
                 }
             } elseif (isset($changeset[$mapping['fieldName']])) {
-                $changeset[$mapping['fieldName']] = Types::getType($mapping['type'])->convertToDatabaseValue($changeset[$mapping['fieldName']]);
+                $changeset[$mapping['fieldName']] = Type::getType($mapping['type'])->convertToDatabaseValue($changeset[$mapping['fieldName']]);
             }
         }
         return $changeset;
@@ -761,7 +761,7 @@ class UnitOfWork
                         }
                     }
                 } else {
-                    $value = Types::getType($mapping['type'])->convertToDatabaseValue($rawValue);
+                    $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
                 }
                 $changeset[$mapping['fieldName']] = $value;
             }
@@ -812,10 +812,10 @@ class UnitOfWork
     {
         if ($documentChangeSet === null) {
             $documentChangeSet = array_merge(
-                    $this->_documentInsertions,
-                    $this->_documentUpdates,
-                    $this->_documentDeletions
-                    );
+                $this->_documentInsertions,
+                $this->_documentUpdates,
+                $this->_documentDeletions
+            );
         }
         
         $calc = $this->getCommitOrderCalculator();

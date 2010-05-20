@@ -28,7 +28,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @version     $Revision$
  * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class HashType implements Type
+class HashType extends Type
 {
     public function convertToDatabaseValue($value)
     {

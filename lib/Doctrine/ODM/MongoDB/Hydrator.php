@@ -22,7 +22,7 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Query,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\ODM\MongoDB\Mapping\Types,
+    Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection;
 
@@ -108,7 +108,7 @@ class Hydrator
                 }
             } else {
                 $value = $data[$mapping['fieldName']];
-                $value = Types::getType($mapping['type'])->convertToPHPValue($value);
+                $value = Type::getType($mapping['type'])->convertToPHPValue($value);
                 $metadata->setFieldValue($document, $mapping['fieldName'], $value);
             }
             if (isset($value)) {

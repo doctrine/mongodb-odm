@@ -64,4 +64,24 @@ class MongoDBException extends \Exception
     {
         return new self(sprintf('The "%s" document is not mapped to a MongoDB database collection.', $className));
     }
+
+    public static function documentManagerClosed()
+    {
+        return new self('The DocumentManager is closed.');
+    }
+
+    public static function typeExists($name)
+    {
+        return new self('Type '.$name.' already exists.');
+    }
+
+    public static function unknownFieldType($name)
+    {
+        return new self('Unknown field type '.$name.' requested.');
+    }
+
+    public static function typeNotFound($name)
+    {
+        return new self('Type to be overwritten '.$name.' does not exist.');
+    }
 }
