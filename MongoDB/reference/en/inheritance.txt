@@ -45,7 +45,7 @@ Example:
         // ... more fields and methods
     }
 
-### Single Collection Inheritance
+++ Single Collection Inheritance
 
 In Single Collection Inheritance each document is stored in a single collection
 where a discriminator field is used to distinguish one document type from another.
@@ -89,7 +89,7 @@ has a discriminator field value of employee, we would get an Employee instance b
 Even though we queried Person, Doctrine will know to return an Employee instance because
 of the discriminator map!
 
-### Collection Per Class Inheritance
+++ Collection Per Class Inheritance
 
 With Collection Per Class Inheritance each document is stored in its own collection
 and contains all inherited fields:
