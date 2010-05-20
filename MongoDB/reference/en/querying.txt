@@ -42,6 +42,7 @@ either as PHP objects or the raw arrays the PHP Mongo extension returns.
 You can execute a query with the `execute()` method which executes the query,
 iterators the cursor and returns an array of results:
 
+    [php]
     $query = $dm->createQuery('User');
     $users = $query->execute();
 
@@ -126,6 +127,7 @@ If you want to an additional sort you can use the `addSort()` method:
 
 You can also run map reduced find queries using the `Query` object:
 
+    [php]
     $query = $this->dm->createQuery('Event')
         ->where('type', 'sale')
         ->map('function() { emit(this.userId, 1); }')
