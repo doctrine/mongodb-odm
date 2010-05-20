@@ -33,35 +33,59 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  */
 class Query
 {
+    const TYPE_FIND   = 1;
+    const TYPE_UPDATE = 2;
+    const TYPE_REMOVE = 3;
+
     /** The DocumentManager instance for this query */
     private $_dm;
+
     /** The Document class name being queried */
     private $_className;
+
     /** The ClassMetadata instance for the class being queried */
     private $_class;
+
     /** Array of fields to select */
     private $_select = array();
+
     /** Array of criteria to query for */
     private $_where = array();
+
+    /** Array to pass to MongoCollection::update() 2nd argument */
+    private $_newObj = array();
+
     /** Array of sort options */
     private $_sort = array();
+
     /** Limit number of records */
     private $_limit = null;
+
     /** Skip a specified number of records (offset) */
     private $_skip = null;
+
     /** Pass hints to the MongoCursor */
     private $_hints = array();
+
     /** Pass immortal to cursor */
     private $_immortal = false;
+
     /** Pass snapshot to cursor */
     private $_snapshot = false;
+
     /** Pass slaveOkaye to cursor */
     private $_slaveOkay = false;
+
     /** Whether or not to try and hydrate the returned data */
     private $_hydrate = true;
+
     /** Map reduce information */
     private $_mapReduce = array();
 
+    /** The type of query */
+    private $_type = self::TYPE_FIND;
+
+    /** Refresh hint */
     const HINT_REFRESH = 1;
 
     /**
@@ -91,7 +115,8 @@ class Query
     }
 
     /**
-     * Whether or not to try and hydrate the returned data
+     * Whether or not to hydrate the data into objects or to return the raw results
+     * from mongo.
      *
      * @param boolean $bool
      */
@@ -105,7 +130,7 @@ class Query
      * Set slave okaye.
      *
      * @param bool $bool
-     * @return Query $this
+     * @return Query
      */
     public function slaveOkay($bool = true)
     {
@@ -116,8 +141,8 @@ class Query
     /**
      * Set snapshot.
      *
-     * @param bool $bool 
-     * @return Query $this
+     * @param bool $bool
+     * @return Query
      */
     public function snapshot($bool = true)
     {
@@ -128,8 +153,8 @@ class Query
     /**
      * Set immortal.
      *
-     * @param bool $bool 
-     * @return Query $this
+     * @param bool $bool
+     * @return Query
      */
     public function immortal($bool = true)
     {
@@ -141,7 +166,7 @@ class Query
      * Pass a hint to the MongoCursor
      *
      * @param string $keyPattern
-     * @return Query $this
+     * @return Query
      */
     public function hint($keyPattern)
     {
@@ -153,12 +178,60 @@ class Query
      * Set the Document class being queried.
      *
      * @param string $className The Document class being queried.
-     * @return Query $this
+     * @return Query
      */
     public function from($className)
     {
-        $this->_className = $className;
-        $this->_class = $this->_dm->getClassMetadata($className);
+        if ($className !== null) {
+            $this->_className = $className;
+            $this->_class = $this->_dm->getClassMetadata($className);
+        }
+        $this->_type = self::TYPE_FIND;
+        return $this;
+    }
+
+    /**
+     * Proxy method to from() to match mongo naming.
+     *
+     * @param string $className
+     * @return Query
+     */
+    public function find($className = null)
+    {
+        return $this->from($className);
+    }
+
+    /**
+     * Sets the query as an update query for the given class name or changes
+     * the type for the current class.
+     *
+     * @param string $className
+     * @return Query
+     */
+    public function update($className = null)
+    {
+        if ($className !== null) {
+            $this->_className = $className;
+            $this->_class = $this->_dm->getClassMetadata($className);
+        }
+        $this->_type = self::TYPE_UPDATE;
+        return $this;
+    }
+
+    /**
+     * Sets the query as a remove query for the given class name or changes
+     * the type for the current class.
+     *
+     * @param string $className
+     * @return Query
+     */
+    public function remove($className = null)
+    {
+        if ($className !== null) {
+            $this->_className = $className;
+            $this->_class = $this->_dm->getClassMetadata($className);
+        }
+        $this->_type = self::TYPE_REMOVE;
         return $this;
     }
 
@@ -166,7 +239,7 @@ class Query
      * The fields to select.
      *
      * @param string $fieldName
-     * @return Query $this
+     * @return Query
      */
     public function select($fieldName = null)
     {
@@ -178,7 +251,7 @@ class Query
      * Add a new field to select.
      *
      * @param string $fieldName
-     * @return Query $this
+     * @return Query
      */
     public function addSelect($fieldName = null)
     {
@@ -194,9 +267,9 @@ class Query
      *
      * @param string $fieldName
      * @param string $value
-     * @return Query $this
+     * @return Query
      */
-    public function where($fieldName, $value)
+    public function where($fieldName, $value = null)
     {
         $this->_where = array();
         $this->addWhere($fieldName, $value);
@@ -208,9 +281,9 @@ class Query
      *
      * @param string $fieldName
      * @param string $value
-     * @return Query $this
+     * @return Query
      */
-    public function addWhere($fieldName, $value)
+    public function addWhere($fieldName, $value = null)
     {
         if ($fieldName === $this->_class->identifier) {
             $fieldName = '_id';
@@ -225,7 +298,7 @@ class Query
      *
      * @param string $fieldName
      * @param mixed $values
-     * @return Query $this
+     * @return Query
      */
     public function whereIn($fieldName, $values)
     {
@@ -235,9 +308,9 @@ class Query
     /**
      * Add where not in criteria.
      *
-     * @param string $fieldName 
-     * @param mixed $values 
-     * @return Query $this
+     * @param string $fieldName
+     * @param mixed $values
+     * @return Query
      */
     public function whereNotIn($fieldName, $values)
     {
@@ -247,9 +320,9 @@ class Query
     /**
      * Add where not equal criteria.
      *
-     * @param string $fieldName 
-     * @param string $value 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $value
+     * @return Query
      */
     public function whereNotEqual($fieldName, $value)
     {
@@ -259,9 +332,9 @@ class Query
     /**
      * Add where greater than criteria.
      *
-     * @param string $fieldName 
-     * @param string $value 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $value
+     * @return Query
      */
     public function whereGt($fieldName, $value)
     {
@@ -271,9 +344,9 @@ class Query
     /**
      * Add where greater than or equal to criteria.
      *
-     * @param string $fieldName 
-     * @param string $value 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $value
+     * @return Query
      */
     public function whereGte($fieldName, $value)
     {
@@ -283,9 +356,9 @@ class Query
     /**
      * Add where less than criteria.
      *
-     * @param string $fieldName 
-     * @param string $value 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $value
+     * @return Query
      */
     public function whereLt($fieldName, $value)
     {
@@ -295,9 +368,9 @@ class Query
     /**
      * Add where less than or equal to criteria.
      *
-     * @param string $fieldName 
-     * @param string $value 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $value
+     * @return Query
      */
     public function whereLte($fieldName, $value)
     {
@@ -307,10 +380,10 @@ class Query
     /**
      * Add where range criteria.
      *
-     * @param string $fieldName 
-     * @param string $start 
-     * @param string $end 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $start
+     * @param string $end
+     * @return Query
      */
     public function whereRange($fieldName, $start, $end)
     {
@@ -320,9 +393,9 @@ class Query
     /**
      * Add where size criteria.
      *
-     * @param string $fieldName 
-     * @param string $size 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $size
+     * @return Query
      */
     public function whereSize($fieldName, $size)
     {
@@ -332,9 +405,9 @@ class Query
     /**
      * Add where exists criteria.
      *
-     * @param string $fieldName 
-     * @param string $bool 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $bool
+     * @return Query
      */
     public function whereExists($fieldName, $bool)
     {
@@ -344,9 +417,9 @@ class Query
     /**
      * Add where type criteria.
      *
-     * @param string $fieldName 
-     * @param string $type 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $type
+     * @return Query
      */
     public function whereType($fieldName, $type)
     {
@@ -356,9 +429,9 @@ class Query
     /**
      * Add where all criteria.
      *
-     * @param string $fieldName 
-     * @param mixed $values 
-     * @return Query $this
+     * @param string $fieldName
+     * @param mixed $values
+     * @return Query
      */
     public function whereAll($fieldName, $values)
     {
@@ -368,9 +441,9 @@ class Query
     /**
      * Add where mod criteria.
      *
-     * @param string $fieldName 
-     * @param string $mod 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $mod
+     * @return Query
      */
     public function whereMod($fieldName, $mod)
     {
@@ -380,9 +453,9 @@ class Query
     /**
      * Set sort and erase all old sorts.
      *
-     * @param string $fieldName 
-     * @param string $order 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $order
+     * @return Query
      */
     public function sort($fieldName, $order)
     {
@@ -394,9 +467,9 @@ class Query
     /**
      * Add a new sort order.
      *
-     * @param string $fieldName 
-     * @param string $order 
-     * @return Query $this
+     * @param string $fieldName
+     * @param string $order
+     * @return Query
      */
     public function addSort($fieldName, $order)
     {
@@ -407,8 +480,8 @@ class Query
     /**
      * Set the Document limit for the MongoCursor
      *
-     * @param string $limit 
-     * @return Query $this
+     * @param string $limit
+     * @return Query
      */
     public function limit($limit)
     {
@@ -419,8 +492,8 @@ class Query
     /**
      * Set the number of Documents to skip for the MongoCursor
      *
-     * @param string $skip 
-     * @return Query $this
+     * @param string $skip
+     * @return Query
      */
     public function skip($skip)
     {
@@ -432,8 +505,8 @@ class Query
      * Specify a map reduce operation for this query.
      *
      * @param mixed $map
-     * @param mixed $reduce 
-     * @param array $options 
+     * @param mixed $reduce
+     * @param array $options
      * @return Query
      */
     public function mapReduce($map, $reduce, array $options = array())
@@ -483,13 +556,181 @@ class Query
     }
 
     /**
+     * Set field to value.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @param boolean $atomic
+     * @return Query
+     */
+    public function set($name, $value, $atomic = true)
+    {
+        if ($atomic === true) {
+            $this->_newObj['$set'][$name] = $value;
+        } else {
+            $this->_newObj[$name] = $value;
+        }
+        return $this;
+    }
+
+    /**
+     * Set the $newObj array
+     *
+     * @param array $newObj
+     */
+    public function setNewObj($newObj)
+    {
+        $this->_newObj = $newObj;
+        return $this;
+    }
+
+    /**
+     * Increment field by the number value if field is present in the document,
+     * otherwise sets field to the number value.
+     *
+     * @param string $name
+     * @param integer $value
+     * @return Query
+     */
+    public function inc($name, $value)
+    {
+        $this->_newObj['$inc'][$name] = $value;
+        return $this;
+    }
+
+    /**
+     * Deletes a given field.
+     *
+     * @param string $field
+     * @return Query
+     */
+    public function unsetField($field)
+    {
+        $this->_newObj['$unset'][$field] = 1;
+        return $this;
+    }
+
+    /**
+     * Appends value to field, if field is an existing array, otherwise sets
+     * field to the array [value] if field is not present. If field is present
+     * but is not an array, an error condition is raised.
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return Query
+     */
+    public function push($field, $value)
+    {
+        $this->_newObj['$push'][$field] = $value;
+        return $this;
+    }
+
+    /**
+     * Appends each value in valueArray to field, if field is an existing
+     * array, otherwise sets field to the array valueArray if field is not
+     * present. If field is present but is not an array, an error condition is
+     * raised.
+     *
+     * @param string $field
+     * @param array $valueArray
+     * @return Query
+     */
+    public function pushAll($field, array $valueArray)
+    {
+        $this->_newObj['$pushAll'][$field] = $valueArray;
+        return $this;
+    }
+
+    /**
+     * Adds value to the array only if its not in the array already.
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return Query
+     */
+    public function addToSet($field, $value)
+    {
+        $this->_newObj['$addToSet'][$field] = $value;
+        return $this;
+    }
+
+    /**
+     * Adds values to the array only they are not in the array already.
+     *
+     * @param string $field
+     * @param array $values
+     * @return Query
+     */
+    public function addManyToSet($field, array $values)
+    {
+        $this->_newObj['$addToSet'][$field]['$each'] = $values;
+    }
+
+    /**
+     * Removes the last element in an array.
+     *
+     * @param string $field  The field name
+     * @param string $firstOrLast  First is 1 and last is -1.
+     * @return Query
+     */
+    public function pop($field, $firstOrLast = 1)
+    {
+        $this->_newObj['$pop'][$field] = $firstOrLast;
+        return $this;
+    }
+
+    /**
+     * Removes all occurrences of value from field, if field is an array.
+     * If field is present but is not an array, an error condition is raised.
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return Query
+     */
+    public function pull($field, $value)
+    {
+        $this->_newObj['$pull'][$field] = $value;
+        return $this;
+    }
+
+    /**
+     * Removes all occurrences of each value in value_array from field, if
+     * field is an array. If field is present but is not an array, an error
+     * condition is raised.
+     *
+     * @param string $field
+     * @param array $valueArray
+     * @return Query
+     */
+    public function pullAll($field, array $valueArray)
+    {
+        $this->_newObj['$pullAll'][$field] = $valueArray;
+        return $this;
+    }
+
+    /**
      * Execute the query and return an array of results
      *
-     * @return array $results The array of results for the query.
+     * @param array $options
+     * @return mixed $result The result of the query.
      */
-    public function execute()
+    public function execute(array $options = array())
     {
-        return $this->getCursor()->getResults();
+        switch ($this->_type) {
+            case self::TYPE_FIND;
+                return $this->getCursor()->getResults();
+                break;
+
+            case self::TYPE_REMOVE;
+                return $this->_dm->getDocumentCollection($this->_className)
+                    ->remove($this->_where, $options);
+                break;
+
+            case self::TYPE_UPDATE;
+                return $this->_dm->getDocumentCollection($this->_className)
+                    ->update($this->_where, $this->_newObj, $options);
+                break;
+        }
     }
 
     /**
@@ -510,10 +751,7 @@ class Query
      */
     public function getSingleResult()
     {
-        if ($result = $this->execute()) {
-            return array_shift($result);
-        }
-        return null;
+        return $this->getCursor()->getSingleResult();
     }
 
     /**
@@ -523,6 +761,12 @@ class Query
      */
     public function getCursor()
     {
+        if ($this->_type !== self::TYPE_FIND) {
+            throw new \InvalidArgumentException(
+                'Cannot get cursor for an update or remove query. Use execute() method.'
+            );
+        }
+
         if (isset($this->_mapReduce['map']) && $this->_mapReduce['reduce']) {
             $cursor = $this->_dm->mapReduce($this->_className, $this->_mapReduce['map'], $this->_mapReduce['reduce'], $this->_where, isset($this->_mapReduce['options']) ? $this->_mapReduce['options'] : array());
             $cursor->hydrate(false);

@@ -403,6 +403,9 @@ class DocumentManager
     {
         $collection = $this->getDocumentCollection($documentName);
         $result = $collection->findOne(array('_id' => new \MongoId($id)));
+        if ( ! $result) {
+            throw new \InvalidArgumentException(sprintf('Could not loadByID because ' . $documentName . ' '.$id . ' does not exist anymore.'));
+        }
         return $this->load($documentName, $id, $result);
     }
 

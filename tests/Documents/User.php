@@ -39,6 +39,9 @@ class User extends BaseDocument
     /** @ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
+    /** @Int */
+    protected $hits = 0;
+
     public function __construct()
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
@@ -129,5 +132,15 @@ class User extends BaseDocument
     public function addGroup(Group $group)
     {
         $this->groups[] = $group;
+    }
+
+    public function getHits()
+    {
+        return $this->hits;
+    }
+
+    public function setHits($hits)
+    {
+        $this->hits = $hits;
     }
 }

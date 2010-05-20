@@ -35,12 +35,16 @@ class MongoCursor implements \Iterator
 {
     /** The DocumentManager instance. */
     private $_dm;
+
     /** The UnitOfWork instance. */
     private $_uow;
+
     /** The ClassMetadata instance. */
     private $_class;
+
     /** The PHP MongoCursor being wrapped */
     private $_mongoCursor;
+
     /** Whether or not to try and hydrate the returned data */
     private $_hydrate = true;
 
@@ -131,6 +135,19 @@ class MongoCursor implements \Iterator
     public function getResults()
     {
         return iterator_to_array($this);
+    }
+
+    /**
+     * Get the first single result from the cursor.
+     *
+     * @return object $document  The single document.
+     */
+    public function getSingleResult()
+    {
+        if ($results = $this->getResults()) {
+            return array_shift($results);
+        }
+        return null;
     }
 
     /** @proxy */
