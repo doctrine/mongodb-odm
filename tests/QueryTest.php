@@ -89,4 +89,13 @@ class QueryTest extends BaseTest
             ->getSingleResult();
         $this->assertFalse(isset($user['hits']));
     }
+
+    public function testGroup()
+    {
+        $query = $this->dm->createQuery('Documents\User')
+            ->group(array(), array('count' => 0))
+            ->reduce('function (obj, prev) { prev.count++; }');
+        $result = $query->execute();
+        $this->assertEquals(1, $result['retval'][0]['count']);
+    }
 }

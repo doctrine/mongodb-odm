@@ -36,6 +36,7 @@ class Query
     const TYPE_FIND   = 1;
     const TYPE_UPDATE = 2;
     const TYPE_REMOVE = 3;
+    const TYPE_GROUP  = 4;
 
     /** The DocumentManager instance for this query */
     private $_dm;
@@ -63,6 +64,9 @@ class Query
 
     /** Skip a specified number of records (offset) */
     private $_skip = null;
+
+    /** Group information. */
+    private $_group = array();
 
     /** Pass hints to the MongoCursor */
     private $_hints = array();
@@ -112,6 +116,16 @@ class Query
     public function getDocumentManager()
     {
         return $this->_dm;
+    }
+
+    /**
+     * Get the type of this query.
+     *
+     * @return string $type
+     */
+    public function getType()
+    {
+        return $this->_type;
     }
 
     /**
@@ -232,6 +246,25 @@ class Query
             $this->_class = $this->_dm->getClassMetadata($className);
         }
         $this->_type = self::TYPE_REMOVE;
+        return $this;
+    }
+
+    /**
+     * Perform an operation similar to SQL's GROUP BY command
+     *
+     * @param array $keys 
+     * @param array $initial 
+     * @param string $reduce 
+     * @param array $condition 
+     * @return Query
+     */
+    public function group($keys, array $initial)
+    {
+        $this->_group = array(
+            'keys' => $keys,
+            'initial' => $initial
+        );
+        $this->_type = self::TYPE_GROUP;
         return $this;
     }
 
@@ -729,6 +762,13 @@ class Query
             case self::TYPE_UPDATE;
                 return $this->_dm->getDocumentCollection($this->_className)
                     ->update($this->_where, $this->_newObj, $options);
+                break;
+            case self::TYPE_GROUP;
+                return $this->_dm->getDocumentCollection($this->_className)
+                    ->group(
+                        $this->_group['keys'], $this->_group['initial'],
+                        $this->_mapReduce['reduce'], $this->_where
+                    );
                 break;
         }
     }
