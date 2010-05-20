@@ -1,10 +1,14 @@
 + Introduction
++ Basic Mapping
++ Reference Mapping
++ Embedded Mapping
++ Inheritance Mapping
++ Working with Objects
++ Events
++ Querying
++ Storing Files with MongoGridFS
++ Map Reduce
++ Logging
 + Annotations Reference
 + XML Mapping
 + YML Mapping
-+ Working with Objects
-+ Inheritance
-+ Storing Files with MongoGridFS
-+ Querying
-+ Map Reduce
-+ Logging

@@ -1,0 +1,45 @@
+This chapter explains how embedded documents are mapped in Doctrine.
+
+++ Embed One
+
+Embed a single document:
+
+    [php]
+    /** @Document */
+    class User
+    {
+        // ...
+
+        /** @EmbedOne(targetDocument="Address") */
+        private $address;
+
+        // ...
+    }
+
+    /** @EmbeddedDocument */
+    class Address
+    {
+        // ...
+    }
+
+++ Embed Many
+
+Embed many documents:
+
+    [php]
+    /** @Document */
+    class User
+    {
+        // ...
+
+        /** @EmbedMany(targetDocument="Phonenumber") */
+        private $phonenumbers = array();
+
+        // ...
+    }
+
+    /** @EmbeddedDocument */
+    class Phonenumber
+    {
+        // ...
+    }
