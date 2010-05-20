@@ -94,3 +94,20 @@ without the use of Doctrine:
     foreach ($users as $user) {
         echo "{$user['_id']} had {$user['value']} sale(s).\n";
     }
+
+Your reduce function could return any type of variables, if you rewrite reduce
+as follows:
+
+    [php]
+    //...
+    $reduce = new MongoCode('function(k, vals) {
+        var sum = 0;
+        for (var i in vals) {
+            sum += vals[i]; 
+        }
+        return { user_id: k, sum: sum };
+    }');
+    //...
+    foreach ($users as $user) {
+        echo "{$user['value']['user_id']} had {$user['value']['sum']} sale(s).\n";
+    }
