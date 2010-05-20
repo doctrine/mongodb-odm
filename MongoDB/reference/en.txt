@@ -4,6 +4,6 @@
 + YML Mapping
 + Inheritance
 + Storing Files with MongoGridFS
-+ Querying for Documents
++ Querying
 + Map Reduce
 + Logging
