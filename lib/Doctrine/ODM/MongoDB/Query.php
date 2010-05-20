@@ -302,7 +302,7 @@ class Query
      * @param string $value
      * @return Query
      */
-    public function where($fieldName, $value = null)
+    public function where($fieldName, $value)
     {
         $this->_where = array();
         $this->addWhere($fieldName, $value);
@@ -316,13 +316,17 @@ class Query
      * @param string $value
      * @return Query
      */
-    public function addWhere($fieldName, $value = null)
+    public function addWhere($fieldName, $value)
     {
         if ($fieldName === $this->_class->identifier) {
             $fieldName = '_id';
             $value = new \MongoId($value);
         }
-        $this->_where[$fieldName] = $value;
+        if (isset($this->_where[$fieldName])) {
+            $this->_where[$fieldName] = array_merge($this->_where[$fieldName], $value);
+        } else {
+            $this->_where[$fieldName] = $value;
+        }
         return $this;
     }
 
@@ -700,15 +704,26 @@ class Query
     }
 
     /**
-     * Removes the last element in an array.
+     * Removes first element in an array
      *
      * @param string $field  The field name
-     * @param string $firstOrLast  First is 1 and last is -1.
      * @return Query
      */
-    public function pop($field, $firstOrLast = 1)
+    public function popFirst($field)
     {
-        $this->_newObj['$pop'][$field] = $firstOrLast;
+        $this->_newObj['$pop'][$field] = 1;
+        return $this;
+    }
+
+    /**
+     * Removes last element in an array
+     *
+     * @param string $field  The field name
+     * @return Query
+     */
+    public function popLast($field)
+    {
+        $this->_newObj['$pop'][$field] = -1;
         return $this;
     }
 
