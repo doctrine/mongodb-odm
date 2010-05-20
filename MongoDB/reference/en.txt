@@ -2,6 +2,7 @@
 + Annotations Reference
 + XML Mapping
 + YML Mapping
++ Working with Objects
 + Inheritance
 + Storing Files with MongoGridFS
 + Querying

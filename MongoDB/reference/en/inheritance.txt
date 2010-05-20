@@ -4,7 +4,7 @@ Single Collection Inheritance and Collection Per Class Inheritance.
 ++ Mapped Superclasses
 
 An mapped superclass is an abstract or concrete class that provides persistent document state and mapping information
-for its subclasses, but which is not itself an document. Typically, the purpose of such a mapped superclass is to define
+for its subclasses, but which is not itself a document. Typically, the purpose of such a mapped superclass is to define
 state and mapping information that is common to multiple document classes. 
 
 Mapped superclasses, just as regular, non-mapped classes, can appear in the middle of an otherwise
@@ -12,7 +12,7 @@ mapped inheritance hierarchy (through Single Collection Inheritance or Collectio
 
 > **NOTE**
 >
-> A mapped superclass cannot be an document, it is not queryable and persistent relationships defined by a mapped
+> A mapped superclass cannot be a document, it is not queryable and persistent relationships defined by a mapped
 > superclass must be unidirectional. For further support of inheritance, the single or joined table inheritance
 > features have to be used.
 
