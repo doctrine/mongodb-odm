@@ -189,6 +189,38 @@ class Configuration
     }
 
     /**
+     * Sets the environment
+     *
+     * @param string $environment
+     */
+    public function setEnvironment($environment)
+    {
+        $this->_attributes['environment'] = $environment;
+    }
+
+    /**
+     * Gets the environment
+     *
+     * @return string $environment
+     */
+    public function getEnvironment()
+    {
+        return isset($this->_attributes['environment']) ?
+            $this->_attributes['environment'] : null;
+    }
+
+    /**
+     * Gets prefix for environment
+     *
+     * @return string $envPrefix
+     */
+    public function getEnvironmentPrefix()
+    {
+        return isset($this->_attributes['environment']) ?
+            sprintf('%s_', $this->_attributes['environment']) : null;
+    }
+
+    /**
      * Set the logger callable.
      *
      * @param mixed $loggerCallable The logger callable.
