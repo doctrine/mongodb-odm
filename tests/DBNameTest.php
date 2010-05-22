@@ -10,7 +10,7 @@ class DbNameTest extends BaseTest
 {
     public function testPrefixDbName()
     {
-        $this->dm->getConfiguration()->setPrefixDBName('test_');
+        $this->dm->getConfiguration()->setDBPrefix('test_');
 
         $meta = $this->getMetaData();
 
@@ -23,7 +23,7 @@ class DbNameTest extends BaseTest
 
     public function testSuffixDbName()
     {
-        $this->dm->getConfiguration()->setSuffixDBName('_test');
+        $this->dm->getConfiguration()->setDBSuffix('_test');
 
         $meta = $this->getMetaData();
 
@@ -36,8 +36,8 @@ class DbNameTest extends BaseTest
 
     public function testPrefixAndSuffixDbName()
     {
-        $this->dm->getConfiguration()->setPrefixDBName('test_');
-        $this->dm->getConfiguration()->setSuffixDBName('_test');
+        $this->dm->getConfiguration()->setDBPrefix('test_');
+        $this->dm->getConfiguration()->setDBSuffix('_test');
 
         $meta = $this->getMetaData();
 
@@ -50,7 +50,7 @@ class DbNameTest extends BaseTest
 
     public function testPersist()
     {
-        $this->dm->getConfiguration()->setPrefixDBName('test_');
+        $this->dm->getConfiguration()->setDBPrefix('test_');
 
         $account = new Account();
         $account->setName('test');

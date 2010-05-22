@@ -55,8 +55,8 @@ class Configuration
     public function __construct()
     {
         $this->_attributes['metadataDriverImpl'] = new PHPDriver();
-        $this->_attributes['prefix_db_name'] = null;
-        $this->_attributes['suffix_db_name'] = null;
+        $this->_attributes['dbPrefix'] = null;
+        $this->_attributes['dbSuffix'] = null;
     }
 
     /**
@@ -191,6 +191,38 @@ class Configuration
     }
 
     /**
+     * Sets the environment
+     *
+     * @param string $environment
+     */
+    public function setEnvironment($environment)
+    {
+        $this->_attributes['environment'] = $environment;
+    }
+
+    /**
+     * Gets the environment
+     *
+     * @return string $environment
+     */
+    public function getEnvironment()
+    {
+        return isset($this->_attributes['environment']) ?
+            $this->_attributes['environment'] : null;
+    }
+
+    /**
+     * Gets prefix for environment
+     *
+     * @return string $envPrefix
+     */
+    public function getEnvironmentPrefix()
+    {
+        return isset($this->_attributes['environment']) ?
+            sprintf('%s_', $this->_attributes['environment']) : null;
+    }
+
+    /**
      * Set the logger callable.
      *
      * @param mixed $loggerCallable The logger callable.
@@ -214,11 +246,11 @@ class Configuration
     /**
      * Set prefix for db name
      *
-     * @param string $prefix The prefix for names of tables
+     * @param string $prefix The prefix for names of databases
      */
-    public function setPrefixDBName($prefix = null)
+    public function setDBPrefix($prefix = null)
     {
-        $this->_attributes['prefix_db_name'] = $prefix;
+        $this->_attributes['dbPrefix'] = $prefix;
     }
 
     /**
@@ -226,9 +258,9 @@ class Configuration
      *
      * @return string 
      */
-    public function getPrefixDBName()
+    public function getDBPrefix()
     {
-        return $this->_attributes['prefix_db_name'];
+        return $this->_attributes['dbPrefix'];
     }
 
     /**
@@ -236,9 +268,9 @@ class Configuration
      *
      * @param string $suffix The suffix for names of tables
      */
-    public function setSuffixDBName($suffix = null)
+    public function setDBSuffix($suffix = null)
     {
-        $this->_attributes['suffix_db_name'] = $suffix;
+        $this->_attributes['dbSuffix'] = $suffix;
     }
 
     /**
@@ -246,8 +278,8 @@ class Configuration
      *
      * @return string
      */
-    public function getSuffixDBName()
+    public function getDBSuffix()
     {
-        return $this->_attributes['suffix_db_name'];
+        return $this->_attributes['dbSuffix'];
     }
 }

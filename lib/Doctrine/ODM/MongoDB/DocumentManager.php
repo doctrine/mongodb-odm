@@ -242,6 +242,7 @@ class DocumentManager
         $db = $this->_metadataFactory->getMetadataFor($className)->getDB();
         $db = $db ? $db : $this->_config->getDefaultDB();
         $db = $db ? $db : 'doctrine';
+        $db = sprintf('%s%s', $this->_config->getEnvironmentPrefix(), $db);
         if ($db && ! isset($this->_documentDBs[$db])) {
             $database = $this->_mongo->selectDB($db);
             $this->_documentDBs[$db] = new MongoDB($database);
@@ -579,9 +580,9 @@ class DocumentManager
     public function formatDBName($dbName)
     {
         return sprintf('%s%s%s', 
-            $this->_config->getPrefixDBName(), 
+            $this->_config->getDBPrefix(), 
             $dbName,
-            $this->_config->getSuffixDBName()
+            $this->_config->getDBSuffix()
         );
     }
 }

@@ -463,8 +463,8 @@ class Query
         $map = array(
             'double' => 1,
             'string' => 2,
-            'embedded' => 3
-            'array' => 4
+            'embedded' => 3,
+            'array' => 4,
             'binary' => 5,
             'undefined' => 6,
             'objectid' => 7,
@@ -475,7 +475,7 @@ class Query
             'dbpointer' => 12,
             'jscode' => 13,
             'symbol' => 14,
-            'jscode_w_s' => 15
+            'jscode_w_s' => 15,
             'timestamp' => 16,
             'integer64' => 17,
             'minkey' => 255,
