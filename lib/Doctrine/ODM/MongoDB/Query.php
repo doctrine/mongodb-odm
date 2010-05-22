@@ -460,6 +460,30 @@ class Query
      */
     public function whereType($fieldName, $type)
     {
+        $map = array(
+            'double' => 1,
+            'string' => 2,
+            'embedded' => 3
+            'array' => 4
+            'binary' => 5,
+            'undefined' => 6,
+            'objectid' => 7,
+            'boolean' => 8,
+            'date' => 9,
+            'null' => 10,
+            'regex' => 11,
+            'dbpointer' => 12,
+            'jscode' => 13,
+            'symbol' => 14,
+            'jscode_w_s' => 15
+            'timestamp' => 16,
+            'integer64' => 17,
+            'minkey' => 255,
+            'maxkey' => 127
+        );
+        if (is_string($type) && isset($map[$type])) {
+            $type = $map[$type];
+        }
         return $this->addWhere($fieldName, array('$type' => $type));
     }
 
@@ -865,5 +889,31 @@ class Query
     public function iterate()
     {
         return $this->getCursor();
+    }
+
+    /**
+     * Gets an array of information about this query for debugging.
+     *
+     * @return array $debug
+     */
+    public function debug()
+    {
+        return array(
+            'className' => $this->_className,
+            'type' => $this->_type,
+            'select' => $this->_select,
+            'where' => $this->_where,
+            'newObj' => $this->_newObj,
+            'sort' => $this->_sort,
+            'limit' => $this->_limit,
+            'skip' => $this->_skip,
+            'group' => $this->_group,
+            'hints' => $this->_hints,
+            'immortal' => $this->_immortal,
+            'snapshot' => $this->_snapshot,
+            'slaveOkay' => $this->_slaveOkay,
+            'hydrate' => $this->_hydrate,
+            'mapReduce' => $this->_mapReduce
+        );
     }
 }

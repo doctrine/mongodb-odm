@@ -79,6 +79,9 @@ class Mongo
     /** @proxy */
     public function __call($method, $arguments)
     {
-        return call_user_func_array(array($this->_mongo, $method), $arguments);
+        if (method_exists($this->_mongo, $method)) {
+            return call_user_func_array(array($this->_mongo, $method), $arguments);
+        }
+        throw new \BadMethodCallException(sprintf('Method %s does not exist on %s', $method, get_class($this)));
     }
 }

@@ -19,7 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+    Doctrine\ODM\MongoDB\Mapping\Types\Type;
 
 /**
  * Wrapper for the PHP MongoCollection class.
@@ -237,5 +238,6 @@ class MongoCollection
         if (method_exists($this->_mongoCollection, $method)) {
             return call_user_func_array(array($this->_mongoCollection, $method), $arguments);
         }
+        throw new \BadMethodCallException(sprintf('Method %s does not exist on %s', $method, get_class($this)));
     }
 }

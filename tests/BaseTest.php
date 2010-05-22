@@ -48,7 +48,8 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase
             'Documents\Account',
             'Documents\Profile',
             'Documents\Group',
-            'Documents\File'
+            'Documents\File',
+            'Documents\Article'
         );
         foreach ($documents as $document) {
             $this->dm->getDocumentCollection($document)->drop();

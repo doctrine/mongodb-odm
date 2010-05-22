@@ -42,6 +42,9 @@ class User extends BaseDocument
     /** @Int */
     protected $hits = 0;
 
+    /** @String */
+    protected $nullTest;
+
     public function __construct()
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();

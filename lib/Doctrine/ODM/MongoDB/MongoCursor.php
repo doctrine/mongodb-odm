@@ -153,10 +153,13 @@ class MongoCursor implements \Iterator
     /** @proxy */
     public function __call($method, $arguments)
     {
-        $return = call_user_func_array(array($this->_mongoCursor, $method), $arguments);
-        if ($return === $this->_mongoCursor) {
-            return $this;
+        if (method_exists($this->_mongoCursor, $method)) {
+            $return = call_user_func_array(array($this->_mongoCursor, $method), $arguments);
+            if ($return === $this->_mongoCursor) {
+                return $this;
+            }
+            return $return;
         }
-        return $return;
+        throw new \BadMethodCallException(sprintf('Method %s does not exist on %s', $method, get_class($this)));
     }
 }
