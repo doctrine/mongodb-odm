@@ -575,4 +575,13 @@ class DocumentManager
             throw MongoDBException::documentManagerClosed();
         }
     }
+
+    public function formatDBName($dbName)
+    {
+        return sprintf('%s%s%s', 
+            $this->_config->getPrefixDBName(), 
+            $dbName,
+            $this->_config->getSuffixDBName()
+        );
+    }
 }
