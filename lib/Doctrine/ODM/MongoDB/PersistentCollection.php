@@ -34,6 +34,11 @@ use Doctrine\Common\Collections\Collection,
  */
 final class PersistentCollection implements Collection
 {
+
+	protected $_owner;
+
+	protected $_mapping;
+
     /**
      * The DocumentManager that manages the persistence of the collection.
      *
@@ -134,6 +139,41 @@ final class PersistentCollection implements Collection
     {
         $this->_isDirty = $dirty;
     }
+
+    /**
+     * INTERNAL:
+     * Sets the collection's owning entity together with the AssociationMapping that
+     * describes the association between the owner and the elements of the collection.
+     *
+     * @param object $document
+     * @param AssociationMapping $mapping
+     */
+    public function setOwner($document, array $mapping)
+    {
+        $this->_owner = $document;
+        $this->_mapping = $mapping;
+    }
+
+    /**
+     * INTERNAL:
+     * Gets the collection owner.
+     *
+     * @return object
+     */
+    public function getOwner()
+    {
+        return $this->_owner;
+    }
+
+	public function getMapping()
+	{
+		return $this->_mapping;
+	}
+
+	public function getTypeClass()
+	{
+		return $this->_typeClass;
+	}
 
     /**
      * Sets the initialized flag of the collection, forcing it into that state.
@@ -352,7 +392,7 @@ final class PersistentCollection implements Collection
     {
         $this->_initialize();
         $result = $this->_coll->clear();
-        if ($this->_association->isOwningSide) {
+        if ($this->_mapping->isOwningSide) {
             $this->_changed();
             $this->_em->getUnitOfWork()->scheduleCollectionDeletion($this);
         }
