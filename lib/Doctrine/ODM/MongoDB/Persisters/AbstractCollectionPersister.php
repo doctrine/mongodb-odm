@@ -37,7 +37,7 @@ abstract class AbstractCollectionPersister
     public function delete(PersistentCollection $coll)
     {
 		$class = $coll->getTypeClass();
-		$collection = $this->_dm->getDocumentCollection($className);
+		$collection = $this->_dm->getDocumentCollection($class->name);
     }
 
     /**
@@ -48,18 +48,21 @@ abstract class AbstractCollectionPersister
      */
     public function update(PersistentCollection $coll)
 	{
-		$mapping = $coll->getMapping();
 		$this->deleteDocs($coll);
 		$this->insertDocs($coll);
 	}
 
 	public function deleteDocs(PersistentCollection $coll)
     {
-		
+		foreach ($coll as $doc) {
+			$this->_documentPersister->delete($doc);
+		}
     }
 
     public function insertDocs(PersistentCollection $coll)
     {
-		
+		foreach ($coll as $doc) {
+			$this->_documentPersister->addInsert($doc);
+		}
     }
 }

@@ -618,6 +618,7 @@ class UnitOfWork
     private function _executeInserts($class)
     {
         $className = $class->name;
+        $persister = $this->getDocumentPersister($className);
         $collection = $this->_dm->getDocumentCollection($className);
 
         $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postPersist]);
@@ -629,30 +630,25 @@ class UnitOfWork
         $inserts = array();
         foreach ($this->_documentInsertions as $oid => $document) {
             if (get_class($document) === $className) {
-                $inserts[$oid] = $this->_prepareInsert($class, $document);
+                $persister->addInsert($document);
+                unset($this->_documentInsertions[$oid]);
                 if ($hasLifecycleCallbacks || $hasListeners) {
                     $documents[] = $document;
                 }
             }
         }
 
-        if ( ! $inserts) {
-            return;
-        }
+        $postInsertIds = $persister->executeInserts();
 
-        $collection->batchInsert($inserts);
-
-        foreach ($inserts as $oid => $changeset) {
-            $document = $this->_documentInsertions[$oid];
-            $id = (string) $changeset['_id'];
-            $class->reflFields[$class->identifier]->setValue($document, $id);
-            $this->_documentIdentifiers[$oid] = $id;
-            $this->_documentStates[$oid] = self::STATE_MANAGED;
-            $this->_originalDocumentData[$oid][$class->identifier] = $id;
-            $this->addToIdentityMap($document);
-            if ($class->isFile()) {
-                $this->_hydrator->hydrate($class, $document, $changeset);
-            }
+        if ($postInsertIds) {
+            foreach ($postInsertIds as $id => $document) {
+                $oid = spl_object_hash($document);
+                $class->reflFields[$class->identifier]->setValue($document, $id);
+                $this->_documentIdentifiers[$oid] = $id;
+                $this->_documentStates[$oid] = self::STATE_MANAGED;
+                $this->_originalDocumentData[$oid][$class->identifier] = $id;
+                $this->addToIdentityMap($document);
+			}
         }
 
         if ($hasLifecycleCallbacks || $hasListeners) {
@@ -675,7 +671,7 @@ class UnitOfWork
     private function _executeUpdates($class)
     {
         $className = $class->name;
-        $collection = $this->_dm->getDocumentCollection($className);
+		$persister = $this->getDocumentPersister($className);
 
         $hasPreUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::preUpdate]);
         $hasPreUpdateListeners = $this->_evm->hasListeners(Events::preUpdate);
@@ -695,12 +691,7 @@ class UnitOfWork
                     );
                 }
 
-                $update = $this->_prepareUpdate($class, $document);
-                $id = $update['_id'];
-                unset($update['_id']);
-
-                $collection->update(array('_id' => $id), array('$set' => $update));
-                
+				$persister->update($document);
                 unset($this->_documentUpdates[$oid]);
 
                 if ($hasPostUpdateLifecycleCallbacks) {
@@ -855,10 +846,11 @@ class UnitOfWork
         $hasListeners = $this->_evm->hasListeners(Events::postRemove);
 
         $className = $class->name;
+        $persister = $this->getDocumentPersister($className);
         $collection = $this->_dm->getDocumentCollection($className);
         foreach ($this->_documentDeletions as $oid => $document) {
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
-                $collection->remove(array('_id' => new \MongoId($this->_documentIdentifiers[$oid])));
+				$persister->delete($document);
                 unset(
                     $this->_documentDeletions[$oid],
                     $this->_documentIdentifiers[$oid],
@@ -1928,7 +1920,8 @@ class UnitOfWork
      */
     public function getDocumentIdentifier($document)
     {
-        return $this->_documentIdentifiers[spl_object_hash($document)];
+        return isset($this->_documentIdentifiers[spl_object_hash($document)]) ?
+			$this->_documentIdentifiers[spl_object_hash($document)] : null;
     }
 
     /**
