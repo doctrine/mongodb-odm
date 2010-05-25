@@ -234,15 +234,18 @@ class UnitOfWork
 		return $this->_collectionPersisters[$type];
     }
 
-	public function getDocumentPersister(array $mapping)
+	public function getDocumentPersister($documentName)
 	{
-		$type = isset ($mapping['embedded']) ? 'embed' : 'reference';
-
+		$class = $this->_dm->getClassMetadata($documentName);
+		$type = $class->isEmbeddedDocument ? 'embedded' : 'default';
 		if ( ! isset ($this->_documentPersisters[$type])) {
-			if ($type === 'embed') {
-				$persister = new EmbedOnePersister;
-			} else if ($type === 'reference') {
-				$persister = new ReferenceOnePersister;
+			switch ($type) {
+				case 'embedded':
+					$persister = new Persisters\EmbeddedDocumentPersister($this->_dm, $class);
+					break;
+				case 'default':
+					$persister = new Persisters\BasicDocumentPersister($this->_dm, $class);
+					break;
 			}
 			$this->_documentPersisters[$type] = $persister;
 		}

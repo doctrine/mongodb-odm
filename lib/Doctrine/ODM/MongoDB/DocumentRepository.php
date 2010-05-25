@@ -45,28 +45,9 @@ class DocumentRepository
     protected $_dm;
 
     /**
-     * @var MongoCollection
-     */
-    protected $_collection;
-
-    /**
      * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     protected $_class;
-
-    /**
-     * The Document hydrator instance.
-     *
-     * @var Doctrine\ODM\MongoDB\Hydrator
-     */
-    protected $_hydrator;
-
-    /**
-     * The UnitOfWork used to coordinate object-level transactions.
-     *
-     * @var Doctrine\ORM\UnitOfWork
-     */
-    private $_unitOfWork;
 
     /**
      * Initializes a new <tt>DocumentRepository</tt>.
@@ -78,9 +59,6 @@ class DocumentRepository
     {
         $this->_documentName = $class->name;
         $this->_dm = $dm;
-        $this->_unitOfWork = $this->_dm->getUnitOfWork();
-        $this->_hydrator = $this->_dm->getHydrator();
-        $this->_collection = $this->_dm->getDocumentCollection($class->name);
         $this->_class = $class;
     }
 
@@ -114,14 +92,13 @@ class DocumentRepository
     public function find($query = array(), array $select = array())
     {
         if (is_string($query)) {
-            $result = $this->_collection->findOne(array('_id' => new \MongoId($query)));
-            if ($result !== null) {
-                return $this->_unitOfWork->getOrCreateDocument($this->_documentName, $result);
-            }
-            return null;
+			if ($document = $this->_dm->getUnitOfWork()->tryGetById($query, $this->_documentName)) {
+				return $document; // Hit!
+			}
+
+			return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->loadById($id);
         } else {
-            $cursor = $this->_collection->find($query, $select);
-            return new MongoCursor($this->_dm, $this->_hydrator, $this->_class, $cursor);
+			return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->loadAll($query, $select);
         }
     }
 
@@ -135,11 +112,7 @@ class DocumentRepository
      */
     public function findOne(array $query = array(), array $select = array())
     {
-        $result = $this->_collection->findOne($query, $select);
-        if ($result !== null) {
-            return $this->_unitOfWork->getOrCreateDocument($this->_documentName, $result);
-        }
-        return null;
+		return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->load($query, $select);
     }
 
     /**
