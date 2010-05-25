@@ -15,11 +15,13 @@ class BasicDocumentPersister
 	protected $_uow;
 	protected $_class;
 	protected $_collection;
+	protected $_documentName;
 	public function __construct(DocumentManager $dm, ClassMetadata $class)
 	{
 		$this->_dm = $dm;
 		$this->_uow = $dm->getUnitOfWork();
 		$this->_class = $class;
+		$this->_documentName = $class->getName();
         $this->_collection = $dm->getDocumentCollection($class->name);
 	}
     public function addInsert($document)
@@ -68,14 +70,14 @@ class BasicDocumentPersister
     {
         $result = $this->_collection->findOne($query, $select);
         if ($result !== null) {
-            return $this->_unitOfWork->getOrCreateDocument($this->_documentName, $result);
+            return $this->_uow->getOrCreateDocument($this->_documentName, $result);
         }
         return null;
     }
 
     public function loadById($id)
 	{
-		$result = $this->_collection->findOne(array('_id' => new \MongoId($query)));
+		$result = $this->_collection->findOne(array('_id' => new \MongoId($id)));
 		if ($result !== null) {
 			return $this->_uow->getOrCreateDocument($this->_documentName, $result);
 		}
@@ -91,6 +93,6 @@ class BasicDocumentPersister
     public function loadAll(array $query = array(), array $select = array())
 	{
 		$cursor = $this->_collection->find($query, $select);
-		return new MongoCursor($this->_dm, $this->_hydrator, $this->_class, $cursor);
+		return new MongoCursor($this->_dm, $this->_dm->getHydrator(), $this->_class, $cursor);
 	}
 }

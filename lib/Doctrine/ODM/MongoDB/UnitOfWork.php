@@ -217,39 +217,37 @@ class UnitOfWork
     /**
 	 * @todo write this function
      */
-    public function getCollectionPersister(array $mapping)
+    public function getCollectionPersister(PersistentCollection $collection)
     {
+		$mapping = $collection->getMapping();
+		$class = $collection->getTypeClass();
+		$documentName = $class->getName();
 		$type = isset ($mapping['embedded']) ? 'embed' : $mapping['strategy'];
-
-		if ( ! isset ($this->_collectionPersisters[$type])) {
+		if ( ! isset ($this->_collectionPersisters[$documentName])) {
 			if ($type === 'embed') {
-				$persister = new EmbedManyPersister($this->_dm, $this->getDocumentPersister($mapping));
+				$persister = new Persisters\EmbedCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
 			} else if ($type === 'set') {
-				$persister = new SetReferenceManyPersister($this->_dm, $this->getDocumentPersister($mapping));
+				$persister = new Persisters\SetCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
 			} else if ($type === 'addToSet') {
-				$persister = new AddToSetReferenceManyPersister($this->_dm, $this->getDocumentPersister($mapping));
+				$persister = new Persisters\AddToSetCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
 			}
-			$this->_collectionPersisters[$type] = $persister;
+			$this->_collectionPersisters[$documentName] = $persister;
 		}
-		return $this->_collectionPersisters[$type];
+		return $this->_collectionPersisters[$documentName];
     }
 
 	public function getDocumentPersister($documentName)
 	{
-		$class = $this->_dm->getClassMetadata($documentName);
-		$type = $class->isEmbeddedDocument ? 'embedded' : 'default';
-		if ( ! isset ($this->_documentPersisters[$type])) {
-			switch ($type) {
-				case 'embedded':
-					$persister = new Persisters\EmbeddedDocumentPersister($this->_dm, $class);
-					break;
-				case 'default':
-					$persister = new Persisters\BasicDocumentPersister($this->_dm, $class);
-					break;
+		if ( ! isset ($this->_documentPersisters[$documentName])) {
+			$class = $this->_dm->getClassMetadata($documentName);
+			if ($class->isEmbeddedDocument) {
+				$persister = new Persisters\EmbeddedDocumentPersister($this->_dm, $class);
+			} else {
+				$persister = new Persisters\BasicDocumentPersister($this->_dm, $class);
 			}
-			$this->_documentPersisters[$type] = $persister;
+			$this->_documentPersisters[$documentName] = $persister;
 		}
-		return $this->_documentPersisters[$type];
+		return $this->_documentPersisters[$documentName];
 	}
 
     /**
@@ -315,12 +313,12 @@ class UnitOfWork
 
 		// Collection deletions (deletions of complete collections)
 		foreach ($this->_collectionDeletions as $collectionToDelete) {
-			$this->getCollectionPersister($collectionToDelete->getMapping())
+			$this->getCollectionPersister($collectionToDelete)
 					->delete($collectionToDelete);
 		}
 		// Collection updates (deleteRows, updateRows, insertRows)
 		foreach ($this->_collectionUpdates as $collectionToUpdate) {
-			$this->getCollectionPersister($collectionToUpdate->getMapping())
+			$this->getCollectionPersister($collectionToUpdate)
 					->update($collectionToUpdate);
 		}
 

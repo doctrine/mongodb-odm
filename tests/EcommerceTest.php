@@ -78,6 +78,7 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(12.99, $product->getOption('small')->getPrice());
 
         $usdCurrency = $this->dm->findOne('Documents\Ecommerce\Currency', array('name' => 'USD'));
+		$this->assertNotNull($usdCurrency);
         $usdCurrency->setMultiplier('2');
 
         $this->assertTrue($product->getOption('small')->getStockItem() instanceof Documents\Ecommerce\StockItem);

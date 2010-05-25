@@ -96,7 +96,7 @@ class DocumentRepository
 				return $document; // Hit!
 			}
 
-			return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->loadById($id);
+			return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->loadById($query);
         } else {
 			return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->loadAll($query, $select);
         }
