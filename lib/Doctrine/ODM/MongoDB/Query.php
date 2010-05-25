@@ -521,7 +521,7 @@ class Query
     public function sort($fieldName, $order)
     {
         $this->_sort = array();
-        $this->_sort[$fieldName] = strtolower($order) === 'asc' ? 1 : -1;
+        $this->addSort($fieldName, $order);
         return $this;
     }
 
