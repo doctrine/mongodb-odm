@@ -219,19 +219,9 @@ class UnitOfWork
      */
     public function getCollectionPersister(PersistentCollection $collection)
     {
-        $mapping = $collection->getMapping();
-        $class = $collection->getTypeClass();
-        $documentName = $class->getName();
-        $type = isset ($mapping['embedded']) ? 'embed' : $mapping['strategy'];
+        $documentName = $collection->getTypeClass()->name;
         if ( ! isset ($this->_collectionPersisters[$documentName])) {
-            if ($type === 'embed') {
-                $persister = new Persisters\EmbedCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
-            } else if ($type === 'set') {
-                $persister = new Persisters\SetCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
-            } else if ($type === 'addToSet') {
-                $persister = new Persisters\AddToSetCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
-            }
-            $this->_collectionPersisters[$documentName] = $persister;
+            $this->_collectionPersisters[$documentName] = new Persisters\BasicCollectionPersister($this->_dm);
         }
         return $this->_collectionPersisters[$documentName];
     }
@@ -240,12 +230,7 @@ class UnitOfWork
     {
         if ( ! isset ($this->_documentPersisters[$documentName])) {
             $class = $this->_dm->getClassMetadata($documentName);
-            if ($class->isEmbeddedDocument) {
-                $persister = new Persisters\EmbeddedDocumentPersister($this->_dm, $class);
-            } else {
-                $persister = new Persisters\BasicDocumentPersister($this->_dm, $class);
-            }
-            $this->_documentPersisters[$documentName] = $persister;
+            $this->_documentPersisters[$documentName] = new Persisters\BasicDocumentPersister($this->_dm, $class);
         }
         return $this->_documentPersisters[$documentName];
     }
@@ -703,138 +688,6 @@ class UnitOfWork
             }
         }
     }
-
-    /**
-     * Prepare array of data for the given ClassMetadata and Document instance
-     * that can be inserted to Mongo.
-     *
-     * @return array $insert The document to insert.
-     */
-    private function _prepareInsert($class, $document)
-    {
-        return $this->_prepareUpdate($class, $document);
-    }
-
-    /**
-     * Prepare array of data for the given ClassMetadata and Document instance
-     * that can be updated in Mongo.
-     *
-     * @package array $update The document to update.
-     */
-    private function _prepareUpdate($class, $document)
-    {
-        $oid = spl_object_hash($document);
-        $changeset = $this->getDocumentChangeSet($document);
-        foreach ($changeset as $fieldName => $values) {
-            $changeset[$fieldName] = $values[1];
-        }
-        if (isset($this->_documentIdentifiers[$oid])) {
-            $changeset['_id'] = new \MongoId($this->_documentIdentifiers[$oid]);
-        }
-        foreach ($class->fieldMappings as $mapping) {
-            if (isset($mapping['reference'])) {
-                $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if ($mapping['type'] === 'many' && isset($changeset[$mapping['fieldName']])) {
-                    $coll = $changeset[$mapping['fieldName']];
-                    $changeset[$mapping['fieldName']] = array();
-                    foreach ($coll as $key => $doc) {
-                        $ref = $this->_prepareDocReference($targetClass, $doc);
-                        if (isset($ref)) {
-                            $changeset[$mapping['fieldName']][] = $ref;
-                        }
-                    }
-                } elseif (isset($changeset[$mapping['fieldName']])) {
-                    $doc = $changeset[$mapping['fieldName']];
-                    $ref = $this->_prepareDocReference($targetClass, $doc);
-                    if (isset($ref)) {
-                        $changeset[$mapping['fieldName']] = $ref;
-                    }
-                }
-            } elseif (isset($mapping['embedded'])) {
-                $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if (isset($changeset[$mapping['fieldName']])) {
-                    $doc = $changeset[$mapping['fieldName']];
-                    $changeset[$mapping['fieldName']] = $this->_prepareDocEmbeded($targetClass, $doc);
-                }
-            } elseif (isset($changeset[$mapping['fieldName']])) {
-                $changeset[$mapping['fieldName']] = Type::getType($mapping['type'])->convertToDatabaseValue($changeset[$mapping['fieldName']]);
-            }
-        }
-        return $changeset;
-    }
-
-    /**
-     * returns the reference representation to be stored in mongodb
-     * or null if not applicable
-     * @param ClassMetadata $class
-     * @param Document $doc
-     * @return array|null
-     */
-    private function _prepareDocReference($class, $doc)
-    {
-        $docOid = spl_object_hash($doc);
-        if (isset($this->_documentIdentifiers[$docOid])) {
-            $id = $this->_documentIdentifiers[$docOid];
-            $ref = array(
-                '$ref' => $class->getCollection(),
-                '$id' => $id,
-                '$db' => $class->getDB()
-            );
-            return $ref;
-        }
-        return null;
-    }
-
-    /**
-     * prepares array of values to be stored in mongo
-     * to represent embedded object
-     * @param ClassMetadata $class
-     * @param Document $doc
-     * @return array
-     */
-    private function _prepareDocEmbeded($class, $doc)
-    {
-        $changeset = array();
-        if (is_array($doc) || $doc instanceof Collection) {
-            foreach ($doc as $val) {
-                $changeset[] = $this->_prepareDocEmbeded($class, $val);
-            }
-        } else {
-            foreach ($class->fieldMappings as $mapping) {
-                $rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
-                if ( ! isset($rawValue)) {
-                    continue;
-                }
-                if (isset($mapping['embedded']) || isset($mapping['reference'])) {
-                    $classMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                    if (isset($mapping['embedded'])) {
-                        if ($mapping['type'] == 'many') {
-                            $value = array();
-                            foreach ($rawValue as $doc) {
-                                $value[] = $this->_prepareDocEmbeded($classMetadata, $doc);
-                            }
-                        } elseif ($mapping['type'] == 'one') {
-                            $value = $this->_prepareDocEmbeded($classMetadata, $rawValue);
-                        }
-                    } elseif (isset($mapping['reference'])) {
-                        if ($mapping['type'] == 'many') {
-                             $value = array();
-                            foreach ($rawValue as $doc) {
-                                $value[] = $this->_prepareDocReference($classMetadata, $doc);
-                            }
-                        } else {
-                            $value = $this->_prepareDocReference($classMetadata, $rawValue);
-                        }
-                    }
-                } else {
-                    $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
-                }
-                $changeset[$mapping['fieldName']] = $value;
-            }
-        }
-        return $changeset;
-    }
-
     /**
      * Executes all document deletions for documents of the specified type.
      *
@@ -1523,7 +1376,7 @@ class UnitOfWork
 
         $class = $this->_dm->getClassMetadata(get_class($document));
         if ($this->getDocumentState($document) == self::STATE_MANAGED) {
-            $this->_dm->loadByID($class->name, $this->_documentIdentifiers[$oid]);
+            $this->getDocumentPersister($class->name)->refresh($document);
         } else {
             throw new \InvalidArgumentException("Document is not MANAGED.");
         }

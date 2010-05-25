@@ -42,7 +42,7 @@ class BasicDocumentPersister
         $inserts = array();
 
         foreach ($this->_queuedInserts as $oid => $document) {
-            $data = $this->_prepareInsertData($document);
+            $data = $this->prepareInsertData($document);
             $inserts[$oid] = $data;
         }
         $this->_collection->batchInsert($inserts);
@@ -59,23 +59,24 @@ class BasicDocumentPersister
     }
     public function update($document)
     {
-        $update = $this->_prepareUpdateData($document);
+        $update = $this->prepareUpdateData($document);
         $id = $update['_id'];
         unset($update['_id']);
 
         $this->_collection->update(array('_id' => $id), array('$set' => $update));
     }
+
     public function delete($document)
     {
         $id = $this->_uow->getDocumentIdentifier($document);
         $this->_collection->remove(array('_id' => new \MongoId($id)));
     }
 
-    private function _prepareInsertData($document)
+    public function prepareInsertData($document)
     {
-        return $this->_prepareUpdateData($document);
+        return $this->prepareUpdateData($document);
     }
-    private function _prepareUpdateData($document)
+    public function prepareUpdateData($document)
     {
         $oid = spl_object_hash($document);
         $changeset = $this->_uow->getDocumentChangeSet($document);
@@ -127,9 +128,10 @@ class BasicDocumentPersister
     {
         return $this->_class;
     }
-    public function refresh(array $id, $document)
+    public function refresh($document)
     {
-        
+        $id = $this->_uow->getDocumentIdentifier($document);
+        $this->_dm->loadByID($this->_class->name, $id);
     }
 
     /**

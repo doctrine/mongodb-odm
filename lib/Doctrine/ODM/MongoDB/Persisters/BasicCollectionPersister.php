@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
-abstract class AbstractCollectionPersister
+class BasicCollectionPersister
 {
     /**
      * @var Doctrine\ODM\MongoDB\DocumentManager
@@ -20,13 +20,10 @@ abstract class AbstractCollectionPersister
      */
     protected $_uow;
 
-    protected $_documentPersister;
-
-    public function __construct(DocumentManager $dm, $documentPersister)
+    public function __construct(DocumentManager $dm)
     {
         $this->_dm = $dm;
         $this->_uow = $dm->getUnitOfWork();
-        $this->_documentPersister = $documentPersister;
     }
 
     /**
@@ -36,8 +33,7 @@ abstract class AbstractCollectionPersister
      */
     public function delete(PersistentCollection $coll)
     {
-        $class = $coll->getTypeClass();
-        $collection = $this->_dm->getDocumentCollection($class->name);
+        $this->deleteDocs($coll);
     }
 
     /**
@@ -55,14 +51,26 @@ abstract class AbstractCollectionPersister
     public function deleteDocs(PersistentCollection $coll)
     {
         foreach ($coll as $doc) {
-            $this->_documentPersister->delete($doc);
+            $persister = $this->_uow->getDocumentPersister(get_class($doc));
+            $persister->delete($doc);
         }
     }
 
     public function insertDocs(PersistentCollection $coll)
     {
+        $document = $coll->getOwner();
+        $mapping = $coll->getMapping();
+        $id = $this->_uow->getDocumentIdentifier($document);
+        $collection = $this->_dm->getDocumentCollection($coll->getTypeClass()->name);
         foreach ($coll as $doc) {
-            $this->_documentPersister->addInsert($doc);
+            $persister = $this->_uow->getDocumentPersister(get_class($doc));
+            $update[] = $persister->prepareUpdateData($doc);
         }
+        $collection->update(
+            array('_id' => $id),
+            array('$' . $mapping['strategy'] => array(
+                $mapping['fieldName'] => $update
+            ))
+        );
     }
 }
