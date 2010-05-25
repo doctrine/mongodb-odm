@@ -3,86 +3,86 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
-	Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-	Doctrine\ODM\MongoDB\MongoCursor,
-	Doctrine\ODM\MongoDB\Mapping\Types\Type,
-	Doctrine\Common\Collections\Collection;
+    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+    Doctrine\ODM\MongoDB\MongoCursor,
+    Doctrine\ODM\MongoDB\Mapping\Types\Type,
+    Doctrine\Common\Collections\Collection;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
 class BasicDocumentPersister
 {
-	protected $_dm;
-	protected $_uow;
-	protected $_class;
-	protected $_collection;
-	protected $_documentName;
-	protected $_documentIdentifiers = array();
-	protected $_queuedInserts = array();
-	public function __construct(DocumentManager $dm, ClassMetadata $class)
-	{
-		$this->_dm = $dm;
-		$this->_uow = $dm->getUnitOfWork();
-		$this->_class = $class;
-		$this->_documentName = $class->getName();
+    protected $_dm;
+    protected $_uow;
+    protected $_class;
+    protected $_collection;
+    protected $_documentName;
+    protected $_documentIdentifiers = array();
+    protected $_queuedInserts = array();
+    public function __construct(DocumentManager $dm, ClassMetadata $class)
+    {
+        $this->_dm = $dm;
+        $this->_uow = $dm->getUnitOfWork();
+        $this->_class = $class;
+        $this->_documentName = $class->getName();
         $this->_collection = $dm->getDocumentCollection($class->name);
-	}
+    }
     public function addInsert($document)
-	{
+    {
         $this->_queuedInserts[spl_object_hash($document)] = $document;
-	}
+    }
     public function executeInserts()
-	{
+    {
         if ( ! $this->_queuedInserts) {
             return;
         }
 
         $postInsertIds = array();
-		$inserts = array();
+        $inserts = array();
 
         foreach ($this->_queuedInserts as $oid => $document) {
-			$data = $this->_prepareInsertData($document);
+            $data = $this->_prepareInsertData($document);
             $inserts[$oid] = $data;
-		}
-		$this->_collection->batchInsert($inserts);
+        }
+        $this->_collection->batchInsert($inserts);
 
-		foreach ($inserts as $oid => $data) {
-			$document = $this->_queuedInserts[$oid];
-			$postInsertIds[(string) $data['_id']] = $document;
-			if ($this->_class->isFile()) {
-				$this->_dm->getHydrator()->hydrate($this->_class, $document, $data);
-			}
-		}
+        foreach ($inserts as $oid => $data) {
+            $document = $this->_queuedInserts[$oid];
+            $postInsertIds[(string) $data['_id']] = $document;
+            if ($this->_class->isFile()) {
+                $this->_dm->getHydrator()->hydrate($this->_class, $document, $data);
+            }
+        }
 
-		return $postInsertIds;
-	}
+        return $postInsertIds;
+    }
     public function update($document)
-	{
-		$update = $this->_prepareUpdateData($document);
-		$id = $update['_id'];
-		unset($update['_id']);
+    {
+        $update = $this->_prepareUpdateData($document);
+        $id = $update['_id'];
+        unset($update['_id']);
 
-		$this->_collection->update(array('_id' => $id), array('$set' => $update));
-	}
+        $this->_collection->update(array('_id' => $id), array('$set' => $update));
+    }
     public function delete($document)
-	{
+    {
         $id = $this->_uow->getDocumentIdentifier($document);
-		$this->_collection->remove(array('_id' => new \MongoId($id)));
-	}
+        $this->_collection->remove(array('_id' => new \MongoId($id)));
+    }
 
-	private function _prepareInsertData($document)
-	{
-		return $this->_prepareUpdateData($document);
-	}
-	private function _prepareUpdateData($document)
-	{
+    private function _prepareInsertData($document)
+    {
+        return $this->_prepareUpdateData($document);
+    }
+    private function _prepareUpdateData($document)
+    {
         $oid = spl_object_hash($document);
         $changeset = $this->_uow->getDocumentChangeSet($document);
         foreach ($changeset as $fieldName => $values) {
             $changeset[$fieldName] = $values[1];
         }
-		$docId = $this->_uow->getDocumentIdentifier($document);
+        $docId = $this->_uow->getDocumentIdentifier($document);
         if ($docId) {
             $changeset['_id'] = new \MongoId($docId);
         }
@@ -116,7 +116,7 @@ class BasicDocumentPersister
             }
         }
         return $changeset;
-	}
+    }
 
     /**
      * Gets the ClassMetadata instance of the entity class this persister is used for.
@@ -128,9 +128,9 @@ class BasicDocumentPersister
         return $this->_class;
     }
     public function refresh(array $id, $document)
-	{
-		
-	}
+    {
+        
+    }
 
     /**
      * Loads an entity by a list of field criteria.
@@ -153,13 +153,13 @@ class BasicDocumentPersister
     }
 
     public function loadById($id)
-	{
-		$result = $this->_collection->findOne(array('_id' => new \MongoId($id)));
-		if ($result !== null) {
-			return $this->_uow->getOrCreateDocument($this->_documentName, $result);
-		}
-		return null;
-	}
+    {
+        $result = $this->_collection->findOne(array('_id' => new \MongoId($id)));
+        if ($result !== null) {
+            return $this->_uow->getOrCreateDocument($this->_documentName, $result);
+        }
+        return null;
+    }
 
     /**
      * Loads a list of entities by a list of field criteria.
@@ -168,10 +168,10 @@ class BasicDocumentPersister
      * @return array
      */
     public function loadAll(array $query = array(), array $select = array())
-	{
-		$cursor = $this->_collection->find($query, $select);
-		return new MongoCursor($this->_dm, $this->_dm->getHydrator(), $this->_class, $cursor);
-	}
+    {
+        $cursor = $this->_collection->find($query, $select);
+        return new MongoCursor($this->_dm, $this->_dm->getHydrator(), $this->_class, $cursor);
+    }
 
     /**
      * returns the reference representation to be stored in mongodb
@@ -183,12 +183,12 @@ class BasicDocumentPersister
     private function _prepareDocReference($class, $doc)
     {
         $id = $this->_uow->getDocumentIdentifier($doc);
-		$ref = array(
-			'$ref' => $class->getCollection(),
-			'$id' => $id,
-			'$db' => $class->getDB()
-		);
-		return $ref;
+        $ref = array(
+            '$ref' => $class->getCollection(),
+            '$id' => $id,
+            '$db' => $class->getDB()
+        );
+        return $ref;
     }
 
     /**

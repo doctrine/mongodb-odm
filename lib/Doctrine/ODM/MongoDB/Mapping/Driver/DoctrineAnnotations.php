@@ -144,7 +144,7 @@ final class ReferenceMany extends Annotation
     public $reference = true;
     public $targetDocument;
     public $cascade;
-	public $strategy = 'set';
+    public $strategy = 'set';
 }
 
 /* Annotations for lifecycle callbacks */

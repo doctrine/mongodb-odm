@@ -35,9 +35,9 @@ use Doctrine\Common\Collections\Collection,
 final class PersistentCollection implements Collection
 {
 
-	protected $_owner;
+    protected $_owner;
 
-	protected $_mapping;
+    protected $_mapping;
 
     /**
      * The DocumentManager that manages the persistence of the collection.
@@ -165,15 +165,15 @@ final class PersistentCollection implements Collection
         return $this->_owner;
     }
 
-	public function getMapping()
-	{
-		return $this->_mapping;
-	}
+    public function getMapping()
+    {
+        return $this->_mapping;
+    }
 
-	public function getTypeClass()
-	{
-		return $this->_typeClass;
-	}
+    public function getTypeClass()
+    {
+        return $this->_typeClass;
+    }
 
     /**
      * Sets the initialized flag of the collection, forcing it into that state.

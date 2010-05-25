@@ -198,9 +198,9 @@ class UnitOfWork
      */
     private $_hydrator;
 
-	protected $_collectionPersisters = array();
+    protected $_collectionPersisters = array();
 
-	protected $_documentPersisters = array();
+    protected $_documentPersisters = array();
 
     /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
@@ -215,40 +215,40 @@ class UnitOfWork
     }
 
     /**
-	 * @todo write this function
+     * @todo write this function
      */
     public function getCollectionPersister(PersistentCollection $collection)
     {
-		$mapping = $collection->getMapping();
-		$class = $collection->getTypeClass();
-		$documentName = $class->getName();
-		$type = isset ($mapping['embedded']) ? 'embed' : $mapping['strategy'];
-		if ( ! isset ($this->_collectionPersisters[$documentName])) {
-			if ($type === 'embed') {
-				$persister = new Persisters\EmbedCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
-			} else if ($type === 'set') {
-				$persister = new Persisters\SetCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
-			} else if ($type === 'addToSet') {
-				$persister = new Persisters\AddToSetCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
-			}
-			$this->_collectionPersisters[$documentName] = $persister;
-		}
-		return $this->_collectionPersisters[$documentName];
+        $mapping = $collection->getMapping();
+        $class = $collection->getTypeClass();
+        $documentName = $class->getName();
+        $type = isset ($mapping['embedded']) ? 'embed' : $mapping['strategy'];
+        if ( ! isset ($this->_collectionPersisters[$documentName])) {
+            if ($type === 'embed') {
+                $persister = new Persisters\EmbedCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
+            } else if ($type === 'set') {
+                $persister = new Persisters\SetCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
+            } else if ($type === 'addToSet') {
+                $persister = new Persisters\AddToSetCollectionPersister($this->_dm, $this->getDocumentPersister($documentName));
+            }
+            $this->_collectionPersisters[$documentName] = $persister;
+        }
+        return $this->_collectionPersisters[$documentName];
     }
 
-	public function getDocumentPersister($documentName)
-	{
-		if ( ! isset ($this->_documentPersisters[$documentName])) {
-			$class = $this->_dm->getClassMetadata($documentName);
-			if ($class->isEmbeddedDocument) {
-				$persister = new Persisters\EmbeddedDocumentPersister($this->_dm, $class);
-			} else {
-				$persister = new Persisters\BasicDocumentPersister($this->_dm, $class);
-			}
-			$this->_documentPersisters[$documentName] = $persister;
-		}
-		return $this->_documentPersisters[$documentName];
-	}
+    public function getDocumentPersister($documentName)
+    {
+        if ( ! isset ($this->_documentPersisters[$documentName])) {
+            $class = $this->_dm->getClassMetadata($documentName);
+            if ($class->isEmbeddedDocument) {
+                $persister = new Persisters\EmbeddedDocumentPersister($this->_dm, $class);
+            } else {
+                $persister = new Persisters\BasicDocumentPersister($this->_dm, $class);
+            }
+            $this->_documentPersisters[$documentName] = $persister;
+        }
+        return $this->_documentPersisters[$documentName];
+    }
 
     /**
      * Commits the UnitOfWork, executing all operations that have been postponed
@@ -311,16 +311,16 @@ class UnitOfWork
             }
         }
 
-		// Collection deletions (deletions of complete collections)
-		foreach ($this->_collectionDeletions as $collectionToDelete) {
-			$this->getCollectionPersister($collectionToDelete)
-					->delete($collectionToDelete);
-		}
-		// Collection updates (deleteRows, updateRows, insertRows)
-		foreach ($this->_collectionUpdates as $collectionToUpdate) {
-			$this->getCollectionPersister($collectionToUpdate)
-					->update($collectionToUpdate);
-		}
+        // Collection deletions (deletions of complete collections)
+        foreach ($this->_collectionDeletions as $collectionToDelete) {
+            $this->getCollectionPersister($collectionToDelete)
+                    ->delete($collectionToDelete);
+        }
+        // Collection updates (deleteRows, updateRows, insertRows)
+        foreach ($this->_collectionUpdates as $collectionToUpdate) {
+            $this->getCollectionPersister($collectionToUpdate)
+                    ->update($collectionToUpdate);
+        }
 
         // Clear up
         $this->_documentInsertions =
@@ -402,7 +402,7 @@ class UnitOfWork
                     $actualData[$name]
                 );
 
-				$coll->setOwner($document, $mapping);
+                $coll->setOwner($document, $mapping);
                 $coll->setDirty( ! $coll->isEmpty());
                 $class->reflFields[$name]->setValue($document, $coll);
                 $actualData[$name] = $coll;
@@ -440,11 +440,11 @@ class UnitOfWork
                                 $this->scheduleOrphanRemoval($orgValue);
                             }
                         } else if ($orgValue instanceof PersistentCollection) {
-							// A PersistentCollection was de-referenced, so delete it.
+                            // A PersistentCollection was de-referenced, so delete it.
                             if  ( ! in_array($orgValue, $this->_collectionDeletions, true)) {
                                 $this->_collectionDeletions[] = $orgValue;
                             }
-						}
+                        }
                     } else {
                         $documentIsDirty = true;
                     }
@@ -648,7 +648,7 @@ class UnitOfWork
                 $this->_documentStates[$oid] = self::STATE_MANAGED;
                 $this->_originalDocumentData[$oid][$class->identifier] = $id;
                 $this->addToIdentityMap($document);
-			}
+            }
         }
 
         if ($hasLifecycleCallbacks || $hasListeners) {
@@ -671,7 +671,7 @@ class UnitOfWork
     private function _executeUpdates($class)
     {
         $className = $class->name;
-		$persister = $this->getDocumentPersister($className);
+        $persister = $this->getDocumentPersister($className);
 
         $hasPreUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::preUpdate]);
         $hasPreUpdateListeners = $this->_evm->hasListeners(Events::preUpdate);
@@ -691,7 +691,7 @@ class UnitOfWork
                     );
                 }
 
-				$persister->update($document);
+                $persister->update($document);
                 unset($this->_documentUpdates[$oid]);
 
                 if ($hasPostUpdateLifecycleCallbacks) {
@@ -850,7 +850,7 @@ class UnitOfWork
         $collection = $this->_dm->getDocumentCollection($className);
         foreach ($this->_documentDeletions as $oid => $document) {
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
-				$persister->delete($document);
+                $persister->delete($document);
                 unset(
                     $this->_documentDeletions[$oid],
                     $this->_documentIdentifiers[$oid],
@@ -1921,7 +1921,7 @@ class UnitOfWork
     public function getDocumentIdentifier($document)
     {
         return isset($this->_documentIdentifiers[spl_object_hash($document)]) ?
-			$this->_documentIdentifiers[spl_object_hash($document)] : null;
+            $this->_documentIdentifiers[spl_object_hash($document)] : null;
     }
 
     /**
@@ -2009,17 +2009,17 @@ class UnitOfWork
 
         $this->_documentChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
 
-		if ($class->hasAssociation($propertyName)) {
-			$mapping = $class->fieldMappings[$propertyName];
-			if ($mapping['type'] === 'one') {
-				$this->_documentUpdates[$oid] = $document;
-			} else if ($oldValue instanceof PersistentCollection) {
+        if ($class->hasAssociation($propertyName)) {
+            $mapping = $class->fieldMappings[$propertyName];
+            if ($mapping['type'] === 'one') {
+                $this->_documentUpdates[$oid] = $document;
+            } else if ($oldValue instanceof PersistentCollection) {
                 // A PersistentCollection was de-referenced, so delete it.
                 if  ( ! in_array($oldValue, $this->_collectionDeletions, true)) {
                     $this->_collectionDeletions[] = $oldValue;
                 }
-			}
-		}
+            }
+        }
 
     }
     

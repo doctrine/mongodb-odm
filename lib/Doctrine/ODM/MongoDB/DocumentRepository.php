@@ -92,13 +92,13 @@ class DocumentRepository
     public function find($query = array(), array $select = array())
     {
         if (is_string($query)) {
-			if ($document = $this->_dm->getUnitOfWork()->tryGetById($query, $this->_documentName)) {
-				return $document; // Hit!
-			}
+            if ($document = $this->_dm->getUnitOfWork()->tryGetById($query, $this->_documentName)) {
+                return $document; // Hit!
+            }
 
-			return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->loadById($query);
+            return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->loadById($query);
         } else {
-			return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->loadAll($query, $select);
+            return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->loadAll($query, $select);
         }
     }
 
@@ -112,7 +112,7 @@ class DocumentRepository
      */
     public function findOne(array $query = array(), array $select = array())
     {
-		return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->load($query, $select);
+        return $this->_dm->getUnitOfWork()->getDocumentPersister($this->_documentName)->load($query, $select);
     }
 
     /**

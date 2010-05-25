@@ -20,14 +20,14 @@ abstract class AbstractCollectionPersister
      */
     protected $_uow;
 
-	protected $_documentPersister;
+    protected $_documentPersister;
 
-	public function __construct(DocumentManager $dm, $documentPersister)
-	{
-		$this->_dm = $dm;
-		$this->_uow = $dm->getUnitOfWork();
-		$this->_documentPersister = $documentPersister;
-	}
+    public function __construct(DocumentManager $dm, $documentPersister)
+    {
+        $this->_dm = $dm;
+        $this->_uow = $dm->getUnitOfWork();
+        $this->_documentPersister = $documentPersister;
+    }
 
     /**
      * Deletes the persistent state represented by the given collection.
@@ -36,8 +36,8 @@ abstract class AbstractCollectionPersister
      */
     public function delete(PersistentCollection $coll)
     {
-		$class = $coll->getTypeClass();
-		$collection = $this->_dm->getDocumentCollection($class->name);
+        $class = $coll->getTypeClass();
+        $collection = $this->_dm->getDocumentCollection($class->name);
     }
 
     /**
@@ -47,22 +47,22 @@ abstract class AbstractCollectionPersister
      * @param PersistentCollection $coll
      */
     public function update(PersistentCollection $coll)
-	{
-		$this->deleteDocs($coll);
-		$this->insertDocs($coll);
-	}
-
-	public function deleteDocs(PersistentCollection $coll)
     {
-		foreach ($coll as $doc) {
-			$this->_documentPersister->delete($doc);
-		}
+        $this->deleteDocs($coll);
+        $this->insertDocs($coll);
+    }
+
+    public function deleteDocs(PersistentCollection $coll)
+    {
+        foreach ($coll as $doc) {
+            $this->_documentPersister->delete($doc);
+        }
     }
 
     public function insertDocs(PersistentCollection $coll)
     {
-		foreach ($coll as $doc) {
-			$this->_documentPersister->addInsert($doc);
-		}
+        foreach ($coll as $doc) {
+            $this->_documentPersister->addInsert($doc);
+        }
     }
 }

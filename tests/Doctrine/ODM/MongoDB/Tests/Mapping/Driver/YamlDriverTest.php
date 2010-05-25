@@ -13,8 +13,8 @@ require_once 'fixtures/User.php';
  */
 class YamlDriverTest extends \PHPUnit_Framework_TestCase
 {
-	public function testCreateYmlDriver()
-	{
+    public function testCreateYmlDriver()
+    {
         $xmlDriver = new YamlDriver(
             __DIR__ . '/fixtures/yaml'
         );
@@ -124,6 +124,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRefresh' => true,
             'isCascadeRemove'  => true,
         ), $classMetadata->fieldMappings['groups']);
-	}
+    }
 
 }
