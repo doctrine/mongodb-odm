@@ -134,6 +134,8 @@ class BasicDocumentPersisterTest extends \BaseTest
         $this->assertTrue(array_key_exists('$pushAll', $update));
         $this->assertTrue(array_key_exists('groups', $update['$pushAll']));
         $this->assertEquals(3, count($update['$pushAll']['groups']));
+        $this->assertTrue(array_key_exists('phonenumbers', $update['$pushAll']));
+        $this->assertEquals(0, count($update['$pushAll']['phonenumbers']));
         $this->assertFalse(array_key_exists('$pullAll', $update));
 
         $this->dm->flush();
