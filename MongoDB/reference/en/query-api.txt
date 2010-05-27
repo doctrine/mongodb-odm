@@ -362,7 +362,7 @@ Change a users password:
     [php]
     $dm->createQuery('User')
         ->set('password', 'newpassword')
-        ->where('username', 'jwage)
+        ->where('username', 'jwage')
         ->execute();
 
 If you want to just set the values of an entirely new object you can do so by
