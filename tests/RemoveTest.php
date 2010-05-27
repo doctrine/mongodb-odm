@@ -35,7 +35,7 @@ class RemoveTest extends BaseTest
         $this->assertNull($user);
     }
 
-    /*
+    
     public function testUnsetFromEmbeddedCollection()
     {
         $user = new User();
@@ -46,10 +46,10 @@ class RemoveTest extends BaseTest
         
         $this->dm->persist($user);
         $this->dm->flush();
-		unset($user);
-		$this->dm->clear();
+        unset($user);
+        $this->dm->clear();
 
-		$user = $this->dm->findOne('Documents\User');
+        $user = $this->dm->findOne('Documents\User');
 
         $groups = $user->getGroups();
         unset($groups[0]);
@@ -62,5 +62,5 @@ class RemoveTest extends BaseTest
 
         $this->assertEquals(2, count($user->getGroups()));
     }
-    */
+    
 }
