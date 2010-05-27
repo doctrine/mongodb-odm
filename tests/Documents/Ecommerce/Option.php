@@ -33,11 +33,11 @@ class Option
     public function __construct($name, Money $money, StockItem $stockItem)
     {
         $this->name = (string) $name;
-        if (empty ($this->name)) {
+        if (empty($this->name)) {
             throw new \InvalidArgumentException('option name cannot be empty');
         }
         $this->money = $money;
-        if (empty ($this->money)) {
+        if (empty($this->money)) {
             throw new \InvalidArgumentException('option price cannot be empty');
         }
         $this->stockItem = $stockItem;

@@ -119,10 +119,12 @@ class BasicDocumentPersisterTest extends \BaseTest
         $user->setUsername('jon');
         $user->setPassword('changeme');
         $user->setAccount($account);
+        $user->setCount(5);
 
         $user->addGroup(new Group('administrator'));
         $user->addGroup(new Group('member'));
         $user->addGroup(new Group('moderator'));
+
 
         $this->dm->persist($user);
         $this->persister->expects($this->once())
@@ -137,6 +139,8 @@ class BasicDocumentPersisterTest extends \BaseTest
         $this->assertTrue(array_key_exists('phonenumbers', $update['$pushAll']));
         $this->assertEquals(0, count($update['$pushAll']['phonenumbers']));
         $this->assertFalse(array_key_exists('$pullAll', $update));
+        $this->assertTrue(array_key_exists('$inc', $update));
+        $this->assertEquals(5, $update['$inc']['count']);
 
         $this->dm->flush();
     }

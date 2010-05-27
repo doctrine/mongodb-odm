@@ -133,7 +133,7 @@ class AnnotationDriver implements Driver
             $mapping['fieldName'] = $property->getName();
             
             $types = array(
-                'Id', 'File', 'Field', 'String', 'Boolean', 'Int', 'Float', 'Date',
+                'Id', 'Increment', 'File', 'Field', 'String', 'Boolean', 'Int', 'Float', 'Date',
                 'Key', 'Bin', 'BinFunc', 'BinUUID', 'BinMD5', 'BinCustom', 'EmbedOne',
                 'EmbedMany', 'ReferenceOne', 'ReferenceMany', 'Timestamp', 'Hash'
             );

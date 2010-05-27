@@ -58,7 +58,7 @@ class Currency
     public function setMultiplier($multiplier)
     {
         $multiplier = (float) $multiplier;
-        if (empty ($multiplier) || $multiplier <= 0) {
+        if (empty($multiplier) || $multiplier <= 0) {
             throw new \InvalidArgumentException(
                 'currency multiplier must be a positive float number'
             );

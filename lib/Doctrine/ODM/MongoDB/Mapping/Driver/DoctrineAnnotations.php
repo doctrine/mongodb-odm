@@ -118,6 +118,10 @@ final class File extends Annotation
     public $type = 'file';
     public $file = true;
 }
+final class Increment extends Annotation
+{
+    public $type = 'increment';
+}
 
 final class EmbedOne extends Annotation
 {

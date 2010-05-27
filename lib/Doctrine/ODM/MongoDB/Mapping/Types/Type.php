@@ -51,6 +51,7 @@ abstract class Type
         'custom' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataCustomType',
         'file' => 'Doctrine\ODM\MongoDB\Mapping\Types\FileType',
         'hash' => 'Doctrine\ODM\MongoDB\Mapping\Types\HashType',
+        'increment' => 'Doctrine\ODM\MongoDB\Mapping\Types\IncrementType'
     );
 
     abstract public function convertToDatabaseValue($value);

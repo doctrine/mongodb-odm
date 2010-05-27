@@ -45,6 +45,9 @@ class User extends BaseDocument
     /** @String */
     protected $nullTest;
 
+    /** @Increment */
+    protected $count = 0;
+
     public function __construct()
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
@@ -156,5 +159,24 @@ class User extends BaseDocument
     public function setHits($hits)
     {
         $this->hits = $hits;
+    }
+
+    public function getCount()
+    {
+        return $this->count;
+    }
+
+    public function setCount($count)
+    {
+        $this->count = $count;
+    }
+
+    public function incrementCount($num = null)
+    {
+        if ($num === null) {
+            $this->count++;
+        } else {
+            $this->count = $this->count + $num;
+        }
     }
 }
