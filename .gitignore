@@ -1,1 +1,6 @@
 tests/Proxies/*
+build.properties
+build/
+logs/
+reports/
+dist/
