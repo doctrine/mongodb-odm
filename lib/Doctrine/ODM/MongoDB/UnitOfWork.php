@@ -198,15 +198,27 @@ class UnitOfWork
         $this->_hydrator = $dm->getHydrator();
     }
 
+    /**
+     * Get the document persister instance for the given document name
+     *
+     * @param string $documentName 
+     * @return BasicDocumentPersister
+     */
     public function getDocumentPersister($documentName)
     {
-        if ( ! isset ($this->_documentPersisters[$documentName])) {
+        if ( ! isset($this->_documentPersisters[$documentName])) {
             $class = $this->_dm->getClassMetadata($documentName);
             $this->_documentPersisters[$documentName] = new Persisters\BasicDocumentPersister($this->_dm, $class);
         }
         return $this->_documentPersisters[$documentName];
     }
 
+    /**
+     * Set the document persister instance to use for the given document name
+     *
+     * @param string $documentName 
+     * @param BasicDocumentPersister $persister
+     */
     public function setDocumentPersister($documentName, Persisters\BasicDocumentPersister $persister)
     {
         $this->_documentPersisters[$documentName] = $persister;

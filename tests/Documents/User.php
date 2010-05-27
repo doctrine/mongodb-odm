@@ -141,7 +141,7 @@ class User extends BaseDocument
     {
         foreach ($this->groups as $key => $group) {
             if ($group->getName() === $name) {
-                unset ($this->groups[$key]);
+                unset($this->groups[$key]);
                 return true;
             }
         }

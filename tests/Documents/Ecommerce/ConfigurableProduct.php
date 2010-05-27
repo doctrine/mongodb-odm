@@ -70,7 +70,7 @@ class ConfigurableProduct
                 throw new \InvalidArgumentException('option name cannot be empty');
             }
             $name = new Option($name, $price, $item);
-            unset ($price, $item);
+            unset($price, $item);
         }
         if (null !== $this->_findOption($name->getName())
             || in_array($name->getStockItem(), $this->_getStockItems(), true)) {
@@ -94,7 +94,7 @@ class ConfigurableProduct
         } else {
             $index = array_search($option, $this->options);
         }
-        unset ($this->options[$index]);
+        unset($this->options[$index]);
         return $this;
     }
 
@@ -106,7 +106,7 @@ class ConfigurableProduct
     public function selectOption($name)
     {
         $option = $this->_findOption($name);
-        if ( ! isset ($option)) {
+        if ( ! isset($option)) {
             throw new \InvalidArgumentException('specified option: ' . $name . ' doesn\'t exist');
         }
         $this->selectedOption = $option;

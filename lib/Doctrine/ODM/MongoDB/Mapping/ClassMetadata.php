@@ -335,7 +335,7 @@ class ClassMetadata
     }
 
     /**
-     * Adds a lifecycle callback for entities of this class.
+     * Adds a lifecycle callback for documents of this class.
      *
      * Note: If the same callback is registered more than once, the old one
      * will be overridden.
@@ -349,7 +349,7 @@ class ClassMetadata
     }
 
     /**
-     * Sets the lifecycle callbacks for entities of this class.
+     * Sets the lifecycle callbacks for documents of this class.
      * Any previously registered callbacks are overwritten.
      *
      * @param array $callbacks
@@ -662,7 +662,7 @@ class ClassMetadata
      * @param string $fieldName
      * @return boolean
      */
-    public function hasAssociation($fieldName)
+    public function hasReference($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['reference']);
     }

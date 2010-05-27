@@ -105,7 +105,7 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, count($product->getOptions()));
         $this->dm->flush();
         $this->dm->detach($product);
-        unset ($product);
+        unset($product);
         $this->assertFalse(isset($product));
 
         $product = $this->getProduct();

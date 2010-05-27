@@ -566,9 +566,9 @@ class DocumentManager
     }
 
     /**
-     * Throws an exception if the EntityManager is closed or currently not active.
+     * Throws an exception if the DocumentManager is closed or currently not active.
      *
-     * @throws ORMException If the EntityManager is closed.
+     * @throws ORMException If the DocumentManager is closed.
      */
     private function _errorIfClosed()
     {

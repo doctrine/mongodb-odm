@@ -84,7 +84,7 @@ class BasicDocumentPersisterTest extends \BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
-        unset ($user, $account);
+        unset($user, $account);
 
         $user = $this->dm->findOne('Documents\User');
         $this->assertEquals('jon', $user->getUsername());
@@ -163,7 +163,7 @@ class BasicDocumentPersisterTest extends \BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        unset ($user, $account);
+        unset($user, $account);
 
         $user = $this->dm->findOne('Documents\User');
 
@@ -213,7 +213,7 @@ class BasicDocumentPersisterTest extends \BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        unset ($user, $account);
+        unset($user, $account);
 
         $user = $this->dm->findOne('Documents\User');
 

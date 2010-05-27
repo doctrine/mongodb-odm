@@ -1,7 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Framework.php';
-require_once $_SERVER['DOCTRINE2_DIR'] . '/Doctrine/Common/ClassLoader.php';
+require_once __DIR__ . '/../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 require_once 'BaseTest.php';
 
 use Doctrine\Common\ClassLoader;
@@ -9,10 +9,10 @@ use Doctrine\Common\ClassLoader;
 $classLoader = new ClassLoader('Doctrine\ODM', __DIR__ . '/../lib');
 $classLoader->register();
 
-$classLoader = new ClassLoader('Doctrine', $_SERVER['DOCTRINE2_DIR']);
+$classLoader = new ClassLoader('Doctrine', __DIR__ . '/../lib/vendor/doctrine-common/lib');
 $classLoader->register();
 
-$classLoader = new ClassLoader('Symfony', $_SERVER['DOCTRINE2_DIR'] . '/vendor');
+$classLoader = new ClassLoader('Symfony\Components\Yaml', __DIR__ . '/../lib/vendor');
 $classLoader->register();
 
 $classLoader = new ClassLoader('Documents', __DIR__);

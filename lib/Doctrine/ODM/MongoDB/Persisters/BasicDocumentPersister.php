@@ -1,4 +1,21 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
@@ -9,17 +26,65 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\Common\Collections\Collection;
 
 /**
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * The BasicDocumentPersister is responsible for actual persisting the calculated
+ * changesets performed by the UnitOfWork.
+ *
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since       1.0
+ * @version     $Revision: 4930 $
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
 class BasicDocumentPersister
 {
-    protected $_dm;
-    protected $_uow;
-    protected $_class;
-    protected $_collection;
-    protected $_documentName;
-    protected $_documentIdentifiers = array();
-    protected $_queuedInserts = array();
+    /**
+     * The DocumentManager instance.
+     *
+     * @var Doctrine\ODM\MongoDB\DocumentManager
+     */
+    private $_dm;
+
+    /**
+     * The UnitOfWork instance.
+     *
+     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     */
+    private $_uow;
+
+    /**
+     * The ClassMetadata instance for the document type being persisted.
+     *
+     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     */
+    private $_class;
+
+    /**
+     * The MongoCollection instance for this document.
+     *
+     * @var Doctrine\ODM\MongoDB\MongoCollection
+     */
+    private $_collection;
+
+    /**
+     * The string document name being persisted.
+     *
+     * @var string
+     */
+    private $_documentName;
+
+    /**
+     * Array of quered inserts for the persister to insert.
+     *
+     * @var array
+     */
+    private $_queuedInserts = array();
+
+    /**
+     * Initializes a new BasicDocumentPersister instance.
+     *
+     * @param Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
+     */
     public function __construct(DocumentManager $dm, ClassMetadata $class)
     {
         $this->_dm = $dm;
@@ -28,10 +93,27 @@ class BasicDocumentPersister
         $this->_documentName = $class->getName();
         $this->_collection = $dm->getDocumentCollection($class->name);
     }
+
+    /**
+     * Adds a document to the queued insertions.
+     * The document remains queued until {@link executeInserts} is invoked.
+     *
+     * @param object $document The document to queue for insertion.
+     */
     public function addInsert($document)
     {
         $this->_queuedInserts[spl_object_hash($document)] = $document;
     }
+
+    /**
+     * Executes all queued document insertions and returns any generated post-insert
+     * identifiers that were created as a result of the insertions.
+     *
+     * If no inserts are queued, invoking this method is a NOOP.
+     *
+     * @return array An array of any generated post-insert IDs. This will be an empty array
+     *               if the document class does not use the IDENTITY generation strategy.
+     */
     public function executeInserts()
     {
         if ( ! $this->_queuedInserts) {
@@ -43,11 +125,11 @@ class BasicDocumentPersister
 
         foreach ($this->_queuedInserts as $oid => $document) {
             $data = $this->prepareUpdateData($document);
-            if ( ! isset ($data['$set'])) {
+            if ( ! isset($data['$set'])) {
                 continue;
             }
             $inserts[$oid] = $data['$set'];
-            if (isset ($data['$pushAll'])) {
+            if (isset($data['$pushAll'])) {
                 foreach ($data['$pushAll'] as $fieldName => $value) {
                     $inserts[$oid][$fieldName] = $value;
                 }
@@ -68,6 +150,7 @@ class BasicDocumentPersister
 
         return $postInsertIds;
     }
+
     public function update($document)
     {
         $id = $this->_uow->getDocumentIdentifier($document);
@@ -90,59 +173,59 @@ class BasicDocumentPersister
         $changeset = $this->_uow->getDocumentChangeSet($document);
         $result = array();
         foreach ($this->_class->fieldMappings as $mapping) {
-            $old = isset ($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
-            $new = isset ($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
+            $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
+            $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
             $changeset[$mapping['fieldName']] = array();
             if (isset($mapping['reference'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 if ($mapping['type'] === 'many') {
-                    if ( ! isset ($old)) {
+                    if ( ! isset($old)) {
                         $result['$pushAll'][$mapping['fieldName']] = array();
                     }
                     $new = $this->_prepareDocReferenceArray($new, $targetClass);
                     $old = $this->_prepareDocReferenceArray($old, $targetClass);
-                    $this->_tryMarkChangedArray($mapping['fieldName'], $new, $old, $result);
+                    $this->_addArrayUpdateAtomicOperator($mapping['fieldName'], $new, $old, $result);
                 } else {
-                    if (isset ($new)) {
+                    if (isset($new)) {
                         $doc = $new;
                         $ref = $this->_prepareDocReference($targetClass, $doc);
-                        unset ($doc);
+                        unset($doc);
                         if (isset($ref)) {
                             $new = $ref;
                         }
                     }
-                    if (isset ($old) && is_object($old)) {
+                    if (isset($old) && is_object($old)) {
                         $old = $this->_prepareDocReference($targetClass, $old);
                     }
-                    $this->_tryMarkChanged($mapping['fieldName'], $new, $old, $result);
+                    $this->_addFieldUpdateAtomicOperator($mapping['fieldName'], $new, $old, $result);
                 }
             } elseif (isset($mapping['embedded'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 if ($mapping['type'] === 'many') {
-                    if ( ! isset ($old)) {
+                    if ( ! isset($old)) {
                         $result['$pushAll'][$mapping['fieldName']] = array();
                     }
                     $new = $this->_prepareDocEmbeddedArray($new, $targetClass);
                     $old = $this->_prepareDocEmbeddedArray($old, $targetClass);
-                    $this->_tryMarkChangedArray($mapping['fieldName'], $new, $old, $result);
+                    $this->_addArrayUpdateAtomicOperator($mapping['fieldName'], $new, $old, $result);
                 } else {
-                    if (isset ($new)) {
+                    if (isset($new)) {
                         $new = $this->_prepareDocEmbeded($targetClass, $new);
                     }
-                    if (isset ($old) && is_object($old)) {
+                    if (isset($old) && is_object($old)) {
                         $old = $this->_prepareDocEmbeded($targetClass, $old);
                     }
-                    $this->_tryMarkChanged($mapping['fieldName'], $new, $old, $result);
+                    $this->_addFieldUpdateAtomicOperator($mapping['fieldName'], $new, $old, $result);
                 }
            } else {
-                if (isset ($new)) {
+                if (isset($new)) {
                     $new = Type::getType($mapping['type'])->convertToDatabaseValue($new);
                 }
-                if (isset ($old) && ! (is_object($new) && $old instanceof $new)) {
+                if (isset($old) && ! (is_object($new) && $old instanceof $new)) {
                     $old = Type::getType($mapping['type'])->convertToDatabaseValue($old);
                 }
                 if ($new != $old) {
-                    if (isset ($new)) {
+                    if (isset($new)) {
                         $result['$set'][$mapping['fieldName']] = $new;
                     } else {
                         $result['$unset'][$mapping['fieldName']] = true;
@@ -150,14 +233,91 @@ class BasicDocumentPersister
                 }
             }
         }
-        
+
         return $result;
     }
 
-    protected function _tryMarkChanged($fieldName, $new, $old, array &$result)
+    /**
+     * Gets the ClassMetadata instance of the document class this persister is used for.
+     *
+     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     */
+    public function getClassMetadata()
     {
-        if ($new != $old) {
-            if (isset ($new)) {
+        return $this->_class;
+    }
+
+    /**
+     * Refreshes a managed document.
+     *
+     * @param object $document The document to refresh.
+     */
+    public function refresh($document)
+    {
+        $id = $this->_uow->getDocumentIdentifier($document);
+        $this->_dm->loadByID($this->_class->name, $id);
+    }
+
+    /**
+     * Loads an document by a list of field criteria.
+     *
+     * @param array $query The criteria by which to load the document.
+     * @param object $document The document to load the data into. If not specified,
+     *        a new document is created.
+     * @param $assoc The association that connects the document to load to another document, if any.
+     * @param array $hints Hints for document creation.
+     * @return object The loaded and managed document instance or NULL if the document can not be found.
+     * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
+     */
+    public function load(array $query = array(), array $select = array())
+    {
+        $result = $this->_collection->findOne($query, $select);
+        if ($result !== null) {
+            return $this->_uow->getOrCreateDocument($this->_documentName, $result);
+        }
+        return null;
+    }
+
+    /**
+     * Lood document by its identifier.
+     *
+     * @param string $id
+     * @return object|null
+     */
+    public function loadById($id)
+    {
+        $result = $this->_collection->findOne(array('_id' => new \MongoId($id)));
+        if ($result !== null) {
+            return $this->_uow->getOrCreateDocument($this->_documentName, $result);
+        }
+        return null;
+    }
+
+    /**
+     * Loads a list of documents by a list of field criteria.
+     *
+     * @param array $criteria
+     * @return array
+     */
+    public function loadAll(array $query = array(), array $select = array())
+    {
+        $cursor = $this->_collection->find($query, $select);
+        return new MongoCursor($this->_dm, $this->_dm->getHydrator(), $this->_class, $cursor);
+    }
+
+    /**
+     * Add the atomic operator to update or remove a field from a document
+     * based on whether or not the value has changed.
+     *
+     * @param string $fieldName
+     * @param string $new
+     * @param string $old
+     * @param string $result
+     */
+    private function _addFieldUpdateAtomicOperator($fieldName, $new, $old, array &$result)
+    {
+        if ($new !== $old) {
+            if (isset($new)) {
                 $result['$set'][$fieldName] = $new;
             } else {
                 $result['$unset'][$fieldName] = true;
@@ -165,7 +325,16 @@ class BasicDocumentPersister
         }
     }
 
-    protected function _tryMarkChangedArray($fieldName, array $new, array $old, array &$result)
+    /**
+     * Add the atomic operator to add new values to an array and to remove values
+     * from an array.
+     *
+     * @param string $fieldName
+     * @param array $new
+     * @param array $old
+     * @param string $result
+     */
+    private function _addArrayUpdateAtomicOperator($fieldName, array $new, array $old, array &$result)
     {
         foreach ($old as $val) {
             if ( ! in_array($val, $new)) {
@@ -179,9 +348,15 @@ class BasicDocumentPersister
         }
     }
 
-    protected function _prepareDocReferenceArray($val, $targetClass)
+    /**
+     * Prepare array of document references for persistence.
+     *
+     * @param PersistentCollection $val
+     * @param ClassMetadata $targetClass
+     */
+    private function _prepareDocReferenceArray($val, ClassMetadata $targetClass)
     {
-        if (isset ($val)) {
+        if (isset($val)) {
             $coll = $val;
             $val = array();
             foreach ($coll as $doc) {
@@ -190,16 +365,22 @@ class BasicDocumentPersister
                 }
                 $val[] = $doc;
             }
-            unset ($coll);
+            unset($coll);
         } else {
             $val = array();
         }
         return $val;
     }
 
-    protected function _prepareDocEmbeddedArray($val, $targetClass)
+    /**
+     * Prepare array of embedded documents for persistence.
+     *
+     * @param PersistentCollection $val 
+     * @param ClassMetadata $targetClass
+     */
+    private function _prepareDocEmbeddedArray($val, ClassMetadata $targetClass)
     {
-        if (isset ($val)) {
+        if (isset($val)) {
             $coll = $val;
             $val = array();
             foreach ($coll as $doc) {
@@ -208,7 +389,7 @@ class BasicDocumentPersister
                 }
                 $val[] = $doc;
             }
-            unset ($docs);
+            unset($coll);
         } else {
             $val = array();
         }
@@ -216,64 +397,8 @@ class BasicDocumentPersister
     }
 
     /**
-     * Gets the ClassMetadata instance of the entity class this persister is used for.
+     * Returns the reference representation to be stored in mongodb or null if not applicable.
      *
-     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
-     */
-    public function getClassMetadata()
-    {
-        return $this->_class;
-    }
-    public function refresh($document)
-    {
-        $id = $this->_uow->getDocumentIdentifier($document);
-        $this->_dm->loadByID($this->_class->name, $id);
-    }
-
-    /**
-     * Loads an entity by a list of field criteria.
-     *
-     * @param array $query The criteria by which to load the entity.
-     * @param object $document The entity to load the data into. If not specified,
-     *        a new entity is created.
-     * @param $assoc The association that connects the entity to load to another entity, if any.
-     * @param array $hints Hints for entity creation.
-     * @return object The loaded and managed entity instance or NULL if the entity can not be found.
-     * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
-     */
-    public function load(array $query = array(), array $select = array())
-    {
-        $result = $this->_collection->findOne($query, $select);
-        if ($result !== null) {
-            return $this->_uow->getOrCreateDocument($this->_documentName, $result);
-        }
-        return null;
-    }
-
-    public function loadById($id)
-    {
-        $result = $this->_collection->findOne(array('_id' => new \MongoId($id)));
-        if ($result !== null) {
-            return $this->_uow->getOrCreateDocument($this->_documentName, $result);
-        }
-        return null;
-    }
-
-    /**
-     * Loads a list of entities by a list of field criteria.
-     *
-     * @param array $criteria
-     * @return array
-     */
-    public function loadAll(array $query = array(), array $select = array())
-    {
-        $cursor = $this->_collection->find($query, $select);
-        return new MongoCursor($this->_dm, $this->_dm->getHydrator(), $this->_class, $cursor);
-    }
-
-    /**
-     * returns the reference representation to be stored in mongodb
-     * or null if not applicable
      * @param ClassMetadata $class
      * @param Document $doc
      * @return array|null
@@ -290,8 +415,8 @@ class BasicDocumentPersister
     }
 
     /**
-     * prepares array of values to be stored in mongo
-     * to represent embedded object
+     * Prepares array of values to be stored in mongo to represent embedded object.
+     *
      * @param ClassMetadata $class
      * @param Document $doc
      * @return array
@@ -332,5 +457,4 @@ class BasicDocumentPersister
         }
         return $changeset;
     }
-
 }

@@ -119,7 +119,7 @@ final class Events
     
     /**
      * The onFlush event occurs when the DocumentManager#flush() operation is invoked,
-     * after any changes to managed entities have been determined but before any
+     * after any changes to managed documents have been determined but before any
      * actual database operations are executed. The event is only raised if there is
      * actually something to do for the underlying UnitOfWork. If nothing needs to be done,
      * the onFlush event is not raised.
