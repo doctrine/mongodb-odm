@@ -137,6 +137,17 @@ class User extends BaseDocument
         $this->groups[] = $group;
     }
 
+    public function removeGroup($name)
+    {
+        foreach ($this->groups as $key => $group) {
+            if ($group->getName() === $name) {
+                unset ($this->groups[$key]);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function getHits()
     {
         return $this->hits;

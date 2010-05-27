@@ -42,8 +42,19 @@ class BasicDocumentPersister
         $inserts = array();
 
         foreach ($this->_queuedInserts as $oid => $document) {
-            $data = $this->prepareInsertData($document);
-            $inserts[$oid] = $data;
+            $data = $this->prepareUpdateData($document);
+            if ( ! isset ($data['$set'])) {
+                continue;
+            }
+            $inserts[$oid] = $data['$set'];
+            if (isset ($data['$pushAll'])) {
+                foreach ($data['$pushAll'] as $fieldName => $value) {
+                    $inserts[$oid][$fieldName] = $value;
+                }
+            }
+        }
+        if (empty ($inserts)) {
+            return;
         }
         $this->_collection->batchInsert($inserts);
 
@@ -59,11 +70,11 @@ class BasicDocumentPersister
     }
     public function update($document)
     {
-        $update = $this->prepareUpdateData($document);
-        $id = $update['_id'];
-        unset($update['_id']);
+        $id = $this->_uow->getDocumentIdentifier($document);
 
-        $this->_collection->update(array('_id' => $id), array('$set' => $update));
+        $update = $this->prepareUpdateData($document);
+
+        $this->_collection->update(array('_id' => new \MongoId($id)), $update);
     }
 
     public function delete($document)
@@ -72,51 +83,137 @@ class BasicDocumentPersister
         $this->_collection->remove(array('_id' => new \MongoId($id)));
     }
 
-    public function prepareInsertData($document)
-    {
-        return $this->prepareUpdateData($document);
-    }
     public function prepareUpdateData($document)
     {
         $oid = spl_object_hash($document);
         $changeset = $this->_uow->getDocumentChangeSet($document);
-        foreach ($changeset as $fieldName => $values) {
-            $changeset[$fieldName] = $values[1];
-        }
-        $docId = $this->_uow->getDocumentIdentifier($document);
-        if ($docId) {
-            $changeset['_id'] = new \MongoId($docId);
-        }
+        $result = array();
         foreach ($this->_class->fieldMappings as $mapping) {
+            $old = isset ($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
+            $new = isset ($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
+            $changeset[$mapping['fieldName']] = array();
             if (isset($mapping['reference'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if ($mapping['type'] === 'many' && isset($changeset[$mapping['fieldName']])) {
-                    $coll = $changeset[$mapping['fieldName']];
-                    $changeset[$mapping['fieldName']] = array();
-                    foreach ($coll as $key => $doc) {
-                        $ref = $this->_prepareDocReference($targetClass, $doc);
-                        if (isset($ref)) {
-                            $changeset[$mapping['fieldName']][] = $ref;
+                if ($mapping['type'] === 'many') {
+                    if (isset ($new)) {
+                        $coll = $new;
+                        $new = array();
+                        foreach ($coll as $key => $doc) {
+                            $ref = $this->_prepareDocReference($targetClass, $doc);
+                            if (isset($ref)) {
+                                $new[] = $ref;
+                            }
+                        }
+                        unset ($coll);
+                    } else {
+                        $new = array();
+                    }
+                    if (isset ($old)) {
+                        $coll = $old;
+                        $old = array();
+                        foreach ($coll as $key => $doc) {
+                            if (is_object($doc)) {
+                                $doc = $this->_prepareDocReference($targetClass, $doc);
+                            }
+                            $old[] = $doc;
+                        }
+                        unset ($coll);
+                    } else {
+                        $old = array();
+                    }
+                    foreach ($old as $val) {
+                        if ( ! in_array($val, $new)) {
+                            $result['$pullAll'][$mapping['fieldName']][] = $val;
                         }
                     }
-                } elseif (isset($changeset[$mapping['fieldName']])) {
-                    $doc = $changeset[$mapping['fieldName']];
-                    $ref = $this->_prepareDocReference($targetClass, $doc);
-                    if (isset($ref)) {
-                        $changeset[$mapping['fieldName']] = $ref;
+                    foreach ($new as $val) {
+                        if ( ! in_array($val, $old)) {
+                            $result['$pushAll'][$mapping['fieldName']][] = $val;
+                        }
+                    }
+                    if ( ! isset($result['$pushAll'][$mapping['fieldName']])
+                            && ! isset($result['$pullAll'][$mapping['fieldName']])) {
+                        if (empty ($new)) {
+                            $result['$pushAll'][$mapping['fieldName']] = array();
+                        }
+                    }
+                } else {
+                    if (isset ($new)) {
+                        $doc = $new;
+                        $ref = $this->_prepareDocReference($targetClass, $doc);
+                        unset ($doc);
+                        if (isset($ref)) {
+                            $new = $ref;
+                        }
+                    }
+                    if (isset ($old) && is_object($old)) {
+                        $old = $this->_prepareDocReference($targetClass, $old);
+                    }
+                    if ($new != $old) {
+                        if (isset ($new)) {
+                            $result['$set'][$mapping['fieldName']] = $new;
+                        } else {
+                            $result['$unset'][$mapping['fieldName']] = true;
+                        }
                     }
                 }
             } elseif (isset($mapping['embedded'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if (isset($changeset[$mapping['fieldName']])) {
-                    $doc = $changeset[$mapping['fieldName']];
-                    $changeset[$mapping['fieldName']] = $this->_prepareDocEmbeded($targetClass, $doc);
+                if ($mapping['type'] === 'many') {
+                    if (isset ($new)) {
+                        $docs = $new;
+                        $new = array();
+                        foreach ($docs as $doc) {
+                            $new[] = $this->_prepareDocEmbeded($targetClass, $doc);
+                            unset ($doc);
+                        }
+                        unset ($docs);
+                    }
+                    if (isset ($old)) {
+                        $docs = $old;
+                        $old = array();
+                        foreach ($docs as $doc) {
+                            if (is_object($doc)) {
+                                $doc = $this->_prepareDocEmbeded($targetClass, $doc);
+                            }
+                            $old[] = $doc;
+                            unset ($doc);
+                        }
+                        unset ($docs);
+                    }
+                } else {
+                    if (isset ($new)) {
+                        $new = $this->_prepareDocEmbeded($targetClass, $new);
+                    }
+                    if (isset ($old) && is_object($old)) {
+                        $old = $this->_prepareDocEmbeded($targetClass, $old);
+                    }
                 }
-            } elseif (isset($changeset[$mapping['fieldName']])) {
-                $changeset[$mapping['fieldName']] = Type::getType($mapping['type'])->convertToDatabaseValue($changeset[$mapping['fieldName']]);
+                 if ($new != $old) {
+                    if (isset ($new)) {
+                        $result['$set'][$mapping['fieldName']] = $new;
+                    } else {
+                        $result['$unset'][$mapping['fieldName']] = true;
+                    }
+                }
+           } else {
+                if (isset ($new)) {
+                    $new = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                }
+                if (isset ($old) && is_scalar($old)) {
+                    $old = Type::getType($mapping['type'])->convertToDatabaseValue($old);
+                }
+                if ($new != $old) {
+                    if (isset ($new)) {
+                        $result['$set'][$mapping['fieldName']] = $new;
+                    } else {
+                        $result['$unset'][$mapping['fieldName']] = true;
+                    }
+                }
             }
         }
-        return $changeset;
+        
+        return $result;
     }
 
     /**
@@ -203,42 +300,36 @@ class BasicDocumentPersister
     private function _prepareDocEmbeded($class, $doc)
     {
         $changeset = array();
-        if (is_array($doc) || $doc instanceof Collection) {
-            foreach ($doc as $val) {
-                $changeset[] = $this->_prepareDocEmbeded($class, $val);
+        foreach ($class->fieldMappings as $mapping) {
+            $rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
+            if ( ! isset($rawValue)) {
+                continue;
             }
-        } else {
-            foreach ($class->fieldMappings as $mapping) {
-                $rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
-                if ( ! isset($rawValue)) {
-                    continue;
-                }
-                if (isset($mapping['embedded']) || isset($mapping['reference'])) {
-                    $classMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                    if (isset($mapping['embedded'])) {
-                        if ($mapping['type'] == 'many') {
-                            $value = array();
-                            foreach ($rawValue as $doc) {
-                                $value[] = $this->_prepareDocEmbeded($classMetadata, $doc);
-                            }
-                        } elseif ($mapping['type'] == 'one') {
-                            $value = $this->_prepareDocEmbeded($classMetadata, $rawValue);
+            if (isset($mapping['embedded']) || isset($mapping['reference'])) {
+                $classMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
+                if (isset($mapping['embedded'])) {
+                    if ($mapping['type'] == 'many') {
+                        $value = array();
+                        foreach ($rawValue as $doc) {
+                            $value[] = $this->_prepareDocEmbeded($classMetadata, $doc);
                         }
-                    } elseif (isset($mapping['reference'])) {
-                        if ($mapping['type'] == 'many') {
-                             $value = array();
-                            foreach ($rawValue as $doc) {
-                                $value[] = $this->_prepareDocReference($classMetadata, $doc);
-                            }
-                        } else {
-                            $value = $this->_prepareDocReference($classMetadata, $rawValue);
-                        }
+                    } elseif ($mapping['type'] == 'one') {
+                        $value = $this->_prepareDocEmbeded($classMetadata, $rawValue);
                     }
-                } else {
-                    $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
+                } elseif (isset($mapping['reference'])) {
+                    if ($mapping['type'] == 'many') {
+                         $value = array();
+                        foreach ($rawValue as $doc) {
+                            $value[] = $this->_prepareDocReference($classMetadata, $doc);
+                        }
+                    } else {
+                        $value = $this->_prepareDocReference($classMetadata, $rawValue);
+                    }
                 }
-                $changeset[$mapping['fieldName']] = $value;
+            } else {
+                $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
             }
+            $changeset[$mapping['fieldName']] = $value;
         }
         return $changeset;
     }

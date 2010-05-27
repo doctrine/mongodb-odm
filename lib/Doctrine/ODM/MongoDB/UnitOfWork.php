@@ -140,20 +140,6 @@ class UnitOfWork
     private $_documentDeletions = array();
 
     /**
-     * All pending collection deletions.
-     *
-     * @var array
-     */
-    private $_collectionDeletions = array();
-
-    /**
-     * All pending collection updates.
-     *
-     * @var array
-     */
-    private $_collectionUpdates = array();
-
-    /**
      * List of collections visited during changeset calculation on a commit-phase of a UnitOfWork.
      * At the end of the UnitOfWork all these collections will make new snapshots
      * of their data.
@@ -198,8 +184,6 @@ class UnitOfWork
      */
     private $_hydrator;
 
-    protected $_collectionPersisters = array();
-
     protected $_documentPersisters = array();
 
     /**
@@ -214,18 +198,6 @@ class UnitOfWork
         $this->_hydrator = $dm->getHydrator();
     }
 
-    /**
-     * @todo write this function
-     */
-    public function getCollectionPersister(PersistentCollection $collection)
-    {
-        $documentName = $collection->getTypeClass()->name;
-        if ( ! isset ($this->_collectionPersisters[$documentName])) {
-            $this->_collectionPersisters[$documentName] = new Persisters\BasicCollectionPersister($this->_dm);
-        }
-        return $this->_collectionPersisters[$documentName];
-    }
-
     public function getDocumentPersister($documentName)
     {
         if ( ! isset ($this->_documentPersisters[$documentName])) {
@@ -233,6 +205,11 @@ class UnitOfWork
             $this->_documentPersisters[$documentName] = new Persisters\BasicDocumentPersister($this->_dm, $class);
         }
         return $this->_documentPersisters[$documentName];
+    }
+
+    public function setDocumentPersister($documentName, Persisters\BasicDocumentPersister $persister)
+    {
+        $this->_documentPersisters[$documentName] = $persister;
     }
 
     /**
@@ -257,8 +234,6 @@ class UnitOfWork
         if ( ! ($this->_documentInsertions ||
                 $this->_documentDeletions ||
                 $this->_documentUpdates ||
-                $this->_collectionUpdates ||
-                $this->_collectionDeletions ||
                 $this->_orphanRemovals)) {
             return; // Nothing to do.
         }
@@ -296,24 +271,11 @@ class UnitOfWork
             }
         }
 
-        // Collection deletions (deletions of complete collections)
-        foreach ($this->_collectionDeletions as $collectionToDelete) {
-            $this->getCollectionPersister($collectionToDelete)
-                    ->delete($collectionToDelete);
-        }
-        // Collection updates (deleteRows, updateRows, insertRows)
-        foreach ($this->_collectionUpdates as $collectionToUpdate) {
-            $this->getCollectionPersister($collectionToUpdate)
-                    ->update($collectionToUpdate);
-        }
-
         // Clear up
         $this->_documentInsertions =
         $this->_documentUpdates =
         $this->_documentDeletions =
         $this->_documentChangeSets =
-        $this->_collectionUpdates =
-        $this->_collectionDeletions =
         $this->_visitedCollections =
         $this->_scheduledForDirtyCheck =
         $this->_orphanRemovals = array();
@@ -424,11 +386,6 @@ class UnitOfWork
                             if ($actualValue === null) {
                                 $this->scheduleOrphanRemoval($orgValue);
                             }
-                        } else if ($orgValue instanceof PersistentCollection) {
-                            // A PersistentCollection was de-referenced, so delete it.
-                            if  ( ! in_array($orgValue, $this->_collectionDeletions, true)) {
-                                $this->_collectionDeletions[] = $orgValue;
-                            }
                         }
                     } else {
                         $documentIsDirty = true;
@@ -497,7 +454,6 @@ class UnitOfWork
     private function _computeAssociationChanges($mapping, $value)
     {
         if ($value instanceof PersistentCollection && $value->isDirty()) {
-            $this->_collectionUpdates[] = $value;
             $this->_visitedCollections[] = $value;
         }
 
@@ -1628,8 +1584,6 @@ class UnitOfWork
         $this->_documentInsertions =
         $this->_documentUpdates =
         $this->_documentDeletions =
-        $this->_collectionDeletions =
-        $this->_collectionUpdates =
         $this->_orphanRemovals = array();
         if ($this->_commitOrderCalculator !== null) {
             $this->_commitOrderCalculator->clear();
@@ -1648,19 +1602,6 @@ class UnitOfWork
     public function scheduleOrphanRemoval($document)
     {
         $this->_orphanRemovals[spl_object_hash($document)] = $document;
-    }
-
-    /**
-     * INTERNAL:
-     * Schedules a complete collection for removal when this UnitOfWork commits.
-     *
-     * @param PersistentCollection $coll
-     */
-    public function scheduleCollectionDeletion(PersistentCollection $coll)
-    {
-        //TODO: if $coll is already scheduled for recreation ... what to do?
-        // Just remove $coll from the scheduled recreations?
-        $this->_collectionDeletions[] = $coll;
     }
 
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
@@ -1862,18 +1803,7 @@ class UnitOfWork
 
         $this->_documentChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
 
-        if ($class->hasAssociation($propertyName)) {
-            $mapping = $class->fieldMappings[$propertyName];
-            if ($mapping['type'] === 'one') {
-                $this->_documentUpdates[$oid] = $document;
-            } else if ($oldValue instanceof PersistentCollection) {
-                // A PersistentCollection was de-referenced, so delete it.
-                if  ( ! in_array($oldValue, $this->_collectionDeletions, true)) {
-                    $this->_collectionDeletions[] = $oldValue;
-                }
-            }
-        }
-
+        $this->_documentUpdates[$oid] = $document;
     }
     
     /**
