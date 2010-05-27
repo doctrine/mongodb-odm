@@ -5,7 +5,8 @@
 + Inheritance Mapping
 + Working with Objects
 + Events
-+ Querying
++ Query API
++ Complex Queries
 + Storing Files with MongoGridFS
 + Map Reduce
 + Logging

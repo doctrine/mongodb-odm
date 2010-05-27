@@ -1,0 +1,24 @@
+Now that we've gone over the Doctrine MongoDB Query API thoroughly, this section
+will show you some more examples that combine some of the features together
+to make more complex queries.
+
+++ Find Queries
+
+Find articles with a date range:
+
+    [php]
+    $dm->createQuery('Article')
+        ->whereRange('createdAt',
+            new \MongoDate(strtotime('1985-09-01')),
+            new \MongoDate(strtotime('1985-09-04'))
+        );
+
+++ Update Queries
+
+Unset all fields from document that are null:
+
+    [php]
+    $dm->createQuery()
+        ->update('User')
+        ->whereType('field', 'null')
+        ->unsetField('field');

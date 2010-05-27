@@ -16,6 +16,7 @@
 * [@EmbedOne](#ann_embed_one)
 * [@EmbeddedDocument](#ann_embedded_document)
 * [@Field](#ann_field)
+* [@Increment](#increment_field)
 * [@File](#ann_file)
 * [@Float](#ann_float)
 * [@Hash](#ann_hash)
@@ -258,6 +259,45 @@ Examples:
      * @Column(type="float")
      */
     protected $height;
+
+<a name="ann_increment"></a>
++++ @Increment
+
+The increment type is just like a normal field except that when you update, it will
+use the `$inc` operator instead of `$set`:
+
+    [php]
+    class Package
+    {
+        // ...
+
+        /** @Increment */
+        protected $downloads = 0;
+
+        public function incrementDownloads()
+        {
+            $this->downloads++;
+        }
+
+        // ...
+    }
+
+Now update a Package instance like the following:
+
+    [php]
+    $package->incrementDownloads();
+    $dm->flush();
+
+The query sent to Mongo would be something like the following:
+
+    array(
+        '$inc' => array(
+            'downloads' => 1
+        )
+    )
+
+It will increment the value by the difference between the new value and the old
+value.
 
 <a name="ann_file"></a>
 +++ @File

@@ -93,6 +93,7 @@ Here is a quick overview of the built-in mapping types:
 * `key`
 * `string`
 * `timestamp`
+* `increment`
 
 You can read more about the available MongoDB types on
 [php.net](http://us.php.net/manual/en/mongo.types.php).
