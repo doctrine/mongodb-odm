@@ -45,9 +45,14 @@ class RemoveTest extends BaseTest
         
         $this->dm->persist($user);
         $this->dm->flush();
+		unset($user);
+		$this->dm->clear();
+
+		$user = $this->dm->findOne('Documents\User');
 
         $groups = $user->getGroups();
         unset($groups[0]);
+        $this->assertEquals(2, count($user->getGroups()));
 
         $this->dm->flush();
         $this->dm->clear();
