@@ -29,7 +29,7 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
     {
         $config = new Configuration();
 
-        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setProxyDir(__DIR__ . '/../../../../../Proxies');
         $config->setProxyNamespace('Proxies');
         $config->setDefaultDB('doctrine_odm_tests');
 

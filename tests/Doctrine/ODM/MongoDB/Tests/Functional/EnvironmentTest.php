@@ -27,7 +27,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
     {
         $config = new Configuration();
 
-        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setProxyDir(__DIR__ . '/../../../../../Proxies');
         $config->setProxyNamespace('Proxies');
         $config->setEnvironment('test');
         $config->setDefaultDB($this->defaultDB);
