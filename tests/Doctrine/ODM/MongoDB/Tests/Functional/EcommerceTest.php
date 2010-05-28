@@ -1,6 +1,8 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Cache\ApcCache,
@@ -17,7 +19,7 @@ use Doctrine\Common\ClassLoader,
     Documents\Ecommerce\Option;
 
 
-class EcommerceTest extends PHPUnit_Framework_TestCase
+class EcommerceTest extends \PHPUnit_Framework_TestCase
 {
     protected $dm;
 
@@ -25,7 +27,7 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
     {
         $config = new Configuration();
 
-        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setProxyDir(__DIR__ . '/../../../../../Proxies');
         $config->setProxyNamespace('Proxies');
 
         $reader = new AnnotationReader();
@@ -81,7 +83,7 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
         $this->assertNotNull($usdCurrency);
         $usdCurrency->setMultiplier('2');
 
-        $this->assertTrue($product->getOption('small')->getStockItem() instanceof Documents\Ecommerce\StockItem);
+        $this->assertTrue($product->getOption('small')->getStockItem() instanceof \Documents\Ecommerce\StockItem);
         $this->assertNotNull($product->getOption('small')->getStockItem()->getId());
         $this->assertEquals(12.99 * 2, $product->getOption('small')->getPrice());
     }
@@ -126,5 +128,4 @@ class EcommerceTest extends PHPUnit_Framework_TestCase
         $products->valid() ?: $products->next();
         return $products->current();
     }
-
 }

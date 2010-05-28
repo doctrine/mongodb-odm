@@ -1,12 +1,14 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Documents\Account, 
     Documents\User,
     Documents\SpecialUser;
 
-class DbNameTest extends BaseTest
+class DbNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testPrefixDbName()
     {

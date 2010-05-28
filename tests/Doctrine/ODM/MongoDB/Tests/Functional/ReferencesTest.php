@@ -1,6 +1,8 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Documents\Address,
     Documents\Profile,
@@ -10,7 +12,7 @@ use Documents\Address,
     Documents\User,
     Doctrine\ODM\MongoDB\PersistentCollection;
 
-class ReferencesTest extends BaseTest
+class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testLazyLoadReference()
     {

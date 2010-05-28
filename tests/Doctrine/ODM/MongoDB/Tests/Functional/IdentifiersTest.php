@@ -1,8 +1,10 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-class IdentifiersTest extends BaseTest
+require_once __DIR__ . '/../../../../../TestInit.php';
+
+class IdentifiersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testIdentifiersAreSet()
     {

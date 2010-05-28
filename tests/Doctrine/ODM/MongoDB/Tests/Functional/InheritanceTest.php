@@ -1,8 +1,10 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-class InheritanceTest extends BaseTest
+require_once __DIR__ . '/../../../../../TestInit.php';
+
+class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testIdentifiersAreSet()
     {
@@ -31,6 +33,6 @@ class InheritanceTest extends BaseTest
         
         $user = $query->getSingleResult();
         $this->assertEquals('Wage', $user->getProfile()->getLastName());
-        $this->assertTrue($user instanceof Documents\SpecialUser);
+        $this->assertTrue($user instanceof \Documents\SpecialUser);
     }
 }

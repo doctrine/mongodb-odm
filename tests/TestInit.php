@@ -2,7 +2,7 @@
 
 require_once 'PHPUnit/Framework.php';
 require_once __DIR__ . '/../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
-require_once 'BaseTest.php';
+require_once __DIR__ . '/Doctrine/ODM/MongoDB/Tests/BaseTest.php';
 
 use Doctrine\Common\ClassLoader;
 

@@ -1,6 +1,8 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Cache\ApcCache,
@@ -11,7 +13,7 @@ use Doctrine\Common\ClassLoader,
     Doctrine\ODM\MongoDB\Mongo,
     Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
-class EnvironmentTest extends PHPUnit_Framework_TestCase
+class EnvironmentTest extends \PHPUnit_Framework_TestCase
 {
     protected $dbNames = array
     (
@@ -45,24 +47,24 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
 
     public function testSetEnvironmentForDocumentUnspecifiedDb()
     {
-        $dbname = $this->dm->getDocumentDB('TestEmptyDatabase')->getName();
+        $dbname = $this->dm->getDocumentDB('Doctrine\ODM\MongoDB\Tests\Functional\TestEmptyDatabase')->getName();
         $this->assertEquals($this->dbNames['unspecified'], $dbname);
     }
 
     public function testSetEnvironment()
     {
-        $dbname  = $this->dm->getDocumentDB('TestDocument')->getName();
+        $dbname  = $this->dm->getDocumentDB('Doctrine\ODM\MongoDB\Tests\Functional\TestDocument')->getName();
 
         $this->assertEquals($this->dbNames['specified'], $dbname);
     }
 
     public function testPersist()
     {
-        $doc = new TestDocument();
+        $doc = new \Doctrine\ODM\MongoDB\Tests\Functional\TestDocument();
         $doc->setName('test');
         $this->dm->persist($doc);
 
-        $doc2 = new TestEmptyDatabase();
+        $doc2 = new \Doctrine\ODM\MongoDB\Tests\Functional\TestEmptyDatabase();
         $doc2->setName('document with unspecified database name');
         $this->dm->persist($doc2);
 
@@ -96,7 +98,7 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($testDoc['_id'] instanceof \MongoId);
 
-        $doc = $this->dm->find('TestDocument', (string)$testDoc['_id']);
+        $doc = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\TestDocument', (string)$testDoc['_id']);
 
         $this->assertEquals($doc->getId(), (string)$testDoc['_id']);
     }
@@ -111,7 +113,7 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($testDoc['_id'] instanceof \MongoId);
 
-        $doc = $this->dm->find('TestEmptyDatabase', (string)$testDoc['_id']);
+        $doc = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\TestEmptyDatabase', (string)$testDoc['_id']);
 
         $this->assertEquals($doc->getId(), (string)$testDoc['_id']);
     }
@@ -124,7 +126,7 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
         $doc = array('name' => 'test doc');
         $coll->insert($doc);
 
-        $docName = $this->dm->createQuery('TestDocument')
+        $docName = $this->dm->createQuery('Doctrine\ODM\MongoDB\Tests\Functional\TestDocument')
             ->where('name', 'test doc')
             ->getSingleResult();
 
@@ -134,8 +136,8 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $documents = array(
-            'TestDocument',
-            'TestEmptyDatabase',
+            'Doctrine\ODM\MongoDB\Tests\Functional\TestDocument',
+            'Doctrine\ODM\MongoDB\Tests\Functional\TestEmptyDatabase',
         );
         foreach ($documents as $document) {
             $this->dm->getDocumentCollection($document)->drop();

@@ -1,6 +1,8 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ODM\MongoDB\DocumentManager,
@@ -19,7 +21,7 @@ use Doctrine\Common\Annotations\AnnotationReader,
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
-class MapReduceTest extends PHPUnit_Framework_TestCase
+class MapReduceTest extends \PHPUnit_Framework_TestCase
 {
     protected $dm;
 

@@ -1,6 +1,8 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Cache\ApcCache,
@@ -18,7 +20,7 @@ use Doctrine\Common\ClassLoader,
     Documents\File,
     Documents\User;
 
-class PersistingTest extends BaseTest
+class PersistingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testCascadeInsertUpdateAndRemove()
     {

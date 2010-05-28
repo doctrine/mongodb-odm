@@ -1,6 +1,8 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Documents\Account,
     Documents\Address,
@@ -10,7 +12,7 @@ use Documents\Account,
     Documents\File,
     Documents\User;
 
-class RemoveTest extends BaseTest
+class RemoveTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testRemove()
     {

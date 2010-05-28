@@ -1,6 +1,8 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Cache\ApcCache,
@@ -16,7 +18,7 @@ use Doctrine\Common\ClassLoader,
     Documents\Ecommerce\Money,
     Documents\Ecommerce\Option;
 
-class DatabasesTest extends PHPUnit_Framework_TestCase
+class DatabasesTest extends \PHPUnit_Framework_TestCase
 {
     protected $dm;
 
@@ -37,7 +39,7 @@ class DatabasesTest extends PHPUnit_Framework_TestCase
 
     public function testDefaultDatabase()
     {
-        $this->assertEquals('testing', $this->dm->getDocumentDB('DefaultDatabaseTest')->getName());
+        $this->assertEquals('testing', $this->dm->getDocumentDB('Doctrine\ODM\MongoDB\Tests\Functional\DefaultDatabaseTest')->getName());
     }
 }
 

@@ -1,6 +1,8 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Documents\Article,
     Documents\Account,
@@ -11,7 +13,7 @@ use Documents\Article,
     Documents\File,
     Documents\User;
 
-class QueryTest extends BaseTest
+class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function setUp()
     {

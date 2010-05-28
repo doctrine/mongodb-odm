@@ -99,7 +99,7 @@
         </if>
 
         <nativephpunit
-            testfile="./tests/AllTests.php" junitlogfile="${build.dir}/logs/testsuites.xml"
+            testfile="./tests/Doctrine/ODM/MongoDB/Tests/AllTests.php" junitlogfile="${build.dir}/logs/testsuites.xml"
             testdirectory="./tests"  coverageclover="${test.phpunit_coverage_file}" configuration="${test.phpunit_configuration_file}"
         />
         <phpunitreport infile="${build.dir}/logs/testsuites.xml" format="frames" todir="${report.dir}/tests" />

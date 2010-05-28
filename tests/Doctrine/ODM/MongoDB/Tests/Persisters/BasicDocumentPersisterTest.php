@@ -16,7 +16,7 @@ use Doctrine\ODM\MongoDB\Persisters\BasicDocumentPersister,
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
-class BasicDocumentPersisterTest extends \BaseTest
+class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     protected $persister;
     protected $classMetadata;

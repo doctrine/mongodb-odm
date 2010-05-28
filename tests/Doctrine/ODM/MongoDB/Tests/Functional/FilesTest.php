@@ -1,11 +1,13 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Documents\File,
     Documents\Profile;
 
-class FilesTest extends BaseTest
+class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testFiles()
     {

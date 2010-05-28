@@ -1,5 +1,7 @@
 <?php
 
+namespace Doctrine\ODM\MongoDB\Tests;
+
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Cache\ApcCache,
     Doctrine\Common\Annotations\AnnotationReader,
@@ -16,13 +18,13 @@ use Doctrine\Common\ClassLoader,
     Documents\File,
     Documents\User;
 
-abstract class BaseTest extends PHPUnit_Framework_TestCase
+abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $config = new Configuration();
 
-        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setProxyDir(__DIR__ . '/../../../../Proxies');
         $config->setProxyNamespace('Proxies');
         $config->setDefaultDB('doctrine_odm_tests');
 

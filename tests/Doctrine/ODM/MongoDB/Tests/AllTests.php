@@ -1,6 +1,8 @@
 <?php
 
-require_once 'TestInit.php';
+namespace Doctrine\ODM\MongoDB\Tests;
+
+require_once __DIR__ . '/../../../../TestInit.php';
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'AllTests::main');
@@ -19,7 +21,7 @@ class AllTests
 
         $directory = new \RecursiveDirectoryIterator(__DIR__);
         $iterator = new \RecursiveIteratorIterator($directory);
-        $regex = new \RegexIterator($iterator, '/^.+\Test.php$/i', RecursiveRegexIterator::GET_MATCH);
+        $regex = new \RegexIterator($iterator, '/^.+\Test.php$/i', \RecursiveRegexIterator::GET_MATCH);
         foreach ($regex as $file) {
             $suite->addTestFile($file[0]);
         }
