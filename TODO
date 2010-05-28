@@ -1,0 +1,202 @@
+# TODO List
+
+List of features to implement.
+
+## Renaming a Field
+
+Rename a field when the object is loaded:
+
+    [php]
+    class User
+    {
+        // ...
+
+        /** @AlsoLoad("foo") */
+        private $bar;
+
+        /** @AlsoLod({"zoom", "pow"}) */
+        private $zip;
+
+        // ...
+    }
+
+## Transforming Data
+
+Transform some data when the object is loaded:
+
+    [php]
+    class User
+    {
+        // ...
+
+        /** @AlsoLoad("fullName") */
+        public function splitNameToFirstAndLastName($fullName)
+        {
+            $e = explode(' ', $fullName);
+            list($this->firstName, $this->lastName) = $e;
+        }
+
+        // ...
+    }
+
+## Transforming Data On Load
+
+Transform some data after the object is loaded:
+
+    [php]
+    class User
+    {
+        // ...
+
+        /** @NotSaved */
+        private $street;
+
+        /** @NotSaved */
+        private $city;
+
+        /** @EmbedOne(targetDocument="Address") */
+        private $address;
+
+        /** @PostLoad */
+        public function postLoad()
+        {
+            if ($this->street !== null || $this->city !== null) {
+                $this->address = new Address($this->street, $this->city);
+            }
+        }
+
+        // ...
+    }
+
+## Transforming Data On Save
+
+You can also transform the data before it is saved:
+
+    [php]
+    class User
+    {
+        // ...
+
+        /** @PrePersist */
+        public function prePersist()
+        {
+            if ($this->street !== null || $this->city !== null) {
+                $this->address = new Address($this->street, $this->city);
+            }
+        }
+    }
+
+## Indexing Embedded Documents
+
+* Putting @Indexed or @Unindexed on a class (document or embedded) will make all of its fields default to indexed or unindexed, respectively.
+* Putting @Indexed or @Unindexed on a field will make it indexed or unindexed, respectively.
+* @Indexed or @Unindexed status for nested classes and fields are generally inherited from containing fields and classes, except that:
+    * @Indexed or @Unindexed on a field overrides the default of the class containing the field.
+    * @Indexed or @Unindexed on a field of type @Embedded will override the default on the class inside the field (be it a single class or a collection).
+
+-
+
+    [php]
+    /** @Document */
+    class LevelTwo
+    {
+        /**
+         * @Field
+         * @Indexed
+         */
+        private $gamma;
+
+        /** @Field */
+        private $delta;
+
+        /**
+         * @EmbedOne(targetDocument="Profile")
+         */
+        private $profile;
+    }
+    
+    /**
+     * @EmbeddedDocument
+     * @Indexed
+     */
+    class LevelOne
+    {
+        /** @Field */
+        private $beta;
+        
+        /**
+         * @Field
+         * @Unindexed
+         * @EmbedOne(targetDocument="LevelTwo")
+         */
+        private $two;
+    }
+    
+    /**
+     * @Document
+     */
+    class DocumentWithComplicatedIndexing
+    {
+        /** @Id */
+        private $id;
+
+        /** @EmbedOne(targetDocument="LevelOne") */
+        private $one;
+
+        /** @Field */
+        private $alpha;
+    }
+
+## Simplify Embedding and References
+
+We don't need @EmbedOne, @EmbedMany, @ReferenceOne and @ReferenceMany. We can make
+it simple @Embedded and @Reference. We know it is one or many based on the default value:
+
+    [php]
+    class User
+    {
+        /** @Embedded(targetDocument="Group") */
+        private $groups = array();
+
+        /** @Reference(targetDocument="Profile") */
+        private $profile;
+    }
+
+We know whether it is many or one based on the default value. If you specify
+an array as the default value then it is many.
+
+## Make All Fields Persisted by Default
+
+So this example will now work. Also make some defaults for the database and collection
+name even if class is not annotated with @Document:
+
+    [php]
+    class User
+    {
+        public $username;
+        public $password;
+    }
+
+Add a @Transient option so you can specify a field to be transient and not persisted:
+
+    [php]
+    class User
+    {
+        public $username;
+        public $password;
+
+        /** @Transient */
+        public $doNotPersist;
+    }
+
+## Allow NULL Values to be Persisted
+
+By default a null value is never persisted or present in a document unless the
+field has the nullable option set to true:
+
+    [php]
+    class User
+    {
+        /** @Field(nullable=true) */
+        private $someField;
+    }
