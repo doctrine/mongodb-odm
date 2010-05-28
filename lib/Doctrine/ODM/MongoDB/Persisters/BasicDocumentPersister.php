@@ -338,8 +338,7 @@ class BasicDocumentPersister
      */
     private function _addFieldUpdateAtomicOperator(array $mapping, $new, $old, array &$result)
     {
-        // @todo This should probably be a strict === but right now it causes some fails
-        if ($new == $old) {
+        if ($this->_equals($old, $new)) {
             return;
         }
 
@@ -374,6 +373,42 @@ class BasicDocumentPersister
             if ( ! in_array($val, $old)) {
                 $result['$pushAll'][$mapping['fieldName']][] = $val;
             }
+        }
+    }
+
+    /**
+     * Performs value comparison
+     * @param mixed $old
+     * @param mixed $new
+     */
+    private function _equals($old, $new)
+    {
+        $old = is_scalar($old) ? $old : $this->_getScalar($old);
+        $new = is_scalar($new) ? $new : $this->_getScalar($new);
+        return $new === $old;
+    }
+
+    /**
+     * Converts value for comparison
+     * @param mixed $val
+     * @todo refactor it to use \Type, to get rid of hard-coded conversion
+     */
+    public function _getScalar($val)
+    {
+        if ($val instanceof \MongoDate) {
+            return $val->sec;
+        } else if ($val instanceof \DateTime) {
+            return $val->getTimestamp();
+        } else if ($val instanceof \MongoBinData) {
+            return $val->bin;
+        } else if (($val instanceof \MongoId) || ($val instanceof \MongoTimestamp)) {
+            return (string) $val;
+        } else if ($val instanceof \MongoMaxKey) {
+            return 1;
+        } else if ($val instanceof \MongoMinKey) {
+            return 0;
+        } else {
+            return $val;
         }
     }
 
