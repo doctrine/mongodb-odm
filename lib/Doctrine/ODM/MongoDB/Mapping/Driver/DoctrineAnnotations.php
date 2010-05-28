@@ -122,7 +122,10 @@ final class Increment extends Annotation
 {
     public $type = 'increment';
 }
-
+final class Collection extends Annotation
+{
+    public $type = 'collection';
+}
 final class EmbedOne extends Annotation
 {
     public $type = 'one';

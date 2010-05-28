@@ -135,7 +135,7 @@ class AnnotationDriver implements Driver
             $types = array(
                 'Id', 'Increment', 'File', 'Field', 'String', 'Boolean', 'Int', 'Float', 'Date',
                 'Key', 'Bin', 'BinFunc', 'BinUUID', 'BinMD5', 'BinCustom', 'EmbedOne',
-                'EmbedMany', 'ReferenceOne', 'ReferenceMany', 'Timestamp', 'Hash'
+                'EmbedMany', 'ReferenceOne', 'ReferenceMany', 'Timestamp', 'Hash', 'Collection'
             );
             foreach ($types as $type) {
                 if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\\' . $type)) {
