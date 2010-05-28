@@ -59,6 +59,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $this->assertTrue(array_key_exists('$set', $update));
+        $this->assertFalse(array_key_exists('$unset', $update));
         $this->assertTrue(array_key_exists('username', $update['$set']));
         $this->assertTrue(array_key_exists('password', $update['$set']));
         $this->assertTrue(array_key_exists('account', $update['$set']));
@@ -133,6 +134,8 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($user);
 
+        $this->assertTrue(array_key_exists('$set', $update));
+        $this->assertFalse(array_key_exists('$unset', $update));
         $this->assertTrue(array_key_exists('$pushAll', $update));
         $this->assertTrue(array_key_exists('groups', $update['$pushAll']));
         $this->assertEquals(3, count($update['$pushAll']['groups']));
@@ -187,6 +190,8 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($user);
 
+        $this->assertFalse(array_key_exists('$set', $update));
+        $this->assertFalse(array_key_exists('$unset', $update));
         $this->assertTrue(array_key_exists('$pullAll', $update));
         $this->assertTrue(array_key_exists('groups', $update['$pullAll']));
         $this->assertEquals(2, count($update['$pullAll']['groups']));
@@ -242,6 +247,8 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($user);
 
+        $this->assertFalse(array_key_exists('$set', $update));
+        $this->assertFalse(array_key_exists('$unset', $update));
         $this->assertTrue(array_key_exists('$pullAll', $update));
         $this->assertTrue(array_key_exists('groups', $update['$pullAll']));
         $this->assertEquals(2, count($update['$pullAll']['groups']));

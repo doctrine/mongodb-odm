@@ -57,6 +57,9 @@ class ProxyFactory
         if ( ! $proxyDir) {
             throw ProxyException::proxyDirectoryRequired();
         }
+        if ( ! is_dir($proxyDir)) {
+            throw ProxyException::proxyDirectoryMustExist();
+        }
         if ( ! $proxyNs) {
             throw ProxyException::proxyNamespaceRequired();
         }
