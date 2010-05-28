@@ -343,7 +343,11 @@ class BasicDocumentPersister
         }
 
         if ($mapping['type'] === 'increment') {
-            $result['$inc'][$mapping['fieldName']] = $new - $old;
+            if ($new >= $old) {
+                $result['$inc'][$mapping['fieldName']] = $new - $old;
+            } else {
+                $result['$inc'][$mapping['fieldName']] = ($old - $new) * -1;
+            }
         } else {
             if (isset($new)) {
                 $result['$set'][$mapping['fieldName']] = $new;

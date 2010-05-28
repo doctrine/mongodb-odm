@@ -20,6 +20,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     protected $persister;
     protected $classMetadata;
+
     public function setUp()
     {
         parent::setUp();
@@ -144,6 +145,18 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFalse(array_key_exists('$pullAll', $update));
         $this->assertTrue(array_key_exists('$inc', $update));
         $this->assertEquals(5, $update['$inc']['count']);
+
+        $user->setCount(20);
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $update = $this->persister->prepareUpdateData($user);
+        $this->assertTrue(array_key_exists('$inc', $update));
+        $this->assertEquals(15, $update['$inc']['count']);
+
+        $user->setCount(5);
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $update = $this->persister->prepareUpdateData($user);
+        $this->assertTrue(array_key_exists('$inc', $update));
+        $this->assertEquals(-15, $update['$inc']['count']);
 
         $this->dm->flush();
     }

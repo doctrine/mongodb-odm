@@ -26,5 +26,12 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user = $this->dm->findOne('Documents\User', array('username' => 'jon'));
         $this->assertEquals(105, $user->getCount());
+
+        $user->setCount(50);
+
+        $this->dm->flush();
+        $this->dm->clear();
+        $user = $this->dm->findOne('Documents\User', array('username' => 'jon'));
+        $this->assertEquals(50, $user->getCount());
     }
 }
