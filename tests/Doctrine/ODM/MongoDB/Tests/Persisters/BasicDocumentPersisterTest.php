@@ -258,6 +258,12 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(2, count($update['$pushAll']['groups']));
 
         $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user);
+
+        $user = $this->dm->findOne('Documents\User');
+        $this->assertEquals(3, count($user->getGroups()));
     }
 
     public function testCollectionField()
