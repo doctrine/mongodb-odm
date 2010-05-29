@@ -21,6 +21,9 @@ class Article
     /** @Date */
     private $createdAt;
 
+    /** @Collection */
+    private $tags = array();
+
     public function getId()
     {
         return $this->id;
@@ -54,5 +57,24 @@ class Article
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
+    }
+
+    public function addTag($tag)
+    {
+        $this->tags[] = $tag;
+    }
+
+    public function removeTag($tag)
+    {
+        if ( ! in_array($tag, $this->tags))
+        {
+            return;
+        }
+        unset ($this->tags[array_search($tag, $this->tags)]);
+    }
+
+    public function getTags()
+    {
+        return $this->tags;
     }
 }

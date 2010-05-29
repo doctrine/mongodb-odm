@@ -245,7 +245,10 @@ class BasicDocumentPersister
                     }
                     $this->_addFieldUpdateAtomicOperator($mapping, $new, $old, $result);
                 }
-           } else {
+//            @todo the below doesn't work, need to find out why
+//            } elseif ($mapping['type'] === 'collection') {
+//                $this->_addArrayUpdateAtomicOperator($mapping, (array) $new, (array) $old, $result);
+            } else {
                 if (isset($new)) {
                     $new = Type::getType($mapping['type'])->convertToDatabaseValue($new);
                 }
@@ -255,7 +258,7 @@ class BasicDocumentPersister
                 $this->_addFieldUpdateAtomicOperator($mapping, $new, $old, $result);
             }
         }
-
+        
         return $result;
     }
 

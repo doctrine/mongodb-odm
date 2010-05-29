@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Doctrine\ODM\MongoDB\Persisters\BasicDocumentPersister,
     Documents\Account,
+    Documents\Article,
     Documents\Address,
     Documents\Group,
     Documents\Phonenumber,
@@ -257,5 +258,68 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(2, count($update['$pushAll']['groups']));
 
         $this->dm->flush();
+    }
+
+    public function testCollectionField()
+    {
+        $classMetadata = $this->dm->getClassMetadata('Documents\Article');
+        $persister = new BasicDocumentPersister($this->dm, $classMetadata);
+        $this->dm->getUnitOfWork()->setDocumentPersister(
+            'Documents\Article', $persister
+        );
+
+        $article = new Article();
+        $article->setTitle('test');
+        $article->setBody('test');
+        $article->setCreatedAt('1985-09-04 00:00:00');
+
+        $article->addTag('tag 1');
+        $article->addTag('tag 2');
+        $article->addTag('tag 3');
+        $article->addTag('tag 4');
+
+        $this->dm->persist($article);
+
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $update = $persister->prepareUpdateData($article);
+
+//        $this->assertTrue(array_key_exists('$pushAll', $update));
+//        $this->assertTrue(array_key_exists('tags', $update['$pushAll']));
+//        $this->assertEquals(4, count($update['$pushAll']['tags']));
+//        $this->assertFalse(array_key_exists('$pullAll', $update));
+
+        $this->dm->flush();
+        $this->dm->clear();
+        unset ($article);
+
+        $article = $this->dm->findOne('Documents\Article');
+
+        $this->assertEquals(array(
+            'tag 1', 'tag 2', 'tag 3', 'tag 4',
+        ), $article->getTags());
+
+        $article->removeTag('tag 1');
+        $article->removeTag('tag 3');
+        $article->addTag('tag 5');
+
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $update = $persister->prepareUpdateData($article);
+
+//        $this->assertTrue(array_key_exists('$pushAll', $update));
+//        $this->assertTrue(array_key_exists('tags', $update['$pushAll']));
+//        $this->assertEquals(1, count($update['$pushAll']['tags']));
+//        $this->assertTrue(array_key_exists('$pullAll', $update));
+//        $this->assertTrue(array_key_exists('tags', $update['$pullAll']));
+//        $this->assertEquals(2, count($update['$pullAll']['tags']));
+
+        $this->dm->flush();
+        $this->dm->clear();
+        unset ($article);
+
+        $article = $this->dm->findOne('Documents\Article');
+
+        $this->assertEquals(array(
+            'tag 2', 'tag 4', 'tag 5'
+        ), $article->getTags());
     }
 }
