@@ -152,7 +152,32 @@ class BasicDocumentPersister
 
         $update = $this->prepareUpdateData($document);
         if ( ! empty($update)) {
-            $this->_collection->update(array('_id' => new \MongoId($id)), $update);
+            /**
+             * temporary fix for @link http://jira.mongodb.org/browse/SERVER-1050
+             * atomic modifiers $pushAll and $pullAll, $push, $pop and $pull
+             * are not allowed on the same field in one update
+             */
+            $id = new \MongoId($id);
+            if (isset ($update['$pushAll']) && isset ($update['$pullAll'])) {
+                $fields = array_intersect(
+                    array_keys($update['$pushAll']),
+                    array_keys($update['$pullAll'])
+                );
+                if ( ! empty ($fields)) {
+                    $tempUpdate = array();
+                    foreach ($fields as $field) {
+                        $tempUpdate[$field] = $update['$pullAll'][$field];
+                        unset ($update['$pullAll'][$field]);
+                    }
+                    if (empty ($update['$pullAll'])) {
+                        unset ($update['$pullAll']);
+                    }
+                    $this->_collection->update(array('_id' => $id), array(
+                        '$pullAll' => $tempUpdate
+                    ));
+                }
+            }
+            $this->_collection->update(array('_id' => $id), $update);
         }
     }
 
@@ -246,8 +271,8 @@ class BasicDocumentPersister
                     $this->_addFieldUpdateAtomicOperator($mapping, $new, $old, $result);
                 }
 //            @todo the below doesn't work, need to find out why
-//            } elseif ($mapping['type'] === 'collection') {
-//                $this->_addArrayUpdateAtomicOperator($mapping, (array) $new, (array) $old, $result);
+            } elseif ($mapping['type'] === 'collection') {
+                $this->_addArrayUpdateAtomicOperator($mapping, (array) $new, (array) $old, $result);
             } else {
                 if (isset($new)) {
                     $new = Type::getType($mapping['type'])->convertToDatabaseValue($new);

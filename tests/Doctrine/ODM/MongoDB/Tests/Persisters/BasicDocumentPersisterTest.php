@@ -283,10 +283,10 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $persister->prepareUpdateData($article);
 
-//        $this->assertTrue(array_key_exists('$pushAll', $update));
-//        $this->assertTrue(array_key_exists('tags', $update['$pushAll']));
-//        $this->assertEquals(4, count($update['$pushAll']['tags']));
-//        $this->assertFalse(array_key_exists('$pullAll', $update));
+        $this->assertTrue(array_key_exists('$pushAll', $update));
+        $this->assertTrue(array_key_exists('tags', $update['$pushAll']));
+        $this->assertEquals(4, count($update['$pushAll']['tags']));
+        $this->assertFalse(array_key_exists('$pullAll', $update));
 
         $this->dm->flush();
         $this->dm->clear();
@@ -305,12 +305,12 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $persister->prepareUpdateData($article);
 
-//        $this->assertTrue(array_key_exists('$pushAll', $update));
-//        $this->assertTrue(array_key_exists('tags', $update['$pushAll']));
-//        $this->assertEquals(1, count($update['$pushAll']['tags']));
-//        $this->assertTrue(array_key_exists('$pullAll', $update));
-//        $this->assertTrue(array_key_exists('tags', $update['$pullAll']));
-//        $this->assertEquals(2, count($update['$pullAll']['tags']));
+        $this->assertTrue(array_key_exists('$pushAll', $update));
+        $this->assertTrue(array_key_exists('tags', $update['$pushAll']));
+        $this->assertEquals(1, count($update['$pushAll']['tags']));
+        $this->assertTrue(array_key_exists('$pullAll', $update));
+        $this->assertTrue(array_key_exists('tags', $update['$pullAll']));
+        $this->assertEquals(2, count($update['$pullAll']['tags']));
 
         $this->dm->flush();
         $this->dm->clear();
