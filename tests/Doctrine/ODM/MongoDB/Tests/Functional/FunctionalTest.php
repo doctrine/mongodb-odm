@@ -70,7 +70,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $manager->setSalary(200000.00);
         $manager->addNote('Gave user 100k a year raise');
         $manager->incrementChanges(2);
-        //$manager->addProject($newProject);
+        $manager->addProject($newProject);
         
         $this->dm->persist($newProject);
         $this->dm->flush();
@@ -78,8 +78,11 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         
         $result = $this->dm->find('Documents\Manager', array('name' => 'Manager'))
             ->hydrate(false)
-            ->getResults();
+            ->getSingleResult();
 
-        print_r($result);
+        $this->assertEquals(200000.00, $result['salary']);
+        $this->assertEquals(2, count($result['projects']));
+        $this->assertEquals(1, count($result['notes']));
+        $this->assertEquals('Gave user 100k a year raise', $result['notes'][0]);
     }
 }

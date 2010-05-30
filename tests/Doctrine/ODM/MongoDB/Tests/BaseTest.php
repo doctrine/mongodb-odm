@@ -51,7 +51,10 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
             'Documents\Profile',
             'Documents\Group',
             'Documents\File',
-            'Documents\Article'
+            'Documents\Article',
+            'Documents\Project',
+            'Documents\Manager',
+            'Documents\Employee'
         );
         foreach ($documents as $document) {
             $this->dm->getDocumentCollection($document)->drop();
