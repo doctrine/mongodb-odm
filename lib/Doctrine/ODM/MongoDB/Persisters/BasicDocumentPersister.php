@@ -152,7 +152,32 @@ class BasicDocumentPersister
 
         $update = $this->prepareUpdateData($document);
         if ( ! empty($update)) {
-            $this->_collection->update(array('_id' => new \MongoId($id)), $update);
+            /**
+             * temporary fix for @link http://jira.mongodb.org/browse/SERVER-1050
+             * atomic modifiers $pushAll and $pullAll, $push, $pop and $pull
+             * are not allowed on the same field in one update
+             */
+            $id = new \MongoId($id);
+            if (isset($update['$pushAll']) && isset($update['$pullAll'])) {
+                $fields = array_intersect(
+                    array_keys($update['$pushAll']),
+                    array_keys($update['$pullAll'])
+                );
+                if ( ! empty ($fields)) {
+                    $tempUpdate = array();
+                    foreach ($fields as $field) {
+                        $tempUpdate[$field] = $update['$pullAll'][$field];
+                        unset ($update['$pullAll'][$field]);
+                    }
+                    if (empty ($update['$pullAll'])) {
+                        unset ($update['$pullAll']);
+                    }
+                    $this->_collection->update(array('_id' => $id), array(
+                        '$pullAll' => $tempUpdate
+                    ));
+                }
+            }
+            $this->_collection->update(array('_id' => $id), $update);
         }
     }
 
@@ -173,23 +198,7 @@ class BasicDocumentPersister
                 continue;
             }
             $changeset[$mapping['fieldName']] = array();
-            if (isset($mapping['reference'])) {
-                $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if ($mapping['type'] === 'many') {
-                    $result[$mapping['fieldName']] = $this->_prepareDocReferenceArray($new, $targetClass);
-                } else {
-                    $result[$mapping['fieldName']] = $this->_prepareDocReference($targetClass, $new);
-                }
-            } elseif (isset($mapping['embedded'])) {
-                $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if ($mapping['type'] === 'many') {
-                    $result[$mapping['fieldName']] = $this->_prepareDocEmbeddedArray($new, $targetClass);
-                } else {
-                    $result[$mapping['fieldName']] = $this->_prepareDocEmbeded($targetClass, $new);
-                }
-            } else {
-                $result[$mapping['fieldName']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
-            }
+            $result[$mapping['fieldName']] = $this->_prepareValue($mapping, $new);
         }
 
         return $result;
@@ -203,60 +212,50 @@ class BasicDocumentPersister
         foreach ($this->_class->fieldMappings as $mapping) {
             $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
-            $changeset[$mapping['fieldName']] = array();
-            if (isset($mapping['reference'])) {
-                $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if ($mapping['type'] === 'many') {
-                    if ( ! isset($old)) {
-                        $result['$pushAll'][$mapping['fieldName']] = array();
-                    }
-                    $new = $this->_prepareDocReferenceArray($new, $targetClass);
-                    $old = $this->_prepareDocReferenceArray($old, $targetClass);
-                    $this->_addArrayUpdateAtomicOperator($mapping, $new, $old, $result);
-                } else {
-                    if (isset($new)) {
-                        $doc = $new;
-                        $ref = $this->_prepareDocReference($targetClass, $doc);
-                        unset($doc);
-                        if (isset($ref)) {
-                            $new = $ref;
-                        }
-                    }
-                    if (isset($old) && is_object($old)) {
-                        $old = $this->_prepareDocReference($targetClass, $old);
-                    }
-                    $this->_addFieldUpdateAtomicOperator($mapping, $new, $old, $result);
+            $new = $this->_prepareValue($mapping, $new);
+            $old = $this->_prepareValue($mapping, $old);
+            if (($mapping['type'] === 'many') || $mapping['type'] === 'collection') {
+                if ( ! isset($old)) {
+                    $result['$pushAll'][$mapping['fieldName']] = array();
                 }
-            } elseif (isset($mapping['embedded'])) {
-                $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                if ($mapping['type'] === 'many') {
-                    if ( ! isset($old)) {
-                        $result['$pushAll'][$mapping['fieldName']] = array();
-                    }
-                    $new = $this->_prepareDocEmbeddedArray($new, $targetClass);
-                    $old = $this->_prepareDocEmbeddedArray($old, $targetClass);
-                    $this->_addArrayUpdateAtomicOperator($mapping, $new, $old, $result);
-                } else {
-                    if (isset($new)) {
-                        $new = $this->_prepareDocEmbeded($targetClass, $new);
-                    }
-                    if (isset($old) && is_object($old)) {
-                        $old = $this->_prepareDocEmbeded($targetClass, $old);
-                    }
-                    $this->_addFieldUpdateAtomicOperator($mapping, $new, $old, $result);
-                }
-           } else {
-                if (isset($new)) {
-                    $new = Type::getType($mapping['type'])->convertToDatabaseValue($new);
-                }
-                if (isset($old) && ! (is_object($new) && $old instanceof $new)) {
-                    $old = Type::getType($mapping['type'])->convertToDatabaseValue($old);
-                }
+                $this->_addArrayUpdateAtomicOperator($mapping, (array) $new, (array) $old, $result);
+            } else {
                 $this->_addFieldUpdateAtomicOperator($mapping, $new, $old, $result);
             }
         }
-
+        
         return $result;
+    }
+
+    /**
+     *
+     * @param array $mapping
+     * @param mixed $value
+     */
+    private function _prepareValue(array $mapping, $value) {
+        if ( ! isset($value)) {
+            return null;
+        }
+        if ($mapping['type'] === 'many') {
+            $values = $value;
+            $value = array();
+            foreach ($values as $rawValue) {
+                $value[] = $this->_prepareValue(array_merge($mapping, array(
+                    'type' => 'one'
+                )), $rawValue);
+            }
+            unset ($values, $rawValue);
+        } elseif ((isset($mapping['reference'])) || isset($mapping['embedded'])) {
+            $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
+            if (isset($mapping['embedded'])) {
+                $value = $this->_prepareDocEmbeded($targetClass, $value);
+            } else if (isset($mapping['reference'])) {
+                $value = $this->_prepareDocReference($targetClass, $value);
+            }
+        } else {
+            $value = Type::getType($mapping['type'])->convertToDatabaseValue($this->_getScalar($value));
+        }
+        return $value;
     }
 
     /**
@@ -395,73 +394,23 @@ class BasicDocumentPersister
     /**
      * Converts value for comparison
      * @param mixed $val
-     * @todo refactor it to use \Type, to get rid of hard-coded conversion
+     * @todo this conversion might not even be necessary, needs re-thinking
      */
-    public function _getScalar($val)
+    private function _getScalar($val)
     {
         if ($val instanceof \MongoDate) {
             return $val->sec;
         } else if ($val instanceof \DateTime) {
             return $val->getTimestamp();
         } else if ($val instanceof \MongoBinData) {
-            return $val->bin;
+            return Type::getType('bin')->convertToPHPValue($val);
         } else if (($val instanceof \MongoId) || ($val instanceof \MongoTimestamp)) {
             return (string) $val;
-        } else if ($val instanceof \MongoMaxKey) {
-            return 1;
-        } else if ($val instanceof \MongoMinKey) {
-            return 0;
+        } else if (($val instanceof \MongoMaxKey) || ($val instanceof \MongoMinKey)) {
+            return Type::getType('key')->convertToPHPValue($val);
         } else {
             return $val;
         }
-    }
-
-    /**
-     * Prepare array of document references for persistence.
-     *
-     * @param PersistentCollection $val
-     * @param ClassMetadata $targetClass
-     */
-    private function _prepareDocReferenceArray($val, ClassMetadata $targetClass)
-    {
-        if (isset($val)) {
-            $coll = $val;
-            $val = array();
-            foreach ($coll as $doc) {
-                if (is_object($doc)) {
-                    $doc = $this->_prepareDocReference($targetClass, $doc);
-                }
-                $val[] = $doc;
-            }
-            unset($coll);
-        } else {
-            $val = array();
-        }
-        return $val;
-    }
-
-    /**
-     * Prepare array of embedded documents for persistence.
-     *
-     * @param PersistentCollection $val 
-     * @param ClassMetadata $targetClass
-     */
-    private function _prepareDocEmbeddedArray($val, ClassMetadata $targetClass)
-    {
-        if (isset($val)) {
-            $coll = $val;
-            $val = array();
-            foreach ($coll as $doc) {
-                if (is_object($doc)) {
-                    $doc = $this->_prepareDocEmbeded($targetClass, $doc);
-                }
-                $val[] = $doc;
-            }
-            unset($coll);
-        } else {
-            $val = array();
-        }
-        return $val;
     }
 
     /**
@@ -471,8 +420,11 @@ class BasicDocumentPersister
      * @param Document $doc
      * @return array|null
      */
-    private function _prepareDocReference(ClassMetadata$class, $doc)
+    private function _prepareDocReference(ClassMetadata $class, $doc)
     {
+        if ( ! is_object($doc)) {
+            return $doc;
+        }
         $id = $this->_uow->getDocumentIdentifier($doc);
         $ref = array(
             '$ref' => $class->getCollection(),
@@ -491,6 +443,9 @@ class BasicDocumentPersister
      */
     private function _prepareDocEmbeded(ClassMetadata $class, $doc)
     {
+        if ( ! is_object($doc)) {
+            return $doc;
+        }
         $changeset = array();
         foreach ($class->fieldMappings as $mapping) {
             $rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
