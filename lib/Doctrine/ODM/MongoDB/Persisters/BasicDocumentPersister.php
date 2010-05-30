@@ -142,6 +142,7 @@ class BasicDocumentPersister
                 $this->_dm->getHydrator()->hydrate($this->_class, $document, $data);
             }
         }
+        $this->_queuedInserts = array();
 
         return $postInsertIds;
     }

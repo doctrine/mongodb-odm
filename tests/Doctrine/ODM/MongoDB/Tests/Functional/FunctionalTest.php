@@ -67,24 +67,22 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $newProject = new Project('Another Project');
-        $this->dm->persist($newProject);
-        $this->dm->flush();
 
         $manager->setSalary(200000.00);
         $manager->addNote('Gave user 100k a year raise');
         $manager->incrementChanges(2);
         $manager->addProject($newProject);
 
-        $uow = $this->dm->getUnitOfWork();
-        $persister = $uow->getDocumentPersister('Documents\Manager');
-
+        $this->dm->persist($newProject);
         $this->dm->flush();
         $this->dm->clear();
-        
-        $result = $this->dm->find('Documents\Manager', array('name' => 'Manager'))
-            ->hydrate(false)
-            ->getSingleResult();
 
+        $results = $this->dm->find('Documents\Manager', array('name' => 'Manager'))
+            ->hydrate(false)
+            ->getResults();
+        $result = current($results);
+
+        $this->assertEquals(1, count($results));
         $this->assertEquals(200000.00, $result['salary']);
         $this->assertEquals(2, count($result['projects']));
         $this->assertEquals(1, count($result['notes']));
