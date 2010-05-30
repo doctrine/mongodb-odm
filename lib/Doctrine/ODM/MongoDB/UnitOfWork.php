@@ -283,6 +283,11 @@ class UnitOfWork
             }
         }
 
+        // Take new snapshots from visited collections
+        foreach ($this->_visitedCollections as $coll) {
+            $coll->takeSnapshot();
+        }
+
         // Clear up
         $this->_documentInsertions =
         $this->_documentUpdates =
@@ -384,8 +389,17 @@ class UnitOfWork
 
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-                if (is_object($orgValue) && $orgValue !== $actualValue) {
-                    $changeSet[$propName] = array($orgValue, $actualValue);
+
+                if (is_object($orgValue)) {
+                    if ($orgValue instanceof PersistentCollection) {
+                        $orgValue = $orgValue->getSnapshot();
+                    }
+                    if ($actualValue instanceof PersistentCollection) {
+                        $actualValue = $actualValue->toArray();
+                    }
+                    if ($orgValue !== $actualValue) {
+                        $changeSet[$propName] = array($orgValue, $actualValue);
+                    }
                 } elseif ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 }

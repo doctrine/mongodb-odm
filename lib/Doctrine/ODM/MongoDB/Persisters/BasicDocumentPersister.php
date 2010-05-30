@@ -215,9 +215,6 @@ class BasicDocumentPersister
             $new = $this->_prepareValue($mapping, $new);
             $old = $this->_prepareValue($mapping, $old);
             if (($mapping['type'] === 'many') || $mapping['type'] === 'collection') {
-                if ( ! isset($old)) {
-                    $result['$pushAll'][$mapping['fieldName']] = array();
-                }
                 $this->_addArrayUpdateAtomicOperator($mapping, (array) $new, (array) $old, $result);
             } else {
                 $this->_addFieldUpdateAtomicOperator($mapping, $new, $old, $result);

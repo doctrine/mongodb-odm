@@ -34,6 +34,13 @@ use Doctrine\Common\Collections\Collection,
  */
 final class PersistentCollection implements Collection
 {
+    /**
+     * A snapshot of the collection at the moment it was fetched from the database.
+     * This is used to create a diff of the collection at commit time.
+     *
+     * @var array
+     */
+    private $_snapshot = array();
 
     protected $_owner;
 
@@ -152,6 +159,51 @@ final class PersistentCollection implements Collection
     {
         $this->_owner = $document;
         $this->_mapping = $mapping;
+    }
+
+    /**
+     * INTERNAL:
+     * Tells this collection to take a snapshot of its current state.
+     */
+    public function takeSnapshot()
+    {
+        $this->_snapshot = $this->_coll->toArray();
+        $this->_isDirty = false;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns the last snapshot of the elements in the collection.
+     *
+     * @return array The last snapshot of the elements.
+     */
+    public function getSnapshot()
+    {
+        return $this->_snapshot;
+    }
+
+    /**
+     * INTERNAL:
+     * getDeleteDiff
+     *
+     * @return array
+     */
+    public function getDeleteDiff()
+    {
+        return array_udiff_assoc($this->_snapshot, $this->_coll->toArray(),
+                function($a, $b) {return $a === $b ? 0 : 1;});
+    }
+
+    /**
+     * INTERNAL:
+     * getInsertDiff
+     *
+     * @return array
+     */
+    public function getInsertDiff()
+    {
+        return array_udiff_assoc($this->_coll->toArray(), $this->_snapshot,
+                function($a, $b) {return $a === $b ? 0 : 1;});
     }
 
     /**

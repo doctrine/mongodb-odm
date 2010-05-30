@@ -67,12 +67,17 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $newProject = new Project('Another Project');
+        $this->dm->persist($newProject);
+        $this->dm->flush();
+
         $manager->setSalary(200000.00);
         $manager->addNote('Gave user 100k a year raise');
         $manager->incrementChanges(2);
         $manager->addProject($newProject);
-        
-        $this->dm->persist($newProject);
+
+        $uow = $this->dm->getUnitOfWork();
+        $persister = $uow->getDocumentPersister('Documents\Manager');
+
         $this->dm->flush();
         $this->dm->clear();
         
