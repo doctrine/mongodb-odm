@@ -182,6 +182,12 @@ class ClassMetadataFactory
                 $class->setCollection($parent->getCollection());
             }
 
+            if ( ! $class->identifier) {
+                $class->mapField(array(
+                    'id' => true,
+                    'fieldName' => 'id'
+                ));
+            }
             $db = $class->getDB() ?: $this->_dm->getConfiguration()->getDefaultDB();
             $class->setDB($this->_dm->formatDBName($db));
 

@@ -132,7 +132,6 @@ class AnnotationDriver implements Driver
         foreach ($reflClass->getProperties() as $property) {
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
-            
             $types = array(
                 'Id', 'Increment', 'File', 'Field', 'String', 'Boolean', 'Int', 'Float', 'Date',
                 'Key', 'Bin', 'BinFunc', 'BinUUID', 'BinMD5', 'BinCustom', 'EmbedOne',
@@ -144,6 +143,10 @@ class AnnotationDriver implements Driver
                     $class->mapField($mapping);
                     break;
                 }
+            }
+            // Remove transient fields
+            if ($transientAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Transient')) {
+                unset($class->fieldMappings[$property->getName()]);
             }
         }
 

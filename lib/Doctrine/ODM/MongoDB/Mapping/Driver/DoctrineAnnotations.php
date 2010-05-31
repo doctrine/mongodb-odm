@@ -153,6 +153,7 @@ final class ReferenceMany extends Annotation
     public $cascade;
     public $strategy = 'set';
 }
+final class Transient extends Annotation {}
 
 /* Annotations for lifecycle callbacks */
 final class HasLifecycleCallbacks extends Annotation {}

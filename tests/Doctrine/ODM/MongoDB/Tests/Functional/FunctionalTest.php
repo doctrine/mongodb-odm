@@ -88,4 +88,40 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, count($result['notes']));
         $this->assertEquals('Gave user 100k a year raise', $result['notes'][0]);
     }
+
+    public function testNotAnnotatedDocumentAndTransientFields()
+    {
+        $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\NotAnnotatedDocument')->drop();
+
+        $test = new NotAnnotatedDocument();
+        $test->field = 'test';
+        $test->transientField = 'w00t';
+        $this->dm->persist($test);
+        $this->dm->flush($test);
+        $this->dm->clear();
+
+        $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NotAnnotatedDocument')
+            ->getSingleResult();
+        $this->assertNotNull($test);
+
+        $test->field = 'ok';
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NotAnnotatedDocument')
+            ->hydrate(false)
+            ->getResults();
+        $document = current($test);
+        $this->assertEquals(1, count($test));
+        $this->assertEquals('ok', $document['field']);
+        $this->assertFalse(isset($document['transientField']));
+    }
+}
+
+class NotAnnotatedDocument
+{
+    public $field;
+
+    /** @Transient */
+    public $transientField;
 }

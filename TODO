@@ -165,30 +165,6 @@ it simple @Embedded and @Reference. We know it is one or many based on the defau
 We know whether it is many or one based on the default value. If you specify
 an array as the default value then it is many.
 
-## Make All Fields Persisted by Default
-
-So this example will now work. Also make some defaults for the database and collection
-name even if class is not annotated with @Document:
-
-    [php]
-    class User
-    {
-        public $username;
-        public $password;
-    }
-
-Add a @Transient option so you can specify a field to be transient and not persisted:
-
-    [php]
-    class User
-    {
-        public $username;
-        public $password;
-
-        /** @Transient */
-        public $doNotPersist;
-    }
-
 ## Allow NULL Values to be Persisted
 
 By default a null value is never persisted or present in a document unless the

@@ -243,6 +243,14 @@ class ClassMetadata
             $collection = strtolower($documentName);
         }
         $this->setCollection($collection);
+
+        foreach ($this->reflClass->getProperties() as $property) {
+            $fieldName = $property->getName();
+            $mapping = array(
+                'fieldName' => $fieldName
+            );
+            $this->mapField($mapping);
+        }
     }
 
     /**
@@ -554,8 +562,15 @@ class ClassMetadata
             $mapping['fieldName'] = $mapping['name'];
         }
         $mapping['name'] = $mapping['fieldName'];
-        if (isset($this->fieldMappings[$mapping['fieldName']])) {
-            $mapping = array_merge($mapping, $this->fieldMappings[$mapping['fieldName']]);
+
+        // unset transient fields
+        if (isset($mapping['transient']) && $mapping['transient']) {
+            unset($this->fieldMappings[$mapping['fieldName']]);
+            return;
+        }
+
+        if ($mapping['fieldName'] === 'id') {
+            $mapping['id'] = true;
         }
 
         if ( ! isset($mapping['type'])) {
@@ -566,9 +581,11 @@ class ClassMetadata
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
         }
 
-        $reflProp = $this->reflClass->getProperty($mapping['fieldName']);
-        $reflProp->setAccessible(true);
-        $this->reflFields[$mapping['fieldName']] = $reflProp;
+        if ($this->reflClass->hasProperty($mapping['fieldName'])) {
+            $reflProp = $this->reflClass->getProperty($mapping['fieldName']);
+            $reflProp->setAccessible(true);
+            $this->reflFields[$mapping['fieldName']] = $reflProp;
+        }
 
         if (isset($mapping['cascade']) && in_array('all', (array) $mapping['cascade'])) {
             unset($mapping['all']);
@@ -701,7 +718,12 @@ class ClassMetadata
      */
     public function setIdentifierValue($document, $id)
     {
-        $this->reflFields[$this->identifier]->setValue($document, $id);
+        if (isset($this->reflFields[$this->identifier])) {
+            $this->reflFields[$this->identifier]->setValue($document, $id);
+        } else {
+            $identifier = $this->identifier;
+            $document->$identifier = $id;
+        }
     }
 
     /**
@@ -712,7 +734,12 @@ class ClassMetadata
      */
     public function getIdentifierValue($document)
     {
-        return (string) $this->reflFields[$this->identifier]->getValue($document);
+        if (isset($this->reflFields[$this->identifier])) {
+            return (string) $this->reflFields[$this->identifier]->getValue($document);
+        } else {
+            $identifier = $this->identifier;
+            return isset($document->$identifier) ? (string) $document->identifier : null;
+        }
     }
 
     /**
@@ -737,7 +764,11 @@ class ClassMetadata
      */
     public function setFieldValue($document, $field, $value)
     {
-        $this->reflFields[$field]->setValue($document, $value);
+        if (isset($this->reflFields[$field])) {
+            $this->reflFields[$field]->setValue($document, $value);
+        } else {
+            $document->$field = $value;
+        }
     }
 
     /**
@@ -748,7 +779,11 @@ class ClassMetadata
      */
     public function getFieldValue($document, $field)
     {
-        return $this->reflFields[$field]->getValue($document);
+        if (isset($this->reflFields[$field])) {
+            return $this->reflFields[$field]->getValue($document);
+        } else {
+            return isset($document->$field) ? $document->$field : null;
+        }
     }
 
     /**

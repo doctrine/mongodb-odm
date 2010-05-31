@@ -611,7 +611,7 @@ class UnitOfWork
         if ($postInsertIds) {
             foreach ($postInsertIds as $id => $document) {
                 $oid = spl_object_hash($document);
-                $class->reflFields[$class->identifier]->setValue($document, $id);
+                $class->setIdentifierValue($document, $id);
                 $this->_documentIdentifiers[$oid] = $id;
                 $this->_documentStates[$oid] = self::STATE_MANAGED;
                 $this->_originalDocumentData[$oid][$class->identifier] = $id;

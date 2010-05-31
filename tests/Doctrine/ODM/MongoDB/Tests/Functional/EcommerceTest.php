@@ -114,7 +114,7 @@ class EcommerceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, count($product->getOptions()));
     }
 
-    public function testDoesNotSaveUnannotatedFields()
+    public function testDoesNotSaveTransientFields()
     {
         $product = $this->getProduct();
 

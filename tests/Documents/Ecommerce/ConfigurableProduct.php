@@ -24,6 +24,7 @@ class ConfigurableProduct
 
     /**
      * @var Documents\Option
+     * @Transient
      */
     protected $selectedOption;
 
