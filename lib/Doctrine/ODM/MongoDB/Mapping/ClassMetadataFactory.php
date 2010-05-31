@@ -35,6 +35,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  * @since       1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 class ClassMetadataFactory
 {

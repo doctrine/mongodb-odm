@@ -34,6 +34,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  * @since       1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 abstract class AbstractFileDriver implements Driver
 {

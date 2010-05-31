@@ -37,8 +37,8 @@ namespace Doctrine\ODM\MongoDB\Mapping;
  * @link        www.doctrine-project.com
  * @since       1.0
  * @version     $Revision$
- * @author      Roman Borschel <roman@code-factory.org> 
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 class ClassMetadata
 {

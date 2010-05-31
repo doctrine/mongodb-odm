@@ -32,6 +32,8 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  * @version     $Revision$
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
 class ProxyException extends MongoDBException
 {

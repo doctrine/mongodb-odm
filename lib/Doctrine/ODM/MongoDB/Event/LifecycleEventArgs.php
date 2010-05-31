@@ -30,13 +30,14 @@ use Doctrine\Common\EventArgs;
  * @since       1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 class LifecycleEventArgs extends EventArgs
 {
     /**
      * @var DocumentManager
      */
-    private $_em;
+    private $_dm;
 
     /**
      * @var object
@@ -46,7 +47,7 @@ class LifecycleEventArgs extends EventArgs
     public function __construct($document, $em)
     {
         $this->_document = $document;
-        $this->_em = $em;
+        $this->_dm = $em;
     }
     
     public function getDocument()
@@ -59,6 +60,6 @@ class LifecycleEventArgs extends EventArgs
      */
     public function getDocumentManager()
     {
-        return $this->_em;
+        return $this->_dm;
     }
 }

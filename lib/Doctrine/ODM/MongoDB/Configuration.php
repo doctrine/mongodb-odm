@@ -31,14 +31,14 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\Driver,
  *     <?php
  *
  *     $config = new Configuration();
- *     $em = DocumentManager::create(new Mongo(), $config);
- *
+ *     $dm = DocumentManager::create(new Mongo(), $config);
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 class Configuration
 {

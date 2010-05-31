@@ -31,6 +31,8 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  * @since       1.0
  * @version     $Revision: 4930 $
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
 class ProxyFactory
 {

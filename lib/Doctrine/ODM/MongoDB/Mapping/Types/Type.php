@@ -29,6 +29,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  * @since       1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 abstract class Type
 {
@@ -51,8 +52,8 @@ abstract class Type
         'custom' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataCustomType',
         'file' => 'Doctrine\ODM\MongoDB\Mapping\Types\FileType',
         'hash' => 'Doctrine\ODM\MongoDB\Mapping\Types\HashType',
-        'increment' => 'Doctrine\ODM\MongoDB\Mapping\Types\IncrementType',
         'collection' => 'Doctrine\ODM\MongoDB\Mapping\Types\CollectionType',
+        'increment' => 'Doctrine\ODM\MongoDB\Mapping\Types\IncrementType'
     );
 
     abstract public function convertToDatabaseValue($value);

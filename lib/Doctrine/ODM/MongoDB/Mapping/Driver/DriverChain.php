@@ -30,6 +30,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * @since       1.0
  * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
 class DriverChain implements Driver

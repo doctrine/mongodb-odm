@@ -26,8 +26,11 @@ namespace Doctrine\ODM\MongoDB;
  *
  * This class cannot be instantiated.
  *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.com
+ * @since       1.0
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 final class Events
 {

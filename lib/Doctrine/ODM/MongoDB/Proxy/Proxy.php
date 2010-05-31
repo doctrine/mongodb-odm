@@ -26,5 +26,7 @@ namespace Doctrine\ODM\MongoDB\Proxy;
  * @since       2.0
  * @version     $Revision: 4930 $
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
 interface Proxy {}

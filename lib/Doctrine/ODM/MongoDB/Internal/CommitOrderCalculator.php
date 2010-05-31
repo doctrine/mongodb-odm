@@ -27,8 +27,8 @@ namespace Doctrine\ODM\MongoDB\Internal;
  * @link        www.doctrine-project.com
  * @since       1.0
  * @version     $Revision$
- * @author      Roman Borschel <roman@code-factory.org> 
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 class CommitOrderCalculator
 {

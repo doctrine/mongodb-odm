@@ -31,6 +31,7 @@ use Doctrine\Common\Collections\Collection,
  * @since       1.0
  * @version     $Revision: 4930 $
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
 final class PersistentCollection implements Collection
 {
@@ -446,7 +447,7 @@ final class PersistentCollection implements Collection
         $result = $this->_coll->clear();
         if ($this->_mapping->isOwningSide) {
             $this->_changed();
-            $this->_em->getUnitOfWork()->scheduleCollectionDeletion($this);
+            $this->_dm->getUnitOfWork()->scheduleCollectionDeletion($this);
         }
         
         return $result;
