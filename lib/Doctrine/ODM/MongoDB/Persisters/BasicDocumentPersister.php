@@ -196,7 +196,7 @@ class BasicDocumentPersister
         $result = array();
         foreach ($this->_class->fieldMappings as $mapping) {
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
-            if ($new === null) {
+            if ($new === null && $mapping['nullable'] === false) {
                 continue;
             }
             $changeset[$mapping['fieldName']] = array();
@@ -222,7 +222,6 @@ class BasicDocumentPersister
                 $this->_addFieldUpdateAtomicOperator($mapping, $new, $old, $result);
             }
         }
-        
         return $result;
     }
 
@@ -347,7 +346,7 @@ class BasicDocumentPersister
                 $result['$inc'][$mapping['fieldName']] = ($old - $new) * -1;
             }
         } else {
-            if (isset($new)) {
+            if (isset($new) || $mapping['nullable'] === true) {
                 $result['$set'][$mapping['fieldName']] = $new;
             } else {
                 $result['$unset'][$mapping['fieldName']] = true;

@@ -164,15 +164,3 @@ it simple @Embedded and @Reference. We know it is one or many based on the defau
 
 We know whether it is many or one based on the default value. If you specify
 an array as the default value then it is many.
-
-## Allow NULL Values to be Persisted
-
-By default a null value is never persisted or present in a document unless the
-field has the nullable option set to true:
-
-    [php]
-    class User
-    {
-        /** @Field(nullable=true) */
-        private $someField;
-    }

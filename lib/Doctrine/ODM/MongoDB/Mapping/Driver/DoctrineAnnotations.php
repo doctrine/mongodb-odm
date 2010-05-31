@@ -57,95 +57,96 @@ final class Id extends Annotation
 {
     public $id = true;
 }
-final class Field extends Annotation
+class Field extends Annotation
 {
     public $type = 'string';
+    public $nullable = false;
 }
-final class Hash extends Annotation
+final class Hash extends Field
 {
     public $type = 'hash';
 }
-final class Boolean extends Annotation
+final class Boolean extends Field
 {
     public $type = 'boolean';
 }
-final class Int extends Annotation
+final class Int extends Field
 {
     public $type = 'int';
 }
-final class Float extends Annotation
+final class Float extends Field
 {
     public $type = 'float';
 }
-final class String extends Annotation
+final class String extends Field
 {
     public $type = 'string';
 }
-final class Date extends Annotation
+final class Date extends Field
 {
     public $type = 'date';
 }
-final class Key extends Annotation
+final class Key extends Field
 {
     public $type = 'key';
 }
-final class Timestamp extends Annotation
+final class Timestamp extends Field
 {
     public $type = 'timestamp';
 }
-final class Bin extends Annotation
+final class Bin extends Field
 {
     public $type = 'bin';
 }
-final class BinFunc extends Annotation
+final class BinFunc extends Field
 {
     public $type = 'bin_func';
 }
-final class BinUUID extends Annotation
+final class BinUUID extends Field
 {
     public $type = 'bin_uuid';
 }
-final class BinMD5 extends Annotation
+final class BinMD5 extends Field
 {
     public $type = 'bin_md5';
 }
-final class BinCustom extends Annotation
+final class BinCustom extends Field
 {
     public $type = 'bin_custom';
 }
-final class File extends Annotation
+final class File extends Field
 {
     public $type = 'file';
     public $file = true;
 }
-final class Increment extends Annotation
+final class Increment extends Field
 {
     public $type = 'increment';
 }
-final class Collection extends Annotation
+final class Collection extends Field
 {
     public $type = 'collection';
 }
-final class EmbedOne extends Annotation
+final class EmbedOne extends Field
 {
     public $type = 'one';
     public $embedded = true;
     public $targetDocument;
 }
-final class EmbedMany extends Annotation
+final class EmbedMany extends Field
 {
     public $type = 'many';
     public $embedded = true;
     public $targetDocument;
 }
-final class ReferenceOne extends Annotation
+final class ReferenceOne extends Field
 {
     public $type = 'one';
     public $reference = true;
     public $targetDocument;
     public $cascade;
 }
-final class ReferenceMany extends Annotation
+final class ReferenceMany extends Field
 {
     public $type = 'many';
     public $reference = true;

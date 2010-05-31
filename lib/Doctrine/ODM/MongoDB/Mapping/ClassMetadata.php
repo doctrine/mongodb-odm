@@ -609,7 +609,9 @@ class ClassMetadata
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $this->identifier = $mapping['fieldName'];
         }
-
+        if ( ! isset($mapping['nullable'])) {
+            $mapping['nullable'] = false;
+        }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
 

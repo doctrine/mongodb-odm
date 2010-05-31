@@ -30,6 +30,7 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove'  => false,
+            'nullable'         => false
         ), $classMetadata->fieldMappings['id']);
 
         $this->assertEquals(array(
@@ -41,6 +42,7 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove'  => false,
+            'nullable'         => false
         ), $classMetadata->fieldMappings['username']);
 
         $this->assertEquals(array(
@@ -52,6 +54,7 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove'  => false,
+            'nullable'         => false
         ), $classMetadata->fieldMappings['createdAt']);
 
         $this->assertEquals(array(
@@ -65,6 +68,7 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove'  => false,
+            'nullable'         => false
         ), $classMetadata->fieldMappings['address']);
 
         $this->assertEquals(array(
@@ -78,6 +82,7 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove'  => false,
+            'nullable'         => false
         ), $classMetadata->fieldMappings['phonenumbers']);
 
         $this->assertEquals(array(
@@ -93,6 +98,7 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => true,
             'isCascadeRefresh' => true,
             'isCascadeRemove'  => true,
+            'nullable'         => false
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
@@ -108,6 +114,7 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => true,
             'isCascadeRefresh' => true,
             'isCascadeRemove'  => true,
+            'nullable'         => false
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
@@ -123,7 +130,7 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => true,
             'isCascadeRefresh' => true,
             'isCascadeRemove'  => true,
+            'nullable'         => false
         ), $classMetadata->fieldMappings['groups']);
     }
-
 }

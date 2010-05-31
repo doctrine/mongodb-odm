@@ -12,7 +12,6 @@ use Documents\User,
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    /*
     public function testIncrement()
     {
         $user = new User();
@@ -39,7 +38,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = $this->dm->findOne('Documents\User', array('username' => 'jon'));
         $this->assertEquals(50, $user->getCount());
     }
-*/
+
     public function testTest()
     {
         $employee = new Employee();
@@ -116,6 +115,47 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('ok', $document['field']);
         $this->assertFalse(isset($document['transientField']));
     }
+
+    public function testNullFieldValuesAllowed()
+    {
+        $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues')->drop();
+
+        $test = new NullFieldValues();
+        $test->field = null;
+        $this->dm->persist($test);
+        $this->dm->flush();
+
+        $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues')
+            ->hydrate(false)
+            ->getResults();
+        $document = current($test);
+        $this->assertNotNull($test);
+        $this->assertNull($document['field']);
+
+        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues')
+            ->getSingleResult();
+        $document->field = 'test';
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues')
+            ->getSingleResult();
+        $this->assertEquals('test', $document->field);
+        $document->field = null;
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues')
+            ->hydrate(false)
+            ->getSingleResult();
+        $this->assertNull($test['field']);
+    }
+}
+
+class NullFieldValues
+{
+    /** @Field(nullable=true) */
+    public $field;
 }
 
 class NotAnnotatedDocument
