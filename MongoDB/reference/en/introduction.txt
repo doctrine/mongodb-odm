@@ -12,7 +12,247 @@ transparent persistence for PHP objects.
 * Collection per class(concrete) and single collection inheritance supported.
 * Map your Doctrine 2 ORM Entities to the ODM and use mixed data stores.
 * Inserts are performed using [MongoCollection::batchInsert()](http://us.php.net/manual/en/mongocollection.batchinsert.php)
-* Updates are performed using $set instead of saving the entire document.
+* Updates are performed using atomic operators.
+
+Here is a quick example of some PHP object documents that demonstrates a few
+of the features:
+
+    [php]
+    /** @MappedSuperclass */
+    abstract class BaseEmployee
+    {
+        /** @Id */
+        protected $id;
+
+        /** @Increment */
+        protected $changes = 0;
+
+        /** @Collection */
+        protected $notes = array();
+
+        /** @String */
+        protected $name;
+
+        /** @Float */
+        protected $salary;
+
+        /** @Date */
+        protected $started;
+
+        /** @Date */
+        protected $left;
+
+        /** @EmbedOne(targetDocument="Address") */
+        protected $address;
+
+        // ...
+    }
+
+    /** @Document(db="my_db", collection="employees") */
+    class Employee extends BaseEmployee
+    {
+        /** @ReferenceOne(targetDocument="Documents\Manager") */
+        private $manager;
+
+        // ...
+    }
+
+    /** @Document(db="my_db", collection="managers") */
+    class Manager extends BaseEmployee
+    {
+        /** @ReferenceMany(targetDocument="Documents\Project") */
+        private $projects = array();
+
+        // ...
+    }
+
+    /** @EmbeddedDocument */
+    class Address
+    {
+        /** @String */
+        private $address;
+
+        /** @String */
+        private $city;
+
+        /** @String */
+        private $state;
+
+        /** @String */
+        private $zipcode;
+
+        // ...
+    }
+
+    /** @Document(db="my_db", collection="projects") */
+    class Project
+    {
+        /** @Id */
+        private $id;
+
+        /** @String */
+        private $name;
+
+        public function __construct($name)
+        {
+            $this->name = $name;
+        }
+
+        // ...
+    }
+
+Now those objects can be used just like you weren't using any persistence layer
+at all and can be persisted transparently by Doctrine:
+
+    [php]
+    $employee = new Employee();
+    $employee->setName('Employee');
+    $employee->setSalary(50000.00);
+    $employee->setStarted(new \DateTime());
+
+    $address = new Address();
+    $address->setAddress('555 Doctrine Rd.');
+    $address->setCity('Nashville');
+    $address->setState('TN');
+    $address->setZipcode('37209');
+    $employee->setAddress($address);
+
+    $project = new Project('New Project');
+    $manager = new Manager();
+    $manager->setName('Manager');
+    $manager->setSalary(100000.00);
+    $manager->setStarted(new \DateTime());
+    $manager->addProject($project);
+
+    $this->dm->persist($employee);
+    $this->dm->persist($address);
+    $this->dm->persist($project);
+    $this->dm->persist($manager);
+    $this->dm->flush();
+
+The above would batch insert the following:
+
+    Array
+    (
+        [000000004b0a33690000000001c304c6] => Array
+            (
+                [name] => New Project
+            )
+
+    )
+    Array
+    (
+        [000000004b0a33660000000001c304c6] => Array
+            (
+                [changes] => 0
+                [notes] => Array
+                    (
+                    )
+
+                [name] => Manager
+                [salary] => 100000
+                [started] => MongoDate Object
+                    (
+                        [sec] => 1275265048
+                        [usec] => 0
+                    )
+
+                [projects] => Array
+                    (
+                        [0] => Array
+                            (
+                                [$ref] => projects
+                                [$id] => 4c0300188ead0e947a000000
+                                [$db] => my_db
+                            )
+
+                    )
+
+            )
+
+    )
+    Array
+    (
+        [000000004b0a336a0000000001c304c6] => Array
+            (
+                [changes] => 0
+                [notes] => Array
+                    (
+                    )
+
+                [name] => Employee
+                [salary] => 50000
+                [started] => MongoDate Object
+                    (
+                        [sec] => 1275265048
+                        [usec] => 0
+                    )
+
+                [address] => Array
+                    (
+                        [address] => 555 Doctrine Rd.
+                        [city] => Nashville
+                        [state] => TN
+                        [zipcode] => 37209
+                    )
+
+            )
+
+    )
+
+If we update a property and call `->flush()` again we'll get an efficient update
+query using the atomic operators:
+
+    [php]
+    $newProject = new Project('Another Project');
+    $manager->setSalary(200000.00);
+    $manager->addNote('Gave user 100k a year raise');
+    $manager->incrementChanges(2);
+    $manager->addProject($newProject);
+
+    $this->dm->persist($newProject);
+    $this->dm->flush();
+
+The above could would produce an update that looks something like this:
+
+    Array
+    (
+        [$inc] => Array
+            (
+                [changes] => 2
+            )
+
+        [$pushAll] => Array
+            (
+                [notes] => Array
+                    (
+                        [0] => Gave user 100k a year raise
+                    )
+
+                [projects] => Array
+                    (
+                        [0] => Array
+                            (
+                                [$ref] => projects
+                                [$id] => 4c0310718ead0e767e030000
+                                [$db] => my_db
+                            )
+
+                    )
+
+            )
+
+        [$set] => Array
+            (
+                [salary] => 200000
+            )
+
+    )
+
+This is a simple example but it demonstrates well that you can transparently
+persist PHP objects while still utilizing the the atomic operators for updating
+documents! Continue reading to learn how to get the Doctrine MongoDB Object
+Document Mapper setup and running!
 
 ## Setup
 
