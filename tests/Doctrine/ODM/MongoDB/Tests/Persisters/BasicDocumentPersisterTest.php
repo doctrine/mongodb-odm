@@ -307,7 +307,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->flush();
         $this->dm->clear();
-        unset ($article);
+        unset($article);
 
         $article = $this->dm->findOne('Documents\Article');
 
@@ -331,7 +331,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->flush();
         $this->dm->clear();
-        unset ($article);
+        unset($article);
 
         $article = $this->dm->findOne('Documents\Article');
 

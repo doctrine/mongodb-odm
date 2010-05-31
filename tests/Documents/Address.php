@@ -2,8 +2,6 @@
 
 namespace Documents;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-
 /** @EmbeddedDocument */
 class Address
 {

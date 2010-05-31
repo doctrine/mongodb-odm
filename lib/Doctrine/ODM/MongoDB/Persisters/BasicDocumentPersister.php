@@ -164,18 +164,19 @@ class BasicDocumentPersister
                     array_keys($update['$pushAll']),
                     array_keys($update['$pullAll'])
                 );
-                if ( ! empty ($fields)) {
+                if ( ! empty($fields)) {
                     $tempUpdate = array();
                     foreach ($fields as $field) {
                         $tempUpdate[$field] = $update['$pullAll'][$field];
-                        unset ($update['$pullAll'][$field]);
+                        unset($update['$pullAll'][$field]);
                     }
-                    if (empty ($update['$pullAll'])) {
-                        unset ($update['$pullAll']);
+                    if (empty($update['$pullAll'])) {
+                        unset($update['$pullAll']);
                     }
-                    $this->_collection->update(array('_id' => $id), array(
+                    $tempUpdate = array(
                         '$pullAll' => $tempUpdate
-                    ));
+                    );
+                    $this->_collection->update(array('_id' => $id), $tempUpdate);
                 }
             }
             $this->_collection->update(array('_id' => $id), $update);
@@ -242,7 +243,7 @@ class BasicDocumentPersister
                     'type' => 'one'
                 )), $rawValue);
             }
-            unset ($values, $rawValue);
+            unset($values, $rawValue);
         } elseif ((isset($mapping['reference'])) || isset($mapping['embedded'])) {
             $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
             if (isset($mapping['embedded'])) {

@@ -11,7 +11,7 @@ abstract class BaseEmployee
     /** @Increment */
     protected $changes = 0;
 
-    /** @Hash */
+    /** @Collection */
     protected $notes = array();
 
     /** @String */

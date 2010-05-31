@@ -70,7 +70,7 @@ class Article
         {
             return;
         }
-        unset ($this->tags[array_search($tag, $this->tags)]);
+        unset($this->tags[array_search($tag, $this->tags)]);
     }
 
     public function getTags()
