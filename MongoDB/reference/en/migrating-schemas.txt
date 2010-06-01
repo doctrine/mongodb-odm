@@ -69,10 +69,10 @@ annotation on a method and use it to do some more complex logic:
 Migrating your schema can be a difficult task and Doctrine gives you a few different
 methods for dealing with this:
 
-* @AlsoLoad - load values from old fields names or transform some data using methods.
-* @NotSaved - load values into fields without saving them again.
-* @PostLoad - execute code after all fields have been loaded.
-* @PrePersist - execute code before your document gets saved.
+* **@AlsoLoad** - load values from old fields names or transform some data using methods.
+* **@NotSaved** - load values into fields without saving them again.
+* **@PostLoad** - execute code after all fields have been loaded.
+* **@PrePersist** - execute code before your document gets saved.
 
 Imagine you have some address fields on a Person document:
 
