@@ -5,6 +5,8 @@ from older documents where the field is still using the old name. Doctrine offer
 a few different methods for dealing with this problem!
 
 > **SIDEBAR**
+> Features in this chapter inspired by Objectify
+>
 > All of the features documented in this chapter were inspired by Objectify which
 > is an object mapper for the AppEngine datastore. You can read more about
 > the project on the [Objectify Wiki](http://code.google.com/p/objectify-appengine/wiki/Concepts?tm=6).
