@@ -166,6 +166,7 @@ final class ReferenceMany extends Field
     public $strategy = 'set';
 }
 final class Transient extends Annotation {}
+final class NotSaved extends Annotation {}
 final class AlsoLoad extends Annotation {
     public $name;
 }

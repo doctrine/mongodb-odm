@@ -197,6 +197,39 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('many', $class->fieldMappings['referenceMany']['type']);
         $this->assertEquals('one', $class->fieldMappings['referenceOne']['type']);
     }
+
+    public function testNotSavedFields()
+    {
+        $collection = $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\NotSaved');
+        $collection->drop();
+        $collection->insert(array(
+            'name' => 'Jonathan Wage',
+            'notSaved' => 'test'
+        ));
+        $notSaved = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\NotSaved');
+        $this->assertEquals('Jonathan Wage', $notSaved->name);
+        $this->assertEquals('test', $notSaved->notSaved);
+
+        $notSaved = new NotSaved();
+        $notSaved->name = 'Roman Borschel';
+        $notSaved->notSaved = 'test';
+        $this->dm->persist($notSaved);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $notSaved = $collection->findOne(array('name' => 'Roman Borschel'));
+        $this->assertEquals('Roman Borschel', $notSaved['name']);
+        $this->assertFalse(isset($notSaved['notSaved']));
+    }
+}
+
+class NotSaved
+{
+    public $id;
+    public $name;
+
+    /** @NotSaved */
+    public $notSaved;
 }
 
 class SimpleEmbedAndReference

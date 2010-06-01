@@ -136,6 +136,9 @@ class AnnotationDriver implements Driver
             if ($alsoLoad = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
                 $class->fieldMappings[$mapping['fieldName']]['alsoLoadFields'] = (array) $alsoLoad->value;
             }
+            if ($notSaved = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\NotSaved')) {
+                $class->fieldMappings[$mapping['fieldName']]['notSaved'] = true;
+            }
 
             $types = array(
                 'Id', 'Increment', 'File', 'Field', 'String', 'Boolean', 'Int', 'Float', 'Date',

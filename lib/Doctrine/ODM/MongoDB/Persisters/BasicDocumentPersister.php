@@ -195,6 +195,9 @@ class BasicDocumentPersister
         $changeset = $this->_uow->getDocumentChangeSet($document);
         $result = array();
         foreach ($this->_class->fieldMappings as $mapping) {
+            if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
+                continue;
+            }
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
             if ($new === null && $mapping['nullable'] === false) {
                 continue;
@@ -212,6 +215,9 @@ class BasicDocumentPersister
         $changeset = $this->_uow->getDocumentChangeSet($document);
         $result = array();
         foreach ($this->_class->fieldMappings as $mapping) {
+            if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
+                continue;
+            }
             $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
             $new = $this->_prepareValue($mapping, $new);
