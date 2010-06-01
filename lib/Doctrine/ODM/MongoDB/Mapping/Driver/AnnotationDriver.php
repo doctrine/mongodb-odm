@@ -132,6 +132,11 @@ class AnnotationDriver implements Driver
         foreach ($reflClass->getProperties() as $property) {
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
+
+            if ($alsoLoad = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
+                $class->fieldMappings[$mapping['fieldName']]['alsoLoadFields'] = (array) $alsoLoad->value;
+            }
+
             $types = array(
                 'Id', 'Increment', 'File', 'Field', 'String', 'Boolean', 'Int', 'Float', 'Date',
                 'Key', 'Bin', 'BinFunc', 'BinUUID', 'BinMD5', 'BinCustom', 'EmbedOne',
@@ -144,14 +149,42 @@ class AnnotationDriver implements Driver
                     break;
                 }
             }
+            $types = array('Embed', 'Reference');
+            foreach ($types as $type) {
+                if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\\' . $type)) {
+                    // This is a blatant hack to see if the defined default
+                    // value is an array so we can make the embed/reference many
+                    // instead of one. This won't be necessary once the ReflectionProperty
+                    // class has a getDefaultValue() method: http://bugs.php.net/bug.php?id=41670
+                    $default = $property->getValue(new $class->name);
+                    $mapping = array_merge($mapping, (array) $fieldAnnot);
+                    if (is_array($default)) {
+                        $mapping['type'] = 'many';
+                    } else {
+                        $mapping['type'] = 'one';
+                    }
+                    $class->mapField($mapping);
+                }
+            }
             // Remove transient fields
             if ($transientAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Transient')) {
-                unset($class->fieldMappings[$property->getName()]);
+                unset($class->fieldMappings[$mapping['fieldName']]);
             }
         }
 
+        $methods = $reflClass->getMethods();
+        foreach ($methods as $method) {
+            if ($method->isPublic()) {
+                if ($alsoLoad = $this->_reader->getMethodAnnotation($method, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
+                    $class->fieldMappings[$mapping['fieldName']]['alsoLoadMethods'][] = array(
+                        'name' => (array) $alsoLoad->value,
+                        'method' => $method->getName()
+                    );
+                }
+            }
+        }   
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\HasLifecycleCallbacks'])) {
-            foreach ($reflClass->getMethods() as $method) {
+            foreach ($methods as $method) {
                 if ($method->isPublic()) {
                     $annotations = $this->_reader->getMethodAnnotations($method);
 

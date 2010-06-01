@@ -133,11 +133,22 @@ final class EmbedOne extends Field
     public $embedded = true;
     public $targetDocument;
 }
+final class Embed extends Field
+{
+    public $embedded = true;
+    public $targetDocument;
+}
 final class EmbedMany extends Field
 {
     public $type = 'many';
     public $embedded = true;
     public $targetDocument;
+}
+final class Reference extends Field
+{
+    public $reference = true;
+    public $targetDocument;
+    public $cascade;
 }
 final class ReferenceOne extends Field
 {
@@ -155,7 +166,9 @@ final class ReferenceMany extends Field
     public $strategy = 'set';
 }
 final class Transient extends Annotation {}
-
+final class AlsoLoad extends Annotation {
+    public $name;
+}
 /* Annotations for lifecycle callbacks */
 final class HasLifecycleCallbacks extends Annotation {}
 final class PrePersist extends Annotation {}

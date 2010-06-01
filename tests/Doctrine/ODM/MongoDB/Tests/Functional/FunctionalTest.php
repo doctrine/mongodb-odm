@@ -150,6 +150,85 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getSingleResult();
         $this->assertNull($test['field']);
     }
+
+    public function testAlsoLoadOnProperty()
+    {
+        $collection = $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad');
+        $collection->drop();
+        $collection->insert(array(
+            'bar' => 'w00t'
+        ));
+        $collection->insert(array(
+            'foo' => 'cool'
+        ));
+        $collection->insert(array(
+            'zip' => 'test'
+        ));
+        $documents = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad')
+            ->getResults();
+        foreach ($documents as $document) {
+            $this->assertNotNull($document->foo);
+        }
+    }
+
+    public function testAlsoLoadOnMethod()
+    {
+        $collection = $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad');
+        $collection->drop();
+        $collection->insert(array(
+            'name' => 'Jonathan Wage'
+        ));
+        $collection->insert(array(
+            'fullName' => 'Jonathan Wage'
+        ));
+        $documents = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad')
+            ->getResults();
+        foreach ($documents as $document) {
+            $this->assertEquals('Jonathan', $document->firstName);
+            $this->assertEquals('Wage', $document->lastName);
+        }
+    }
+
+    public function testSimplerEmbedAndReference()
+    {
+        $class = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\Functional\SimpleEmbedAndReference');
+        $this->assertEquals('many', $class->fieldMappings['embedMany']['type']);
+        $this->assertEquals('one', $class->fieldMappings['embedOne']['type']);
+        $this->assertEquals('many', $class->fieldMappings['referenceMany']['type']);
+        $this->assertEquals('one', $class->fieldMappings['referenceOne']['type']);
+    }
+}
+
+class SimpleEmbedAndReference
+{
+    /** @Embed(targetDocument="Reference") */
+    public $embedMany = array();
+
+    /** @Reference(targetDocument="Embedded") */
+    public $referenceMany = array();
+
+    /** @Embed(targetDocument="Reference") */
+    public $embedOne;
+
+    /** @Reference(targetDocument="Embedded") */
+    public $referenceOne;
+}
+
+class AlsoLoad
+{
+    /** @AlsoLoad({"bar", "zip"}) */
+    public $foo;
+
+    public $firstName;
+    public $lastName;
+
+    /** @AlsoLoad({"name", "fullName"}) */
+    public function populateFirstAndLastName($name)
+    {
+        $e = explode(' ', $name);
+        $this->firstName = $e[0];
+        $this->lastName = $e[1];
+    }
 }
 
 class NullFieldValues

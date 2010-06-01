@@ -68,15 +68,17 @@ class Hydrator
     {
         $values = array();
         foreach ($metadata->fieldMappings as $mapping) {
-            if ( ! isset($data[$mapping['fieldName']])) {
+            $rawValue = $this->_getFieldValue($mapping, $document, $data);
+            if ( ! isset($rawValue)) {
                 continue;
             }
+            
             if (isset($mapping['embedded'])) {
                 $embeddedMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 $embeddedDocument = $embeddedMetadata->newInstance();
                 if ($mapping['type'] === 'many') {
                     $documents = new ArrayCollection();
-                    foreach ($data[$mapping['fieldName']] as $docArray) {
+                    foreach ($rawValue as $docArray) {
                         $doc = clone $embeddedDocument;
                         $this->hydrate($embeddedMetadata, $doc, $docArray);
                         $documents->add($doc);
@@ -85,21 +87,20 @@ class Hydrator
                     $value = $documents;
                 } else {
                     $value = clone $embeddedDocument;
-                    $this->hydrate($embeddedMetadata, $value, $data[$mapping['fieldName']]);
+                    $this->hydrate($embeddedMetadata, $value, $rawValue);
                     $metadata->setFieldValue($document, $mapping['fieldName'], $value);
                 }
             } elseif (isset($mapping['reference'])) {
                 $targetMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 $targetDocument = $targetMetadata->newInstance();
-                $value = isset($data[$mapping['fieldName']]) ? $data[$mapping['fieldName']] : null;
-                if ($mapping['type'] === 'one' && isset($value['$id'])) {
-                    $id = (string) $value['$id'];
+                if ($mapping['type'] === 'one' && isset($rawValue['$id'])) {
+                    $id = (string) $rawValue['$id'];
                     $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
                     $metadata->setFieldValue($document, $mapping['fieldName'], $proxy);
-                } elseif ($mapping['type'] === 'many' && (is_array($value) || $value instanceof Collection)) {
+                } elseif ($mapping['type'] === 'many' && (is_array($rawValue) || $rawValue instanceof Collection)) {
                     $documents = new PersistentCollection($this->_dm, $targetMetadata, new ArrayCollection());
                     $documents->setInitialized(false);
-                    foreach ($value as $v) {
+                    foreach ($rawValue as $v) {
                         $id = (string) $v['$id'];
                         $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
                         $documents->add($proxy);
@@ -107,8 +108,7 @@ class Hydrator
                     $metadata->setFieldValue($document, $mapping['fieldName'], $documents);
                 }
             } else {
-                $value = $data[$mapping['fieldName']];
-                $value = Type::getType($mapping['type'])->convertToPHPValue($value);
+                $value = Type::getType($mapping['type'])->convertToPHPValue($rawValue);
                 $metadata->setFieldValue($document, $mapping['fieldName'], $value);
             }
             if (isset($value)) {
@@ -119,5 +119,27 @@ class Hydrator
             $metadata->setIdentifierValue($document, (string) $data['_id']);
         }
         return $values;
+    }
+
+    private function _getFieldValue(array $mapping, $document, $data)
+    {
+        $names = isset($mapping['alsoLoadFields']) ? $mapping['alsoLoadFields'] : array();
+        array_unshift($names, $mapping['fieldName']);
+        foreach ($names as $name) {
+            if (isset($data[$name])) {
+                return $data[$name];
+            }
+        }
+        if (isset($mapping['alsoLoadMethods'])) {
+            foreach ($mapping['alsoLoadMethods'] as $alsoLoad) {
+                $names = $alsoLoad['name'];
+                foreach ($names as $name) {
+                    if (isset($data[$name])) {
+                        $document->$alsoLoad['method']($data[$name]);
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
