@@ -124,11 +124,11 @@ at all and can be persisted transparently by Doctrine:
     $manager->setStarted(new \DateTime());
     $manager->addProject($project);
 
-    $this->dm->persist($employee);
-    $this->dm->persist($address);
-    $this->dm->persist($project);
-    $this->dm->persist($manager);
-    $this->dm->flush();
+    $dm->persist($employee);
+    $dm->persist($address);
+    $dm->persist($project);
+    $dm->persist($manager);
+    $dm->flush();
 
 The above would batch insert the following:
 
@@ -210,8 +210,8 @@ query using the atomic operators:
     $manager->incrementChanges(2);
     $manager->addProject($newProject);
 
-    $this->dm->persist($newProject);
-    $this->dm->flush();
+    $dm->persist($newProject);
+    $dm->flush();
 
 The above could would produce an update that looks something like this:
 
