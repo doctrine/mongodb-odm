@@ -55,8 +55,6 @@ class Configuration
     public function __construct()
     {
         $this->_attributes['metadataDriverImpl'] = new PHPDriver();
-        $this->_attributes['dbPrefix'] = null;
-        $this->_attributes['dbSuffix'] = null;
     }
 
     /**
@@ -298,7 +296,8 @@ class Configuration
      */
     public function getDBPrefix()
     {
-        return $this->_attributes['dbPrefix'];
+        return isset($this->_attributes['dbPrefix']) ?
+            $this->_attributes['dbPrefix'] : null;
     }
 
     /**
@@ -318,6 +317,7 @@ class Configuration
      */
     public function getDBSuffix()
     {
-        return $this->_attributes['dbSuffix'];
+        return isset($this->_attributes['dbSuffix']) ?
+            $this->_attributes['dbSuffix'] : null;
     }
 }
