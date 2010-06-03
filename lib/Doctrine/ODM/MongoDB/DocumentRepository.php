@@ -129,8 +129,7 @@ class DocumentRepository
     /**
      * Finds documents by a set of criteria.
      *
-     * @param string $column
-     * @param string $value
+     * @param array $criteria
      * @return array
      */
     public function findBy(array $criteria)
@@ -141,8 +140,7 @@ class DocumentRepository
     /**
      * Finds a single document by a set of criteria.
      *
-     * @param string $column
-     * @param string $value
+     * @param array $criteria
      * @return object
      */
     public function findOneBy(array $criteria)

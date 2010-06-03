@@ -173,10 +173,10 @@ class ClassMetadata
      * READ-ONLY: The discriminator value of this class.
      *
      * <b>This does only apply to the JOINED and SINGLE_COLLECTION inheritance mapping strategies
-     * where a discriminator column is used.</b>
+     * where a discriminator field is used.</b>
      *
      * @var mixed
-     * @see discriminatorColumn
+     * @see discriminatorField
      */
     public $discriminatorValue;
 
@@ -184,7 +184,7 @@ class ClassMetadata
      * READ-ONLY: The discriminator map of all mapped classes in the hierarchy.
      *
      * <b>This does only apply to the SINGLE_COLLECTION inheritance mapping strategy
-     * where a discriminator column is used.</b>
+     * where a discriminator field is used.</b>
      *
      * @var mixed
      * @see discriminatorField
@@ -192,7 +192,7 @@ class ClassMetadata
     public $discriminatorMap = array();
 
     /**
-     * READ-ONLY: The definition of the descriminator field used in SINGLE_COLLECTION
+     * READ-ONLY: The definition of the discriminator field used in SINGLE_COLLECTION
      * inheritance mapping.
      *
      * @var string
