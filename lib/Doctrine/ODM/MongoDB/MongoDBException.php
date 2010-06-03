@@ -84,4 +84,9 @@ class MongoDBException extends \Exception
     {
         return new self('Type to be overwritten '.$name.' does not exist.');
     }
+
+    public static function unknownDocumentNamespace($documentNamespaceAlias)
+    {
+        return new self("Unknown Document namespace alias '$documentNamespaceAlias'.");
+    }
 }

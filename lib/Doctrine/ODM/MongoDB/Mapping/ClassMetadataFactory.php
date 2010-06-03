@@ -117,21 +117,41 @@ class ClassMetadataFactory
     public function getMetadataFor($className)
     {
         if ( ! isset($this->_loadedMetadata[$className])) {
-            
+            $realClassName = $className;
+
+            // Check for namespace alias
+            if (strpos($className, ':') !== false) {
+                list($namespaceAlias, $simpleClassName) = explode(':', $className);
+                $realClassName = $this->_dm->getConfiguration()->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
+
+                if (isset($this->_loadedMetadata[$realClassName])) {
+                    // We do not have the alias name in the map, include it
+                    $this->_loadedMetadata[$className] = $this->_loadedMetadata[$realClassName];
+
+                    return $this->_loadedMetadata[$realClassName];
+                }
+            }
+
             if ($this->_cacheDriver) {
-                if (($cached = $this->_cacheDriver->fetch("$className\$MONGODBODMCLASSMETADATA")) !== false) {
-                    $this->_loadedMetadata[$className] = $cached;
+                if (($cached = $this->_cacheDriver->fetch("$realClassName\$MONGODBODMCLASSMETADATA")) !== false) {
+                    $this->_loadedMetadata[$realClassName] = $cached;
                 } else {
-                    foreach ($this->_loadMetadata($className) as $loadedClassName) {
+                    foreach ($this->_loadMetadata($realClassName) as $loadedClassName) {
                         $this->_cacheDriver->save(
                             "$loadedClassName\$MONGODBODMCLASSMETADATA", $this->_loadedMetadata[$loadedClassName], null
                         );
                     }
                 }
             } else {
-                $this->_loadMetadata($className);
+                $this->_loadMetadata($realClassName);
+            }
+
+            if ($className != $realClassName) {
+                // We do not have the alias name in the map, include it
+                $this->_loadedMetadata[$className] = $this->_loadedMetadata[$realClassName];
             }
         }
+
         return $this->_loadedMetadata[$className];
     }
 

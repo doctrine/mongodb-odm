@@ -200,6 +200,20 @@ class MongoCollection
     }
 
     /** @override */
+    public function update(array $criteria, array $newObj, array $options = array())
+    {
+        if ($this->_loggerCallable) {
+            $this->log(array(
+                'update' => true,
+                'criteria' => $criteria,
+                'newObj' => $newObj,
+                'options' => $options
+            ));
+        }
+        return $this->_mongoCollection->update($criteria, $newObj, $options);
+    }
+
+    /** @override */
     public function find(array $query = array(), array $fields = array())
     {
         if ($this->_loggerCallable) {
