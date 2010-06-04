@@ -16,12 +16,12 @@
 * [@EmbedOne](#ann_embed_one)
 * [@EmbeddedDocument](#ann_embedded_document)
 * [@Field](#ann_field)
-* [@Increment](#ann_increment)
 * [@File](#ann_file)
 * [@Float](#ann_float)
 * [@Hash](#ann_hash)
 * [@HasLifecycleCallbacks](#ann_has_lifecycle_callbacks)
 * [@Id](#ann_id)
+* [@Increment](#ann_increment)
 * [@Index](#ann_index)
 * [@Inheritance](#ann_inheritance)
 * [@InheritanceType](#ann_inheritance_type)
@@ -39,6 +39,7 @@
 * [@ReferenceMany](#ann_reference_many)
 * [@String](#ann_string)
 * [@Timestamp](#ann_timestamp)
+* [@Transient](#ann_transient)
 
 ++ Reference
 
@@ -260,45 +261,6 @@ Examples:
      */
     protected $height;
 
-<a name="ann_increment"></a>
-+++ @Increment
-
-The increment type is just like a normal field except that when you update, it will
-use the `$inc` operator instead of `$set`:
-
-    [php]
-    class Package
-    {
-        // ...
-
-        /** @Increment */
-        protected $downloads = 0;
-
-        public function incrementDownloads()
-        {
-            $this->downloads++;
-        }
-
-        // ...
-    }
-
-Now update a Package instance like the following:
-
-    [php]
-    $package->incrementDownloads();
-    $dm->flush();
-
-The query sent to Mongo would be something like the following:
-
-    array(
-        '$inc' => array(
-            'downloads' => 1
-        )
-    )
-
-It will increment the value by the difference between the new value and the old
-value.
-
 <a name="ann_file"></a>
 +++ @File
 
@@ -357,6 +319,45 @@ Example:
          */
         protected $id;
     }
+
+<a name="ann_increment"></a>
++++ @Increment
+
+The increment type is just like a normal field except that when you update, it will
+use the `$inc` operator instead of `$set`:
+
+    [php]
+    class Package
+    {
+        // ...
+
+        /** @Increment */
+        protected $downloads = 0;
+
+        public function incrementDownloads()
+        {
+            $this->downloads++;
+        }
+
+        // ...
+    }
+
+Now update a Package instance like the following:
+
+    [php]
+    $package->incrementDownloads();
+    $dm->flush();
+
+The query sent to Mongo would be something like the following:
+
+    array(
+        '$inc' => array(
+            'downloads' => 1
+        )
+    )
+
+It will increment the value by the difference between the new value and the old
+value.
 
 <a name="ann_index"></a>
 +++ @Index
@@ -512,3 +513,14 @@ Example:
      */
     private $cart;
 
+<a name="ann_transient"></a>
++++ @Transient
+
+If you want to mark a field as transient (not persisted), you can use the `@Transient`
+annotation:
+
+    [php]
+    /** @Transient */
+    private $errors = array();
+
+Now the `errors` property will be ignored by Doctrine completely and will not be persisted!
