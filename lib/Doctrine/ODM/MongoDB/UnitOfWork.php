@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
+    Doctrine\ODM\MongoDB\Event\LifecycleEventArgs,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\Collections\ArrayCollection;
 
