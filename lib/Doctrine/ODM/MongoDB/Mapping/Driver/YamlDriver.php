@@ -74,6 +74,9 @@ class YamlDriver extends AbstractFileDriver
         if (isset($element['inheritanceType'])) {
             $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
         }
+        if (isset($element['customId']) && $element['customId']) {
+            $class->allowCustomId(true);
+        }
         if (isset($element['discriminatorField'])) {
             $discrField = $element['discriminatorField'];
             $class->setDiscriminatorField(array(

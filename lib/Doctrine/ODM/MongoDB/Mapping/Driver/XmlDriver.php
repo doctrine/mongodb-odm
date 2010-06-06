@@ -70,6 +70,9 @@ class XmlDriver extends AbstractFileDriver
                 $class->addIndex((array) $index['keys'], (array) $index['options']);
             }
         }
+        if (isset($xmlRoot['customId']) && ((string) $xmlRoot['customId'] === true)) {
+            $class->allowCustomId(true);
+        }
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
             $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
