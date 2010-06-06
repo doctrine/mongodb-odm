@@ -118,6 +118,13 @@ class ClassMetadata
     public $customRepositoryClassName;
 
     /**
+     * Whether custom id value is allowed or not
+     * 
+     * @var bool
+     */
+    public $customIdAllowed = false;
+
+    /**
      * READ-ONLY: The names of the parent classes (ancestors).
      *
      * @var array
@@ -829,6 +836,16 @@ class ClassMetadata
         if (count($classNames) > 0) {
             $this->rootDocumentName = array_pop($classNames);
         }
+    }
+
+    public function allowCustomId($boolean)
+    {
+        $this->customIdAllowed = (bool) $boolean;
+    }
+
+    public function isAllowedCustomId()
+    {
+        return $this->customIdAllowed;
     }
 
     /**

@@ -109,6 +109,9 @@ class AnnotationDriver implements Driver
                     $class->addIndex($index->keys, $index->options);
                 }
             }
+            if ($documentAnnot->customId) {
+                $class->allowCustomId(true);
+            }
             if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'])) {
                 $inheritanceTypeAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'];
                 $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));

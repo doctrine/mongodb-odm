@@ -203,6 +203,10 @@ class BasicDocumentPersister
                 continue;
             }
             $changeset[$mapping['fieldName']] = array();
+            if ($this->_class->isIdentifier($mapping['fieldName'])) {
+                $result['_id'] = (string) $this->_prepareValue($mapping, $new);
+                continue;
+            }
             $result[$mapping['fieldName']] = $this->_prepareValue($mapping, $new);
         }
 
@@ -311,7 +315,10 @@ class BasicDocumentPersister
      */
     public function loadById($id)
     {
-        $result = $this->_collection->findOne(array('_id' => new \MongoId($id)));
+        if ( ! $this->_class->isAllowedCustomId()) {
+            $id = new \MongoId($id);
+        }
+        $result = $this->_collection->findOne(array('_id' => $id));
         if ($result !== null) {
             return $this->_uow->getOrCreateDocument($this->_documentName, $result);
         }
