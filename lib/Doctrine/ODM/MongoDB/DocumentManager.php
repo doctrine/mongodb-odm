@@ -410,11 +410,20 @@ class DocumentManager
      * @param string $documentName The document name to load.
      * @param string $id  The id the document to load.
      * @return object $document  The loaded document.
+     * @todo this function seems to be doing to much, should we move parts of it
+     * to BasicDocumentPersister maybe?
      */
     public function loadByID($documentName, $id)
     {
+        $class = $this->getClassMetadata($documentName);
         $collection = $this->getDocumentCollection($documentName);
-        $result = $collection->findOne(array('_id' => new \MongoId($id)));
+
+        if ( ! $class->isAllowedCustomId()) {
+          $id = new \MongoId($id);
+        }
+
+        $result = $collection->findOne(array('_id' => $id));
+
         if ( ! $result) {
             throw new \InvalidArgumentException(sprintf('Could not loadByID because ' . $documentName . ' '.$id . ' does not exist anymore.'));
         }
@@ -586,3 +595,4 @@ class DocumentManager
         );
     }
 }
+
