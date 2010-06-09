@@ -506,10 +506,10 @@ class UnitOfWork
             $oid = spl_object_hash($entry);
             if ($state == self::STATE_NEW) {
                 if (isset($targetClass->lifecycleCallbacks[Events::prePersist])) {
-                    $targetClass->invokeLifecycleCallbacks(Events::prePersist, $document);
+                    $targetClass->invokeLifecycleCallbacks(Events::prePersist, $entry);
                 }
                 if ($this->_evm->hasListeners(Events::prePersist)) {
-                    $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($document, $this->_dm));
+                    $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($entry, $this->_dm));
                 }
 
                 $this->_documentStates[$oid] = self::STATE_MANAGED;
@@ -519,7 +519,7 @@ class UnitOfWork
                 $this->computeChangeSet($targetClass, $entry);
                 
             } elseif ($state == self::STATE_REMOVED) {
-                throw MongoDBException::removedDocumentInCollectionDetected($document, $mapping);
+                throw MongoDBException::removedDocumentInCollectionDetected($entry, $mapping);
             }
             // MANAGED associated documents are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
