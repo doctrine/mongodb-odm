@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
+    Doctrine\ODM\MongoDB\UnitOfWork,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\MongoCursor,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
@@ -205,14 +206,28 @@ class BasicDocumentPersister
                 continue;
             }
             $changeset[$mapping['fieldName']] = array();
-            $result[$mapping['fieldName']] = $value = $this->_prepareValue($mapping, $new);
-            if (isset($mapping['reference']) && ! $value['$id']) {
-                $refOid = spl_object_hash($new);
-                if ( ! isset($this->_referenceUpdates[$refOid])) {
-                    $this->_referenceUpdates[$refOid] = array();
+            if (isset($mapping['reference'])) {
+                $scheduleForUpdate = false;
+                if ($mapping['type'] === 'one') {
+                    if ($this->_uow->getDocumentState($new) === UnitOfWork::STATE_NEW) {
+                        $scheduleForUpdate = true;
+                    }
+                } elseif ($mapping['type'] === 'many') {
+                    foreach ($new as $doc) {
+                        if ($this->_uow->getDocumentState($doc) === UnitOfWork::STATE_NEW) {
+                            $scheduleForUpdate = true;
+                            break;
+                        }
+                    }
                 }
-                $this->_referenceUpdates[$refOid][] = array($mapping['fieldName'], $document);
+                if ($scheduleForUpdate) {
+                    if ( ! $this->_uow->isScheduledForUpdate($document)) {
+                        $this->_uow->scheduleForUpdate($document);
+                    }
+                    continue;
+                }
             }
+            $result[$mapping['fieldName']] = $this->_prepareValue($mapping, $new);
         }
 
         return $result;
