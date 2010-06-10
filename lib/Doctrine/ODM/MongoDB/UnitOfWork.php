@@ -347,7 +347,7 @@ class UnitOfWork
 
         $actualData = array();
         foreach ($class->reflFields as $name => $refProp) {
-            if ( ! $class->isIdentifier($name) || $class->isAllowedCustomId()) {
+            if ( ! $class->isIdentifier($name) || $class->getAllowCustomID()) {
                 $actualData[$name] = $refProp->getValue($document);
             }
 

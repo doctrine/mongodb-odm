@@ -110,7 +110,7 @@ class AnnotationDriver implements Driver
                 }
             }
             if ($documentAnnot->customId) {
-                $class->allowCustomId(true);
+                $class->setAllowCustomId(true);
             }
             if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'])) {
                 $inheritanceTypeAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'];

@@ -122,7 +122,7 @@ class ClassMetadata
      * 
      * @var bool
      */
-    public $customIdAllowed = false;
+    public $allowCustomID = false;
 
     /**
      * READ-ONLY: The names of the parent classes (ancestors).
@@ -838,14 +838,14 @@ class ClassMetadata
         }
     }
 
-    public function allowCustomId($boolean)
+    public function setAllowCustomId($boolean)
     {
-        $this->customIdAllowed = (bool) $boolean;
+        $this->allowCustomID = (bool) $boolean;
     }
 
-    public function isAllowedCustomId()
+    public function getAllowCustomID()
     {
-        return $this->customIdAllowed;
+        return $this->allowCustomID;
     }
 
     /**

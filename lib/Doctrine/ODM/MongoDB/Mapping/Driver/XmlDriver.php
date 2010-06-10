@@ -71,7 +71,7 @@ class XmlDriver extends AbstractFileDriver
             }
         }
         if (isset($xmlRoot['customId']) && ((string) $xmlRoot['customId'] === true)) {
-            $class->allowCustomId(true);
+            $class->setAllowCustomId(true);
         }
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];

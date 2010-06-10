@@ -418,7 +418,7 @@ class DocumentManager
         $class = $this->getClassMetadata($documentName);
         $collection = $this->getDocumentCollection($documentName);
 
-        if ( ! $class->isAllowedCustomId()) {
+        if ( ! $class->getAllowCustomID()) {
           $id = new \MongoId($id);
         }
 

@@ -315,7 +315,7 @@ class BasicDocumentPersister
      */
     public function loadById($id)
     {
-        if ( ! $this->_class->isAllowedCustomId()) {
+        if ( ! $this->_class->getAllowCustomID()) {
             $id = new \MongoId($id);
         }
         $result = $this->_collection->findOne(array('_id' => $id));
