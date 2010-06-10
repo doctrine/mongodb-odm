@@ -29,7 +29,6 @@ final class Document extends Annotation
     public $collection;
     public $repositoryClass;
     public $indexes = array();
-    public $customId = false;
 }
 final class EmbeddedDocument extends Annotation {}
 final class MappedSuperclass extends Annotation {}
@@ -57,6 +56,7 @@ final class Index extends Annotation
 final class Id extends Annotation
 {
     public $id = true;
+    public $custom = false;
 }
 class Field extends Annotation
 {

@@ -109,9 +109,6 @@ class AnnotationDriver implements Driver
                     $class->addIndex($index->keys, $index->options);
                 }
             }
-            if ($documentAnnot->customId) {
-                $class->setAllowCustomId(true);
-            }
             if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'])) {
                 $inheritanceTypeAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'];
                 $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
@@ -150,6 +147,9 @@ class AnnotationDriver implements Driver
             );
             foreach ($types as $type) {
                 if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\\' . $type)) {
+                    if ($type === 'Id' && $fieldAnnot->custom) {
+                         $class->setAllowCustomId(true);
+                    }
                     $mapping = array_merge($mapping, (array) $fieldAnnot);
                     $class->mapField($mapping);
                     break;
