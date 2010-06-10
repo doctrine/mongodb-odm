@@ -1212,7 +1212,7 @@ class UnitOfWork
     private function _doMerge($document, array &$visited, $prevManagedCopy = null, $mapping = null)
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
-        $id = $class->getIdentifierValues($document);
+        $id = $class->getIdentifierValue($document);
 
         if ( ! $id) {
             throw new \InvalidArgumentException('New document detected during merge.'
@@ -1476,10 +1476,10 @@ class UnitOfWork
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
                     foreach ($relatedDocuments as $relatedDocument) {
-                        $this->_cascadeMerge($relatedDocument, $visited);
+                        $this->_cascadeMerge($relatedDocument, $managedCopy, $visited);
                     }
                 } elseif ($relatedDocuments !== null) {
-                    $this->_cascadeMerge($relatedDocuments, $visited);
+                    $this->_cascadeMerge($relatedDocuments, $managedCopy, $visited);
                 }
             } elseif (isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
