@@ -270,6 +270,9 @@ class UnitOfWork
             foreach ($commitOrder as $class) {
                 $this->_executeInserts($class);
             }
+            foreach ($commitOrder as $class) {
+                $this->_executeReferenceUpdates($class);
+            }
         }
         
         if ($this->_documentUpdates) {
@@ -298,6 +301,18 @@ class UnitOfWork
         $this->_visitedCollections =
         $this->_scheduledForDirtyCheck =
         $this->_orphanRemovals = array();
+    }
+
+    /**
+     * Executes reference updates
+     *
+     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
+     */
+    private function _executeReferenceUpdates(ClassMetadata $class)
+    {
+        $className = $class->name;
+        $persister = $this->getDocumentPersister($className);
+        $persister->executeReferenceUpdates();
     }
 
     /**
