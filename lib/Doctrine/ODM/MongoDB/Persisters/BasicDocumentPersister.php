@@ -79,6 +79,8 @@ class BasicDocumentPersister
      */
     private $_queuedInserts = array();
 
+    private $_referenceUpdates = array();
+
     /**
      * Initializes a new BasicDocumentPersister instance.
      *
@@ -203,7 +205,14 @@ class BasicDocumentPersister
                 continue;
             }
             $changeset[$mapping['fieldName']] = array();
-            $result[$mapping['fieldName']] = $this->_prepareValue($mapping, $new);
+            $result[$mapping['fieldName']] = $value = $this->_prepareValue($mapping, $new);
+            if (isset($mapping['reference']) && ! $value['$id']) {
+                $refOid = spl_object_hash($new);
+                if ( ! isset($this->_referenceUpdates[$refOid])) {
+                    $this->_referenceUpdates[$refOid] = array();
+                }
+                $this->_referenceUpdates[$refOid][] = array($mapping['fieldName'], $document);
+            }
         }
 
         return $result;

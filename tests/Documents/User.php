@@ -113,6 +113,7 @@ class User extends BaseDocument
     public function setAccount(Account $account)
     {
         $this->account = $account;
+        $this->account->setUser($this);
     }
 
     public function getAccount()
