@@ -186,7 +186,12 @@ class BasicDocumentPersister
     public function delete($document)
     {
         $id = $this->_uow->getDocumentIdentifier($document);
-        $this->_collection->remove(array('_id' => new \MongoId($id)));
+
+        if ( ! $this->_class->isAllowedCustomId()) {
+          $id = new \MongoId($id);
+        }
+
+        $this->_collection->remove(array('_id' => $id));
     }
 
     public function prepareInsertData($document)
