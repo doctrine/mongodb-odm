@@ -279,7 +279,9 @@ class BasicDocumentPersister
     public function refresh($document)
     {
         $id = $this->_uow->getDocumentIdentifier($document);
-        $this->_dm->loadByID($this->_class->name, $id);
+        if ($this->_dm->loadByID($this->_class->name, $id) === null) {
+            throw new \InvalidArgumentException(sprintf('Could not loadByID because ' . $this->_class->name . ' '.$id . ' does not exist anymore.'));
+        }
     }
 
     /**
