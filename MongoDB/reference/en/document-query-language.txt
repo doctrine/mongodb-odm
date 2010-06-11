@@ -502,6 +502,11 @@ You can use placeholders instead of literal values:
     [php]
     $query = $dm->query('find all Documents\User where username = ?', array('jwage'));
 
+You can also use named placeholders:
+
+    [php]
+    $query = $dm->query('find all Documents\User where username = :username', array(':username' => 'jwage'));
+
 ++ JSON Values
 
 You can include strings of json as the values in your DQL:
