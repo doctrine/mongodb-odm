@@ -6,8 +6,9 @@
 + Working with Objects
 + Events
 + Migrating Schemas
-+ Query API
++ Query Builder API
 + Complex Queries
++ Document Query Language
 + Storing Files with MongoGridFS
 + Map Reduce
 + Logging
