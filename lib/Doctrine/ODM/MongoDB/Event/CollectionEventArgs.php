@@ -15,31 +15,38 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
- */
+*/
 
-namespace Doctrine\ODM\MongoDB\Mapping\Driver;
+namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\Common\EventArgs;
 
 /**
- * The PHPDriver invokes a static PHP function on the document class itself passing
- * a ClassMetadata instance for you to manually populate with mapping information.
+ * Collection event args
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
+ * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
-class PHPDriver implements Driver
+class CollectionEventArgs extends EventArgs
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function loadMetadataForClass($className, ClassMetadata $class)
+    private $_invoker;
+    private $_data;
+
+    public function __construct($invoker, &$data)
     {
-        if (method_exists($className, 'loadMetadata')) {
-            call_user_func_array(array($className, 'loadMetadata'), array($class));
-        }
+        $this->_invoker = $invoker;
+        $this->_data = $data;
+    }
+
+    public function getInvoker()
+    {
+        return $this->_invoker;
+    }
+
+    public function getData()
+    {
+        return $this->_data;
     }
 }

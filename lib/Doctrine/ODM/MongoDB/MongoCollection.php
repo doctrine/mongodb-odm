@@ -20,7 +20,9 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mapping\Types\Type;
+    Doctrine\ODM\MongoDB\Mapping\Types\Type,
+    Doctrine\ODM\MongoDB\Event\CollectionEventArgs,
+    Doctrine\ODM\MongoDB\Event\CollectionUpdateEventArgs;
 
 /**
  * Wrapper for the PHP MongoCollection class.
@@ -28,7 +30,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
  * @since       1.0
- * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class MongoCollection
@@ -43,6 +44,13 @@ class MongoCollection
     private $_loggerCallable;
 
     /**
+     * The event manager that is the central point of the event system.
+     *
+     * @var Doctrine\Common\EventManager
+     */
+    private $_eventManager;
+
+    /**
      * Create a new MongoCollection instance that wraps a PHP MongoCollection instance
      * for a given ClassMetadata instance.
      *
@@ -55,6 +63,7 @@ class MongoCollection
         $this->_mongoCollection = $mongoCollection;
         $this->_class = $class;
         $this->_loggerCallable = $dm->getConfiguration()->getLoggerCallable();
+        $this->_eventManager = $dm->getEventManager();
     }
 
     /**
@@ -86,6 +95,10 @@ class MongoCollection
     /** @override */
     public function batchInsert(array &$a, array $options = array())
     {
+        if ($this->_eventManager->hasListeners(CollectionEvents::preBatchInsert)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::preBatchInsert, new CollectionEventArgs($this, $a));
+        }
+
         if ($this->_mongoCollection instanceof \MongoGridFS) {
             foreach ($a as $key => $array) {
                 $this->saveFile($array);
@@ -100,7 +113,13 @@ class MongoCollection
                 'data' => $a
             ));
         }
-        return $this->_mongoCollection->batchInsert($a, $options);
+        $result = $this->_mongoCollection->batchInsert($a, $options);
+
+        if ($this->_eventManager->hasListeners(CollectionEvents::postBatchInsert)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::postBatchInsert, new CollectionEventArgs($this, $result));
+        }
+
+        return $result;
     }
 
     /**
@@ -112,6 +131,10 @@ class MongoCollection
      */
     public function saveFile(array &$a)
     {
+        if ($this->_eventManager->hasListeners(CollectionEvents::preSaveFile)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::preSaveFile, new CollectionEventArgs($this, $a));
+        }
+
         $fileName = $this->_class->fieldMappings[$this->_class->file]['fieldName'];
         $file = $a[$fileName];
         unset($a[$fileName]);
@@ -158,6 +181,11 @@ class MongoCollection
 
             $file = $this->_mongoCollection->findOne(array('_id' => $id));
         }
+
+        if ($this->_eventManager->hasListeners(CollectionEvents::postSaveFile)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::postSaveFile, new CollectionEventArgs($this, $file));
+        }
+
         $a = $file->file;
         $a[$this->_class->file] = $file;
         return $a;
@@ -166,6 +194,10 @@ class MongoCollection
     /** @override */
     public function getDBRef(array $reference)
     {
+        if ($this->_eventManager->hasListeners(CollectionEvents::preGetDBRef)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::preGetDBRef, new CollectionEventArgs($this, $reference));
+        }
+
         if ($this->_loggerCallable) {
             $this->log(array(
                 'get' => true,
@@ -180,12 +212,22 @@ class MongoCollection
             $data[$this->_class->file] = $file;
             return $data;
         }
-        return $this->_mongoCollection->getDBRef($reference);
+        $dbRef = $this->_mongoCollection->getDBRef($reference);
+
+        if ($this->_eventManager->hasListeners(CollectionEvents::postGetDBRef)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::postGetDBRef, new CollectionEventArgs($this, $dbRef));
+        }
+
+        return $dbRef;
     }
 
     /** @override */
     public function save(array &$a, array $options = array())
     {
+        if ($this->_eventManager->hasListeners(CollectionEvents::preSave)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::preSave, new CollectionEventArgs($this, $a));
+        }
+
         if ($this->_loggerCallable) {
             $this->log(array(
                 'save' => true,
@@ -194,14 +236,25 @@ class MongoCollection
             ));
         }
         if ($this->_class->isFile()) {
-            return $this->saveFile($a);
+            $result = $this->saveFile($a);
+        } else {
+            $result = $this->_mongoCollection->save($a, $options);
         }
-        return $this->_mongoCollection->save($a, $options);
+
+        if ($this->_eventManager->hasListeners(CollectionEvents::postSave)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::postSave, new CollectionEventArgs($this, $result));
+        }
+
+        return $result;
     }
 
     /** @override */
     public function update(array $criteria, array $newObj, array $options = array())
     {
+        if ($this->_eventManager->hasListeners(CollectionEvents::preUpdate)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::preUpdate, new CollectionUpdateEventArgs($this, $criteria, $newObj, $options));
+        }
+
         if ($this->_loggerCallable) {
             $this->log(array(
                 'update' => true,
@@ -210,12 +263,22 @@ class MongoCollection
                 'options' => $options
             ));
         }
-        return $this->_mongoCollection->update($criteria, $newObj, $options);
+        $result = $this->_mongoCollection->update($criteria, $newObj, $options);
+
+        if ($this->_eventManager->hasListeners(CollectionEvents::postUpdate)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::postUpdate, new CollectionEventArgs($this, $result));
+        }
+
+        return $result;
     }
 
     /** @override */
     public function find(array $query = array(), array $fields = array())
     {
+        if ($this->_eventManager->hasListeners(CollectionEvents::preFind)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::preFind, new CollectionEventArgs($this, $query));
+        }
+
         if ($this->_loggerCallable) {
             $this->log(array(
                 'find' => true,
@@ -223,12 +286,22 @@ class MongoCollection
                 'fields' => $fields
             ));
         }
-        return $this->_mongoCollection->find($query, $fields);
+        $result = $this->_mongoCollection->find($query, $fields);
+
+        if ($this->_eventManager->hasListeners(CollectionEvents::postFind)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::postFind, new CollectionEventArgs($this, $result));
+        }
+
+        return $result;
     }
 
     /** @override */
     public function findOne(array $query = array(), array $fields = array())
     {
+        if ($this->_eventManager->hasListeners(CollectionEvents::preFindOne)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::preFindOne, new CollectionEventArgs($this, $query));
+        }
+
         if ($this->_loggerCallable) {
             $this->log(array(
                 'findOne' => true,
@@ -243,7 +316,13 @@ class MongoCollection
             $data[$this->_class->file] = $file;
             return $data;
         }
-        return $this->_mongoCollection->findOne($query, $fields);
+        $result = $this->_mongoCollection->findOne($query, $fields);
+
+        if ($this->_eventManager->hasListeners(CollectionEvents::postFindOne)) {
+            $this->_eventManager->dispatchEvent(CollectionEvents::postFindOne, new CollectionEventArgs($this, $result));
+        }
+
+        return $result;
     }
 
     /** @proxy */

@@ -31,7 +31,6 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
- * @version     $Revision: 4930 $
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */

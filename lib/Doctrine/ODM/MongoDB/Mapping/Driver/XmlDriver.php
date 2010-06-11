@@ -27,7 +27,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
  * @since       1.0
- * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -131,7 +130,7 @@ class XmlDriver extends AbstractFileDriver
         }
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
-                $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ORM\Events::' . (string) $lifecycleCallback['type']));
+                $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ORM\ODMEvents::' . (string) $lifecycleCallback['type']));
             }
         }
     }

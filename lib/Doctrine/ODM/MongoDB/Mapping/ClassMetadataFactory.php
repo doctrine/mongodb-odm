@@ -22,7 +22,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\MongoDBException,
-    Doctrine\ODM\MongoDB\Events,
+    Doctrine\ODM\MongoDB\ODMEvents,
     Doctrine\Common\Cache\Cache;
 
 /**
@@ -33,7 +33,6 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
- * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -213,9 +212,9 @@ class ClassMetadataFactory
 
             $class->setParentClasses($visited);
 
-            if ($this->_evm->hasListeners(Events::loadClassMetadata)) {
+            if ($this->_evm->hasListeners(ODMEvents::loadClassMetadata)) {
                 $eventArgs = new \Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs($class);
-                $this->_evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+                $this->_evm->dispatchEvent(ODMEvents::loadClassMetadata, $eventArgs);
             }
 
             $this->_loadedMetadata[$className] = $class;

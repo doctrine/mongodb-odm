@@ -22,7 +22,7 @@
 namespace Doctrine\ODM\MongoDB;
 
 /**
- * Container for all ORM events.
+ * Container for all ODM events.
  *
  * This class cannot be instantiated.
  *
@@ -32,7 +32,7 @@ namespace Doctrine\ODM\MongoDB;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-final class Events
+final class ODMEvents
 {
     private function __construct() {}
 

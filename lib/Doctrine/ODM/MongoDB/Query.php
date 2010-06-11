@@ -28,15 +28,15 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
- * @version     $Revision: 4930 $
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Query
 {
     const TYPE_FIND   = 1;
-    const TYPE_UPDATE = 2;
-    const TYPE_REMOVE = 3;
-    const TYPE_GROUP  = 4;
+    const TYPE_INSERT = 2;
+    const TYPE_UPDATE = 3;
+    const TYPE_REMOVE = 4;
+    const TYPE_GROUP  = 5;
 
     /** The DocumentManager instance for this query */
     private $_dm;
@@ -233,6 +233,23 @@ class Query
     }
 
     /**
+     * Sets the query as an insert query for the given class name or change
+     * the type for the current class.
+     *
+     * @param string $className
+     * @return Query
+     */
+    public function insert($className = null)
+    {
+        if ($className !== null) {
+            $this->_className = $className;
+            $this->_class = $this->_dm->getClassMetadata($className);
+        }
+        $this->_type = self::TYPE_INSERT;
+        return $this;
+    }
+
+    /**
      * Sets the query as a remove query for the given class name or changes
      * the type for the current class.
      *
@@ -323,7 +340,7 @@ class Query
             $value = new \MongoId($value);
         }
         if (isset($this->_where[$fieldName])) {
-            $this->_where[$fieldName] = array_merge($this->_where[$fieldName], $value);
+            $this->_where[$fieldName] = array_merge_recursive($this->_where[$fieldName], $value);
         } else {
             $this->_where[$fieldName] = $value;
         }
@@ -813,6 +830,12 @@ class Query
                 return $this->_dm->getDocumentCollection($this->_className)
                     ->update($this->_where, $this->_newObj, $options);
                 break;
+            
+            case self::TYPE_INSERT;
+                return $this->_dm->getDocumentCollection($this->_className)
+                    ->insert($this->_newObj);
+                break;
+
             case self::TYPE_GROUP;
                 return $this->_dm->getDocumentCollection($this->_className)
                     ->group(
@@ -894,11 +917,12 @@ class Query
     /**
      * Gets an array of information about this query for debugging.
      *
+     * @param string $name
      * @return array $debug
      */
-    public function debug()
+    public function debug($name = null)
     {
-        return array(
+        $debug = array(
             'className' => $this->_className,
             'type' => $this->_type,
             'select' => $this->_select,
@@ -915,5 +939,14 @@ class Query
             'hydrate' => $this->_hydrate,
             'mapReduce' => $this->_mapReduce
         );
+        if ($name !== null) {
+            return $debug[$name];
+        }
+        foreach ($debug as $key => $value) {
+            if ( ! $value) {
+                unset($debug[$key]);
+            }
+        }
+        return $debug;
     }
 }
