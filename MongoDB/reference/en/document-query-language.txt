@@ -478,6 +478,7 @@ You can remove documents with DQL too:
 
 The above would result in the following:
 
+    [php]
     $mongo->dbname->users->remove(array('username' => 'jwage'));
 
 ++ Map and Reduce Queries
