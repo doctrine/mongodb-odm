@@ -159,25 +159,21 @@ class Parser
         if ($this->_lexer->isNextToken(Lexer::T_REDUCE)) {
             $this->ReduceClause($query, $parameters);
         }
-        
-        $tokens = array(
-            Lexer::T_SORT           => 'SortClause',
-            Lexer::T_LIMIT          => 'LimitClause',
-            Lexer::T_SKIP           => 'SkipClause'
-        );
 
-        while (true) {
-            $found = false;
-            foreach ($tokens as $token => $method) {
-                if ($this->_lexer->isNextToken($token)) {
-                    $this->match($token);
-                    $found = true;
-                    $this->$method($query, $parameters);
-                    unset($tokens[$token]);
-                }
-            }
-            if ($found === false) {
-                break;
+        while ($this->_lexer->isNextToken($this->_lexer->lookahead['type'])) {
+            $this->match($this->_lexer->lookahead['type']);
+            switch ($this->_lexer->token['type']) {
+                case Lexer::T_SORT:
+                    $this->SortClause($query, $parameters);
+                    break;
+                case Lexer::T_LIMIT:
+                    $this->LimitClause($query, $parameters);
+                    break;
+                case Lexer::T_SKIP;
+                    $this->SkipClause($query, $parameters);
+                    break;
+                default:
+                    break(2);
             }
         }
     }
@@ -213,10 +209,7 @@ class Parser
     }
 
     /**
-     * UpdateQuery ::= UpdateClause [SetExpression], [UnsetExpression], [IncrementExpression],
-     *                              [PushExpression], [PushAllExpression], [PullExpression],
-     *                              [PullAllExpression], [AddToSetExpression], [AddManyToSetExpression],
-     *                              [PopFirstExpression], [PopLastExpression] [WhereClause]
+     * UpdateQuery ::= UpdateClause [WhereClause]
      */
     public function UpdateQuery(Query $query, array $parameters)
     {
@@ -224,33 +217,60 @@ class Parser
         $this->match(Lexer::T_IDENTIFIER);
         $query->update($this->_lexer->token['value']);
 
-        $tokens = array(
-            Lexer::T_SET            => 'SetExpression',
-            Lexer::T_UNSET          => 'UnsetExpression',
-            Lexer::T_INC            => 'IncrementExpression',
-            Lexer::T_PUSH           => 'PushExpression',
-            Lexer::T_PUSHALL        => 'PushAllExpression',
-            Lexer::T_PULL           => 'PullExpression',
-            Lexer::T_PULLALL        => 'PullAllExpression',
-            Lexer::T_ADDTOSET       => 'AddToSetExpression',
-            Lexer::T_ADDMANYTOSET   => 'AddManyToSetExpression',
-            Lexer::T_POPFIRST       => 'PopFirstExpression',
-            Lexer::T_POPLAST        => 'PopLastExpression'
-        );
-
-        $this->match($this->_lexer->lookahead['type']);
-        $method = $tokens[$this->_lexer->token['type']];
-        $this->$method($query, $parameters);
-
+        $this->UpdateClause($query, $parameters);
         while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
-            $this->match($this->_lexer->lookahead['type']);
-            $method = $tokens[$this->_lexer->token['type']];
-            $this->$method($query, $parameters);
+            $this->UpdateClause($query, $parameters);
         }
 
         if ($this->_lexer->isNextToken(Lexer::T_WHERE)) {
             $this->WhereClause($query, $parameters);
+        }
+    }
+
+    /**
+     * UpdateClause ::= [SetExpression], [UnsetExpression], [IncrementExpression],
+     *                  [PushExpression], [PushAllExpression], [PullExpression],
+     *                  [PullAllExpression], [AddToSetExpression], [AddManyToSetExpression],
+     *                  [PopFirstExpression], [PopLastExpression]
+     */
+    public function UpdateClause(Query $query, array $parameters)
+    {
+        $this->match($this->_lexer->lookahead['type']);
+        switch ($this->_lexer->token['type']) {
+            case Lexer::T_SET:
+                $this->SetExpression($query, $parameters);
+                break;
+            case Lexer::T_UNSET:
+                $this->UnsetExpression($query, $parameters);
+                break;
+            case Lexer::T_INC:
+                $this->IncrementExpression($query, $parameters);
+                break;
+            case Lexer::T_PUSH:
+                $this->PushExpression($query, $parameters);
+                break;
+            case Lexer::T_PUSHALL:
+                $this->PushAllExpression($query, $parameters);
+                break;
+            case Lexer::T_PULL:
+                $this->PullExpression($query, $parameters);
+                break;
+            case Lexer::T_PULLALL:
+                $this->PullAllExpression($query, $parameters);
+                break;
+            case Lexer::T_ADDTOSET:
+                $this->AddToSetExpression($query, $parameters);
+                break;
+            case Lexer::T_ADDMANYTOSET:
+                $this->AddManyToSetExpression($query, $parameters);
+                break;
+            case Lexer::T_POPFIRST:
+                $this->PopFirstExpression($query, $parameters);
+                break;
+            case Lexer::T_POPLAST:
+                $this->PopLastExpression($query, $parameters);
+                break;
         }
     }
 
@@ -395,27 +415,53 @@ class Parser
     public function WhereClauseExpression(Query $query, array $parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
+
         $this->match($this->_lexer->lookahead['type']);
         $operator = $this->_lexer->token['value'];
+
         $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_lexer->token['value'];
-        $operators = array(
-            '='      => 'addWhere',
-            '!='     => 'whereNotEqual',
-            '>='     => 'whereGte',
-            '<='     => 'whereLte',
-            '>'      => 'whereGt',
-            '<'      => 'whereLt',
-            'in'     => 'whereIn',
-            'notIn'  => 'whereNotIn',
-            'all'    => 'whereAll',
-            'size'   => 'whereSize',
-            'exists' => 'whereExists',
-            'type'   => 'whereType'
-        );
-        $method = $operators[$operator];
-        $value = $this->_prepareValue($value, $parameters);
-        $query->$method($fieldName, $value);
+        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+
+        switch ($operator) {
+            case '=':
+                $query->addWhere($fieldName, $value);
+                break;
+            case '!=':
+                $query->whereNotEqual($fieldName, $value);
+                break;
+            case '>=':
+                $query->whereGte($fieldName, $value);
+                break;
+            case '<=':
+                $query->whereLte($fieldName, $value);
+                break;
+            case '>':
+                $query->whereGt($fieldName, $value);
+                break;
+            case '<':
+                $query->whereLt($fieldName, $value);
+                break;
+            case 'in':
+                $query->whereIn($fieldName, $value);
+                break;
+            case 'notIn':
+                $query->whereNotIn($fieldName, $value);
+                break;
+            case 'all':
+                $query->whereAll($fieldName, $value);
+                break;
+            case 'size':
+                $query->whereSize($fieldName, $value);
+                break;
+            case 'exists':
+                $query->whereExists($fieldName, $value);
+                break;
+            case 'type':
+                $query->whereType($fieldName, $value);
+                break;
+            default:
+                $this->syntaxError('Invalid atomic update operator.');
+        }
     }
 
     /**
