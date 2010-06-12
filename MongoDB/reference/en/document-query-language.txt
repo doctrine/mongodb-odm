@@ -357,7 +357,7 @@ The above would result in the following:
 Pull an element from a collection:
 
     [php]
-    $query = $dm->query('update Documents\User pull groups = ?, 2);
+    $query = $dm->query('update Documents\User pull groups = ?', 2);
 
 The above would result in the following:
 
