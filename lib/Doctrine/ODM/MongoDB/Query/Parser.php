@@ -65,19 +65,8 @@ class Parser
 
         $this->_lexer->reset();
         $this->_lexer->setInput($query);
-        $this->_lexer->moveNext();
 
-        $query = new Query($this->_dm);
-
-        if ($this->_lexer->isNextToken(Lexer::T_FIND)) {
-            $this->FindQuery($query, $parameters);
-        } else if ($this->_lexer->isNextToken(Lexer::T_UPDATE)) {
-            $this->UpdateQuery($query, $parameters);
-        } else if ($this->_lexer->isNextToken(Lexer::T_INSERT)) {
-            $this->InsertQuery($query, $parameters);
-        } else if ($this->_lexer->isNextToken(Lexer::T_REMOVE)) {
-            $this->RemoveQuery($query, $parameters);
-        }
+        $query = $this->QueryLanguage($parameters);
 
         return $query;
     }
@@ -104,7 +93,7 @@ class Parser
      * @param array $token Optional token.
      * @throws AnnotationException
      */
-    private function syntaxError($expected, $token = null)
+    public function syntaxError($expected, $token = null)
     {
         if ($token === null) {
             $token = $this->_lexer->lookahead;
@@ -123,42 +112,58 @@ class Parser
         throw new \Doctrine\ODM\MongoDB\MongoDBException($message);
     }
 
-    private function FindQuery(Query $query, array $parameters)
+    /**
+     * QueryLanguage ::= FindQuery | InsertQuery | UpdateQuery | RemoveQuery
+     */
+    public function QueryLanguage(array $parameters)
     {
-        $this->match(Lexer::T_FIND);
+        $this->_lexer->moveNext();
 
-        if ($this->_lexer->isNextToken(Lexer::T_SELECT_ALL)) {
-            $this->match(Lexer::T_SELECT_ALL);
-            $this->match(Lexer::T_IDENTIFIER);
-        } else {
-            $this->match(Lexer::T_IDENTIFIER);
-            $query->addSelect($this->_lexer->token['value']);
-            while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-                $this->match(Lexer::T_COMMA);
-                $this->match(Lexer::T_IDENTIFIER);
-                $query->addSelect($this->_lexer->token['value']);
-            }
-            $this->match(Lexer::T_IDENTIFIER);
+        $query = new Query($this->_dm);
+
+        switch ($this->_lexer->lookahead['type']) {
+            case Lexer::T_FIND:
+                $this->FindQuery($query, $parameters);
+                break;
+            case Lexer::T_INSERT:
+                $this->InsertQuery($query, $parameters);
+                break;
+            case Lexer::T_UPDATE:
+                $this->UpdateQuery($query, $parameters);
+                break;
+            case Lexer::T_REMOVE:
+                $this->RemoveQuery($query, $parameters);
+                break;
+            default:
+                $this->syntaxError('FIND, INSERT, UPDATE or REMOVE');
+                break;
         }
+        return $query;
+    }
 
-        $query->find($this->_lexer->token['value']);
+    /**
+     * FindQuery ::= FindClause [WhereClause] [MapClause] [ReduceClause] [SortClause] [LimitClause] [SkipClause]
+     */
+    public function FindQuery(Query $query, array $parameters)
+    {
+        $this->FindClause($query);
 
         if ($this->_lexer->isNextToken(Lexer::T_WHERE)) {
-            $this->Where($query, $parameters);
+            $this->WhereClause($query, $parameters);
         }
 
         if ($this->_lexer->isNextToken(Lexer::T_MAP)) {
-            $this->Map($query, $parameters);
+            $this->MapClause($query, $parameters);
         }
 
         if ($this->_lexer->isNextToken(Lexer::T_REDUCE)) {
-            $this->Reduce($query, $parameters);
+            $this->ReduceClause($query, $parameters);
         }
         
         $tokens = array(
-            Lexer::T_SORT           => 'Sort',
-            Lexer::T_LIMIT          => 'Limit',
-            Lexer::T_SKIP           => 'Skip'
+            Lexer::T_SORT           => 'SortClause',
+            Lexer::T_LIMIT          => 'LimitClause',
+            Lexer::T_SKIP           => 'SkipClause'
         );
 
         while (true) {
@@ -177,24 +182,60 @@ class Parser
         }
     }
 
-    private function UpdateQuery(Query $query, array $parameters)
+    /**
+     * FindClause ::= "FIND" all | SelectField {"," SelectField}
+     */
+    public function FindClause(Query $query)
+    {
+        $this->match(Lexer::T_FIND);
+
+        if ($this->_lexer->isNextToken(Lexer::T_FIND_ALL)) {
+            $this->match(Lexer::T_FIND_ALL);
+        } else {
+            $this->SelectField($query);
+            while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+                $this->match(Lexer::T_COMMA);
+                $this->SelectField($query);
+            }
+        }
+
+        $this->match(Lexer::T_IDENTIFIER);
+        $query->find($this->_lexer->token['value']);
+    }
+
+    /**
+     * SelectField ::= DocumentFieldName
+     */
+    public function SelectField(Query $query)
+    {
+        $this->match(Lexer::T_IDENTIFIER);
+        $query->addSelect($this->_lexer->token['value']);
+    }
+
+    /**
+     * UpdateQuery ::= UpdateClause [SetExpression], [UnsetExpression], [IncrementExpression],
+     *                              [PushExpression], [PushAllExpression], [PullExpression],
+     *                              [PullAllExpression], [AddToSetExpression], [AddManyToSetExpression],
+     *                              [PopFirstExpression], [PopLastExpression] [WhereClause]
+     */
+    public function UpdateQuery(Query $query, array $parameters)
     {
         $this->match(Lexer::T_UPDATE);
         $this->match(Lexer::T_IDENTIFIER);
         $query->update($this->_lexer->token['value']);
 
         $tokens = array(
-            Lexer::T_SET            => 'UpdateSet',
-            Lexer::T_UNSET          => 'UpdateUnset',
-            Lexer::T_INC            => 'UpdateInc',
-            Lexer::T_PUSH           => 'UpdatePush',
-            Lexer::T_PUSHALL        => 'UpdatePushAll',
-            Lexer::T_PULL           => 'UpdatePull',
-            Lexer::T_PULLALL        => 'UpdatePullAll',
-            Lexer::T_ADDTOSET       => 'UpdateAddToSet',
-            Lexer::T_ADDMANYTOSET   => 'UpdateAddManyToSet',
-            Lexer::T_POPFIRST       => 'UpdatePopFirst',
-            Lexer::T_POPLAST        => 'UpdatePopLast'
+            Lexer::T_SET            => 'SetExpression',
+            Lexer::T_UNSET          => 'UnsetExpression',
+            Lexer::T_INC            => 'IncrementExpression',
+            Lexer::T_PUSH           => 'PushExpression',
+            Lexer::T_PUSHALL        => 'PushAllExpression',
+            Lexer::T_PULL           => 'PullExpression',
+            Lexer::T_PULLALL        => 'PullAllExpression',
+            Lexer::T_ADDTOSET       => 'AddToSetExpression',
+            Lexer::T_ADDMANYTOSET   => 'AddManyToSetExpression',
+            Lexer::T_POPFIRST       => 'PopFirstExpression',
+            Lexer::T_POPLAST        => 'PopLastExpression'
         );
 
         $this->match($this->_lexer->lookahead['type']);
@@ -209,96 +250,121 @@ class Parser
         }
 
         if ($this->_lexer->isNextToken(Lexer::T_WHERE)) {
-            $this->Where($query, $parameters);
+            $this->WhereClause($query, $parameters);
         }
     }
 
-    private function InsertQuery(Query $query, array $parameters)
+    /**
+     * InsertQuery ::= InsertClause InsertSetClause {"," InsertSetClause}
+     */
+    public function InsertQuery(Query $query, array $parameters)
     {
         $this->match(Lexer::T_INSERT);
         $this->match(Lexer::T_IDENTIFIER);
         $query->insert($this->_lexer->token['value']);
 
         $this->match(Lexer::T_SET);
-        $this->InsertSet($query, $parameters);
-    }
-
-    private function InsertSet(Query $query, array $parameters)
-    {
-        $this->InsertSetPart($query, $parameters);
+        $this->InsertSetClause($query, $parameters);
         while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
-            $this->InsertSetPart($query, $parameters);
+            $this->InsertSetClause($query, $parameters);
         }
     }
 
-    private function InsertSetPart(Query $query, array $parameters)
+    /**
+     * InsertSetClause ::= DocumentFieldName "=" NewValue
+     */
+    public function InsertSetClause(Query $query, array $parameters)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
         $query->set($fieldName, $value, false);
     }
 
-    private function RemoveQuery(Query $query, array $parameters)
+    /**
+     * RemoveQuery ::= RemoveClause [WhereClause]
+     * RemoveClause ::= "REMOVE" DocumentClassName
+     */
+    public function RemoveQuery(Query $query, array $parameters)
     {
         $this->match(Lexer::T_REMOVE);
         $this->match(Lexer::T_IDENTIFIER);
         $query->remove($this->_lexer->token['value']);
 
         if ($this->_lexer->isNextToken(Lexer::T_WHERE)) {
-            $this->Where($query, $parameters);
+            $this->WhereClause($query, $parameters);
         }
     }
 
-    private function Sort(Query $query)
+    /**
+     * SortClause ::= SortClauseField {"," SortClauseField}
+     */
+    public function SortClause(Query $query)
     {
-        $this->SortPart($query);
+        $this->SortClauseField($query);
         while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
-            $this->SortPart($query);
+            $this->SortClauseField($query);
         }
     }
 
-    private function SortPart(Query $query)
+    /**
+     * SortClauseField ::= DocumentFieldName "ASC | DESC"
+     */
+    public function SortClauseField(Query $query)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match(Lexer::T_IDENTIFIER);
         $order = $this->_lexer->token['value'];
         $query->addSort($fieldName, $order);
     }
 
-    private function Limit(Query $query)
+    /**
+     * LimitClause ::= "LIMIT" LimitInteger
+     */
+    public function LimitClause(Query $query)
     {
         $this->match($this->_lexer->lookahead['type']);
         $query->limit($this->_lexer->token['value']);
     }
 
-    private function Skip(Query $query)
+    /**
+     * SkipClause ::= "SKIP" SkipInteger
+     */
+    public function SkipClause(Query $query)
     {
         $this->match($this->_lexer->lookahead['type']);
         $query->skip($this->_lexer->token['value']);
     }
 
-    private function Map(Query $query, array $parameters)
+    /**
+     * MapClause ::= "MAP" MapFunction
+     */
+    public function MapClause(Query $query, array $parameters)
     {
         $this->match(Lexer::T_MAP);
         $this->match(Lexer::T_STRING);
         $query->map($this->_lexer->token['value']);
     }
 
-    private function Reduce(Query $query, array $parameters)
+    /**
+     * ReduceClause ::= "REDUCE" ReduceFunction
+     */
+    public function ReduceClause(Query $query, array $parameters)
     {
         $this->match(Lexer::T_REDUCE);
         $this->match(Lexer::T_STRING);
         $query->reduce($this->_lexer->token['value']);
     }
 
-    private function FieldName(Query $query)
+    /**
+     * DocumentFieldName ::= DocumentFieldName | EmbeddedDocument "." {"." DocumentFieldName}
+     */
+    public function DocumentFieldName(Query $query)
     {
+        $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->_lexer->token['value'];
         while ($this->_lexer->isNextToken(Lexer::T_DOT)) {
             $this->match(Lexer::T_DOT);
@@ -308,20 +374,27 @@ class Parser
         return $fieldName;
     }
 
-    private function Where(Query $query, array $parameters)
+    /**
+     * WhereClause ::= "WHERE" WhereClausePart {"AND" WhereClausePart}
+     */
+    public function WhereClause(Query $query, array $parameters)
     {
         $this->match(Lexer::T_WHERE);
-        $this->WherePart($query, $parameters);
+        $this->WhereClauseExpression($query, $parameters);
         while ($this->_lexer->isNextToken(Lexer::T_AND)) {
             $this->match(Lexer::T_AND);
-            $this->WherePart($query, $parameters);
+            $this->WhereClauseExpression($query, $parameters);
         }
     }
 
-    private function WherePart(Query $query, array $parameters)
+    /**
+     * WhereClausePart ::= DocumentFieldName WhereClauseExpression NewValue
+     * WhereClauseExpression ::= "=" | "!=" | ">=" | "<=" | ">" | "<" | "in"
+     *                         "notIn" | "all" | "size" | "exists" | "type"
+     */
+    public function WhereClauseExpression(Query $query, array $parameters)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $operator = $this->_lexer->token['value'];
         $this->match($this->_lexer->lookahead['type']);
@@ -345,103 +418,123 @@ class Parser
         $query->$method($fieldName, $value);
     }
 
-    private function UpdateSet(Query $query, array $parameters)
+    /**
+     * SetExpression ::= "SET" DocumentFieldName "=" NewValue {"," SetExpression}
+     */
+    public function SetExpression(Query $query, array $parameters)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
         $query->set($fieldName, $value);
     }
 
-    public function UpdateUnset(Query $query, array $parameters)
+    /**
+     * UnsetExpression ::= "UNSET" DocumentFieldName {"," UnsetExpression}
+     */
+    public function UnsetExpression(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->unsetField($this->_lexer->token['value']);
     }
 
-    private function UpdatePush(Query $query, array $parameters)
+    /**
+     * PushExpression ::= "PUSH" DocumentFieldName Value {"," PushExpression}
+     */
+    public function PushExpression(Query $query, array $parameters)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
         $query->push($fieldName, $value);
     }
 
-    private function UpdatePushAll(Query $query, array $parameters)
+    /**
+     * PushAllExpression ::= "PUSHALL" DocumentFieldName Value {"," PushAllExpression}
+     */
+    public function PushAllExpression(Query $query, array $parameters)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
         $query->pushAll($fieldName, $value);
     }
 
-    private function UpdatePull(Query $query, array $parameters)
+    /**
+     * PullExpression ::= "PULL" DocumentFieldName Value {"," PullExpression}
+     */
+    public function PullExpression(Query $query, array $parameters)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
         $query->pull($fieldName, $value);
     }
 
-    private function UpdatePullAll(Query $query, array $parameters)
+    /**
+     * PullAllExpression ::= "PULLALL" DocumentFieldName Value {"," PullAllExpression}
+     */
+    public function PullAllExpression(Query $query, array $parameters)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
         $query->pullAll($fieldName, $value);
     }
 
-    private function UpdatePopFirst(Query $query, array $parameters)
+    /**
+     * PopFirstExpression ::= "POPFIRST" DocumentFieldName {"," PopFirstExpression}
+     */
+    public function PopFirstExpression(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->popFirst($this->_lexer->token['value']);
     }
 
-    private function UpdatePopLast(Query $query, array $parameters)
+    /**
+     * PopLastExpression ::= "POPLAST" DocumentFieldName {"," PopLastExpression}
+     */
+    public function PopLastExpression(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->popLast($this->_lexer->token['value']);
     }
 
-    private function UpdateAddToSet(Query $query, array $parameters)
+    /**
+     * AddToSetExpression ::= "ADDTOSET" DocumentFieldName Value {"," AddToSetExpression}
+     */
+    public function AddToSetExpression(Query $query, array $parameters)
     {
-        $this->UpdateAddToSetPart($query, $parameters);
-    }
-
-    private function UpdateAddToSetPart(Query $query, array $parameters)
-    {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
         $query->addToSet($fieldName, $value);
     }
 
-    private function UpdateAddManyToSet(Query $query, array $parameters)
+    /**
+     * AddManyToSetExpression ::= "ADDMANYTOSET" DocumentFieldName Value {"," AddManyToSetExpression}
+     */
+    public function AddManyToSetExpression(Query $query, array $parameters)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
         $query->addManyToSet($fieldName, $value);
     }
 
-    private function UpdateInc(Query $query, array $parameters)
+    /**
+     * IncrementExpression ::= "INC" DocumentFieldName "=" IncrementInteger {"," IncrementExpression}
+     */
+    public function IncrementExpression(Query $query, array $parameters)
     {
-        $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->FieldName($query);
+        $fieldName = $this->DocumentFieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);

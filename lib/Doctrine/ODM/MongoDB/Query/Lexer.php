@@ -46,7 +46,7 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_LT                  = 12;
     const T_LTE                 = 13;
     const T_GTE                 = 14;
-    const T_SELECT_ALL          = 15;
+    const T_FIND_ALL          = 15;
 
     // All tokens that are also identifiers should be >= 100
     const T_IDENTIFIER          = 100;
@@ -124,7 +124,7 @@ class Lexer extends \Doctrine\Common\Lexer
             $value = str_replace("''", "'", substr($value, 1, strlen($value) - 2));
             return self::T_STRING;
         } else if ($value === 'all') {
-            return self::T_SELECT_ALL;
+            return self::T_FIND_ALL;
         } else if (ctype_alpha($value[0]) || $value[0] === '_') {
             $name = 'Doctrine\ODM\MongoDB\Query\Lexer::T_' . strtoupper($value);
             if (defined($name)) {

@@ -98,49 +98,49 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('username' => 'jwage'), $query->debug('where'));
     }
 
-    public function testUpdateIncrement()
+    public function testIncrementOperatorrement()
     {
         $query = $this->parser->parse("update Documents\User inc count = 1, inc views = 2, set username = 'jwage'");
         $this->assertEquals(array('$set' => array('username' => 'jwage'), '$inc' => array('count' => 1, 'views' => 2)), $query->debug('newObj'));
     }
 
-    public function testUpdateUnset()
+    public function testUnsetOperator()
     {
         $query = $this->parser->parse("update Documents\User unset somefield, unset anotherfield");
         $this->assertEquals(array('$unset' => array('somefield' => 1, 'anotherfield' => 1)), $query->debug('newObj'));
     }
 
-    public function testUpdatePush()
+    public function testPushOperator()
     {
         $query = $this->parser->parse("update Documents\User push groups = :group", array(':group' => 1));
         $this->assertEquals(array('$push' => array('groups' => 1)), $query->debug('newObj'));
     }
 
-    public function testUpdatePushAll()
+    public function testPushAllOperator()
     {
         $query = $this->parser->parse("update Documents\User pushAll groups = :groups", array(':groups' => array(1, 2, 3)));
         $this->assertEquals(array('$pushAll' => array('groups' => array(1, 2, 3))), $query->debug('newObj'));
     }
 
-    public function testUpdatePull()
+    public function testPullOperator()
     {
         $query = $this->parser->parse("update Documents\User pull groups = :groups", array(':groups' => array(1, 2, 3)));
         $this->assertEquals(array('$pull' => array('groups' => array(1, 2, 3))), $query->debug('newObj'));
     }
 
-    public function testUpdatePullAll()
+    public function testPullAllOperator()
     {
         $query = $this->parser->parse("update Documents\User pullAll groups = :groups", array(':groups' => array(1, 2, 3)));
         $this->assertEquals(array('$pullAll' => array('groups' => array(1, 2, 3))), $query->debug('newObj'));
     }
 
-    public function testUpdatePopFirst()
+    public function testPopFirstOperator()
     {
         $query = $this->parser->parse("update Documents\User popFirst groups, popFirst comments");
         $this->assertEquals(array('$pop' => array('groups' => 1, 'comments' => 1)), $query->debug('newObj'));
     }
 
-    public function testUpdatePopLast()
+    public function testPopLastOperator()
     {
         $query = $this->parser->parse("update Documents\User popFirst groups, popLast comments");
         $this->assertEquals(array('$pop' => array('groups' => 1, 'comments' => -1)), $query->debug('newObj'));
