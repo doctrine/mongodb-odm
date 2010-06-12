@@ -280,7 +280,7 @@ The above would result in the following:
 ++ Update Queries
 
     [php]
-    $query = $dm->query("update Documents\User inc count = 1, views = 2 set username = 'jwage'");
+    $query = $dm->query("update Documents\User inc count = 1, inc views = 2, set username = 'jwage'");
 
 The above would result in the following:
 
@@ -302,7 +302,7 @@ The above would result in the following:
 You can `unset` fields easily too:
 
     [php]
-    $query = $dm->query('update Documents\User unset somefield, anotherfield');
+    $query = $dm->query('update Documents\User unset somefield, unset anotherfield');
 
 The above would result in the following:
 
@@ -396,7 +396,7 @@ The above would result in the following:
 Pop the first element off of a collection:
 
     [php]
-    $query = $dm->query('update Documents\User popFirst groups, comments');
+    $query = $dm->query('update Documents\User popFirst groups, popFirst comments');
 
 The above would result in the following:
 
@@ -413,7 +413,7 @@ The above would result in the following:
 Pop the last element off a collection and combine it with popFirst:
 
     [php]
-    $query = $dm->query('update Documents\User popFirst groups popLast comments');
+    $query = $dm->query('update Documents\User popFirst groups, popLast comments');
 
 The above would result in the following:
 
