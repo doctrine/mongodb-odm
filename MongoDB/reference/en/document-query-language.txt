@@ -531,3 +531,51 @@ The above would result in the following:
             )
 
     )
+
+++ Embedded Documents
+
+You can use the dot notation for working with fields from embedded documents:
+
+    [php]
+    $dm->query('update Documents\User set address.city = ? where username = ?', array('Atlanta', 'jwage'))
+        ->execute();
+
+The above would issue an update like the following for the user with a username of `jwage`:
+
+    Array
+    (
+        [$set] => Array
+            (
+                [address.city] => Atlanta
+            )
+    )
+
+You can insert a document as well:
+
+    [php]
+    $dm->query('insert Documents\User set username = ?, address.city = ?', array('jwage', 'Nashville'))
+        ->execute();
+
+It would insert a document like the following:
+
+    Array
+    (
+        [username] => jwage
+        [address] => Array
+            (
+                [city] => Nashville
+            )
+    )
+
+You can do the same thing in a where condition when executing find, update, or remove
+queries:
+
+    [php]
+    $users = $dm->query('find Documents\User where username = ? and address.city = ?', array('jwage', 'Nashville'))
+        ->execute();
+
+It also works for searching in embedded document collections:
+
+    [php]
+    $users = $dm->query('find Documents\User where phonenumbers.phonenumber = ?', '6155139185')
+        ->execute();
