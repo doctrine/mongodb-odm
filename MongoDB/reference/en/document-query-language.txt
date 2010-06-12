@@ -274,7 +274,7 @@ The above would result in the following:
     [php]
     $mongo->dbname->users->insert(array(
         'username' => 'jwage',
-        'password' => 'changeme
+        'password' => 'changeme'
     ));
 
 ++ Update Queries
