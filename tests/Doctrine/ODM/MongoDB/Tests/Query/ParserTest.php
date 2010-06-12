@@ -29,18 +29,6 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $this->dm->query('find all Documents\User where username = ? and password = :password', array('jwage', ':password' => 'changeme'));
     }
 
-    public function testFunctional()
-    {
-        $user = new \Documents\User();
-        $user->setUsername('jwage');
-        $this->dm->persist($user);
-        $this->dm->flush();
-
-        $query = $this->dm->query("find all Documents\User where username = :username", array(':username' => 'jwage'));
-        $user = $query->getSingleResult();
-        $this->assertNotNull($user);
-    }
-
     public function testNotEquals()
     {
         $query = $this->parser->parse("find all Documents\User where username != 'jwage' and username != 'ok'");

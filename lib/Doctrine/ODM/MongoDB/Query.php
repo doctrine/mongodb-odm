@@ -646,7 +646,17 @@ class Query
         if ($atomic === true) {
             $this->_newObj['$set'][$name] = $value;
         } else {
-            $this->_newObj[$name] = $value;
+            if (strpos($name, '.') !== false) {
+                $e = explode('.', $name);
+                $current = &$this->_newObj;
+                foreach ($e as $v) {
+                    $current[$v] = null;
+                    $current = &$current[$v];
+                }
+                $current = $value;
+            } else {
+                $this->_newObj[$name] = $value;
+            }
         }
         return $this;
     }

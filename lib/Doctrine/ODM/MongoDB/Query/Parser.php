@@ -239,7 +239,7 @@ class Parser
     private function InsertSetPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
@@ -269,7 +269,7 @@ class Parser
     private function SortPart(Query $query)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match(Lexer::T_IDENTIFIER);
         $order = $this->_lexer->token['value'];
         $query->addSort($fieldName, $order);
@@ -301,6 +301,17 @@ class Parser
         $query->reduce($this->_lexer->token['value']);
     }
 
+    private function FieldName(Query $query)
+    {
+        $fieldName = $this->_lexer->token['value'];
+        while ($this->_lexer->isNextToken(Lexer::T_DOT)) {
+            $this->match(Lexer::T_DOT);
+            $this->match(Lexer::T_IDENTIFIER);
+            $fieldName .= '.' . $this->_lexer->token['value'];
+        }
+        return $fieldName;
+    }
+
     private function Where(Query $query, array $parameters)
     {
         $this->match(Lexer::T_WHERE);
@@ -314,7 +325,7 @@ class Parser
     private function WherePart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $operator = $this->_lexer->token['value'];
         $this->match($this->_lexer->lookahead['type']);
@@ -350,7 +361,7 @@ class Parser
     private function UpdateSetPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
@@ -380,7 +391,7 @@ class Parser
     private function UpdatePushPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
@@ -399,7 +410,7 @@ class Parser
     private function UpdatePushAllPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
@@ -418,7 +429,7 @@ class Parser
     private function UpdatePullPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
@@ -437,7 +448,7 @@ class Parser
     private function UpdatePullAllPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
@@ -478,7 +489,7 @@ class Parser
     private function UpdateAddToSetPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
@@ -497,7 +508,7 @@ class Parser
     private function UpdateAddManyToSetPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
@@ -516,7 +527,7 @@ class Parser
     private function UpdateIncPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
+        $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
         $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);

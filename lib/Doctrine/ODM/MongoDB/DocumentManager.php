@@ -289,8 +289,11 @@ class DocumentManager
         return $this->_documentCollections[$key];
     }
 
-    public function query($queryString, array $parameters = array())
+    public function query($queryString, $parameters = array())
     {
+        if ( ! is_array($parameters)) {
+            $parameters = array($parameters);
+        }
         return $this->_queryParser->parse($queryString, $parameters);
     }
 
