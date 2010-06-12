@@ -10,7 +10,7 @@ Document Objects.
 Use find queries to find and return your Doctrine document objects:
 
     [php]
-    $query = $dm->Query('find all Documents\User');
+    $query = $dm->query('find all Documents\User');
     $users = $query->execute();
 
 The above would result in something blank `find()` returning all documents.
