@@ -15,6 +15,11 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->parser = new Parser($this->dm);
     }
 
+    public function testMultipleOperators()
+    {
+        $query = $this->dm->query("update Documents\User set username = 'jwage', set password = 'changeme', inc count = 1, push groups = 1");
+    }
+
     public function testPlaceholders()
     {
         $query = $this->dm->query('find all Documents\User where username = ? and password = ?', array('jwage', 'changeme'));
@@ -82,7 +87,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testUpdate()
     {
-        $query = $this->parser->parse("update Documents\User set username = 'jwage', password = 'changeme', groups = 'json:[1, 2, 3]'");
+        $query = $this->parser->parse("update Documents\User set username = 'jwage', set password = 'changeme', set groups = 'json:[1, 2, 3]'");
         $this->assertEquals(Query::TYPE_UPDATE, $query->debug('type'));
         $this->assertEquals(array('$set' => array('username' => 'jwage', 'password' => 'changeme', 'groups' => array(1, 2, 3))), $query->debug('newObj'));
     }
@@ -95,13 +100,13 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testUpdateIncrement()
     {
-        $query = $this->parser->parse("update Documents\User inc count = 1, views = 2 set username = 'jwage'");
+        $query = $this->parser->parse("update Documents\User inc count = 1, inc views = 2, set username = 'jwage'");
         $this->assertEquals(array('$set' => array('username' => 'jwage'), '$inc' => array('count' => 1, 'views' => 2)), $query->debug('newObj'));
     }
 
     public function testUpdateUnset()
     {
-        $query = $this->parser->parse("update Documents\User unset somefield, anotherfield");
+        $query = $this->parser->parse("update Documents\User unset somefield, unset anotherfield");
         $this->assertEquals(array('$unset' => array('somefield' => 1, 'anotherfield' => 1)), $query->debug('newObj'));
     }
 
@@ -131,13 +136,13 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testUpdatePopFirst()
     {
-        $query = $this->parser->parse("update Documents\User popFirst groups, comments");
+        $query = $this->parser->parse("update Documents\User popFirst groups, popFirst comments");
         $this->assertEquals(array('$pop' => array('groups' => 1, 'comments' => 1)), $query->debug('newObj'));
     }
 
     public function testUpdatePopLast()
     {
-        $query = $this->parser->parse("update Documents\User popFirst groups popLast comments");
+        $query = $this->parser->parse("update Documents\User popFirst groups, popLast comments");
         $this->assertEquals(array('$pop' => array('groups' => 1, 'comments' => -1)), $query->debug('newObj'));
     }
 

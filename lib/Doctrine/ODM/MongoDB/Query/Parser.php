@@ -197,19 +197,15 @@ class Parser
             Lexer::T_POPLAST        => 'UpdatePopLast'
         );
 
-        while (true) {
-            $found = false;
-            foreach ($tokens as $token => $method) {
-                if ($this->_lexer->isNextToken($token)) {
-                    $this->match($token);
-                    $found = true;
-                    $this->$method($query, $parameters);
-                    unset($tokens[$token]);
-                }
-            }
-            if ($found === false) {
-                break;
-            }
+        $this->match($this->_lexer->lookahead['type']);
+        $method = $tokens[$this->_lexer->token['type']];
+        $this->$method($query, $parameters);
+
+        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+            $this->match(Lexer::T_COMMA);
+            $this->match($this->_lexer->lookahead['type']);
+            $method = $tokens[$this->_lexer->token['type']];
+            $this->$method($query, $parameters);
         }
 
         if ($this->_lexer->isNextToken(Lexer::T_WHERE)) {
@@ -233,7 +229,7 @@ class Parser
         while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
             $this->InsertSetPart($query, $parameters);
-        }     
+        }
     }
 
     private function InsertSetPart(Query $query, array $parameters)
@@ -351,15 +347,6 @@ class Parser
 
     private function UpdateSet(Query $query, array $parameters)
     {
-        $this->UpdateSetPart($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->UpdateSetPart($query, $parameters);
-        }     
-    }
-
-    private function UpdateSetPart(Query $query, array $parameters)
-    {
         $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
@@ -372,23 +359,9 @@ class Parser
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->unsetField($this->_lexer->token['value']);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->match(Lexer::T_IDENTIFIER);
-            $query->unsetField($this->_lexer->token['value']);
-        }
     }
 
     private function UpdatePush(Query $query, array $parameters)
-    {
-        $this->UpdatePushPart($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->UpdatePushPart($query, $parameters);
-        }     
-    }
-
-    private function UpdatePushPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->FieldName($query);
@@ -400,15 +373,6 @@ class Parser
 
     private function UpdatePushAll(Query $query, array $parameters)
     {
-        $this->UpdatePushAllPart($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->UpdatePushAllPart($query, $parameters);
-        }     
-    }
-
-    private function UpdatePushAllPart(Query $query, array $parameters)
-    {
         $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
@@ -419,15 +383,6 @@ class Parser
 
     private function UpdatePull(Query $query, array $parameters)
     {
-        $this->UpdatePullPart($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->UpdatePullPart($query, $parameters);
-        }     
-    }
-
-    private function UpdatePullPart(Query $query, array $parameters)
-    {
         $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
@@ -437,15 +392,6 @@ class Parser
     }
 
     private function UpdatePullAll(Query $query, array $parameters)
-    {
-        $this->UpdatePullAllPart($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->UpdatePullAllPart($query, $parameters);
-        }     
-    }
-
-    private function UpdatePullAllPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->FieldName($query);
@@ -459,31 +405,17 @@ class Parser
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->popFirst($this->_lexer->token['value']);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->match(Lexer::T_IDENTIFIER);
-            $query->popFirst($this->_lexer->token['value']);
-        }   
     }
 
     private function UpdatePopLast(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->popLast($this->_lexer->token['value']);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->match(Lexer::T_IDENTIFIER);
-            $query->popLast($this->_lexer->token['value']);
-        }   
     }
 
     private function UpdateAddToSet(Query $query, array $parameters)
     {
         $this->UpdateAddToSetPart($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->UpdateAddToSetPart($query, $parameters);
-        }     
     }
 
     private function UpdateAddToSetPart(Query $query, array $parameters)
@@ -498,15 +430,6 @@ class Parser
 
     private function UpdateAddManyToSet(Query $query, array $parameters)
     {
-        $this->UpdateAddManyToSetPart($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->UpdateAddManyToSetPart($query, $parameters);
-        }     
-    }
-
-    private function UpdateAddManyToSetPart(Query $query, array $parameters)
-    {
         $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->FieldName($query);
         $this->match($this->_lexer->lookahead['type']);
@@ -516,15 +439,6 @@ class Parser
     }
 
     private function UpdateInc(Query $query, array $parameters)
-    {
-        $this->UpdateIncPart($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-            $this->match(Lexer::T_COMMA);
-            $this->UpdateIncPart($query, $parameters);
-        }
-    }
-
-    private function UpdateIncPart(Query $query, array $parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->FieldName($query);
