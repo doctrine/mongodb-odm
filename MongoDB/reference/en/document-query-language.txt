@@ -446,7 +446,7 @@ The above would result in the following:
 Add many items to a set:
 
     [php]
-    $query = $dm->query('update Documents\User addManyToSet groups = ?, array(array(1, 2, 3)));
+    $query = $dm->query('update Documents\User addManyToSet groups = ?', array(array(1, 2, 3)));
 
 The above would result in the following:
 
