@@ -15,6 +15,95 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->parser = new Parser($this->dm);
     }
 
+    public function testComplexQuery()
+    {
+        $dql = 'find all Documents\User limit 10 skip 30
+            sort username desc, password asc';
+        $query = $this->parser->parse($dql);
+        $this->assertEquals(10, $query->debug('limit'));
+        $this->assertEquals(30, $query->debug('skip'));
+        $this->assertEquals(array('username' => -1, 'password' => 1), $query->debug('sort'));
+
+        $dql = "update Documents\User
+            set field1 = 1,
+            unset field2,
+            inc field3 = 1,
+            push groups = 1,
+            pushAll groups = '[2, 3, 4]',
+            pull groups = 1,
+            pullAll groups = '[2]',
+            popFirst groups,
+            popLast comments,
+            addToSet groups = 4,
+            addManyToSet groups = '[5, 6, 7]'
+            WHERE
+            username = ?
+            AND password = ?
+            AND username != 'bob'
+            AND count > 1 AND count >= 1
+            AND count < 5 AND count > 10
+            AND groups in '[1, 2]'
+            AND groups notIn '[5]'
+            AND groups all '[1]',
+            AND groups size 5
+            AND groups exists true
+            AND groups type 'string'
+            limit 10 skip 30
+            sort username desc, password asc";
+        $query = $this->parser->parse($dql);
+        $this->assertEquals(array(
+            'username' =>
+            array(
+              '$ne' => 'bob',
+            ),
+            'password' => NULL,
+            'count' => array(
+              '$gt' => array(1, 10),
+              '$gte' => 1,
+              '$lt' => 5
+            ),
+            'groups' =>
+            array(
+              '$in' => array(1, 2),
+              '$nin' => array(5),
+              '$all' => array(1)
+            ),
+          ), $query->debug('where'));
+
+        $this->assertEquals(array(
+            '$set' => array(
+              'field1' => 1,
+            ),
+            '$unset' => array(
+              'field2' => 1,
+            ),
+            '$inc' => array(
+              'field3' => 1,
+            ),
+            '$push' => array(
+              'groups' => 1,
+            ),
+            '$pushAll' => array(
+              'groups' => array(2, 3, 4),
+            ),
+            '$pull' => array(
+              'groups' => 1,
+            ),
+            '$pullAll' => array(
+              'groups' => array(2),
+            ),
+            '$pop' => array(
+              'groups' => 1,
+              'comments' => -1,
+            ),
+            '$addToSet' => array(
+              'groups' => array(
+                '$each' => array(4, 5, 6, 7),
+              ),
+            ),
+          ), $query->debug('newObj'));
+    }
+
     public function testPushAllComplexJsonValue()
     {
         $group1 = new \stdClass;
@@ -263,18 +352,18 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testWhereSize()
     {
         $query = $this->parser->parse('find all Documents\User where groups size 3');
-        $this->assertEquals(array('groups' => array('$size' => 3)), $query->debug('where'));   
+        $this->assertEquals(array('groups' => array('$size' => 3)), $query->debug('where'));
     }
 
     public function testWhereExists()
     {
         $query = $this->parser->parse('find all Documents\User where groups exists true and comments exists false');
-        $this->assertEquals(array('groups' => array('$exists' => true), 'comments' => array('$exists' => false)), $query->debug('where'));   
+        $this->assertEquals(array('groups' => array('$exists' => true), 'comments' => array('$exists' => false)), $query->debug('where'));
     }
 
     public function testWhereType()
     {
         $query = $this->parser->parse('find all Documents\User where username type string');
-        $this->assertEquals(array('username' => array('$type' => 2)), $query->debug('where'));   
+        $this->assertEquals(array('username' => array('$type' => 2)), $query->debug('where'));
     }
 }

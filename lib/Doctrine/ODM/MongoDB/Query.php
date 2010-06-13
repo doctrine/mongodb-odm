@@ -751,7 +751,13 @@ class Query
      */
     public function addManyToSet($field, array $values)
     {
-        $this->_newObj['$addToSet'][$field]['$each'] = $values;
+        if ( ! isset($this->_newObj['$addToSet'][$field])) {
+            $this->_newObj['$addToSet'][$field]['$each'] = array();
+        }
+        if ( ! is_array($this->_newObj['$addToSet'][$field])) {
+            $this->_newObj['$addToSet'][$field] = array('$each' => array($this->_newObj['$addToSet'][$field]));
+        }
+        $this->_newObj['$addToSet'][$field]['$each'] = array_merge_recursive($this->_newObj['$addToSet'][$field]['$each'], $values);
     }
 
     /**
