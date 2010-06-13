@@ -15,9 +15,14 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->parser = new Parser($this->dm);
     }
 
-    public function testMultipleOperators()
+    public function testPushAllComplexJsonValue()
     {
-        $query = $this->dm->query("update Documents\User set username = 'jwage', set password = 'changeme', inc count = 1, push groups = 1");
+        $group1 = new \stdClass;
+        $group1->name = 'group1';
+        $group2 = new \stdClass;
+        $group2->name = 'group2';
+        $query = $this->parser->parse('update Documents\User pushAll groups = \'[{"name":"group1"},{"name":"group2"}]\'');
+        $this->assertEquals(array('$pushAll' => array('groups' => array($group1, $group2))), $query->debug('newObj'));
     }
 
     public function testPlaceholders()
@@ -26,12 +31,36 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('username' => 'jwage', 'password' => 'changeme'), $query->debug('where'));
     }
 
+    public function testWhereInJsonValue()
+    {
+        $query = $this->parser->parse("find all Documents\User where groups in '[1, 2, 3]'");
+        $this->assertEquals(array('groups' => array('$in' => array(1, 2, 3))), $query->debug('where'));
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */
     public function testMixingException()
     {
         $query = $this->dm->query('find all Documents\User where username = ? and password = :password', array('jwage', ':password' => 'changeme'));
+    }
+
+    public function testPushAllJsonValue()
+    {
+        $query = $this->parser->parse("update Documents\User pushAll groups = '[1, 2, 3]'");
+        $this->assertEquals(array('$pushAll' => array('groups' => array(1, 2, 3))), $query->debug('newObj'));
+    }
+
+    public function testPushAllOperator()
+    {
+        $query = $this->parser->parse("update Documents\User pushAll groups = :groups", array(':groups' => array(1, 2, 3)));
+        $this->assertEquals(array('$pushAll' => array('groups' => array(1, 2, 3))), $query->debug('newObj'));
+    }
+
+    public function testMultipleOperators()
+    {
+        $query = $this->dm->query("update Documents\User set username = 'jwage', set password = 'changeme', inc count = 1, push groups = 1");
+        $this->assertEquals(array('$set' => array('username' => 'jwage', 'password' => 'changeme'), '$inc' => array('count' => 1), '$push' => array('groups' => 1)), $query->debug('newObj'));
     }
 
     public function testNotEquals()
@@ -87,7 +116,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testUpdate()
     {
-        $query = $this->parser->parse("update Documents\User set username = 'jwage', set password = 'changeme', set groups = 'json:[1, 2, 3]'");
+        $query = $this->parser->parse("update Documents\User set username = 'jwage', set password = 'changeme', set groups = '[1, 2, 3]'");
         $this->assertEquals(Query::TYPE_UPDATE, $query->debug('type'));
         $this->assertEquals(array('$set' => array('username' => 'jwage', 'password' => 'changeme', 'groups' => array(1, 2, 3))), $query->debug('newObj'));
     }
@@ -98,7 +127,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('username' => 'jwage'), $query->debug('where'));
     }
 
-    public function testIncrementOperatorrement()
+    public function testIncrementOperator()
     {
         $query = $this->parser->parse("update Documents\User inc count = 1, inc views = 2, set username = 'jwage'");
         $this->assertEquals(array('$set' => array('username' => 'jwage'), '$inc' => array('count' => 1, 'views' => 2)), $query->debug('newObj'));
@@ -114,12 +143,6 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $query = $this->parser->parse("update Documents\User push groups = :group", array(':group' => 1));
         $this->assertEquals(array('$push' => array('groups' => 1)), $query->debug('newObj'));
-    }
-
-    public function testPushAllOperator()
-    {
-        $query = $this->parser->parse("update Documents\User pushAll groups = :groups", array(':groups' => array(1, 2, 3)));
-        $this->assertEquals(array('$pushAll' => array('groups' => array(1, 2, 3))), $query->debug('newObj'));
     }
 
     public function testPullOperator()
@@ -217,9 +240,6 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $query = $this->parser->parse("find all Documents\User where username = 'jwage' AND password = 'changeme' AND isActive = true AND isNew = false");
         $this->assertEquals(array('username' => 'jwage', 'password' => 'changeme', 'isActive' => true, 'isNew' => false), $query->debug('where'));
-
-        $query = $this->parser->parse("find all Documents\User where groups in 'json:[1, 2, 3]'");
-        $this->assertEquals(array('groups' => array('$in' => array(1, 2, 3))), $query->debug('where'));
     }
 
     public function testWhereIn()

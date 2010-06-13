@@ -26,7 +26,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $this->dm->query('find all Documents\User where address.city = ?', 'nashville');
         $this->assertNotNull($query->getSingleResult());
 
-        $query = $this->dm->query('find all Documents\User where phonenumbers.phonenumber = ?', '6155139185');
+        $query = $this->dm->query('find all Documents\User where phonenumbers size 1');
         $this->assertNotNull($query->getSingleResult());
 
         $this->dm->query('update Documents\User set address.city = ?', 'atlanta')

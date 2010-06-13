@@ -46,7 +46,11 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_LT                  = 12;
     const T_LTE                 = 13;
     const T_GTE                 = 14;
-    const T_FIND_ALL          = 15;
+    const T_FIND_ALL            = 15;
+    const T_OPEN_BRACKET        = 16;
+    const T_CLOSE_BRACKET       = 17;
+    const T_OPEN_CURLY_BRACE    = 18;
+    const T_CLOSE_CURLY_BRACE   = 19;
 
     // All tokens that are also identifiers should be >= 100
     const T_IDENTIFIER          = 100;
@@ -134,10 +138,14 @@ class Lexer extends \Doctrine\Common\Lexer
                 }
             }
             return self::T_IDENTIFIER;
-        } else if ($value[0] === ':') {
+        } else if ($value[0] === ':' || $value[0] === '?') {
             return self::T_INPUT_PARAMETER;
         } else {
             switch ($value) {
+                case '{':  return self::T_OPEN_CURLY_BRACE;
+                case '}':  return self::T_CLOSE_CURLY_BRACE;
+                case '[':  return self::T_OPEN_BRACKET;
+                case ']':  return self::T_CLOSE_BRACKET;
                 case '.':  return self::T_DOT;
                 case ',':  return self::T_COMMA;
                 case '<=': return self::T_GTE;

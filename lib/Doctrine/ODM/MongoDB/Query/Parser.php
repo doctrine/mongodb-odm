@@ -292,14 +292,12 @@ class Parser
     }
 
     /**
-     * InsertSetClause ::= DocumentFieldName "=" NewValue
+     * InsertSetClause ::= DocumentFieldName "=" Value
      */
     public function InsertSetClause(Query $query, array $parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
-        $this->match($this->_lexer->lookahead['type']);
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+        $value = $this->Value($parameters);
         $query->set($fieldName, $value, false);
     }
 
@@ -408,7 +406,7 @@ class Parser
     }
 
     /**
-     * WhereClausePart ::= DocumentFieldName WhereClauseExpression NewValue
+     * WhereClausePart ::= DocumentFieldName WhereClauseExpression Value
      * WhereClauseExpression ::= "=" | "!=" | ">=" | "<=" | ">" | "<" | "in"
      *                         "notIn" | "all" | "size" | "exists" | "type"
      */
@@ -416,11 +414,9 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName($query);
 
-        $this->match($this->_lexer->lookahead['type']);
-        $operator = $this->_lexer->token['value'];
+        $operator = $this->_lexer->lookahead['value'];
 
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+        $value = $this->Value($parameters);
 
         switch ($operator) {
             case '=':
@@ -465,14 +461,36 @@ class Parser
     }
 
     /**
-     * SetExpression ::= "SET" DocumentFieldName "=" NewValue {"," SetExpression}
+     * Value ::= LiteralValue | JsonObject | JsonArray
+     */
+    public function Value(array $parameters)
+    {
+        $this->match($this->_lexer->lookahead['type']);
+        $this->match($this->_lexer->lookahead['type']);
+        $value = $this->_lexer->token['value'];
+        if (isset($parameters[$value])) {
+            $value = $parameters[$value];
+        }
+        // detect and decode json values
+        if (is_string($value) && null !== ($decoded = json_decode($value))) {
+            return $decoded;
+        }
+        if ($value === 'true') {
+            $value = true;
+        }
+        if ($value === 'false') {
+            $value = false;
+        }
+        return $value;
+    }
+
+    /**
+     * SetExpression ::= "SET" DocumentFieldName "=" Value {"," SetExpression}
      */
     public function SetExpression(Query $query, array $parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
-        $this->match($this->_lexer->lookahead['type']);
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+        $value = $this->Value($parameters);
         $query->set($fieldName, $value);
     }
 
@@ -491,9 +509,7 @@ class Parser
     public function PushExpression(Query $query, array $parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
-        $this->match($this->_lexer->lookahead['type']);
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+        $value = $this->Value($parameters);
         $query->push($fieldName, $value);
     }
 
@@ -503,9 +519,7 @@ class Parser
     public function PushAllExpression(Query $query, array $parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
-        $this->match($this->_lexer->lookahead['type']);
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+        $value = $this->Value($parameters);
         $query->pushAll($fieldName, $value);
     }
 
@@ -515,9 +529,7 @@ class Parser
     public function PullExpression(Query $query, array $parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
-        $this->match($this->_lexer->lookahead['type']);
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+        $value = $this->Value($parameters);
         $query->pull($fieldName, $value);
     }
 
@@ -527,9 +539,7 @@ class Parser
     public function PullAllExpression(Query $query, array $parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
-        $this->match($this->_lexer->lookahead['type']);
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+        $value = $this->Value($parameters);
         $query->pullAll($fieldName, $value);
     }
 
@@ -557,9 +567,7 @@ class Parser
     public function AddToSetExpression(Query $query, array $parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
-        $this->match($this->_lexer->lookahead['type']);
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+        $value = $this->Value($parameters);
         $query->addToSet($fieldName, $value);
     }
 
@@ -569,9 +577,7 @@ class Parser
     public function AddManyToSetExpression(Query $query, array $parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
-        $this->match($this->_lexer->lookahead['type']);
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+        $value = $this->Value($parameters);
         $query->addManyToSet($fieldName, $value);
     }
 
@@ -581,26 +587,7 @@ class Parser
     public function IncrementExpression(Query $query, array $parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
-        $this->match($this->_lexer->lookahead['type']);
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_prepareValue($this->_lexer->token['value'], $parameters);
+        $value = $this->Value($parameters);
         $query->inc($fieldName, $value);
-    }
-
-    private function _prepareValue($value, array $parameters)
-    {
-        if (isset($parameters[$value])) {
-            $value = $parameters[$value];
-        }
-        if ($value === 'true') {
-            $value = true;
-        }
-        if ($value === 'false') {
-            $value = false;
-        }
-        if (is_string($value) && strstr($value, 'json:') !== false) {
-            $value = json_decode(substr($value, 5));
-        }
-        return $value;
     }
 }
