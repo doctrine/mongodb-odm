@@ -15,6 +15,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testSearchEmbeddedDocumentDQL()
     {
         $user = new \Documents\User();
+        $user->setUsername('jwage');
         $address = new \Documents\Address();
         $address->setCity('nashville');
         $user->setAddress($address);
@@ -23,7 +24,21 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
+        $this->assertNotNull($this->dm->find('Documents\User', array('phonenumbers.phonenumber' => '6155139185'))->getSingleResult());
+
+        $query = $this->dm->query("find all Documents\User where phonenumbers.phonenumber = '6155139185'");
+        $this->assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->query("find all Documents\User where phonenumbers.phonenumber = ?", array('6155139185'));
+        $this->assertNotNull($query->getSingleResult());
+
         $query = $this->dm->query('find all Documents\User where address.city = ?', 'nashville');
+        $this->assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->query('find all Documents\User where phonenumbers size :size', array(':size' => 1));
+        $this->assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->query('find all Documents\User where phonenumbers size ?', 1);
         $this->assertNotNull($query->getSingleResult());
 
         $query = $this->dm->query('find all Documents\User where phonenumbers size 1');

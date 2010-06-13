@@ -119,8 +119,12 @@ class Lexer extends \Doctrine\Common\Lexer
 
         // Recognizing numeric values
         if (is_numeric($value)) {
-            return (strpos($value, '.') !== false || stripos($value, 'e') !== false) 
+            $type = (strpos($value, '.') !== false || stripos($value, 'e') !== false) 
                     ? self::T_FLOAT : self::T_INTEGER;
+            if ($type === self::T_INTEGER) {
+                $value = (integer) $value;
+            }
+            return $type;
         }
 
         // Differentiate between quoted names, identifiers, input parameters and symbols

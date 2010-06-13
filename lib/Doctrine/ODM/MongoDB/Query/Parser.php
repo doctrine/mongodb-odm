@@ -53,14 +53,8 @@ class Parser
 
     public function parse($query, $parameters = array())
     {
-        if (strpos($query, '?') !== false) {
-            if (strpos($query, ':') !== false) {
-                throw new \InvalidArgumentException('Cannot mixed named and regular placeholders.');
-            }
-            $regex = '/([=,\(][^\\\']*)(\?)/iU';
-            foreach($parameters as $key => $value) {
-                $query = preg_replace($regex, "\\1'{$value}'", $query, 1);
-            }
+        if (strpos($query, '?') !== false && strpos($query, ':') !== false) {
+            throw new \InvalidArgumentException('Cannot mixed named and regular placeholders.');
         }
 
         $this->_lexer->reset();
@@ -115,7 +109,7 @@ class Parser
     /**
      * QueryLanguage ::= FindQuery | InsertQuery | UpdateQuery | RemoveQuery
      */
-    public function QueryLanguage(array $parameters)
+    public function QueryLanguage(array &$parameters)
     {
         $this->_lexer->moveNext();
 
@@ -144,7 +138,7 @@ class Parser
     /**
      * FindQuery ::= FindClause [WhereClause] [MapClause] [ReduceClause] [SortClause] [LimitClause] [SkipClause]
      */
-    public function FindQuery(Query $query, array $parameters)
+    public function FindQuery(Query $query, array &$parameters)
     {
         $this->FindClause($query);
 
@@ -211,7 +205,7 @@ class Parser
     /**
      * UpdateQuery ::= UpdateClause [WhereClause]
      */
-    public function UpdateQuery(Query $query, array $parameters)
+    public function UpdateQuery(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_UPDATE);
         $this->match(Lexer::T_IDENTIFIER);
@@ -234,7 +228,7 @@ class Parser
      *                  [PullAllExpression], [AddToSetExpression], [AddManyToSetExpression],
      *                  [PopFirstExpression], [PopLastExpression]
      */
-    public function UpdateClause(Query $query, array $parameters)
+    public function UpdateClause(Query $query, array &$parameters)
     {
         $this->match($this->_lexer->lookahead['type']);
         switch ($this->_lexer->token['type']) {
@@ -277,7 +271,7 @@ class Parser
     /**
      * InsertQuery ::= InsertClause InsertSetClause {"," InsertSetClause}
      */
-    public function InsertQuery(Query $query, array $parameters)
+    public function InsertQuery(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_INSERT);
         $this->match(Lexer::T_IDENTIFIER);
@@ -294,7 +288,7 @@ class Parser
     /**
      * InsertSetClause ::= DocumentFieldName "=" Value
      */
-    public function InsertSetClause(Query $query, array $parameters)
+    public function InsertSetClause(Query $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
         $value = $this->Value($parameters);
@@ -305,7 +299,7 @@ class Parser
      * RemoveQuery ::= RemoveClause [WhereClause]
      * RemoveClause ::= "REMOVE" DocumentClassName
      */
-    public function RemoveQuery(Query $query, array $parameters)
+    public function RemoveQuery(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_REMOVE);
         $this->match(Lexer::T_IDENTIFIER);
@@ -360,7 +354,7 @@ class Parser
     /**
      * MapClause ::= "MAP" MapFunction
      */
-    public function MapClause(Query $query, array $parameters)
+    public function MapClause(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_MAP);
         $this->match(Lexer::T_STRING);
@@ -370,7 +364,7 @@ class Parser
     /**
      * ReduceClause ::= "REDUCE" ReduceFunction
      */
-    public function ReduceClause(Query $query, array $parameters)
+    public function ReduceClause(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_REDUCE);
         $this->match(Lexer::T_STRING);
@@ -395,7 +389,7 @@ class Parser
     /**
      * WhereClause ::= "WHERE" WhereClausePart {"AND" WhereClausePart}
      */
-    public function WhereClause(Query $query, array $parameters)
+    public function WhereClause(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_WHERE);
         $this->WhereClauseExpression($query, $parameters);
@@ -410,7 +404,7 @@ class Parser
      * WhereClauseExpression ::= "=" | "!=" | ">=" | "<=" | ">" | "<" | "in"
      *                         "notIn" | "all" | "size" | "exists" | "type"
      */
-    public function WhereClauseExpression(Query $query, array $parameters)
+    public function WhereClauseExpression(Query $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
 
@@ -463,7 +457,7 @@ class Parser
     /**
      * Value ::= LiteralValue | JsonObject | JsonArray
      */
-    public function Value(array $parameters)
+    public function Value(array &$parameters)
     {
         $this->match($this->_lexer->lookahead['type']);
         $this->match($this->_lexer->lookahead['type']);
@@ -471,9 +465,12 @@ class Parser
         if (isset($parameters[$value])) {
             $value = $parameters[$value];
         }
+        if ($value === '?') {
+            $value = array_shift($parameters);
+        }
         // detect and decode json values
-        if (is_string($value) && null !== ($decoded = json_decode($value))) {
-            return $decoded;
+        if ($value[0] === '[' || $value[0] === '{') {
+            return json_decode($value);
         }
         if ($value === 'true') {
             $value = true;
@@ -487,7 +484,7 @@ class Parser
     /**
      * SetExpression ::= "SET" DocumentFieldName "=" Value {"," SetExpression}
      */
-    public function SetExpression(Query $query, array $parameters)
+    public function SetExpression(Query $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
         $value = $this->Value($parameters);
@@ -497,7 +494,7 @@ class Parser
     /**
      * UnsetExpression ::= "UNSET" DocumentFieldName {"," UnsetExpression}
      */
-    public function UnsetExpression(Query $query, array $parameters)
+    public function UnsetExpression(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->unsetField($this->_lexer->token['value']);
@@ -506,7 +503,7 @@ class Parser
     /**
      * PushExpression ::= "PUSH" DocumentFieldName Value {"," PushExpression}
      */
-    public function PushExpression(Query $query, array $parameters)
+    public function PushExpression(Query $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
         $value = $this->Value($parameters);
@@ -516,7 +513,7 @@ class Parser
     /**
      * PushAllExpression ::= "PUSHALL" DocumentFieldName Value {"," PushAllExpression}
      */
-    public function PushAllExpression(Query $query, array $parameters)
+    public function PushAllExpression(Query $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
         $value = $this->Value($parameters);
@@ -526,7 +523,7 @@ class Parser
     /**
      * PullExpression ::= "PULL" DocumentFieldName Value {"," PullExpression}
      */
-    public function PullExpression(Query $query, array $parameters)
+    public function PullExpression(Query $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
         $value = $this->Value($parameters);
@@ -536,7 +533,7 @@ class Parser
     /**
      * PullAllExpression ::= "PULLALL" DocumentFieldName Value {"," PullAllExpression}
      */
-    public function PullAllExpression(Query $query, array $parameters)
+    public function PullAllExpression(Query $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
         $value = $this->Value($parameters);
@@ -546,7 +543,7 @@ class Parser
     /**
      * PopFirstExpression ::= "POPFIRST" DocumentFieldName {"," PopFirstExpression}
      */
-    public function PopFirstExpression(Query $query, array $parameters)
+    public function PopFirstExpression(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->popFirst($this->_lexer->token['value']);
@@ -555,7 +552,7 @@ class Parser
     /**
      * PopLastExpression ::= "POPLAST" DocumentFieldName {"," PopLastExpression}
      */
-    public function PopLastExpression(Query $query, array $parameters)
+    public function PopLastExpression(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->popLast($this->_lexer->token['value']);
@@ -564,7 +561,7 @@ class Parser
     /**
      * AddToSetExpression ::= "ADDTOSET" DocumentFieldName Value {"," AddToSetExpression}
      */
-    public function AddToSetExpression(Query $query, array $parameters)
+    public function AddToSetExpression(Query $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
         $value = $this->Value($parameters);
@@ -574,7 +571,7 @@ class Parser
     /**
      * AddManyToSetExpression ::= "ADDMANYTOSET" DocumentFieldName Value {"," AddManyToSetExpression}
      */
-    public function AddManyToSetExpression(Query $query, array $parameters)
+    public function AddManyToSetExpression(Query $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
         $value = $this->Value($parameters);
@@ -584,7 +581,7 @@ class Parser
     /**
      * IncrementExpression ::= "INC" DocumentFieldName "=" IncrementInteger {"," IncrementExpression}
      */
-    public function IncrementExpression(Query $query, array $parameters)
+    public function IncrementExpression(Query $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName($query);
         $value = $this->Value($parameters);
