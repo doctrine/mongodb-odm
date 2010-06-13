@@ -513,7 +513,7 @@ You can also use named placeholders:
 You can include strings of json as the values in your DQL:
 
     [php]
-    $query = $dm->query("update Documents\User set groups = 'json:[1, 2, 3]'");
+    $query = $dm->query("update Documents\User set groups = '[1, 2, 3]'");
 
 The above would result in the following:
 
