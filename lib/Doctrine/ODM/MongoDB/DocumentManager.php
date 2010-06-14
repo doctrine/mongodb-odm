@@ -426,16 +426,21 @@ class DocumentManager
      *
      * @param string $documentName The document name to load.
      * @param string $id  The id the document to load.
+     * @param boolean $isProxy
      * @return object $document  The loaded document.
      */
-    public function loadByID($documentName, $id)
+    public function loadByID($documentName, $id, $isProxy = false)
     {
         $collection = $this->getDocumentCollection($documentName);
         $result = $collection->findOne(array('_id' => new \MongoId($id)));
         if ( ! $result) {
             return null;
         }
-        return $this->load($documentName, $id, $result);
+        $document = $this->load($documentName, $id, $result);
+        if ($isProxy) {
+            $this->getUnitOfWork()->registerManaged($document, $id, $result);
+        }
+        return $document;
     }
 
     /**
