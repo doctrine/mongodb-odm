@@ -15,6 +15,39 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->parser = new Parser($this->dm);
     }
 
+    public function testElemMatch()
+    {
+        $query = $this->parser->parse("find all Documents\User where phonenumbers.phonenumber in '[1]'");
+        $this->assertEquals(
+            array('phonenumbers.phonenumber' => array(
+                '$in' => array(1)
+            )),
+            $query->debug('where')
+        );
+
+        $query = $this->parser->parse("find all Documents\User where all accounts.name ='test' and all accounts.type_name = 'test' and accounts.name = 'test'");
+        $this->assertEquals(
+            array(
+                'accounts' => array(
+                    '$elemMatch' => array(
+                        'name' => 'test',
+                        'type_name' => 'test'
+                    )
+                ),
+                'accounts.name' => 'test'
+            ),
+            $query->debug('where')
+        );
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testMixingException()
+    {
+        $query = $this->dm->query('find all Documents\User where username = ? and password = :password', array('jwage', ':password' => 'changeme'));
+    }
+
     public function testComplexQuery()
     {
         $dql = 'find all Documents\User limit 10 skip 30
@@ -37,37 +70,46 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             addToSet groups = 4,
             addManyToSet groups = '[5, 6, 7]'
             WHERE
-            username = ?
-            AND password = ?
-            AND username != 'bob'
-            AND count > 1 AND count >= 1
-            AND count < 5 AND count > 10
-            AND groups in '[1, 2]'
-            AND groups notIn '[5]'
-            AND groups all '[1]',
-            AND groups size 5
-            AND groups exists true
-            AND groups type 'string'
+            field1 = 'jwage'
+            AND field2 = 'changeme'
+            AND field3 != 'bob'
+            AND field4 > 1
+            AND field5 >= 1
+            AND field6 < 5
+            AND field7 > 10
+            AND field8 in '[1, 2, 3, 4]'
+            AND field9 notIn '[5, 6]',
+            AND field10 all '[1, 2]',
+            AND field11 size 5
+            AND field12 exists true
+            AND field13 type 'string'
             limit 10 skip 30
             sort username desc, password asc";
         $query = $this->parser->parse($dql);
         $this->assertEquals(array(
-            'username' =>
-            array(
+            'field1' => 'jwage',
+            'field2' => 'changeme',
+            'field3' => array(
               '$ne' => 'bob',
             ),
-            'password' => NULL,
-            'count' => array(
-              '$gt' => array(1, 10),
-              '$gte' => 1,
+            'field4' => array(
+              '$gt' => 1
+            ),
+            'field5' => array(
+              '$gte' => 1
+            ),
+            'field6' => array(
               '$lt' => 5
             ),
-            'groups' =>
-            array(
-              '$in' => array(1, 2),
-              '$nin' => array(5),
-              '$all' => array(1)
+            'field7' => array(
+              '$gt' => 10
             ),
+            'field8' => array(
+              '$in' => array(1, 2, 3, 4)
+            ),
+            'field9' => array(
+              '$nin' => array(5, 6)
+            )
           ), $query->debug('where'));
 
         $this->assertEquals(array(
@@ -126,14 +168,6 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('groups' => array('$in' => array(1, 2, 3))), $query->debug('where'));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testMixingException()
-    {
-        $query = $this->dm->query('find all Documents\User where username = ? and password = :password', array('jwage', ':password' => 'changeme'));
-    }
-
     public function testPushAllJsonValue()
     {
         $query = $this->parser->parse("update Documents\User pushAll groups = '[1, 2, 3]'");
@@ -154,8 +188,8 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testNotEquals()
     {
-        $query = $this->parser->parse("find all Documents\User where username != 'jwage' and username != 'ok'");
-        $this->assertEquals(array('username' => array('$ne' => array('jwage', 'ok'))), $query->debug('where'));
+        $query = $this->parser->parse("find all Documents\User where username != 'jwage'");
+        $this->assertEquals(array('username' => array('$ne' => 'jwage')), $query->debug('where'));
     }
 
     public function testReduce()
