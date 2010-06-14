@@ -44,224 +44,6 @@ Combine `limit` with `skip` for paging:
     [php]
     $query = $dm->query('find all Documents\User sort username asc skip 30 limit 10');
 
-++ Where Conditions
-
-Use the equals operator:
-
-    [php]
-    $query = $dm->query("find all Documents\User where username = 'jwage'");
-
-The above would result in the following:
-
-    Array
-    (
-        [username] => jwage
-    )
-
-Use not equals operator:
-
-    [php]
-    $query = $dm->query("find all Documents\User where username != 'jwage' and username != 'ok'");
-
-The above would result in the following:
-
-    Array
-    (
-        [username] => Array
-            (
-                [$ne] => Array
-                    (
-                        [0] => jwage
-                        [1] => ok
-                    )
-
-            )
-
-    )
-
-Use the greater than operator:
-
-    [php]
-    $query = $dm->query('find username Documents\User where count > 1');
-
-The above would result in the following:
-
-    Array
-    (
-        [count] => Array
-            (
-                [$gt] => 1
-            )
-
-    )
-
-Use the greater than or equal to operator:
-
-    [php]
-    $query = $dm->query('find username Documents\User where count >= 1');
-
-The above would result in the following:
-
-    Array
-    (
-        [count] => Array
-            (
-                [$gte] => 1
-            )
-
-    )
-
-Use the less than operator:
-
-    [php]
-    $query = $dm->query('find username Documents\User where count < 1');
-
-The above would result in the following:
-
-    Array
-    (
-        [count] => Array
-            (
-                [$lt] => 1
-            )
-
-    )
-
-Use the less than or equal to operator:
-
-    [php]
-    $query = $dm->query('find username Documents\User where count <= 1');
-
-The above would result in the following:
-
-    Array
-    (
-        [count] => Array
-            (
-                [$lte] => 1
-            )
-
-    )
-
-Use the in operator:
-
-    [php]
-    $query = $dm->query('find all Documents\User where groups in ?', array(array(1, 2, 3)));
-
-The above would result in the following:
-
-    Array
-    (
-        [groups] => Array
-            (
-                [$in] => Array
-                    (
-                        [0] => 1
-                        [1] => 2
-                        [2] => 3
-                    )
-
-            )
-
-    )
-
-Use the notIn operator:
-
-    [php]
-    $query = $dm->query('find all Documents\User where groups notIn ?', array(array(1, 2, 3)));
-
-The above would result in the following:
-
-    Array
-    (
-        [groups] => Array
-            (
-                [$nin] => Array
-                    (
-                        [0] => 1
-                        [1] => 2
-                        [2] => 3
-                    )
-
-            )
-
-    )
-
-Use the all operator:
-
-    [php]
-    $query = $dm->query('find all Documents\User where groups all ?', array(array(1, 2, 3));
-
-The above would result in the following:
-
-    Array
-    (
-        [groups] => Array
-            (
-                [$all] => Array
-                    (
-                        [0] => 1
-                        [1] => 2
-                        [2] => 3
-                    )
-
-            )
-
-    )
-
-Use the size operator:
-
-    [php]
-    $query = $dm->query('find all Documents\User where groups size 3');
-
-The above would result in the following:
-
-    Array
-    (
-        [groups] => Array
-            (
-                [$size] => 3
-            )
-
-    )
-
-Use the exists operator:
-
-    [php]
-    $query = $dm->query('find all Documents\User where groups exists true and comments exists false');
-
-The above would result in the following:
-
-    Array
-    (
-        [groups] => Array
-            (
-                [$exists] => 1
-            )
-
-        [comments] => Array
-            (
-                [$exists] => 
-            )
-
-    )
-
-Use the type operator:
-
-    [php]
-    $query = $dm->query('find all Documents\User where username type string');
-
-The above would result in the following:
-
-    Array
-    (
-        [username] => Array
-            (
-                [$type] => 2
-            )
-
-    )
-
 ++ Insert Queries
 
 Insert documents with DQL as well:
@@ -279,25 +61,25 @@ The above would result in the following:
 
 ++ Update Queries
 
++++ Set
+
+Set a fields value:
+
     [php]
-    $query = $dm->query("update Documents\User inc count = 1, inc views = 2, set username = 'jwage'");
+    $query = $dm->query("update Documents\User set password = 'changeme' where username = 'jwage'");
 
 The above would result in the following:
 
     Array
     (
-        [$inc] => Array
-            (
-                [count] => 1
-                [views] => 2
-            )
-
         [$set] => Array
             (
-                [username] => jwage
+                [password] => changeme
             )
 
     )
+
++++ Unset
 
 You can `unset` fields easily too:
 
@@ -316,6 +98,8 @@ The above would result in the following:
 
     )
 
++++ Push
+
 Push new elements on collections:
 
     [php]
@@ -331,6 +115,8 @@ The above would result in the following:
             )
 
     )
+
++++ Push All
 
 You can push multiple with `pushAll`:
 
@@ -354,6 +140,8 @@ The above would result in the following:
 
         )
 
++++ Pull
+
 Pull an element from a collection:
 
     [php]
@@ -370,6 +158,8 @@ The above would result in the following:
             )
 
     )
+
++++ Pull All
 
 Pull multiple elements from a collection:
 
@@ -393,6 +183,8 @@ The above would result in the following:
 
     )
 
++++ Pop First
+
 Pop the first element off of a collection:
 
     [php]
@@ -409,6 +201,8 @@ The above would result in the following:
             )
 
     )
+
++++ Pop Last
 
 Pop the last element off a collection and combine it with popFirst:
 
@@ -427,6 +221,8 @@ The above would result in the following:
 
     )
 
++++ Add to Set
+
 Add an item to a set:
 
     [php]
@@ -442,6 +238,8 @@ The above would result in the following:
             )
 
     )
+
++++ Add Many to Set
 
 Add many items to a set:
 
@@ -465,6 +263,28 @@ The above would result in the following:
 
                     )
 
+            )
+
+    )
+
++++ Multiple Operations
+
+    [php]
+    $query = $dm->query("update Documents\User inc count = 1, inc views = 2, set username = 'jwage'");
+
+The above would result in the following:
+
+    Array
+    (
+        [$inc] => Array
+            (
+                [count] => 1
+                [views] => 2
+            )
+
+        [$set] => Array
+            (
+                [username] => jwage
             )
 
     )
@@ -495,6 +315,276 @@ Specify a `map` in addition to `reduce` for more complex map and reduce queries:
     $map = 'function () { return 1; }';
     $reduce = 'function () { return this.a == 3 || this.b == 4; }';
     $query = $dm->query("find all Documents\User map ? reduce ?", array($map, $reduce));
+
+++ Where Conditions
+
++++ Equals
+
+Use the equals operator:
+
+    [php]
+    $query = $dm->query("find all Documents\User where username = 'jwage'");
+
+The above would result in the following:
+
+    Array
+    (
+        [username] => jwage
+    )
+
++++ Not Equals
+
+Use not equals operator:
+
+    [php]
+    $query = $dm->query("find all Documents\User where username != 'jwage' and username != 'ok'");
+
+The above would result in the following:
+
+    Array
+    (
+        [username] => Array
+            (
+                [$ne] => Array
+                    (
+                        [0] => jwage
+                        [1] => ok
+                    )
+
+            )
+
+    )
+
++++ Greater Than
+
+Use the greater than operator:
+
+    [php]
+    $query = $dm->query('find username Documents\User where count > 1');
+
+The above would result in the following:
+
+    Array
+    (
+        [count] => Array
+            (
+                [$gt] => 1
+            )
+
+    )
+
++++ Greater Than or Equal To
+
+Use the greater than or equal to operator:
+
+    [php]
+    $query = $dm->query('find username Documents\User where count >= 1');
+
+The above would result in the following:
+
+    Array
+    (
+        [count] => Array
+            (
+                [$gte] => 1
+            )
+
+    )
+
++++ Less Than
+
+Use the less than operator:
+
+    [php]
+    $query = $dm->query('find username Documents\User where count < 1');
+
+The above would result in the following:
+
+    Array
+    (
+        [count] => Array
+            (
+                [$lt] => 1
+            )
+
+    )
+
++++ Less Than or Equal To
+
+Use the less than or equal to operator:
+
+    [php]
+    $query = $dm->query('find username Documents\User where count <= 1');
+
+The above would result in the following:
+
+    Array
+    (
+        [count] => Array
+            (
+                [$lte] => 1
+            )
+
+    )
+
++++ In
+
+Use the in operator:
+
+    [php]
+    $query = $dm->query('find all Documents\User where groups in ?', array(array(1, 2, 3)));
+
+The above would result in the following:
+
+    Array
+    (
+        [groups] => Array
+            (
+                [$in] => Array
+                    (
+                        [0] => 1
+                        [1] => 2
+                        [2] => 3
+                    )
+
+            )
+
+    )
+
++++ Not In
+
+Use the notIn operator:
+
+    [php]
+    $query = $dm->query('find all Documents\User where groups notIn ?', array(array(1, 2, 3)));
+
+The above would result in the following:
+
+    Array
+    (
+        [groups] => Array
+            (
+                [$nin] => Array
+                    (
+                        [0] => 1
+                        [1] => 2
+                        [2] => 3
+                    )
+
+            )
+
+    )
+
++++ All
+
+Use the all operator:
+
+    [php]
+    $query = $dm->query('find all Documents\User where groups all ?', array(array(1, 2, 3));
+
+The above would result in the following:
+
+    Array
+    (
+        [groups] => Array
+            (
+                [$all] => Array
+                    (
+                        [0] => 1
+                        [1] => 2
+                        [2] => 3
+                    )
+
+            )
+
+    )
+
++++ Size
+
+Use the size operator:
+
+    [php]
+    $query = $dm->query('find all Documents\User where groups size 3');
+
+The above would result in the following:
+
+    Array
+    (
+        [groups] => Array
+            (
+                [$size] => 3
+            )
+
+    )
+
++++ Exists
+
+Use the exists operator:
+
+    [php]
+    $query = $dm->query('find all Documents\User where groups exists true and comments exists false');
+
+The above would result in the following:
+
+    Array
+    (
+        [groups] => Array
+            (
+                [$exists] => 1
+            )
+
+        [comments] => Array
+            (
+                [$exists] => 
+            )
+
+    )
+
++++ Type
+
+Use the type operator:
+
+    [php]
+    $query = $dm->query('find all Documents\User where username type string');
+
+The above would result in the following:
+
+    Array
+    (
+        [username] => Array
+            (
+                [$type] => 2
+            )
+
+    )
+
++++ ElemMatch
+
+If you want to generate `$elemMatch` queries when searching embedded document collections
+you can use the `all` keyword in your query:
+
+    [php]
+    $query = $dm->query("
+        find all Documents\User 
+        where all accounts.name = 'Doctrine'
+        and all accounts.department = 'Development'
+        and groups.name = 'Group 1'
+    ")
+
+The above would result in the following:
+
+    Array
+    (
+        [accounts] => Array
+            (
+                [$elemMatch] => Array
+                    (
+                        [name] => Doctrine
+                        [department] => Development
+                    )
+            )
+        [groups.name] => Group 1
+    )
 
 ++ Placeholders
 
