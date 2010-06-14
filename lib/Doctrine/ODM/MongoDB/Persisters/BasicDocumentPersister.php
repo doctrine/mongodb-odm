@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
+    Doctrine\ODM\MongoDB\UnitOfWork,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\MongoCursor,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
@@ -77,6 +78,9 @@ class BasicDocumentPersister
      * @var array
      */
     private $_queuedInserts = array();
+
+    private $_documentsToUpdate = array();
+    private $_fieldsToUpdate = array();
 
     /**
      * Initializes a new BasicDocumentPersister instance.
@@ -146,6 +150,37 @@ class BasicDocumentPersister
         return $postInsertIds;
     }
 
+    /**
+     * Executes reference updates in case document had references to new documents,
+     * without identifier value
+     */
+    public function executeReferenceUpdates()
+    {
+        foreach ($this->_documentsToUpdate as $oid => $document)
+        {
+            $update = array();
+            foreach ($this->_fieldsToUpdate[$oid] as $fieldName => $fieldData)
+            {
+                list ($mapping, $value) = $fieldData;
+                $update[$fieldName] = $this->_prepareValue($mapping, $value);
+            }
+            $id = $this->_uow->getDocumentIdentifier($document);
+            $id = new \MongoId($id);
+            $this->_collection->update(array(
+                '_id' => $id
+            ), array(
+                '$set' => $update
+            ));
+            unset ($this->_documentsToUpdate[$oid]);
+            unset ($this->_fieldsToUpdate[$oid]);
+        }
+    }
+
+    /**
+     * Updates persisted document, using atomic operators
+     *
+     * @param mixed $document
+     */
     public function update($document)
     {
         $id = $this->_uow->getDocumentIdentifier($document);
@@ -182,12 +217,23 @@ class BasicDocumentPersister
         }
     }
 
+    /**
+     * Removes document from mongo
+     *
+     * @param mixed $document
+     */
     public function delete($document)
     {
         $id = $this->_uow->getDocumentIdentifier($document);
         $this->_collection->remove(array('_id' => new \MongoId($id)));
     }
 
+    /**
+     * Prepares insert data for document
+     *
+     * @param mixed $document
+     * @return array
+     */
     public function prepareInsertData($document)
     {
         $oid = spl_object_hash($document);
@@ -203,11 +249,37 @@ class BasicDocumentPersister
             }
             $changeset[$mapping['fieldName']] = array();
             $result[$mapping['fieldName']] = $this->_prepareValue($mapping, $new);
+            if (isset($mapping['reference'])) {
+                $scheduleForUpdate = false;
+                if ($mapping['type'] === 'one') {
+                    if (null === $result[$mapping['fieldName']]['$id']) {
+                        $scheduleForUpdate = true;
+                    }
+                } elseif ($mapping['type'] === 'many') {
+                    foreach ($result[$mapping['fieldName']] as $ref) {
+                        if (null === $ref['$id']) {
+                            $scheduleForUpdate = true;
+                            break;
+                        }
+                    }
+                }
+                if ($scheduleForUpdate) {
+                    unset($result[$mapping['fieldName']]);
+                    $id = spl_object_hash($document);
+                    $this->_documentsToUpdate[$id] = $document;
+                    $this->_fieldsToUpdate[$id][$mapping['fieldName']] = array($mapping, $new);
+                }
+            }
         }
-
         return $result;
     }
 
+    /**
+     * Prepares update array for document, using atomic operators
+     *
+     * @param mixed $document
+     * @return array
+     */
     public function prepareUpdateData($document)
     {
         $oid = spl_object_hash($document);
