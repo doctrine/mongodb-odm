@@ -331,20 +331,52 @@ class Query
      *
      * @param string $fieldName
      * @param string $value
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function addWhere($fieldName, $value)
+    public function addWhere($fieldName, $value, $elemMatch = true)
     {
-        if ($fieldName === $this->_class->identifier) {
-            $fieldName = '_id';
-            $value = new \MongoId($value);
+        $value = $this->_prepareWhereValue($fieldName, $value);
+
+        // use $elemMatch for embedded collections when $elemMatch === true
+        if ($elemMatch === true && strpos($fieldName, '.') !== false) {
+            return $this->addWhereElemMatch($fieldName, $value);
         }
+
         if (isset($this->_where[$fieldName])) {
             $this->_where[$fieldName] = array_merge_recursive($this->_where[$fieldName], $value);
         } else {
             $this->_where[$fieldName] = $value;
         }
+
         return $this;
+    }
+
+    public function addWhereElemMatch($fieldName, $value)
+    {
+        $e = explode('.', $fieldName);
+        $fieldName = array_pop($e);
+        $embeddedPath = implode('.', $e);
+        $this->_where[$embeddedPath]['$elemMatch'][$fieldName] = $value;
+        return $this;
+    }
+
+    public function addWhereElemMatchOperator($fieldName, $operator, $value)
+    {
+        $e = explode('.', $fieldName);
+        $fieldName = array_pop($e);
+        $embeddedPath = implode('.', $e);
+        $this->_where[$embeddedPath]['$elemMatch'][$fieldName][$operator] = $value;
+        return $this;
+    }
+
+    public function addWhereOperator($fieldName, $operator, $value, $elemMatch = true)
+    {
+        // use $elemMatch for embedded collections when $elemMatch === true
+        if ($elemMatch === true && strpos($fieldName, '.') !== false) {
+            return $this->addWhereElemMatchOperator($fieldName, $operator, $value);
+        }
+        $this->_where[$fieldName][$operator] = $value;
     }
 
     /**
@@ -352,11 +384,12 @@ class Query
      *
      * @param string $fieldName
      * @param mixed $values
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereIn($fieldName, $values)
+    public function whereIn($fieldName, $values, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$in' => (array) $values));
+        return $this->addWhereOperator($fieldName, '$in', $values, $elemMatch);
     }
 
     /**
@@ -364,11 +397,12 @@ class Query
      *
      * @param string $fieldName
      * @param mixed $values
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereNotIn($fieldName, $values)
+    public function whereNotIn($fieldName, $values, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$nin' => (array) $values));
+        return $this->addWhereOperator($fieldName, '$nin', (array) $values, $elemMatch);
     }
 
     /**
@@ -376,11 +410,12 @@ class Query
      *
      * @param string $fieldName
      * @param string $value
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereNotEqual($fieldName, $value)
+    public function whereNotEqual($fieldName, $value, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$ne' => $value));
+        return $this->addWhereOperator($fieldName, '$ne', $value, $elemMatch);
     }
 
     /**
@@ -388,11 +423,12 @@ class Query
      *
      * @param string $fieldName
      * @param string $value
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereGt($fieldName, $value)
+    public function whereGt($fieldName, $value, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$gt' => $value));
+        return $this->addWhereOperator($fieldName, '$gt', $value, $elemMatch);
     }
 
     /**
@@ -400,11 +436,12 @@ class Query
      *
      * @param string $fieldName
      * @param string $value
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereGte($fieldName, $value)
+    public function whereGte($fieldName, $value, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$gte' => $value));
+        return $this->addWhereOperator($fieldName, '$gte', $value, $elemMatch);
     }
 
     /**
@@ -412,11 +449,12 @@ class Query
      *
      * @param string $fieldName
      * @param string $value
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereLt($fieldName, $value)
+    public function whereLt($fieldName, $value, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$lt' => $value));
+        return $this->addWhereOperator($fieldName, '$lt', $value, $elemMatch);
     }
 
     /**
@@ -424,11 +462,12 @@ class Query
      *
      * @param string $fieldName
      * @param string $value
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereLte($fieldName, $value)
+    public function whereLte($fieldName, $value, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$lte' => $value));
+        return $this->addWhereOperator($fieldName, '$lte', $value, $elemMatch);
     }
 
     /**
@@ -437,11 +476,13 @@ class Query
      * @param string $fieldName
      * @param string $start
      * @param string $end
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereRange($fieldName, $start, $end)
+    public function whereRange($fieldName, $start, $end, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$gt' => $start, '$lt' => $end));
+        return $this->addWhereOperator($fieldName, '$gt', $start, $elemMatch)
+            ->$this->addWhereOperator($fieldName, '$lt', $end, $elemMatch);
     }
 
     /**
@@ -449,11 +490,12 @@ class Query
      *
      * @param string $fieldName
      * @param string $size
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereSize($fieldName, $size)
+    public function whereSize($fieldName, $size, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$size' => $size));
+        return $this->addWhereOperator($fieldName, '$size', $size, $elemMatch);
     }
 
     /**
@@ -461,11 +503,12 @@ class Query
      *
      * @param string $fieldName
      * @param string $bool
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereExists($fieldName, $bool)
+    public function whereExists($fieldName, $bool, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$exists' => $bool));
+        return $this->addWhereOperator($fieldName, '$exists', $bool, $elemMatch);
     }
 
     /**
@@ -473,9 +516,10 @@ class Query
      *
      * @param string $fieldName
      * @param string $type
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereType($fieldName, $type)
+    public function whereType($fieldName, $type, $elemMatch = true)
     {
         $map = array(
             'double' => 1,
@@ -501,7 +545,7 @@ class Query
         if (is_string($type) && isset($map[$type])) {
             $type = $map[$type];
         }
-        return $this->addWhere($fieldName, array('$type' => $type));
+        return $this->addWhereOperator($fieldName, '$type', $type, $elemMatch);
     }
 
     /**
@@ -509,11 +553,12 @@ class Query
      *
      * @param string $fieldName
      * @param mixed $values
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereAll($fieldName, $values)
+    public function whereAll($fieldName, $values, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$all' => (array) $values));
+        return $this->addWhereOperator($fieldName, '$all', (array) $values, $elemMatch);
     }
 
     /**
@@ -521,11 +566,12 @@ class Query
      *
      * @param string $fieldName
      * @param string $mod
+     * @param boolean $elemMatch
      * @return Query
      */
-    public function whereMod($fieldName, $mod)
+    public function whereMod($fieldName, $mod, $elemMatch = true)
     {
-        return $this->addWhere($fieldName, array('$mod' => $mod));
+        return $this->addWhereOperator($fieldName, '$mod', $mod, $elemMatch);
     }
 
     /**
@@ -964,5 +1010,20 @@ class Query
             }
         }
         return $debug;
+    }
+
+    private function _prepareWhereValue($fieldName, $value)
+    {
+        if ($fieldName === $this->_class->identifier) {
+            $fieldName = '_id';
+            if (is_array($value)) {
+                foreach ($value as $k => $v) {
+                    $value[$k] = new \MongoId($v);
+                }
+            } else {
+                $value = new \MongoId($value);
+            }
+        }
+        return $value;
     }
 }
