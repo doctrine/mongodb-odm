@@ -185,7 +185,8 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         unset($user, $account);
 
         $user = $this->dm->findOne('Documents\User');
-
+        $this->assertEquals(3, count($user->getGroups()));
+  
         $user->removeGroup('moderator');
         $user->removeGroup('member');
 
