@@ -46,11 +46,10 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_LT                  = 12;
     const T_LTE                 = 13;
     const T_GTE                 = 14;
-    const T_FIND_ALL            = 15;
-    const T_OPEN_BRACKET        = 16;
-    const T_CLOSE_BRACKET       = 17;
-    const T_OPEN_CURLY_BRACE    = 18;
-    const T_CLOSE_CURLY_BRACE   = 19;
+    const T_OPEN_BRACKET        = 15;
+    const T_CLOSE_BRACKET       = 16;
+    const T_OPEN_CURLY_BRACE    = 17;
+    const T_CLOSE_CURLY_BRACE   = 18;
 
     // All tokens that are also identifiers should be >= 100
     const T_IDENTIFIER          = 100;
@@ -88,6 +87,7 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_OR                  = 132;
     const T_TRUE                = 133;
     const T_FALSE               = 134;
+    const T_ANY                 = 135;
 
     /**
      * @inheritdoc
@@ -131,8 +131,6 @@ class Lexer extends \Doctrine\Common\Lexer
         if ($value[0] === "'") {
             $value = str_replace("''", "'", substr($value, 1, strlen($value) - 2));
             return self::T_STRING;
-        } else if ($value === 'all') {
-            return self::T_FIND_ALL;
         } else if (ctype_alpha($value[0]) || $value[0] === '_') {
             $name = 'Doctrine\ODM\MongoDB\Query\Lexer::T_' . strtoupper($value);
             if (defined($name)) {
