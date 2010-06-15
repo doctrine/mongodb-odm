@@ -81,7 +81,16 @@ class BasicDocumentPersister
      */
     private $_queuedInserts = array();
 
+    /**
+     * Documents to be updated, used in executeReferenceUpdates() method
+     * @var array
+     */
     private $_documentsToUpdate = array();
+
+    /**
+     * Fields to update, used in executeReferenceUpdates() method
+     * @var array
+     */
     private $_fieldsToUpdate = array();
 
     /**
