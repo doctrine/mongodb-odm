@@ -27,7 +27,7 @@ You can select only certain fields:
 If you want to use the `$slice` operator for only selecting a subset of elements in an array:
 
     [php]
-    $query = $dm->query('find comments.slice(20, 10) Documents\User');
+    $query = $dm->query('find comments skip 20 limit 10 Documents\User');
 
 The above would result in the following select:
 
@@ -37,8 +37,8 @@ The above would result in the following select:
             (
                 [$slice] => Array
                     (
-                        [0] => 10
-                        [1] => 20
+                        [0] => 20
+                        [1] => 10
                     )
 
             )
