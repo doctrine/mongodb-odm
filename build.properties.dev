@@ -1,5 +1,5 @@
 version=1.0.0ALPHA1
-stability=beta
+stability=alpha
 build.dir=build
 dist.dir=dist
 report.dir=reports

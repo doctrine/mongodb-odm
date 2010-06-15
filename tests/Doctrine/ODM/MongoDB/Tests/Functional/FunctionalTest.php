@@ -12,6 +12,67 @@ use Documents\User,
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function testSearchEmbeddedDocumentDQL()
+    {
+        $user = new \Documents\User();
+        $user->setUsername('jwage');
+        $address = new \Documents\Address();
+        $address->setCity('nashville');
+        $user->setAddress($address);
+
+        $user->addPhonenumber(new \Documents\Phonenumber('6155139185'));
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->assertNotNull($this->dm->find('Documents\User', array('phonenumbers.phonenumber' => '6155139185'))->getSingleResult());
+
+        $query = $this->dm->query("find all Documents\User where phonenumbers.phonenumber = '6155139185'");
+        $this->assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->query("find all Documents\User where phonenumbers.phonenumber = ?", array('6155139185'));
+        $this->assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->query('find all Documents\User where address.city = ?', 'nashville');
+        $this->assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->query('find all Documents\User where phonenumbers size :size', array(':size' => 1));
+        $this->assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->query('find all Documents\User where phonenumbers size ?', 1);
+        $this->assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->query('find all Documents\User where phonenumbers size 1');
+        $this->assertNotNull($query->getSingleResult());
+
+        $this->dm->query('update Documents\User set address.city = ?', 'atlanta')
+            ->execute();
+
+        $query = $this->dm->query('find all Documents\User where address.city = ?', 'atlanta');
+        $this->assertNotNull($query->getSingleResult());
+
+        $this->dm->query('remove Documents\User where address.city = ?', 'atlanta')
+            ->execute();
+
+        $query = $this->dm->query('find all Documents\User where address.city = ?', 'atlanta');
+        $this->assertNull($query->getSingleResult());
+
+        $this->dm->query("insert Documents\User set username = 'jwage', address.city = 'atlanta'")
+            ->execute();
+        $query = $this->dm->query('find all Documents\User where address.city = ? and username = ?', array('atlanta', 'jwage'));
+        $this->assertNotNull($query->getSingleResult());
+    }
+
+    public function testFunctionalDQLQuery()
+    {
+        $user = new \Documents\User();
+        $user->setUsername('jwage');
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $query = $this->dm->query("find all Documents\User where username = :username", array(':username' => 'jwage'));
+        $this->assertNotNull($query->getSingleResult());
+    }
+
     public function testIncrement()
     {
         $user = new User();

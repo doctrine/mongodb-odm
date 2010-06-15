@@ -20,10 +20,13 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
+    Doctrine\ODM\MongoDB\UnitOfWork,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\MongoCursor,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
-    Doctrine\Common\Collections\Collection;
+    Doctrine\Common\Collections\Collection,
+    Doctrine\ODM\MongoDB\ODMEvents,
+    Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
 
 /**
  * The BasicDocumentPersister is responsible for actual persisting the calculated
@@ -31,7 +34,6 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
- * @version     $Revision: 4930 $
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
@@ -78,6 +80,9 @@ class BasicDocumentPersister
      * @var array
      */
     private $_queuedInserts = array();
+
+    private $_documentsToUpdate = array();
+    private $_fieldsToUpdate = array();
 
     /**
      * Initializes a new BasicDocumentPersister instance.
@@ -147,12 +152,48 @@ class BasicDocumentPersister
         return $postInsertIds;
     }
 
+    /**
+     * Executes reference updates in case document had references to new documents,
+     * without identifier value
+     */
+    public function executeReferenceUpdates()
+    {
+        foreach ($this->_documentsToUpdate as $oid => $document)
+        {
+            $update = array();
+            foreach ($this->_fieldsToUpdate[$oid] as $fieldName => $fieldData)
+            {
+                list ($mapping, $value) = $fieldData;
+                $update[$fieldName] = $this->_prepareValue($mapping, $value);
+            }
+            $id = $this->_uow->getDocumentIdentifier($document);
+            $id = new \MongoId($id);
+            $this->_collection->update(array(
+                '_id' => $id
+            ), array(
+                '$set' => $update
+            ));
+            unset ($this->_documentsToUpdate[$oid]);
+            unset ($this->_fieldsToUpdate[$oid]);
+        }
+    }
+
+    /**
+     * Updates persisted document, using atomic operators
+     *
+     * @param mixed $document
+     */
     public function update($document)
     {
         $id = $this->_uow->getDocumentIdentifier($document);
 
         $update = $this->prepareUpdateData($document);
         if ( ! empty($update)) {
+            if ($this->_dm->getEventManager()->hasListeners(ODMEvents::onUpdatePrepared)) {
+                $this->_dm->getEventManager()->dispatchEvent(
+                    ODMEvents::onUpdatePrepared, new OnUpdatePreparedArgs($this->_dm, $document, $update)
+                );
+            }
             /**
              * temporary fix for @link http://jira.mongodb.org/browse/SERVER-1050
              * atomic modifiers $pushAll and $pullAll, $push, $pop and $pull
@@ -183,6 +224,11 @@ class BasicDocumentPersister
         }
     }
 
+    /**
+     * Removes document from mongo
+     *
+     * @param mixed $document
+     */
     public function delete($document)
     {
         $id = $this->_uow->getDocumentIdentifier($document);
@@ -194,6 +240,12 @@ class BasicDocumentPersister
         $this->_collection->remove(array('_id' => $id));
     }
 
+    /**
+     * Prepares insert data for document
+     *
+     * @param mixed $document
+     * @return array
+     */
     public function prepareInsertData($document)
     {
         $oid = spl_object_hash($document);
@@ -213,11 +265,37 @@ class BasicDocumentPersister
                 continue;
             }
             $result[$mapping['fieldName']] = $this->_prepareValue($mapping, $new);
+            if (isset($mapping['reference'])) {
+                $scheduleForUpdate = false;
+                if ($mapping['type'] === 'one') {
+                    if (null === $result[$mapping['fieldName']]['$id']) {
+                        $scheduleForUpdate = true;
+                    }
+                } elseif ($mapping['type'] === 'many') {
+                    foreach ($result[$mapping['fieldName']] as $ref) {
+                        if (null === $ref['$id']) {
+                            $scheduleForUpdate = true;
+                            break;
+                        }
+                    }
+                }
+                if ($scheduleForUpdate) {
+                    unset($result[$mapping['fieldName']]);
+                    $id = spl_object_hash($document);
+                    $this->_documentsToUpdate[$id] = $document;
+                    $this->_fieldsToUpdate[$id][$mapping['fieldName']] = array($mapping, $new);
+                }
+            }
         }
-
         return $result;
     }
 
+    /**
+     * Prepares update array for document, using atomic operators
+     *
+     * @param mixed $document
+     * @return array
+     */
     public function prepareUpdateData($document)
     {
         $oid = spl_object_hash($document);
@@ -289,7 +367,9 @@ class BasicDocumentPersister
     public function refresh($document)
     {
         $id = $this->_uow->getDocumentIdentifier($document);
-        $this->_dm->loadByID($this->_class->name, $id);
+        if ($this->_dm->loadByID($this->_class->name, $id) === null) {
+            throw new \InvalidArgumentException(sprintf('Could not loadByID because ' . $this->_class->name . ' '.$id . ' does not exist anymore.'));
+        }
     }
 
     /**

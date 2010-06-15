@@ -26,6 +26,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mongo,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
+    Doctrine\ODM\MongoDB\Query\Parser,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\EventManager;
 
@@ -110,6 +111,13 @@ class DocumentManager
     private $_documentCollections = array();
 
     /**
+     * The Query\Parser instance for parsing string based queries.
+     *
+     * @var Query\Parser $parser
+     */
+    private $_queryParser;
+
+    /**
      * Whether the DocumentManager is closed or not.
      */
     private $_closed = false;
@@ -135,6 +143,7 @@ class DocumentManager
         if ($cacheDriver = $this->_config->getMetadataCacheImpl()) {
             $this->_metadataFactory->setCacheDriver($cacheDriver);
         }
+        $this->_queryParser = new Parser($this);
         $this->_unitOfWork = new UnitOfWork($this);
         $this->_proxyFactory = new ProxyFactory($this,
                 $config->getProxyDir(),
@@ -280,6 +289,14 @@ class DocumentManager
         return $this->_documentCollections[$key];
     }
 
+    public function query($queryString, $parameters = array())
+    {
+        if ( ! is_array($parameters)) {
+            $parameters = array($parameters);
+        }
+        return $this->_queryParser->parse($queryString, $parameters);
+    }
+
     /**
      * Create a new Query instance for a class.
      *
@@ -409,11 +426,12 @@ class DocumentManager
      *
      * @param string $documentName The document name to load.
      * @param string $id  The id the document to load.
+     * @param boolean $isProxy
      * @return object $document  The loaded document.
      * @todo this function seems to be doing to much, should we move parts of it
      * to BasicDocumentPersister maybe?
      */
-    public function loadByID($documentName, $id)
+    public function loadByID($documentName, $id, $isProxy = false)
     {
         $class = $this->getClassMetadata($documentName);
         $collection = $this->getDocumentCollection($documentName);
@@ -425,9 +443,13 @@ class DocumentManager
         $result = $collection->findOne(array('_id' => $id));
 
         if ( ! $result) {
-            throw new \InvalidArgumentException(sprintf('Could not loadByID because ' . $documentName . ' '.$id . ' does not exist anymore.'));
+            return null;
         }
-        return $this->load($documentName, $id, $result);
+        $document = $this->load($documentName, $id, $result);
+        if ($isProxy) {
+            $this->getUnitOfWork()->registerManaged($document, $id, $result);
+        }
+        return $document;
     }
 
     /**

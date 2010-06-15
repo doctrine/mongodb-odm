@@ -30,7 +30,6 @@ require __DIR__ . '/DoctrineAnnotations.php';
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
  * @since       1.0
- * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -196,31 +195,31 @@ class AnnotationDriver implements Driver
                     $annotations = $this->_reader->getMethodAnnotations($method);
 
                     if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PrePersist'])) {
-                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::prePersist);
+                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::prePersist);
                     }
 
                     if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PostPersist'])) {
-                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::postPersist);
+                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::postPersist);
                     }
 
                     if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PreUpdate'])) {
-                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::preUpdate);
+                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::preUpdate);
                     }
 
                     if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PostUpdate'])) {
-                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::postUpdate);
+                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::postUpdate);
                     }
 
                     if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PreRemove'])) {
-                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::preRemove);
+                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::preRemove);
                     }
 
                     if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PostRemove'])) {
-                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::postRemove);
+                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::postRemove);
                     }
 
                     if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PostLoad'])) {
-                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::postLoad);
+                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::postLoad);
                     }
                 }
             }

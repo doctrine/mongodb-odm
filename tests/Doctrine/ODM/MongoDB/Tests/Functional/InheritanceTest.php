@@ -24,9 +24,8 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $query = $this->dm->createQuery('Documents\SpecialUser')
             ->where('id', $user->getId());
-
         $user = $query->getSingleResult();
-        
+  
         $user->getProfile()->setLastName('Wage');
         $this->dm->flush();
         $this->dm->clear();

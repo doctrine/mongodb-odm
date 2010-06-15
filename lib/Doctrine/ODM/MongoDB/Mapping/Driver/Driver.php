@@ -27,7 +27,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
  * @since       1.0
- * @version     $Revision$
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */

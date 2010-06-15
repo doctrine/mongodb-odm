@@ -1,5 +1,7 @@
 <?php
 /*
+ *  $Id$
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -17,29 +19,38 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Driver;
-
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+namespace Doctrine\ODM\MongoDB;
 
 /**
- * The PHPDriver invokes a static PHP function on the document class itself passing
- * a ClassMetadata instance for you to manually populate with mapping information.
+ * Container for all MongoCollection events.
+ *
+ * This class cannot be instantiated.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
+ * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
-class PHPDriver implements Driver
+final class CollectionEvents
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function loadMetadataForClass($className, ClassMetadata $class)
-    {
-        if (method_exists($className, 'loadMetadata')) {
-            call_user_func_array(array($className, 'loadMetadata'), array($class));
-        }
-    }
+    const preBatchInsert = 'collectionPreBatchInsert';
+    const postBatchInsert = 'collectionPostBatchInsert';
+
+    const preUpdate = 'collectionPreUpdate';
+    const postUpdate = 'collectionPostUpdate';
+
+    const preSaveFile = 'collectionPreSaveFile';
+    const postSaveFile = 'collectionPostSaveFile';
+
+    const preGetDBRef = 'collectionPreGetDBRef';
+    const postGetDBRef = 'collectionPostGetDBRef';
+
+    const preSave = 'collectionPreSave';
+    const postSave = 'collectionPostSave';
+
+    const preFind = 'collectionPreFind';
+    const postFind = 'collectionPostFind';
+
+    const preFindOne = 'collectionPreFindOne';
+    const postFindOne = 'collectionPostFindOne';
 }

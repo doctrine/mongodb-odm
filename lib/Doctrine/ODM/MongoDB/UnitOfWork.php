@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
+    Doctrine\ODM\MongoDB\Event\LifecycleEventArgs,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\Collections\ArrayCollection;
 
@@ -34,7 +35,6 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
- * @version     $Revision: 4930 $
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -258,8 +258,8 @@ class UnitOfWork
         }
 
         // Raise onFlush
-        if ($this->_evm->hasListeners(Events::onFlush)) {
-            $this->_evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->_dm));
+        if ($this->_evm->hasListeners(ODMEvents::onFlush)) {
+            $this->_evm->dispatchEvent(ODMEvents::onFlush, new Event\OnFlushEventArgs($this->_dm));
         }
 
         // Now we need a commit order to maintain referential integrity
@@ -268,6 +268,9 @@ class UnitOfWork
         if ($this->_documentInsertions) {
             foreach ($commitOrder as $class) {
                 $this->_executeInserts($class);
+            }
+            foreach ($commitOrder as $class) {
+                $this->_executeReferenceUpdates($class);
             }
         }
         
@@ -297,6 +300,18 @@ class UnitOfWork
         $this->_visitedCollections =
         $this->_scheduledForDirtyCheck =
         $this->_orphanRemovals = array();
+    }
+
+    /**
+     * Executes reference updates
+     *
+     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
+     */
+    private function _executeReferenceUpdates(ClassMetadata $class)
+    {
+        $className = $class->name;
+        $persister = $this->getDocumentPersister($className);
+        $persister->executeReferenceUpdates();
     }
 
     /**
@@ -504,11 +519,11 @@ class UnitOfWork
             $state = $this->getDocumentState($entry, self::STATE_NEW);
             $oid = spl_object_hash($entry);
             if ($state == self::STATE_NEW) {
-                if (isset($targetClass->lifecycleCallbacks[Events::prePersist])) {
-                    $targetClass->invokeLifecycleCallbacks(Events::prePersist, $document);
+                if (isset($targetClass->lifecycleCallbacks[ODMEvents::prePersist])) {
+                    $targetClass->invokeLifecycleCallbacks(ODMEvents::prePersist, $entry);
                 }
-                if ($this->_evm->hasListeners(Events::prePersist)) {
-                    $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($document, $this->_dm));
+                if ($this->_evm->hasListeners(ODMEvents::prePersist)) {
+                    $this->_evm->dispatchEvent(ODMEvents::prePersist, new LifecycleEventArgs($entry, $this->_dm));
                 }
 
                 $this->_documentStates[$oid] = self::STATE_MANAGED;
@@ -518,7 +533,7 @@ class UnitOfWork
                 $this->computeChangeSet($targetClass, $entry);
                 
             } elseif ($state == self::STATE_REMOVED) {
-                throw MongoDBException::removedDocumentInCollectionDetected($document, $mapping);
+                throw MongoDBException::removedDocumentInCollectionDetected($entry, $mapping);
             }
             // MANAGED associated documents are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
@@ -589,8 +604,8 @@ class UnitOfWork
         $persister = $this->getDocumentPersister($className);
         $collection = $this->_dm->getDocumentCollection($className);
 
-        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postPersist]);
-        $hasListeners = $this->_evm->hasListeners(Events::postPersist);
+        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[ODMEvents::postPersist]);
+        $hasListeners = $this->_evm->hasListeners(ODMEvents::postPersist);
         if ($hasLifecycleCallbacks || $hasListeners) {
             $documents = array();
         }
@@ -622,10 +637,10 @@ class UnitOfWork
         if ($hasLifecycleCallbacks || $hasListeners) {
             foreach ($documents as $document) {
                 if ($hasLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::postPersist, $document);
+                    $class->invokeLifecycleCallbacks(ODMEvents::postPersist, $document);
                 }
                 if ($hasListeners) {
-                    $this->_evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->_dm));
+                    $this->_evm->dispatchEvent(ODMEvents::postPersist, new LifecycleEventArgs($document, $this->_dm));
                 }
             }
         }
@@ -641,20 +656,20 @@ class UnitOfWork
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
 
-        $hasPreUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::preUpdate]);
-        $hasPreUpdateListeners = $this->_evm->hasListeners(Events::preUpdate);
-        $hasPostUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postUpdate]);
-        $hasPostUpdateListeners = $this->_evm->hasListeners(Events::postUpdate);
+        $hasPreUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[ODMEvents::preUpdate]);
+        $hasPreUpdateListeners = $this->_evm->hasListeners(ODMEvents::preUpdate);
+        $hasPostUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[ODMEvents::postUpdate]);
+        $hasPostUpdateListeners = $this->_evm->hasListeners(ODMEvents::postUpdate);
 
         foreach ($this->_documentUpdates as $oid => $document) {
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
                 if ($hasPreUpdateLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::preUpdate, $document);
+                    $class->invokeLifecycleCallbacks(ODMEvents::preUpdate, $document);
                     $this->recomputeSingleDocumentChangeSet($class, $document);
                 }
                 
                 if ($hasPreUpdateListeners) {
-                    $this->_evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
+                    $this->_evm->dispatchEvent(ODMEvents::preUpdate, new Event\PreUpdateEventArgs(
                         $document, $this->_dm, $this->_documentChangeSets[$oid])
                     );
                 }
@@ -663,10 +678,10 @@ class UnitOfWork
                 unset($this->_documentUpdates[$oid]);
 
                 if ($hasPostUpdateLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::postUpdate, $document);
+                    $class->invokeLifecycleCallbacks(ODMEvents::postUpdate, $document);
                 }
                 if ($hasPostUpdateListeners) {
-                    $this->_evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->_dm));
+                    $this->_evm->dispatchEvent(ODMEvents::postUpdate, new LifecycleEventArgs($document, $this->_dm));
                 }
             }
         }
@@ -678,8 +693,8 @@ class UnitOfWork
      */
     private function _executeDeletions($class)
     {
-        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postRemove]);
-        $hasListeners = $this->_evm->hasListeners(Events::postRemove);
+        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[ODMEvents::postRemove]);
+        $hasListeners = $this->_evm->hasListeners(ODMEvents::postRemove);
 
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
@@ -697,10 +712,10 @@ class UnitOfWork
                 $this->_documentStates[$oid] = self::STATE_NEW;
 
                 if ($hasLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::postRemove, $document);
+                    $class->invokeLifecycleCallbacks(ODMEvents::postRemove, $document);
                 }
                 if ($hasListeners) {
-                    $this->_evm->dispatchEvent(Events::postRemove, new LifecycleEventArgs($document, $this->_dm));
+                    $this->_evm->dispatchEvent(ODMEvents::postRemove, new LifecycleEventArgs($document, $this->_dm));
                 }
             }
         }
@@ -1103,11 +1118,11 @@ class UnitOfWork
                 $this->scheduleForDirtyCheck($document);
                 break;
             case self::STATE_NEW:
-                if (isset($class->lifecycleCallbacks[Events::prePersist])) {
-                    $class->invokeLifecycleCallbacks(Events::prePersist, $document);
+                if (isset($class->lifecycleCallbacks[ODMEvents::prePersist])) {
+                    $class->invokeLifecycleCallbacks(ODMEvents::prePersist, $document);
                 }
-                if ($this->_evm->hasListeners(Events::prePersist)) {
-                    $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($document, $this->_dm));
+                if ($this->_evm->hasListeners(ODMEvents::prePersist)) {
+                    $this->_evm->dispatchEvent(ODMEvents::prePersist, new LifecycleEventArgs($document, $this->_dm));
                 }
 
                 $this->_documentStates[$oid] = self::STATE_MANAGED;
@@ -1171,11 +1186,11 @@ class UnitOfWork
                 // nothing to do
                 break;
             case self::STATE_MANAGED:
-                if (isset($class->lifecycleCallbacks[Events::preRemove])) {
-                    $class->invokeLifecycleCallbacks(Events::preRemove, $document);
+                if (isset($class->lifecycleCallbacks[ODMEvents::preRemove])) {
+                    $class->invokeLifecycleCallbacks(ODMEvents::preRemove, $document);
                 }
-                if ($this->_evm->hasListeners(Events::preRemove)) {
-                    $this->_evm->dispatchEvent(Events::preRemove, new LifecycleEventArgs($document, $this->_dm));
+                if ($this->_evm->hasListeners(ODMEvents::preRemove)) {
+                    $this->_evm->dispatchEvent(ODMEvents::preRemove, new LifecycleEventArgs($document, $this->_dm));
                 }
                 $this->scheduleForDelete($document);
                 break;
@@ -1211,7 +1226,7 @@ class UnitOfWork
     private function _doMerge($document, array &$visited, $prevManagedCopy = null, $mapping = null)
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
-        $id = $class->getIdentifierValues($document);
+        $id = $class->getIdentifierValue($document);
 
         if ( ! $id) {
             throw new \InvalidArgumentException('New document detected during merge.'
@@ -1475,10 +1490,10 @@ class UnitOfWork
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
                     foreach ($relatedDocuments as $relatedDocument) {
-                        $this->_cascadeMerge($relatedDocument, $visited);
+                        $this->_cascadeMerge($relatedDocument, $managedCopy, $visited);
                     }
                 } elseif ($relatedDocuments !== null) {
-                    $this->_cascadeMerge($relatedDocuments, $visited);
+                    $this->_cascadeMerge($relatedDocuments, $managedCopy, $visited);
                 }
             } elseif (isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1673,11 +1688,11 @@ class UnitOfWork
         if ($overrideLocalValues) {
             $this->_hydrator->hydrate($class, $document, $data);
         }
-        if (isset($class->lifecycleCallbacks[Events::postLoad])) {
-            $class->invokeLifecycleCallbacks(Events::postLoad, $document);
+        if (isset($class->lifecycleCallbacks[ODMEvents::postLoad])) {
+            $class->invokeLifecycleCallbacks(ODMEvents::postLoad, $document);
         }
-        if ($this->_evm->hasListeners(Events::postLoad)) {
-            $this->_evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->_dm));
+        if ($this->_evm->hasListeners(ODMEvents::postLoad)) {
+            $this->_evm->dispatchEvent(ODMEvents::postLoad, new LifecycleEventArgs($document, $this->_dm));
         }
         return $document;
     }

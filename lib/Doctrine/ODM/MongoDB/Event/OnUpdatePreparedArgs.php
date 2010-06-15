@@ -17,29 +17,43 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Driver;
+namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
- * The PHPDriver invokes a static PHP function on the document class itself passing
- * a ClassMetadata instance for you to manually populate with mapping information.
+ * Class that holds event arguments for a onUpdatePrepared event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
+ * @link        www.doctrine-project.com
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class PHPDriver implements Driver
+class OnUpdatePreparedArgs extends LifecycleEventArgs
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function loadMetadataForClass($className, ClassMetadata $class)
+    private $_dm;
+    private $_document;
+    private $_update;
+
+    public function __construct(DocumentManager $dm, $document, array &$update)
     {
-        if (method_exists($className, 'loadMetadata')) {
-            call_user_func_array(array($className, 'loadMetadata'), array($class));
-        }
+        $this->_dm = $dm;
+        $this->_document = $document;
+        $this->_update = $update;
+    }
+
+    public function getDocumentManager()
+    {
+        return $this->_dm;
+    }
+
+    public function getDocument()
+    {
+        return $this->_document;
+    }
+
+    public function &getUpdate()
+    {
+        return $this->_update;
     }
 }
