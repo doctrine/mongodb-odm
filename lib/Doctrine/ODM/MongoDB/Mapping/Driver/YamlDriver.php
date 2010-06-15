@@ -118,7 +118,7 @@ class YamlDriver extends AbstractFileDriver
         if (isset($element['lifecycleCallbacks'])) {
             foreach ($element['lifecycleCallbacks'] as $type => $methods) {
                 foreach ($methods as $method) {
-                    $class->addLifecycleCallback($method, constant('Doctrine\ORM\ODMEvents::' . $type));
+                    $class->addLifecycleCallback($method, constant('Doctrine\ODM\MongoDB\ODMEvents::' . $type));
                 }
             }
         }

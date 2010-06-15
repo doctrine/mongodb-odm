@@ -130,7 +130,7 @@ class XmlDriver extends AbstractFileDriver
         }
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
-                $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ORM\ODMEvents::' . (string) $lifecycleCallback['type']));
+                $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ODM\MongoDB\ODMEvents::' . (string) $lifecycleCallback['type']));
             }
         }
     }
