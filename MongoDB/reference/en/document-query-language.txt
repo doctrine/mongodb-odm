@@ -15,6 +15,36 @@ Use find queries to find and return your Doctrine document objects:
 
 The above would result in something blank `find()` returning all documents.
 
++++ Selecting Fields
+
+You can select only certain fields:
+
+    [php]
+    $query = $dm->query('find username, password Documents\User');
+
+++++ Slice
+
+If you want to use the `$slice` operator for only selecting a subset of elements in an array:
+
+    [php]
+    $query = $dm->query('find comments.slice(20, 10) Documents\User');
+
+The above would result in the following select:
+
+    Array
+    (
+        [comments] => Array
+            (
+                [$slice] => Array
+                    (
+                        [0] => 10
+                        [1] => 20
+                    )
+
+            )
+
+    )
+
 +++ Sorting
 
 You can specify the fields to `sort` by too:
@@ -337,7 +367,7 @@ The above would result in the following:
 Use not equals operator:
 
     [php]
-    $query = $dm->query("find all Documents\User where username != 'jwage' and username != 'ok'");
+    $query = $dm->query("find all Documents\User where username != 'jwage'");
 
 The above would result in the following:
 
@@ -345,11 +375,7 @@ The above would result in the following:
     (
         [username] => Array
             (
-                [$ne] => Array
-                    (
-                        [0] => jwage
-                        [1] => ok
-                    )
+                [$ne] => jwage
 
             )
 
@@ -427,6 +453,29 @@ The above would result in the following:
 
     )
 
++++ Mod
+
+Use the mod operator:
+
+    [php]
+    $query = $dm->query("find all Documents\User where a mod '[10, 1]'");
+
+The above would result in the following:
+
+    Array
+    (
+        [a] => Array
+            (
+                [$mod] => Array
+                    (
+                        [0] => 10
+                        [1] => 1
+                    )
+
+            )
+
+    )
+
 +++ In
 
 Use the in operator:
@@ -469,6 +518,33 @@ The above would result in the following:
                         [0] => 1
                         [1] => 2
                         [2] => 3
+                    )
+
+            )
+
+    )
+
++++ Not
+
+Negate any operation by using the not operator before it:
+
+    [php]
+    $query = $dm->query("find all Documents\User where not a mod '[10, 1]'");
+
+The above would result in the following:
+
+    Array
+    (
+        [a] => Array
+            (
+                [$not] => Array
+                    (
+                        [$mod] => Array
+                            (
+                                [0] => 10
+                                [1] => 1
+                            )
+
                     )
 
             )
