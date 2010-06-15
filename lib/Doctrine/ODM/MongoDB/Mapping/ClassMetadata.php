@@ -577,7 +577,7 @@ class ClassMetadata
 
         if ($mapping['fieldName'] === 'id') {
             $mapping['id'] = true;
-            $mapping['type'] = 'id';
+            $mapping['type'] = isset($mapping['type']) ? $mapping['type'] : 'id';
         }
 
         if ( ! isset($mapping['type'])) {
