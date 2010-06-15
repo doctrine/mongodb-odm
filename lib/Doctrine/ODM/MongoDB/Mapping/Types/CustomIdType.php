@@ -27,15 +27,13 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class IdType extends Type
+class CustomIdType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-		if ( ! $value instanceof \MongoId) {
-		    $value = new \MongoId($value);
-		}
-		return $value;
+        return (string) $value;
     }
 
     public function convertToPHPValue($value)

@@ -47,6 +47,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $documents = array(
             'Documents\User',
             'Documents\SpecialUser',
+            'Documents\CustomUser',
             'Documents\Account',
             'Documents\Profile',
             'Documents\Group',

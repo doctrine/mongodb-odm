@@ -718,6 +718,18 @@ class ClassMetadata
                 $this->fieldMappings[$fieldName]['type'] === 'many';
     }
 
+	public function getPHPIdentifierValue($id)
+	{
+		$idType = $this->fieldMappings[$this->identifier]['type'];
+		return Types\Type::getType($idType)->convertToPHPValue($id);
+	}
+
+	public function getDatabaseIdentifierValue($id)
+	{
+		$idType = $this->fieldMappings[$this->identifier]['type'];
+		return Types\Type::getType($idType)->convertToDatabaseValue($id);
+	}
+
     /**
      * Sets the document identifier of a document.
      *
@@ -726,6 +738,7 @@ class ClassMetadata
      */
     public function setIdentifierValue($document, $id)
     {
+		$id = $this->getPHPIdentifierValue($id);
         if (isset($this->reflFields[$this->identifier])) {
             $this->reflFields[$this->identifier]->setValue($document, $id);
         } else {
@@ -759,7 +772,7 @@ class ClassMetadata
     public function getIdentifierObject($document)
     {
         if ($id = $this->getIdentifierValue($document)) {
-            return new \MongoId($id);
+            return $this->getDatabaseIdentifierValue($id);
         }
     }
 

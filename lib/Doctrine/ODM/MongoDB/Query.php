@@ -998,10 +998,10 @@ class Query
             $fieldName = '_id';
             if (is_array($value)) {
                 foreach ($value as $k => $v) {
-                    $value[$k] = new \MongoId($v);
+                    $value[$k] = $this->_class->getDatabaseIdentifierValue($id);
                 }
             } else {
-                $value = new \MongoId($value);
+                $value = $this->_class->getDatabaseIdentifierValue($id);
             }
         }
         return $value;

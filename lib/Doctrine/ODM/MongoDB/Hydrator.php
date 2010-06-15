@@ -93,14 +93,14 @@ class Hydrator
                 $targetMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 $targetDocument = $targetMetadata->newInstance();
                 if ($mapping['type'] === 'one' && isset($rawValue['$id'])) {
-                    $id = (string) $rawValue['$id'];
+                    $id = $targetMetadata->getPHPIdentifierValue($rawValue['$id']);
                     $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
                     $metadata->setFieldValue($document, $mapping['fieldName'], $proxy);
                 } elseif ($mapping['type'] === 'many' && (is_array($rawValue) || $rawValue instanceof Collection)) {
                     $documents = new PersistentCollection($this->_dm, $targetMetadata, new ArrayCollection());
                     $documents->setInitialized(false);
                     foreach ($rawValue as $v) {
-                        $id = (string) $v['$id'];
+                        $id = $targetMetadata->getPHPIdentifierValue($v['$id']);
                         $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
                         $documents->add($proxy);
                     }
@@ -115,7 +115,7 @@ class Hydrator
             }
         }
         if (isset($data['_id'])) {
-            $metadata->setIdentifierValue($document, (string) $data['_id']);
+            $metadata->setIdentifierValue($document, $data['_id']);
         }
         return $values;
     }

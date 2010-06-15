@@ -142,7 +142,7 @@ class BasicDocumentPersister
 
         foreach ($inserts as $oid => $data) {
             $document = $this->_queuedInserts[$oid];
-            $postInsertIds[(string) $data['_id']] = $document;
+            $postInsertIds[] = array($data['_id'], $document);
             if ($this->_class->isFile()) {
                 $this->_dm->getHydrator()->hydrate($this->_class, $document, $data);
             }
@@ -166,8 +166,9 @@ class BasicDocumentPersister
                 list ($mapping, $value) = $fieldData;
                 $update[$fieldName] = $this->_prepareValue($mapping, $value);
             }
+			$classMetadata = $this->_dm->getClassMetadata(get_class($document));
             $id = $this->_uow->getDocumentIdentifier($document);
-            $id = new \MongoId($id);
+            $id = $classMetadata->getDatabaseIdentifierValue($id);
             $this->_collection->update(array(
                 '_id' => $id
             ), array(
@@ -199,7 +200,7 @@ class BasicDocumentPersister
              * atomic modifiers $pushAll and $pullAll, $push, $pop and $pull
              * are not allowed on the same field in one update
              */
-            $id = new \MongoId($id);
+            $id = $this->_class->getDatabaseIdentifierValue($id);
             if (isset($update['$pushAll']) && isset($update['$pullAll'])) {
                 $fields = array_intersect(
                     array_keys($update['$pushAll']),
@@ -233,11 +234,9 @@ class BasicDocumentPersister
     {
         $id = $this->_uow->getDocumentIdentifier($document);
 
-        if ( ! $this->_class->isAllowedCustomId()) {
-          $id = new \MongoId($id);
-        }
-
-        $this->_collection->remove(array('_id' => $id));
+        $this->_collection->remove(array(
+			'_id' => $this->_class->getDatabaseIdentifierValue($id)
+		));
     }
 
     /**
@@ -261,7 +260,7 @@ class BasicDocumentPersister
             }
             $changeset[$mapping['fieldName']] = array();
             if ($this->_class->isIdentifier($mapping['fieldName'])) {
-                $result['_id'] = (string) $this->_prepareValue($mapping, $new);
+                $result['_id'] = $this->_prepareValue($mapping, $new);
                 continue;
             }
             $result[$mapping['fieldName']] = $this->_prepareValue($mapping, $new);
@@ -400,10 +399,9 @@ class BasicDocumentPersister
      */
     public function loadById($id)
     {
-        if ( ! $this->_class->getAllowCustomID()) {
-            $id = new \MongoId($id);
-        }
-        $result = $this->_collection->findOne(array('_id' => $id));
+        $result = $this->_collection->findOne(array(
+			'_id' => $this->_class->getDatabaseIdentifierValue($id)
+		));
         if ($result !== null) {
             return $this->_uow->getOrCreateDocument($this->_documentName, $result);
         }
@@ -522,6 +520,9 @@ class BasicDocumentPersister
             return $doc;
         }
         $id = $this->_uow->getDocumentIdentifier($doc);
+		if (null !== $id) {
+			$id = $class->getPHPIdentifierValue($id);
+		}
         $ref = array(
             '$ref' => $class->getCollection(),
             '$id' => $id,

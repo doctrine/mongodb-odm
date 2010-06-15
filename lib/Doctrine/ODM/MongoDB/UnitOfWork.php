@@ -624,7 +624,8 @@ class UnitOfWork
         $postInsertIds = $persister->executeInserts();
 
         if ($postInsertIds) {
-            foreach ($postInsertIds as $id => $document) {
+            foreach ($postInsertIds as $pair) {
+				list($id, $document) = $pair;
                 $oid = spl_object_hash($document);
                 $class->setIdentifierValue($document, $id);
                 $this->_documentIdentifiers[$oid] = $id;
@@ -941,6 +942,7 @@ class UnitOfWork
     {
         $classMetadata = $this->_dm->getClassMetadata(get_class($document));
         $id = $this->_documentIdentifiers[spl_object_hash($document)];
+		$id = $classMetadata->getPHPIdentifierValue($id);
         if ($id === '') {
             throw new \InvalidArgumentException("The given document has no identity.");
         }
@@ -1001,6 +1003,7 @@ class UnitOfWork
         $oid = spl_object_hash($document);
         $classMetadata = $this->_dm->getClassMetadata(get_class($document));
         $id = $this->_documentIdentifiers[$oid];
+		$id = $classMetadata->getPHPIdentifierValue($id);
         if ($id === '') {
             throw new \InvalidArgumentException("The given document has no identity.");
         }
@@ -1058,6 +1061,7 @@ class UnitOfWork
         }
         $classMetadata = $this->_dm->getClassMetadata(get_class($document));
         $id = $this->_documentIdentifiers[$oid];
+		$id = $classMetadata->getPHPIdentifierValue($id);
         if ($id === '') {
             return false;
         }
@@ -1666,7 +1670,7 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata($className);
 
-        $id = (string) $data['_id'];
+        $id = $class->getPHPIdentifierValue($data['_id']);
         if (isset($this->_identityMap[$class->rootDocumentName][$id])) {
             $document = $this->_identityMap[$class->rootDocumentName][$id];
             $oid = spl_object_hash($document);

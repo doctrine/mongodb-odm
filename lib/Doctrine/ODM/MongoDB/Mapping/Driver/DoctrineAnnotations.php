@@ -56,6 +56,7 @@ final class Index extends Annotation
 final class Id extends Annotation
 {
     public $id = true;
+	public $type = 'id';
     public $custom = false;
 }
 class Field extends Annotation
