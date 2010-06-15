@@ -306,7 +306,7 @@ class Query
         if ($limit !== null) {
             $slice[] = $limit;
         }
-        return $this->_select[$fieldName][Mongo::cmd() . 'slice'] = $slice;
+        return $this->_select[$fieldName]['$slice'] = $slice;
     }
 
     /**
@@ -342,7 +342,7 @@ class Query
         $e = explode('.', $fieldName);
         $fieldName = array_pop($e);
         $embeddedPath = implode('.', $e);
-        $this->_where[$embeddedPath][Mongo::cmd() . 'elemMatch'][$fieldName] = $value;
+        $this->_where[$embeddedPath]['$elemMatch'][$fieldName] = $value;
         return $this;
     }
 
@@ -351,7 +351,7 @@ class Query
         $e = explode('.', $fieldName);
         $fieldName = array_pop($e);
         $embeddedPath = implode('.', $e);
-        $this->_where[$embeddedPath][Mongo::cmd() . 'elemMatch'][$fieldName][$operator] = $value;
+        $this->_where[$embeddedPath]['$elemMatch'][$fieldName][$operator] = $value;
         return $this;
     }
 
@@ -361,7 +361,7 @@ class Query
             return $this->whereElemMatchOperator($fieldName, $operator, $value);
         }
         if (isset($options['not'])) {
-            $this->_where[$fieldName][Mongo::cmd() . 'not'][$operator] = $value;
+            $this->_where[$fieldName]['$not'][$operator] = $value;
             return $this;
         }
         $this->_where[$fieldName][$operator] = $value;
@@ -370,7 +370,7 @@ class Query
 
     public function whereNot($fieldName, $value, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'not', $value);
+        return $this->whereOperator($fieldName, '$not', $value);
     }
 
     /**
@@ -383,7 +383,7 @@ class Query
      */
     public function whereIn($fieldName, $values, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'in', $values, $options);
+        return $this->whereOperator($fieldName, '$in', $values, $options);
     }
 
     /**
@@ -396,7 +396,7 @@ class Query
      */
     public function whereNotIn($fieldName, $values, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'nin', (array) $values, $options);
+        return $this->whereOperator($fieldName, '$nin', (array) $values, $options);
     }
 
     /**
@@ -409,7 +409,7 @@ class Query
      */
     public function whereNotEqual($fieldName, $value, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'ne', $value, $options);
+        return $this->whereOperator($fieldName, '$ne', $value, $options);
     }
 
     /**
@@ -422,7 +422,7 @@ class Query
      */
     public function whereGt($fieldName, $value, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'gt', $value, $options);
+        return $this->whereOperator($fieldName, '$gt', $value, $options);
     }
 
     /**
@@ -435,7 +435,7 @@ class Query
      */
     public function whereGte($fieldName, $value, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'gte', $value, $options);
+        return $this->whereOperator($fieldName, '$gte', $value, $options);
     }
 
     /**
@@ -448,7 +448,7 @@ class Query
      */
     public function whereLt($fieldName, $value, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'lt', $value, $options);
+        return $this->whereOperator($fieldName, '$lt', $value, $options);
     }
 
     /**
@@ -461,7 +461,7 @@ class Query
      */
     public function whereLte($fieldName, $value, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'lte', $value, $options);
+        return $this->whereOperator($fieldName, '$lte', $value, $options);
     }
 
     /**
@@ -475,8 +475,8 @@ class Query
      */
     public function whereRange($fieldName, $start, $end, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'gt', $start, $options)
-            ->whereOperator($fieldName, Mongo::cmd() . 'lt', $end, $options);
+        return $this->whereOperator($fieldName, '$gt', $start, $options)
+            ->whereOperator($fieldName, '$lt', $end, $options);
     }
 
     /**
@@ -489,7 +489,7 @@ class Query
      */
     public function whereSize($fieldName, $size, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'size', $size, $options);
+        return $this->whereOperator($fieldName, '$size', $size, $options);
     }
 
     /**
@@ -502,7 +502,7 @@ class Query
      */
     public function whereExists($fieldName, $bool, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'exists', $bool, $options);
+        return $this->whereOperator($fieldName, '$exists', $bool, $options);
     }
 
     /**
@@ -539,7 +539,7 @@ class Query
         if (is_string($type) && isset($map[$type])) {
             $type = $map[$type];
         }
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'type', $type, $options);
+        return $this->whereOperator($fieldName, '$type', $type, $options);
     }
 
     /**
@@ -552,7 +552,7 @@ class Query
      */
     public function whereAll($fieldName, $values, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'all', (array) $values, $options);
+        return $this->whereOperator($fieldName, '$all', (array) $values, $options);
     }
 
     /**
@@ -565,7 +565,7 @@ class Query
      */
     public function whereMod($fieldName, $mod, array $options = array())
     {
-        return $this->whereOperator($fieldName, Mongo::cmd() . 'mod', $mod, $options);
+        return $this->whereOperator($fieldName, '$mod', $mod, $options);
     }
 
     /**
@@ -670,7 +670,7 @@ class Query
     public function set($name, $value, $atomic = true)
     {
         if ($atomic === true) {
-            $this->_newObj[Mongo::cmd() . 'set'][$name] = $value;
+            $this->_newObj['$set'][$name] = $value;
         } else {
             if (strpos($name, '.') !== false) {
                 $e = explode('.', $name);
@@ -708,7 +708,7 @@ class Query
      */
     public function inc($name, $value)
     {
-        $this->_newObj[Mongo::cmd() . 'inc'][$name] = $value;
+        $this->_newObj['$inc'][$name] = $value;
         return $this;
     }
 
@@ -720,7 +720,7 @@ class Query
      */
     public function unsetField($field)
     {
-        $this->_newObj[Mongo::cmd() . 'unset'][$field] = 1;
+        $this->_newObj['$unset'][$field] = 1;
         return $this;
     }
 
@@ -735,7 +735,7 @@ class Query
      */
     public function push($field, $value)
     {
-        $this->_newObj[Mongo::cmd() . 'push'][$field] = $value;
+        $this->_newObj['$push'][$field] = $value;
         return $this;
     }
 
@@ -751,7 +751,7 @@ class Query
      */
     public function pushAll($field, array $valueArray)
     {
-        $this->_newObj[Mongo::cmd() . 'pushAll'][$field] = $valueArray;
+        $this->_newObj['$pushAll'][$field] = $valueArray;
         return $this;
     }
 
@@ -764,7 +764,7 @@ class Query
      */
     public function addToSet($field, $value)
     {
-        $this->_newObj[Mongo::cmd() . 'addToSet'][$field] = $value;
+        $this->_newObj['$addToSet'][$field] = $value;
         return $this;
     }
 
@@ -777,13 +777,13 @@ class Query
      */
     public function addManyToSet($field, array $values)
     {
-        if ( ! isset($this->_newObj[Mongo::cmd() . 'addToSet'][$field])) {
-            $this->_newObj[Mongo::cmd() . 'addToSet'][$field][Mongo::cmd() . 'each'] = array();
+        if ( ! isset($this->_newObj['$addToSet'][$field])) {
+            $this->_newObj['$addToSet'][$field]['$each'] = array();
         }
-        if ( ! is_array($this->_newObj[Mongo::cmd() . 'addToSet'][$field])) {
-            $this->_newObj[Mongo::cmd() . 'addToSet'][$field] = array(Mongo::cmd() . 'each' => array($this->_newObj[Mongo::cmd() . 'addToSet'][$field]));
+        if ( ! is_array($this->_newObj['$addToSet'][$field])) {
+            $this->_newObj['$addToSet'][$field] = array('$each' => array($this->_newObj['$addToSet'][$field]));
         }
-        $this->_newObj[Mongo::cmd() . 'addToSet'][$field][Mongo::cmd() . 'each'] = array_merge_recursive($this->_newObj[Mongo::cmd() . 'addToSet'][$field][Mongo::cmd() . 'each'], $values);
+        $this->_newObj['$addToSet'][$field]['$each'] = array_merge_recursive($this->_newObj['$addToSet'][$field]['$each'], $values);
     }
 
     /**
@@ -794,7 +794,7 @@ class Query
      */
     public function popFirst($field)
     {
-        $this->_newObj[Mongo::cmd() . 'pop'][$field] = 1;
+        $this->_newObj['$pop'][$field] = 1;
         return $this;
     }
 
@@ -806,7 +806,7 @@ class Query
      */
     public function popLast($field)
     {
-        $this->_newObj[Mongo::cmd() . 'pop'][$field] = -1;
+        $this->_newObj['$pop'][$field] = -1;
         return $this;
     }
 
@@ -820,7 +820,7 @@ class Query
      */
     public function pull($field, $value)
     {
-        $this->_newObj[Mongo::cmd() . 'pull'][$field] = $value;
+        $this->_newObj['$pull'][$field] = $value;
         return $this;
     }
 
@@ -835,7 +835,7 @@ class Query
      */
     public function pullAll($field, array $valueArray)
     {
-        $this->_newObj[Mongo::cmd() . 'pullAll'][$field] = $valueArray;
+        $this->_newObj['$pullAll'][$field] = $valueArray;
         return $this;
     }
 
@@ -927,7 +927,7 @@ class Query
             $cursor->hydrate(false);
         } else {
             if (isset($this->_mapReduce['reduce'])) {
-                $this->_where[Mongo::cmd() . 'where'] = $this->_mapReduce['reduce'];
+                $this->_where['$where'] = $this->_mapReduce['reduce'];
             }
             $cursor = $this->_dm->find($this->_className, $this->_where, $this->_select);
             $cursor->hydrate($this->_hydrate);

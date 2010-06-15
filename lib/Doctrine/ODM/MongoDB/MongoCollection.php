@@ -141,7 +141,7 @@ class MongoCollection
         if ($file instanceof \MongoGridFSFile) {
             $id = $a['_id'];
             unset($a['_id']);
-            $set = array(Mongo::cmd() . 'set' => $a);
+            $set = array('$set' => $a);
 
             if ($this->_loggerCallable) {
                 $this->log(array(

@@ -101,7 +101,7 @@ final class PersistentCollection implements Collection
                 $ids[] = $this->_typeClass->getIdentifierObject($document);
             }
 
-            $data = $collection->find(array('_id' => array(Mongo::cmd() . 'in' => $ids)));
+            $data = $collection->find(array('_id' => array('$in' => $ids)));
             $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
             foreach ($data as $id => $document) {
                 $document = $this->_dm->getUnitOfWork()->getOrCreateDocument($this->_typeClass->name, $document, $hints);
