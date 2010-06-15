@@ -29,7 +29,7 @@ class ProxyChangesetsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
-        unset ($user, $account);
+        unset($user, $account);
 
         $user = $this->dm->findOne('Documents\User');
 

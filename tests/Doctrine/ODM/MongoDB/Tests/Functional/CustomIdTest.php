@@ -32,14 +32,14 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('userId', $user->getId());
 
         $this->dm->clear();
-        unset ($user, $account);
+        unset($user, $account);
 
         $user = $this->dm->findOne('Documents\CustomUser');
 
         $this->assertEquals('userId', $user->getId());
 
         $this->dm->clear();
-        unset ($user);
+        unset($user);
 
         $user = $this->dm->find('Documents\CustomUser', 'userId');
 
@@ -76,7 +76,7 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        unset ($user1, $user2, $user3);
+        unset($user1, $user2, $user3);
 
         $users = $this->dm->find("Documents\User");
 
@@ -135,7 +135,7 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        unset ($user1, $user2, $user3);
+        unset($user1, $user2, $user3);
 
         $user = $this->dm->find('Documents\CustomUser', 'userId');
 
@@ -144,7 +144,7 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('user1', $user->getUsername());
 
         $this->dm->clear();
-        unset ($user);
+        unset($user);
 
         $this->assertNull($this->dm->find('Documents\User', 'userId'));
         $this->assertNull($this->dm->find('Documents\CustomUser', 'asd'));

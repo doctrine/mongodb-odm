@@ -174,8 +174,8 @@ class BasicDocumentPersister
             ), array(
                 '$set' => $update
             ));
-            unset ($this->_documentsToUpdate[$oid]);
-            unset ($this->_fieldsToUpdate[$oid]);
+            unset($this->_documentsToUpdate[$oid]);
+            unset($this->_fieldsToUpdate[$oid]);
         }
     }
 
