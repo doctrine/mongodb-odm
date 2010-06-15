@@ -24,7 +24,7 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'fieldName'        => 'id',
             'id'               => true,
             'name'             => 'id',
-            'type'             => 'string',
+            'type'             => 'id',
             'isCascadeDetach'  => false,
             'isCascadeMerge'   => false,
             'isCascadePersist' => false,

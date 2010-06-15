@@ -48,8 +48,8 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('userId', $user->getId());
     }
 
-	public function testBatchInsertCustomId()
-	{
+    public function testBatchInsertCustomId()
+    {
         $account = new Account();
         $account->setName('Jon Test Account');
 
@@ -73,42 +73,42 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user2);
         $this->dm->persist($user3);
 
-		$this->dm->flush();
-		$this->dm->clear();
+        $this->dm->flush();
+        $this->dm->clear();
 
-		unset ($user1, $user2, $user3);
+        unset ($user1, $user2, $user3);
 
-		$users = $this->dm->find("Documents\User");
+        $users = $this->dm->find("Documents\User");
 
-		$this->assertEquals(2, $users->count());
+        $this->assertEquals(2, $users->count());
 
-		$results = array();
-		foreach ($users as $user) {
-			if ($user->getId() === 'userId') {
-				$results['userId'] = true;
-			}
-			$this->assertNotNull($user->getId());
-			$results['ids'][] = $user->getId();
-		}
+        $results = array();
+        foreach ($users as $user) {
+            if ($user->getId() === 'userId') {
+                $results['userId'] = true;
+            }
+            $this->assertNotNull($user->getId());
+            $results['ids'][] = $user->getId();
+        }
 
-		$users = $this->dm->find("Documents\CustomUser");
+        $users = $this->dm->find("Documents\CustomUser");
 
-		$this->assertEquals(1, $users->count());
+        $this->assertEquals(1, $users->count());
 
-		foreach ($users as $user) {
-			if ($user->getId() === 'userId') {
-				$results['userId'] = true;
-			}
-			$this->assertNotNull($user->getId());
-			$results['ids'][] = $user->getId();
-		}
+        foreach ($users as $user) {
+            if ($user->getId() === 'userId') {
+                $results['userId'] = true;
+            }
+            $this->assertNotNull($user->getId());
+            $results['ids'][] = $user->getId();
+        }
 
-		$this->assertTrue($results['userId']);
-		$this->assertEquals(3, count($results['ids']));
-	}
+        $this->assertTrue($results['userId']);
+        $this->assertEquals(3, count($results['ids']));
+    }
 
-	public function testFindUser()
-	{
+    public function testFindUser()
+    {
         $account = new Account();
         $account->setName('Jon Test Account');
 
@@ -132,21 +132,21 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user2);
         $this->dm->persist($user3);
 
-		$this->dm->flush();
-		$this->dm->clear();
+        $this->dm->flush();
+        $this->dm->clear();
 
-		unset ($user1, $user2, $user3);
+        unset ($user1, $user2, $user3);
 
-		$user = $this->dm->find('Documents\CustomUser', 'userId');
+        $user = $this->dm->find('Documents\CustomUser', 'userId');
 
-		$this->assertNotNull($user);
-		$this->assertEquals('userId', $user->getId());
-		$this->assertEquals('user1', $user->getUsername());
+        $this->assertNotNull($user);
+        $this->assertEquals('userId', $user->getId());
+        $this->assertEquals('user1', $user->getUsername());
 
-		$this->dm->clear();
-		unset ($user);
+        $this->dm->clear();
+        unset ($user);
 
-		$this->assertNull($this->dm->find('Documents\User', 'userId'));
-		$this->assertNull($this->dm->find('Documents\CustomUser', 'asd'));
-	}
+        $this->assertNull($this->dm->find('Documents\User', 'userId'));
+        $this->assertNull($this->dm->find('Documents\CustomUser', 'asd'));
+    }
 }

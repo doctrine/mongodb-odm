@@ -166,7 +166,7 @@ class BasicDocumentPersister
                 list ($mapping, $value) = $fieldData;
                 $update[$fieldName] = $this->_prepareValue($mapping, $value);
             }
-			$classMetadata = $this->_dm->getClassMetadata(get_class($document));
+            $classMetadata = $this->_dm->getClassMetadata(get_class($document));
             $id = $this->_uow->getDocumentIdentifier($document);
             $id = $classMetadata->getDatabaseIdentifierValue($id);
             $this->_collection->update(array(
@@ -235,8 +235,8 @@ class BasicDocumentPersister
         $id = $this->_uow->getDocumentIdentifier($document);
 
         $this->_collection->remove(array(
-			'_id' => $this->_class->getDatabaseIdentifierValue($id)
-		));
+            '_id' => $this->_class->getDatabaseIdentifierValue($id)
+        ));
     }
 
     /**
@@ -400,8 +400,8 @@ class BasicDocumentPersister
     public function loadById($id)
     {
         $result = $this->_collection->findOne(array(
-			'_id' => $this->_class->getDatabaseIdentifierValue($id)
-		));
+            '_id' => $this->_class->getDatabaseIdentifierValue($id)
+        ));
         if ($result !== null) {
             return $this->_uow->getOrCreateDocument($this->_documentName, $result);
         }
@@ -520,9 +520,9 @@ class BasicDocumentPersister
             return $doc;
         }
         $id = $this->_uow->getDocumentIdentifier($doc);
-		if (null !== $id) {
-			$id = $class->getPHPIdentifierValue($id);
-		}
+        if (null !== $id) {
+            $id = $class->getPHPIdentifierValue($id);
+        }
         $ref = array(
             '$ref' => $class->getCollection(),
             '$id' => $id,

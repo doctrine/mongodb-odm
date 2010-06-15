@@ -998,10 +998,10 @@ class Query
             $fieldName = '_id';
             if (is_array($value)) {
                 foreach ($value as $k => $v) {
-                    $value[$k] = $this->_class->getDatabaseIdentifierValue($id);
+                    $value[$k] = $this->_class->getDatabaseIdentifierValue($v);
                 }
             } else {
-                $value = $this->_class->getDatabaseIdentifierValue($id);
+                $value = $this->_class->getDatabaseIdentifierValue($value);
             }
         }
         return $value;

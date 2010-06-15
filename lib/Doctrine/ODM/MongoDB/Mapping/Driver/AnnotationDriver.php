@@ -147,8 +147,8 @@ class AnnotationDriver implements Driver
             foreach ($types as $type) {
                 if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\\' . $type)) {
                     if ($type === 'Id' && $fieldAnnot->custom) {
-						 $fieldAnnot->type = 'custom_id';
-                         $class->setAllowCustomId(true);
+                        $fieldAnnot->type = 'custom_id';
+                        $class->setAllowCustomId(true);
                     }
                     $mapping = array_merge($mapping, (array) $fieldAnnot);
                     $class->mapField($mapping);

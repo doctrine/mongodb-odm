@@ -32,10 +32,10 @@ class IdType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-		if ( ! $value instanceof \MongoId) {
-		    $value = new \MongoId($value);
-		}
-		return $value;
+        if ( ! $value instanceof \MongoId) {
+            $value = new \MongoId($value);
+        }
+        return $value;
     }
 
     public function convertToPHPValue($value)

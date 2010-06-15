@@ -625,7 +625,7 @@ class UnitOfWork
 
         if ($postInsertIds) {
             foreach ($postInsertIds as $pair) {
-				list($id, $document) = $pair;
+                list($id, $document) = $pair;
                 $oid = spl_object_hash($document);
                 $class->setIdentifierValue($document, $id);
                 $this->_documentIdentifiers[$oid] = $id;
@@ -942,7 +942,7 @@ class UnitOfWork
     {
         $classMetadata = $this->_dm->getClassMetadata(get_class($document));
         $id = $this->_documentIdentifiers[spl_object_hash($document)];
-		$id = $classMetadata->getPHPIdentifierValue($id);
+        $id = $classMetadata->getPHPIdentifierValue($id);
         if ($id === '') {
             throw new \InvalidArgumentException("The given document has no identity.");
         }
@@ -1003,7 +1003,7 @@ class UnitOfWork
         $oid = spl_object_hash($document);
         $classMetadata = $this->_dm->getClassMetadata(get_class($document));
         $id = $this->_documentIdentifiers[$oid];
-		$id = $classMetadata->getPHPIdentifierValue($id);
+        $id = $classMetadata->getPHPIdentifierValue($id);
         if ($id === '') {
             throw new \InvalidArgumentException("The given document has no identity.");
         }
@@ -1061,7 +1061,7 @@ class UnitOfWork
         }
         $classMetadata = $this->_dm->getClassMetadata(get_class($document));
         $id = $this->_documentIdentifiers[$oid];
-		$id = $classMetadata->getPHPIdentifierValue($id);
+        $id = $classMetadata->getPHPIdentifierValue($id);
         if ($id === '') {
             return false;
         }
