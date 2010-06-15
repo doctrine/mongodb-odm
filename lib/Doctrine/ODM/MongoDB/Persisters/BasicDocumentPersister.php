@@ -24,7 +24,8 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\MongoCursor,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
-    Doctrine\Common\Collections\Collection;
+    Doctrine\Common\Collections\Collection,
+    Doctrine\ODM\MongoDB\ODMEvents;
 
 /**
  * The BasicDocumentPersister is responsible for actual persisting the calculated
@@ -187,6 +188,11 @@ class BasicDocumentPersister
 
         $update = $this->prepareUpdateData($document);
         if ( ! empty($update)) {
+            if ($this->_dm->getEventManager()->hasListeners(ODMEvents::onUpdatePrepared)) {
+                $this->_dm->getEventManager()->dispatchEvent(
+                    ODMEvents::onUpdatePrepared, new Event\OnUpdatePreparedArgs($this->_dm, $document, $update)
+                );
+            }
             /**
              * temporary fix for @link http://jira.mongodb.org/browse/SERVER-1050
              * atomic modifiers $pushAll and $pullAll, $push, $pop and $pull
