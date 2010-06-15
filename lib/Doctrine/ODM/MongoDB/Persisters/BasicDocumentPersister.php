@@ -25,7 +25,8 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\MongoCursor,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\Common\Collections\Collection,
-    Doctrine\ODM\MongoDB\ODMEvents;
+    Doctrine\ODM\MongoDB\ODMEvents,
+    Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
 
 /**
  * The BasicDocumentPersister is responsible for actual persisting the calculated
@@ -190,7 +191,7 @@ class BasicDocumentPersister
         if ( ! empty($update)) {
             if ($this->_dm->getEventManager()->hasListeners(ODMEvents::onUpdatePrepared)) {
                 $this->_dm->getEventManager()->dispatchEvent(
-                    ODMEvents::onUpdatePrepared, new Event\OnUpdatePreparedArgs($this->_dm, $document, $update)
+                    ODMEvents::onUpdatePrepared, new OnUpdatePreparedArgs($this->_dm, $document, $update)
                 );
             }
             /**
