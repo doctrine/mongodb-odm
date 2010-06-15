@@ -17,8 +17,14 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testSelectSlice()
     {
-        $query = $this->parser->parse('find username, profile.firstName, comments.slice(10, 20) Documents\User');
+        $query = $this->parser->parse('find username, profile.firstName, comments limit 20 skip 10 Documents\User');
         $this->assertEquals(array('username', 'profile.firstName', 'comments' => array('$slice' => array(10, 20))), $query->debug('select'));
+
+        $query = $this->parser->parse('find comments skip 10 Documents\User');
+        $this->assertEquals(array('comments' => array('$slice' => array(10))), $query->debug('select'));
+
+        $query = $this->parser->parse('find comments limit 10 Documents\User');
+        $this->assertEquals(array('comments' => array('$slice' => array(0, 10))), $query->debug('select'));
     }
 
     public function testWhereMod()

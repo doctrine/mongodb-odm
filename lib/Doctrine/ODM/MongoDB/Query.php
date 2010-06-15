@@ -300,11 +300,11 @@ class Query
         return $this;
     }
 
-    public function selectSlice($fieldName, $start, $end = null)
+    public function selectSlice($fieldName, $skip, $limit = null)
     {
-        $slice = array($start);
-        if ($end !== null) {
-            $slice[] = $end;
+        $slice = array($skip);
+        if ($limit !== null) {
+            $slice[] = $limit;
         }
         return $this->_select[$fieldName]['$slice'] = $slice;
     }

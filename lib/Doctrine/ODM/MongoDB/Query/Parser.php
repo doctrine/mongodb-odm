@@ -160,11 +160,11 @@ class Parser
                 case Lexer::T_SORT:
                     $this->SortClause($query, $parameters);
                     break;
-                case Lexer::T_LIMIT:
-                    $this->LimitClause($query, $parameters);
-                    break;
                 case Lexer::T_SKIP;
                     $this->SkipClause($query, $parameters);
+                    break;
+                case Lexer::T_LIMIT:
+                    $this->LimitClause($query, $parameters);
                     break;
                 default:
                     break(2);
@@ -198,38 +198,32 @@ class Parser
      */
     public function SelectField(Query $query)
     {
-        $this->match(Lexer::T_IDENTIFIER);
+        $fieldName = $this->DocumentFieldName();
 
-        if ($this->_lexer->isNextToken(Lexer::T_DOT)) {
-            $fieldName = $this->_lexer->token['value'];
-            $slice = false;
-            while ($this->_lexer->isNextToken(Lexer::T_DOT)) {
-                $this->match(Lexer::T_DOT);
-                if ($this->_lexer->isNextToken(Lexer::T_SLICE)) {
-                    $slice = true;
-                    $this->match(Lexer::T_SLICE);
-                    $this->match(Lexer::T_OPEN_PARENTHESES);
+        $limit = null;
+        $skip = null;
+        while ($this->_lexer->isNextToken($this->_lexer->lookahead['type'])) {
+            switch ($this->_lexer->lookahead['type']) {
+                case Lexer::T_SKIP;
+                    $this->match(Lexer::T_SKIP);
                     $this->match(Lexer::T_INTEGER);
-                    $start = $this->_lexer->token['value'];
-                    $end = null;
-                    if ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
-                        $this->match(Lexer::T_COMMA);
-                        $this->match(Lexer::T_INTEGER);
-                        $end = $this->_lexer->token['value'];
-                    }
-                    $this->match(Lexer::T_CLOSE_PARENTHESES);
-                } else {
-                    $this->match(Lexer::T_IDENTIFIER);
-                    $fieldName .= '.' . $this->_lexer->token['value'];
-                }
+                    $skip = $this->_lexer->token['value'];
+                    break;
+                case Lexer::T_LIMIT:
+                    $this->match(Lexer::T_LIMIT);
+                    $this->match(Lexer::T_INTEGER);
+                    $limit = $this->_lexer->token['value'];
+                    break;
+                default:
+                    break(2);
             }
-            if ($slice === true) {
-                $query->selectSlice($fieldName, $start, $end);
-            } else {
-                $query->select($fieldName);
-            }
+        }
+
+        if ($skip || $limit) {
+            $skip = $skip !== null ? $skip : 0;
+            $query->selectSlice($fieldName, $skip, $limit);
         } else {
-            $query->select($this->_lexer->token['value']);
+            $query->select($fieldName);
         }
     }
 
@@ -321,7 +315,7 @@ class Parser
      */
     public function InsertSetClause(Query $query, array &$parameters)
     {
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
         $query->set($fieldName, $value, false);
     }
@@ -358,7 +352,7 @@ class Parser
      */
     public function SortClauseField(Query $query)
     {
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
         $this->match(Lexer::T_IDENTIFIER);
         $order = $this->_lexer->token['value'];
         $query->sort($fieldName, $order);
@@ -405,7 +399,7 @@ class Parser
     /**
      * DocumentFieldName ::= DocumentFieldName | EmbeddedDocument "." {"." DocumentFieldName}
      */
-    public function DocumentFieldName(Query $query)
+    public function DocumentFieldName()
     {
         $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->_lexer->token['value'];
@@ -449,7 +443,7 @@ class Parser
                 break;
         }
 
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
 
         $operator = $this->_lexer->lookahead['value'];
 
@@ -532,7 +526,7 @@ class Parser
      */
     public function SetExpression(Query $query, array &$parameters)
     {
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
         $query->set($fieldName, $value);
     }
@@ -551,7 +545,7 @@ class Parser
      */
     public function PushExpression(Query $query, array &$parameters)
     {
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
         $query->push($fieldName, $value);
     }
@@ -561,7 +555,7 @@ class Parser
      */
     public function PushAllExpression(Query $query, array &$parameters)
     {
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
         $query->pushAll($fieldName, $value);
     }
@@ -571,7 +565,7 @@ class Parser
      */
     public function PullExpression(Query $query, array &$parameters)
     {
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
         $query->pull($fieldName, $value);
     }
@@ -581,7 +575,7 @@ class Parser
      */
     public function PullAllExpression(Query $query, array &$parameters)
     {
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
         $query->pullAll($fieldName, $value);
     }
@@ -609,7 +603,7 @@ class Parser
      */
     public function AddToSetExpression(Query $query, array &$parameters)
     {
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
         $query->addToSet($fieldName, $value);
     }
@@ -619,7 +613,7 @@ class Parser
      */
     public function AddManyToSetExpression(Query $query, array &$parameters)
     {
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
         $query->addManyToSet($fieldName, $value);
     }
@@ -629,7 +623,7 @@ class Parser
      */
     public function IncrementExpression(Query $query, array &$parameters)
     {
-        $fieldName = $this->DocumentFieldName($query);
+        $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
         $query->inc($fieldName, $value);
     }

@@ -91,7 +91,6 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_FALSE               = 134;
     const T_ANY                 = 135;
     const T_NOT                 = 136;
-    const T_SLICE               = 137;
 
     /**
      * @inheritdoc
