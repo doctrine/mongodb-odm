@@ -83,4 +83,13 @@ class Mongo
         }
         throw new \BadMethodCallException(sprintf('Method %s does not exist on %s', $method, get_class($this)));
     }
+
+    public static function cmd()
+    {
+        static $cmd;
+        if ( ! isset($cmd)) {
+            $cmd = ini_get("mongo.cmd");
+        }
+        return $cmd;
+    }
 }

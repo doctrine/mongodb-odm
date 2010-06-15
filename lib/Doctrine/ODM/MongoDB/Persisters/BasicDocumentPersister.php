@@ -26,7 +26,8 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\Common\Collections\Collection,
     Doctrine\ODM\MongoDB\ODMEvents,
-    Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
+    Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs,
+    Doctrine\ODM\MongoDB\Mongo;
 
 /**
  * The BasicDocumentPersister is responsible for actual persisting the calculated
@@ -172,7 +173,7 @@ class BasicDocumentPersister
             $this->_collection->update(array(
                 '_id' => $id
             ), array(
-                '$set' => $update
+                Mongo::cmd() . 'set' => $update
             ));
             unset($this->_documentsToUpdate[$oid]);
             unset($this->_fieldsToUpdate[$oid]);
@@ -201,22 +202,22 @@ class BasicDocumentPersister
              * are not allowed on the same field in one update
              */
             $id = $this->_class->getDatabaseIdentifierValue($id);
-            if (isset($update['$pushAll']) && isset($update['$pullAll'])) {
+            if (isset($update[Mongo::cmd() . 'pushAll']) && isset($update[Mongo::cmd() . 'pullAll'])) {
                 $fields = array_intersect(
-                    array_keys($update['$pushAll']),
-                    array_keys($update['$pullAll'])
+                    array_keys($update[Mongo::cmd() . 'pushAll']),
+                    array_keys($update[Mongo::cmd() . 'pullAll'])
                 );
                 if ( ! empty($fields)) {
                     $tempUpdate = array();
                     foreach ($fields as $field) {
-                        $tempUpdate[$field] = $update['$pullAll'][$field];
-                        unset($update['$pullAll'][$field]);
+                        $tempUpdate[$field] = $update[Mongo::cmd() . 'pullAll'][$field];
+                        unset($update[Mongo::cmd() . 'pullAll'][$field]);
                     }
-                    if (empty($update['$pullAll'])) {
-                        unset($update['$pullAll']);
+                    if (empty($update[Mongo::cmd() . 'pullAll'])) {
+                        unset($update[Mongo::cmd() . 'pullAll']);
                     }
                     $tempUpdate = array(
-                        '$pullAll' => $tempUpdate
+                        Mongo::cmd() . 'pullAll' => $tempUpdate
                     );
                     $this->_collection->update(array('_id' => $id), $tempUpdate);
                 }
@@ -267,12 +268,12 @@ class BasicDocumentPersister
             if (isset($mapping['reference'])) {
                 $scheduleForUpdate = false;
                 if ($mapping['type'] === 'one') {
-                    if (null === $result[$mapping['fieldName']]['$id']) {
+                    if (null === $result[$mapping['fieldName']][Mongo::cmd() . 'id']) {
                         $scheduleForUpdate = true;
                     }
                 } elseif ($mapping['type'] === 'many') {
                     foreach ($result[$mapping['fieldName']] as $ref) {
-                        if (null === $ref['$id']) {
+                        if (null === $ref[Mongo::cmd() . 'id']) {
                             $scheduleForUpdate = true;
                             break;
                         }
@@ -437,15 +438,15 @@ class BasicDocumentPersister
 
         if ($mapping['type'] === 'increment') {
             if ($new >= $old) {
-                $result['$inc'][$mapping['fieldName']] = $new - $old;
+                $result[Mongo::cmd() . 'inc'][$mapping['fieldName']] = $new - $old;
             } else {
-                $result['$inc'][$mapping['fieldName']] = ($old - $new) * -1;
+                $result[Mongo::cmd() . 'inc'][$mapping['fieldName']] = ($old - $new) * -1;
             }
         } else {
             if (isset($new) || $mapping['nullable'] === true) {
-                $result['$set'][$mapping['fieldName']] = $new;
+                $result[Mongo::cmd() . 'set'][$mapping['fieldName']] = $new;
             } else {
-                $result['$unset'][$mapping['fieldName']] = true;
+                $result[Mongo::cmd() . 'unset'][$mapping['fieldName']] = true;
             }
         }
     }
@@ -463,12 +464,12 @@ class BasicDocumentPersister
     {
         foreach ($old as $val) {
             if ( ! in_array($val, $new)) {
-                $result['$pullAll'][$mapping['fieldName']][] = $val;
+                $result[Mongo::cmd() . 'pullAll'][$mapping['fieldName']][] = $val;
             }
         }
         foreach ($new as $val) {
             if ( ! in_array($val, $old)) {
-                $result['$pushAll'][$mapping['fieldName']][] = $val;
+                $result[Mongo::cmd() . 'pushAll'][$mapping['fieldName']][] = $val;
             }
         }
     }
@@ -524,9 +525,9 @@ class BasicDocumentPersister
             $id = $class->getPHPIdentifierValue($id);
         }
         $ref = array(
-            '$ref' => $class->getCollection(),
-            '$id' => $id,
-            '$db' => $class->getDB()
+            Mongo::cmd() . 'ref' => $class->getCollection(),
+            Mongo::cmd() . 'id' => $id,
+            Mongo::cmd() . 'db' => $class->getDB()
         );
         return $ref;
     }

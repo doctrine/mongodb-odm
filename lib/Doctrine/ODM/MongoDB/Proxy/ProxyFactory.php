@@ -21,7 +21,8 @@ namespace Doctrine\ODM\MongoDB\Proxy;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mapping\AssociationMapping;
+    Doctrine\ODM\MongoDB\Mapping\AssociationMapping,
+    Doctrine\ODM\MongoDB\Mongo;
 
 
 /**
@@ -188,8 +189,8 @@ class ProxyFactory
                         $parameterString .= '&';
                     }
 
-                    $parameterString .= '$' . $param->getName();
-                    $argumentString  .= '$' . $param->getName();
+                    $parameterString .= Mongo::cmd() . $param->getName();
+                    $argumentString  .= Mongo::cmd() . $param->getName();
 
                     if ($param->isDefaultValueAvailable()) {
                         $parameterString .= ' = ' . var_export($param->getDefaultValue(), true);
