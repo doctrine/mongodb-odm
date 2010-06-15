@@ -132,10 +132,10 @@ by using the `sort()` method:
     $query = $dm->createQuery('Article')
         ->sort('createdAt', 'desc');
 
-If you want to an additional sort you can use the `addSort()` method:
+If you want to an additional sort you can call `sort()` again:
 
     [php]
-    $query->addSort('featured', 'desc');
+    $query->sort('featured', 'desc');
 
 +++ Map Reduce
 
@@ -186,7 +186,6 @@ Here is a list of all the conditional operation methods you can use on the `Quer
 object. Click the method to see a practical example:
 
 * [where($fieldName, $value)](#where)
-* [addWhere($fieldName, $value)](#addWhere)
 * [whereIn($fieldName, $values)](#whereIn)
 * [whereNotIn($fieldName, $values)](#whereNotIn)
 * [whereNotEqual($fieldName, $value)](#whereNotEqual)
@@ -202,14 +201,13 @@ object. Click the method to see a practical example:
 * [whereMod($fieldName, $mod)](#whereMod)
 
 <a name="where"></a>
-<a name="addWhere"></a>
 
 Query for active administrator users:
 
     [php]
     $query = $dm->createQuery('User')
         ->where('type', 'admin')
-        ->addWhere('active', 1);
+        ->where('active', 1);
 
 <a name="whereIn"></a>
 
