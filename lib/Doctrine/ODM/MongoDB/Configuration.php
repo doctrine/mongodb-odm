@@ -54,6 +54,7 @@ class Configuration
     public function __construct()
     {
         $this->_attributes['metadataDriverImpl'] = new PHPDriver();
+		$this->_attributes['mongoCmd'] = ini_get('mongo.cmd');
     }
 
     /**
@@ -319,4 +320,22 @@ class Configuration
         return isset($this->_attributes['dbSuffix']) ?
             $this->_attributes['dbSuffix'] : null;
     }
+
+	/**
+	 * Get mongodb command prefix - '$' by default
+	 * @return string
+	 */
+	public function getMongoCmd()
+	{
+		return $this->_attributes['mongoCmd'];
+	}
+
+	/**
+	 * Set mongodb command prefix
+	 * @param string $cmd
+	 */
+	public function setMongoCmd($cmd)
+	{
+		$this->_attributes['mongoCmd'] = $cmd;
+	}
 }

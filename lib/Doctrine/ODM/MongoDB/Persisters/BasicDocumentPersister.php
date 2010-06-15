@@ -94,6 +94,12 @@ class BasicDocumentPersister
     private $_fieldsToUpdate = array();
 
     /**
+     * Mongo command prefix
+     * @var string
+     */
+    private $_cmd;
+
+    /**
      * Initializes a new BasicDocumentPersister instance.
      *
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
@@ -106,6 +112,7 @@ class BasicDocumentPersister
         $this->_class = $class;
         $this->_documentName = $class->getName();
         $this->_collection = $dm->getDocumentCollection($class->name);
+        $this->_cmd = $this->_dm->getConfiguration()->getMongoCmd();
     }
 
     /**
@@ -181,7 +188,7 @@ class BasicDocumentPersister
             $this->_collection->update(array(
                 '_id' => $id
             ), array(
-                '$set' => $update
+                $this->_cmd . 'set' => $update
             ));
             unset($this->_documentsToUpdate[$oid]);
             unset($this->_fieldsToUpdate[$oid]);
@@ -210,22 +217,22 @@ class BasicDocumentPersister
              * are not allowed on the same field in one update
              */
             $id = $this->_class->getDatabaseIdentifierValue($id);
-            if (isset($update['$pushAll']) && isset($update['$pullAll'])) {
+            if (isset($update[$this->_cmd . 'pushAll']) && isset($update[$this->_cmd . 'pullAll'])) {
                 $fields = array_intersect(
-                    array_keys($update['$pushAll']),
-                    array_keys($update['$pullAll'])
+                    array_keys($update[$this->_cmd . 'pushAll']),
+                    array_keys($update[$this->_cmd . 'pullAll'])
                 );
                 if ( ! empty($fields)) {
                     $tempUpdate = array();
                     foreach ($fields as $field) {
-                        $tempUpdate[$field] = $update['$pullAll'][$field];
-                        unset($update['$pullAll'][$field]);
+                        $tempUpdate[$field] = $update[$this->_cmd . 'pullAll'][$field];
+                        unset($update[$this->_cmd . 'pullAll'][$field]);
                     }
-                    if (empty($update['$pullAll'])) {
-                        unset($update['$pullAll']);
+                    if (empty($update[$this->_cmd . 'pullAll'])) {
+                        unset($update[$this->_cmd . 'pullAll']);
                     }
                     $tempUpdate = array(
-                        '$pullAll' => $tempUpdate
+                        $this->_cmd . 'pullAll' => $tempUpdate
                     );
                     $this->_collection->update(array('_id' => $id), $tempUpdate);
                 }
@@ -276,12 +283,12 @@ class BasicDocumentPersister
             if (isset($mapping['reference'])) {
                 $scheduleForUpdate = false;
                 if ($mapping['type'] === 'one') {
-                    if (null === $result[$mapping['fieldName']]['$id']) {
+                    if (null === $result[$mapping['fieldName']][$this->_cmd . 'id']) {
                         $scheduleForUpdate = true;
                     }
                 } elseif ($mapping['type'] === 'many') {
                     foreach ($result[$mapping['fieldName']] as $ref) {
-                        if (null === $ref['$id']) {
+                        if (null === $ref[$this->_cmd . 'id']) {
                             $scheduleForUpdate = true;
                             break;
                         }
@@ -446,15 +453,15 @@ class BasicDocumentPersister
 
         if ($mapping['type'] === 'increment') {
             if ($new >= $old) {
-                $result['$inc'][$mapping['fieldName']] = $new - $old;
+                $result[$this->_cmd . 'inc'][$mapping['fieldName']] = $new - $old;
             } else {
-                $result['$inc'][$mapping['fieldName']] = ($old - $new) * -1;
+                $result[$this->_cmd . 'inc'][$mapping['fieldName']] = ($old - $new) * -1;
             }
         } else {
             if (isset($new) || $mapping['nullable'] === true) {
-                $result['$set'][$mapping['fieldName']] = $new;
+                $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
             } else {
-                $result['$unset'][$mapping['fieldName']] = true;
+                $result[$this->_cmd . 'unset'][$mapping['fieldName']] = true;
             }
         }
     }
@@ -472,12 +479,12 @@ class BasicDocumentPersister
     {
         foreach ($old as $val) {
             if ( ! in_array($val, $new)) {
-                $result['$pullAll'][$mapping['fieldName']][] = $val;
+                $result[$this->_cmd . 'pullAll'][$mapping['fieldName']][] = $val;
             }
         }
         foreach ($new as $val) {
             if ( ! in_array($val, $old)) {
-                $result['$pushAll'][$mapping['fieldName']][] = $val;
+                $result[$this->_cmd . 'pushAll'][$mapping['fieldName']][] = $val;
             }
         }
     }
@@ -533,9 +540,9 @@ class BasicDocumentPersister
             $id = $class->getPHPIdentifierValue($id);
         }
         $ref = array(
-            '$ref' => $class->getCollection(),
-            '$id' => $id,
-            '$db' => $class->getDB()
+            $this->_cmd . 'ref' => $class->getCollection(),
+            $this->_cmd . 'id' => $id,
+            $this->_cmd . 'db' => $class->getDB()
         );
         return $ref;
     }

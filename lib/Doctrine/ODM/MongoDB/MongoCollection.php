@@ -51,6 +51,12 @@ class MongoCollection
     private $_eventManager;
 
     /**
+     * Mongo command prefix
+     * @var string
+     */
+    private $_cmd;
+
+    /**
      * Create a new MongoCollection instance that wraps a PHP MongoCollection instance
      * for a given ClassMetadata instance.
      *
@@ -63,6 +69,7 @@ class MongoCollection
         $this->_mongoCollection = $mongoCollection;
         $this->_class = $class;
         $this->_loggerCallable = $dm->getConfiguration()->getLoggerCallable();
+        $this->_cmd = $dm->getConfiguration()->getMongoCmd();
         $this->_eventManager = $dm->getEventManager();
     }
 
@@ -141,7 +148,7 @@ class MongoCollection
         if ($file instanceof \MongoGridFSFile) {
             $id = $a['_id'];
             unset($a['_id']);
-            $set = array('$set' => $a);
+            $set = array($this->_cmd . 'set' => $a);
 
             if ($this->_loggerCallable) {
                 $this->log(array(

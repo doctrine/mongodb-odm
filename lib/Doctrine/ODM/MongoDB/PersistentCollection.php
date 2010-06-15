@@ -80,11 +80,18 @@ final class PersistentCollection implements Collection
      */
     private $_coll;
 
+    /**
+     * Mongo command prefix
+     * @var string
+     */
+    private $_cmd;
+
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $coll)
     {
         $this->_coll = $coll;
         $this->_dm = $dm;
         $this->_typeClass = $class;
+        $this->_cmd = $dm->getConfiguration()->getMongoCmd();
     }
 
     /**
@@ -101,7 +108,7 @@ final class PersistentCollection implements Collection
                 $ids[] = $this->_typeClass->getIdentifierObject($document);
             }
 
-            $data = $collection->find(array('_id' => array('$in' => $ids)));
+            $data = $collection->find(array('_id' => array($this->_cmd . 'in' => $ids)));
             $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
             foreach ($data as $id => $document) {
                 $document = $this->_dm->getUnitOfWork()->getOrCreateDocument($this->_typeClass->name, $document, $hints);

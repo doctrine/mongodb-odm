@@ -45,6 +45,12 @@ class Hydrator
     private $_dm;
 
     /**
+     * Mongo command prefix
+     * @var string
+     */
+    private $_cmd;
+
+    /**
      * Create a new Hydrator instance
      *
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
@@ -52,6 +58,7 @@ class Hydrator
     public function __construct(DocumentManager $dm)
     {
         $this->_dm = $dm;
+        $this->_cmd = $dm->getConfiguration()->getMongoCmd();
     }
 
     /**
@@ -92,15 +99,15 @@ class Hydrator
             } elseif (isset($mapping['reference'])) {
                 $targetMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 $targetDocument = $targetMetadata->newInstance();
-                if ($mapping['type'] === 'one' && isset($rawValue['$id'])) {
-                    $id = $targetMetadata->getPHPIdentifierValue($rawValue['$id']);
+                if ($mapping['type'] === 'one' && isset($rawValue[$this->_cmd . 'id'])) {
+                    $id = $targetMetadata->getPHPIdentifierValue($rawValue[$this->_cmd . 'id']);
                     $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
                     $metadata->setFieldValue($document, $mapping['fieldName'], $proxy);
                 } elseif ($mapping['type'] === 'many' && (is_array($rawValue) || $rawValue instanceof Collection)) {
                     $documents = new PersistentCollection($this->_dm, $targetMetadata, new ArrayCollection());
                     $documents->setInitialized(false);
                     foreach ($rawValue as $v) {
-                        $id = $targetMetadata->getPHPIdentifierValue($v['$id']);
+                        $id = $targetMetadata->getPHPIdentifierValue($v[$this->_cmd . 'id']);
                         $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
                         $documents->add($proxy);
                     }
