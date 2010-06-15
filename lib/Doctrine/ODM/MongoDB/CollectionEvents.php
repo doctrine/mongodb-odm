@@ -33,24 +33,24 @@ namespace Doctrine\ODM\MongoDB;
  */
 final class CollectionEvents
 {
-    const preBatchInsert = 'preBatchInsert';
-    const postBatchInsert = 'postBatchInsert';
+    const preBatchInsert = 'collectionPreBatchInsert';
+    const postBatchInsert = 'collectionPostBatchInsert';
 
-    const preUpdate = 'preUpdate';
-    const postUpdate = 'postUpdate';
+    const preUpdate = 'collectionPreUpdate';
+    const postUpdate = 'collectionPostUpdate';
 
-    const preSaveFile = 'preSaveFile';
-    const postSaveFile = 'postSaveFile';
+    const preSaveFile = 'collectionPreSaveFile';
+    const postSaveFile = 'collectionPostSaveFile';
 
-    const preGetDBRef = 'preGetDBRef';
-    const postGetDBRef = 'postGetDBRef';
+    const preGetDBRef = 'collectionPreGetDBRef';
+    const postGetDBRef = 'collectionPostGetDBRef';
 
-    const preSave = 'preSave';
-    const postSave = 'postSave';
+    const preSave = 'collectionPreSave';
+    const postSave = 'collectionPostSave';
 
-    const preFind = 'preFind';
-    const postFind = 'postFind';
+    const preFind = 'collectionPreFind';
+    const postFind = 'collectionPostFind';
 
-    const preFindOne = 'preFindOne';
-    const postFindOne = 'postFindOne';
+    const preFindOne = 'collectionPreFindOne';
+    const postFindOne = 'collectionPostFindOne';
 }
