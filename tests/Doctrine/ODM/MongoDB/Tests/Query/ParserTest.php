@@ -15,6 +15,31 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->parser = new Parser($this->dm);
     }
 
+    public function testSelectSlice()
+    {
+        $query = $this->parser->parse('find username, profile.firstName, comments.slice(10, 20) Documents\User');
+        $this->assertEquals(array('username', 'profile.firstName', 'comments' => array('$slice' => array(10, 20))), $query->debug('select'));
+    }
+
+    public function testWhereMod()
+    {
+        $query = $this->parser->parse("find all Documents\User where a mod '[10, 1]'");
+        $this->assertEquals(array('a' => array('$mod' => array(10, 1))), $query->debug('where'));
+
+        $query = $this->parser->parse("find all Documents\User where not a mod '[10, 1]'");
+        $this->assertEquals(array('a' => array('$not' => array('$mod' => array(10, 1)))), $query->debug('where'));
+    }
+
+    public function testWhereNot()
+    {
+        $query = $this->parser->parse("find all Documents\User where not username = 'jwage' and not count > 1 and not groups in '[1, 2, 3]'");
+        $this->assertEquals(array(
+            'username' => array('$not' => 'jwage'),
+            'count' => array('$not' => array('$gt' => 1)),
+            'groups' => array('$not' => array('$in' => array(1, 2, 3)))
+        ), $query->debug('where'));
+    }
+
     public function testElemMatch()
     {
         $query = $this->parser->parse("find all Documents\User where phonenumbers.phonenumber in '[1]'");
@@ -25,7 +50,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $query->debug('where')
         );
 
-        $query = $this->parser->parse("find all Documents\User where all accounts.name ='test' and all accounts.type_name = 'test' and accounts.name = 'test'");
+        $query = $this->parser->parse("find all Documents\User where all accounts.name = 'test' and all accounts.type_name = 'test' and accounts.name = 'test'");
         $this->assertEquals(
             array(
                 'accounts' => array(

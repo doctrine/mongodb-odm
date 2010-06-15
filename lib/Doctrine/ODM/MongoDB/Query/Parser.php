@@ -199,7 +199,38 @@ class Parser
     public function SelectField(Query $query)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $query->addSelect($this->_lexer->token['value']);
+
+        if ($this->_lexer->isNextToken(Lexer::T_DOT)) {
+            $fieldName = $this->_lexer->token['value'];
+            $slice = false;
+            while ($this->_lexer->isNextToken(Lexer::T_DOT)) {
+                $this->match(Lexer::T_DOT);
+                if ($this->_lexer->isNextToken(Lexer::T_SLICE)) {
+                    $slice = true;
+                    $this->match(Lexer::T_SLICE);
+                    $this->match(Lexer::T_OPEN_PARENTHESES);
+                    $this->match(Lexer::T_INTEGER);
+                    $start = $this->_lexer->token['value'];
+                    $end = null;
+                    if ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+                        $this->match(Lexer::T_COMMA);
+                        $this->match(Lexer::T_INTEGER);
+                        $end = $this->_lexer->token['value'];
+                    }
+                    $this->match(Lexer::T_CLOSE_PARENTHESES);
+                } else {
+                    $this->match(Lexer::T_IDENTIFIER);
+                    $fieldName .= '.' . $this->_lexer->token['value'];
+                }
+            }
+            if ($slice === true) {
+                $query->selectSlice($fieldName, $start, $end);
+            } else {
+                $query->select($fieldName);
+            }
+        } else {
+            $query->select($this->_lexer->token['value']);
+        }
     }
 
     /**
@@ -330,7 +361,7 @@ class Parser
         $fieldName = $this->DocumentFieldName($query);
         $this->match(Lexer::T_IDENTIFIER);
         $order = $this->_lexer->token['value'];
-        $query->addSort($fieldName, $order);
+        $query->sort($fieldName, $order);
     }
 
     /**
@@ -400,17 +431,24 @@ class Parser
     }
 
     /**
-     * WhereClausePart ::= ["all"] DocumentFieldName WhereClauseExpression Value
+     * WhereClausePart ::= ["all", "not"] DocumentFieldName WhereClauseExpression Value
      * WhereClauseExpression ::= "=" | "!=" | ">=" | "<=" | ">" | "<" | "in"
      *                         "notIn" | "all" | "size" | "exists" | "type"
      */
     public function WhereClauseExpression(Query $query, array &$parameters)
     {
-        $elemMatch = false;
-        if ($this->_lexer->isNextToken(Lexer::T_ALL)) {
-            $elemMatch = true;
-            $this->match(Lexer::T_ALL);
+        $options = array();
+        switch ($this->_lexer->lookahead['type']) {
+            case Lexer::T_ALL:
+                $this->match(Lexer::T_ALL);
+                $options['elemMatch'] = true;
+                break;
+            case Lexer::T_NOT:
+                $this->match(Lexer::T_NOT);
+                $options['not'] = true;
+                break;
         }
+
         $fieldName = $this->DocumentFieldName($query);
 
         $operator = $this->_lexer->lookahead['value'];
@@ -419,40 +457,43 @@ class Parser
 
         switch ($operator) {
             case '=':
-                $query->addWhere($fieldName, $value, $elemMatch);
+                $query->where($fieldName, $value, $options);
                 break;
             case '!=':
-                $query->whereNotEqual($fieldName, $value, $elemMatch);
+                $query->whereNotEqual($fieldName, $value, $options);
                 break;
             case '>=':
-                $query->whereGte($fieldName, $value, $elemMatch);
+                $query->whereGte($fieldName, $value, $options);
                 break;
             case '<=':
-                $query->whereLte($fieldName, $value, $elemMatch);
+                $query->whereLte($fieldName, $value, $options);
                 break;
             case '>':
-                $query->whereGt($fieldName, $value, $elemMatch);
+                $query->whereGt($fieldName, $value, $options);
                 break;
             case '<':
-                $query->whereLt($fieldName, $value, $elemMatch);
+                $query->whereLt($fieldName, $value, $options);
                 break;
             case 'in':
-                $query->whereIn($fieldName, $value, $elemMatch);
+                $query->whereIn($fieldName, $value, $options);
                 break;
             case 'notIn':
-                $query->whereNotIn($fieldName, $value, $elemMatch);
+                $query->whereNotIn($fieldName, $value, $options);
                 break;
             case 'all':
-                $query->whereAll($fieldName, $value, $elemMatch);
+                $query->whereAll($fieldName, $value, $options);
                 break;
             case 'size':
-                $query->whereSize($fieldName, $value, $elemMatch);
+                $query->whereSize($fieldName, $value, $options);
                 break;
             case 'exists':
-                $query->whereExists($fieldName, $value, $elemMatch);
+                $query->whereExists($fieldName, $value, $options);
                 break;
             case 'type':
-                $query->whereType($fieldName, $value, $elemMatch);
+                $query->whereType($fieldName, $value, $options);
+                break;
+            case 'mod':
+                $query->whereMod($fieldName, $value, $options);
                 break;
             default:
                 $this->syntaxError('Invalid atomic update operator.');

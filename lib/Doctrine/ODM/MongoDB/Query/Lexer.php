@@ -50,6 +50,8 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_CLOSE_BRACKET       = 16;
     const T_OPEN_CURLY_BRACE    = 17;
     const T_CLOSE_CURLY_BRACE   = 18;
+    const T_OPEN_PARENTHESES    = 19;
+    const T_CLOSE_PARENTHESES   = 20;
 
     // All tokens that are also identifiers should be >= 100
     const T_IDENTIFIER          = 100;
@@ -88,6 +90,8 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_TRUE                = 133;
     const T_FALSE               = 134;
     const T_ANY                 = 135;
+    const T_NOT                 = 136;
+    const T_SLICE               = 137;
 
     /**
      * @inheritdoc
@@ -148,6 +152,8 @@ class Lexer extends \Doctrine\Common\Lexer
                 case '}':  return self::T_CLOSE_CURLY_BRACE;
                 case '[':  return self::T_OPEN_BRACKET;
                 case ']':  return self::T_CLOSE_BRACKET;
+                case '(':  return self::T_OPEN_PARENTHESES;
+                case ')':  return self::T_CLOSE_PARENTHESES;
                 case '.':  return self::T_DOT;
                 case ',':  return self::T_COMMA;
                 case '<=': return self::T_GTE;
