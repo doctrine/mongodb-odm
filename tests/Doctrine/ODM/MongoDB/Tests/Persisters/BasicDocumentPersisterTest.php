@@ -60,14 +60,14 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $update = $this->persister->prepareUpdateData($user);
         $this->dm->flush();
 
-        $this->assertTrue(array_key_exists('$set', $update));
-        $this->assertFalse(array_key_exists('$unset', $update));
-        $this->assertTrue(array_key_exists('username', $update['$set']));
-        $this->assertTrue(array_key_exists('password', $update['$set']));
-        $this->assertTrue(array_key_exists('account', $update['$set']));
-        $this->assertTrue(array_key_exists('$ref', $update['$set']['account']));
-        $this->assertTrue(array_key_exists('$db', $update['$set']['account']));
-        $this->assertTrue(array_key_exists('$id', $update['$set']['account']));
+        $this->assertTrue(array_key_exists($this->escapeCommand('set'), $update));
+        $this->assertFalse(array_key_exists($this->escapeCommand('unset'), $update));
+        $this->assertTrue(array_key_exists('username', $update[$this->escapeCommand('set')]));
+        $this->assertTrue(array_key_exists('password', $update[$this->escapeCommand('set')]));
+        $this->assertTrue(array_key_exists('account', $update[$this->escapeCommand('set')]));
+        $this->assertTrue(array_key_exists($this->escapeCommand('ref'), $update[$this->escapeCommand('set')]['account']));
+        $this->assertTrue(array_key_exists($this->escapeCommand('db'), $update[$this->escapeCommand('set')]['account']));
+        $this->assertTrue(array_key_exists($this->escapeCommand('id'), $update[$this->escapeCommand('set')]['account']));
     }
 
     public function testDocumentUpdate()
@@ -106,9 +106,9 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($user);
 
-        $this->assertTrue(array_key_exists('$unset', $update));
-        $this->assertTrue(array_key_exists('username', $update['$unset']));
-        $this->assertFalse(array_key_exists('$set', $update));
+        $this->assertTrue(array_key_exists($this->escapeCommand('unset'), $update));
+        $this->assertTrue(array_key_exists('username', $update[$this->escapeCommand('unset')]));
+        $this->assertFalse(array_key_exists($this->escapeCommand('set'), $update));
 
         $this->dm->flush();
     }
@@ -136,26 +136,26 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($user);
 
-        $this->assertTrue(array_key_exists('$set', $update));
-        $this->assertFalse(array_key_exists('$unset', $update));
-        $this->assertTrue(array_key_exists('$pushAll', $update));
-        $this->assertTrue(array_key_exists('groups', $update['$pushAll']));
-        $this->assertEquals(3, count($update['$pushAll']['groups']));
-        $this->assertFalse(array_key_exists('$pullAll', $update));
-        $this->assertTrue(array_key_exists('$inc', $update));
-        $this->assertEquals(5, $update['$inc']['count']);
+        $this->assertTrue(array_key_exists($this->escapeCommand('set'), $update));
+        $this->assertFalse(array_key_exists($this->escapeCommand('unset'), $update));
+        $this->assertTrue(array_key_exists($this->escapeCommand('pushAll'), $update));
+        $this->assertTrue(array_key_exists('groups', $update[$this->escapeCommand('pushAll')]));
+        $this->assertEquals(3, count($update[$this->escapeCommand('pushAll')]['groups']));
+        $this->assertFalse(array_key_exists($this->escapeCommand('pullAll'), $update));
+        $this->assertTrue(array_key_exists($this->escapeCommand('inc'), $update));
+        $this->assertEquals(5, $update[$this->escapeCommand('inc')]['count']);
 
         $user->setCount(20);
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($user);
-        $this->assertTrue(array_key_exists('$inc', $update));
-        $this->assertEquals(15, $update['$inc']['count']);
+        $this->assertTrue(array_key_exists($this->escapeCommand('inc'), $update));
+        $this->assertEquals(15, $update[$this->escapeCommand('inc')]['count']);
 
         $user->setCount(5);
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($user);
-        $this->assertTrue(array_key_exists('$inc', $update));
-        $this->assertEquals(-15, $update['$inc']['count']);
+        $this->assertTrue(array_key_exists($this->escapeCommand('inc'), $update));
+        $this->assertEquals(-15, $update[$this->escapeCommand('inc')]['count']);
 
         $this->dm->flush();
     }
@@ -203,12 +203,12 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($user);
 
-        $this->assertFalse(array_key_exists('$set', $update));
-        $this->assertFalse(array_key_exists('$unset', $update));
-        $this->assertTrue(array_key_exists('$pullAll', $update));
-        $this->assertTrue(array_key_exists('groups', $update['$pullAll']));
-        $this->assertEquals(2, count($update['$pullAll']['groups']));
-        $this->assertFalse(array_key_exists('$pushAll', $update));
+        $this->assertFalse(array_key_exists($this->escapeCommand('set'), $update));
+        $this->assertFalse(array_key_exists($this->escapeCommand('unset'), $update));
+        $this->assertTrue(array_key_exists($this->escapeCommand('pullAll'), $update));
+        $this->assertTrue(array_key_exists('groups', $update[$this->escapeCommand('pullAll')]));
+        $this->assertEquals(2, count($update[$this->escapeCommand('pullAll')]['groups']));
+        $this->assertFalse(array_key_exists($this->escapeCommand('pushAll'), $update));
 
         $this->dm->flush();
     }
@@ -260,14 +260,14 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($user);
 
-        $this->assertFalse(array_key_exists('$set', $update));
-        $this->assertFalse(array_key_exists('$unset', $update));
-        $this->assertTrue(array_key_exists('$pullAll', $update));
-        $this->assertTrue(array_key_exists('groups', $update['$pullAll']));
-        $this->assertEquals(2, count($update['$pullAll']['groups']));
-        $this->assertTrue(array_key_exists('$pushAll', $update));
-        $this->assertTrue(array_key_exists('groups', $update['$pushAll']));
-        $this->assertEquals(2, count($update['$pushAll']['groups']));
+        $this->assertFalse(array_key_exists($this->escapeCommand('set'), $update));
+        $this->assertFalse(array_key_exists($this->escapeCommand('unset'), $update));
+        $this->assertTrue(array_key_exists($this->escapeCommand('pushAll'), $update));
+        $this->assertTrue(array_key_exists('groups', $update[$this->escapeCommand('pushAll')]));
+        $this->assertEquals(2, count($update[$this->escapeCommand('pushAll')]['groups']));
+        $this->assertTrue(array_key_exists($this->escapeCommand('pullAll'), $update));
+        $this->assertTrue(array_key_exists('groups', $update[$this->escapeCommand('pullAll')]));
+        $this->assertEquals(2, count($update[$this->escapeCommand('pullAll')]['groups']));
 
         $this->dm->flush();
         $this->dm->clear();
@@ -301,10 +301,10 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $persister->prepareUpdateData($article);
 
-        $this->assertTrue(array_key_exists('$pushAll', $update));
-        $this->assertTrue(array_key_exists('tags', $update['$pushAll']));
-        $this->assertEquals(4, count($update['$pushAll']['tags']));
-        $this->assertFalse(array_key_exists('$pullAll', $update));
+        $this->assertTrue(array_key_exists($this->escapeCommand('pushAll'), $update));
+        $this->assertTrue(array_key_exists('tags', $update[$this->escapeCommand('pushAll')]));
+        $this->assertEquals(4, count($update[$this->escapeCommand('pushAll')]['tags']));
+        $this->assertFalse(array_key_exists($this->escapeCommand('pullAll'), $update));
 
         $this->dm->flush();
         $this->dm->clear();
@@ -323,12 +323,12 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $persister->prepareUpdateData($article);
 
-        $this->assertTrue(array_key_exists('$pushAll', $update));
-        $this->assertTrue(array_key_exists('tags', $update['$pushAll']));
-        $this->assertEquals(1, count($update['$pushAll']['tags']));
-        $this->assertTrue(array_key_exists('$pullAll', $update));
-        $this->assertTrue(array_key_exists('tags', $update['$pullAll']));
-        $this->assertEquals(2, count($update['$pullAll']['tags']));
+        $this->assertTrue(array_key_exists($this->escapeCommand('pushAll'), $update));
+        $this->assertTrue(array_key_exists('tags', $update[$this->escapeCommand('pushAll')]));
+        $this->assertEquals(1, count($update[$this->escapeCommand('pushAll')]['tags']));
+        $this->assertTrue(array_key_exists($this->escapeCommand('pullAll'), $update));
+        $this->assertTrue(array_key_exists('tags', $update[$this->escapeCommand('pullAll')]));
+        $this->assertEquals(2, count($update[$this->escapeCommand('pullAll')]['tags']));
 
         $this->dm->flush();
         $this->dm->clear();

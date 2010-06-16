@@ -29,7 +29,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testFindQuery()
     {
         $query = $this->dm->createQuery('Documents\User')
-            ->where('$where', "function() { return this.username == 'boo' }");
+            ->where($this->escapeCommand('where'), "function() { return this.username == 'boo' }");
         $user = $query->getSingleResult();
         $this->assertEquals('boo', $user->getUsername());
 
