@@ -322,6 +322,12 @@ class BasicDocumentPersister
             }
             $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
+            /**
+             * @todo what happens if we want to update id of the document?
+             */
+            if ($this->_class->isIdentifier($mapping['fieldName'])) {
+                continue;
+            }
             $new = $this->_prepareValue($mapping, $new);
             $old = $this->_prepareValue($mapping, $old);
             if (($mapping['type'] === 'many') || $mapping['type'] === 'collection') {
