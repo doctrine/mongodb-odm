@@ -62,7 +62,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function escapeCommand($command) {
+    public function escape($command) {
         return $this->dm->getConfiguration()->getMongoCmd() . $command;
     }
 }

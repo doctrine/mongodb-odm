@@ -46,7 +46,7 @@ class Configuration
      *
      * @var array $_attributes
      */
-    private $_attributes = array();
+    private $_attributes = array('mongoCmd' => '$');
 
     /**
      * Create a new Configuration instance.
@@ -54,7 +54,6 @@ class Configuration
     public function __construct()
     {
         $this->_attributes['metadataDriverImpl'] = new PHPDriver();
-        $this->_attributes['mongoCmd'] = ini_get('mongo.cmd');
     }
 
     /**

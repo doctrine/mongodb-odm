@@ -43,7 +43,7 @@ class CollectionEventsTEst extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $file = array('file' => 'file');
         $this->dm->getDocumentCollection('Documents\File')->saveFile($file);
         $cmd = $this->dm->getConfiguration()->getMongoCmd();
-        $collection->getDbRef(array($this->escapeCommand('ref') => 'users', $this->escapeCommand('id') => 'theid'));
+        $collection->getDbRef(array($this->escape('ref') => 'users', $this->escape('id') => 'theid'));
         $document = array('_id' => 'test', 'username' => 'jwage');
         $collection->save($document);
         $collection->find();
