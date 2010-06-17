@@ -64,6 +64,11 @@ class MongoDBException extends \Exception
         return new self(sprintf('The "%s" document is not mapped to a MongoDB database collection.', $className));
     }
 
+    public static function documentNotFound($className, $identifier)
+    {
+        return new self(sprintf('The "%s" document with identifier "%s" could not be found.', $className, $identifier));
+    }
+
     public static function documentManagerClosed()
     {
         return new self('The DocumentManager is closed.');

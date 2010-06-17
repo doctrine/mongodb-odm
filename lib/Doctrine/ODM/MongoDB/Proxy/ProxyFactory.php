@@ -266,7 +266,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
         if ( ! $this->__isInitialized__ && $this->__dm) {
             $this->__isInitialized__ = true;
             if ($this->__dm->loadByID(get_class($this), $this->__identifier, true) === null) {
-                throw new \Doctrine\ODM\MongoDB\DocumentNotFoundException();
+                throw \Doctrine\ODM\MongoDB\MongoDBException::documentNotFound(get_class($this), $this->__identifier);
             }
             unset($this->__dm);
             unset($this->__identifier);
