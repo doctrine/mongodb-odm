@@ -436,8 +436,7 @@ class DocumentManager
         $class = $this->getClassMetadata($documentName);
         $collection = $this->getDocumentCollection($documentName);
 
-        $id = $class->getPHPIdentifierValue($id);
-        $result = $collection->findOne(array('_id' => $id));
+        $result = $collection->findOne(array('_id' => $class->getDatabaseIdentifierValue($id)));
 
         if ( ! $result) {
             return null;
