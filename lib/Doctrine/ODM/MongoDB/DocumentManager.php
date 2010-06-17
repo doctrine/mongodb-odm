@@ -436,10 +436,7 @@ class DocumentManager
         $class = $this->getClassMetadata($documentName);
         $collection = $this->getDocumentCollection($documentName);
 
-        if ( ! $class->getAllowCustomID()) {
-          $id = new \MongoId($id);
-        }
-
+        $id = $class->getPHPIdentifierValue($id);
         $result = $collection->findOne(array('_id' => $id));
 
         if ( ! $result) {
