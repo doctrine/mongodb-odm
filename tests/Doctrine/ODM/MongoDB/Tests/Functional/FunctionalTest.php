@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Documents\User,
+    Documents\Phonenumber,
     Documents\Employee,
     Documents\Manager,
     Documents\Address,
@@ -12,6 +13,20 @@ use Documents\User,
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function testSameObjectValuesInCollection()
+    {
+        $user = new User();
+        $user->setUsername('testing');
+        $user->getPhonenumbers()->add(new Phonenumber('6155139185'));
+        $user->getPhonenumbers()->add(new Phonenumber('6155139185'));
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->findOne('Documents\User', array('username' => 'testing'));
+        $this->assertEquals(2, count($user->getPhonenumbers()));
+    }
+
     public function testSearchEmbeddedDocumentDQL()
     {
         $user = new \Documents\User();
