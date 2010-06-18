@@ -426,12 +426,11 @@ class DocumentManager
      *
      * @param string $documentName The document name to load.
      * @param string $id  The id the document to load.
-     * @param boolean $isProxy
      * @return object $document  The loaded document.
      * @todo this function seems to be doing to much, should we move parts of it
      * to BasicDocumentPersister maybe?
      */
-    public function loadByID($documentName, $id, $isProxy = false)
+    public function loadByID($documentName, $id)
     {
         $class = $this->getClassMetadata($documentName);
         $collection = $this->getDocumentCollection($documentName);
@@ -441,11 +440,7 @@ class DocumentManager
         if ( ! $result) {
             return null;
         }
-        $document = $this->load($documentName, $id, $result);
-        if ($isProxy) {
-            $this->getUnitOfWork()->registerManaged($document, $id, $result);
-        }
-        return $document;
+        return $this->load($documentName, $id, $result);
     }
 
     /**
@@ -461,7 +456,9 @@ class DocumentManager
     {
         if ($data !== null) {
             $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
-            return $this->_unitOfWork->getOrCreateDocument($documentName, $data, $hints);
+            $document = $this->_unitOfWork->getOrCreateDocument($documentName, $data, $hints);
+            $this->getUnitOfWork()->registerManaged($document, $id, $data);
+            return $document;
         }
         return false;
     }
