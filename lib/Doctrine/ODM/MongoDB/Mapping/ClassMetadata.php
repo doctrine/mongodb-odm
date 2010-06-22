@@ -898,6 +898,7 @@ class ClassMetadata
             'db',
             'collection',
             'rootDocumentName',
+            'allowCustomID',
         );
 
         if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE) {
