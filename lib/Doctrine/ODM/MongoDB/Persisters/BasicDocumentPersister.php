@@ -26,7 +26,8 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\Common\Collections\Collection,
     Doctrine\ODM\MongoDB\ODMEvents,
-    Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
+    Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs,
+    Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * The BasicDocumentPersister is responsible for actual persisting the calculated
@@ -322,11 +323,11 @@ class BasicDocumentPersister
             }
             $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
-            if ($this->_class->isIdentifier($mapping['fieldName'])) {
-                continue;
-            }
             $new = $this->_prepareValue($mapping, $new);
             $old = $this->_prepareValue($mapping, $old);
+            if ($this->_class->isIdentifier($mapping['fieldName']) && ! $this->_equals($new, $old)) {
+                throw MongoDBException::identifierCannotBeUpdated();
+            }
             if (($mapping['type'] === 'many') || $mapping['type'] === 'collection') {
                 $this->_addArrayUpdateAtomicOperator($mapping, (array) $new, (array) $old, $result);
             } else {

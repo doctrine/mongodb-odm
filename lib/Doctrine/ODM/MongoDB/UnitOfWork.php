@@ -406,7 +406,7 @@ class UnitOfWork
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
 
-                if (is_object($orgValue)) {
+                if (is_object($orgValue) || is_object($actualValue)) {
                     if ($orgValue instanceof PersistentCollection) {
                         $orgValue = $orgValue->getSnapshot();
                     }
@@ -421,16 +421,14 @@ class UnitOfWork
                 }
 
                 if (isset($changeSet[$propName])) {
+                    $documentIsDirty = true;
                     if (isset($class->fieldMappings[$propName]['reference'])) {
                         $mapping = $class->fieldMappings[$propName];
                         if ($mapping['type'] === 'one') {
-                            $documentIsDirty = true;
                             if ($actualValue === null) {
                                 $this->scheduleOrphanRemoval($orgValue);
                             }
                         }
-                    } else {
-                        $documentIsDirty = true;
                     }
                 }
             }
