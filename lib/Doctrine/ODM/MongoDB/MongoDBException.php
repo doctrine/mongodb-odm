@@ -74,6 +74,12 @@ class MongoDBException extends \Exception
         return new self('The DocumentManager is closed.');
     }
 
+    public static function findByRequiresParameter($methodName)
+    {
+        return new self("You need to pass a parameter to '".$methodName."'");
+    }
+
+
     public static function typeExists($name)
     {
         return new self('Type '.$name.' already exists.');

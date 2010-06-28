@@ -592,7 +592,7 @@ class DocumentManager
     /**
      * Throws an exception if the DocumentManager is closed or currently not active.
      *
-     * @throws ORMException If the DocumentManager is closed.
+     * @throws MongoDBException If the DocumentManager is closed.
      */
     private function _errorIfClosed()
     {
