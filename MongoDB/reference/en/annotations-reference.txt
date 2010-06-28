@@ -8,6 +8,7 @@
 * [@BinMD5](#ann_bin_md5)
 * [@BinUUID](#ann_bin_uuid)
 * [@Boolean](#ann_boolean)
+* [@Collection](#ann_collection)
 * [@Date](#ann_date)
 * [@Document](#ann_document)
 * [@DiscriminatorField](#ann_discriminator_field)
@@ -77,6 +78,12 @@ Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata
 +++ @Boolean
 
 Alias of [@Field](#ann_field), with "type" attribute set to "boolean"
+
+<a name="ann_collection"></a>
++++ @Collection
+
+Alias of [@Field](#ann_field), with "type" attribute set to "collection".
+Stores and retrieves the value as numeric indexed array.
 
 <a name="ann_date"></a>
 +++ @Date
@@ -298,7 +305,7 @@ Example:
 +++ @Hash
 
 Alias of [@Field](#ann_field), with "type" attribute set to "hash".
-Stores and retrieves the value as array.
+Stores and retrieves the value as associative array.
 
 <a name="ann_id"></a>
 +++ @Id
