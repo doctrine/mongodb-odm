@@ -139,22 +139,17 @@ class AnnotationDriver implements Driver
                 $class->fieldMappings[$mapping['fieldName']]['notSaved'] = true;
             }
 
-            $types = array(
-                'Id', 'Increment', 'File', 'Field', 'String', 'Boolean', 'Int', 'Float', 'Date',
-                'Key', 'Bin', 'BinFunc', 'BinUUID', 'BinMD5', 'BinCustom', 'EmbedOne',
-                'EmbedMany', 'ReferenceOne', 'ReferenceMany', 'Timestamp', 'Hash', 'Collection'
-            );
-            foreach ($types as $type) {
-                if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\\' . $type)) {
-                    if ($type === 'Id' && $fieldAnnot->custom) {
+            foreach ($this->_reader->getPropertyAnnotations($property) as $fieldAnnot) {
+                if ($fieldAnnot instanceof \Doctrine\ODM\MongoDB\Mapping\Field) {
+                    if ($fieldAnnot instanceof \Doctrine\ODM\MongoDB\Mapping\Id && $fieldAnnot->custom) {
                         $fieldAnnot->type = 'custom_id';
                         $class->setAllowCustomId(true);
                     }
                     $mapping = array_merge($mapping, (array) $fieldAnnot);
                     $class->mapField($mapping);
-                    break;
                 }
             }
+
             $types = array('Embed', 'Reference');
             foreach ($types as $type) {
                 if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\\' . $type)) {

@@ -53,16 +53,16 @@ final class Index extends Annotation
     public $options = array();
 }
 
-final class Id extends Annotation
-{
-    public $id = true;
-    public $type = 'id';
-    public $custom = false;
-}
 class Field extends Annotation
 {
     public $type = 'string';
     public $nullable = false;
+}
+final class Id extends Field
+{
+    public $id = true;
+    public $type = 'id';
+    public $custom = false;
 }
 final class Hash extends Field
 {
