@@ -55,6 +55,7 @@ final class Index extends Annotation
 
 class Field extends Annotation
 {
+    public $name;
     public $type = 'string';
     public $nullable = false;
 }
