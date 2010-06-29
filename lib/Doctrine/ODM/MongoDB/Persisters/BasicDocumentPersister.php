@@ -401,12 +401,15 @@ class BasicDocumentPersister
      * @param array $hints Hints for document creation.
      * @return object The loaded and managed document instance or NULL if the document can not be found.
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
+     * @todo Modify DocumentManager to use this method instead of its own hard coded
      */
     public function load(array $query = array(), array $select = array())
     {
         $result = $this->_collection->findOne($query, $select);
         if ($result !== null) {
-            return $this->_uow->getOrCreateDocument($this->_documentName, $result);
+            $document = $this->_uow->getOrCreateDocument($this->_documentName, $result);
+            $this->_uow->registerManaged($document, $result['_id'], $result);
+            return $document;
         }
         return null;
     }

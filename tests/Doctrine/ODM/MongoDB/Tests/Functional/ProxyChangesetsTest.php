@@ -46,4 +46,31 @@ class ProxyChangesetsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $accountPersister = $uow->getDocumentPersister('Documents\Account');
         $this->assertEquals(array(), $accountPersister->prepareUpdateData($user->getAccount()));
     }
+    public function testDocumentChangesets()
+    {
+        $account = new Account();
+        $account->setName('Jon Test Account');
+
+        $user = new User();
+        $user->setUsername('jon');
+        $user->setPassword('changeme');
+        $user->setAccount($account);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+        unset($user, $account);
+
+        $user = $this->dm->findOne('Documents\User');
+
+        $metadata = $this->dm->getClassMetadata('Documents\User');
+
+        $account = $this->dm->findOne('Documents\Account');
+
+        $uow = $this->dm->getUnitOfWork();
+        $uow->computeChangeSets();
+
+        $accountPersister = $uow->getDocumentPersister('Documents\Account');
+        $this->assertEquals(array(), $accountPersister->prepareUpdateData($account));
+    }
 }
