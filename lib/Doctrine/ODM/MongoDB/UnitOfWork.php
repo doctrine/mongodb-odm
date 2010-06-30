@@ -363,7 +363,7 @@ class UnitOfWork
         $actualData = array();
         foreach ($class->fieldMappings as $name => $mapping) {
             if ( ! $class->isIdentifier($name) || $class->getAllowCustomID()) {
-                $actualData[$name] = $class->refFields[$mapping['fieldName']]->getValue($document);
+                $actualData[$name] = $class->reflFields[$mapping['fieldName']]->getValue($document);
             }
 
             if ($class->isCollectionValuedReference($name) && $actualData[$name] !== null
