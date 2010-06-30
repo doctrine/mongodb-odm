@@ -251,11 +251,17 @@ class ClassMetadata
         $this->setCollection($collection);
 
         foreach ($this->reflClass->getProperties() as $property) {
-            $fieldName = $property->getName();
-            $mapping = array(
-                'fieldName' => $fieldName
-            );
-            $this->mapField($mapping);
+            /**
+             * this is a temporary fix, since getProperties() returns properties of parent classes
+             * which causes transient fields of mapped super classes be re-mapped
+             */
+            if ($property->getDeclaringClass()->name === $this->name) {
+                $fieldName = $property->getName();
+                $mapping = array(
+                    'fieldName' => $fieldName
+                );
+                $this->mapField($mapping);
+            }
         }
     }
 

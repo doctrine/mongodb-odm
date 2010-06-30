@@ -361,9 +361,9 @@ class UnitOfWork
         $oid = spl_object_hash($document);
 
         $actualData = array();
-        foreach ($class->reflFields as $name => $refProp) {
+        foreach ($class->fieldMappings as $name => $mapping) {
             if ( ! $class->isIdentifier($name) || $class->getAllowCustomID()) {
-                $actualData[$name] = $refProp->getValue($document);
+                $actualData[$name] = $class->refFields[$mapping['fieldName']]->getValue($document);
             }
 
             if ($class->isCollectionValuedReference($name) && $actualData[$name] !== null
@@ -372,8 +372,6 @@ class UnitOfWork
                 if ( ! $actualData[$name] instanceof Collection) {
                     $actualData[$name] = new ArrayCollection($actualData[$name]);
                 }
-                
-                $mapping = $class->fieldMappings[$name];
                 
                 // Inject PersistentCollection
                 $coll = new PersistentCollection(
