@@ -408,7 +408,7 @@ class BasicDocumentPersister
         $result = $this->_collection->findOne($query, $select);
         if ($result !== null) {
             $document = $this->_uow->getOrCreateDocument($this->_documentName, $result);
-            $this->_uow->registerManaged($document, $result['_id'], $result);
+            $this->_uow->registerManaged($document, $this->_class->getPHPIdentifierValue($result['_id']), $result);
             return $document;
         }
         return null;
@@ -426,7 +426,9 @@ class BasicDocumentPersister
             '_id' => $this->_class->getDatabaseIdentifierValue($id)
         ));
         if ($result !== null) {
-            return $this->_uow->getOrCreateDocument($this->_documentName, $result);
+            $document = $this->_uow->getOrCreateDocument($this->_documentName, $result);
+            $this->_uow->registerManaged($document, $this->_class->getPHPIdentifierValue($result['_id']), $result);
+            return $document;
         }
         return null;
     }
