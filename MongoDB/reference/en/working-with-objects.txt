@@ -344,7 +344,7 @@ one recommended way of grouping these queries in a central location.
 
     [php]
 
-    use Doctrine\ORM\DocumentRepository;
+    use Doctrine\ODM\MongoDB\DocumentRepository;
 
     /**
      * @Document(repositoryClass="UserRepository")
