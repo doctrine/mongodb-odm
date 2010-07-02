@@ -146,9 +146,9 @@ class DocumentManager
         $this->_queryParser = new Parser($this);
         $this->_unitOfWork = new UnitOfWork($this);
         $this->_proxyFactory = new ProxyFactory($this,
-                $config->getProxyDir(),
-                $config->getProxyNamespace(),
-                $config->getAutoGenerateProxyClasses());
+                $this->_config->getProxyDir(),
+                $this->_config->getProxyNamespace(),
+                $this->_config->getAutoGenerateProxyClasses());
     }
 
     /**
