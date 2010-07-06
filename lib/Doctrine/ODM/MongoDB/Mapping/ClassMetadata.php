@@ -766,7 +766,7 @@ class ClassMetadata
             return (string) $this->reflFields[$this->identifier]->getValue($document);
         } else {
             $identifier = $this->identifier;
-            return isset($document->$identifier) ? (string) $document->identifier : null;
+            return isset($document->$identifier) ? (string) $document->$identifier : null;
         }
     }
 
