@@ -128,15 +128,17 @@ class AnnotationDriver implements Driver
             $class->isEmbeddedDocument = true;
         }
 
+        $methods = $reflClass->getMethods();
+
         foreach ($reflClass->getProperties() as $property) {
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
 
             if ($alsoLoad = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
-                $class->fieldMappings[$mapping['fieldName']]['alsoLoadFields'] = (array) $alsoLoad->value;
+                $mapping['alsoLoadFields'] = (array) $alsoLoad->value;
             }
             if ($notSaved = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\NotSaved')) {
-                $class->fieldMappings[$mapping['fieldName']]['notSaved'] = true;
+                $mapping['notSaved'] = true;
             }
 
             foreach ($this->_reader->getPropertyAnnotations($property) as $fieldAnnot) {
@@ -168,13 +170,8 @@ class AnnotationDriver implements Driver
                     $class->mapField($mapping);
                 }
             }
-            // Remove transient fields
-            if ($transientAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Transient')) {
-                unset($class->fieldMappings[$mapping['fieldName']]);
-            }
         }
 
-        $methods = $reflClass->getMethods();
         foreach ($methods as $method) {
             if ($method->isPublic()) {
                 if ($alsoLoad = $this->_reader->getMethodAnnotation($method, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
@@ -184,7 +181,7 @@ class AnnotationDriver implements Driver
                     );
                 }
             }
-        }   
+        }
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\HasLifecycleCallbacks'])) {
             foreach ($methods as $method) {
                 if ($method->isPublic()) {

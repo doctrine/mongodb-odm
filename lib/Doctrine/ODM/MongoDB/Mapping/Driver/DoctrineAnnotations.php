@@ -168,9 +168,8 @@ final class ReferenceMany extends Field
     public $cascade;
     public $strategy = 'set';
 }
-final class Transient extends Annotation {}
-final class NotSaved extends Annotation {}
-final class AlsoLoad extends Annotation {
+final class NotSaved extends Field {}
+final class AlsoLoad extends Field {
     public $name;
 }
 /* Annotations for lifecycle callbacks */
