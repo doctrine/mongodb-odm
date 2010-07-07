@@ -2,7 +2,7 @@
 
 namespace Documents;
 
-/** * @Document */
+/** @Document(collection="custom_users") */
 class CustomUser extends User
 {
     /** @Id(custom=true) */

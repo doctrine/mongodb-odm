@@ -13,6 +13,21 @@ use Documents\User,
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+
+    public function tearDown()
+    {
+        parent::tearDown();
+        $documents = array(
+            'Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad',
+            'Doctrine\ODM\MongoDB\Tests\Functional\NotAnnotatedDocument',
+            'Doctrine\ODM\MongoDB\Tests\Functional\NotSaved',
+            'Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues',
+            'Doctrine\ODM\MongoDB\Tests\Functional\SimpleEmbedAndReference',
+        );
+        foreach ($documents as $document) {
+            $this->dm->getDocumentCollection($document)->drop();
+        }
+    }
     public function testSameObjectValuesInCollection()
     {
         $user = new User();
@@ -164,7 +179,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Gave user 100k a year raise', $result['notes'][0]);
     }
 
-    public function testNotAnnotatedDocumentAndTransientFields()
+    public function testNotAnnotatedDocument()
     {
         $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\NotAnnotatedDocument')->drop();
 
@@ -178,18 +193,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NotAnnotatedDocument')
             ->getSingleResult();
         $this->assertNotNull($test);
-
-        $test->field = 'ok';
-        $this->dm->flush();
-        $this->dm->clear();
-
-        $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NotAnnotatedDocument')
-            ->hydrate(false)
-            ->getResults();
-        $document = current($test);
-        $this->assertEquals(1, count($test));
-        $this->assertEquals('ok', $document['field']);
-        $this->assertFalse(isset($document['transientField']));
+        $this->assertFalse(isset($test->transientField));
     }
 
     public function testNullFieldValuesAllowed()
@@ -225,6 +229,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->hydrate(false)
             ->getSingleResult();
         $this->assertNull($test['field']);
+        $this->assertFalse(isset($test['transientField']));
     }
 
     public function testAlsoLoadOnProperty()
@@ -299,15 +304,19 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
+/** @Document(collection="functional_tests") */
 class NotSaved
 {
+    /** @Id */
     public $id;
+    /** @String */
     public $name;
 
     /** @NotSaved */
     public $notSaved;
 }
 
+/** @Document(collection="functional_tests") */
 class SimpleEmbedAndReference
 {
     /** @Embed(targetDocument="Reference") */
@@ -323,12 +332,15 @@ class SimpleEmbedAndReference
     public $referenceOne;
 }
 
+/** @Document(collection="functional_tests") */
 class AlsoLoad
 {
     /** @AlsoLoad({"bar", "zip"}) */
     public $foo;
 
+    /** @String */
     public $firstName;
+    /** @String */
     public $lastName;
 
     /** @AlsoLoad({"name", "fullName"}) */
@@ -340,16 +352,18 @@ class AlsoLoad
     }
 }
 
+/** @Document(collection="functional_tests") */
 class NullFieldValues
 {
     /** @Field(nullable=true) */
     public $field;
 }
 
+/** @Document(collection="functional_tests") */
 class NotAnnotatedDocument
 {
+    /** @Field */
     public $field;
 
-    /** @Transient */
     public $transientField;
 }
