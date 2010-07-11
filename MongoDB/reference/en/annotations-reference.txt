@@ -40,7 +40,6 @@
 * [@ReferenceMany](#ann_reference_many)
 * [@String](#ann_string)
 * [@Timestamp](#ann_timestamp)
-* [@Transient](#ann_transient)
 
 ++ Reference
 
@@ -519,15 +518,3 @@ Example:
      * @ReferenceOne(targetDocument="Documents\ShoppingCart", cascade="all")
      */
     private $cart;
-
-<a name="ann_transient"></a>
-+++ @Transient
-
-If you want to mark a field as transient (not persisted), you can use the `@Transient`
-annotation:
-
-    [php]
-    /** @Transient */
-    private $errors = array();
-
-Now the `errors` property will be ignored by Doctrine completely and will not be persisted!
