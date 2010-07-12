@@ -579,8 +579,8 @@ class BasicDocumentPersister
                 if (isset($mapping['embedded'])) {
                     if ($mapping['type'] == 'many') {
                         $value = array();
-                        foreach ($rawValue as $doc) {
-                            $value[] = $this->_prepareDocEmbeded($classMetadata, $doc);
+                        foreach ($rawValue as $embeddedDoc) {
+                            $value[] = $this->_prepareDocEmbeded($classMetadata, $embeddedDoc);
                         }
                     } elseif ($mapping['type'] == 'one') {
                         $value = $this->_prepareDocEmbeded($classMetadata, $rawValue);
@@ -588,8 +588,8 @@ class BasicDocumentPersister
                 } elseif (isset($mapping['reference'])) {
                     if ($mapping['type'] == 'many') {
                          $value = array();
-                        foreach ($rawValue as $doc) {
-                            $value[] = $this->_prepareDocReference($classMetadata, $doc);
+                        foreach ($rawValue as $referencedDoc) {
+                            $value[] = $this->_prepareDocReference($classMetadata, $referencedDoc);
                         }
                     } else {
                         $value = $this->_prepareDocReference($classMetadata, $rawValue);
