@@ -86,7 +86,7 @@ class Hydrator
             if ( ! isset($rawValue)) {
                 continue;
             }
-            
+        
             if (isset($mapping['embedded'])) {
                 $embeddedMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 $embeddedDocument = $embeddedMetadata->newInstance();

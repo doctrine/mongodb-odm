@@ -239,17 +239,23 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection->insert(array(
             'bar' => 'w00t'
         ));
+        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('bar' => 'w00t'))
+            ->getSingleResult();
+        $this->assertEquals('w00t', $document->foo);
+
         $collection->insert(array(
             'foo' => 'cool'
         ));
+        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('bar' => 'w00t'))
+            ->getSingleResult();
+        $this->assertNotNull($document->foo);
+
         $collection->insert(array(
             'zip' => 'test'
         ));
-        $documents = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad')
-            ->getResults();
-        foreach ($documents as $document) {
-            $this->assertNotNull($document->foo);
-        }
+        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('bar' => 'w00t'))
+            ->getSingleResult();
+        $this->assertNotNull($document->foo);
     }
 
     public function testAlsoLoadOnMethod()
@@ -349,8 +355,16 @@ class SimpleEmbedAndReference
 /** @Document(collection="functional_tests") */
 class AlsoLoad
 {
-    /** @AlsoLoad({"bar", "zip"}) */
+    /**
+     * @AlsoLoad({"bar", "zip"})
+     */
     public $foo;
+
+    /** @NotSaved */
+    public $bar;
+
+    /** @NotSaved */
+    public $zip;
 
     /** @NotSaved */
     public $name;
