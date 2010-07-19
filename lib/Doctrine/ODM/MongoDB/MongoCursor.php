@@ -30,7 +30,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class MongoCursor implements \Iterator
+class MongoCursor implements \Iterator, \Countable
 {
     /** The DocumentManager instance. */
     private $_dm;
@@ -79,10 +79,15 @@ class MongoCursor implements \Iterator
      *
      * @param boolean $bool
      */
-    public function hydrate($bool)
+    public function hydrate($bool = null)
     {
-        $this->_hydrate = $bool;
-        return $this;
+        if ($bool !== null)
+        {
+            $this->_hydrate = $bool;
+            return $this;
+        } else {
+            return $this->_hydrate;
+        }
     }
 
     /** @override */
@@ -126,6 +131,12 @@ class MongoCursor implements \Iterator
     public function rewind()
     {
         return $this->_mongoCursor->rewind();
+    }
+
+    /** @proxy */
+    public function count()
+    {
+        return $this->_mongoCursor->count();
     }
 
     /**
