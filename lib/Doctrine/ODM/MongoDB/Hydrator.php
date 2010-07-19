@@ -74,6 +74,14 @@ class Hydrator
     {
         $values = array();
         foreach ($metadata->fieldMappings as $mapping) {
+            if (isset($mapping['alsoLoadMethods'])) {
+                foreach ($mapping['alsoLoadMethods'] as $method) {
+                    if (isset($data[$mapping['fieldName']])) {
+                        $document->$method($data[$mapping['fieldName']]);
+                    }
+                }
+            }
+
             $rawValue = $this->_getFieldValue($mapping, $document, $data);
             if ( ! isset($rawValue)) {
                 continue;
@@ -134,16 +142,6 @@ class Hydrator
         foreach ($names as $name) {
             if (isset($data[$name])) {
                 return $data[$name];
-            }
-        }
-        if (isset($mapping['alsoLoadMethods'])) {
-            foreach ($mapping['alsoLoadMethods'] as $alsoLoad) {
-                $names = $alsoLoad['name'];
-                foreach ($names as $name) {
-                    if (isset($data[$name])) {
-                        $document->$alsoLoad['method']($data[$name]);
-                    }
-                }
             }
         }
         return null;

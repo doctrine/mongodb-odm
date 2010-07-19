@@ -257,17 +257,31 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection = $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad');
         $collection->drop();
         $collection->insert(array(
-            'name' => 'Jonathan Wage'
+            'name' => 'Jonathan Wage',
+            'test1' => 'test1'
         ));
+        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('name' => 'Jonathan Wage'))
+            ->getSingleResult();
+        $this->assertEquals('Jonathan', $document->firstName);
+        $this->assertEquals('Wage', $document->lastName);
+        $this->assertEquals('test1', $document->test);
+
         $collection->insert(array(
-            'fullName' => 'Jonathan Wage'
+            'fullName' => 'Jonathan Wage',
+            'test2' => 'test2'
         ));
-        $documents = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad')
-            ->getResults();
-        foreach ($documents as $document) {
-            $this->assertEquals('Jonathan', $document->firstName);
-            $this->assertEquals('Wage', $document->lastName);
-        }
+        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('fullName' => 'Jonathan Wage'))
+            ->getSingleResult();
+        $this->assertEquals('Jonathan', $document->firstName);
+        $this->assertEquals('Wage', $document->lastName);
+        $this->assertEquals('test2', $document->test);
+
+        $collection->insert(array(
+            'test' => 'test'
+        ));
+        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('test' => 'test'))
+            ->getSingleResult();
+        $this->assertEquals('test', $document->test);
     }
 
     public function testSimplerEmbedAndReference()
@@ -338,10 +352,26 @@ class AlsoLoad
     /** @AlsoLoad({"bar", "zip"}) */
     public $foo;
 
+    /** @NotSaved */
+    public $name;
+
+    /** @NotSaved */
+    public $fullName;
+
     /** @String */
     public $firstName;
+
     /** @String */
     public $lastName;
+
+    /** @String */
+    public $test;
+
+    /** @String */
+    public $test1;
+
+    /** @String */
+    public $test2;
 
     /** @AlsoLoad({"name", "fullName"}) */
     public function populateFirstAndLastName($name)
@@ -349,6 +379,12 @@ class AlsoLoad
         $e = explode(' ', $name);
         $this->firstName = $e[0];
         $this->lastName = $e[1];
+    }
+
+    /** @AlsoLoad({"test1", "test2"}) */
+    public function populateTest($test)
+    {
+        $this->test = $test;
     }
 }
 

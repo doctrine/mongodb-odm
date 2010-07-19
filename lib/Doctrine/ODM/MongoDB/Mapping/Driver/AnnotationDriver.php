@@ -175,10 +175,10 @@ class AnnotationDriver implements Driver
         foreach ($methods as $method) {
             if ($method->isPublic()) {
                 if ($alsoLoad = $this->_reader->getMethodAnnotation($method, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
-                    $class->fieldMappings[$mapping['fieldName']]['alsoLoadMethods'][] = array(
-                        'name' => (array) $alsoLoad->value,
-                        'method' => $method->getName()
-                    );
+                    $fields = (array) $alsoLoad->value;
+                    foreach ($fields as $value) {
+                        $class->fieldMappings[$value]['alsoLoadMethods'][] = $method->getName();
+                    }
                 }
             }
         }
