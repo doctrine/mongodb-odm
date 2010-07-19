@@ -46,11 +46,24 @@ class User extends BaseDocument
     /** @Increment */
     protected $count = 0;
 
+    /** @Collection */
+    private $logs = array();
+
     public function __construct()
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->groups = array();
         $this->createdAt = new \DateTime();
+    }
+
+    public function getLogs()
+    {
+        return $this->logs;
+    }
+
+    public function log($log)
+    {
+        $this->logs[] = $log;
     }
 
     public function getId()

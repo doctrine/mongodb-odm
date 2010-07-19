@@ -322,6 +322,24 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Roman Borschel', $notSaved['name']);
         $this->assertFalse(isset($notSaved['notSaved']));
     }
+
+    public function testCollection()
+    {
+        $user = new \Documents\User();
+        $user->setUsername('joncolltest');
+        $user->log(array('test'));
+        $user->log(array('test'));
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $coll = $this->dm->getDocumentCollection('Documents\User');
+        $document = $coll->findOne(array('username' => 'joncolltest'));
+        $this->assertEquals(2, count($document['logs']));
+
+        $document = $this->dm->findOne('Documents\User', array('username' => 'joncolltest'));
+        $this->assertEquals(2, count($document->getLogs()));
+    }
 }
 
 /** @Document(collection="functional_tests") */
