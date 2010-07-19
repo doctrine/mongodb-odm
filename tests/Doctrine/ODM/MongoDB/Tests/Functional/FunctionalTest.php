@@ -28,6 +28,37 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->dm->getDocumentCollection($document)->drop();
         }
     }
+
+    public function testCollection()
+    {
+        $user = new \Documents\User();
+        $user->setUsername('joncolltest');
+        $user->log(array('test'));
+        $user->log(array('test'));
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $coll = $this->dm->getDocumentCollection('Documents\User');
+        $document = $coll->findOne(array('username' => 'joncolltest'));
+        $this->assertEquals(2, count($document['logs']));
+
+        $document = $this->dm->findOne('Documents\User', array('username' => 'joncolltest'));
+        $this->assertEquals(2, count($document->getLogs()));
+        $document->log(array('test'));
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->findOne('Documents\User', array('username' => 'joncolltest'));
+        $this->assertEquals(3, count($document->getLogs()));
+        $document->setLogs(array('ok', 'test'));
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->findOne('Documents\User', array('username' => 'joncolltest'));
+        $this->assertEquals(array('ok', 'test'), $document->getLogs());
+    }
+
     public function testSameObjectValuesInCollection()
     {
         $user = new User();
@@ -321,24 +352,6 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $notSaved = $collection->findOne(array('name' => 'Roman Borschel'));
         $this->assertEquals('Roman Borschel', $notSaved['name']);
         $this->assertFalse(isset($notSaved['notSaved']));
-    }
-
-    public function testCollection()
-    {
-        $user = new \Documents\User();
-        $user->setUsername('joncolltest');
-        $user->log(array('test'));
-        $user->log(array('test'));
-        $this->dm->persist($user);
-        $this->dm->flush();
-        $this->dm->clear();
-
-        $coll = $this->dm->getDocumentCollection('Documents\User');
-        $document = $coll->findOne(array('username' => 'joncolltest'));
-        $this->assertEquals(2, count($document['logs']));
-
-        $document = $this->dm->findOne('Documents\User', array('username' => 'joncolltest'));
-        $this->assertEquals(2, count($document->getLogs()));
     }
 }
 

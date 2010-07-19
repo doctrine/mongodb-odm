@@ -61,6 +61,11 @@ class User extends BaseDocument
         return $this->logs;
     }
 
+    public function setLogs($logs)
+    {
+        $this->logs = $logs;
+    }
+
     public function log($log)
     {
         $this->logs[] = $log;

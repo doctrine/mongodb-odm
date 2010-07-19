@@ -319,16 +319,17 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $article->removeTag('tag 1');
         $article->removeTag('tag 3');
         $article->addTag('tag 5');
+        $article->addTag('tag 6');
 
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $persister->prepareUpdateData($article);
 
         $this->assertTrue(array_key_exists($this->escape('pushAll'), $update));
         $this->assertTrue(array_key_exists('tags', $update[$this->escape('pushAll')]));
-        $this->assertEquals(1, count($update[$this->escape('pushAll')]['tags']));
+        $this->assertEquals(4, count($update[$this->escape('pushAll')]['tags']));
         $this->assertTrue(array_key_exists($this->escape('pullAll'), $update));
         $this->assertTrue(array_key_exists('tags', $update[$this->escape('pullAll')]));
-        $this->assertEquals(2, count($update[$this->escape('pullAll')]['tags']));
+        $this->assertEquals(4, count($update[$this->escape('pullAll')]['tags']));
 
         $this->dm->flush();
         $this->dm->clear();
@@ -337,7 +338,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $article = $this->dm->findOne('Documents\Article');
 
         $this->assertEquals(array(
-            'tag 2', 'tag 4', 'tag 5'
+            'tag 2', 'tag 4', 'tag 5', 'tag 6'
         ), $article->getTags());
     }
 }

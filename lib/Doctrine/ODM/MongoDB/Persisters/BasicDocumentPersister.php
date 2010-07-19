@@ -490,13 +490,13 @@ class BasicDocumentPersister
      */
     private function _addArrayUpdateAtomicOperator(array $mapping, array $new, array $old, array &$result)
     {
-        foreach ($old as $val) {
-            if ( ! in_array($val, $new)) {
+        foreach ($old as $key => $val) {
+            if ( ! isset($new[$key]) || (isset($new[$key]) && $new[$key] !== $val)) {
                 $result[$this->_cmd . 'pullAll'][$mapping['fieldName']][] = $val;
             }
         }
-        foreach ($new as $val) {
-            if ( ! in_array($val, $old)) {
+        foreach ($new as $key => $val) {
+            if ( ! isset($old[$key]) || (isset($old[$key]) && $old[$key] !== $val)) {
                 $result[$this->_cmd . 'pushAll'][$mapping['fieldName']][] = $val;
             }
         }
