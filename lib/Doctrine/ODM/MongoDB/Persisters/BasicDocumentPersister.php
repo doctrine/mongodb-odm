@@ -303,6 +303,10 @@ class BasicDocumentPersister
                 }
             }
         }
+        // add inheritance discriminator field value to insert data
+        if ($this->_class->isInheritanceTypeSingleCollection()) {
+            $result[$this->_class->discriminatorField['name']] = $this->_class->discriminatorValue;
+        }
         return $result;
     }
 

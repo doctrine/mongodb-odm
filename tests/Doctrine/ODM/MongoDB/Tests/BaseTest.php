@@ -54,6 +54,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
             'Documents\File',
             'Documents\Article',
             'Documents\Project',
+            'Documents\SubProject',
             'Documents\Manager',
             'Documents\Employee'
         );
@@ -62,7 +63,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function escape($command) {
+    public function escape($command)
+    {
         return $this->dm->getConfiguration()->getMongoCmd() . $command;
     }
 }

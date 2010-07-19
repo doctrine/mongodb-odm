@@ -1666,6 +1666,13 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata($className);
 
+        if ($class->isInheritanceTypeSingleCollection()) {
+            if (isset($data[$class->discriminatorField['name']])) {
+                $type = $data[$class->discriminatorField['name']];
+                $class = $this->_dm->getClassMetadata($class->discriminatorMap[$type]);
+            }
+        }
+
         $id = $class->getPHPIdentifierValue($data['_id']);
         if (isset($this->_identityMap[$class->rootDocumentName][$id])) {
             $document = $this->_identityMap[$class->rootDocumentName][$id];

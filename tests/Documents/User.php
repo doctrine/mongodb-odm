@@ -7,8 +7,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 /**
  * @Document(collection="users")
  * @InheritanceType("COLLECTION_PER_CLASS")
- * @DiscriminatorField(fieldName="type")
- * @DiscriminatorMap({"special"="Documents\SpecialUser", "custom"="Documents\CustomUser"})
  */
 class User extends BaseDocument
 {

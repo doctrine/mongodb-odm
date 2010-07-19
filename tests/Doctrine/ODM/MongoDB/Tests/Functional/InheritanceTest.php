@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../../../../TestInit.php';
 
 class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testIdentifiersAreSet()
+    public function testCollectionPerClassInheritance()
     {
         $profile = new \Documents\Profile();
         $profile->setFirstName('Jon');
@@ -33,5 +33,38 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = $query->getSingleResult();
         $this->assertEquals('Wage', $user->getProfile()->getLastName());
         $this->assertTrue($user instanceof \Documents\SpecialUser);
+    }
+
+    public function testSingleCollectionInhertiance()
+    {
+        $project = new \Documents\Project('Project');
+        $this->dm->persist($project);
+        $this->dm->flush();
+
+        $coll = $this->dm->getDocumentCollection('Documents\Project');
+        $document = $coll->findOne(array('name' => 'Project'));
+        $this->assertEquals('project', $document['type']);
+
+        $subProject = new \Documents\SubProject('Sub Project');
+        $this->dm->persist($subProject);
+        $this->dm->flush();
+
+        $coll = $this->dm->getDocumentCollection('Documents\SubProject');
+        $document = $coll->findOne(array('name' => 'Sub Project'));
+        $this->assertEquals('sub-project', $document['type']);
+
+        $this->dm->clear();
+
+        $document = $this->dm->findOne('Documents\Project', array('name' => 'Project'));
+        $this->assertInstanceOf('Documents\Project', $document);
+
+        $document = $this->dm->findOne('Documents\SubProject', array('name' => 'Project'));
+        $this->assertInstanceOf('Documents\Project', $document);
+
+        $document = $this->dm->findOne('Documents\Project', array('name' => 'Sub Project'));
+        $this->assertInstanceOf('Documents\SubProject', $document);
+
+        $document = $this->dm->findOne('Documents\SubProject', array('name' => 'Sub Project'));
+        $this->assertInstanceOf('Documents\SubProject', $document);
     }
 }
