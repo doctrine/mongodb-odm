@@ -1690,7 +1690,7 @@ class UnitOfWork
             $overrideLocalValues = true;
         }
         if ($overrideLocalValues) {
-            $this->_hydrator->hydrate($class, $document, $data);
+            $this->_hydrator->hydrate($document, $data);
         }
         if (isset($class->lifecycleCallbacks[ODMEvents::postLoad])) {
             $class->invokeLifecycleCallbacks(ODMEvents::postLoad, $document);

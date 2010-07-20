@@ -58,10 +58,10 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = $this->dm->findOne('Documents\Project', array('name' => 'Project'));
         $this->assertInstanceOf('Documents\Project', $document);
 
-        $document = $this->dm->findOne('Documents\SubProject', array('name' => 'Project'));
+        $document = $this->dm->findOne('Documents\Project', array('name' => 'Project'));
         $this->assertInstanceOf('Documents\Project', $document);
 
-        $document = $this->dm->findOne('Documents\Project', array('name' => 'Sub Project'));
+        $document = $this->dm->findOne('Documents\SubProject', array('name' => 'Sub Project'));
         $this->assertInstanceOf('Documents\SubProject', $document);
 
         $document = $this->dm->findOne('Documents\SubProject', array('name' => 'Sub Project'));

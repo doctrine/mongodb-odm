@@ -62,16 +62,15 @@ class Hydrator
     }
 
     /**
-     * Hydrate array of MongoDB document data into the given document object
-     * based on the mapping information provided in the ClassMetadata instance.
+     * Hydrate array of MongoDB document data into the given document object.
      *
-     * @param ClassMetadata $metadata  The ClassMetadata instance for mapping information.
      * @param object $document  The document object to hydrate the data into.
      * @param array $data The array of document data.
      * @return array $values The array of hydrated values.
      */
-    public function hydrate(ClassMetadata $metadata, $document, $data)
+    public function hydrate($document, $data)
     {
+        $metadata = $this->_dm->getClassMetadata(get_class($document));
         foreach ($metadata->fieldMappings as $mapping) {
             $this->_executeAlsoLoadMethods($document, $mapping, $data);
 
@@ -183,7 +182,7 @@ class Hydrator
         $className = $this->_getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
         $embeddedMetadata = $this->_dm->getClassMetadata($className);
         $document = $embeddedMetadata->newInstance();
-        return $this->hydrate($embeddedMetadata, $document, $embeddedDocument);
+        return $this->hydrate($document, $embeddedDocument);
     }
 
     private function _hydrateManyEmbedded(array $mapping, array $embeddedDocuments)

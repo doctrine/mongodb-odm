@@ -161,7 +161,7 @@ class BasicDocumentPersister
             $document = $this->_queuedInserts[$oid];
             $postInsertIds[] = array($data['_id'], $document);
             if ($this->_class->isFile()) {
-                $this->_dm->getHydrator()->hydrate($this->_class, $document, $data);
+                $this->_dm->getHydrator()->hydrate($document, $data);
             }
         }
         $this->_queuedInserts = array();

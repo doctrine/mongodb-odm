@@ -271,8 +271,8 @@ class DocumentManager
     public function getDocumentCollection($className)
     {
         $metadata = $this->_metadataFactory->getMetadataFor($className);
-        $collection = $metadata->getCollection();
         $db = $metadata->getDB();
+        $collection = $metadata->getCollection();
         $key = $db . '.' . $collection . '.' . $className;
         if ($collection && ! isset($this->_documentCollections[$key])) {
             if ($metadata->isFile()) {
@@ -300,12 +300,12 @@ class DocumentManager
     /**
      * Create a new Query instance for a class.
      *
-     * @param string $className The class name.
+     * @param string $documentName The document class name.
      * @return Document\ODM\MongoDB\Query
      */
-    public function createQuery($className = null)
+    public function createQuery($documentName = null)
     {
-        return new Query($this, $className);
+        return new Query($this, $documentName);
     }
 
     /**
@@ -551,6 +551,14 @@ class DocumentManager
      */
     public function find($documentName, $query = array(), array $select = array())
     {
+        if (is_array($documentName)) {
+            $classNames = $documentName;
+            $documentName = $classNames[0];
+
+            $discriminatorField = $this->getClassMetadata($documentName)->discriminatorField['name'];
+            $discriminatorValues = $this->getDiscriminatorValues($classNames);
+            $query[$discriminatorField] = array('$in' => $discriminatorValues);
+        }
         return $this->getRepository($documentName)->find($query, $select);
     }
 
@@ -609,5 +617,20 @@ class DocumentManager
             $this->_config->getDBSuffix()
         );
     }
-}
 
+    public function getDiscriminatorValues($classNames)
+    {
+        $discriminatorValues = array();
+        $collections = array();
+        foreach ($classNames as $className) {
+            $class = $this->getClassMetadata($className);
+            $discriminatorValues[] = $class->discriminatorValue;
+            $key = $class->getDB() . '.' . $class->getCollection();
+            $collections[$key] = $key;
+        }
+        if (count($collections) > 1) {
+            throw new \InvalidArgumentException('Documents involved are not all mapped to the same database collection.');
+        }
+        return $discriminatorValues;
+    }
+}

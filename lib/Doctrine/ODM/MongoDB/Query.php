@@ -108,11 +108,10 @@ class Query
     {
         $this->_dm = $dm;
         $this->_hydrator = $dm->getHydrator();
-        if ($className !== null) {
-            $this->_className = $className;
-            $this->_class = $this->_dm->getClassMetadata($className);
-        }
         $this->_cmd = $dm->getConfiguration()->getMongoCmd();
+        if ($className !== null) {
+            $this->from($className);
+        }
     }
 
     /**
@@ -203,6 +202,15 @@ class Query
      */
     public function from($className)
     {
+        if (is_array($className)) {
+            $classNames = $className;
+            $className = $classNames[0];
+
+            $discriminatorField = $this->_dm->getClassMetadata($className)->discriminatorField['name'];
+            $discriminatorValues = $this->_dm->getDiscriminatorValues($classNames);
+            $this->whereIn($discriminatorField, $discriminatorValues);
+        }
+
         if ($className !== null) {
             $this->_className = $className;
             $this->_class = $this->_dm->getClassMetadata($className);
