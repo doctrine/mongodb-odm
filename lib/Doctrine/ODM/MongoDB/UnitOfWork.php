@@ -1662,7 +1662,7 @@ class UnitOfWork
     {
         $class = $this->_dm->getClassMetadata($className);
 
-        if ($class->isInheritanceTypeSingleCollection()) {
+        if ($class->hasDiscriminator()) {
             if (isset($data[$class->discriminatorField['name']])) {
                 $type = $data[$class->discriminatorField['name']];
                 $class = $this->_dm->getClassMetadata($class->discriminatorMap[$data[$class->discriminatorField['name']]]);

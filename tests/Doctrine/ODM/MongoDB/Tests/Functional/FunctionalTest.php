@@ -446,6 +446,61 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Jon', $product->sellable->getSeller()->getName());
         $this->assertEquals('Product2', $product->sellable->getProduct()->getName());
     }
+
+    public function testSameCollectionTest()
+    {
+        $test1 = new SameCollectionTest1();
+        $test1->name = 'test1';
+        $this->dm->persist($test1);
+
+        $test2 = new SameCollectionTest2();
+        $test2->name = 'test2';
+        $this->dm->persist($test2);
+        $this->dm->flush();
+
+        $test = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1', array('name' => 'test1'));
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1', $test);
+
+        $test = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1', array('name' => 'test2'));
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2', $test);
+    }
+}
+
+/**
+ * @Document(collection="same_collection")
+ * @DiscriminatorField(fieldName="type")
+ * @DiscriminatorMap({"test1"="Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1", "test2"="Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2"})
+ */
+class SameCollectionTest1
+{
+    /** @Id */
+    public $id;
+
+    /** @String */
+    public $name;
+
+    /** @String */
+    public $test;
+}
+
+/**
+ * @Document(collection="same_collection")
+ * @DiscriminatorField(fieldName="type")
+ * @DiscriminatorMap({"test1"="Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1", "test2"="Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2"})
+ */
+class SameCollectionTest2
+{
+    /** @Id */
+    public $id;
+
+    /** @String */
+    public $name;
+
+    /** @String */
+    public $ok;
+
+    /** @String */
+    public $w00t;
 }
 
 /**

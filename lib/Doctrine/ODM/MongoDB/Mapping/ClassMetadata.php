@@ -776,6 +776,16 @@ class ClassMetadata
     }
 
     /**
+     * Checks whether the document has a discriminator field and value configured.
+     *
+     * @return boolean
+     */
+    public function hasDiscriminator()
+    {
+        return $this->discriminatorField && $this->discriminatorValue ? true : false;
+    }
+
+    /**
      * @return boolean
      */
     public function isInheritanceTypeNone()
