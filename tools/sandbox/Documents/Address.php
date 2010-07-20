@@ -5,9 +5,16 @@ namespace Documents;
 /** @EmbeddedDocument */
 class Address
 {
+    /** @String */
     private $street;
+
+    /** @String */
     private $city;
+
+    /** @String */
     private $state;
+
+    /** @String */
     private $postalCode;
 
     public function getStreet()

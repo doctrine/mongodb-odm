@@ -559,7 +559,9 @@ class BasicDocumentPersister
             $this->_cmd . 'db' => $class->getDB()
         );
         if ( ! isset($referenceMapping['targetDocument'])) {
-            $ref['_doctrine_class_name'] = $class->getName();
+            $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_name';
+            $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search($class->getName(), $referenceMapping['discriminatorMap']) : $class->getName();
+            $ref[$discriminatorField] = $discriminatorValue;
         }
         return $ref;
     }

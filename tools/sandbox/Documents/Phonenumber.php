@@ -5,6 +5,7 @@ namespace Documents;
 /** @EmbeddedDocument */
 class Phonenumber
 {
+    /** @String */
     private $phonenumber;
 
     public function __construct($phonenumber = null)

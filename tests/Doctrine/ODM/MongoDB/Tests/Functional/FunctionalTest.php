@@ -389,6 +389,13 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
+        $test = $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\FavoritesUser')->findOne(array('name' => 'favorites'));
+        $this->assertTrue(isset($test['favorites'][0]['type']));
+        $this->assertEquals('project', $test['favorites'][0]['type']);
+        $this->assertEquals('group', $test['favorites'][1]['type']);
+        $this->assertTrue(isset($test['favorite']['_doctrine_class_name']));
+        $this->assertEquals('Documents\Project', $test['favorite']['_doctrine_class_name']);
+
         $user = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\FavoritesUser', array('name' => 'favorites'));
         $favorites = $user->getFavorites();
         $this->assertInstanceOf('Documents\Project', $favorites[0]);
@@ -587,7 +594,15 @@ class FavoritesUser
     /** @String */
     private $name;
 
-    /** @Reference */
+    /**
+     * @Reference(
+     *   discriminatorField="type",
+     *   discriminatorMap={
+     *     "group"="Documents\Group",
+     *     "project"="Documents\Project"
+     *   }
+     * )
+     */
     private $favorites = array();
 
     /** @Embedded */

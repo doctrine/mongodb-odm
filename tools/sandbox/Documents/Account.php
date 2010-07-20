@@ -2,10 +2,13 @@
 
 namespace Documents;
 
+/** @Document */
 class Account
 {
     /** @Id */
     private $id;
+
+    /** @String */
     private $name;
 
     public function __construct($name)
