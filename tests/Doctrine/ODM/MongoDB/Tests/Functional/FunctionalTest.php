@@ -401,6 +401,126 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf('Documents\Address', $user->getEmbed());
         $this->assertInstanceOf('Documents\Project', $user->getFavorite());
     }
+
+    public function testPreUpdate()
+    {
+        $product = new PreUpdateTestProduct();
+        $product->name = 'Product';
+
+        $seller = new PreUpdateTestSeller();
+        $seller->name = 'Jon';
+
+        $this->dm->persist($seller);
+        $this->dm->persist($product);
+        $this->dm->flush();
+
+        $sellable = new PreUpdateTestSellable();
+        $sellable->product = $product;
+        $sellable->seller = $seller;
+
+        $product->sellable = $sellable;
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $product = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\PreUpdateTestProduct', array('name' => 'Product'));
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\PreUpdateTestProduct', $product->sellable->getProduct());
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\PreUpdateTestSeller', $product->sellable->getSeller());
+
+        $product = new PreUpdateTestProduct();
+        $product->name = 'Product2';
+
+        $this->dm->persist($product);
+        $this->dm->flush();
+
+        $sellable = new PreUpdateTestSellable();
+        $sellable->product = $product;
+        $sellable->seller = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\PreUpdateTestSeller', array('name' => 'Jon'));
+
+        $product->sellable = $sellable;
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $product = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\PreUpdateTestProduct', array('name' => 'Product2'));
+        $this->assertEquals('Jon', $product->sellable->getSeller()->getName());
+        $this->assertEquals('Product2', $product->sellable->getProduct()->getName());
+    }
+}
+
+/**
+ * @Document(collection="pre_update_test_product")
+ */
+class PreUpdateTestProduct
+{
+    /** @Id */
+    public $id;
+
+    /** @String */
+    public $name;
+
+    /** @Embedded(targetDocument="PreUpdateTestSellable") */
+    public $sellable;
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+}
+
+/**
+ * @EmbeddedDocument
+ */
+class PreUpdateTestSellable
+{
+    /** @Reference(targetDocument="PreUpdateTestProduct") */
+    public $product;
+
+    /** @Reference(targetDocument="PreUpdateTestSeller") */
+    public $seller;
+
+    public function getProduct()
+    {
+        return $this->product;
+    }
+
+    public function getSeller()
+    {
+        return $this->seller;
+    }
+}
+
+/**
+ * @Document(collection="pre_update_test_seller")
+ * @HasLifecycleCallbacks
+ */
+class PreUpdateTestSeller
+{
+    /** @Id */
+    public $id;
+
+    /** @String */
+    public $name;
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /** @PreUpdate */
+    public function preUpdate()
+    {
+    }
 }
 
 /** @Document(collection="favorites_user") */
