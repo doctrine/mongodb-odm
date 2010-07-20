@@ -100,7 +100,6 @@ and contains all inherited fields:
     /**
      * @Document
      * @InheritanceType("COLLECTION_PER_CLASS")
-     * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
      */
     class Person
     {
