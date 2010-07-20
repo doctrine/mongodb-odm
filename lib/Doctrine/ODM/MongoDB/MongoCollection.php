@@ -282,6 +282,10 @@ class MongoCollection
     /** @override */
     public function find(array $query = array(), array $fields = array())
     {
+        if ($this->_class->hasDiscriminator() && ! isset($query[$this->_class->discriminatorField['name']])) {
+            $query[$this->_class->discriminatorField['name']] = $this->_class->discriminatorValue;
+        }
+
         if ($this->_eventManager->hasListeners(CollectionEvents::preFind)) {
             $this->_eventManager->dispatchEvent(CollectionEvents::preFind, new CollectionEventArgs($this, $query));
         }
@@ -305,6 +309,10 @@ class MongoCollection
     /** @override */
     public function findOne(array $query = array(), array $fields = array())
     {
+        if ($this->_class->hasDiscriminator() && ! isset($query[$this->_class->discriminatorField['name']])) {
+            $query[$this->_class->discriminatorField['name']] = $this->_class->discriminatorValue;
+        }
+
         if ($this->_eventManager->hasListeners(CollectionEvents::preFindOne)) {
             $this->_eventManager->dispatchEvent(CollectionEvents::preFindOne, new CollectionEventArgs($this, $query));
         }

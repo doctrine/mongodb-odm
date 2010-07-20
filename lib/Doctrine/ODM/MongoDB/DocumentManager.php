@@ -273,7 +273,7 @@ class DocumentManager
         $metadata = $this->_metadataFactory->getMetadataFor($className);
         $collection = $metadata->getCollection();
         $db = $metadata->getDB();
-        $key = $db . '.' . $collection;
+        $key = $db . '.' . $collection . '.' . $className;
         if ($collection && ! isset($this->_documentCollections[$key])) {
             if ($metadata->isFile()) {
                 $collection = $this->getDocumentDB($className)->getGridFS($collection);

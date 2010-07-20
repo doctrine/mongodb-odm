@@ -466,10 +466,18 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $test = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1', array('name' => 'test1'));
+        $this->assertNotNull($test);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1', $test);
 
-        $test = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1', array('name' => 'test2'));
+        $test = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2', array('name' => 'test2'));
+        $this->assertNotNull($test);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2', $test);
+
+        $test = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2', array('name' => 'test1'));
+        $this->assertNull($test);
+
+        $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1', array('type' => array('$in' => array('test1', 'test2'))))->getResults();
+        $this->assertEquals(2, count($test));
     }
 }
 

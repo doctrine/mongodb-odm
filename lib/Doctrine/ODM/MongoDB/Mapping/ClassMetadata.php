@@ -392,6 +392,19 @@ class ClassMetadata
     }
 
     /**
+     * Sets the discriminator value for this class.
+     * Used for JOINED/SINGLE_TABLE inheritance and multiple document types in a single
+     * collection.
+     *
+     * @param string $value
+     */
+    public function setDiscriminatorValue($value)
+    {
+        $this->discriminatorMap[$value] = $this->name;
+        $this->discriminatorValue = $value;
+    }
+
+    /**
      * Add a index for this Document.
      *
      * @param array $keys Array of keys for the index.

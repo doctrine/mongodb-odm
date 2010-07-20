@@ -46,6 +46,7 @@ final class DiscriminatorField extends Annotation
     public $fieldName;
 }
 final class DiscriminatorMap extends Annotation {}
+final class DiscriminatorValue extends Annotation {}
 
 final class Index extends Annotation
 {

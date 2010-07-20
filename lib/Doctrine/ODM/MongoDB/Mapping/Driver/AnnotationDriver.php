@@ -122,6 +122,10 @@ class AnnotationDriver implements Driver
                 $discrMapAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorMap'];
                 $class->setDiscriminatorMap($discrMapAnnot->value);
             }
+            if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorValue'])) {
+                $discrValueAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorValue'];
+                $class->setDiscriminatorValue($discrValueAnnot->value);
+            }
         } else if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass'])) {
             $class->isMappedSuperclass = true;
         } else if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\EmbeddedDocument'])) {
