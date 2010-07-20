@@ -43,7 +43,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     }
 
-    public function testOneEmbeddedReference()
+    public function testOneEmbedded()
     {
         $address = new Address();
         $address->setAddress('6512 Mercomatic Ct.');
@@ -68,7 +68,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($user->getAddress(), $user2->getAddress());
     }
 
-    public function testManyEmbeddedReference()
+    public function testManyEmbedded()
     {
         $user = new \Documents\User();
         $user->addPhonenumber(new Phonenumber('6155139185'));

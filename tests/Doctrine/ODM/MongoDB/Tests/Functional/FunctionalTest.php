@@ -9,6 +9,7 @@ use Documents\User,
     Documents\Employee,
     Documents\Manager,
     Documents\Address,
+    Documents\Group,
     Documents\Project;
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -23,6 +24,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'Doctrine\ODM\MongoDB\Tests\Functional\NotSaved',
             'Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues',
             'Doctrine\ODM\MongoDB\Tests\Functional\SimpleEmbedAndReference',
+            'Doctrine\ODM\MongoDB\Tests\Functional\FavoritesUser',
         );
         foreach ($documents as $document) {
             $this->dm->getDocumentCollection($document)->drop();
@@ -117,10 +119,11 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $this->dm->query('find all Documents\User where address.city = ?', 'atlanta');
         $this->assertNull($query->getSingleResult());
 
-        $this->dm->query("insert Documents\User set username = 'jwage', address.city = 'atlanta'")
+        $this->dm->query("insert Documents\User set username = 'jonwage', address.city = 'atlanta'")
             ->execute();
-        $query = $this->dm->query('find all Documents\User where address.city = ? and username = ?', array('atlanta', 'jwage'));
-        $this->assertNotNull($query->getSingleResult());
+        $document = $this->dm->getDocumentCollection('Documents\User')->findOne(array('username' => 'jonwage'));
+        $this->assertEquals('atlanta', $document['address']['city']);
+        $this->assertEquals('jonwage', $document['username']);
     }
 
     public function testFunctionalDQLQuery()
@@ -352,6 +355,123 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $notSaved = $collection->findOne(array('name' => 'Roman Borschel'));
         $this->assertEquals('Roman Borschel', $notSaved['name']);
         $this->assertFalse(isset($notSaved['notSaved']));
+    }
+
+    public function testFavoritesReference()
+    {
+        $project = new Project('Test Project');
+        $this->dm->persist($project);
+        $this->dm->flush();
+
+        $group = new Group('Test Group');
+        $this->dm->persist($group);
+        $this->dm->flush();
+
+        $user = new FavoritesUser();
+        $user->setName('favorites');
+        $user->addFavorite($project);
+        $user->addFavorite($group);
+
+        $address = new Address();
+        $address->setAddress('6512 Mercomatic Ct.');
+        $address->setCity('Nashville');
+        $address->setState('TN');
+        $address->setZipcode('37209');
+
+        $user->embed($address);
+        $user->setEmbed($address);
+
+        $document = new Phonenumber('6155139185');
+        $user->embed($document);
+        $user->setFavorite($project);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\FavoritesUser', array('name' => 'favorites'));
+        $favorites = $user->getFavorites();
+        $this->assertInstanceOf('Documents\Project', $favorites[0]);
+        $this->assertInstanceOf('Documents\Group', $favorites[1]);
+
+        $embedded = $user->getEmbedded();
+        $this->assertInstanceOf('Documents\Address', $embedded[0]);
+        $this->assertInstanceOf('Documents\Phonenumber', $embedded[1]);
+
+        $this->assertInstanceOf('Documents\Address', $user->getEmbed());
+        $this->assertInstanceOf('Documents\Project', $user->getFavorite());
+    }
+}
+
+/** @Document(collection="favorites_user") */
+class FavoritesUser
+{
+    /** @Id */
+    private $id;
+
+    /** @String */
+    private $name;
+
+    /** @Reference */
+    private $favorites = array();
+
+    /** @Embedded */
+    private $embedded = array();
+
+    /** @Reference */
+    private $favorite;
+
+    /** @Embedded */
+    private $embed;
+
+    public function setFavorite($favorite)
+    {
+        $this->favorite = $favorite;
+    }
+
+    public function getFavorite()
+    {
+        return $this->favorite;
+    }
+
+    public function setEmbed($embed)
+    {
+        $this->embed = $embed;
+    }
+
+    public function getEmbed()
+    {
+        return $this->embed;
+    }
+
+    public function embed($document)
+    {
+        $this->embedded[] = $document;
+    }
+
+    public function getEmbedded()
+    {
+        return $this->embedded;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function addFavorite($favorite)
+    {
+        $this->favorites[] = $favorite;
+    }
+
+    public function getFavorites()
+    {
+        return $this->favorites;
     }
 }
 

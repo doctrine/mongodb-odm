@@ -54,11 +54,6 @@ final class PersistentCollection implements Collection
     private $_dm;
 
     /**
-     * The class descriptor of the collection's document type.
-     */
-    private $_typeClass;
-
-    /**
      * Whether the collection is dirty and needs to be synchronized with the database
      * when the UnitOfWork that manages its persistent state commits.
      *
@@ -86,11 +81,10 @@ final class PersistentCollection implements Collection
      */
     private $_cmd;
 
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $coll)
+    public function __construct(DocumentManager $dm, Collection $coll)
     {
         $this->_coll = $coll;
         $this->_dm = $dm;
-        $this->_typeClass = $class;
         $this->_cmd = $dm->getConfiguration()->getMongoCmd();
     }
 
@@ -101,22 +95,24 @@ final class PersistentCollection implements Collection
     private function _initialize()
     {
         if ( ! $this->_initialized) {
-            $collection = $this->_dm->getDocumentCollection($this->_typeClass->name);
-
-            $ids = array();
+            $groupedIds = array();
             foreach ($this->_coll as $document) {
-                $ids[] = $this->_typeClass->getIdentifierObject($document);
+                $class = $this->_dm->getClassMetadata(get_class($document));
+                $ids[$class->name][] = $class->getIdentifierObject($document);
             }
 
-            $data = $collection->find(array('_id' => array($this->_cmd . 'in' => $ids)));
-            $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
-            foreach ($data as $id => $documentData) {
-                $document = $this->_dm->getUnitOfWork()->getOrCreateDocument($this->_typeClass->name, $documentData, $hints);
-                $this->_dm->getUnitOfWork()->registerManaged($document, $this->_typeClass->getPHPIdentifierValue($documentData['_id']), $documentData);
-                if ($document instanceof Proxy) {
-                    $document->__isInitialized__ = true;
-                    unset($document->__dm);
-                    unset($document->__identifier);
+            foreach ($groupedIds as $className => $ids) {
+                $collection = $this->_dm->getDocumentCollection($className);
+                $data = $collection->find(array('_id' => array($this->_cmd . 'in' => $ids)));
+                $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
+                foreach ($data as $id => $documentData) {
+                    $document = $this->_dm->getUnitOfWork()->getOrCreateDocument($this->_typeClass->name, $documentData, $hints);
+                    $this->_dm->getUnitOfWork()->registerManaged($document, $this->_typeClass->getPHPIdentifierValue($documentData['_id']), $documentData);
+                    if ($document instanceof Proxy) {
+                        $document->__isInitialized__ = true;
+                        unset($document->__dm);
+                        unset($document->__identifier);
+                    }
                 }
             }
 

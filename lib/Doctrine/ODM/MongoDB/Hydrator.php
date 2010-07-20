@@ -72,67 +72,31 @@ class Hydrator
      */
     public function hydrate(ClassMetadata $metadata, $document, $data)
     {
-        $values = array();
         foreach ($metadata->fieldMappings as $mapping) {
-            if (isset($mapping['alsoLoadMethods'])) {
-                foreach ($mapping['alsoLoadMethods'] as $method) {
-                    if (isset($data[$mapping['fieldName']])) {
-                        $document->$method($data[$mapping['fieldName']]);
-                    }
-                }
-            }
+            $this->_executeAlsoLoadMethods($document, $mapping, $data);
 
             $rawValue = $this->_getFieldValue($mapping, $document, $data);
-            if ( ! isset($rawValue)) {
+            if ($rawValue === null) {
                 continue;
             }
-        
+
+            // Hydrate embedded
             if (isset($mapping['embedded'])) {
-                $embeddedMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                $embeddedDocument = $embeddedMetadata->newInstance();
-                if ($mapping['type'] === 'many') {
-                    $documents = new ArrayCollection();
-                    foreach ($rawValue as $docArray) {
-                        $doc = clone $embeddedDocument;
-                        $this->hydrate($embeddedMetadata, $doc, $docArray);
-                        $documents->add($doc);
-                    }
-                    $metadata->setFieldValue($document, $mapping['fieldName'], $documents);
-                    $value = $documents;
-                } else {
-                    $value = clone $embeddedDocument;
-                    $this->hydrate($embeddedMetadata, $value, $rawValue);
-                    $metadata->setFieldValue($document, $mapping['fieldName'], $value);
-                }
+                $this->_hydrateEmbedded($metadata, $document, $mapping, $rawValue);
+
+            // Hydrate reference
             } elseif (isset($mapping['reference'])) {
-                $targetMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
-                $targetDocument = $targetMetadata->newInstance();
-                if ($mapping['type'] === 'one' && isset($rawValue[$this->_cmd . 'id'])) {
-                    $id = $targetMetadata->getPHPIdentifierValue($rawValue[$this->_cmd . 'id']);
-                    $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
-                    $metadata->setFieldValue($document, $mapping['fieldName'], $proxy);
-                } elseif ($mapping['type'] === 'many' && (is_array($rawValue) || $rawValue instanceof Collection)) {
-                    $documents = new PersistentCollection($this->_dm, $targetMetadata, new ArrayCollection());
-                    $documents->setInitialized(false);
-                    foreach ($rawValue as $v) {
-                        $id = $targetMetadata->getPHPIdentifierValue($v[$this->_cmd . 'id']);
-                        $proxy = $this->_dm->getReference($mapping['targetDocument'], $id);
-                        $documents->add($proxy);
-                    }
-                    $metadata->setFieldValue($document, $mapping['fieldName'], $documents);
-                }
+                $this->_hydrateReference($metadata, $document, $mapping, $rawValue);
+
+            // Hydrate regular field
             } else {
-                $value = Type::getType($mapping['type'])->convertToPHPValue($rawValue);
-                $metadata->setFieldValue($document, $mapping['fieldName'], $value);
-            }
-            if (isset($value)) {
-                $values[$mapping['fieldName']] = $value;
+                $this->_hydrateField($metadata, $document, $mapping, $rawValue);
             }
         }
+        // Set the document identifier
         if (isset($data['_id'])) {
             $metadata->setIdentifierValue($document, $data['_id']);
         }
-        return $values;
     }
 
     private function _getFieldValue(array $mapping, $document, $data)
@@ -145,5 +109,88 @@ class Hydrator
             }
         }
         return null;
+    }
+
+    private function _executeAlsoLoadMethods($document, array $mapping, array $data)
+    {
+        if (isset($mapping['alsoLoadMethods'])) {
+            foreach ($mapping['alsoLoadMethods'] as $method) {
+                if (isset($data[$mapping['fieldName']])) {
+                    $document->$method($data[$mapping['fieldName']]);
+                }
+            }
+        }
+    }
+
+    private function _hydrateReference(ClassMetadata $metadata, $document, array $mapping, $rawValue)
+    {
+        if ($mapping['type'] === 'one' && isset($rawValue[$this->_cmd . 'id'])) {
+            $this->_hydrateOneReference($metadata, $document, $mapping, $rawValue);
+        } elseif ($mapping['type'] === 'many' && (is_array($rawValue) || $rawValue instanceof Collection)) {
+            $this->_hydrateManyReference($metadata, $document, $mapping, $rawValue);
+        }
+    }
+
+    private function _hydrateOneReference(ClassMetadata $metadata, $document, array $mapping, $rawValue)
+    {
+        $className = isset($rawValue['_doctrine_class_name']) ? $rawValue['_doctrine_class_name'] : $mapping['targetDocument'];
+        $targetMetadata = $this->_dm->getClassMetadata($className);
+        $targetDocument = $targetMetadata->newInstance();
+        $id = $targetMetadata->getPHPIdentifierValue($rawValue[$this->_cmd . 'id']);
+        $proxy = $this->_dm->getReference($className, $id);
+        $metadata->setFieldValue($document, $mapping['fieldName'], $proxy);
+    }
+
+    private function _hydrateManyReference(ClassMetadata $metadata, $document, array $mapping, $rawValue)
+    {
+        $documents = new PersistentCollection($this->_dm, new ArrayCollection());
+        $documents->setInitialized(false);
+        foreach ($rawValue as $v) {
+            $className = isset($v['_doctrine_class_name']) ? $v['_doctrine_class_name'] : $mapping['targetDocument'];
+            $targetMetadata = $this->_dm->getClassMetadata($className);
+            $targetDocument = $targetMetadata->newInstance();
+            $id = $targetMetadata->getPHPIdentifierValue($v[$this->_cmd . 'id']);
+            $proxy = $this->_dm->getReference($className, $id);
+            $documents->add($proxy);
+        }
+        $metadata->setFieldValue($document, $mapping['fieldName'], $documents);
+    }
+
+    private function _hydrateEmbedded(ClassMetadata $metadata, $document, array $mapping, $rawValue)
+    {
+        if ($mapping['type'] === 'one') {
+            $this->_hydrateOneEmbedded($metadata, $document, $mapping, $rawValue);
+        } elseif ($mapping['type'] === 'many') {
+            $this->_hydrateManyEmbedded($metadata, $document, $mapping, $rawValue);
+        }
+    }
+
+    private function _hydrateOneEmbedded(ClassMetadata $metadata, $document, array $mapping, $rawValue)
+    {
+        $className = isset($rawValue['_doctrine_class_name']) ? $rawValue['_doctrine_class_name'] : $mapping['targetDocument'];
+        $embeddedMetadata = $this->_dm->getClassMetadata($className);
+        $value = $embeddedMetadata->newInstance();
+        $this->hydrate($embeddedMetadata, $value, $rawValue);
+        $metadata->setFieldValue($document, $mapping['fieldName'], $value);
+        return $value;
+    }
+
+    private function _hydrateManyEmbedded(ClassMetadata $metadata, $document, array $mapping, $rawValue)
+    {
+        $documents = new ArrayCollection();
+        foreach ($rawValue as $docArray) {
+            $className = isset($docArray['_doctrine_class_name']) ? $docArray['_doctrine_class_name'] : $mapping['targetDocument'];
+            $embeddedMetadata = $this->_dm->getClassMetadata($className);
+            $doc = $embeddedMetadata->newInstance();
+            $this->hydrate($embeddedMetadata, $doc, $docArray);
+            $documents->add($doc);
+        }
+        $metadata->setFieldValue($document, $mapping['fieldName'], $documents);
+    }
+
+    private function _hydrateField(ClassMetadata $metadata, $document, array $mapping, $rawValue)
+    {
+        $value = Type::getType($mapping['type'])->convertToPHPValue($rawValue);
+        $metadata->setFieldValue($document, $mapping['fieldName'], $value);
     }
 }

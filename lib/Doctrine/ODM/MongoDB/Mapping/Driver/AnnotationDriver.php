@@ -152,7 +152,7 @@ class AnnotationDriver implements Driver
                 }
             }
 
-            $types = array('Embed', 'Reference');
+            $types = array('Embedded', 'Embed', 'Reference');
             foreach ($types as $type) {
                 if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\\' . $type)) {
                     // This is a blatant hack to see if the defined default

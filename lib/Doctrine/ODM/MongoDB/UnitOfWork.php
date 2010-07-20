@@ -375,8 +375,7 @@ class UnitOfWork
                 
                 // Inject PersistentCollection
                 $coll = new PersistentCollection(
-                    $this->_dm, 
-                    $this->_dm->getClassMetadata($mapping['targetDocument']), 
+                    $this->_dm,
                     $actualData[$name]
                 );
 
@@ -771,7 +770,7 @@ class UnitOfWork
     private function _addDependencies($class, $calc)
     {
         foreach ($class->fieldMappings as $mapping) {
-            if (isset($mapping['reference'])) {
+            if (isset($mapping['reference']) && isset($mapping['targetDocument'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 if ( ! $calc->hasClass($targetClass->name)) {
                     $calc->addClass($targetClass);
@@ -780,7 +779,7 @@ class UnitOfWork
                     $calc->addDependency($targetClass, $class);
                 }
             }
-            if (isset($mapping['embedded'])) {
+            if (isset($mapping['embedded']) && isset($mapping['targetDocument'])) {
                 $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 if ( ! $calc->hasClass($targetClass->name)) {
                     $calc->addClass($targetClass);
@@ -1273,10 +1272,7 @@ class UnitOfWork
                             }
                         }
                     } else {
-                        $coll = new PersistentCollection($this->_dm,
-                                $this->_dm->getClassMetadata($mapping2['targetDocument']),
-                                new ArrayCollection
-                                );
+                        $coll = new PersistentCollection($this->_dm, new ArrayCollection());
                         $coll->setOwner($managedCopy, $mapping2);
                         $coll->setInitialized($mapping2['isCascadeMerge']);
                         $prop->setValue($managedCopy, $coll);

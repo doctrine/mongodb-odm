@@ -346,7 +346,8 @@ class BasicDocumentPersister
      * @param array $mapping
      * @param mixed $value
      */
-    private function _prepareValue(array $mapping, $value) {
+    private function _prepareValue(array $mapping, $value)
+    {
         if ( ! isset($value)) {
             return null;
         }
@@ -360,11 +361,10 @@ class BasicDocumentPersister
             }
             unset($values, $rawValue);
         } elseif ((isset($mapping['reference'])) || isset($mapping['embedded'])) {
-            $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
             if (isset($mapping['embedded'])) {
-                $value = $this->_prepareDocEmbeded($targetClass, $value);
+                $value = $this->_prepareDocEmbeded($mapping, $value);
             } else if (isset($mapping['reference'])) {
-                $value = $this->_prepareDocReference($targetClass, $value);
+                $value = $this->_prepareDocReference($mapping, $value);
             }
         } else {
             $value = Type::getType($mapping['type'])->convertToDatabaseValue($this->_getScalar($value));
@@ -539,15 +539,16 @@ class BasicDocumentPersister
     /**
      * Returns the reference representation to be stored in mongodb or null if not applicable.
      *
-     * @param ClassMetadata $class
+     * @param array $referenceMapping
      * @param Document $doc
      * @return array|null
      */
-    private function _prepareDocReference(ClassMetadata $class, $doc)
+    private function _prepareDocReference(array $referenceMapping, $doc)
     {
         if ( ! is_object($doc)) {
             return $doc;
         }
+        $class = $this->_dm->getClassMetadata(get_class($doc));
         $id = $this->_uow->getDocumentIdentifier($doc);
         if (null !== $id) {
             $id = $class->getPHPIdentifierValue($id);
@@ -557,21 +558,25 @@ class BasicDocumentPersister
             $this->_cmd . 'id' => $id,
             $this->_cmd . 'db' => $class->getDB()
         );
+        if ( ! isset($referenceMapping['targetDocument'])) {
+            $ref['_doctrine_class_name'] = $class->getName();
+        }
         return $ref;
     }
 
     /**
      * Prepares array of values to be stored in mongo to represent embedded object.
      *
-     * @param ClassMetadata $class
+     * @param array $embeddedMapping
      * @param Document $doc
      * @return array
      */
-    private function _prepareDocEmbeded(ClassMetadata $class, $doc)
+    private function _prepareDocEmbeded(array $embeddedMapping, $doc)
     {
         if ( ! is_object($doc)) {
             return $doc;
         }
+        $class = $this->_dm->getClassMetadata(get_class($doc));
         $changeset = array();
         foreach ($class->fieldMappings as $mapping) {
             $rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
@@ -579,30 +584,32 @@ class BasicDocumentPersister
                 continue;
             }
             if (isset($mapping['embedded']) || isset($mapping['reference'])) {
-                $classMetadata = $this->_dm->getClassMetadata($mapping['targetDocument']);
                 if (isset($mapping['embedded'])) {
                     if ($mapping['type'] == 'many') {
                         $value = array();
                         foreach ($rawValue as $embeddedDoc) {
-                            $value[] = $this->_prepareDocEmbeded($classMetadata, $embeddedDoc);
+                            $value[] = $this->_prepareDocEmbeded($mapping, $embeddedDoc);
                         }
                     } elseif ($mapping['type'] == 'one') {
-                        $value = $this->_prepareDocEmbeded($classMetadata, $rawValue);
+                        $value = $this->_prepareDocEmbeded($mapping, $rawValue);
                     }
                 } elseif (isset($mapping['reference'])) {
                     if ($mapping['type'] == 'many') {
                          $value = array();
                         foreach ($rawValue as $referencedDoc) {
-                            $value[] = $this->_prepareDocReference($classMetadata, $referencedDoc);
+                            $value[] = $this->_prepareDocReference($mapping, $referencedDoc);
                         }
                     } else {
-                        $value = $this->_prepareDocReference($classMetadata, $rawValue);
+                        $value = $this->_prepareDocReference($mapping, $rawValue);
                     }
                 }
             } else {
                 $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
             }
             $changeset[$mapping['fieldName']] = $value;
+        }
+        if ( ! isset($embeddedMapping['targetDocument'])) {
+            $changeset['_doctrine_class_name'] = $class->getName();
         }
         return $changeset;
     }

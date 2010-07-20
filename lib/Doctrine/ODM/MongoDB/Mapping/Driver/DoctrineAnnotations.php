@@ -141,6 +141,11 @@ final class Embed extends Field
     public $embedded = true;
     public $targetDocument;
 }
+final class Embedded extends Field
+{
+    public $embedded = true;
+    public $targetDocument;
+}
 final class EmbedMany extends Field
 {
     public $type = 'many';
