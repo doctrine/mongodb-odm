@@ -76,3 +76,77 @@ Reference many documents:
     {
         // ...
     }
+
+++ Mixing Document Types
+
+If you want to store different types of documents in references you can simply
+omit the `targetDocument` option:
+
+    [php]
+    /** @Document */
+    class User
+    {
+        // ..
+
+        /** @ReferenceMany */
+        private $favorites = array();
+
+        // ...
+    }
+
+Now the `$favorites` property can store a reference to any type of document! The class 
+name will be automatically added for you in a field named `_doctrine_class_name`.
+
+You can also specify a discriminator map to avoid storing the fully qualified class name 
+with each reference:
+
+    [php]
+    /** @Document */
+    class User
+    {
+        // ..
+
+        /**
+         * @ReferenceMany(
+         *   discriminatorMap={
+         *     "album"="Album",
+         *     "song"="Song"
+         *   }
+         * )
+         */
+        private $favorites = array();
+
+        // ...
+    }
+
+You can have different classes that can be referenced:
+
+    [php]
+    /** @Document */
+    class Album
+    {
+        // ...
+    }
+
+    /** @Document */
+    class Song
+    {
+        // ...
+    }
+
+If you want to store the discriminator value in a field other than `_doctrine_class_name`
+you can use the `discriminatorField` option:
+
+    [php]
+    /** @Document */
+    class User
+    {
+        // ..
+
+        /**
+         * @ReferenceMany(discriminatorField="type")
+         */
+        private $favorites = array();
+
+        // ...
+    }

@@ -209,9 +209,56 @@ Every document class needs an identifier. You designate the field that serves
 as the identifier with the `@Id` marker annotation. Here is an example:
 
     [php]
+    /** @Document */
     class MyPersistentClass
     {
         /** @Id */
         private $id;
         //...
     }
+
+++ Multiple Document Types in a Collection
+
+You can easily store multiple types of documents in a single collection. It only requires
+that you specify a `discriminatorMap` for each document in the collection. Here is an
+example:
+
+    [php]
+    /**
+     * @Document(collection="my_documents")
+     * @DiscriminatorField(fieldName="type")
+     * @DiscriminatorMap({"article"="Article", "album"="Album"})
+     */
+    class Article
+    {
+        // ...
+    }
+
+    /**
+     * @Document(collection="my_documents")
+     * @DiscriminatorField(fieldName="type")
+     * @DiscriminatorMap({"article"="Article", "album"="Album"})
+     */
+    class Album
+    {
+        // ...
+    }
+
+All instances of `Article` and `Album` will be stored in the `my_documents` collection.
+You can query for the documents just like you normally would and if you want to and the
+results will automatically be limited for you based on the discriminator map.
+
+If you wish to query for multiple types of documents from the collection you can simply
+pass an array of document class names:
+
+    [php]
+    $documents = $dm->find(array('Article', 'Album'));
+
+The above will return a `MongoCursor` that will allow you to iterate over all `Article`
+and `Album` instances!
+
+You can also create queries in the same way:
+
+    [php]
+    $query = $dm->createQuery(array('Article', 'Album'));
+    $documents = $query->execute();
