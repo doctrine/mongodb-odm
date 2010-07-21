@@ -317,7 +317,7 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
-        $query->set($fieldName, $value, false);
+        $query->field($fieldName)->set($value, false);
     }
 
     /**
@@ -449,45 +449,46 @@ class Parser
 
         $value = $this->Value($parameters);
 
+        $query->field($fieldName);
         switch ($operator) {
             case '=':
-                $query->where($fieldName, $value, $options);
+                $query->equal($value, $options);
                 break;
             case '!=':
-                $query->whereNotEqual($fieldName, $value, $options);
+                $query->notEqual($value, $options);
                 break;
             case '>=':
-                $query->whereGte($fieldName, $value, $options);
+                $query->greaterThanOrEq($value, $options);
                 break;
             case '<=':
-                $query->whereLte($fieldName, $value, $options);
+                $query->lessThanOrEq($value, $options);
                 break;
             case '>':
-                $query->whereGt($fieldName, $value, $options);
+                $query->greaterThan($value, $options);
                 break;
             case '<':
-                $query->whereLt($fieldName, $value, $options);
+                $query->lessThan($value, $options);
                 break;
             case 'in':
-                $query->whereIn($fieldName, $value, $options);
+                $query->in($value, $options);
                 break;
             case 'notIn':
-                $query->whereNotIn($fieldName, $value, $options);
+                $query->notIn($value, $options);
                 break;
             case 'all':
-                $query->whereAll($fieldName, $value, $options);
+                $query->all($value, $options);
                 break;
             case 'size':
-                $query->whereSize($fieldName, $value, $options);
+                $query->size($value, $options);
                 break;
             case 'exists':
-                $query->whereExists($fieldName, $value, $options);
+                $query->exists($value, $options);
                 break;
             case 'type':
-                $query->whereType($fieldName, $value, $options);
+                $query->type($value, $options);
                 break;
             case 'mod':
-                $query->whereMod($fieldName, $value, $options);
+                $query->mod($value, $options);
                 break;
             default:
                 $this->syntaxError('Invalid atomic update operator.');
@@ -528,7 +529,7 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
-        $query->set($fieldName, $value);
+        $query->field($fieldName)->set($value);
     }
 
     /**
@@ -537,7 +538,7 @@ class Parser
     public function UnsetExpression(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $query->unsetField($this->_lexer->token['value']);
+        $query->field($this->_lexer->token['value'])->unsetField();
     }
 
     /**
@@ -547,7 +548,7 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
-        $query->push($fieldName, $value);
+        $query->field($fieldName)->push($value);
     }
 
     /**
@@ -557,7 +558,7 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
-        $query->pushAll($fieldName, $value);
+        $query->field($fieldName)->pushAll($value);
     }
 
     /**
@@ -567,7 +568,7 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
-        $query->pull($fieldName, $value);
+        $query->field($fieldName)->pull($value);
     }
 
     /**
@@ -577,7 +578,7 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
-        $query->pullAll($fieldName, $value);
+        $query->field($fieldName)->pullAll($value);
     }
 
     /**
@@ -586,7 +587,7 @@ class Parser
     public function PopFirstExpression(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $query->popFirst($this->_lexer->token['value']);
+        $query->field($this->_lexer->token['value'])->popFirst();
     }
 
     /**
@@ -595,7 +596,7 @@ class Parser
     public function PopLastExpression(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $query->popLast($this->_lexer->token['value']);
+        $query->field($this->_lexer->token['value'])->popLast();
     }
 
     /**
@@ -605,7 +606,7 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
-        $query->addToSet($fieldName, $value);
+        $query->field($fieldName)->addToSet($value);
     }
 
     /**
@@ -615,7 +616,7 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
-        $query->addManyToSet($fieldName, $value);
+        $query->field($fieldName)->addManyToSet($value);
     }
 
     /**
@@ -625,6 +626,6 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
-        $query->inc($fieldName, $value);
+        $query->field($fieldName)->inc($value);
     }
 }

@@ -23,7 +23,8 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($user->getProfile()->getProfileId() !== '');
 
         $query = $this->dm->createQuery('Documents\SpecialUser')
-            ->where('id', $user->getId());
+            ->field('id')
+            ->equal($user->getId());
         $user = $query->getSingleResult();
   
         $user->getProfile()->setLastName('Wage');

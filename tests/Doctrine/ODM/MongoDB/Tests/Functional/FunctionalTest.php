@@ -482,10 +482,11 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         )->getResults();
         $this->assertEquals(2, count($test));
 
-        $test = $this->dm->createQuery(array(
+        $q = $this->dm->createQuery(array(
             'Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1',
             'Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2')
-        )->execute();
+        );
+        $test = $q->execute();
         $this->assertEquals(2, count($test));
 
         $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1')->getResults();

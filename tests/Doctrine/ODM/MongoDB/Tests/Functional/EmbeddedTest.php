@@ -36,7 +36,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user = $this->dm->createQuery('Documents\User')
-            ->where('id', $user->getId())
+            ->field('id')->equal($user->getId())
             ->getSingleResult();
         $this->assertEquals($addressClone, $user->getAddress());
     }
@@ -52,7 +52,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user2 = $this->dm->createQuery('Documents\User')
-            ->where('id', $user->getId())
+            ->id()->equal($user->getId())
             ->getSingleResult();
 
         $this->assertEquals($user->getPhonenumbers(), $user2->getPhonenumbers());

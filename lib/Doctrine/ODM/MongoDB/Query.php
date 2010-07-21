@@ -95,6 +95,9 @@ class Query
      */
     private $_cmd;
 
+    /** The current field adding conditions to */
+    private $_currentField;
+
     /** Refresh hint */
     const HINT_REFRESH = 1;
 
@@ -208,7 +211,7 @@ class Query
 
             $discriminatorField = $this->_dm->getClassMetadata($className)->discriminatorField['name'];
             $discriminatorValues = $this->_dm->getDiscriminatorValues($classNames);
-            $this->whereIn($discriminatorField, $discriminatorValues);
+            $this->field($discriminatorField)->in($discriminatorValues);
         }
 
         if ($className !== null) {
@@ -315,220 +318,269 @@ class Query
         return $this;
     }
 
+    /**
+     * Select a slice of an embedded document.
+     *
+     * @param string $fieldName
+     * @param integer $skip
+     * @param integer $limit
+     * @return Query
+     */
     public function selectSlice($fieldName, $skip, $limit = null)
     {
         $slice = array($skip);
         if ($limit !== null) {
             $slice[] = $limit;
         }
-        return $this->_select[$fieldName][$this->_cmd . 'slice'] = $slice;
+        $this->_select[$fieldName][$this->_cmd . 'slice'] = $slice;
+        return $this;
+    }
+
+    /**
+     * Set the current field to operate on.
+     *
+     * @param string $field
+     * @return Query
+     */
+    public function field($field)
+    {
+        $this->_currentField = $field;
+        return $this;
     }
 
     /**
      * Add a new where criteria erasing all old criteria.
      *
-     * @param string $fieldName
      * @param string $value
      * @return Query
      */
-    public function where($fieldName, $value, array $options = array())
+    public function equal($value, array $options = array())
     {
-        $value = $this->_prepareWhereValue($fieldName, $value);
+        $value = $this->_prepareWhereValue($this->_currentField, $value);
 
         if (isset($options['elemMatch'])) {
-            return $this->whereElemMatch($fieldName, $value, $options);
+            return $this->elemMatch($value, $options);
         }
 
         if (isset($options['not'])) {
-            return $this->whereNot($fieldName, $value, $options);
+            return $this->not($value, $options);
         }
 
-        if (isset($this->_where[$fieldName])) {
-            $this->_where[$fieldName] = array_merge_recursive($this->_where[$fieldName], $value);
+        if (isset($this->_where[$this->_currentField])) {
+            $this->_where[$this->_currentField] = array_merge_recursive($this->_where[$this->_currentField], $value);
         } else {
-            $this->_where[$fieldName] = $value;
+            $this->_where[$this->_currentField] = $value;
         }
 
         return $this;
     }
 
-    public function whereElemMatch($fieldName, $value, array $options = array())
+    /**
+     * Add $where javascript function to reduce result sets.
+     *
+     * @param string $javascript
+     * @return Query
+     */
+    public function where($javascript)
     {
-        $e = explode('.', $fieldName);
+        return $this->field($this->_cmd . 'where')->equal($javascript);
+    }
+
+    /**
+     * Add element match to query.
+     *
+     * @param string $value
+     * @param array $options
+     * @return Query
+     */
+    public function elemMatch($value, array $options = array())
+    {
+        $e = explode('.', $this->_currentField);
         $fieldName = array_pop($e);
         $embeddedPath = implode('.', $e);
         $this->_where[$embeddedPath][$this->_cmd . 'elemMatch'][$fieldName] = $value;
         return $this;
     }
 
-    public function whereElemMatchOperator($fieldName, $operator, $value)
+    /**
+     * Add element match operator to the query.
+     *
+     * @param string $operator 
+     * @param string $value 
+     * @return Query
+     */
+    public function elemMatchOperator($operator, $value)
     {
-        $e = explode('.', $fieldName);
+        $e = explode('.', $this->_currentField);
         $fieldName = array_pop($e);
         $embeddedPath = implode('.', $e);
         $this->_where[$embeddedPath][$this->_cmd . 'elemMatch'][$fieldName][$operator] = $value;
         return $this;
     }
 
-    public function whereOperator($fieldName, $operator, $value, array $options = array())
+    /**
+     * Add MongoDB operator to the query.
+     *
+     * @param string $operator
+     * @param string $value
+     * @param array $options
+     * @return Query
+     */
+    public function operator($operator, $value, array $options = array())
     {
         if (isset($options['elemMatch'])) {
-            return $this->whereElemMatchOperator($fieldName, $operator, $value);
+            return $this->elemMatchOperator($operator, $value);
         }
         if (isset($options['not'])) {
-            $this->_where[$fieldName][$this->_cmd . 'not'][$operator] = $value;
+            $this->_where[$this->_currentField][$this->_cmd . 'not'][$operator] = $value;
             return $this;
         }
-        $this->_where[$fieldName][$operator] = $value;
+        $this->_where[$this->_currentField][$operator] = $value;
         return $this;
     }
 
-    public function whereNot($fieldName, $value, array $options = array())
+    /**
+     * Add a new where not criteria
+     *
+     * @param string $value
+     * @param array $options
+     * @return Query
+     */
+    public function not($value, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'not', $value);
+        return $this->operator($this->_cmd . 'not', $value);
     }
 
     /**
      * Add a new where in criteria.
      *
-     * @param string $fieldName
      * @param mixed $values
      * @param array $options
      * @return Query
      */
-    public function whereIn($fieldName, $values, array $options = array())
+    public function in($values, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'in', $values, $options);
+        return $this->operator($this->_cmd . 'in', $values, $options);
     }
 
     /**
      * Add where not in criteria.
      *
-     * @param string $fieldName
      * @param mixed $values
      * @param array $options
      * @return Query
      */
-    public function whereNotIn($fieldName, $values, array $options = array())
+    public function notIn($values, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'nin', (array) $values, $options);
+        return $this->operator($this->_cmd . 'nin', (array) $values, $options);
     }
 
     /**
      * Add where not equal criteria.
      *
-     * @param string $fieldName
      * @param string $value
      * @param array $options
      * @return Query
      */
-    public function whereNotEqual($fieldName, $value, array $options = array())
+    public function notEqual($value, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'ne', $value, $options);
+        return $this->operator($this->_cmd . 'ne', $value, $options);
     }
 
     /**
      * Add where greater than criteria.
      *
-     * @param string $fieldName
      * @param string $value
      * @param array $options
      * @return Query
      */
-    public function whereGt($fieldName, $value, array $options = array())
+    public function greaterThan($value, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'gt', $value, $options);
+        return $this->operator($this->_cmd . 'gt', $value, $options);
     }
 
     /**
      * Add where greater than or equal to criteria.
      *
-     * @param string $fieldName
      * @param string $value
      * @param array $options
      * @return Query
      */
-    public function whereGte($fieldName, $value, array $options = array())
+    public function greaterThanOrEq($value, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'gte', $value, $options);
+        return $this->operator($this->_cmd . 'gte', $value, $options);
     }
 
     /**
      * Add where less than criteria.
      *
-     * @param string $fieldName
      * @param string $value
      * @param array $options
      * @return Query
      */
-    public function whereLt($fieldName, $value, array $options = array())
+    public function lessThan($value, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'lt', $value, $options);
+        return $this->operator($this->_cmd . 'lt', $value, $options);
     }
 
     /**
      * Add where less than or equal to criteria.
      *
-     * @param string $fieldName
      * @param string $value
      * @param array $options
      * @return Query
      */
-    public function whereLte($fieldName, $value, array $options = array())
+    public function lessThanOrEq($value, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'lte', $value, $options);
+        return $this->operator($this->_cmd . 'lte', $value, $options);
     }
 
     /**
      * Add where range criteria.
      *
-     * @param string $fieldName
      * @param string $start
      * @param string $end
      * @param array $options
      * @return Query
      */
-    public function whereRange($fieldName, $start, $end, array $options = array())
+    public function range($start, $end, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'gt', $start, $options)
-            ->whereOperator($fieldName, $this->_cmd . 'lt', $end, $options);
+        return $this->operator($this->_cmd . 'gt', $start, $options)
+            ->operator($this->_cmd . 'lt', $end, $options);
     }
 
     /**
      * Add where size criteria.
      *
-     * @param string $fieldName
      * @param string $size
      * @param array $options
      * @return Query
      */
-    public function whereSize($fieldName, $size, array $options = array())
+    public function size($size, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'size', $size, $options);
+        return $this->operator($this->_cmd . 'size', $size, $options);
     }
 
     /**
      * Add where exists criteria.
      *
-     * @param string $fieldName
      * @param string $bool
      * @param array $options
      * @return Query
      */
-    public function whereExists($fieldName, $bool, array $options = array())
+    public function exists($bool, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'exists', $bool, $options);
+        return $this->operator($this->_cmd . 'exists', $bool, $options);
     }
 
     /**
      * Add where type criteria.
      *
-     * @param string $fieldName
      * @param string $type
      * @param array $options
      * @return Query
      */
-    public function whereType($fieldName, $type, array $options = array())
+    public function type($type, array $options = array())
     {
         $map = array(
             'double' => 1,
@@ -554,39 +606,36 @@ class Query
         if (is_string($type) && isset($map[$type])) {
             $type = $map[$type];
         }
-        return $this->whereOperator($fieldName, $this->_cmd . 'type', $type, $options);
+        return $this->operator($this->_cmd . 'type', $type, $options);
     }
 
     /**
      * Add where all criteria.
      *
-     * @param string $fieldName
      * @param mixed $values
      * @param array $options
      * @return Query
      */
-    public function whereAll($fieldName, $values, array $options = array())
+    public function all($values, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'all', (array) $values, $options);
+        return $this->operator($this->_cmd . 'all', (array) $values, $options);
     }
 
     /**
      * Add where mod criteria.
      *
-     * @param string $fieldName
      * @param string $mod
      * @param array $options
      * @return Query
      */
-    public function whereMod($fieldName, $mod, array $options = array())
+    public function mod($mod, array $options = array())
     {
-        return $this->whereOperator($fieldName, $this->_cmd . 'mod', $mod, $options);
+        return $this->operator($this->_cmd . 'mod', $mod, $options);
     }
 
     /**
      * Set sort and erase all old sorts.
      *
-     * @param string $fieldName
      * @param string $order
      * @return Query
      */
@@ -677,18 +726,17 @@ class Query
     /**
      * Set field to value.
      *
-     * @param string $name
      * @param mixed $value
      * @param boolean $atomic
      * @return Query
      */
-    public function set($name, $value, $atomic = true)
+    public function set($value, $atomic = true)
     {
         if ($atomic === true) {
-            $this->_newObj[$this->_cmd . 'set'][$name] = $value;
+            $this->_newObj[$this->_cmd . 'set'][$this->_currentField] = $value;
         } else {
-            if (strpos($name, '.') !== false) {
-                $e = explode('.', $name);
+            if (strpos($this->_currentField, '.') !== false) {
+                $e = explode('.', $this->_currentField);
                 $current = &$this->_newObj;
                 foreach ($e as $v) {
                     $current[$v] = null;
@@ -696,7 +744,7 @@ class Query
                 }
                 $current = $value;
             } else {
-                $this->_newObj[$name] = $value;
+                $this->_newObj[$this->_currentField] = $value;
             }
         }
         return $this;
@@ -717,25 +765,23 @@ class Query
      * Increment field by the number value if field is present in the document,
      * otherwise sets field to the number value.
      *
-     * @param string $name
      * @param integer $value
      * @return Query
      */
-    public function inc($name, $value)
+    public function inc($value)
     {
-        $this->_newObj[$this->_cmd . 'inc'][$name] = $value;
+        $this->_newObj[$this->_cmd . 'inc'][$this->_currentField] = $value;
         return $this;
     }
 
     /**
      * Deletes a given field.
      *
-     * @param string $field
      * @return Query
      */
-    public function unsetField($field)
+    public function unsetField()
     {
-        $this->_newObj[$this->_cmd . 'unset'][$field] = 1;
+        $this->_newObj[$this->_cmd . 'unset'][$this->_currentField] = 1;
         return $this;
     }
 
@@ -744,13 +790,12 @@ class Query
      * field to the array [value] if field is not present. If field is present
      * but is not an array, an error condition is raised.
      *
-     * @param string $field
      * @param mixed $value
      * @return Query
      */
-    public function push($field, $value)
+    public function push($value)
     {
-        $this->_newObj[$this->_cmd . 'push'][$field] = $value;
+        $this->_newObj[$this->_cmd . 'push'][$this->_currentField] = $value;
         return $this;
     }
 
@@ -760,68 +805,63 @@ class Query
      * present. If field is present but is not an array, an error condition is
      * raised.
      *
-     * @param string $field
      * @param array $valueArray
      * @return Query
      */
-    public function pushAll($field, array $valueArray)
+    public function pushAll(array $valueArray)
     {
-        $this->_newObj[$this->_cmd . 'pushAll'][$field] = $valueArray;
+        $this->_newObj[$this->_cmd . 'pushAll'][$this->_currentField] = $valueArray;
         return $this;
     }
 
     /**
      * Adds value to the array only if its not in the array already.
      *
-     * @param string $field
      * @param mixed $value
      * @return Query
      */
-    public function addToSet($field, $value)
+    public function addToSet($value)
     {
-        $this->_newObj[$this->_cmd . 'addToSet'][$field] = $value;
+        $this->_newObj[$this->_cmd . 'addToSet'][$this->_currentField] = $value;
         return $this;
     }
 
     /**
      * Adds values to the array only they are not in the array already.
      *
-     * @param string $field
      * @param array $values
      * @return Query
      */
-    public function addManyToSet($field, array $values)
+    public function addManyToSet(array $values)
     {
-        if ( ! isset($this->_newObj[$this->_cmd . 'addToSet'][$field])) {
-            $this->_newObj[$this->_cmd . 'addToSet'][$field][$this->_cmd . 'each'] = array();
+        if ( ! isset($this->_newObj[$this->_cmd . 'addToSet'][$this->_currentField])) {
+            $this->_newObj[$this->_cmd . 'addToSet'][$this->_currentField][$this->_cmd . 'each'] = array();
         }
-        if ( ! is_array($this->_newObj[$this->_cmd . 'addToSet'][$field])) {
-            $this->_newObj[$this->_cmd . 'addToSet'][$field] = array($this->_cmd . 'each' => array($this->_newObj[$this->_cmd . 'addToSet'][$field]));
+        if ( ! is_array($this->_newObj[$this->_cmd . 'addToSet'][$this->_currentField])) {
+            $this->_newObj[$this->_cmd . 'addToSet'][$this->_currentField] = array($this->_cmd . 'each' => array($this->_newObj[$this->_cmd . 'addToSet'][$this->_currentField]));
         }
-        $this->_newObj[$this->_cmd . 'addToSet'][$field][$this->_cmd . 'each'] = array_merge_recursive($this->_newObj[$this->_cmd . 'addToSet'][$field][$this->_cmd . 'each'], $values);
+        $this->_newObj[$this->_cmd . 'addToSet'][$this->_currentField][$this->_cmd . 'each'] = array_merge_recursive($this->_newObj[$this->_cmd . 'addToSet'][$this->_currentField][$this->_cmd . 'each'], $values);
     }
 
     /**
      * Removes first element in an array
      *
-     * @param string $field  The field name
      * @return Query
      */
-    public function popFirst($field)
+    public function popFirst()
     {
-        $this->_newObj[$this->_cmd . 'pop'][$field] = 1;
+        $this->_newObj[$this->_cmd . 'pop'][$this->_currentField] = 1;
         return $this;
     }
 
     /**
      * Removes last element in an array
      *
-     * @param string $field  The field name
      * @return Query
      */
-    public function popLast($field)
+    public function popLast()
     {
-        $this->_newObj[$this->_cmd . 'pop'][$field] = -1;
+        $this->_newObj[$this->_cmd . 'pop'][$this->_currentField] = -1;
         return $this;
     }
 
@@ -829,13 +869,12 @@ class Query
      * Removes all occurrences of value from field, if field is an array.
      * If field is present but is not an array, an error condition is raised.
      *
-     * @param string $field
      * @param mixed $value
      * @return Query
      */
-    public function pull($field, $value)
+    public function pull($value)
     {
-        $this->_newObj[$this->_cmd . 'pull'][$field] = $value;
+        $this->_newObj[$this->_cmd . 'pull'][$this->_currentField] = $value;
         return $this;
     }
 
@@ -844,13 +883,12 @@ class Query
      * field is an array. If field is present but is not an array, an error
      * condition is raised.
      *
-     * @param string $field
      * @param array $valueArray
      * @return Query
      */
-    public function pullAll($field, array $valueArray)
+    public function pullAll(array $valueArray)
     {
-        $this->_newObj[$this->_cmd . 'pullAll'][$field] = $valueArray;
+        $this->_newObj[$this->_cmd . 'pullAll'][$this->_currentField] = $valueArray;
         return $this;
     }
 
@@ -1020,5 +1058,10 @@ class Query
             }
         }
         return $value;
+    }
+
+    public function __call($method, $arguments)
+    {
+        return $this->field($method);
     }
 }

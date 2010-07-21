@@ -29,7 +29,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testFindQuery()
     {
         $query = $this->dm->createQuery('Documents\User')
-            ->where($this->escape('where'), "function() { return this.username == 'boo' }");
+            ->where("function() { return this.username == 'boo' }");
         $user = $query->getSingleResult();
         $this->assertEquals('boo', $user->getUsername());
 
@@ -43,8 +43,9 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $query = $this->dm->createQuery('Documents\User')
             ->update()
-            ->where('username', 'boo')
-            ->set('username', 'crap');
+            ->username()
+            ->set('crap')
+            ->equal('boo');
         $result = $query->execute();
 
         $this->dm->refresh($this->user);
@@ -58,7 +59,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $query = $this->dm->createQuery('Documents\User')
             ->remove()
-            ->where('username', 'boo');
+            ->field('username')->equal('boo');
         $result = $query->execute();
 
         // should invoke exception because $this->user doesn't exist anymore
@@ -69,8 +70,8 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $query = $this->dm->createQuery('Documents\User')
             ->update()
-            ->inc('hits', 5)
-            ->where('username', 'boo');
+            ->field('hits')->inc(5)
+            ->field('username')->equal('boo');
         $query->execute();
         $query->execute();
 
@@ -84,8 +85,8 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $query = $this->dm->createQuery('Documents\User')
             ->update()
-            ->unsetField('hits')
-            ->where('username', 'boo');
+            ->field('hits')->unsetField()
+            ->field('username')->equal('boo');
         $result = $query->execute();
 
         $user = $query->from('Documents\User')
@@ -107,12 +108,13 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->dm->createQuery()
             ->update('Documents\User')
-            ->whereType('nullTest', 'null')
+            ->field('nullTest')
+            ->type('null')
             ->unsetField('nullTest')
             ->execute();
 
         $user = $this->dm->createQuery('Documents\User')
-            ->whereType('nullTest', 'null')
+            ->field('nullTest')->type('null')
             ->getSingleResult();
         $this->assertNull($user);
     }
@@ -148,7 +150,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $query = $this->dm->createQuery('Documents\Article');
-        $query->whereRange('createdAt',
+        $query->field('createdAt')->range(
             new \MongoDate(strtotime('1985-09-01')),
             new \MongoDate(strtotime('1985-09-04'))
         );
