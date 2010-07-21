@@ -51,7 +51,7 @@ example:
     [php]
     $query = $dm->createQuery('Documents\User')
         ->field('type')
-        ->equal('sale')
+        ->equals('sale')
         ->map('function() { emit(this.user.$id, 1); }')
         ->reduce('function(k, vals) {
             var sum = 0;

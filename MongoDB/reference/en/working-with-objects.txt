@@ -359,7 +359,7 @@ one recommended way of grouping these queries in a central location.
         public function getAllAdminUsers()
         {
             return $this->createQuery()
-                ->field('status')->equal('admin')
+                ->field('status')->equals('admin')
                 ->getResult();
         }
     }

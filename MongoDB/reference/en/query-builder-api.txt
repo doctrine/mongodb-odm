@@ -67,7 +67,7 @@ method:
 
     [php]
     $user = $dm->createQuery('User')
-        ->field('username')->equal('jwage')
+        ->field('username')->equals('jwage')
         ->getSingleResults();
 
 +++ Getting Query Cursor
@@ -143,7 +143,7 @@ You can also run map reduced find queries using the `Query` object:
 
     [php]
     $query = $this->dm->createQuery('Event')
-        ->field('type')->equal('sale')
+        ->field('type')->equals('sale')
         ->map('function() { emit(this.userId, 1); }')
         ->reduce("function(k, vals) {
             var sum = 0;
@@ -197,8 +197,8 @@ Query for active administrator users:
 
     [php]
     $query = $dm->createQuery('User')
-        ->field('type')->equal('admin')
-        ->field('active')->equal(1);
+        ->field('type')->equals('admin')
+        ->field('active')->equals(1);
 
 <a name="in"></a>
 
@@ -351,7 +351,7 @@ Change a users password:
     [php]
     $dm->createQuery('User')
         ->field('password')->set('newpassword')
-        ->field('username')->equal('jwage')
+        ->field('username')->equals('jwage')
         ->execute();
 
 If you want to just set the values of an entirely new object you can do so by
@@ -363,7 +363,7 @@ atomic one:
         ->field('username')->set('jwage', false)
         ->field('password')->set('password', false)
         // ... set other remaining fields
-        ->field('username')->equal('jwage')
+        ->field('username')->equals('jwage')
         ->execute();
 
 Read more about the [$set modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24set) in the Mongo docs.
@@ -379,7 +379,7 @@ You can set an entirely new object to update as well:
             'password' => 'password',
             // ... other fields
         ))
-        ->field('username')->equal('jwage')
+        ->field('username')->equals('jwage')
         ->execute();
 
 <a name="inc"></a>
@@ -388,7 +388,7 @@ Increment the value of a document:
 
     [php]
     $dm->createQuery('Package')
-        ->field('id')->equal('theid')
+        ->field('id')->equals('theid')
         ->field('downloads')->inc(1)
         ->execute();
 
@@ -412,7 +412,7 @@ Append new tag to the tags array:
     [php]
     $dm->createQuery('Article')
         ->field('tags')->push('tag5')
-        ->field('id')->equal('theid')
+        ->field('id')->equals('theid')
         ->execute();
 
 Read more about the [$push modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24push) in the Mongo docs.
@@ -424,7 +424,7 @@ Append new tags to the tags array:
     [php]
     $dm->createQuery('Article')
         ->field('tags')->pushAll(array('tag6', 'tag7'))
-        ->field('id')->equal('theid')
+        ->field('id')->equals('theid')
         ->execute();
 
 Read more about the [$pushAll modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24pushAll) in the Mongo docs.
@@ -436,7 +436,7 @@ Add value to array only if its not in the array already:
     [php]
     $dm->createQuery('Article')
         ->field('tags')->addToSet('tag1')
-        ->field('id')->equal('theid')
+        ->field('id')->equals('theid')
         ->execute();
 
 Read more about the [$addToSet modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24addToSet) in the Mongo docs.
@@ -448,7 +448,7 @@ Add many values to the array only if they do not exist in the array already:
     [php]
     $dm->createQuery('Article')
         ->field('tags')->addManyToSet(array('tag6', 'tag7'))
-        ->field('id')->equal('theid')
+        ->field('id')->equals('theid')
         ->execute();
 
 Read more about the [$addManyToSet modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24addManyToSet) in the Mongo docs.
@@ -460,7 +460,7 @@ Remove first element in an array:
     [php]
     $dm->createQuery('Article')
         ->field('tags')->popFirst()
-        ->field('id')->equal('theid')
+        ->field('id')->equals('theid')
         ->execute();
 
 <a name="popLast"></a>
@@ -470,7 +470,7 @@ Remove last element in an array:
     [php]
     $dm->createQuery('Article')
         ->field('tags')->popLast()
-        ->field('id')->equal('theid')
+        ->field('id')->equals('theid')
         ->execute();
 
 Read more about the [$pop modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24pop) in the Mongo docs.
@@ -508,7 +508,7 @@ Here is an example where we remove users who have never logged in:
     [php]
     $dm->createQuery('User')
         ->remove()
-        ->field('num_logins')->equal(0)
+        ->field('num_logins')->equals(0)
         ->execute();
 
 ++ Group Queries
