@@ -732,6 +732,9 @@ class Query
      */
     public function set($value, $atomic = true)
     {
+        if ($this->_type == self::TYPE_INSERT) {
+            $atomic = false;
+        }
         if ($atomic === true) {
             $this->_newObj[$this->_cmd . 'set'][$this->_currentField] = $value;
         } else {
