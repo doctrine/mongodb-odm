@@ -283,7 +283,8 @@ class MongoCollection
     public function find(array $query = array(), array $fields = array())
     {
         if ($this->_class->hasDiscriminator() && ! isset($query[$this->_class->discriminatorField['name']])) {
-            $query[$this->_class->discriminatorField['name']] = $this->_class->discriminatorValue;
+            $discriminatorValues = $this->_getClassDiscriminatorValues($this->_class);
+            $query[$this->_class->discriminatorField['name']] = array('$in' => $discriminatorValues);
         }
 
         if ($this->_eventManager->hasListeners(CollectionEvents::preFind)) {
@@ -310,7 +311,8 @@ class MongoCollection
     public function findOne(array $query = array(), array $fields = array())
     {
         if ($this->_class->hasDiscriminator() && ! isset($query[$this->_class->discriminatorField['name']])) {
-            $query[$this->_class->discriminatorField['name']] = $this->_class->discriminatorValue;
+            $discriminatorValues = $this->_getClassDiscriminatorValues($this->_class);
+            $query[$this->_class->discriminatorField['name']] = array('$in' => $discriminatorValues);
         }
 
         if ($this->_eventManager->hasListeners(CollectionEvents::preFindOne)) {
@@ -338,6 +340,17 @@ class MongoCollection
         }
 
         return $result;
+    }
+
+    private function _getClassDiscriminatorValues(ClassMetadata $metadata)
+    {
+        $discriminatorValues = array($metadata->discriminatorValue);
+        foreach ($metadata->subClasses as $className) {
+            if ($key = array_search($className, $metadata->discriminatorMap)) {
+                $discriminatorValues[] = $key;
+            }
+        }
+        return $discriminatorValues;
     }
 
     /** @proxy */
