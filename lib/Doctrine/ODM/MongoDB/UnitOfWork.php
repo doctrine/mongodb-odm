@@ -788,7 +788,10 @@ class UnitOfWork
                     $calc->addDependency($targetClass, $class);
                 }
 
-                $this->_addDependencies($targetClass, $calc);
+                // avoid infinite recursion
+                if ($class != $targetClass) {
+                    $this->_addDependencies($targetClass, $calc);
+                }
             }
         }
     }
