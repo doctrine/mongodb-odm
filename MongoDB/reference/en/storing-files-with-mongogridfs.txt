@@ -79,7 +79,8 @@ Now you can later query for the Image and render it:
 
     [php]
     $image = $dm->createQuery('Documents\Image')
-        ->where('name', 'Test image')
+        ->field('name')
+        ->equal('Test image')
         ->getSingleResult();
 
     header('Content-type: image/png;');
@@ -150,7 +151,7 @@ you can use:
 
     [php]
     $profile = $dm->createQuery('Profile')
-        ->where('name', 'Jonathan H. Wage')
+        ->field('name')->equal('Jonathan H. Wage')
         ->getSingleResult();
 
     $image = $profile->getImage();

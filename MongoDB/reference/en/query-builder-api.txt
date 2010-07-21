@@ -67,7 +67,7 @@ method:
 
     [php]
     $user = $dm->createQuery('User')
-        ->where('username', 'jwage')
+        ->field('username')->equal('jwage')
         ->getSingleResults();
 
 +++ Getting Query Cursor
@@ -143,7 +143,7 @@ You can also run map reduced find queries using the `Query` object:
 
     [php]
     $query = $this->dm->createQuery('Event')
-        ->where('type', 'sale')
+        ->field('type')->equal('sale')
         ->map('function() { emit(this.userId, 1); }')
         ->reduce("function(k, vals) {
             var sum = 0;
@@ -159,20 +159,11 @@ You can also run map reduced find queries using the `Query` object:
 > hydrated and the raw results from the map reduce operation will be returned.
 
 If you just want to reduce the results using a javascript function you can just
-call the `reduce()` method by itself:
+call the `where()` method:
 
     [php]
     $query = $this->dm->createQuery('User')
-        ->reduce("function() { return this.type == 'admin'; }");
-
-The above is the same as if we did the following manually:
-
-    [php]
-    $query = $this->dm->createQuery('User')
-        ->where('$where', "function() { return this.type == 'admin'; }");
-
-When you use just a `reduce()` and no `map()` then when the query is executed
-it is executed as a `$where` operator.
+        ->where("function() { return this.type == 'admin'; }");
 
 You can read more about the [$where operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-JavascriptExpressionsand%7B%7B%24where%7D%7D) in the Mongo docs.
 
@@ -185,20 +176,20 @@ interface with a fluent API.
 Here is a list of all the conditional operation methods you can use on the `Query`
 object. Click the method to see a practical example:
 
-* [where($fieldName, $value)](#where)
-* [whereIn($fieldName, $values)](#whereIn)
-* [whereNotIn($fieldName, $values)](#whereNotIn)
-* [whereNotEqual($fieldName, $value)](#whereNotEqual)
-* [whereGt($fieldName, $value)](#whereGt)
-* [whereGte($fieldName, $value)](#whereGte)
-* [whereLt($fieldName, $value)](#whereLte)
-* [whereLte($fieldName, $value)](#whereLte)
-* [whereRange($fieldName, $start, $end)](#whereRange)
-* [whereSize($fieldName, $size)](#whereSize)
-* [whereExists($fieldName, $bool)](#whereExists)
-* [whereType($fieldName, $type)](#whereType)
-* [whereAll($fieldName, $values)](#whereAll)
-* [whereMod($fieldName, $mod)](#whereMod)
+* [where($javascript)](#where)
+* [in($values)](#in)
+* [notIn($fieldName, $values)](#notIn)
+* [notEqual($fieldName, $value)](#notEqual)
+* [greaterThan($fieldName, $value)](#greaterThan)
+* [greaterThanOrEq($fieldName, $value)](#greaterThanOrEq)
+* [lessThan($fieldName, $value)](#lessThan)
+* [lessThanOrEq($fieldName, $value)](#lessThanOrEq)
+* [range($fieldName, $start, $end)](#range)
+* [size($fieldName, $size)](#size)
+* [exists($fieldName, $bool)](#exists)
+* [type($fieldName, $type)](#type)
+* [all($fieldName, $values)](#all)
+* [mod($fieldName, $mod)](#mod)
 
 <a name="where"></a>
 
@@ -206,124 +197,124 @@ Query for active administrator users:
 
     [php]
     $query = $dm->createQuery('User')
-        ->where('type', 'admin')
-        ->where('active', 1);
+        ->field('type')->equal('admin')
+        ->field('active')->equal(1);
 
-<a name="whereIn"></a>
+<a name="in"></a>
 
 Query for articles that have some tags:
 
     [php]
     $query = $dm->createQuery('Article')
-        ->whereIn('tags.name', array('tag1', 'tag2'));
+        ->field('tags.name')->in(array('tag1', 'tag2'));
 
 Read more about the [$in operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24in) in the Mongo docs
 
-<a name="whereNotIn"></a>
+<a name="notIn"></a>
 
 Query for articles that do not have some tags:
 
     [php]
     $query = $dm->createQuery('Article')
-        ->whereNotIn('tags.name', array('tag3'));
+        ->field('tags.name')->notIn(array('tag3'));
 
 Read more about the [$nin operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24nin) in the Mongo docs.
 
-<a name="whereNotEqual"></a>
+<a name="notEqual"></a>
 
     [php]
     $query = $dm->createQuery('User')
-        ->whereNotEqual('type', 'admin');
+        ->field('type')->notEqual('admin');
 
 Read more about the [$ne operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24ne) in the Mongo docs.
 
-<a name="whereGt"></a>
+<a name="greaterThan"></a>
 
 Query for accounts with an amount due greater than 30:
 
     [php]
     $query = $dm->createQuery('Account')
-        ->whereGt('amount_due', 30);
+        ->field('amount_due')->greaterThan(30);
 
-<a name="whereGte"></a>
+<a name="greaterThanOrEq"></a>
 
 Query for accounts with an amount due greater than or equal to 30:
 
     [php]
     $query = $dm->createQuery('Account')
-        ->whereGte('amount_due', 30);
+        ->field('amount_due')->greaterThanOrEq(30);
 
-<a name="whereLt"></a>
+<a name="lessThan"></a>
 
 Query for accounts with an amount due less than 30:
 
     [php]
     $query = $dm->createQuery('Account')
-        ->whereLt('amount_due', 30);
+        ->field('amount_due')->lessThan(30);
 
-<a name="whereLte"></a>
+<a name="lessThanOrEq"></a>
 
 Query for accounts with an amount due less than or equal to 30:
 
     [php]
     $query = $dm->createQuery('Account')
-        ->whereLte('amount_due', 30);
+        ->field('amount_due')->lessThanOrEq(30);
 
-<a name="whereRange"></a>
+<a name="range"></a>
 
 Query for accounts with an amount due between 10 and 20:
 
     [php]
     $query = $dm->createQuery('Account')
-        ->whereRange('amount_due', 10, 20);
+        ->field('amount_due')->range(10, 20);
 
 Read more about [conditional operators](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperators%3A%3C%2C%3C%3D%2C%3E%2C%3E%3D) in the Mongo docs.
 
-<a name="whereSize"></a>
+<a name="size"></a>
 
 Query for articles with no comments:
 
     [php]
     $query = $dm->createQuery('Article')
-        ->whereSize('comments', 0);
+        ->field('comments')->size(0);
 
 Read more about the [$size operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24size) in the Mongo docs.
 
-<a name="whereExists"></a>
+<a name="exists"></a>
 
 Query for users that have a login field before it was renamed to username:
 
     [php]
     $query = $dm->createQuery('User')
-        ->whereExists('login');
+        ->field('login')->exists();
 
 Read more about the [$exists operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24exists) in the Mongo docs.
 
-<a name="whereType"></a>
+<a name="type"></a>
 
 Query for users that have a type field that is of integer bson type:
 
     [php]
     $query = $dm->createQuery('User')
-        ->whereType('type', 16);
+        ->field('type')->type('integer');
 
 Read more about the [$type operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24type) in the Mongo docs.
 
-<a name="whereAll"></a>
+<a name="all"></a>
 
 Query for users that are in all the specified Groups:
 
     [php]
     $query = $dm->createQuery('User')
-        ->whereAll('groups', array('Group 1', 'Group 2'));
+        ->field('groups')->all(array('Group 1', 'Group 2'));
 
 Read more about the [$all operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24all) in the Mongo docs.
 
-<a name="whereMod"></a>
+<a name="mod"></a>
 
     [php]
     $query = $dm->createQuery('Transaction')
-        ->whereMod('field', array(10, 1));
+        ->field('field')->mod('field', array(10, 1));
 
 Read more about the [$mod operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod) in the Mongo docs.
 
@@ -359,8 +350,8 @@ Change a users password:
 
     [php]
     $dm->createQuery('User')
-        ->set('password', 'newpassword')
-        ->where('username', 'jwage')
+        ->field('password')->set('newpassword')
+        ->field('username')->equal('jwage')
         ->execute();
 
 If you want to just set the values of an entirely new object you can do so by
@@ -369,10 +360,10 @@ atomic one:
 
     [php]
     $dm->createQuery('User')
-        ->set('username', 'jwage', false)
-        ->set('password', 'password', false)
+        ->field('username')->set('jwage', false)
+        ->field('password')->set('password', false)
         // ... set other remaining fields
-        ->where('username', 'jwage')
+        ->field('username')->equal('jwage')
         ->execute();
 
 Read more about the [$set modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24set) in the Mongo docs.
@@ -388,7 +379,7 @@ You can set an entirely new object to update as well:
             'password' => 'password',
             // ... other fields
         ))
-        ->where('username', 'jwage')
+        ->field('username')->equal('jwage')
         ->execute();
 
 <a name="inc"></a>
@@ -397,8 +388,8 @@ Increment the value of a document:
 
     [php]
     $dm->createQuery('Package')
-        ->where('id', 'theid')
-        ->inc('downloads', 1)
+        ->field('id')->equal('theid')
+        ->field('downloads')->inc(1)
         ->execute();
 
 Read more about the [$inc modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24inc) in the Mongo docs.
@@ -409,8 +400,7 @@ Unset the login field from users where the login field still exists:
 
     [php]
     $dm->createQuery('User')
-        ->unsetField('login')
-        ->whereExists('login')
+        ->field('login')->unsetField()->exists()
         ->execute();
 
 Read more about the [$unset modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset) in the Mongo docs.
@@ -421,8 +411,8 @@ Append new tag to the tags array:
 
     [php]
     $dm->createQuery('Article')
-        ->push('tags', 'tag5')
-        ->where('id', 'theid')
+        ->field('tags')->push('tag5')
+        ->field('id')->equal('theid')
         ->execute();
 
 Read more about the [$push modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24push) in the Mongo docs.
@@ -433,8 +423,8 @@ Append new tags to the tags array:
 
     [php]
     $dm->createQuery('Article')
-        ->pushAll('tags', array('tag6', 'tag7'))
-        ->where('id', 'theid')
+        ->field('tags')->pushAll(array('tag6', 'tag7'))
+        ->field('id')->equal('theid')
         ->execute();
 
 Read more about the [$pushAll modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24pushAll) in the Mongo docs.
@@ -445,8 +435,8 @@ Add value to array only if its not in the array already:
 
     [php]
     $dm->createQuery('Article')
-        ->addToSet('tags', 'tag1')
-        ->where('id', 'theid')
+        ->field('tags')->addToSet('tag1')
+        ->field('id')->equal('theid')
         ->execute();
 
 Read more about the [$addToSet modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24addToSet) in the Mongo docs.
@@ -457,8 +447,8 @@ Add many values to the array only if they do not exist in the array already:
 
     [php]
     $dm->createQuery('Article')
-        ->addManyToSet('tags', array('tag6', 'tag7'))
-        ->where('id', 'theid')
+        ->field('tags')->addManyToSet(array('tag6', 'tag7'))
+        ->field('id')->equal('theid')
         ->execute();
 
 Read more about the [$addManyToSet modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24addManyToSet) in the Mongo docs.
@@ -469,8 +459,8 @@ Remove first element in an array:
 
     [php]
     $dm->createQuery('Article')
-        ->popFirst('tags')
-        ->where('id', 'theid')
+        ->field('tags')->popFirst()
+        ->field('id')->equal('theid')
         ->execute();
 
 <a name="popLast"></a>
@@ -479,8 +469,8 @@ Remove last element in an array:
 
     [php]
     $dm->createQuery('Article')
-        ->popLast('tags')
-        ->where('id', 'theid')
+        ->field('tags')->popLast()
+        ->field('id')->equal('theid')
         ->execute();
 
 Read more about the [$pop modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24pop) in the Mongo docs.
@@ -491,7 +481,7 @@ Remove all occurrences of value from array:
 
     [php]
     $dm->createQuery('Article')
-        ->pull('tags', 'tag1')
+        ->field('tags')->pull('tag1')
         ->execute();
 
 Read more about the [$pull modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24pull) in the Mongo docs.
@@ -500,7 +490,7 @@ Read more about the [$pull modifier](http://www.mongodb.org/display/DOCS/Updatin
 
     [php]
     $dm->createQuery('Article')
-        ->pullAll('tags', array('tag1', 'tag2'))
+        ->field('tags')->pullAll(array('tag1', 'tag2'))
         ->execute();
 
 Read more about the [$pullAll modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24pullAll) in the Mongo docs.
@@ -518,7 +508,7 @@ Here is an example where we remove users who have never logged in:
     [php]
     $dm->createQuery('User')
         ->remove()
-        ->where('num_logins', 0)
+        ->field('num_logins')->equal(0)
         ->execute();
 
 ++ Group Queries
@@ -532,7 +522,7 @@ similar to SQL's GROUP BY command.
     $result = $this->dm->createQuery('Documents\User')
         ->group(array(), array('count' => 0))
         ->reduce('function (obj, prev) { prev.count++; }')
-        ->whereGt('a', 1)
+        ->field('a')->greaterThan(1)
         ->execute();
 
 This is the same as if we were to do the group with the raw PHP code:

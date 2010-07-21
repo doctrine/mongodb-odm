@@ -331,7 +331,7 @@ Here is a simple example:
     [php]
     // All users with an age between 20 and 30 (inclusive).
     $q = $dm->createQuery('User')
-        ->whereRange('age', 20, 30);
+        ->field('age')->range(20, 30);
     $users = $q->getResult();
 
 +++ Custom Repositories
@@ -359,7 +359,7 @@ one recommended way of grouping these queries in a central location.
         public function getAllAdminUsers()
         {
             return $this->createQuery()
-                ->where('status', 'admin')
+                ->field('status')->equal('admin')
                 ->getResult();
         }
     }

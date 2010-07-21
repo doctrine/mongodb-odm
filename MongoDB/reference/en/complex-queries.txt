@@ -8,17 +8,19 @@ Find articles with a date range:
 
     [php]
     $dm->createQuery('Article')
-        ->whereRange('createdAt',
+        ->field('createdAt')
+        ->range(
             new \MongoDate(strtotime('1985-09-01')),
             new \MongoDate(strtotime('1985-09-04'))
         );
 
 ++ Update Queries
 
-Unset all fields from document that are null:
+Remove a field from a document if it is null:
 
     [php]
     $dm->createQuery()
         ->update('User')
-        ->whereType('field', 'null')
-        ->unsetField('field');
+        ->field('signature')
+        ->type('null')
+        ->unsetField();
