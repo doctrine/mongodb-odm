@@ -452,7 +452,7 @@ class Parser
         $query->field($fieldName);
         switch ($operator) {
             case '=':
-                $query->equal($value, $options);
+                $query->equals($value, $options);
                 break;
             case '!=':
                 $query->notEqual($value, $options);

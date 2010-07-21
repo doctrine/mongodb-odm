@@ -28,7 +28,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $query = $this->dm->createQuery('Documents\User')
-            ->field('id')->equal($user->getId());
+            ->field('id')->equals($user->getId());
 
         $user = $query->getSingleResult();
 
@@ -63,7 +63,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user2 = $this->dm->createQuery('Documents\User')
-            ->field('id')->equal($user->getId())
+            ->field('id')->equals($user->getId())
             ->getSingleResult();
         $this->assertEquals($user->getAddress(), $user2->getAddress());
     }
@@ -79,7 +79,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user2 = $this->dm->createQuery('Documents\User')
-            ->field('id')->equal($user->getId())
+            ->field('id')->equals($user->getId())
             ->getSingleResult();
 
         $this->assertEquals($user->getPhonenumbers(), $user2->getPhonenumbers());
@@ -103,7 +103,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $accountId = $user->getAccount()->getId();
 
         $user2 = $this->dm->createQuery('Documents\User')
-            ->field('id')->equal($user->getId())
+            ->field('id')->equals($user->getId())
             ->getSingleResult();
 
     }
@@ -125,7 +125,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user2 = $this->dm->createQuery('Documents\User')
             ->field('id')
-            ->equal($user->getId())
+            ->equals($user->getId())
             ->getSingleResult();
 
         $groups = $user2->getGroups();
@@ -140,7 +140,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user3 = $this->dm->createQuery('Documents\User')
-            ->field('id')->equal($user->getId())
+            ->field('id')->equals($user->getId())
             ->getSingleResult();
         $this->assertEquals(1, count($user2->getGroups()));
     }

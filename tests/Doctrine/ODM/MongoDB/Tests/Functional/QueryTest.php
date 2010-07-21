@@ -45,7 +45,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->update()
             ->username()
             ->set('crap')
-            ->equal('boo');
+            ->equals('boo');
         $result = $query->execute();
 
         $this->dm->refresh($this->user);
@@ -59,7 +59,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $query = $this->dm->createQuery('Documents\User')
             ->remove()
-            ->field('username')->equal('boo');
+            ->field('username')->equals('boo');
         $result = $query->execute();
 
         // should invoke exception because $this->user doesn't exist anymore
@@ -71,7 +71,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $this->dm->createQuery('Documents\User')
             ->update()
             ->field('hits')->inc(5)
-            ->field('username')->equal('boo');
+            ->field('username')->equals('boo');
         $query->execute();
         $query->execute();
 
@@ -86,7 +86,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $this->dm->createQuery('Documents\User')
             ->update()
             ->field('hits')->unsetField()
-            ->field('username')->equal('boo');
+            ->field('username')->equals('boo');
         $result = $query->execute();
 
         $user = $query->from('Documents\User')

@@ -354,7 +354,7 @@ class Query
      * @param string $value
      * @return Query
      */
-    public function equal($value, array $options = array())
+    public function equals($value, array $options = array())
     {
         $value = $this->_prepareWhereValue($this->_currentField, $value);
 
@@ -383,7 +383,7 @@ class Query
      */
     public function where($javascript)
     {
-        return $this->field($this->_cmd . 'where')->equal($javascript);
+        return $this->field($this->_cmd . 'where')->equals($javascript);
     }
 
     /**

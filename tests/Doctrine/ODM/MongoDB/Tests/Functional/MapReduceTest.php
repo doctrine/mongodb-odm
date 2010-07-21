@@ -207,7 +207,7 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
 
         $query = $this->dm->createQuery('Documents\Event')
             ->field('type')
-            ->equal('sale')
+            ->equals('sale')
             ->map('function() { emit(this.user.$id, 1); }')
             ->reduce("function(k, vals) {
                 var sum = 0;
