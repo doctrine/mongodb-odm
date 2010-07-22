@@ -139,20 +139,6 @@ final class EmbedOne extends Field
     public $discriminatorField;
     public $discriminatorMap;
 }
-final class Embed extends Field
-{
-    public $embedded = true;
-    public $targetDocument;
-    public $discriminatorField;
-    public $discriminatorMap;
-}
-final class Embedded extends Field
-{
-    public $embedded = true;
-    public $targetDocument;
-    public $discriminatorField;
-    public $discriminatorMap;
-}
 final class EmbedMany extends Field
 {
     public $type = 'many';
@@ -160,14 +146,6 @@ final class EmbedMany extends Field
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
-}
-final class Reference extends Field
-{
-    public $reference = true;
-    public $targetDocument;
-    public $discriminatorField;
-    public $discriminatorMap;
-    public $cascade;
 }
 final class ReferenceOne extends Field
 {

@@ -556,7 +556,7 @@ class PreUpdateTestProduct
     /** @String */
     public $name;
 
-    /** @Embedded(targetDocument="PreUpdateTestSellable") */
+    /** @EmbedOne(targetDocument="PreUpdateTestSellable") */
     public $sellable;
 
     public function getName()
@@ -575,10 +575,10 @@ class PreUpdateTestProduct
  */
 class PreUpdateTestSellable
 {
-    /** @Reference(targetDocument="PreUpdateTestProduct") */
+    /** @ReferenceOne(targetDocument="PreUpdateTestProduct") */
     public $product;
 
-    /** @Reference(targetDocument="PreUpdateTestSeller") */
+    /** @ReferenceOne(targetDocument="PreUpdateTestSeller") */
     public $seller;
 
     public function getProduct()
@@ -630,7 +630,7 @@ class FavoritesUser
     private $name;
 
     /**
-     * @Reference(
+     * @ReferenceMany(
      *   discriminatorField="type",
      *   discriminatorMap={
      *     "group"="Documents\Group",
@@ -640,13 +640,13 @@ class FavoritesUser
      */
     private $favorites = array();
 
-    /** @Embedded */
+    /** @EmbedMany */
     private $embedded = array();
 
-    /** @Reference */
+    /** @ReferenceOne */
     private $favorite;
 
-    /** @Embedded */
+    /** @EmbedOne */
     private $embed;
 
     public function setFavorite($favorite)
@@ -705,6 +705,7 @@ class NotSaved
 {
     /** @Id */
     public $id;
+
     /** @String */
     public $name;
 
@@ -715,16 +716,16 @@ class NotSaved
 /** @Document(collection="functional_tests") */
 class SimpleEmbedAndReference
 {
-    /** @Embed(targetDocument="Reference") */
+    /** @EmbedMany(targetDocument="Reference") */
     public $embedMany = array();
 
-    /** @Reference(targetDocument="Embedded") */
+    /** @ReferenceMany(targetDocument="Embedded") */
     public $referenceMany = array();
 
-    /** @Embed(targetDocument="Reference") */
+    /** @EmbedOne(targetDocument="Reference") */
     public $embedOne;
 
-    /** @Reference(targetDocument="Embedded") */
+    /** @ReferenceOne(targetDocument="Embedded") */
     public $referenceOne;
 }
 

@@ -155,25 +155,6 @@ class AnnotationDriver implements Driver
                     $class->mapField($mapping);
                 }
             }
-
-            $types = array('Embedded', 'Embed', 'Reference');
-            foreach ($types as $type) {
-                if ($fieldAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\\' . $type)) {
-                    // This is a blatant hack to see if the defined default
-                    // value is an array so we can make the embed/reference many
-                    // instead of one. This won't be necessary once the ReflectionProperty
-                    // class has a getDefaultValue() method: http://bugs.php.net/bug.php?id=41670
-                    $property->setAccessible(true);
-                    $default = $property->getValue(new $class->name);
-                    $mapping = array_merge($mapping, (array) $fieldAnnot);
-                    if (is_array($default)) {
-                        $mapping['type'] = 'many';
-                    } else {
-                        $mapping['type'] = 'one';
-                    }
-                    $class->mapField($mapping);
-                }
-            }
         }
 
         foreach ($methods as $method) {

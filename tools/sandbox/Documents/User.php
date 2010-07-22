@@ -14,13 +14,13 @@ class User
     /** @BinDataMD5 */
     private $password;
 
-    /** @Embed(targetDocument="Address") */
+    /** @EmbedOne(targetDocument="Address") */
     private $address;
 
-    /** @Reference(targetDocument="Account") */
+    /** @ReferenceOne(targetDocument="Account") */
     private $account;
 
-    /** @Embed(targetDocument="Phonenumber") */
+    /** @EmbedOne(targetDocument="Phonenumber") */
     private $phonenumbers = array();
 
     public function getId()
