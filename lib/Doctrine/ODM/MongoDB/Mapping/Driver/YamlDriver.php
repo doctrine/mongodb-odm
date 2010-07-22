@@ -146,7 +146,6 @@ class YamlDriver extends AbstractFileDriver
             'reference'      => true,
             'targetDocument' => $reference['targetDocument'],
             'name'           => $fieldName,
-            'strategy'         => (isset($reference['strategy'])) ? $reference['strategy'] : 'set',
         );
         return $mapping;
     }

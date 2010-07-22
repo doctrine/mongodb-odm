@@ -186,7 +186,6 @@ final class ReferenceMany extends Field
     public $discriminatorField;
     public $discriminatorMap;
     public $cascade;
-    public $strategy = 'set';
 }
 final class NotSaved extends Field {}
 final class AlsoLoad extends Field {

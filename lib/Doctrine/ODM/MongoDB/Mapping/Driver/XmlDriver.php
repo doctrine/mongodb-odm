@@ -163,7 +163,6 @@ class XmlDriver extends AbstractFileDriver
             'reference'      => true,
             'targetDocument' => (string) $attributes['target-document'],
             'name'           => (string) $attributes['field'],
-            'strategy'       => (isset($attributes['strategy'])) ? (string) $attributes['strategy'] : 'set',
         );
         return $mapping;
     }
