@@ -14,7 +14,6 @@ use Documents\User,
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-
     public function tearDown()
     {
         parent::tearDown();
