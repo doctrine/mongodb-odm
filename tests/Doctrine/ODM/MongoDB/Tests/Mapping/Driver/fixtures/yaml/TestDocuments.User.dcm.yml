@@ -29,5 +29,5 @@ TestDocuments\User:
       targetDocument: Documents\Group
       cascade: all
   lifecycleCallbacks:
-    prePersist: doStuffOnPrePersist
+    prePersist: [doStuffOnPrePersist]
     postPersist: [doStuffOnPostPersist, doOtherStuffOnPostPersist]
