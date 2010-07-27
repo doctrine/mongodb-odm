@@ -1113,6 +1113,11 @@ class UnitOfWork
         $visited[$oid] = $document; // Mark visited
 
         $class = $this->_dm->getClassMetadata(get_class($document));
+
+        if ($class->isEmbeddedDocument || $class->isMappedSuperclass) {
+            throw MongoDBException::documentNotMappedToCollection($class->name);
+        }
+
         $documentState = $this->getDocumentState($document, self::STATE_NEW);
         
         switch ($documentState) {

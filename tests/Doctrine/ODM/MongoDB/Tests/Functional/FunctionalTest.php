@@ -185,7 +185,6 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $manager->addProject($project);
 
         $this->dm->persist($employee);
-        $this->dm->persist($address);
         $this->dm->persist($project);
         $this->dm->persist($manager);
         $this->dm->flush();

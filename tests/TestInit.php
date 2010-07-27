@@ -17,3 +17,6 @@ $classLoader->register();
 
 $classLoader = new ClassLoader('Documents', __DIR__);
 $classLoader->register();
+
+$classLoader = new ClassLoader('Stubs', __DIR__);
+$classLoader->register();
