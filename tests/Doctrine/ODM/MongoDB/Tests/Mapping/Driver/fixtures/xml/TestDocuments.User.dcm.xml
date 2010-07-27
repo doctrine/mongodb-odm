@@ -27,5 +27,10 @@
                 <all />
             </cascade>
         </reference-one>
+        <lifecycle-callbacks>
+          <lifecycle-callback method="doStuffOnPrePersist" type="prePersist" />
+          <lifecycle-callback method="doStuffOnPostPersist" type="postPersist" />
+          <lifecycle-callback method="doOtherStuffOnPostPersist" type="postPersist" />
+        </lifecycle-callbacks>
     </document>
 </doctrine-mongo-mapping>

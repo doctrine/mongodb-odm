@@ -129,6 +129,12 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRemove'  => true,
             'nullable'         => false
         ), $classMetadata->fieldMappings['groups']);
-    }
 
+        $this->assertEquals(array(
+            'postPersist' => array('doStuffOnPostPersist', 'doOtherStuffOnPostPersist'),
+            'prePersist' => array('doStuffOnPrePersist')
+          ),
+          $classMetadata->lifecycleCallbacks
+        );
+    }
 }

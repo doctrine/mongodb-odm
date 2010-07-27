@@ -28,3 +28,6 @@ TestDocuments\User:
     groups:
       targetDocument: Documents\Group
       cascade: all
+  lifecycleCallbacks:
+    prePersist: doStuffOnPrePersist
+    postPersist: [doStuffOnPostPersist, doOtherStuffOnPostPersist]
