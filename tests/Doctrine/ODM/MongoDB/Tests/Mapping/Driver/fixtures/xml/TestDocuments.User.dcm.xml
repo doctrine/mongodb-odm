@@ -17,6 +17,7 @@
             </cascade>
         </reference-one>
         <embed-many target-document="Documents\Phonenumber" field="phonenumbers" />
+        <embed-one target-document="TestDocument\EmbeddedDocument" field="test" />
         <reference-many target-document="Documents\Group" field="groups">
             <cascade>
                 <all />

@@ -88,6 +88,11 @@ class YamlDriver extends AbstractFileDriver
         }
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $fieldName => $mapping) {
+                if (is_string($mapping)) {
+                    $type = $mapping;
+                    $mapping = array();
+                    $mapping['type'] = $type;
+                }
                 if ( ! isset($mapping['fieldName'])) {
                     $mapping['fieldName'] = $fieldName;
                 }

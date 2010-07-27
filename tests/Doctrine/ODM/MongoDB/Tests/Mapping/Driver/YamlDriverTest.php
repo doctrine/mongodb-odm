@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver,
 
 require_once __DIR__ . '/../../../../../../TestInit.php';
 require_once 'fixtures/User.php';
+require_once 'fixtures/EmbeddedDocument.php';
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
@@ -136,5 +137,20 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
           ),
           $classMetadata->lifecycleCallbacks
         );
+
+        $classMetadata = new ClassMetadata('TestDocuments\EmbeddedDocument');
+        $xmlDriver->loadMetadataForClass('TestDocuments\EmbeddedDocument', $classMetadata);
+
+        $this->assertEquals(array(
+            'fieldName'        => 'name',
+            'name'             => 'name',
+            'type'             => 'string',
+            'isCascadeDetach'  => false,
+            'isCascadeMerge'   => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove'  => false,
+            'nullable'         => false
+        ), $classMetadata->fieldMappings['name']);
     }
 }

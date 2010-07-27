@@ -1,0 +1,4 @@
+TestDocuments\EmbeddedDocument:
+  type: embeddedDocument
+  fields:
+    name: string

@@ -14,6 +14,8 @@ TestDocuments\User:
   embedOne:
     address:
       targetDocument: Documents\Address
+    test:
+      targetDocument: TestDocuments\EmbeddedDocument
   embedMany:
     phonenumbers:
       targetDocument: Documents\Phonenumber
