@@ -12,19 +12,34 @@ use Documents\User,
     Documents\Group,
     Documents\Project;
 
+use Documents\Functional\AlsoLoad,
+    Documents\Functional\EmbeddedTestLevel0,
+    Documents\Functional\EmbeddedTestLevel1,
+    Documents\Functional\EmbeddedTestLevel2,
+    Documents\Functional\FavoritesUser,
+    Documents\Functional\NotAnnotatedDocument,
+    Documents\Functional\NotSaved,
+    Documents\Functional\NullFieldValues,
+    Documents\Functional\PreUpdateTestProduct,
+    Documents\Functional\PreUpdateTestSellable,
+    Documents\Functional\PreUpdateTestSeller,
+    Documents\Functional\SameCollection1,
+    Documents\Functional\SameCollection2,
+    Documents\Functional\SimpleEmbedAndReference;
+
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function tearDown()
     {
         parent::tearDown();
         $documents = array(
-            'Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad',
-            'Doctrine\ODM\MongoDB\Tests\Functional\NotAnnotatedDocument',
-            'Doctrine\ODM\MongoDB\Tests\Functional\NotSaved',
-            'Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues',
-            'Doctrine\ODM\MongoDB\Tests\Functional\SimpleEmbedAndReference',
-            'Doctrine\ODM\MongoDB\Tests\Functional\FavoritesUser',
-            'Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTestLevel0'
+            'Documents\Functional\AlsoLoad',
+            'Documents\Functional\NotAnnotatedDocument',
+            'Documents\Functional\NotSaved',
+            'Documents\Functional\NullFieldValues',
+            'Documents\Functional\SimpleEmbedAndReference',
+            'Documents\Functional\FavoritesUser',
+            'Documents\Functional\EmbeddedTestLevel0'
         );
         foreach ($documents as $document) {
             $this->dm->getDocumentCollection($document)->drop();
@@ -214,7 +229,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testNotAnnotatedDocument()
     {
-        $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\NotAnnotatedDocument')->drop();
+        $this->dm->getDocumentCollection('Documents\Functional\NotAnnotatedDocument')->drop();
 
         $test = new NotAnnotatedDocument();
         $test->field = 'test';
@@ -223,7 +238,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush($test);
         $this->dm->clear();
 
-        $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NotAnnotatedDocument')
+        $test = $this->dm->find('Documents\Functional\NotAnnotatedDocument')
             ->getSingleResult();
         $this->assertNotNull($test);
         $this->assertFalse(isset($test->transientField));
@@ -231,34 +246,34 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testNullFieldValuesAllowed()
     {
-        $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues')->drop();
+        $this->dm->getDocumentCollection('Documents\Functional\NullFieldValues')->drop();
 
         $test = new NullFieldValues();
         $test->field = null;
         $this->dm->persist($test);
         $this->dm->flush();
 
-        $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues')
+        $test = $this->dm->find('Documents\Functional\NullFieldValues')
             ->hydrate(false)
             ->getResults();
         $document = current($test);
         $this->assertNotNull($test);
         $this->assertNull($document['field']);
 
-        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues')
+        $document = $this->dm->find('Documents\Functional\NullFieldValues')
             ->getSingleResult();
         $document->field = 'test';
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues')
+        $document = $this->dm->find('Documents\Functional\NullFieldValues')
             ->getSingleResult();
         $this->assertEquals('test', $document->field);
         $document->field = null;
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues')
+        $test = $this->dm->find('Documents\Functional\NullFieldValues')
             ->hydrate(false)
             ->getSingleResult();
         $this->assertNull($test['field']);
@@ -267,39 +282,39 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testAlsoLoadOnProperty()
     {
-        $collection = $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad');
+        $collection = $this->dm->getDocumentCollection('Documents\Functional\AlsoLoad');
         $collection->drop();
         $collection->insert(array(
             'bar' => 'w00t'
         ));
-        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('bar' => 'w00t'))
+        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('bar' => 'w00t'))
             ->getSingleResult();
         $this->assertEquals('w00t', $document->foo);
 
         $collection->insert(array(
             'foo' => 'cool'
         ));
-        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('bar' => 'w00t'))
+        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('bar' => 'w00t'))
             ->getSingleResult();
         $this->assertNotNull($document->foo);
 
         $collection->insert(array(
             'zip' => 'test'
         ));
-        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('bar' => 'w00t'))
+        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('bar' => 'w00t'))
             ->getSingleResult();
         $this->assertNotNull($document->foo);
     }
 
     public function testAlsoLoadOnMethod()
     {
-        $collection = $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad');
+        $collection = $this->dm->getDocumentCollection('Documents\Functional\AlsoLoad');
         $collection->drop();
         $collection->insert(array(
             'name' => 'Jonathan Wage',
             'test1' => 'test1'
         ));
-        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('name' => 'Jonathan Wage'))
+        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('name' => 'Jonathan Wage'))
             ->getSingleResult();
         $this->assertEquals('Jonathan', $document->firstName);
         $this->assertEquals('Wage', $document->lastName);
@@ -309,7 +324,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fullName' => 'Jonathan Wage',
             'test2' => 'test2'
         ));
-        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('fullName' => 'Jonathan Wage'))
+        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('fullName' => 'Jonathan Wage'))
             ->getSingleResult();
         $this->assertEquals('Jonathan', $document->firstName);
         $this->assertEquals('Wage', $document->lastName);
@@ -318,14 +333,14 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection->insert(array(
             'test' => 'test'
         ));
-        $document = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\AlsoLoad', array('test' => 'test'))
+        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('test' => 'test'))
             ->getSingleResult();
         $this->assertEquals('test', $document->test);
     }
 
     public function testSimplerEmbedAndReference()
     {
-        $class = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\Functional\SimpleEmbedAndReference');
+        $class = $this->dm->getClassMetadata('Documents\Functional\SimpleEmbedAndReference');
         $this->assertEquals('many', $class->fieldMappings['embedMany']['type']);
         $this->assertEquals('one', $class->fieldMappings['embedOne']['type']);
         $this->assertEquals('many', $class->fieldMappings['referenceMany']['type']);
@@ -334,13 +349,13 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testNotSavedFields()
     {
-        $collection = $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\NotSaved');
+        $collection = $this->dm->getDocumentCollection('Documents\Functional\NotSaved');
         $collection->drop();
         $collection->insert(array(
             'name' => 'Jonathan Wage',
             'notSaved' => 'test'
         ));
-        $notSaved = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\NotSaved');
+        $notSaved = $this->dm->findOne('Documents\Functional\NotSaved');
         $this->assertEquals('Jonathan Wage', $notSaved->name);
         $this->assertEquals('test', $notSaved->notSaved);
 
@@ -388,14 +403,14 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getDocumentCollection('Doctrine\ODM\MongoDB\Tests\Functional\FavoritesUser')->findOne(array('name' => 'favorites'));
+        $test = $this->dm->getDocumentCollection('Documents\Functional\FavoritesUser')->findOne(array('name' => 'favorites'));
         $this->assertTrue(isset($test['favorites'][0]['type']));
         $this->assertEquals('project', $test['favorites'][0]['type']);
         $this->assertEquals('group', $test['favorites'][1]['type']);
         $this->assertTrue(isset($test['favorite']['_doctrine_class_name']));
         $this->assertEquals('Documents\Project', $test['favorite']['_doctrine_class_name']);
 
-        $user = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\FavoritesUser', array('name' => 'favorites'));
+        $user = $this->dm->findOne('Documents\Functional\FavoritesUser', array('name' => 'favorites'));
         $favorites = $user->getFavorites();
         $this->assertInstanceOf('Documents\Project', $favorites[0]);
         $this->assertInstanceOf('Documents\Group', $favorites[1]);
@@ -429,9 +444,9 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $product = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\PreUpdateTestProduct', array('name' => 'Product'));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\PreUpdateTestProduct', $product->sellable->getProduct());
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\PreUpdateTestSeller', $product->sellable->getSeller());
+        $product = $this->dm->findOne('Documents\Functional\PreUpdateTestProduct', array('name' => 'Product'));
+        $this->assertInstanceOf('Documents\Functional\PreUpdateTestProduct', $product->sellable->getProduct());
+        $this->assertInstanceOf('Documents\Functional\PreUpdateTestSeller', $product->sellable->getSeller());
 
         $product = new PreUpdateTestProduct();
         $product->name = 'Product2';
@@ -441,57 +456,57 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $sellable = new PreUpdateTestSellable();
         $sellable->product = $product;
-        $sellable->seller = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\PreUpdateTestSeller', array('name' => 'Jon'));
+        $sellable->seller = $this->dm->findOne('Documents\Functional\PreUpdateTestSeller', array('name' => 'Jon'));
 
         $product->sellable = $sellable;
 
         $this->dm->flush();
         $this->dm->clear();
 
-        $product = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\PreUpdateTestProduct', array('name' => 'Product2'));
+        $product = $this->dm->findOne('Documents\Functional\PreUpdateTestProduct', array('name' => 'Product2'));
         $this->assertEquals('Jon', $product->sellable->getSeller()->getName());
         $this->assertEquals('Product2', $product->sellable->getProduct()->getName());
     }
 
     public function testSameCollectionTest()
     {
-        $test1 = new SameCollectionTest1();
+        $test1 = new SameCollection1();
         $test1->name = 'test1';
         $this->dm->persist($test1);
 
-        $test2 = new SameCollectionTest2();
+        $test2 = new SameCollection2();
         $test2->name = 'test2';
         $this->dm->persist($test2);
         $this->dm->flush();
 
-        $test = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1', array('name' => 'test1'));
+        $test = $this->dm->findOne('Documents\Functional\SameCollection1', array('name' => 'test1'));
         $this->assertNotNull($test);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1', $test);
+        $this->assertInstanceOf('Documents\Functional\SameCollection1', $test);
 
-        $test = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2', array('name' => 'test2'));
+        $test = $this->dm->findOne('Documents\Functional\SameCollection2', array('name' => 'test2'));
         $this->assertNotNull($test);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2', $test);
+        $this->assertInstanceOf('Documents\Functional\SameCollection2', $test);
 
-        $test = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2', array('name' => 'test1'));
+        $test = $this->dm->findOne('Documents\Functional\SameCollection2', array('name' => 'test1'));
         $this->assertNull($test);
 
         $test = $this->dm->find(array(
-            'Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1',
-            'Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2')
+            'Documents\Functional\SameCollection1',
+            'Documents\Functional\SameCollection2')
         )->getResults();
         $this->assertEquals(2, count($test));
 
         $q = $this->dm->createQuery(array(
-            'Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1',
-            'Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2')
+            'Documents\Functional\SameCollection1',
+            'Documents\Functional\SameCollection2')
         );
         $test = $q->execute();
         $this->assertEquals(2, count($test));
 
-        $test = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1')->getResults();
+        $test = $this->dm->find('Documents\Functional\SameCollection1')->getResults();
         $this->assertEquals(1, count($test));
 
-        $test = $this->dm->createQuery('Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1')->execute();
+        $test = $this->dm->createQuery('Documents\Functional\SameCollection1')->execute();
         $this->assertEquals(1, count($test));
     }
 
@@ -531,325 +546,11 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTestLevel0');
+        $check = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0');
         $this->assertEquals('test', $check->name);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTestLevel1', $test->level1[0]);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTestLevel2', $test->level1[0]->level2[0]);
+        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $test->level1[0]);
+        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $test->level1[0]->level2[0]);
         $this->assertEquals(2, count($test->level1));
         $this->assertEquals(2, count($test->level1[0]->level2));
     }
-}
-
-/** @Document(collection="embedded_test") */
-class EmbeddedTestLevel0
-{
-    /** @Id */
-    public $id;
-    /** @String */
-    public $name;
-    /** @EmbedMany(targetDocument="EmbeddedTestLevel1") */
-    public $level1 = array();
-}
-
-/** @EmbeddedDocument */
-class EmbeddedTestLevel1
-{
-    /** @String */
-    public $name;
-    /** @EmbedMany(targetDocument="EmbeddedTestLevel2") */
-    public $level2 = array();
-}
-
-/** @EmbeddedDocument */
-class EmbeddedTestLevel2
-{
-    /** @String */
-    public $name;
-}
-
-/**
- * @Document(collection="same_collection")
- * @DiscriminatorField(fieldName="type")
- * @DiscriminatorMap({"test1"="Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1", "test2"="Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2"})
- */
-class SameCollectionTest1
-{
-    /** @Id */
-    public $id;
-
-    /** @String */
-    public $name;
-
-    /** @String */
-    public $test;
-}
-
-/**
- * @Document(collection="same_collection")
- * @DiscriminatorField(fieldName="type")
- * @DiscriminatorMap({"test1"="Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest1", "test2"="Doctrine\ODM\MongoDB\Tests\Functional\SameCollectionTest2"})
- */
-class SameCollectionTest2
-{
-    /** @Id */
-    public $id;
-
-    /** @String */
-    public $name;
-
-    /** @String */
-    public $ok;
-
-    /** @String */
-    public $w00t;
-}
-
-/**
- * @Document(collection="pre_update_test_product")
- */
-class PreUpdateTestProduct
-{
-    /** @Id */
-    public $id;
-
-    /** @String */
-    public $name;
-
-    /** @EmbedOne(targetDocument="PreUpdateTestSellable") */
-    public $sellable;
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-}
-
-/**
- * @EmbeddedDocument
- */
-class PreUpdateTestSellable
-{
-    /** @ReferenceOne(targetDocument="PreUpdateTestProduct") */
-    public $product;
-
-    /** @ReferenceOne(targetDocument="PreUpdateTestSeller") */
-    public $seller;
-
-    public function getProduct()
-    {
-        return $this->product;
-    }
-
-    public function getSeller()
-    {
-        return $this->seller;
-    }
-}
-
-/**
- * @Document(collection="pre_update_test_seller")
- * @HasLifecycleCallbacks
- */
-class PreUpdateTestSeller
-{
-    /** @Id */
-    public $id;
-
-    /** @String */
-    public $name;
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /** @PreUpdate */
-    public function preUpdate()
-    {
-    }
-}
-
-/** @Document(collection="favorites_user") */
-class FavoritesUser
-{
-    /** @Id */
-    private $id;
-
-    /** @String */
-    private $name;
-
-    /**
-     * @ReferenceMany(
-     *   discriminatorField="type",
-     *   discriminatorMap={
-     *     "group"="Documents\Group",
-     *     "project"="Documents\Project"
-     *   }
-     * )
-     */
-    private $favorites = array();
-
-    /** @EmbedMany */
-    private $embedded = array();
-
-    /** @ReferenceOne */
-    private $favorite;
-
-    /** @EmbedOne */
-    private $embed;
-
-    public function setFavorite($favorite)
-    {
-        $this->favorite = $favorite;
-    }
-
-    public function getFavorite()
-    {
-        return $this->favorite;
-    }
-
-    public function setEmbed($embed)
-    {
-        $this->embed = $embed;
-    }
-
-    public function getEmbed()
-    {
-        return $this->embed;
-    }
-
-    public function embed($document)
-    {
-        $this->embedded[] = $document;
-    }
-
-    public function getEmbedded()
-    {
-        return $this->embedded;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    public function addFavorite($favorite)
-    {
-        $this->favorites[] = $favorite;
-    }
-
-    public function getFavorites()
-    {
-        return $this->favorites;
-    }
-}
-
-/** @Document(collection="functional_tests") */
-class NotSaved
-{
-    /** @Id */
-    public $id;
-
-    /** @String */
-    public $name;
-
-    /** @NotSaved */
-    public $notSaved;
-}
-
-/** @Document(collection="functional_tests") */
-class SimpleEmbedAndReference
-{
-    /** @EmbedMany(targetDocument="Reference") */
-    public $embedMany = array();
-
-    /** @ReferenceMany(targetDocument="Embedded") */
-    public $referenceMany = array();
-
-    /** @EmbedOne(targetDocument="Reference") */
-    public $embedOne;
-
-    /** @ReferenceOne(targetDocument="Embedded") */
-    public $referenceOne;
-}
-
-/** @Document(collection="functional_tests") */
-class AlsoLoad
-{
-    /**
-     * @AlsoLoad({"bar", "zip"})
-     */
-    public $foo;
-
-    /** @NotSaved */
-    public $bar;
-
-    /** @NotSaved */
-    public $zip;
-
-    /** @NotSaved */
-    public $name;
-
-    /** @NotSaved */
-    public $fullName;
-
-    /** @String */
-    public $firstName;
-
-    /** @String */
-    public $lastName;
-
-    /** @String */
-    public $test;
-
-    /** @String */
-    public $test1;
-
-    /** @String */
-    public $test2;
-
-    /** @AlsoLoad({"name", "fullName"}) */
-    public function populateFirstAndLastName($name)
-    {
-        $e = explode(' ', $name);
-        $this->firstName = $e[0];
-        $this->lastName = $e[1];
-    }
-
-    /** @AlsoLoad({"test1", "test2"}) */
-    public function populateTest($test)
-    {
-        $this->test = $test;
-    }
-}
-
-/** @Document(collection="functional_tests") */
-class NullFieldValues
-{
-    /** @Field(nullable=true) */
-    public $field;
-}
-
-/** @Document(collection="functional_tests") */
-class NotAnnotatedDocument
-{
-    /** @Field */
-    public $field;
-
-    public $transientField;
 }
