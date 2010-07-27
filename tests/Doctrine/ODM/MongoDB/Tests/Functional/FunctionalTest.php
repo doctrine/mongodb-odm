@@ -24,6 +24,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues',
             'Doctrine\ODM\MongoDB\Tests\Functional\SimpleEmbedAndReference',
             'Doctrine\ODM\MongoDB\Tests\Functional\FavoritesUser',
+            'Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTest'
         );
         foreach ($documents as $document) {
             $this->dm->getDocumentCollection($document)->drop();
@@ -504,6 +505,66 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
              'Documents\Profile')
          )->execute();
     }
+
+    public function testEmbedded()
+    {
+        $test = new EmbeddedTest();
+        $test->name = 'test';
+
+        $level1 = new EmbeddedTestLevel1();
+        $level1->name = 'test level1 #1';
+        $test->level1[] = $level1;
+
+        $level2 = new EmbeddedTestLevel2();
+        $level2->name = 'test level2 #1';
+        $level1->level2[] = $level2;
+
+        $level2 = new EmbeddedTestLevel2();
+        $level2->name = 'test level2 #2';
+        $level1->level2[] = $level2;
+
+        $level1 = new EmbeddedTestLevel1();
+        $level1->name = 'test level1 #2';
+        $test->level1[] = $level1;
+
+        $this->dm->persist($test);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $check = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTest');
+        $this->assertEquals('test', $check->name);
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTestLevel1', $test->level1[0]);
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTestLevel2', $test->level1[0]->level2[0]);
+        $this->assertEquals(2, count($test->level1));
+        $this->assertEquals(2, count($test->level1[0]->level2));
+    }
+}
+
+/** @Document(collection="embedded_test") */
+class EmbeddedTest
+{
+    /** @Id */
+    public $id;
+    /** @String */
+    public $name;
+    /** @EmbedMany(targetDocument="EmbeddedTestLevel1") */
+    public $level1 = array();
+}
+
+/** @EmbeddedDocument */
+class EmbeddedTestLevel1
+{
+    /** @String */
+    public $name;
+    /** @EmbedMany(targetDocument="EmbeddedTestLevel2") */
+    public $level2 = array();
+}
+
+/** @EmbeddedDocument */
+class EmbeddedTestLevel2
+{
+    /** @String */
+    public $name;
 }
 
 /**
