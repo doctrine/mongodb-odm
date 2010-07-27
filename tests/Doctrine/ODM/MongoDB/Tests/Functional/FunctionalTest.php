@@ -24,7 +24,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'Doctrine\ODM\MongoDB\Tests\Functional\NullFieldValues',
             'Doctrine\ODM\MongoDB\Tests\Functional\SimpleEmbedAndReference',
             'Doctrine\ODM\MongoDB\Tests\Functional\FavoritesUser',
-            'Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTest'
+            'Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTestLevel0'
         );
         foreach ($documents as $document) {
             $this->dm->getDocumentCollection($document)->drop();
@@ -508,7 +508,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbedded()
     {
-        $test = new EmbeddedTest();
+        $test = new EmbeddedTestLevel0();
         $test->name = 'test';
 
         $level1 = new EmbeddedTestLevel1();
@@ -531,7 +531,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTest');
+        $check = $this->dm->findOne('Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTestLevel0');
         $this->assertEquals('test', $check->name);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTestLevel1', $test->level1[0]);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\EmbeddedTestLevel2', $test->level1[0]->level2[0]);
@@ -541,7 +541,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /** @Document(collection="embedded_test") */
-class EmbeddedTest
+class EmbeddedTestLevel0
 {
     /** @Id */
     public $id;
