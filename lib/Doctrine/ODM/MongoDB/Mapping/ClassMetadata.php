@@ -176,6 +176,13 @@ class ClassMetadata
     public $fieldMappings = array();
 
     /**
+     * READ-ONLY: The registered lifecycle callbacks for documents of this class.
+     *
+     * @var array
+     */
+    public $lifecycleCallbacks = array();
+
+    /**
      * READ-ONLY: The discriminator value of this class.
      *
      * <b>This does only apply to the JOINED and SINGLE_COLLECTION inheritance mapping strategies
@@ -565,6 +572,14 @@ class ClassMetadata
 
         if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
+        }
+
+        if (isset($mapping['discriminatorMap'])) {
+            foreach ($mapping['discriminatorMap'] as $key => $class) {
+                if (strpos($class, '\\') === false && strlen($this->namespace)) {
+                    $mapping['discriminatorMap'][$key] = $this->namespace . '\\' . $class;
+                }
+            }
         }
 
         if ($this->reflClass->hasProperty($mapping['fieldName'])) {

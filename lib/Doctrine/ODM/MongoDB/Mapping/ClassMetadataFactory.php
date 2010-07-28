@@ -192,6 +192,7 @@ class ClassMetadataFactory
                 $this->_addInheritedFields($class, $parent);
                 $class->setIdentifier($parent->identifier);
                 $class->setDiscriminatorMap($parent->discriminatorMap);
+                $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             }
 
             $this->_driver->loadMetadataForClass($className, $class);

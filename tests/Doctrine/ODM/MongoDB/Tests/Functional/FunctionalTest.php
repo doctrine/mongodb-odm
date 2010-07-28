@@ -10,9 +10,11 @@ use Documents\User,
     Documents\Manager,
     Documents\Address,
     Documents\Group,
-    Documents\Project;
-
-use Documents\Functional\AlsoLoad,
+    Documents\Project,
+    Documents\Agent,
+    Documents\Server,
+    Documents\GuestServer,
+    Documents\Functional\AlsoLoad,
     Documents\Functional\EmbeddedTestLevel0,
     Documents\Functional\EmbeddedTestLevel1,
     Documents\Functional\EmbeddedTestLevel2,
@@ -29,21 +31,30 @@ use Documents\Functional\AlsoLoad,
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function tearDown()
+    public function testPersistingNewDocumentWithOnlyOneReference()
     {
-        parent::tearDown();
-        $documents = array(
-            'Documents\Functional\AlsoLoad',
-            'Documents\Functional\NotAnnotatedDocument',
-            'Documents\Functional\NotSaved',
-            'Documents\Functional\NullFieldValues',
-            'Documents\Functional\SimpleEmbedAndReference',
-            'Documents\Functional\FavoritesUser',
-            'Documents\Functional\EmbeddedTestLevel0'
-        );
-        foreach ($documents as $document) {
-            $this->dm->getDocumentCollection($document)->drop();
-        }
+        $server = new \Documents\GuestServer();
+        $server->name = 'test';
+        $this->dm->persist($server);
+        $this->dm->flush();
+        $id = $server->id;
+
+        $this->dm->clear();
+
+        $server = $this->dm->getReference('Documents\GuestServer', $id);
+
+        $agent = new \Documents\Agent();
+        $agent->server = $server;
+        $this->dm->persist($agent);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->getDocumentCollection('Documents\Agent')->findOne();
+
+        $this->assertEquals('servers', $test['server']['$ref']);
+        $this->assertTrue(isset($test['server']['$id']));
+        $this->assertEquals('doctrine_odm_tests', $test['server']['$db']);
+        $this->assertEquals('server_guest', $test['server']['_doctrine_class_name']);
     }
 
     public function testCollection()
