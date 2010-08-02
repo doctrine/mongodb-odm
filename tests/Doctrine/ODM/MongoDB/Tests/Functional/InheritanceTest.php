@@ -68,4 +68,13 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = $this->dm->findOne('Documents\SubProject', array('name' => 'Sub Project'));
         $this->assertInstanceOf('Documents\SubProject', $document);
     }
+
+    public function testPrePersistIsCalledFromMappedSuperClass()
+    {
+        $user = new \Documents\User();
+        $user->setUsername('test');
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->assertTrue($user->persisted);
+    }
 }

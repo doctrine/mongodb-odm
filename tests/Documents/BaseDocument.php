@@ -2,9 +2,14 @@
 
 namespace Documents;
 
-/** @MappedSuperClass */
-class BaseDocument
+/**
+ * @MappedSuperClass
+ * @HasLifecycleCallbacks
+ */
+abstract class BaseDocument
 {
+    public $persisted = false;
+
     /** @String */
     protected $inheritedProperty;
 
@@ -16,5 +21,11 @@ class BaseDocument
     public function getInheritedProperty()
     {
         return $this->inheritedProperty;
+    }
+
+    /** @PrePersist */
+    public function prePersist()
+    {
+        $this->persisted = true;
     }
 }
