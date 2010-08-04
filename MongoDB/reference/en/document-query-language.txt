@@ -33,6 +33,7 @@ For example if you want to get all the distinct ages of the `Documents\User` doc
 
 The above distinct example would be the same as manually running the following code with mongo:
 
+    [php]
     $results = $mongo->dbname->command(array(
         'distinct' => 'users',
         'key' => 'age'
