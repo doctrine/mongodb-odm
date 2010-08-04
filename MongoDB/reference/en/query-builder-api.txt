@@ -97,7 +97,7 @@ method:
 
 In the results only the data from the username and password will be returned.
 
-+++ Distinct Results
++++ Selecting Distinct Values
 
 Sometimes you may want to get an array of distinct values in a collection. You can accomplish
 this using the `distinct()` method:
