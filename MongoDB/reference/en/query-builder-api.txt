@@ -97,6 +97,18 @@ method:
 
 In the results only the data from the username and password will be returned.
 
++++ Distinct Results
+
+Sometimes you may want to get an array of distinct values in a collection. You can accomplish
+this using the `distinct()` method:
+
+    [php]
+    $ages = $dm->createQuery('User')
+        ->distinct('age')
+        ->execute();
+
+The above would give you an array of all the distinct user ages!
+
 +++ Disabling Hydration
 
 For find queries the results by default are hydrated and you get document objects

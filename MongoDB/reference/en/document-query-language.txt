@@ -22,6 +22,23 @@ You can select only certain fields:
     [php]
     $query = $dm->query('find username, password Documents\User');
 
++++ Selecting Distinct Values
+
+If you want to select just the distinct values of a field you can use the `distinct` keyword.
+For example if you want to get all the distinct ages of the `Documents\User` document:
+
+    [php]
+    $ages = $dm->query('find distinct age Documents\User')
+        ->execute();
+
+The above distinct example would be the same as manually running the following code with mongo:
+
+    $results = $mongo->dbname->command(array(
+        'distinct' => 'users',
+        'key' => 'age'
+    ));
+    $ages = $results['values'];
+
 ++++ Slice
 
 If you want to use the `$slice` operator for only selecting a subset of elements in an array:
