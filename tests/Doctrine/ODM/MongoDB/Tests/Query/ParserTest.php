@@ -15,6 +15,20 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->parser = new Parser($this->dm);
     }
 
+    public function testDistinct()
+    {
+        $query = $this->parser->parse('find distinct count Documents\User');
+        $this->assertEquals('count', $query->debug('distinctField'));
+    }
+
+    /**
+     * @expectedException Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function testMultipleDistinctThrowsException()
+    {
+        $query = $this->parser->parse('find distinct count, distinct test Documents\User');
+    }
+
     public function testSelectSlice()
     {
         $query = $this->parser->parse('find username, profile.firstName, comments limit 20 skip 10 Documents\User');

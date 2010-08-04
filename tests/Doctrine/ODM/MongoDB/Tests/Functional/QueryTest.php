@@ -54,6 +54,10 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')->equals('distinct_test')
             ->execute();
         $this->assertEquals(array(1, 2, 3), $results);
+
+        $results = $this->dm->query('find distinct count from Documents\User WHERE username = ?', array('distinct_test'))
+            ->execute();
+        $this->assertEquals(array(1, 2, 3), $results);
     }
 
     public function testFindQuery()

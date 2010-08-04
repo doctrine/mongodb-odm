@@ -189,6 +189,10 @@ class Parser
             }
         }
 
+        if ($this->_lexer->isNextToken(Lexer::T_FROM)) {
+            $this->match(Lexer::T_FROM);
+        }
+
         $this->match(Lexer::T_IDENTIFIER);
         $query->find($this->_lexer->token['value']);
     }
@@ -198,7 +202,17 @@ class Parser
      */
     public function SelectField(Query $query)
     {
-        $fieldName = $this->DocumentFieldName();
+        if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
+            $this->match(Lexer::T_DISTINCT);
+            $fieldName = $this->DocumentFieldName();
+            $query->distinct($fieldName);
+            if ( ! $this->_lexer->isNextToken(Lexer::T_IDENTIFIER) && ! $this->_lexer->isNextToken(Lexer::T_FROM)) {
+                $this->syntaxError($this->_lexer->getLiteral(Lexer::T_IDENTIFIER));
+            }
+            return;
+        } else {
+            $fieldName = $this->DocumentFieldName();
+        }
 
         $limit = null;
         $skip = null;

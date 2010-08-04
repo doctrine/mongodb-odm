@@ -37,7 +37,6 @@ class Query
     const TYPE_UPDATE   = 3;
     const TYPE_REMOVE   = 4;
     const TYPE_GROUP    = 5;
-    const TYPE_DISTINCT = 6;
 
     /** The DocumentManager instance for this query */
     private $_dm;
@@ -317,7 +316,6 @@ class Query
     public function distinct($field)
     {
         $this->_distinctField = $field;
-        $this->_type = self::TYPE_DISTINCT;
         return $this;
     }
 
@@ -934,6 +932,15 @@ class Query
     {
         switch ($this->_type) {
             case self::TYPE_FIND;
+                if ($this->_distinctField !== null) {
+                    $result = $this->_dm->getDocumentDB($this->_className)
+                        ->command(array(
+                            'distinct' => $this->_dm->getDocumentCollection($this->_className)->getName(),
+                            'key' => $this->_distinctField,
+                            'query' => $this->_where
+                        ));
+                    return $result['values'];
+                }
                 return $this->getCursor()->getResults();
                 break;
 
@@ -958,16 +965,6 @@ class Query
                         $this->_group['keys'], $this->_group['initial'],
                         $this->_mapReduce['reduce'], $this->_where
                     );
-                break;
-
-            case self::TYPE_DISTINCT;
-                $result = $this->_dm->getDocumentDB($this->_className)
-                    ->command(array(
-                        'distinct' => $this->_dm->getDocumentCollection($this->_className)->getName(),
-                        'key' => $this->_distinctField,
-                        'query' => $this->_where
-                    ));
-                return $result['values'];
                 break;
         }
     }
@@ -1063,7 +1060,8 @@ class Query
             'snapshot' => $this->_snapshot,
             'slaveOkay' => $this->_slaveOkay,
             'hydrate' => $this->_hydrate,
-            'mapReduce' => $this->_mapReduce
+            'mapReduce' => $this->_mapReduce,
+            'distinctField' => $this->_distinctField,
         );
         if ($name !== null) {
             return $debug[$name];
