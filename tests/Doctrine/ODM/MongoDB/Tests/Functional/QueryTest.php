@@ -26,6 +26,36 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
     }
 
+    public function testDistinct()
+    {
+        $user = new User();
+        $user->setUsername('distinct_test');
+        $user->setCount(1);
+        $this->dm->persist($user);
+
+        $user = new User();
+        $user->setUsername('distinct_test');
+        $user->setCount(1);
+        $this->dm->persist($user);
+
+        $user = new User();
+        $user->setUsername('distinct_test');
+        $user->setCount(2);
+        $this->dm->persist($user);
+
+        $user = new User();
+        $user->setUsername('distinct_test');
+        $user->setCount(3);
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $results = $this->dm->createQuery('Documents\User')
+            ->distinct('count')
+            ->field('username')->equals('distinct_test')
+            ->execute();
+        $this->assertEquals(array(1, 2, 3), $results);
+    }
+
     public function testFindQuery()
     {
         $query = $this->dm->createQuery('Documents\User')

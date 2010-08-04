@@ -32,11 +32,12 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  */
 class Query
 {
-    const TYPE_FIND   = 1;
-    const TYPE_INSERT = 2;
-    const TYPE_UPDATE = 3;
-    const TYPE_REMOVE = 4;
-    const TYPE_GROUP  = 5;
+    const TYPE_FIND     = 1;
+    const TYPE_INSERT   = 2;
+    const TYPE_UPDATE   = 3;
+    const TYPE_REMOVE   = 4;
+    const TYPE_GROUP    = 5;
+    const TYPE_DISTINCT = 6;
 
     /** The DocumentManager instance for this query */
     private $_dm;
@@ -85,6 +86,9 @@ class Query
 
     /** Map reduce information */
     private $_mapReduce = array();
+
+    /** Field to select distinct values of */
+    private $_distinctField;
 
     /** The type of query */
     private $_type = self::TYPE_FIND;
@@ -300,6 +304,20 @@ class Query
             'initial' => $initial
         );
         $this->_type = self::TYPE_GROUP;
+        return $this;
+    }
+
+    /**
+     * The distinct method queries for a list of distinct values for the given
+     * field for the document being queried for.
+     *
+     * @param string $field
+     * @return Query
+     */
+    public function distinct($field)
+    {
+        $this->_distinctField = $field;
+        $this->_type = self::TYPE_DISTINCT;
         return $this;
     }
 
@@ -940,6 +958,16 @@ class Query
                         $this->_group['keys'], $this->_group['initial'],
                         $this->_mapReduce['reduce'], $this->_where
                     );
+                break;
+
+            case self::TYPE_DISTINCT;
+                $result = $this->_dm->getDocumentDB($this->_className)
+                    ->command(array(
+                        'distinct' => $this->_dm->getDocumentCollection($this->_className)->getName(),
+                        'key' => $this->_distinctField,
+                        'query' => $this->_where
+                    ));
+                return $result['values'];
                 break;
         }
     }
