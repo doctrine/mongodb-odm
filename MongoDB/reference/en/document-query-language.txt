@@ -39,7 +39,7 @@ The above distinct example would be the same as manually running the following c
     ));
     $ages = $results['values'];
 
-++++ Slice
+++++ Selecting a Slice
 
 If you want to use the `$slice` operator for only selecting a subset of elements in an array:
 
