@@ -144,7 +144,7 @@ class XmlDriver extends AbstractFileDriver
         $mapping = array(
             'type'           => $type,
             'embedded'       => true,
-            'targetDocument' => (string) $attributes['target-document'],
+            'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
         );
         return $mapping;
@@ -161,7 +161,7 @@ class XmlDriver extends AbstractFileDriver
             'cascade'        => $cascade,
             'type'           => $type,
             'reference'      => true,
-            'targetDocument' => (string) $attributes['target-document'],
+            'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
         );
         return $mapping;

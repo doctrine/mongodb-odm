@@ -138,7 +138,7 @@ class YamlDriver extends AbstractFileDriver
             'name'           => $fieldName,
             'embedded'       => true,
             'type'           => $type,
-            'targetDocument' => $embed['targetDocument'],
+            'targetDocument' => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
         );
         return $mapping;
     }
@@ -149,7 +149,7 @@ class YamlDriver extends AbstractFileDriver
             'cascade'        => isset($reference['cascade']) ? $reference['cascade'] : null,
             'type'           => $type,
             'reference'      => true,
-            'targetDocument' => $reference['targetDocument'],
+            'targetDocument' => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'name'           => $fieldName,
         );
         return $mapping;
