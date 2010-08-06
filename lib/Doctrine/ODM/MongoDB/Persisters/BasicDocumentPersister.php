@@ -607,7 +607,9 @@ class BasicDocumentPersister
             $changeset[$mapping['fieldName']] = $value;
         }
         if ( ! isset($embeddedMapping['targetDocument'])) {
-            $changeset['_doctrine_class_name'] = $class->getName();
+            $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_name';
+            $discriminatorValue = isset($embeddedMapping['discriminatorMap']) ? array_search($class->getName(), $embeddedMapping['discriminatorMap']) : $class->getName();
+            $changeset[$discriminatorField] = $discriminatorValue;
         }
         return $changeset;
     }
