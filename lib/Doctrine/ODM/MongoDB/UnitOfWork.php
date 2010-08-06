@@ -1274,9 +1274,8 @@ class UnitOfWork
                             if ($other !== null) {
                                 $targetClass = $this->_dm->getClassMetadata($mapping2['targetDocument']);
                                 $id = $targetClass->getIdentifierValue($other);
-                                $proxy = $this->_dm->getProxyFactory()->getProxy($mapping2['targetDocument'], $id);
-                                $prop->setValue($managedCopy, $proxy);
-                                $this->registerManaged($proxy, $id, array());
+                                $reference = $this->_dm->getReference($mapping2['targetDocument'], $id);
+                                $prop->setValue($managedCopy, $reference);
                             }
                         }
                     } else {
@@ -1688,17 +1687,14 @@ class UnitOfWork
             } else {
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
             }
+            if ($overrideLocalValues) {
+                $this->_hydrator->hydrate($document, $data);
+                $this->_originalDocumentData[$oid] = $data;
+            }
         } else {
             $document = $class->newInstance();
-            $oid = spl_object_hash($document);
-            $this->_documentIdentifiers[$oid] = $id;
-            $this->_documentStates[$oid] = self::STATE_MANAGED;
-            $this->_originalDocumentData[$oid] = $data;
-            $this->_identityMap[$class->rootDocumentName][$id] = $document;
-            $overrideLocalValues = true;
-        }
-        if ($overrideLocalValues) {
             $this->_hydrator->hydrate($document, $data);
+            $this->registerManaged($document, $id, $data);
         }
         if (isset($class->lifecycleCallbacks[ODMEvents::postLoad])) {
             $class->invokeLifecycleCallbacks(ODMEvents::postLoad, $document);

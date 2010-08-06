@@ -107,7 +107,6 @@ final class PersistentCollection implements Collection
                 $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
                 foreach ($data as $id => $documentData) {
                     $document = $this->_dm->getUnitOfWork()->getOrCreateDocument($this->_typeClass->name, $documentData, $hints);
-                    $this->_dm->getUnitOfWork()->registerManaged($document, $this->_typeClass->getPHPIdentifierValue($documentData['_id']), $documentData);
                     if ($document instanceof Proxy) {
                         $document->__isInitialized__ = true;
                         unset($document->__dm);

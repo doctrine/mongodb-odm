@@ -101,9 +101,7 @@ class MongoCursor implements \Iterator, \Countable
             $current = $this->_mongoCursor->current();
         }
         if ($this->_hydrate) {
-            $document = $this->_uow->getOrCreateDocument($this->_class->name, $current);
-            $this->_uow->registerManaged($document, $this->_class->getPHPIdentifierValue($current['_id']), $current);
-            return $document;
+            return $this->_uow->getOrCreateDocument($this->_class->name, $current);
         } else {
             return $current;
         }

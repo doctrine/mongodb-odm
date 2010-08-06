@@ -457,7 +457,6 @@ class DocumentManager
         if ($data !== null) {
             $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
             $document = $this->_unitOfWork->getOrCreateDocument($documentName, $data, $hints);
-            $this->getUnitOfWork()->registerManaged($document, $id, $data);
             return $document;
         }
         return false;
