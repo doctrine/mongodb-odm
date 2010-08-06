@@ -385,6 +385,12 @@ class UnitOfWork
                 $actualData[$name] = $coll;
             }
         }
+        if ($class->isCollectionValuedEmbed($name) && $actualData[$name] !== null
+                && ! ($actualData[$name] instanceof Collection)) {
+            $coll = new ArrayCollection($actualData[$name]);
+            $class->reflFields[$name]->setValue($document, $coll);
+            $actualData[$name] = $coll;
+        }
 
         if ( ! isset($this->_originalDocumentData[$oid])) {
             // Document is either NEW or MANAGED but not yet fully persisted (only has an id).
