@@ -714,6 +714,32 @@ class ClassMetadata
                 $this->fieldMappings[$fieldName]['type'] === 'many';
     }
 
+    /**
+     * Checks whether the class has a mapped embedded document for the specified field
+     * and if yes, checks whether it is a single-valued association (to-one).
+     *
+     * @param string $fieldName
+     * @return boolean TRUE if the association exists and is single-valued, FALSE otherwise.
+     */
+    public function isSingleValuedEmbed($fieldName)
+    {
+        return isset($this->fieldMappings[$fieldName]['embedded']) &&
+                $this->fieldMappings[$fieldName]['type'] === 'one';
+    }
+
+    /**
+     * Checks whether the class has a mapped embedded document for the specified field
+     * and if yes, checks whether it is a collection-valued association (to-many).
+     *
+     * @param string $fieldName
+     * @return boolean TRUE if the association exists and is collection-valued, FALSE otherwise.
+     */
+    public function isCollectionValuedEmbed($fieldName)
+    {
+        return isset($this->fieldMappings[$fieldName]['embedded']) &&
+                $this->fieldMappings[$fieldName]['type'] === 'many';
+    }
+
     public function getPHPIdentifierValue($id)
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
