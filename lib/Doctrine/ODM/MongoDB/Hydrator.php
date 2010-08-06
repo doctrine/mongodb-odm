@@ -21,8 +21,9 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Query,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
+    Doctrine\ODM\MongoDB\Collection\PersistentReferenceCollection,
+    Doctrine\ODM\MongoDB\Collection\PersistentEmbeddedCollection,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection;
 
@@ -159,7 +160,7 @@ class Hydrator
 
     private function _hydrateManyReference(array $mapping, array $references)
     {
-        $documents = new PersistentCollection($this->_dm, new ArrayCollection());
+        $documents = new PersistentReferenceCollection($this->_dm, new ArrayCollection());
         $documents->setInitialized(false);
         foreach ($references as $reference) {
             $document = $this->_hydrateOneReference($mapping, $reference);
@@ -192,7 +193,7 @@ class Hydrator
             $document = $this->_hydrateOneEmbedded($mapping, $embeddedDocument);
             $documents->add($document);
         }
-        return $documents;
+        return new PersistentEmbeddedCollection($this->_dm, $documents);
     }
 
     private function _hydrateField(array $mapping, $value)

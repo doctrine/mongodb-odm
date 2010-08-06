@@ -10,10 +10,39 @@ use Documents\Address,
     Documents\Account,
     Documents\Group,
     Documents\User,
-    Doctrine\ODM\MongoDB\PersistentCollection;
+    Documents\Functional\EmbeddedTestLevel0,
+    Documents\Functional\EmbeddedTestLevel1,
+    Doctrine\ODM\MongoDB\Collection\PersistentReferenceCollection;
 
 class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function testFlushEmbedded()
+    {
+        $test = new EmbeddedTestLevel0();
+        $test->name = 'test';
+
+        $this->dm->persist($test);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0', array('name' => 'test'));
+        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
+
+        // Adding this flush here makes level1 not to be inserted.
+        $this->dm->flush();
+
+        $level1 = new EmbeddedTestLevel1();
+        $level1->name = 'test level1 #1';
+        $test->level1[] = $level1;
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0');
+        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
+        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $test->level1[0]);
+    }
+
     public function testOneEmbedded()
     {
         $address = new Address();
@@ -55,6 +84,6 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->id()->equals($user->getId())
             ->getSingleResult();
 
-        $this->assertEquals($user->getPhonenumbers(), $user2->getPhonenumbers());
+        $this->assertEquals($user->getPhonenumbers(), $user2->getPhonenumbers()->unwrap());
     }
 }

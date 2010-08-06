@@ -10,7 +10,7 @@ use Documents\Address,
     Documents\Account,
     Documents\Group,
     Documents\User,
-    Doctrine\ODM\MongoDB\PersistentCollection;
+    Doctrine\ODM\MongoDB\Collection\PersistentReferenceCollection;
 
 class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -82,7 +82,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('id')->equals($user->getId())
             ->getSingleResult();
 
-        $this->assertEquals($user->getPhonenumbers(), $user2->getPhonenumbers());
+        $this->assertEquals($user->getPhonenumbers(), $user2->getPhonenumbers()->unwrap());
     }
 
     public function testOneReference()
@@ -119,7 +119,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $groups = $user->getGroups();
 
-        $this->assertTrue($groups instanceof PersistentCollection);
+        $this->assertTrue($groups instanceof PersistentReferenceCollection);
         $this->assertTrue($groups[0]->getId() !== '');
         $this->assertTrue($groups[1]->getId() !== '');
 
@@ -130,7 +130,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $groups = $user2->getGroups();
 
-        $this->assertTrue($groups instanceof PersistentCollection);
+        $this->assertTrue($groups instanceof PersistentReferenceCollection);
         $this->assertTrue($groups[0] instanceof Group);
         $this->assertTrue($groups[1] instanceof Group);
 

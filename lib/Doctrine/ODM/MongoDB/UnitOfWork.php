@@ -25,6 +25,9 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\ODM\MongoDB\Event\LifecycleEventArgs,
+    Doctrine\ODM\MongoDB\Collection\AbstractPersistentCollection,
+    Doctrine\ODM\MongoDB\Collection\PersistentReferenceCollection,
+    Doctrine\ODM\MongoDB\Collection\PersistentEmbeddedCollection,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\Collections\ArrayCollection;
 
@@ -367,14 +370,14 @@ class UnitOfWork
             }
 
             if ($class->isCollectionValuedReference($name) && $actualData[$name] !== null
-                    && ! ($actualData[$name] instanceof PersistentCollection)) {
+                    && ! ($actualData[$name] instanceof PersistentReferenceCollection)) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
                 if ( ! $actualData[$name] instanceof Collection) {
                     $actualData[$name] = new ArrayCollection($actualData[$name]);
                 }
                 
-                // Inject PersistentCollection
-                $coll = new PersistentCollection(
+                // Inject PersistentReferenceCollection
+                $coll = new PersistentReferenceCollection(
                     $this->_dm,
                     $actualData[$name]
                 );
@@ -387,7 +390,19 @@ class UnitOfWork
         }
         if ($class->isCollectionValuedEmbed($name) && $actualData[$name] !== null
                 && ! ($actualData[$name] instanceof Collection)) {
-            $coll = new ArrayCollection($actualData[$name]);
+            // If $actualData[$name] is not a Collection then use an ArrayCollection.
+            if ( ! $actualData[$name] instanceof Collection) {
+                $actualData[$name] = new ArrayCollection($actualData[$name]);
+            }
+
+            // Inject PersistentEmbeddedCollection
+            $coll = new PersistentEmbeddedCollection(
+                $this->_dm,
+                $actualData[$name]
+            );
+
+            $coll->setOwner($document, $mapping);
+            $coll->setDirty( ! $coll->isEmpty());
             $class->reflFields[$name]->setValue($document, $coll);
             $actualData[$name] = $coll;
         }
@@ -410,10 +425,10 @@ class UnitOfWork
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
 
                 if (is_object($orgValue) || is_object($actualValue)) {
-                    if ($orgValue instanceof PersistentCollection) {
+                    if ($orgValue instanceof AbstractPersistentCollection) {
                         $orgValue = $orgValue->getSnapshot();
                     }
-                    if ($actualValue instanceof PersistentCollection) {
+                    if ($actualValue instanceof AbstractPersistentCollection) {
                         $actualValue = $actualValue->toArray();
                     }
                     if ($orgValue !== $actualValue) {
@@ -447,12 +462,16 @@ class UnitOfWork
         
         // Look for changes in references of the document
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference'])) {
-                continue;
-            }
-            $val = $class->reflFields[$mapping['fieldName']]->getValue($document);
-            if ($val !== null) {
-                $this->_computeAssociationChanges($mapping, $val);
+            if (isset($mapping['reference'])) {
+                $val = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if ($val !== null) {
+                    $this->_computeReferenceChanges($mapping, $val);
+                }
+            } elseif (isset($mapping['embedded'])) {
+                $val = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if ($val !== null) {
+                    $this->_computeEmbeddedChanges($mapping, $val);
+                }
             }
         }
     }
@@ -489,14 +508,14 @@ class UnitOfWork
     }
 
     /**
-     * Computes the changes of an association.
+     * Computes the changes of a reference.
      *
-     * @param AssociationMapping $mapping
+     * @param array $mapping
      * @param mixed $value The value of the association.
      */
-    private function _computeAssociationChanges($mapping, $value)
+    private function _computeReferenceChanges($mapping, $value)
     {
-        if ($value instanceof PersistentCollection && $value->isDirty()) {
+        if ($value instanceof PersistentReferenceCollection && $value->isDirty()) {
             $this->_visitedCollections[] = $value;
         }
 
@@ -511,7 +530,7 @@ class UnitOfWork
                 return; // Ignore uninitialized proxy objects
             }
             $value = array($value);
-        } elseif ($value instanceof PersistentCollection) {
+        } elseif ($value instanceof PersistentReferenceCollection) {
             $value = $value->unwrap();
         }
         
@@ -538,6 +557,37 @@ class UnitOfWork
             }
             // MANAGED associated documents are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
+        }
+    }
+
+    /**
+     * Computes the changes of an embedded document.
+     *
+     * @param arra $mapping
+     * @param mixed $value The value of the association.
+     */
+    private function _computeEmbeddedChanges($mapping, $value)
+    {
+        if ($value instanceof PersistentEmbeddedCollection && $value->isDirty()) {
+            $this->_visitedCollections[] = $value;
+        }
+
+        if ($mapping['type'] === 'one') {
+            $value = array($value);
+        } elseif ($value instanceof PersistentReferenceCollection) {
+            $value = $value->unwrap();
+        }
+
+        foreach ($value as $entry) {
+            $targetClass = $this->_dm->getClassMetadata(get_class($entry));
+            foreach ($targetClass->fieldMappings as $mapping) {
+                if (isset($mapping['embedded'])) {
+                    $val = $targetClass->reflFields[$mapping['fieldName']]->getValue($entry);
+                    if ($val !== null) {
+                        $this->_computeEmbeddedChanges($mapping, $val);
+                    }
+                }
+            }
         }
     }
 
@@ -1285,7 +1335,7 @@ class UnitOfWork
                             }
                         }
                     } else {
-                        $coll = new PersistentCollection($this->_dm, new ArrayCollection());
+                        $coll = new PersistentReferenceCollection($this->_dm, new ArrayCollection());
                         $coll->setOwner($managedCopy, $mapping2);
                         $coll->setInitialized($mapping2['isCascadeMerge']);
                         $prop->setValue($managedCopy, $coll);
@@ -1407,7 +1457,7 @@ class UnitOfWork
             if (isset($mapping['embedded'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments instanceof PersistentReferenceCollection) {
                         // Unwrap so that foreach() does not initialize
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
@@ -1420,7 +1470,7 @@ class UnitOfWork
             } elseif (isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments instanceof PersistentReferenceCollection) {
                         // Unwrap so that foreach() does not initialize
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
@@ -1450,7 +1500,7 @@ class UnitOfWork
             if (isset($mapping['embedded'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments instanceof PersistentReferenceCollection) {
                         // Unwrap so that foreach() does not initialize
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
@@ -1463,7 +1513,7 @@ class UnitOfWork
             } elseif (isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments instanceof PersistentReferenceCollection) {
                         // Unwrap so that foreach() does not initialize
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
@@ -1494,7 +1544,7 @@ class UnitOfWork
             if (isset($mapping['embedded'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments instanceof PersistentReferenceCollection) {
                         // Unwrap so that foreach() does not initialize
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
@@ -1507,7 +1557,7 @@ class UnitOfWork
             } elseif (isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments instanceof PersistentReferenceCollection) {
                         // Unwrap so that foreach() does not initialize
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
@@ -1538,7 +1588,7 @@ class UnitOfWork
             if (isset($mapping['embedded'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments instanceof PersistentReferenceCollection) {
                         // Unwrap so that foreach() does not initialize
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
@@ -1551,7 +1601,7 @@ class UnitOfWork
             } elseif (isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments instanceof PersistentReferenceCollection) {
                         // Unwrap so that foreach() does not initialize
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
@@ -1581,7 +1631,7 @@ class UnitOfWork
             if (isset($mapping['embedded'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments instanceof PersistentReferenceCollection) {
                         // Unwrap so that foreach() does not initialize
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
@@ -1594,7 +1644,7 @@ class UnitOfWork
             } elseif (isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments instanceof PersistentReferenceCollection) {
                         // Unwrap so that foreach() does not initialize
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
@@ -1655,7 +1705,7 @@ class UnitOfWork
         $this->_orphanRemovals[spl_object_hash($document)] = $document;
     }
 
-    public function isCollectionScheduledForDeletion(PersistentCollection $coll)
+    public function isCollectionScheduledForDeletion(PersistentReferenceCollection $coll)
     {
         return in_array($coll, $this->_collectionsDeletions, true);
     }

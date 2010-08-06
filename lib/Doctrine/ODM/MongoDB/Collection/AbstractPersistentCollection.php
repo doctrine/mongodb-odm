@@ -17,11 +17,12 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB;
+namespace Doctrine\ODM\MongoDB\Collection;
 
 use Doctrine\Common\Collections\Collection,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
+    Doctrine\ODM\MongoDB\DocumentManager,
     Closure;
 
 /**
@@ -32,7 +33,7 @@ use Doctrine\Common\Collections\Collection,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-final class PersistentCollection implements Collection
+abstract class AbstractPersistentCollection implements Collection
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -40,7 +41,7 @@ final class PersistentCollection implements Collection
      *
      * @var array
      */
-    private $_snapshot = array();
+    protected $_snapshot = array();
 
     protected $_owner;
 
@@ -51,7 +52,7 @@ final class PersistentCollection implements Collection
      *
      * @var Doctrine\ODM\MongoDB\DocumentManager
      */
-    private $_dm;
+    protected $_dm;
 
     /**
      * Whether the collection is dirty and needs to be synchronized with the database
@@ -59,27 +60,27 @@ final class PersistentCollection implements Collection
      *
      * @var boolean
      */
-    private $_isDirty = false;
+    protected $_isDirty = false;
 
     /**
      * Whether the collection has already been initialized.
      * 
      * @var boolean
      */
-    private $_initialized = true;
+    protected $_initialized = true;
     
     /**
      * The wrapped Collection instance.
      * 
      * @var Collection
      */
-    private $_coll;
+    protected $_coll;
 
     /**
      * Mongo command prefix
      * @var string
      */
-    private $_cmd;
+    protected $_cmd;
 
     public function __construct(DocumentManager $dm, Collection $coll)
     {
@@ -88,41 +89,12 @@ final class PersistentCollection implements Collection
         $this->_cmd = $dm->getConfiguration()->getMongoCmd();
     }
 
-    /**
-     * Initializes the collection by loading its contents from the database
-     * if the collection is not yet initialized.
-     */
-    private function _initialize()
-    {
-        if ( ! $this->_initialized) {
-            $groupedIds = array();
-            foreach ($this->_coll as $document) {
-                $class = $this->_dm->getClassMetadata(get_class($document));
-                $ids[$class->name][] = $class->getIdentifierObject($document);
-            }
-
-            foreach ($groupedIds as $className => $ids) {
-                $collection = $this->_dm->getDocumentCollection($className);
-                $data = $collection->find(array('_id' => array($this->_cmd . 'in' => $ids)));
-                $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
-                foreach ($data as $id => $documentData) {
-                    $document = $this->_dm->getUnitOfWork()->getOrCreateDocument($this->_typeClass->name, $documentData, $hints);
-                    if ($document instanceof Proxy) {
-                        $document->__isInitialized__ = true;
-                        unset($document->__dm);
-                        unset($document->__identifier);
-                    }
-                }
-            }
-
-            $this->_initialized = true;
-        }
-    }
+    abstract protected function _initialize();
 
     /**
      * Marks this collection as changed/dirty.
      */
-    private function _changed()
+    protected function _changed()
     {
         if ( ! $this->_isDirty) {
             $this->_isDirty = true;
@@ -451,7 +423,6 @@ final class PersistentCollection implements Collection
             $this->_changed();
             $this->_dm->getUnitOfWork()->scheduleCollectionDeletion($this);
         }
-        
         return $result;
     }
     
