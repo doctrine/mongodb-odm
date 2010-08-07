@@ -385,8 +385,7 @@ class UnitOfWork
                 $coll->setDirty( ! $coll->isEmpty());
                 $class->reflFields[$name]->setValue($document, $coll);
                 $actualData[$name] = $coll;
-            }
-            if ($class->isCollectionValuedEmbed($name) && $actualData[$name] !== null
+            } elseif ($class->isCollectionValuedEmbed($name) && $actualData[$name] !== null
                     && ! ($actualData[$name] instanceof Collection)) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
                 if ( ! $actualData[$name] instanceof Collection) {

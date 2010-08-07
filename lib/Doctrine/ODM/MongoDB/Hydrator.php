@@ -104,6 +104,8 @@ class Hydrator
         // Set the document identifier
         if (isset($data['_id'])) {
             $metadata->setIdentifierValue($document, $data['_id']);
+            $data[$metadata->identifier] = $data['_id'];
+            unset($data['_id']);
         }
         return $document;
     }
