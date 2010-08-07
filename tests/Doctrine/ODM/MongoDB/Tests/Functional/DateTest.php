@@ -28,6 +28,7 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository('Documents\User')->findOneByUsername('w00ting');
+        $this->assertNotNull($user);
         $this->assertEquals('w00ting', $user->getUsername());
         $this->assertTrue($user->getCreatedAt() instanceof \DateTime);
         $this->assertEquals('09/01/1985', $user->getCreatedAt()->format('m/d/Y'));

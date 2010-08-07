@@ -128,8 +128,9 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->addGroup(new Group('member'));
         $user->addGroup(new Group('moderator'));
 
+        $this->dm->getUnitOfWork()->registerManaged($user, 'userid', array());
+        $this->dm->getUnitOfWork()->registerManaged($account, 'accountid', array());
 
-        $this->dm->persist($user);
         $this->persister->expects($this->once())
             ->method('executeInserts');
 

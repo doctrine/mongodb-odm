@@ -69,7 +69,7 @@ class Hydrator
      * @param array $data The array of document data.
      * @return array $values The array of hydrated values.
      */
-    public function hydrate($document, $data)
+    public function hydrate($document, &$data)
     {
         $metadata = $this->_dm->getClassMetadata(get_class($document));
         foreach ($metadata->fieldMappings as $mapping) {
@@ -84,11 +84,11 @@ class Hydrator
 
             // Hydrate embedded
             if (isset($mapping['embedded'])) {
-                $value = $this->_hydrateEmbedded($mapping, $rawValue);
+                $value = $this->_hydrateEmbedded($document, $mapping, $rawValue);
 
             // Hydrate reference
             } elseif (isset($mapping['reference'])) {
-                $value = $this->_hydrateReference($mapping, $rawValue);
+                $value = $this->_hydrateReference($document, $mapping, $rawValue);
 
             // Hydrate regular field
             } else {
@@ -97,6 +97,7 @@ class Hydrator
 
             // Set hydrated field value to document
             if ($value !== null) {
+                $data[$mapping['name']] = $value;
                 $metadata->setFieldValue($document, $mapping['fieldName'], $value);
             }
         }
@@ -141,12 +142,14 @@ class Hydrator
         }
     }
 
-    private function _hydrateReference(array $mapping, array $reference)
+    private function _hydrateReference($document, array $mapping, array $reference)
     {
         if ($mapping['type'] === 'one' && isset($reference[$this->_cmd . 'id'])) {
             return $this->_hydrateOneReference($mapping, $reference);
         } elseif ($mapping['type'] === 'many' && (is_array($reference) || $reference instanceof Collection)) {
-            return $this->_hydrateManyReference($mapping, $reference);
+            $coll = $this->_hydrateManyReference($mapping, $reference);
+            $coll->setOwner($document, $mapping);
+            return $coll;
         }
     }
 
@@ -160,21 +163,24 @@ class Hydrator
 
     private function _hydrateManyReference(array $mapping, array $references)
     {
-        $documents = new PersistentReferenceCollection($this->_dm, new ArrayCollection());
-        $documents->setInitialized(false);
+        $coll = new PersistentReferenceCollection($this->_dm, new ArrayCollection());
+        $coll->setInitialized(false);
         foreach ($references as $reference) {
             $document = $this->_hydrateOneReference($mapping, $reference);
-            $documents->add($document);
+            $coll->add($document);
         }
-        return $documents;
+        $coll->takeSnapshot();
+        return $coll;
     }
 
-    private function _hydrateEmbedded(array $mapping, array $embeddedDocument)
+    private function _hydrateEmbedded($document, array $mapping, array $embeddedDocument)
     {
         if ($mapping['type'] === 'one') {
             return $this->_hydrateOneEmbedded($mapping, $embeddedDocument);
         } elseif ($mapping['type'] === 'many') {
-            return $this->_hydrateManyEmbedded($mapping, $embeddedDocument);
+            $coll = $this->_hydrateManyEmbedded($mapping, $embeddedDocument);
+            $coll->setOwner($document, $mapping);
+            return $coll;
         }
     }
 
@@ -188,12 +194,13 @@ class Hydrator
 
     private function _hydrateManyEmbedded(array $mapping, array $embeddedDocuments)
     {
-        $documents = new ArrayCollection();
+        $coll = new PersistentEmbeddedCollection(new ArrayCollection());
         foreach ($embeddedDocuments as $embeddedDocument) {
             $document = $this->_hydrateOneEmbedded($mapping, $embeddedDocument);
-            $documents->add($document);
+            $coll->add($document);
         }
-        return new PersistentEmbeddedCollection($this->_dm, $documents);
+        $coll->takeSnapshot();
+        return $coll;
     }
 
     private function _hydrateField(array $mapping, $value)

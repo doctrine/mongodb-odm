@@ -440,7 +440,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $product->name = 'Product';
 
         $seller = new PreUpdateTestSeller();
-        $seller->name = 'Jon';
+        $seller->name = 'Seller';
 
         $this->dm->persist($seller);
         $this->dm->persist($product);
@@ -467,7 +467,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $sellable = new PreUpdateTestSellable();
         $sellable->product = $product;
-        $sellable->seller = $this->dm->findOne('Documents\Functional\PreUpdateTestSeller', array('name' => 'Jon'));
+        $sellable->seller = $this->dm->findOne('Documents\Functional\PreUpdateTestSeller', array('name' => 'Seller'));
 
         $product->sellable = $sellable;
 
@@ -475,7 +475,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $product = $this->dm->findOne('Documents\Functional\PreUpdateTestProduct', array('name' => 'Product2'));
-        $this->assertEquals('Jon', $product->sellable->getSeller()->getName());
+        $this->assertEquals('Seller', $product->sellable->getSeller()->getName());
         $this->assertEquals('Product2', $product->sellable->getProduct()->getName());
     }
 

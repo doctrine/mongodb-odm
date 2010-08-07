@@ -34,20 +34,4 @@ use Doctrine\Common\Collections\Collection,
  */
 final class PersistentEmbeddedCollection extends AbstractPersistentCollection
 {
-    protected function _initialize()
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function clear()
-    {
-        $this->_initialize();
-        $result = $this->_coll->clear();
-        if ($this->_mapping->isOwningSide) {
-            $this->_changed();
-        }
-        return $result;
-    }
 }

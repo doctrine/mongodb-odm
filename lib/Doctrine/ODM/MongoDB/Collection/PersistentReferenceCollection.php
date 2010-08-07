@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB\Collection;
 use Doctrine\Common\Collections\Collection,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
+    Doctrine\ODM\MongoDB\DocumentManager,
     Closure;
 
 /**
@@ -35,8 +36,27 @@ use Doctrine\Common\Collections\Collection,
 final class PersistentReferenceCollection extends AbstractPersistentCollection
 {
     /**
-     * Initializes the collection by loading its contents from the database
-     * if the collection is not yet initialized.
+     * The DocumentManager that manages the persistence of the collection.
+     *
+     * @var Doctrine\ODM\MongoDB\DocumentManager
+     */
+    protected $_dm;
+
+    /**
+     * Mongo command prefix
+     * @var string
+     */
+    protected $_cmd;
+
+    public function __construct(DocumentManager $dm, Collection $coll)
+    {
+        $this->_coll = $coll;
+        $this->_dm = $dm;
+        $this->_cmd = $dm->getConfiguration()->getMongoCmd();
+    }
+
+    /**
+     * @inheritdoc
      */
     protected function _initialize()
     {
@@ -63,5 +83,19 @@ final class PersistentReferenceCollection extends AbstractPersistentCollection
 
             $this->_initialized = true;
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        $this->_initialize();
+        $result = $this->_coll->clear();
+        if ($this->_mapping->isOwningSide) {
+            $this->_changed();
+            $this->_dm->getUnitOfWork()->scheduleCollectionDeletion($this);
+        }
+        return $result;
     }
 }

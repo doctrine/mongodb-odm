@@ -48,13 +48,6 @@ abstract class AbstractPersistentCollection implements Collection
     protected $_mapping;
 
     /**
-     * The DocumentManager that manages the persistence of the collection.
-     *
-     * @var Doctrine\ODM\MongoDB\DocumentManager
-     */
-    protected $_dm;
-
-    /**
      * Whether the collection is dirty and needs to be synchronized with the database
      * when the UnitOfWork that manages its persistent state commits.
      *
@@ -76,20 +69,17 @@ abstract class AbstractPersistentCollection implements Collection
      */
     protected $_coll;
 
-    /**
-     * Mongo command prefix
-     * @var string
-     */
-    protected $_cmd;
-
-    public function __construct(DocumentManager $dm, Collection $coll)
+    public function __construct(Collection $coll)
     {
         $this->_coll = $coll;
-        $this->_dm = $dm;
-        $this->_cmd = $dm->getConfiguration()->getMongoCmd();
     }
 
-    abstract protected function _initialize();
+    /**
+     * Method for initialize the collection to be overridden in subclass.
+     */
+    protected function _initialize()
+    {
+    }
 
     /**
      * Marks this collection as changed/dirty.
@@ -421,7 +411,6 @@ abstract class AbstractPersistentCollection implements Collection
         $result = $this->_coll->clear();
         if ($this->_mapping->isOwningSide) {
             $this->_changed();
-            $this->_dm->getUnitOfWork()->scheduleCollectionDeletion($this);
         }
         return $result;
     }

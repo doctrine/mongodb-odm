@@ -396,11 +396,7 @@ class UnitOfWork
             }
 
             // Inject PersistentEmbeddedCollection
-            $coll = new PersistentEmbeddedCollection(
-                $this->_dm,
-                $actualData[$name]
-            );
-
+            $coll = new PersistentEmbeddedCollection($actualData[$name]);
             $coll->setOwner($document, $mapping);
             $coll->setDirty( ! $coll->isEmpty());
             $class->reflFields[$name]->setValue($document, $coll);
@@ -412,7 +408,7 @@ class UnitOfWork
             // These result in an INSERT.
             $this->_originalDocumentData[$oid] = $actualData;
             $this->_documentChangeSets[$oid] = array_map(
-                function($e) { return array(null, $e); }, $actualData
+                function($e) { return array(null, $e, null, null); }, $actualData
             );
         } else {
             // Document is "fully" MANAGED: it was already fully persisted before
@@ -429,10 +425,18 @@ class UnitOfWork
                         $orgValue = $orgValue->getSnapshot();
                     }
                     if ($actualValue instanceof AbstractPersistentCollection) {
+                        $insertDiff = $actualValue->getInsertDiff();
+                        $deleteDiff = $actualValue->getDeleteDiff();
                         $actualValue = $actualValue->toArray();
                     }
                     if ($orgValue !== $actualValue) {
                         $changeSet[$propName] = array($orgValue, $actualValue);
+                    }
+                    if (isset($insertDiff)) {
+                        $changeSet[$propName][2] = $insertDiff;
+                    }
+                    if (isset($deleteDiff)) {
+                        $changeSet[$propName][3] = $deleteDiff;
                     }
                 } elseif ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
@@ -459,7 +463,6 @@ class UnitOfWork
                 }
             }
         }
-        
         // Look for changes in references of the document
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['reference'])) {

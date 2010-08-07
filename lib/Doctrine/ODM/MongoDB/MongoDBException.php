@@ -99,9 +99,4 @@ class MongoDBException extends \Exception
     {
         return new self("Unknown Document namespace alias '$documentNamespaceAlias'.");
     }
-
-    public static function identifierCannotBeUpdated()
-    {
-        return new self("Document idetifier updates are not allowed");
-    }
 }
