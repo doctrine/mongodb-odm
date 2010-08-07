@@ -206,6 +206,7 @@ class BasicDocumentPersister
         $id = $this->_uow->getDocumentIdentifier($document);
 
         $update = $this->prepareUpdateData($document);
+        //print_r($update);
         if ( ! empty($update)) {
             if ($this->_dm->getEventManager()->hasListeners(ODMEvents::onUpdatePrepared)) {
                 $this->_dm->getEventManager()->dispatchEvent(
@@ -327,13 +328,23 @@ class BasicDocumentPersister
             }
 
             if ($mapping['type'] === 'many') {
-                // insert diff
-                if (isset($changeset[$mapping['fieldName']][2]) && $changeset[$mapping['fieldName']][2]) {
-                    $result[$this->_cmd . 'pushAll'][$mapping['fieldName']] = $this->_prepareValue($mapping, $changeset[$mapping['fieldName']][2]);
-                }
-                // delete diff
-                if (isset($changeset[$mapping['fieldName']][3]) && $changeset[$mapping['fieldName']][3]) {
-                    $result[$this->_cmd . 'pullAll'][$mapping['fieldName']] = $this->_prepareValue($mapping, $changeset[$mapping['fieldName']][3]);
+                if ($mapping['strategy'] === 'pushPull') {
+                    // insert diff
+                    if (isset($changeset[$mapping['fieldName']][2]) && $changeset[$mapping['fieldName']][2]) {
+                        $result[$this->_cmd . 'pushAll'][$mapping['fieldName']] = $this->_prepareValue($mapping, $changeset[$mapping['fieldName']][2]);
+                    }
+                    // delete diff
+                    if (isset($changeset[$mapping['fieldName']][3]) && $changeset[$mapping['fieldName']][3]) {
+                        $result[$this->_cmd . 'pullAll'][$mapping['fieldName']] = $this->_prepareValue($mapping, $changeset[$mapping['fieldName']][3]);
+                    }
+                } elseif ($mapping['strategy'] === 'set') {
+                    $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
+                    $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
+                    $new = $this->_prepareValue($mapping, $new);
+                    $old = $this->_prepareValue($mapping, $old);
+                    if ($old !== $new) {
+                        $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
+                    }
                 }
             } else {
                 $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
@@ -493,16 +504,17 @@ class BasicDocumentPersister
      */
     private function _addArrayUpdateAtomicOperator(array $mapping, array $new, array $old, array &$result)
     {
-        // delete
-        $deleteDiff = array_udiff_assoc($old, $new, function($a, $b) { return $a === $b ? 0 : 1; });
-        if ($deleteDiff) {
-            $result[$this->_cmd . 'pullAll'][$mapping['fieldName']] = array_values($deleteDiff);
-        }
-
-        // insert
-        $insertDiff = array_udiff_assoc($new, $old, function($a, $b) {return $a === $b ? 0 : 1;});
-        if ($insertDiff) {
-            $result[$this->_cmd . 'pushAll'][$mapping['fieldName']] = array_values($insertDiff);
+        if ($mapping['strategy'] === 'pushPull') {
+            $deleteDiff = array_udiff_assoc($old, $new, function($a, $b) {return $a === $b ? 0 : 1; });
+            $insertDiff = array_udiff_assoc($new, $old, function($a, $b) {return $a === $b ? 0 : 1;});
+            if ($deleteDiff) {
+                $result[$this->_cmd . 'pullAll'][$mapping['fieldName']] = array_values($deleteDiff);
+            }
+            if ($insertDiff) {
+                $result[$this->_cmd . 'pushAll'][$mapping['fieldName']] = array_values($insertDiff);
+            }
+        } elseif ($mapping['strategy'] === 'set') {
+            $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
         }
     }
 

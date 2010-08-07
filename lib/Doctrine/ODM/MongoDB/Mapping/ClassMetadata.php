@@ -245,6 +245,7 @@ class ClassMetadata
         $this->rootDocumentName = $documentName;
         $this->reflClass = new \ReflectionClass($documentName);
         $this->namespace = $this->reflClass->getNamespaceName();
+        $this->setCollection($this->reflClass->getShortName());
     }
 
     /**

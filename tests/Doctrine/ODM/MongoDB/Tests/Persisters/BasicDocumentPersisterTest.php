@@ -12,7 +12,10 @@ use Doctrine\ODM\MongoDB\Persisters\BasicDocumentPersister,
     Documents\Phonenumber,
     Documents\Profile,
     Documents\File,
-    Documents\User;
+    Documents\User,
+    Documents\Strategy,
+    Documents\Message,
+    Documents\Task;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
@@ -68,6 +71,59 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(array_key_exists($this->escape('ref'), $update[$this->escape('set')]['account']));
         $this->assertTrue(array_key_exists($this->escape('db'), $update[$this->escape('set')]['account']));
         $this->assertTrue(array_key_exists($this->escape('id'), $update[$this->escape('set')]['account']));
+    }
+
+    public function testSetStrategy()
+    {
+        $data = array(
+            '_id' => 'testid',
+            'logs' => array(
+                array('name' => 'test'),
+                array('name' => 'ok'),
+                array('name' => 'test')
+            ),
+            'messages' => array(
+                array('name' => 'Message1'),
+                array('name' => 'Message2')
+            ),
+            'tasks' => array(
+                array(
+                    '$db' => 'dbname',
+                    '$id' => 'id',
+                    '$ref' => 'collname'
+                )
+            )
+        );
+        $test = new Strategy();
+        $this->dm->getHydrator()->hydrate($test, $data);
+        $this->dm->getUnitOfWork()->registerManaged($test, 'testid', $data);
+
+        unset($test->logs[0]);
+        $test->logs[] = 'whatever';
+        $test->messages[] = new Message('Message3');
+        $test->tasks[] = new Task('Task1');
+        $test->tasks[] = new Task('Task2');
+
+        $classMetadata = $this->dm->getClassMetadata('Documents\Strategy');
+        $persister = $this->getMock(
+            'Doctrine\ODM\MongoDB\Persisters\BasicDocumentPersister',
+            array('update', 'delete', 'executeInserts'),
+            array($this->dm, $classMetadata)
+        );
+        $this->dm->getUnitOfWork()->setDocumentPersister(
+            'Documents\Strategy', $persister
+        );
+
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $update = $persister->prepareUpdateData($test);
+
+        $this->assertTrue(isset($update['$set']['logs']));
+        $this->assertEquals(3, count($update['$set']['logs']));
+        $this->assertTrue(isset($update['$set']['messages']));
+        $this->assertEquals(3, count($update['$set']['messages']));
+        $this->assertTrue(isset($update['$set']['tasks']));
+        $this->assertEquals(3, count($update['$set']['tasks']));
+        
     }
 
     public function testDocumentUpdate()
