@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\Collection,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\ODM\MongoDB\DocumentManager,
+    Doctrine\ODM\MongoDB\Query,
     Closure;
 
 /**
@@ -68,7 +69,7 @@ final class PersistentReferenceCollection extends AbstractPersistentCollection
                     continue;
                 }
                 $class = $this->_dm->getClassMetadata(get_class($document));
-                $ids[$class->name][] = $class->getIdentifierObject($document);
+                $groupedIds[$class->name][] = $class->getIdentifierObject($document);
             }
 
             foreach ($groupedIds as $className => $ids) {
@@ -76,7 +77,7 @@ final class PersistentReferenceCollection extends AbstractPersistentCollection
                 $data = $collection->find(array('_id' => array($this->_cmd . 'in' => $ids)));
                 $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
                 foreach ($data as $id => $documentData) {
-                    $document = $this->_dm->getUnitOfWork()->getOrCreateDocument($this->_typeClass->name, $documentData, $hints);
+                    $document = $this->_dm->getUnitOfWork()->getOrCreateDocument($className, $documentData, $hints);
                     if ($document instanceof Proxy) {
                         $document->__isInitialized__ = true;
                         unset($document->__dm);

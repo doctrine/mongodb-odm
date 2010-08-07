@@ -122,6 +122,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($groups instanceof PersistentReferenceCollection);
         $this->assertTrue($groups[0]->getId() !== '');
         $this->assertTrue($groups[1]->getId() !== '');
+        $this->dm->clear();
 
         $user2 = $this->dm->createQuery('Documents\User')
             ->field('id')
@@ -129,6 +130,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getSingleResult();
 
         $groups = $user2->getGroups();
+
+        $groupsArray = $groups->toArray();
+        $this->assertTrue($groupsArray[0]->__isInitialized__);
+        $this->assertTrue($groupsArray[1]->__isInitialized__);
 
         $this->assertTrue($groups instanceof PersistentReferenceCollection);
         $this->assertTrue($groups[0] instanceof Group);
