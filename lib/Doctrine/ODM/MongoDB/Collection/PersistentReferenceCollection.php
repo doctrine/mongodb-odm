@@ -63,6 +63,10 @@ final class PersistentReferenceCollection extends AbstractPersistentCollection
         if ( ! $this->_initialized) {
             $groupedIds = array();
             foreach ($this->_coll as $document) {
+                // Skip initialized proxy documents, no need to fetch them
+                if ($document instanceof Proxy && $document->__isInitialized__ === true) {
+                    continue;
+                }
                 $class = $this->_dm->getClassMetadata(get_class($document));
                 $ids[$class->name][] = $class->getIdentifierObject($document);
             }
