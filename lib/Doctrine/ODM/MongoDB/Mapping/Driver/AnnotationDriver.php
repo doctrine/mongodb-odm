@@ -94,42 +94,45 @@ class AnnotationDriver implements Driver
         $classAnnotations = $this->_reader->getClassAnnotations($reflClass);
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Document'])) {
             $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Document'];
-            if ($documentAnnot->db) {
-                $class->setDB($documentAnnot->db);
-            }
-            if ($documentAnnot->collection) {
-                $class->setCollection($documentAnnot->collection);
-            }
-            if ($documentAnnot->repositoryClass) {
-                $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
-            }
-            if ($documentAnnot->indexes) {
-                foreach($documentAnnot->indexes as $index) {
-                    $class->addIndex($index->keys, $index->options);
-                }
-            }
-            if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'])) {
-                $inheritanceTypeAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'];
-                $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
-            }
-            if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorField'])) {
-                $discrFieldAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorField'];
-                $class->setDiscriminatorField(array(
-                    'fieldName' => $discrFieldAnnot->fieldName,
-                ));
-            }
-            if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorMap'])) {
-                $discrMapAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorMap'];
-                $class->setDiscriminatorMap($discrMapAnnot->value);
-            }
-            if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorValue'])) {
-                $discrValueAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorValue'];
-                $class->setDiscriminatorValue($discrValueAnnot->value);
-            }
-        } else if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass'])) {
+        } elseif (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass'])) {
+            $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass'];
             $class->isMappedSuperclass = true;
-        } else if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\EmbeddedDocument'])) {
+        } elseif (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\EmbeddedDocument'])) {
+            $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\EmbeddedDocument'];
             $class->isEmbeddedDocument = true;
+        }
+
+        if (isset($documentAnnot->db)) {
+            $class->setDB($documentAnnot->db);
+        }
+        if (isset($documentAnnot->collection)) {
+            $class->setCollection($documentAnnot->collection);
+        }
+        if (isset($documentAnnot->repositoryClass)) {
+            $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
+        }
+        if (isset($documentAnnot->indexes)) {
+            foreach($documentAnnot->indexes as $index) {
+                $class->addIndex($index->keys, $index->options);
+            }
+        }
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'])) {
+            $inheritanceTypeAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'];
+            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
+        }
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorField'])) {
+            $discrFieldAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorField'];
+            $class->setDiscriminatorField(array(
+                'fieldName' => $discrFieldAnnot->fieldName,
+            ));
+        }
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorMap'])) {
+            $discrMapAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorMap'];
+            $class->setDiscriminatorMap($discrMapAnnot->value);
+        }
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorValue'])) {
+            $discrValueAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorValue'];
+            $class->setDiscriminatorValue($discrValueAnnot->value);
         }
 
         $methods = $reflClass->getMethods();
