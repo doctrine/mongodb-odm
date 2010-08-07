@@ -368,7 +368,6 @@ class UnitOfWork
             if ( ! $class->isIdentifier($name) || $class->getAllowCustomID()) {
                 $actualData[$name] = $class->getFieldValue($document, $mapping['fieldName']);
             }
-
             if ($class->isCollectionValuedReference($name) && $actualData[$name] !== null
                     && ! ($actualData[$name] instanceof PersistentReferenceCollection)) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
@@ -387,20 +386,20 @@ class UnitOfWork
                 $class->reflFields[$name]->setValue($document, $coll);
                 $actualData[$name] = $coll;
             }
-        }
-        if ($class->isCollectionValuedEmbed($name) && $actualData[$name] !== null
-                && ! ($actualData[$name] instanceof Collection)) {
-            // If $actualData[$name] is not a Collection then use an ArrayCollection.
-            if ( ! $actualData[$name] instanceof Collection) {
-                $actualData[$name] = new ArrayCollection($actualData[$name]);
-            }
+            if ($class->isCollectionValuedEmbed($name) && $actualData[$name] !== null
+                    && ! ($actualData[$name] instanceof Collection)) {
+                // If $actualData[$name] is not a Collection then use an ArrayCollection.
+                if ( ! $actualData[$name] instanceof Collection) {
+                    $actualData[$name] = new ArrayCollection($actualData[$name]);
+                }
 
-            // Inject PersistentEmbeddedCollection
-            $coll = new PersistentEmbeddedCollection($actualData[$name]);
-            $coll->setOwner($document, $mapping);
-            $coll->setDirty( ! $coll->isEmpty());
-            $class->reflFields[$name]->setValue($document, $coll);
-            $actualData[$name] = $coll;
+                // Inject PersistentEmbeddedCollection
+                $coll = new PersistentEmbeddedCollection($actualData[$name]);
+                $coll->setOwner($document, $mapping);
+                $coll->setDirty( ! $coll->isEmpty());
+                $class->reflFields[$name]->setValue($document, $coll);
+                $actualData[$name] = $coll;
+            }
         }
 
         if ( ! isset($this->_originalDocumentData[$oid])) {
