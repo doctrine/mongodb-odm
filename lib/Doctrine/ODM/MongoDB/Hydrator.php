@@ -73,9 +73,27 @@ class Hydrator
     {
         $metadata = $this->_dm->getClassMetadata(get_class($document));
         foreach ($metadata->fieldMappings as $mapping) {
-            $this->_executeAlsoLoadMethods($document, $mapping, $data);
+            if (isset($mapping['alsoLoadMethods'])) {
+                foreach ($mapping['alsoLoadMethods'] as $method) {
+                    if (isset($data[$mapping['fieldName']])) {
+                        $document->$method($data[$mapping['fieldName']]);
+                    }
+                }
+            }
 
-            $rawValue = $this->_getFieldValue($mapping, $document, $data);
+            if (isset($mapping['alsoLoadFields'])) {
+                $rawValue = null;
+                $names = isset($mapping['alsoLoadFields']) ? $mapping['alsoLoadFields'] : array();
+                array_unshift($names, $mapping['fieldName']);
+                foreach ($names as $name) {
+                    if (isset($data[$name])) {
+                        $rawValue = $data[$name];
+                        break;
+                    }
+                }
+            } else {
+                $rawValue = isset($data[$mapping['fieldName']]) ? $data[$mapping['fieldName']] : null;
+            }
             if ($rawValue === null) {
                 continue;
             }
@@ -84,15 +102,52 @@ class Hydrator
 
             // Hydrate embedded
             if (isset($mapping['embedded'])) {
-                $value = $this->_hydrateEmbedded($document, $mapping, $rawValue);
-
+                if ($mapping['type'] === 'one') {
+                    $embeddedDocument = $rawValue;
+                    $className = $this->_getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                    $embeddedMetadata = $this->_dm->getClassMetadata($className);
+                    $value = $embeddedMetadata->newInstance();
+                    $this->hydrate($value, $embeddedDocument);
+                } elseif ($mapping['type'] === 'many') {
+                    $embeddedDocuments = $rawValue;
+                    $coll = new PersistentEmbeddedCollection(new ArrayCollection());
+                    foreach ($embeddedDocuments as $embeddedDocument) {
+                        $className = $this->_getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                        $embeddedMetadata = $this->_dm->getClassMetadata($className);
+                        $embeddedDocumentObject = $embeddedMetadata->newInstance();
+                        $this->hydrate($embeddedDocumentObject, $embeddedDocument);
+                        $coll->add($embeddedDocumentObject);
+                    }
+                    $coll->takeSnapshot();
+                    $coll->setOwner($document, $mapping);
+                    $value = $coll;
+                }
             // Hydrate reference
             } elseif (isset($mapping['reference'])) {
-                $value = $this->_hydrateReference($document, $mapping, $rawValue);
+                $reference = $rawValue;
+                if ($mapping['type'] === 'one' && isset($reference[$this->_cmd . 'id'])) {
+                    $className = $this->_getClassNameFromDiscriminatorValue($mapping, $reference);
+                    $targetMetadata = $this->_dm->getClassMetadata($className);
+                    $id = $targetMetadata->getPHPIdentifierValue($reference[$this->_cmd . 'id']);
+                    $value = $this->_dm->getReference($className, $id);
+                } elseif ($mapping['type'] === 'many' && (is_array($reference) || $reference instanceof Collection)) {
+                    $references = $reference;
+                    $coll = new PersistentReferenceCollection($this->_dm, new ArrayCollection());
+                    $coll->setInitialized(false);
+                    foreach ($references as $reference) {
+                        $className = $this->_getClassNameFromDiscriminatorValue($mapping, $reference);
+                        $targetMetadata = $this->_dm->getClassMetadata($className);
+                        $id = $targetMetadata->getPHPIdentifierValue($reference[$this->_cmd . 'id']);
+                        $reference = $this->_dm->getReference($className, $id);
+                        $coll->add($reference);
+                    }
+                    $coll->takeSnapshot();
+                    $value = $coll;
+                }
 
             // Hydrate regular field
             } else {
-                $value = $this->_hydrateField($mapping, $rawValue);
+                $value = Type::getType($mapping['type'])->convertToPHPValue($rawValue);
             }
 
             // Set hydrated field value to document
@@ -110,18 +165,6 @@ class Hydrator
         return $document;
     }
 
-    private function _getFieldValue(array $mapping, $document, $data)
-    {
-        $names = isset($mapping['alsoLoadFields']) ? $mapping['alsoLoadFields'] : array();
-        array_unshift($names, $mapping['fieldName']);
-        foreach ($names as $name) {
-            if (isset($data[$name])) {
-                return $data[$name];
-            }
-        }
-        return null;
-    }
-
     private function _getClassNameFromDiscriminatorValue(array $mapping, $value)
     {
         $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
@@ -131,82 +174,5 @@ class Hydrator
         } else {
             return $mapping['targetDocument'];
         }
-    }
-
-    private function _executeAlsoLoadMethods($document, array $mapping, array $data)
-    {
-        if (isset($mapping['alsoLoadMethods'])) {
-            foreach ($mapping['alsoLoadMethods'] as $method) {
-                if (isset($data[$mapping['fieldName']])) {
-                    $document->$method($data[$mapping['fieldName']]);
-                }
-            }
-        }
-    }
-
-    private function _hydrateReference($document, array $mapping, array $reference)
-    {
-        if ($mapping['type'] === 'one' && isset($reference[$this->_cmd . 'id'])) {
-            return $this->_hydrateOneReference($mapping, $reference);
-        } elseif ($mapping['type'] === 'many' && (is_array($reference) || $reference instanceof Collection)) {
-            $coll = $this->_hydrateManyReference($mapping, $reference);
-            $coll->setOwner($document, $mapping);
-            return $coll;
-        }
-    }
-
-    private function _hydrateOneReference(array $mapping, array $reference)
-    {
-        $className = $this->_getClassNameFromDiscriminatorValue($mapping, $reference);
-        $targetMetadata = $this->_dm->getClassMetadata($className);
-        $id = $targetMetadata->getPHPIdentifierValue($reference[$this->_cmd . 'id']);
-        return $this->_dm->getReference($className, $id);
-    }
-
-    private function _hydrateManyReference(array $mapping, array $references)
-    {
-        $coll = new PersistentReferenceCollection($this->_dm, new ArrayCollection());
-        $coll->setInitialized(false);
-        foreach ($references as $reference) {
-            $document = $this->_hydrateOneReference($mapping, $reference);
-            $coll->add($document);
-        }
-        $coll->takeSnapshot();
-        return $coll;
-    }
-
-    private function _hydrateEmbedded($document, array $mapping, array $embeddedDocument)
-    {
-        if ($mapping['type'] === 'one') {
-            return $this->_hydrateOneEmbedded($mapping, $embeddedDocument);
-        } elseif ($mapping['type'] === 'many') {
-            $coll = $this->_hydrateManyEmbedded($mapping, $embeddedDocument);
-            $coll->setOwner($document, $mapping);
-            return $coll;
-        }
-    }
-
-    private function _hydrateOneEmbedded(array $mapping, array $embeddedDocument)
-    {
-        $className = $this->_getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
-        $embeddedMetadata = $this->_dm->getClassMetadata($className);
-        $document = $embeddedMetadata->newInstance();
-        return $this->hydrate($document, $embeddedDocument);
-    }
-
-    private function _hydrateManyEmbedded(array $mapping, array $embeddedDocuments)
-    {
-        $coll = new PersistentEmbeddedCollection(new ArrayCollection());
-        foreach ($embeddedDocuments as $embeddedDocument) {
-            $document = $this->_hydrateOneEmbedded($mapping, $embeddedDocument);
-            $coll->add($document);
-        }
-        $coll->takeSnapshot();
-        return $coll;
-    }
-
-    private function _hydrateField(array $mapping, $value)
-    {
-        return Type::getType($mapping['type'])->convertToPHPValue($value);
     }
 }
