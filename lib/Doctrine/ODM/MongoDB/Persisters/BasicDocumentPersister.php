@@ -144,7 +144,6 @@ class BasicDocumentPersister
 
         $postInsertIds = array();
         $inserts = array();
-
         foreach ($this->_queuedInserts as $oid => $document) {
             $data = $this->prepareInsertData($document);
             if ( ! $data) {
@@ -191,9 +190,9 @@ class BasicDocumentPersister
             ), array(
                 $this->_cmd . 'set' => $update
             ));
-            unset($this->_documentsToUpdate[$oid]);
-            unset($this->_fieldsToUpdate[$oid]);
         }
+        $this->_documentsToUpdate = array();
+        $this->_fieldsToUpdate = array();
     }
 
     /**
@@ -206,7 +205,6 @@ class BasicDocumentPersister
         $id = $this->_uow->getDocumentIdentifier($document);
 
         $update = $this->prepareUpdateData($document);
-        //print_r($update);
         if ( ! empty($update)) {
             if ($this->_dm->getEventManager()->hasListeners(ODMEvents::onUpdatePrepared)) {
                 $this->_dm->getEventManager()->dispatchEvent(
@@ -267,7 +265,7 @@ class BasicDocumentPersister
     {
         $oid = spl_object_hash($document);
         $changeset = $this->_uow->getDocumentChangeSet($document);
-        $result = array();
+        $insertData = array();
         foreach ($this->_class->fieldMappings as $mapping) {
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
                 continue;
@@ -276,20 +274,19 @@ class BasicDocumentPersister
             if ($new === null && $mapping['nullable'] === false) {
                 continue;
             }
-            $changeset[$mapping['fieldName']] = array();
             if ($this->_class->isIdentifier($mapping['fieldName'])) {
-                $result['_id'] = $this->_prepareValue($mapping, $new);
+                $insertData['_id'] = $this->_prepareValue($mapping, $new);
                 continue;
             }
-            $result[$mapping['fieldName']] = $this->_prepareValue($mapping, $new);
+            $insertData[$mapping['fieldName']] = $this->_prepareValue($mapping, $new);
             if (isset($mapping['reference'])) {
                 $scheduleForUpdate = false;
                 if ($mapping['type'] === 'one') {
-                    if (null === $result[$mapping['fieldName']][$this->_cmd . 'id']) {
+                    if (null === $insertData[$mapping['fieldName']][$this->_cmd . 'id']) {
                         $scheduleForUpdate = true;
                     }
                 } elseif ($mapping['type'] === 'many') {
-                    foreach ($result[$mapping['fieldName']] as $ref) {
+                    foreach ($insertData[$mapping['fieldName']] as $ref) {
                         if (null === $ref[$this->_cmd . 'id']) {
                             $scheduleForUpdate = true;
                             break;
@@ -297,7 +294,7 @@ class BasicDocumentPersister
                     }
                 }
                 if ($scheduleForUpdate) {
-                    unset($result[$mapping['fieldName']]);
+                    unset($insertData[$mapping['fieldName']]);
                     $id = spl_object_hash($document);
                     $this->_documentsToUpdate[$id] = $document;
                     $this->_fieldsToUpdate[$id][$mapping['fieldName']] = array($mapping, $new);
@@ -306,9 +303,9 @@ class BasicDocumentPersister
         }
         // add discriminator if the class has one
         if ($this->_class->hasDiscriminator()) {
-            $result[$this->_class->discriminatorField['name']] = $this->_class->discriminatorValue;
+            $insertData[$this->_class->discriminatorField['name']] = $this->_class->discriminatorValue;
         }
-        return $result;
+        return $insertData;
     }
 
     /**
@@ -340,22 +337,51 @@ class BasicDocumentPersister
                 } elseif ($mapping['strategy'] === 'set') {
                     $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
                     $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
-                    $new = $this->_prepareValue($mapping, $new);
-                    $old = $this->_prepareValue($mapping, $old);
                     if ($old !== $new) {
+                        $new = $this->_prepareValue($mapping, $new);
+                        $old = $this->_prepareValue($mapping, $old);
                         $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
                     }
                 }
             } else {
                 $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
                 $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
-                $new = $this->_prepareValue($mapping, $new);
-                $old = $this->_prepareValue($mapping, $old);
                 if ($old !== $new) {
                     if ($mapping['type'] === 'collection') {
-                        $this->_addArrayUpdateAtomicOperator($mapping, (array) $new, (array) $old, $result);
+                        $new = $this->_prepareValue($mapping, $new);
+                        $old = $this->_prepareValue($mapping, $old);
+                        if ($mapping['strategy'] === 'pushPull') {
+                            $old = (array) $old;
+                            $new = (array) $new;
+                            $deleteDiff = array_udiff_assoc($old, $new, function($a, $b) {return $a === $b ? 0 : 1; });
+                            $insertDiff = array_udiff_assoc($new, $old, function($a, $b) {return $a === $b ? 0 : 1;});
+                            if ($deleteDiff) {
+                                $result[$this->_cmd . 'pullAll'][$mapping['fieldName']] = array_values($deleteDiff);
+                            }
+                            if ($insertDiff) {
+                                $result[$this->_cmd . 'pushAll'][$mapping['fieldName']] = array_values($insertDiff);
+                            }
+                        } elseif ($mapping['strategy'] === 'set') {
+                            $new = $this->_prepareValue($mapping, $new);
+                            $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
+                        }
                     } else {
-                        $this->_addFieldUpdateAtomicOperator($mapping, $new, $old, $result);
+                        if ($mapping['type'] === 'increment') {
+                            $new = $this->_prepareValue($mapping, $new);
+                            $old = $this->_prepareValue($mapping, $old);
+                            if ($new >= $old) {
+                                $result[$this->_cmd . 'inc'][$mapping['fieldName']] = $new - $old;
+                            } else {
+                                $result[$this->_cmd . 'inc'][$mapping['fieldName']] = ($old - $new) * -1;
+                            }
+                        } else {
+                            $new = $this->_prepareValue($mapping, $new);
+                            if (isset($new) || $mapping['nullable'] === true) {
+                                $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
+                            } else {
+                                $result[$this->_cmd . 'unset'][$mapping['fieldName']] = true;
+                            }
+                        }
                     }
                 }
             }
@@ -374,24 +400,23 @@ class BasicDocumentPersister
             return null;
         }
         if ($mapping['type'] === 'many') {
-            $values = $value;
-            $value = array();
-            foreach ($values as $rawValue) {
-                $value[] = $this->_prepareValue(array_merge($mapping, array(
-                    'type' => 'one'
-                )), $rawValue);
+            $prepared = array();
+
+            $oneMapping = $mapping;
+            $oneMapping['type'] = 'one';
+            foreach ($value as $rawValue) {
+                $prepared[] = $this->_prepareValue($oneMapping, $rawValue);
             }
-            unset($values, $rawValue);
-        } elseif ((isset($mapping['reference'])) || isset($mapping['embedded'])) {
+        } elseif (isset($mapping['reference']) || isset($mapping['embedded'])) {
             if (isset($mapping['embedded'])) {
-                $value = $this->_prepareEmbeddedDocValue($mapping, $value);
-            } else if (isset($mapping['reference'])) {
-                $value = $this->_prepareReferencedDocValue($mapping, $value);
+                $prepared = $this->_prepareEmbeddedDocValue($mapping, $value);
+            } elseif (isset($mapping['reference'])) {
+                $prepared = $this->_prepareReferencedDocValue($mapping, $value);
             }
         } else {
-            $value = Type::getType($mapping['type'])->convertToDatabaseValue($value);
+            $prepared = Type::getType($mapping['type'])->convertToDatabaseValue($value);
         }
-        return $value;
+        return $prepared;
     }
 
     /**
@@ -465,57 +490,6 @@ class BasicDocumentPersister
     {
         $cursor = $this->_collection->find($query, $select);
         return new MongoCursor($this->_dm, $this->_dm->getHydrator(), $this->_class, $cursor);
-    }
-
-    /**
-     * Add the atomic operator to update or remove a field from a document
-     * based on whether or not the value has changed.
-     *
-     * @param string $fieldName
-     * @param string $new
-     * @param string $old
-     * @param string $result
-     */
-    private function _addFieldUpdateAtomicOperator(array $mapping, $new, $old, array &$result)
-    {
-        if ($mapping['type'] === 'increment') {
-            if ($new >= $old) {
-                $result[$this->_cmd . 'inc'][$mapping['fieldName']] = $new - $old;
-            } else {
-                $result[$this->_cmd . 'inc'][$mapping['fieldName']] = ($old - $new) * -1;
-            }
-        } else {
-            if (isset($new) || $mapping['nullable'] === true) {
-                $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
-            } else {
-                $result[$this->_cmd . 'unset'][$mapping['fieldName']] = true;
-            }
-        }
-    }
-
-    /**
-     * Add the atomic operator to add new values to an array and to remove values
-     * from an array.
-     *
-     * @param string $fieldName
-     * @param array $new
-     * @param array $old
-     * @param string $result
-     */
-    private function _addArrayUpdateAtomicOperator(array $mapping, array $new, array $old, array &$result)
-    {
-        if ($mapping['strategy'] === 'pushPull') {
-            $deleteDiff = array_udiff_assoc($old, $new, function($a, $b) {return $a === $b ? 0 : 1; });
-            $insertDiff = array_udiff_assoc($new, $old, function($a, $b) {return $a === $b ? 0 : 1;});
-            if ($deleteDiff) {
-                $result[$this->_cmd . 'pullAll'][$mapping['fieldName']] = array_values($deleteDiff);
-            }
-            if ($insertDiff) {
-                $result[$this->_cmd . 'pushAll'][$mapping['fieldName']] = array_values($insertDiff);
-            }
-        } elseif ($mapping['strategy'] === 'set') {
-            $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
-        }
     }
 
     /**
