@@ -16,6 +16,9 @@ class Project
     /** @String */
     private $name;
 
+    /** @EmbedOne(targetDocument="Address") */
+    private $address;
+
     public function __construct($name)
     {
         $this->name = $name;
@@ -31,9 +34,18 @@ class Project
         return $this->name;
     }
 
-    public function setName($val)
+    public function setName($name)
     {
-        $this->name = $val;
-        return $this;
+        $this->name = $name;
+    }
+
+    public function setAddress(Address $address)
+    {
+        $this->address = $address;
+    }
+
+    public function getAddress()
+    {
+        return $this->address;
     }
 }

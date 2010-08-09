@@ -58,7 +58,7 @@ abstract class BaseEmployee
 
     public function addNote($note)
     {
-        $this->notes = $note;
+        $this->notes[] = $note;
         return $this;
     }
 

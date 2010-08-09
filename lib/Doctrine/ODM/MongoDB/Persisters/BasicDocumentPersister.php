@@ -324,15 +324,24 @@ class BasicDocumentPersister
                 continue;
             }
 
-            if ($mapping['type'] === 'many') {
+            if ($mapping['type'] === 'many' || $mapping['type'] === 'collection') {
                 if ($mapping['strategy'] === 'pushPull') {
-                    // insert diff
-                    if (isset($changeset[$mapping['fieldName']][2]) && $changeset[$mapping['fieldName']][2]) {
-                        $result[$this->_cmd . 'pushAll'][$mapping['fieldName']] = $this->_prepareValue($mapping, $changeset[$mapping['fieldName']][2]);
-                    }
-                    // delete diff
-                    if (isset($changeset[$mapping['fieldName']][3]) && $changeset[$mapping['fieldName']][3]) {
-                        $result[$this->_cmd . 'pullAll'][$mapping['fieldName']] = $this->_prepareValue($mapping, $changeset[$mapping['fieldName']][3]);
+                    $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
+                    $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
+                    if ($old !== $new) {
+                        $old = $old ? $old : array();
+                        $new = $new ? $new : array();
+                        $deleteDiff = array_udiff_assoc($old, $new, function($a, $b) {return $a === $b ? 0 : 1; });
+                        $insertDiff = array_udiff_assoc($new, $old, function($a, $b) {return $a === $b ? 0 : 1;});
+
+                        // insert diff
+                        if ($insertDiff) {
+                            $result[$this->_cmd . 'pushAll'][$mapping['fieldName']] = $this->_prepareValue($mapping, $insertDiff);
+                        }
+                        // delete diff
+                        if ($deleteDiff) {
+                            $result[$this->_cmd . 'pullAll'][$mapping['fieldName']] = $this->_prepareValue($mapping, $deleteDiff);
+                        }
                     }
                 } elseif ($mapping['strategy'] === 'set') {
                     $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
@@ -347,40 +356,20 @@ class BasicDocumentPersister
                 $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
                 $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
                 if ($old !== $new) {
-                    if ($mapping['type'] === 'collection') {
+                    if ($mapping['type'] === 'increment') {
                         $new = $this->_prepareValue($mapping, $new);
                         $old = $this->_prepareValue($mapping, $old);
-                        if ($mapping['strategy'] === 'pushPull') {
-                            $old = (array) $old;
-                            $new = (array) $new;
-                            $deleteDiff = array_udiff_assoc($old, $new, function($a, $b) {return $a === $b ? 0 : 1; });
-                            $insertDiff = array_udiff_assoc($new, $old, function($a, $b) {return $a === $b ? 0 : 1;});
-                            if ($deleteDiff) {
-                                $result[$this->_cmd . 'pullAll'][$mapping['fieldName']] = array_values($deleteDiff);
-                            }
-                            if ($insertDiff) {
-                                $result[$this->_cmd . 'pushAll'][$mapping['fieldName']] = array_values($insertDiff);
-                            }
-                        } elseif ($mapping['strategy'] === 'set') {
-                            $new = $this->_prepareValue($mapping, $new);
-                            $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
+                        if ($new >= $old) {
+                            $result[$this->_cmd . 'inc'][$mapping['fieldName']] = $new - $old;
+                        } else {
+                            $result[$this->_cmd . 'inc'][$mapping['fieldName']] = ($old - $new) * -1;
                         }
                     } else {
-                        if ($mapping['type'] === 'increment') {
-                            $new = $this->_prepareValue($mapping, $new);
-                            $old = $this->_prepareValue($mapping, $old);
-                            if ($new >= $old) {
-                                $result[$this->_cmd . 'inc'][$mapping['fieldName']] = $new - $old;
-                            } else {
-                                $result[$this->_cmd . 'inc'][$mapping['fieldName']] = ($old - $new) * -1;
-                            }
+                        $new = $this->_prepareValue($mapping, $new);
+                        if (isset($new) || $mapping['nullable'] === true) {
+                            $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
                         } else {
-                            $new = $this->_prepareValue($mapping, $new);
-                            if (isset($new) || $mapping['nullable'] === true) {
-                                $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
-                            } else {
-                                $result[$this->_cmd . 'unset'][$mapping['fieldName']] = true;
-                            }
+                            $result[$this->_cmd . 'unset'][$mapping['fieldName']] = true;
                         }
                     }
                 }
@@ -396,7 +385,7 @@ class BasicDocumentPersister
      */
     private function _prepareValue(array $mapping, $value)
     {
-        if ( ! isset($value)) {
+        if ($value === null) {
             return null;
         }
         if ($mapping['type'] === 'many') {
@@ -496,16 +485,13 @@ class BasicDocumentPersister
      * Returns the reference representation to be stored in mongodb or null if not applicable.
      *
      * @param array $referenceMapping
-     * @param Document $doc
+     * @param Document $document
      * @return array|null
      */
-    private function _prepareReferencedDocValue(array $referenceMapping, $doc)
+    private function _prepareReferencedDocValue(array $referenceMapping, $document)
     {
-        if ( ! is_object($doc)) {
-            return $doc;
-        }
-        $class = $this->_dm->getClassMetadata(get_class($doc));
-        $id = $this->_uow->getDocumentIdentifier($doc);
+        $class = $this->_dm->getClassMetadata(get_class($document));
+        $id = $this->_uow->getDocumentIdentifier($document);
         if (null !== $id) {
             $id = $class->getDatabaseIdentifierValue($id);
         }
@@ -526,19 +512,19 @@ class BasicDocumentPersister
      * Prepares array of values to be stored in mongo to represent embedded object.
      *
      * @param array $embeddedMapping
-     * @param Document $doc
+     * @param Document $embeddedDocument
      * @return array
      */
-    private function _prepareEmbeddedDocValue(array $embeddedMapping, $doc)
+    private function _prepareEmbeddedDocValue(array $embeddedMapping, $embeddedDocument)
     {
-        if ( ! is_object($doc)) {
-            return $doc;
-        }
-        $class = $this->_dm->getClassMetadata(get_class($doc));
-        $changeset = array();
+        $class = $this->_dm->getClassMetadata(get_class($embeddedDocument));
+        $embeddedDocumentValue = array();
         foreach ($class->fieldMappings as $mapping) {
-            $rawValue = $class->getFieldValue($doc, $mapping['fieldName']);
-            if ( ! isset($rawValue)) {
+            $rawValue = $class->getFieldValue($embeddedDocument, $mapping['fieldName']);
+            if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
+                continue;
+            }
+            if ($rawValue === null && $mapping['nullable'] === false) {
                 continue;
             }
             if (isset($mapping['embedded']) || isset($mapping['reference'])) {
@@ -564,13 +550,13 @@ class BasicDocumentPersister
             } else {
                 $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
             }
-            $changeset[$mapping['fieldName']] = $value;
+            $embeddedDocumentValue[$mapping['fieldName']] = $value;
         }
         if ( ! isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_name';
             $discriminatorValue = isset($embeddedMapping['discriminatorMap']) ? array_search($class->getName(), $embeddedMapping['discriminatorMap']) : $class->getName();
-            $changeset[$discriminatorField] = $discriminatorValue;
+            $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
         }
-        return $changeset;
+        return $embeddedDocumentValue;
     }
 }

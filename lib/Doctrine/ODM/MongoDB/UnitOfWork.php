@@ -366,21 +366,8 @@ class UnitOfWork
             if ( ! $class->isIdentifier($name) || $class->getAllowCustomID()) {
                 $actualData[$name] = $class->getFieldValue($document, $mapping['fieldName']);
             }
-            if ($class->isCollectionValuedReference($name) && $actualData[$name] !== null
-                    && ! ($actualData[$name] instanceof PersistentCollection)) {
-                // If $actualData[$name] is not a Collection then use an ArrayCollection.
-                if ( ! $actualData[$name] instanceof Collection) {
-                    $actualData[$name] = new ArrayCollection($actualData[$name]);
-                }
-                
-                // Inject PersistentCollection
-                $coll = new PersistentCollection($this->_dm, $actualData[$name]);
-                $coll->setOwner($document, $mapping);
-                $coll->setDirty( ! $coll->isEmpty());
-                $class->reflFields[$name]->setValue($document, $coll);
-                $actualData[$name] = $coll;
-            } elseif ($class->isCollectionValuedEmbed($name) && $actualData[$name] !== null
-                    && ! ($actualData[$name] instanceof Collection)) {
+            if (($class->isCollectionValuedReference($name) || $class->isCollectionValuedEmbed($name))
+                    && $actualData[$name] !== null && ! ($actualData[$name] instanceof PersistentCollection)) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
                 if ( ! $actualData[$name] instanceof Collection) {
                     $actualData[$name] = new ArrayCollection($actualData[$name]);
@@ -417,18 +404,10 @@ class UnitOfWork
                         $orgValue = $orgValue->getSnapshot();
                     }
                     if ($actualValue instanceof PersistentCollection) {
-                        $insertDiff = $actualValue->getInsertDiff();
-                        $deleteDiff = $actualValue->getDeleteDiff();
                         $actualValue = $actualValue->toArray();
                     }
                     if ($orgValue !== $actualValue) {
                         $changeSet[$propName] = array($orgValue, $actualValue);
-                    }
-                    if (isset($insertDiff)) {
-                        $changeSet[$propName][2] = $insertDiff;
-                    }
-                    if (isset($deleteDiff)) {
-                        $changeSet[$propName][3] = $deleteDiff;
                     }
                 } elseif ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                     $changeSet[$propName] = array($orgValue, $actualValue);

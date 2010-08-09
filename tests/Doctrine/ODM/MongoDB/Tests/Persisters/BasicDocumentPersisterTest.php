@@ -15,7 +15,8 @@ use Doctrine\ODM\MongoDB\Persisters\BasicDocumentPersister,
     Documents\User,
     Documents\Strategy,
     Documents\Message,
-    Documents\Task;
+    Documents\Task,
+    Documents\Project;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
@@ -45,6 +46,77 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         parent::tearDown();
     }
 
+    /*
+    public function testEmbededUpdate()
+    {
+        $subAddress =  new Address();
+        $subAddress->setCity('Chicago');
+
+        $address = new Address();
+        $address->setCity('Nashville');
+        $address->setSubAddress($subAddress);
+        $address->count = 1;
+
+        $project = new Project('Test');
+        $project->setAddress($address);
+
+        $originalData = array(
+            'name' => 'test',
+            'address' => clone $address
+        );
+        $this->dm->getUnitOfWork()->registerManaged($project, 'theprojectid', $originalData);
+        $originalData = array(
+            'city' => 'Nashville',
+            'count' => 0,
+            'subAddress' => clone $subAddress
+        );
+        $this->dm->getUnitOfWork()->registerManaged($address, 'theaddressid', $originalData);
+        $originalData = array(
+            'city' => 'Chicago',
+            'count' => 0
+        );
+        $this->dm->getUnitOfWork()->registerManaged($subAddress, 'thesubaddressid', $originalData);
+
+        $address->setCity('Atlanta');
+        
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $changeSet = $this->dm->getUnitOfWork()->getDocumentChangeSet($address);
+
+        $update = $this->persister->prepareUpdateData($project);
+    }
+
+    public function testOneEmbedded()
+    {
+        $address = new Address();
+        $address->setCity('Nashville');
+
+        $user = new User();
+        $user->setUsername('jon');
+        $user->setAddress($address);
+
+        $originalData = array(
+            'username' => 'jon',
+            'address' => clone $address,
+            'count' => 0,
+            'hits' => 0,
+            'createdAt' => $user->getCreatedAt()
+        );
+        $this->dm->getUnitOfWork()->registerManaged($user, 'theuserid', $originalData);
+        $originalData = array(
+            'city' => 'Nashville'
+        );
+        $this->dm->getUnitOfWork()->registerManaged($address, 'theaddressid', $originalData);
+        $address->setCity('Atlanta');
+        
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $changeSet = $this->dm->getUnitOfWork()->getDocumentChangeSet($address);
+        $this->assertEquals(array('city' => array('Nashville', 'Atlanta'), 'count' => array(null, 0)), $changeSet);
+        
+        $update = $this->persister->prepareUpdateData($user);
+        $this->assertEquals(array('$set' => array('address.city' => 'Atlanta'), '$inc' => array('address.count' => 0)), $update);
+    }
+    */
+
     public function testNewDocumentInsert()
     {
         $account = new Account();
@@ -58,7 +130,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->persister->expects($this->once())
             ->method('executeInserts');
 
-        $this->dm->persist($user);
+        $this->dm->getUnitOfWork()->registerManaged($user, 'theid', array());
         $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($user);
         $this->dm->flush();
@@ -383,10 +455,10 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertTrue(array_key_exists($this->escape('pushAll'), $update));
         $this->assertTrue(array_key_exists('tags', $update[$this->escape('pushAll')]));
-        $this->assertEquals(4, count($update[$this->escape('pushAll')]['tags']));
+        $this->assertEquals(2, count($update[$this->escape('pushAll')]['tags']));
         $this->assertTrue(array_key_exists($this->escape('pullAll'), $update));
         $this->assertTrue(array_key_exists('tags', $update[$this->escape('pullAll')]));
-        $this->assertEquals(4, count($update[$this->escape('pullAll')]['tags']));
+        $this->assertEquals(2, count($update[$this->escape('pullAll')]['tags']));
 
         $this->dm->flush();
         $this->dm->clear();

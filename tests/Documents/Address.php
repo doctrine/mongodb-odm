@@ -17,6 +17,22 @@ class Address
     /** @String */
     private $zipcode;
 
+    /** @Increment */
+    public $count = 0;
+
+    /** @EmbedOne(targetDocument="Address") */
+    private $subAddress;
+
+    public function setSubAddress(Address $subAddress)
+    {
+        $this->subAddress = $subAddress;
+    }
+
+    public function getSubAddress()
+    {
+        return $this->subAddress;
+    }
+
     public function getAddress()
     {
         return $this->address;

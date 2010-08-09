@@ -82,7 +82,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('id')->equals($user->getId())
             ->getSingleResult();
 
-        $this->assertEquals($user->getPhonenumbers(), $user2->getPhonenumbers()->unwrap());
+        $this->assertEquals($user->getPhonenumbers()->unwrap(), $user2->getPhonenumbers()->unwrap());
     }
 
     public function testOneReference()

@@ -31,6 +31,28 @@ use Documents\User,
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    /*
+    public function testNewEmbedded()
+    {
+        $address = new Address();
+        $address->setCity('Nashville');
+        $address->count = 1;
+
+        $user = new Project('Test');
+        $user->setAddress($address);
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $address->count = 5;
+        $address->setCity('Atlanta');
+        $this->dm->flush();
+
+        $test = $this->dm->getDocumentCollection('Documents\Project')->findOne(array('name' => 'Test'));
+        $this->assertEquals('Atlanta', $test['address']['city']);
+        $this->assertEquals(5, $test['address']['count']);
+    }
+    */
+
     public function testPersistingNewDocumentWithOnlyOneReference()
     {
         $server = new \Documents\GuestServer();
