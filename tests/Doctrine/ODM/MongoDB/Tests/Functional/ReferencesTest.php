@@ -10,7 +10,7 @@ use Documents\Address,
     Documents\Account,
     Documents\Group,
     Documents\User,
-    Doctrine\ODM\MongoDB\Collection\PersistentReferenceCollection;
+    Doctrine\ODM\MongoDB\PersistentCollection;
 
 class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -119,7 +119,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $groups = $user->getGroups();
 
-        $this->assertTrue($groups instanceof PersistentReferenceCollection);
+        $this->assertTrue($groups instanceof PersistentCollection);
         $this->assertTrue($groups[0]->getId() !== '');
         $this->assertTrue($groups[1]->getId() !== '');
         $this->dm->clear();
@@ -135,7 +135,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($groupsArray[0]->__isInitialized__);
         $this->assertTrue($groupsArray[1]->__isInitialized__);
 
-        $this->assertTrue($groups instanceof PersistentReferenceCollection);
+        $this->assertTrue($groups instanceof PersistentCollection);
         $this->assertTrue($groups[0] instanceof Group);
         $this->assertTrue($groups[1] instanceof Group);
 

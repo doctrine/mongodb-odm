@@ -12,7 +12,7 @@ use Documents\Address,
     Documents\User,
     Documents\Functional\EmbeddedTestLevel0,
     Documents\Functional\EmbeddedTestLevel1,
-    Doctrine\ODM\MongoDB\Collection\PersistentReferenceCollection;
+    Doctrine\ODM\MongoDB\PersistentCollection;
 
 class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

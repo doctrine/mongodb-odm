@@ -64,5 +64,4 @@ class RemoveTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals(2, count($user->getGroups()));
     }
-    
 }

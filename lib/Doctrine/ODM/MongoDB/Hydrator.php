@@ -22,8 +22,7 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Query,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
-    Doctrine\ODM\MongoDB\Collection\PersistentReferenceCollection,
-    Doctrine\ODM\MongoDB\Collection\PersistentEmbeddedCollection,
+    Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection;
 
@@ -110,7 +109,7 @@ class Hydrator
                     $this->hydrate($value, $embeddedDocument);
                 } elseif ($mapping['type'] === 'many') {
                     $embeddedDocuments = $rawValue;
-                    $coll = new PersistentEmbeddedCollection(new ArrayCollection());
+                    $coll = new PersistentCollection($this->_dm, new ArrayCollection());
                     foreach ($embeddedDocuments as $embeddedDocument) {
                         $className = $this->_getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                         $embeddedMetadata = $this->_dm->getClassMetadata($className);
@@ -132,7 +131,7 @@ class Hydrator
                     $value = $this->_dm->getReference($className, $id);
                 } elseif ($mapping['type'] === 'many' && (is_array($reference) || $reference instanceof Collection)) {
                     $references = $reference;
-                    $coll = new PersistentReferenceCollection($this->_dm, new ArrayCollection());
+                    $coll = new PersistentCollection($this->_dm, new ArrayCollection());
                     $coll->setInitialized(false);
                     foreach ($references as $reference) {
                         $className = $this->_getClassNameFromDiscriminatorValue($mapping, $reference);

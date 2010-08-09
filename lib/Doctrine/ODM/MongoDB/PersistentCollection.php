@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Collection;
+namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Collections\Collection,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
@@ -33,7 +33,7 @@ use Doctrine\Common\Collections\Collection,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-abstract class AbstractPersistentCollection implements Collection
+class PersistentCollection implements Collection
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -41,11 +41,11 @@ abstract class AbstractPersistentCollection implements Collection
      *
      * @var array
      */
-    protected $_snapshot = array();
+    private $_snapshot = array();
 
-    protected $_owner;
+    private $_owner;
 
-    protected $_mapping;
+    private $_mapping;
 
     /**
      * Whether the collection is dirty and needs to be synchronized with the database
@@ -53,38 +53,77 @@ abstract class AbstractPersistentCollection implements Collection
      *
      * @var boolean
      */
-    protected $_isDirty = false;
+    private $_isDirty = false;
 
     /**
      * Whether the collection has already been initialized.
      * 
      * @var boolean
      */
-    protected $_initialized = true;
+    private $_initialized = true;
     
     /**
      * The wrapped Collection instance.
      * 
      * @var Collection
      */
-    protected $_coll;
-
-    public function __construct(Collection $coll)
-    {
-        $this->_coll = $coll;
-    }
+    private $_coll;
 
     /**
-     * Method for initialize the collection to be overridden in subclass.
+     * The DocumentManager that manages the persistence of the collection.
+     *
+     * @var Doctrine\ODM\MongoDB\DocumentManager
      */
-    protected function _initialize()
+    private $_dm;
+
+    /**
+     * Mongo command prefix
+     * @var string
+     */
+    private $_cmd;
+
+    public function __construct(DocumentManager $dm, Collection $coll)
     {
+        $this->_coll = $coll;
+        $this->_dm = $dm;
+        $this->_cmd = $dm->getConfiguration()->getMongoCmd();
+    }
+
+    private function _initialize()
+    {
+        if ( ! $this->_initialized) {
+            $groupedIds = array();
+            foreach ($this->_coll as $document) {
+                // Skip initialized proxy documents, no need to fetch them
+                if ($document instanceof Proxy && $document->__isInitialized__ === true) {
+                    continue;
+                }
+                $class = $this->_dm->getClassMetadata(get_class($document));
+                $groupedIds[$class->name][] = $class->getIdentifierObject($document);
+            }
+
+            foreach ($groupedIds as $className => $ids) {
+                $collection = $this->_dm->getDocumentCollection($className);
+                $data = $collection->find(array('_id' => array($this->_cmd . 'in' => $ids)));
+                $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
+                foreach ($data as $id => $documentData) {
+                    $document = $this->_dm->getUnitOfWork()->getOrCreateDocument($className, $documentData, $hints);
+                    if ($document instanceof Proxy) {
+                        $document->__isInitialized__ = true;
+                        unset($document->__dm);
+                        unset($document->__identifier);
+                    }
+                }
+            }
+
+            $this->_initialized = true;
+        }
     }
 
     /**
      * Marks this collection as changed/dirty.
      */
-    protected function _changed()
+    private function _changed()
     {
         if ( ! $this->_isDirty) {
             $this->_isDirty = true;
