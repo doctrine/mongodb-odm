@@ -20,7 +20,7 @@ class User
     /** @ReferenceOne(targetDocument="Account") */
     private $account;
 
-    /** @EmbedOne(targetDocument="Phonenumber") */
+    /** @EmbedMany(targetDocument="Phonenumber") */
     private $phonenumbers = array();
 
     public function getId()

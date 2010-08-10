@@ -33,6 +33,28 @@ use Documents\User,
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function testNestedCategories()
+    {
+        $root = new \Documents\Category('Root');
+        $child1 = new \Documents\SubCategory('Child 1');
+        $child2 = new \Documents\SubCategory('Child 2');
+        $child1->addChild($child2);
+        $root->addChild($child1);
+
+        $this->dm->persist($root);
+        $this->dm->flush();
+
+        $child1->setName('Child 1 Changed');
+        $child2->setName('Child 2 Changed');
+        $root->setname('Root Changed');
+        $this->dm->flush();
+
+        $test = $this->dm->getDocumentCollection('Documents\Category')->findOne();
+        $this->assertEquals('Child 1 Changed', $test['children'][0]['name']);
+        $this->assertEquals('Child 2 Changed', $test['children'][0]['children'][0]['name']);
+        $this->assertEquals('Root Changed', $test['name']);
+    }
+
     public function testNotSaved()
     {
         $test = new \Documents\Functional\AlsoLoad();

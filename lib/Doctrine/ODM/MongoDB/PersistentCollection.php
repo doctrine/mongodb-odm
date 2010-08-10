@@ -82,11 +82,13 @@ class PersistentCollection implements Collection
      */
     private $cmd;
 
-    public function __construct(DocumentManager $dm, Collection $coll)
+    public function __construct(Collection $coll, DocumentManager $dm = null)
     {
         $this->coll = $coll;
-        $this->dm = $dm;
-        $this->cmd = $dm->getConfiguration()->getMongoCmd();
+        if ($dm !== null) {
+            $this->dm = $dm;
+            $this->cmd = $dm->getConfiguration()->getMongoCmd();
+        }
     }
 
     private function initialize()

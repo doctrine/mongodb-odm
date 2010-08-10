@@ -356,6 +356,7 @@ class UnitOfWork
         }
         
         $oid = spl_object_hash($document);
+        $parentOid = spl_object_hash($parentDocument);
 
         $actualData = array();
         foreach ($class->fieldMappings as $name => $mapping) {
@@ -370,7 +371,11 @@ class UnitOfWork
                 }
 
                 // Inject PersistentCollection
-                $coll = new PersistentCollection($this->dm, $actualData[$name]);
+                if ($class->isCollectionValuedReference($name)) {
+                    $coll = new PersistentCollection($actualData[$name], $this->dm);
+                } else {
+                    $coll = new PersistentCollection($actualData[$name]);
+                }
                 $coll->setOwner($document, $mapping);
                 $coll->setDirty( ! $coll->isEmpty());
                 $class->reflFields[$name]->setValue($document, $coll);
@@ -426,7 +431,9 @@ class UnitOfWork
             if ($changeSet) {
                 $this->documentChangeSets[$oid] = $changeSet;
                 $this->originalDocumentData[$oid] = $actualData;
-                $this->documentUpdates[$oid] = $document;
+                if ( ! $class->isEmbeddedDocument) {
+                    $this->documentUpdates[$oid] = $document;
+                }
             }
         }
 
@@ -462,7 +469,9 @@ class UnitOfWork
         // Compute changes for other MANAGED documents. Change tracking policies take effect here.
         foreach ($this->identityMap as $className => $documents) {
             $class = $this->dm->getClassMetadata($className);
-
+            if ($class->isEmbeddedDocument) {
+                continue;
+            }
             foreach ($documents as $document) {
                 // Ignore uninitialized proxy objects
                 if (/* $document is readOnly || */ $document instanceof Proxy && ! $document->__isInitialized__) {
@@ -1308,7 +1317,7 @@ class UnitOfWork
                             }
                         }
                     } else {
-                        $coll = new PersistentCollection($this->dm, new ArrayCollection());
+                        $coll = new PersistentCollection(new ArrayCollection(), $this->dm);
                         $coll->setOwner($managedCopy, $mapping2);
                         $coll->setInitialized($mapping2['isCascadeMerge']);
                         $prop->setValue($managedCopy, $coll);
