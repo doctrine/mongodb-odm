@@ -110,8 +110,8 @@ class PersistentCollection implements Collection
                     $document = $this->dm->getUnitOfWork()->getOrCreateDocument($className, $documentData, $hints);
                     if ($document instanceof Proxy) {
                         $document->__isInitialized__ = true;
-                        unset($document->_dm);
-                        unset($document->_identifier);
+                        unset($document->__dm);
+                        unset($document->__identifier);
                     }
                 }
             }

@@ -1680,9 +1680,14 @@ class UnitOfWork
      * @return object The document instance.
      * @internal Highly performance-sensitive method.
      */
-    public function getOrCreateDocument($className, array $data, &$hints = array())
+    public function getOrCreateDocument($className, $data, &$hints = array())
     {
         $class = $this->dm->getClassMetadata($className);
+        if ($data instanceof \MongoGridFSFile) {
+            $file = $data;
+            $data = $file->file;
+            $data[$class->file] = $file;
+        }
 
         if ($class->hasDiscriminator()) {
             if (isset($data[$class->discriminatorField['name']])) {
