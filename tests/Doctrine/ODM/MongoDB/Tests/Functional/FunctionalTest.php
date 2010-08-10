@@ -33,6 +33,19 @@ use Documents\User,
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function testNotSaved()
+    {
+        $test = new \Documents\Functional\AlsoLoad();
+        $test->bar = 'test';
+        $test->firstName = 'Jon';
+        $this->dm->persist($test);
+        $this->dm->flush();
+
+        $test = $this->dm->getDocumentCollection('Documents\Functional\AlsoLoad')->findOne(array('firstName' => 'Jon'));
+        $this->assertEquals('Jon', $test['firstName']);
+        $this->assertFalse(isset($test['bar']));
+    }
+
     public function testManyEmbedded()
     {
         $album = new Album('Jon');
