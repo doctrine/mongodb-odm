@@ -33,19 +33,19 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
 class MongoCursor implements \Iterator, \Countable
 {
     /** The DocumentManager instance. */
-    private $_dm;
+    private $dm;
 
     /** The UnitOfWork instance. */
-    private $_uow;
+    private $uow;
 
     /** The ClassMetadata instance. */
-    private $_class;
+    private $class;
 
     /** The PHP MongoCursor being wrapped */
-    private $_mongoCursor;
+    private $mongoCursor;
 
     /** Whether or not to try and hydrate the returned data */
-    private $_hydrate = true;
+    private $hydrate = true;
 
     /**
      * Create a new MongoCursor which wraps around a given PHP MongoCursor.
@@ -57,11 +57,11 @@ class MongoCursor implements \Iterator, \Countable
      */
     public function __construct(DocumentManager $dm, Hydrator $hydrator, ClassMetadata $class, \MongoCursor $mongoCursor)
     {
-        $this->_dm = $dm;
-        $this->_uow = $this->_dm->getUnitOfWork();
-        $this->_hydrator = $hydrator;
-        $this->_class = $class;
-        $this->_mongoCursor = $mongoCursor;
+        $this->dm = $dm;
+        $this->uow = $this->dm->getUnitOfWork();
+        $this->hydrator = $hydrator;
+        $this->class = $class;
+        $this->mongoCursor = $mongoCursor;
     }
 
     /**
@@ -71,7 +71,7 @@ class MongoCursor implements \Iterator, \Countable
      */
     public function getMongoCursor()
     {
-        return $this->_mongoCursor;
+        return $this->mongoCursor;
     }
 
     /**
@@ -83,25 +83,25 @@ class MongoCursor implements \Iterator, \Countable
     {
         if ($bool !== null)
         {
-            $this->_hydrate = $bool;
+            $this->hydrate = $bool;
             return $this;
         } else {
-            return $this->_hydrate;
+            return $this->hydrate;
         }
     }
 
     /** @override */
     public function current()
     {
-        if ($this->_mongoCursor instanceof \MongoGridFSCursor) {
-            $file = $this->_mongoCursor->current();
+        if ($this->mongoCursor instanceof \MongoGridFSCursor) {
+            $file = $this->mongoCursor->current();
             $current = $file->file;
-            $current[$this->_class->file] = $file;
+            $current[$this->class->file] = $file;
         } else {
-            $current = $this->_mongoCursor->current();
+            $current = $this->mongoCursor->current();
         }
-        if ($this->_hydrate) {
-            return $this->_uow->getOrCreateDocument($this->_class->name, $current);
+        if ($this->hydrate) {
+            return $this->uow->getOrCreateDocument($this->class->name, $current);
         } else {
             return $current;
         }
@@ -110,31 +110,31 @@ class MongoCursor implements \Iterator, \Countable
     /** @proxy */
     public function next()
     {
-        return $this->_mongoCursor->next();
+        return $this->mongoCursor->next();
     }
 
     /** @proxy */
     public function key()
     {
-        return $this->_mongoCursor->key();
+        return $this->mongoCursor->key();
     }
 
     /** @proxy */
     public function valid()
     {
-        return $this->_mongoCursor->valid();
+        return $this->mongoCursor->valid();
     }
 
     /** @proxy */
     public function rewind()
     {
-        return $this->_mongoCursor->rewind();
+        return $this->mongoCursor->rewind();
     }
 
     /** @proxy */
     public function count()
     {
-        return $this->_mongoCursor->count();
+        return $this->mongoCursor->count();
     }
 
     /**
@@ -163,9 +163,9 @@ class MongoCursor implements \Iterator, \Countable
     /** @proxy */
     public function __call($method, $arguments)
     {
-        if (method_exists($this->_mongoCursor, $method)) {
-            $return = call_user_func_array(array($this->_mongoCursor, $method), $arguments);
-            if ($return === $this->_mongoCursor) {
+        if (method_exists($this->mongoCursor, $method)) {
+            $return = call_user_func_array(array($this->mongoCursor, $method), $arguments);
+            if ($return === $this->mongoCursor) {
                 return $this;
             }
             return $return;

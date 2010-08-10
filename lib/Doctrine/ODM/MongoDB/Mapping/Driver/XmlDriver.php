@@ -37,7 +37,7 @@ class XmlDriver extends AbstractFileDriver
      *
      * @var string
      */
-    protected $_fileExtension = '.dcm.xml';
+    protected $fileExtension = '.dcm.xml';
 
     /**
      * {@inheritdoc}
@@ -109,25 +109,25 @@ class XmlDriver extends AbstractFileDriver
         }
         if (isset($xmlRoot->{'embed-one'})) {
             foreach ($xmlRoot->{'embed-one'} as $embed) {
-                $mapping = $this->_getMappingFromEmbed($embed, 'one');
+                $mapping = $this->getMappingFromEmbed($embed, 'one');
                 $class->mapField($mapping);
             }
         }
         if (isset($xmlRoot->{'embed-many'})) {
             foreach ($xmlRoot->{'embed-many'} as $embed) {
-                $mapping = $this->_getMappingFromEmbed($embed, 'many');
+                $mapping = $this->getMappingFromEmbed($embed, 'many');
                 $class->mapField($mapping);
             }
         }
         if (isset($xmlRoot->{'reference-many'})) {
             foreach ($xmlRoot->{'reference-many'} as $reference) {
-                $mapping = $this->_getMappingFromReference($reference, 'many');
+                $mapping = $this->getMappingFromReference($reference, 'many');
                 $class->mapField($mapping);
             }
         }
         if (isset($xmlRoot->{'reference-one'})) {
             foreach ($xmlRoot->{'reference-one'} as $reference) {
-                $mapping = $this->_getMappingFromReference($reference, 'one');
+                $mapping = $this->getMappingFromReference($reference, 'one');
                 $class->mapField($mapping);
             }
         }
@@ -138,7 +138,7 @@ class XmlDriver extends AbstractFileDriver
         }
     }
 
-    private function _getMappingFromEmbed($embed, $type)
+    private function getMappingFromEmbed($embed, $type)
     {
         $attributes = $embed->attributes();
         $mapping = array(
@@ -150,7 +150,7 @@ class XmlDriver extends AbstractFileDriver
         return $mapping;
     }
 
-    private function _getMappingFromReference($reference, $type)
+    private function getMappingFromReference($reference, $type)
     {
         $cascade = array_keys((array) $reference->cascade);
         if (1 === count($cascade)) {
@@ -167,7 +167,7 @@ class XmlDriver extends AbstractFileDriver
         return $mapping;
     }
 
-    protected function _loadMappingFile($file)
+    protected function loadMappingFile($file)
     {
         $result = array();
         $xmlElement = simplexml_load_file($file);

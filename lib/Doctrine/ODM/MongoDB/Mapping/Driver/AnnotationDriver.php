@@ -40,14 +40,14 @@ class AnnotationDriver implements Driver
      *
      * @var AnnotationReader
      */
-    private $_reader;
+    private $reader;
 
     /**
      * The paths where to look for mapping files.
      *
      * @var array
      */
-    private $_paths = array();
+    private $paths = array();
 
     /**
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
@@ -58,7 +58,7 @@ class AnnotationDriver implements Driver
      */
     public function __construct(AnnotationReader $reader, $paths = null)
     {
-        $this->_reader = $reader;
+        $this->reader = $reader;
         if ($paths) {
             $this->addPaths((array) $paths);
         }
@@ -71,7 +71,7 @@ class AnnotationDriver implements Driver
      */
     public function addPaths(array $paths)
     {
-        $this->_paths = array_unique(array_merge($this->_paths, $paths));
+        $this->paths = array_unique(array_merge($this->paths, $paths));
     }
 
     /**
@@ -81,7 +81,7 @@ class AnnotationDriver implements Driver
      */
     public function getPaths()
     {
-        return $this->_paths;
+        return $this->paths;
     }
 
     /**
@@ -91,7 +91,7 @@ class AnnotationDriver implements Driver
     {
         $reflClass = $class->getReflectionClass();
 
-        $classAnnotations = $this->_reader->getClassAnnotations($reflClass);
+        $classAnnotations = $this->reader->getClassAnnotations($reflClass);
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Document'])) {
             $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Document'];
         } elseif (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass'])) {
@@ -141,14 +141,14 @@ class AnnotationDriver implements Driver
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
 
-            if ($alsoLoad = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
+            if ($alsoLoad = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
                 $mapping['alsoLoadFields'] = (array) $alsoLoad->value;
             }
-            if ($notSaved = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\NotSaved')) {
+            if ($notSaved = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\NotSaved')) {
                 $mapping['notSaved'] = true;
             }
 
-            foreach ($this->_reader->getPropertyAnnotations($property) as $fieldAnnot) {
+            foreach ($this->reader->getPropertyAnnotations($property) as $fieldAnnot) {
                 if ($fieldAnnot instanceof \Doctrine\ODM\MongoDB\Mapping\Field) {
                     if ($fieldAnnot instanceof \Doctrine\ODM\MongoDB\Mapping\Id && $fieldAnnot->custom) {
                         $fieldAnnot->type = 'custom_id';
@@ -162,7 +162,7 @@ class AnnotationDriver implements Driver
 
         foreach ($methods as $method) {
             if ($method->isPublic()) {
-                if ($alsoLoad = $this->_reader->getMethodAnnotation($method, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
+                if ($alsoLoad = $this->reader->getMethodAnnotation($method, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
                     $fields = (array) $alsoLoad->value;
                     foreach ($fields as $value) {
                         $class->fieldMappings[$value]['alsoLoadMethods'][] = $method->getName();
@@ -173,7 +173,7 @@ class AnnotationDriver implements Driver
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\HasLifecycleCallbacks'])) {
             foreach ($methods as $method) {
                 if ($method->isPublic()) {
-                    $annotations = $this->_reader->getMethodAnnotations($method);
+                    $annotations = $this->reader->getMethodAnnotations($method);
 
                     if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PrePersist'])) {
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::prePersist);

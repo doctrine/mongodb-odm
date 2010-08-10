@@ -36,19 +36,19 @@ class Parser
      *
      * @var Doctrine\ODM\MongoDB\DocumentManager
      */
-    private $_dm;
+    private $dm;
 
     /**
      * The lexer.
      *
      * @var Doctrine\ODM\MongoDB\Query\Lexer
      */
-    private $_lexer;
+    private $lexer;
 
     public function __construct(DocumentManager $dm)
     {
-        $this->_dm = $dm;
-        $this->_lexer = new Lexer;
+        $this->dm = $dm;
+        $this->lexer = new Lexer;
     }
 
     public function parse($query, $parameters = array())
@@ -57,8 +57,8 @@ class Parser
             throw new \InvalidArgumentException('Cannot mixed named and regular placeholders.');
         }
 
-        $this->_lexer->reset();
-        $this->_lexer->setInput($query);
+        $this->lexer->reset();
+        $this->lexer->setInput($query);
 
         $query = $this->QueryLanguage($parameters);
 
@@ -74,10 +74,10 @@ class Parser
      */
     public function match($token)
     {
-        if ( ! ($this->_lexer->lookahead['type'] === $token)) {
-            $this->syntaxError($this->_lexer->getLiteral($token));
+        if ( ! ($this->lexer->lookahead['type'] === $token)) {
+            $this->syntaxError($this->lexer->getLiteral($token));
         }
-        $this->_lexer->moveNext();
+        $this->lexer->moveNext();
     }
 
     /**
@@ -90,12 +90,12 @@ class Parser
     public function syntaxError($expected, $token = null)
     {
         if ($token === null) {
-            $token = $this->_lexer->lookahead;
+            $token = $this->lexer->lookahead;
         }
 
         $message =  "Expected {$expected}, got ";
 
-        if ($this->_lexer->lookahead === null) {
+        if ($this->lexer->lookahead === null) {
             $message .= 'end of string';
         } else {
             $message .= "'{$token['value']}' at position {$token['position']}";
@@ -111,11 +111,11 @@ class Parser
      */
     public function QueryLanguage(array &$parameters)
     {
-        $this->_lexer->moveNext();
+        $this->lexer->moveNext();
 
-        $query = new Query($this->_dm);
+        $query = new Query($this->dm);
 
-        switch ($this->_lexer->lookahead['type']) {
+        switch ($this->lexer->lookahead['type']) {
             case Lexer::T_FIND:
                 $this->FindQuery($query, $parameters);
                 break;
@@ -142,21 +142,21 @@ class Parser
     {
         $this->FindClause($query);
 
-        if ($this->_lexer->isNextToken(Lexer::T_WHERE)) {
+        if ($this->lexer->isNextToken(Lexer::T_WHERE)) {
             $this->WhereClause($query, $parameters);
         }
 
-        if ($this->_lexer->isNextToken(Lexer::T_MAP)) {
+        if ($this->lexer->isNextToken(Lexer::T_MAP)) {
             $this->MapClause($query, $parameters);
         }
 
-        if ($this->_lexer->isNextToken(Lexer::T_REDUCE)) {
+        if ($this->lexer->isNextToken(Lexer::T_REDUCE)) {
             $this->ReduceClause($query, $parameters);
         }
 
-        while ($this->_lexer->isNextToken($this->_lexer->lookahead['type'])) {
-            $this->match($this->_lexer->lookahead['type']);
-            switch ($this->_lexer->token['type']) {
+        while ($this->lexer->isNextToken($this->lexer->lookahead['type'])) {
+            $this->match($this->lexer->lookahead['type']);
+            switch ($this->lexer->token['type']) {
                 case Lexer::T_SORT:
                     $this->SortClause($query, $parameters);
                     break;
@@ -179,22 +179,22 @@ class Parser
     {
         $this->match(Lexer::T_FIND);
 
-        if ($this->_lexer->isNextToken(Lexer::T_ALL)) {
+        if ($this->lexer->isNextToken(Lexer::T_ALL)) {
             $this->match(Lexer::T_ALL);
         } else {
             $this->SelectField($query);
-            while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+            while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
                 $this->match(Lexer::T_COMMA);
                 $this->SelectField($query);
             }
         }
 
-        if ($this->_lexer->isNextToken(Lexer::T_FROM)) {
+        if ($this->lexer->isNextToken(Lexer::T_FROM)) {
             $this->match(Lexer::T_FROM);
         }
 
         $this->match(Lexer::T_IDENTIFIER);
-        $query->find($this->_lexer->token['value']);
+        $query->find($this->lexer->token['value']);
     }
 
     /**
@@ -202,12 +202,12 @@ class Parser
      */
     public function SelectField(Query $query)
     {
-        if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
+        if ($this->lexer->isNextToken(Lexer::T_DISTINCT)) {
             $this->match(Lexer::T_DISTINCT);
             $fieldName = $this->DocumentFieldName();
             $query->distinct($fieldName);
-            if ( ! $this->_lexer->isNextToken(Lexer::T_IDENTIFIER) && ! $this->_lexer->isNextToken(Lexer::T_FROM)) {
-                $this->syntaxError($this->_lexer->getLiteral(Lexer::T_IDENTIFIER));
+            if ( ! $this->lexer->isNextToken(Lexer::T_IDENTIFIER) && ! $this->lexer->isNextToken(Lexer::T_FROM)) {
+                $this->syntaxError($this->lexer->getLiteral(Lexer::T_IDENTIFIER));
             }
             return;
         } else {
@@ -216,17 +216,17 @@ class Parser
 
         $limit = null;
         $skip = null;
-        while ($this->_lexer->isNextToken($this->_lexer->lookahead['type'])) {
-            switch ($this->_lexer->lookahead['type']) {
+        while ($this->lexer->isNextToken($this->lexer->lookahead['type'])) {
+            switch ($this->lexer->lookahead['type']) {
                 case Lexer::T_SKIP;
                     $this->match(Lexer::T_SKIP);
                     $this->match(Lexer::T_INTEGER);
-                    $skip = $this->_lexer->token['value'];
+                    $skip = $this->lexer->token['value'];
                     break;
                 case Lexer::T_LIMIT:
                     $this->match(Lexer::T_LIMIT);
                     $this->match(Lexer::T_INTEGER);
-                    $limit = $this->_lexer->token['value'];
+                    $limit = $this->lexer->token['value'];
                     break;
                 default:
                     break(2);
@@ -248,15 +248,15 @@ class Parser
     {
         $this->match(Lexer::T_UPDATE);
         $this->match(Lexer::T_IDENTIFIER);
-        $query->update($this->_lexer->token['value']);
+        $query->update($this->lexer->token['value']);
 
         $this->UpdateClause($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+        while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
             $this->UpdateClause($query, $parameters);
         }
 
-        if ($this->_lexer->isNextToken(Lexer::T_WHERE)) {
+        if ($this->lexer->isNextToken(Lexer::T_WHERE)) {
             $this->WhereClause($query, $parameters);
         }
     }
@@ -269,8 +269,8 @@ class Parser
      */
     public function UpdateClause(Query $query, array &$parameters)
     {
-        $this->match($this->_lexer->lookahead['type']);
-        switch ($this->_lexer->token['type']) {
+        $this->match($this->lexer->lookahead['type']);
+        switch ($this->lexer->token['type']) {
             case Lexer::T_SET:
                 $this->SetExpression($query, $parameters);
                 break;
@@ -314,11 +314,11 @@ class Parser
     {
         $this->match(Lexer::T_INSERT);
         $this->match(Lexer::T_IDENTIFIER);
-        $query->insert($this->_lexer->token['value']);
+        $query->insert($this->lexer->token['value']);
 
         $this->match(Lexer::T_SET);
         $this->InsertSetClause($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+        while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
             $this->InsertSetClause($query, $parameters);
         }
@@ -342,9 +342,9 @@ class Parser
     {
         $this->match(Lexer::T_REMOVE);
         $this->match(Lexer::T_IDENTIFIER);
-        $query->remove($this->_lexer->token['value']);
+        $query->remove($this->lexer->token['value']);
 
-        if ($this->_lexer->isNextToken(Lexer::T_WHERE)) {
+        if ($this->lexer->isNextToken(Lexer::T_WHERE)) {
             $this->WhereClause($query, $parameters);
         }
     }
@@ -355,7 +355,7 @@ class Parser
     public function SortClause(Query $query)
     {
         $this->SortClauseField($query);
-        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+        while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
             $this->SortClauseField($query);
         }
@@ -368,7 +368,7 @@ class Parser
     {
         $fieldName = $this->DocumentFieldName();
         $this->match(Lexer::T_IDENTIFIER);
-        $order = $this->_lexer->token['value'];
+        $order = $this->lexer->token['value'];
         $query->sort($fieldName, $order);
     }
 
@@ -377,8 +377,8 @@ class Parser
      */
     public function LimitClause(Query $query)
     {
-        $this->match($this->_lexer->lookahead['type']);
-        $query->limit($this->_lexer->token['value']);
+        $this->match($this->lexer->lookahead['type']);
+        $query->limit($this->lexer->token['value']);
     }
 
     /**
@@ -386,8 +386,8 @@ class Parser
      */
     public function SkipClause(Query $query)
     {
-        $this->match($this->_lexer->lookahead['type']);
-        $query->skip($this->_lexer->token['value']);
+        $this->match($this->lexer->lookahead['type']);
+        $query->skip($this->lexer->token['value']);
     }
 
     /**
@@ -397,7 +397,7 @@ class Parser
     {
         $this->match(Lexer::T_MAP);
         $this->match(Lexer::T_STRING);
-        $query->map($this->_lexer->token['value']);
+        $query->map($this->lexer->token['value']);
     }
 
     /**
@@ -407,7 +407,7 @@ class Parser
     {
         $this->match(Lexer::T_REDUCE);
         $this->match(Lexer::T_STRING);
-        $query->reduce($this->_lexer->token['value']);
+        $query->reduce($this->lexer->token['value']);
     }
 
     /**
@@ -416,11 +416,11 @@ class Parser
     public function DocumentFieldName()
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $fieldName = $this->_lexer->token['value'];
-        while ($this->_lexer->isNextToken(Lexer::T_DOT)) {
+        $fieldName = $this->lexer->token['value'];
+        while ($this->lexer->isNextToken(Lexer::T_DOT)) {
             $this->match(Lexer::T_DOT);
             $this->match(Lexer::T_IDENTIFIER);
-            $fieldName .= '.' . $this->_lexer->token['value'];
+            $fieldName .= '.' . $this->lexer->token['value'];
         }
         return $fieldName;
     }
@@ -432,7 +432,7 @@ class Parser
     {
         $this->match(Lexer::T_WHERE);
         $this->WhereClauseExpression($query, $parameters);
-        while ($this->_lexer->isNextToken(Lexer::T_AND)) {
+        while ($this->lexer->isNextToken(Lexer::T_AND)) {
             $this->match(Lexer::T_AND);
             $this->WhereClauseExpression($query, $parameters);
         }
@@ -446,7 +446,7 @@ class Parser
     public function WhereClauseExpression(Query $query, array &$parameters)
     {
         $options = array();
-        switch ($this->_lexer->lookahead['type']) {
+        switch ($this->lexer->lookahead['type']) {
             case Lexer::T_ALL:
                 $this->match(Lexer::T_ALL);
                 $options['elemMatch'] = true;
@@ -459,7 +459,7 @@ class Parser
 
         $fieldName = $this->DocumentFieldName();
 
-        $operator = $this->_lexer->lookahead['value'];
+        $operator = $this->lexer->lookahead['value'];
 
         $value = $this->Value($parameters);
 
@@ -514,9 +514,9 @@ class Parser
      */
     public function Value(array &$parameters)
     {
-        $this->match($this->_lexer->lookahead['type']);
-        $this->match($this->_lexer->lookahead['type']);
-        $value = $this->_lexer->token['value'];
+        $this->match($this->lexer->lookahead['type']);
+        $this->match($this->lexer->lookahead['type']);
+        $value = $this->lexer->token['value'];
         if (isset($parameters[$value])) {
             $value = $parameters[$value];
         }
@@ -552,7 +552,7 @@ class Parser
     public function UnsetExpression(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $query->field($this->_lexer->token['value'])->unsetField();
+        $query->field($this->lexer->token['value'])->unsetField();
     }
 
     /**
@@ -601,7 +601,7 @@ class Parser
     public function PopFirstExpression(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $query->field($this->_lexer->token['value'])->popFirst();
+        $query->field($this->lexer->token['value'])->popFirst();
     }
 
     /**
@@ -610,7 +610,7 @@ class Parser
     public function PopLastExpression(Query $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
-        $query->field($this->_lexer->token['value'])->popLast();
+        $query->field($this->lexer->token['value'])->popLast();
     }
 
     /**

@@ -149,7 +149,7 @@ class ClassMetadata
      * 
      * @var object
      */
-    private $_prototype;
+    private $prototype;
 
     /**
      * READ-ONLY: The inheritance mapping type used by the class.
@@ -900,10 +900,10 @@ class ClassMetadata
      */
     public function newInstance()
     {
-        if ($this->_prototype === null) {
-            $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+        if ($this->prototype === null) {
+            $this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
         }
-        return clone $this->_prototype;
+        return clone $this->prototype;
     }
 
     /**

@@ -42,13 +42,13 @@ class Hydrator
      *
      * @var Doctrine\ODM\MongoDB\DocumentManager
      */
-    private $_dm;
+    private $dm;
 
     /**
      * Mongo command prefix
      * @var string
      */
-    private $_cmd;
+    private $cmd;
 
     /**
      * Create a new Hydrator instance
@@ -57,8 +57,8 @@ class Hydrator
      */
     public function __construct(DocumentManager $dm)
     {
-        $this->_dm = $dm;
-        $this->_cmd = $dm->getConfiguration()->getMongoCmd();
+        $this->dm = $dm;
+        $this->cmd = $dm->getConfiguration()->getMongoCmd();
     }
 
     /**
@@ -70,7 +70,7 @@ class Hydrator
      */
     public function hydrate($document, &$data)
     {
-        $metadata = $this->_dm->getClassMetadata(get_class($document));
+        $metadata = $this->dm->getClassMetadata(get_class($document));
         foreach ($metadata->fieldMappings as $mapping) {
             if (isset($mapping['alsoLoadMethods'])) {
                 foreach ($mapping['alsoLoadMethods'] as $method) {
@@ -103,20 +103,20 @@ class Hydrator
             if (isset($mapping['embedded'])) {
                 if ($mapping['type'] === 'one') {
                     $embeddedDocument = $rawValue;
-                    $className = $this->_getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
-                    $embeddedMetadata = $this->_dm->getClassMetadata($className);
+                    $className = $this->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                    $embeddedMetadata = $this->dm->getClassMetadata($className);
                     $value = $embeddedMetadata->newInstance();
                     $this->hydrate($value, $embeddedDocument);
-                    $this->_dm->getUnitOfWork()->registerManagedEmbeddedDocument($value, $embeddedDocument);
+                    $this->dm->getUnitOfWork()->registerManagedEmbeddedDocument($value, $embeddedDocument);
                 } elseif ($mapping['type'] === 'many') {
                     $embeddedDocuments = $rawValue;
-                    $coll = new PersistentCollection($this->_dm, new ArrayCollection());
+                    $coll = new PersistentCollection($this->dm, new ArrayCollection());
                     foreach ($embeddedDocuments as $embeddedDocument) {
-                        $className = $this->_getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
-                        $embeddedMetadata = $this->_dm->getClassMetadata($className);
+                        $className = $this->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                        $embeddedMetadata = $this->dm->getClassMetadata($className);
                         $embeddedDocumentObject = $embeddedMetadata->newInstance();
                         $this->hydrate($embeddedDocumentObject, $embeddedDocument);
-                        $this->_dm->getUnitOfWork()->registerManagedEmbeddedDocument($embeddedDocumentObject, $embeddedDocument);
+                        $this->dm->getUnitOfWork()->registerManagedEmbeddedDocument($embeddedDocumentObject, $embeddedDocument);
                         $coll->add($embeddedDocumentObject);
                     }
                     $coll->setOwner($document, $mapping);
@@ -126,20 +126,20 @@ class Hydrator
             // Hydrate reference
             } elseif (isset($mapping['reference'])) {
                 $reference = $rawValue;
-                if ($mapping['type'] === 'one' && isset($reference[$this->_cmd . 'id'])) {
-                    $className = $this->_getClassNameFromDiscriminatorValue($mapping, $reference);
-                    $targetMetadata = $this->_dm->getClassMetadata($className);
-                    $id = $targetMetadata->getPHPIdentifierValue($reference[$this->_cmd . 'id']);
-                    $value = $this->_dm->getReference($className, $id);
+                if ($mapping['type'] === 'one' && isset($reference[$this->cmd . 'id'])) {
+                    $className = $this->getClassNameFromDiscriminatorValue($mapping, $reference);
+                    $targetMetadata = $this->dm->getClassMetadata($className);
+                    $id = $targetMetadata->getPHPIdentifierValue($reference[$this->cmd . 'id']);
+                    $value = $this->dm->getReference($className, $id);
                 } elseif ($mapping['type'] === 'many' && (is_array($reference) || $reference instanceof Collection)) {
                     $references = $reference;
-                    $coll = new PersistentCollection($this->_dm, new ArrayCollection());
+                    $coll = new PersistentCollection($this->dm, new ArrayCollection());
                     $coll->setInitialized(false);
                     foreach ($references as $reference) {
-                        $className = $this->_getClassNameFromDiscriminatorValue($mapping, $reference);
-                        $targetMetadata = $this->_dm->getClassMetadata($className);
-                        $id = $targetMetadata->getPHPIdentifierValue($reference[$this->_cmd . 'id']);
-                        $reference = $this->_dm->getReference($className, $id);
+                        $className = $this->getClassNameFromDiscriminatorValue($mapping, $reference);
+                        $targetMetadata = $this->dm->getClassMetadata($className);
+                        $id = $targetMetadata->getPHPIdentifierValue($reference[$this->cmd . 'id']);
+                        $reference = $this->dm->getReference($className, $id);
                         $coll->add($reference);
                     }
                     $coll->takeSnapshot();
@@ -166,7 +166,7 @@ class Hydrator
         return $document;
     }
 
-    private function _getClassNameFromDiscriminatorValue(array $mapping, $value)
+    private function getClassNameFromDiscriminatorValue(array $mapping, $value)
     {
         $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
         if (isset($value[$discriminatorField])) {
