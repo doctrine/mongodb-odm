@@ -345,6 +345,7 @@ class UnitOfWork
      * and any changes to its properties are detected, then a reference to the document is stored
      * there to mark it for an update.
      *
+     * @param object $parentDocument The top most parent document of the document we are computing.
      * @param ClassMetadata $class The class descriptor of the document.
      * @param object $document The document for which to compute the changes.
      */
@@ -372,7 +373,6 @@ class UnitOfWork
                 $coll = new PersistentCollection($this->_dm, $actualData[$name]);
                 $coll->setOwner($document, $mapping);
                 $coll->setDirty( ! $coll->isEmpty());
-                $coll->takeSnapshot();
                 $class->reflFields[$name]->setValue($document, $coll);
                 $actualData[$name] = $coll;
             }
@@ -480,6 +480,7 @@ class UnitOfWork
     /**
      * Computes the changes of a reference.
      *
+     * @param object $parentDocument The top most parent document of the document we are computing.
      * @param array $mapping
      * @param mixed $value The value of the association.
      */
@@ -533,7 +534,8 @@ class UnitOfWork
     /**
      * Computes the changes of an embedded document.
      *
-     * @param arra $mapping
+     * @param object $parentDocument The top most parent document of the document we are computing.
+     * @param array $mapping
      * @param mixed $value The value of the association.
      */
     private function _computeEmbeddedChanges($parentDocument, $mapping, $value)
@@ -547,19 +549,9 @@ class UnitOfWork
         } elseif ($value instanceof PersistentCollection) {
             $value = $value->unwrap();
         }
-        $parentState = $this->getDocumentState($parentDocument, self::STATE_NEW);
-        $parentOid = spl_object_hash($parentDocument);
         foreach ($value as $entry) {
             $targetClass = $this->_dm->getClassMetadata(get_class($entry));
-            $state = $this->getDocumentState($entry, self::STATE_NEW);
-            $oid = spl_object_hash($entry);
-            if ($state == self::STATE_NEW) {
-                $this->registerManagedEmbeddedDocument($entry, array());
-            }
             $this->computeChangeSet($parentDocument, $targetClass, $entry);
-            if (isset($this->_documentIdentifiers[$parentOid])) {
-                $this->_documentUpdates[$parentOid] = $parentDocument;
-            }
         }
     }
 
@@ -967,8 +959,12 @@ class UnitOfWork
     public function addToIdentityMap($document)
     {
         $classMetadata = $this->_dm->getClassMetadata(get_class($document));
-        $id = $this->_documentIdentifiers[spl_object_hash($document)];
-        $id = $classMetadata->getPHPIdentifierValue($id);
+        if ($classMetadata->isEmbeddedDocument) {
+            $id = spl_object_hash($document);
+        } else {
+            $id = $this->_documentIdentifiers[spl_object_hash($document)];
+            $id = $classMetadata->getPHPIdentifierValue($id);
+        }
         if ($id === '') {
             throw new \InvalidArgumentException("The given document has no identity.");
         }
@@ -1814,7 +1810,7 @@ class UnitOfWork
 
     /**
      * INTERNAL:
-     * Registers an document as managed.
+     * Registers a document as managed.
      *
      * @param object $document The document.
      * @param array $id The identifier values.
@@ -1829,6 +1825,13 @@ class UnitOfWork
         $this->addToIdentityMap($document);
     }
 
+    /**
+     * INTERNAL:
+     * Registers an embedded document as managed.
+     *
+     * @param object $document The document.
+     * @param array $data The original document data.
+     */
     public function registerManagedEmbeddedDocument($document, array $data)
     {
         $class = $this->_dm->getClassMetadata(get_class($document));
@@ -1836,7 +1839,7 @@ class UnitOfWork
         $this->_documentStates[$oid] = self::STATE_MANAGED;
         $this->_documentIdentifiers[$oid] = $oid;
         $this->_originalDocumentData[$oid] = $data;
-        $this->_identityMap[$class->rootDocumentName][$oid] = $document;
+        $this->addToIdentityMap($document);
     }
 
     /**
