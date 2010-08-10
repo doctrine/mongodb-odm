@@ -129,6 +129,9 @@ class PersistentCollection implements Collection
     {
         if ( ! $this->isDirty) {
             $this->isDirty = true;
+            if ($this->dm && $this->mapping !== null && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
+                $this->dm->getUnitOfWork()->scheduleForDirtyCheck($this->owner);
+            }
         }
     }
 

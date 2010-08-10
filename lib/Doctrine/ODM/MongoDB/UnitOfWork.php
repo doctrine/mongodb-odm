@@ -112,6 +112,16 @@ class UnitOfWork
     private $documentStates = array();
 
     /**
+     * Map of documents that are scheduled for dirty checking at commit time.
+     * This is only used for documents with a change tracking policy of DEFERRED_EXPLICIT.
+     * Keys are object ids (spl_object_hash).
+     * 
+     * @var array
+     * @todo rename: scheduledForSynchronization
+     */
+    private $scheduledForDirtyCheck = array();
+
+    /**
      * A list of all pending document insertions.
      *
      * @var array
@@ -155,13 +165,6 @@ class UnitOfWork
      * @var Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator
      */
     private $commitOrderCalculator;
-    
-    /**
-     * Orphaned documents that are scheduled for removal.
-     * 
-     * @var array
-     */
-    private $orphanRemovals = array();
 
     /**
      * The EventManager used for dispatching events.
@@ -238,15 +241,8 @@ class UnitOfWork
 
         if ( ! ($this->documentInsertions ||
                 $this->documentDeletions ||
-                $this->documentUpdates ||
-                $this->orphanRemovals)) {
+                $this->documentUpdates)) {
             return; // Nothing to do.
-        }
-
-        if ($this->orphanRemovals) {
-            foreach ($this->orphanRemovals as $orphan) {
-                $this->remove($orphan);
-            }
         }
 
         // Raise onFlush
@@ -290,7 +286,7 @@ class UnitOfWork
         $this->documentDeletions =
         $this->documentChangeSets =
         $this->visitedCollections =
-        $this->orphanRemovals = array();
+        $this->scheduledForDirtyCheck = array();
     }
 
     /**
@@ -405,7 +401,8 @@ class UnitOfWork
             // Document is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
             $originalData = $this->originalDocumentData[$oid];
-            $changeSet = array();
+            $isChangeTrackingNotify = $class->isChangeTrackingNotify();
+            $changeSet = $isChangeTrackingNotify ? $this->documentChangeSets[$oid] : array();
 
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
@@ -420,6 +417,8 @@ class UnitOfWork
                     if ($orgValue !== $actualValue) {
                         $changeSet[$propName] = array($orgValue, $actualValue);
                     }
+                } else if ($isChangeTrackingNotify) {
+                    continue;
                 } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if (is_object($orgValue) && $orgValue !== $actualValue) {
@@ -472,7 +471,16 @@ class UnitOfWork
             if ($class->isEmbeddedDocument) {
                 continue;
             }
-            foreach ($documents as $document) {
+            $class = $this->dm->getClassMetadata($className);
+
+            // If change tracking is explicit or happens through notification, then only compute
+            // changes on documents of that type that are explicitly marked for synchronization.
+            $documentsToProcess = ! $class->isChangeTrackingDeferredImplicit() ?
+                    (isset($this->scheduledForDirtyCheck[$className]) ?
+                        $this->scheduledForDirtyCheck[$className] : array())
+                    : $documents;
+
+            foreach ($documentsToProcess as $document) {
                 // Ignore uninitialized proxy objects
                 if (/* $document is readOnly || */ $document instanceof Proxy && ! $document->__isInitialized__) {
                     continue;
@@ -900,6 +908,12 @@ class UnitOfWork
         return isset($this->documentUpdates[spl_object_hash($document)]);
     }
 
+    public function isScheduledForDirtyCheck($document)
+    {
+        $rootDocumentName = $this->dm->getClassMetadata(get_class($document))->rootDocumentName;
+        return isset($this->scheduledForDirtyCheck[$rootDocumentName][spl_object_hash($document)]);
+    }
+
     /**
      * INTERNAL:
      * Schedules an document for deletion.
@@ -1083,6 +1097,18 @@ class UnitOfWork
     }
 
     /**
+     * Schedules a document for dirty-checking at commit-time.
+     *
+     * @param object $document The document to schedule for dirty-checking.
+     * @todo Rename: scheduleForSynchronization
+     */
+    public function scheduleForDirtyCheck($document)
+    {
+        $rootClassName = $this->dm->getClassMetadata(get_class($document))->rootDocumentName;
+        $this->scheduledForDirtyCheck[$rootClassName][spl_object_hash($document)] = $document;
+    }
+
+    /**
      * Checks whether an document is registered in the identity map of this UnitOfWork.
      *
      * @param object $document
@@ -1160,10 +1186,24 @@ class UnitOfWork
             if ($documentState === self::STATE_NEW) {
                 $this->registerManagedEmbeddedDocument($document, array());
             }
+            switch ($documentState) {
+                case self::STATE_MANAGED:
+                    // Nothing to do, except if policy is "deferred explicit"
+                    if ($class->isChangeTrackingDeferredExplicit()) {
+                        $this->scheduleForDirtyCheck($document);
+                    }
+                    break;
+                case self::STATE_NEW:
+                    $this->registerManagedEmbeddedDocument($document, array());
+                    break;
+            }
         } else {
             switch ($documentState) {
                 case self::STATE_MANAGED:
-                    // do nothing
+                    // Nothing to do, except if policy is "deferred explicit"
+                    if ($class->isChangeTrackingDeferredExplicit()) {
+                        $this->scheduleForDirtyCheck($document);
+                    }
                     break;
                 case self::STATE_NEW:
                     if (isset($class->lifecycleCallbacks[ODMEvents::prePersist])) {
@@ -1327,6 +1367,13 @@ class UnitOfWork
                         $prop->setValue($managedCopy, $coll);
                     }
                 }
+                if ($class->isChangeTrackingNotify()) {
+                    // Just treat all properties as changed, there is no other choice.
+                    $this->propertyChanged($managedCopy, $name, null, $prop->getValue($managedCopy));
+                }
+            }
+            if ($class->isChangeTrackingDeferredExplicit()) {
+                $this->scheduleForDirtyCheck($document);
             }
         }
 
@@ -1654,27 +1701,13 @@ class UnitOfWork
         $this->originalDocumentData =
         $this->documentChangeSets =
         $this->documentStates =
+        $this->scheduledForDirtyCheck =
         $this->documentInsertions =
         $this->documentUpdates =
-        $this->documentDeletions =
-        $this->orphanRemovals = array();
+        $this->documentDeletions = array();
         if ($this->commitOrderCalculator !== null) {
             $this->commitOrderCalculator->clear();
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Schedules an orphaned document for removal. The remove() operation will be
-     * invoked on that document at the beginning of the next commit of this
-     * UnitOfWork.
-     * 
-     * @ignore
-     * @param object $document
-     */
-    public function scheduleOrphanRemoval($document)
-    {
-        $this->orphanRemovals[spl_object_hash($document)] = $document;
     }
 
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
@@ -1890,11 +1923,12 @@ class UnitOfWork
             return; // ignore non-persistent fields
         }
 
+        // Update changeset and mark document for synchronization
         $this->documentChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
-
-        $this->documentUpdates[$oid] = $document;
+        if ( ! isset($this->scheduledForDirtyCheck[$class->rootDocumentName][$oid])) {
+            $this->scheduleForDirtyCheck($document);
+        }
     }
-    
     /**
      * Gets the currently scheduled document insertions in this UnitOfWork.
      * 

@@ -134,6 +134,10 @@ class AnnotationDriver implements Driver
             $discrValueAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorValue'];
             $class->setDiscriminatorValue($discrValueAnnot->value);
         }
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\ChangeTrackingPolicy'])) {
+            $changeTrackingAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\ChangeTrackingPolicy'];
+            $metadata->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_' . $changeTrackingAnnot->value));
+        }
 
         $methods = $reflClass->getMethods();
 

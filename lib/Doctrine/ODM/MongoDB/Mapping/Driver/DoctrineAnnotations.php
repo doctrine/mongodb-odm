@@ -174,6 +174,8 @@ final class NotSaved extends Field {}
 final class AlsoLoad extends Field {
     public $name;
 }
+final class ChangeTrackingPolicy extends Annotation {}
+
 /* Annotations for lifecycle callbacks */
 final class HasLifecycleCallbacks extends Annotation {}
 final class PrePersist extends Annotation {}

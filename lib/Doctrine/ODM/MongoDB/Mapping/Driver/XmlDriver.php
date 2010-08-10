@@ -91,7 +91,11 @@ class XmlDriver extends AbstractFileDriver
             $class->setDiscriminatorMap($map);
         }
         if (isset($xmlRoot->inheritance['type'])) {
-            $class->discriminatorMap = $xmlRoot['inheritance'];
+            $class->Yp = $xmlRoot['inheritance'];
+        }
+        if (isset($xmlRoot->{'change-tracking-policy'})) {
+            $metadata->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
+                    . strtoupper((string)$xmlRoot->{'change-tracking-policy'})));
         }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
