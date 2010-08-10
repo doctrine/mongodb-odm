@@ -553,6 +553,10 @@ class UnitOfWork
             $this->visitedCollections[] = $value;
         }
 
+        if ( ! $mapping['isCascadePersist']) {
+            return; // "Persistence by reachability" only if persist cascade specified
+        }
+
         if ($mapping['type'] === 'one') {
             $value = array($value);
         } elseif ($value instanceof PersistentCollection) {
@@ -1564,7 +1568,7 @@ class UnitOfWork
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['embedded']) && (!isset($mapping['reference']) || !$mapping['isCascadePersist'])) {
+            if ( ! $mapping['isCascadePersist']) {
                 continue;
             }
             if (isset($mapping['embedded']) || isset($mapping['reference'])) {

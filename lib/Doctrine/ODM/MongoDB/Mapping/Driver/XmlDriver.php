@@ -140,8 +140,13 @@ class XmlDriver extends AbstractFileDriver
 
     private function getMappingFromEmbed($embed, $type)
     {
+        $cascade = array_keys((array) $embed->cascade);
+        if (1 === count($cascade)) {
+            $cascade = current($cascade) ?: next($cascade);
+        }
         $attributes = $embed->attributes();
         $mapping = array(
+            'cascade'        => $cascade,
             'type'           => $type,
             'embedded'       => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,

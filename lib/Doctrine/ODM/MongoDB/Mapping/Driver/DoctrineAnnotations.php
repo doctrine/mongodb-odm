@@ -139,6 +139,7 @@ final class EmbedOne extends Field
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
+    public $cascade;
 }
 final class EmbedMany extends Field
 {
@@ -148,6 +149,7 @@ final class EmbedMany extends Field
     public $discriminatorField;
     public $discriminatorMap;
     public $strategy = 'pushPull'; // pushPull, set
+    public $cascade;
 }
 final class ReferenceOne extends Field
 {

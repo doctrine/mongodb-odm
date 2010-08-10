@@ -87,7 +87,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
         ), $classMetadata->fieldMappings['phonenumbers']);
 
         $this->assertEquals(array(
-            'cascade'          => 'all',
             'fieldName'        => 'profile',
             'name'             => 'profile',
             'type'             => 'one',
@@ -102,7 +101,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
-            'cascade'          => 'all',
             'fieldName'        => 'account',
             'name'             => 'account',
             'type'             => 'one',
@@ -117,7 +115,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
-            'cascade'          => 'all',
             'fieldName'        => 'groups',
             'name'             => 'groups',
             'type'             => 'many',

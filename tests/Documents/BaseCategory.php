@@ -8,7 +8,7 @@ abstract class BaseCategory
     /** @String */
      protected $name;
 
-     /** @EmbedMany(targetDocument="SubCategory") */
+     /** @EmbedMany(targetDocument="SubCategory", cascade={"all"}) */
      protected $children = array();
 
      public function __construct($name = null)

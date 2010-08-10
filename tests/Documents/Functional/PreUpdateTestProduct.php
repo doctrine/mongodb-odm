@@ -13,7 +13,7 @@ class PreUpdateTestProduct
     /** @String */
     public $name;
 
-    /** @EmbedOne(targetDocument="PreUpdateTestSellable") */
+    /** @EmbedOne(targetDocument="PreUpdateTestSellable", cascade={"all"}) */
     public $sellable;
 
     public function getName()

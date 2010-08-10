@@ -16,7 +16,7 @@ class Project
     /** @String */
     private $name;
 
-    /** @EmbedOne(targetDocument="Address") */
+    /** @EmbedOne(targetDocument="Address", cascade={"all"}) */
     private $address;
 
     public function __construct($name)

@@ -605,6 +605,7 @@ class ClassMetadata
                 $mapping['isCascade' . ucfirst($cascade)] = true;
             }
         }
+        unset($mapping['cascade']);
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
         }

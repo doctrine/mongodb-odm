@@ -11,7 +11,7 @@ class Album
     /** @String */
     private $name;
 
-    /** @EmbedMany(targetDocument="Song") */
+    /** @EmbedMany(targetDocument="Song", cascade={"all"}) */
     private $songs = array();
 
     public function __construct($name)

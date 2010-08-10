@@ -135,10 +135,11 @@ class YamlDriver extends AbstractFileDriver
     private function getMappingFromEmbed($fieldName, $embed, $type)
     {
         $mapping = array(
-            'name'           => $fieldName,
-            'embedded'       => true,
+            'cascade'        => isset($embed['cascade']) ? $embed['cascade'] : null,
             'type'           => $type,
+            'embedded'       => true,
             'targetDocument' => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
+            'name'           => $fieldName,
         );
         return $mapping;
     }

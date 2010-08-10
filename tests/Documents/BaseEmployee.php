@@ -26,7 +26,7 @@ abstract class BaseEmployee
     /** @Date */
     protected $left;
 
-    /** @EmbedOne(targetDocument="Address") */
+    /** @EmbedOne(targetDocument="Address", cascade={"all"}) */
     protected $address;
 
     public function getId()

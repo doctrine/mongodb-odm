@@ -5,13 +5,13 @@ namespace Documents\Functional;
 /** @Document(collection="functional_tests") */
 class SimpleEmbedAndReference
 {
-    /** @EmbedMany(targetDocument="Reference") */
+    /** @EmbedMany(targetDocument="Reference", cascade={"all"}) */
     public $embedMany = array();
 
     /** @ReferenceMany(targetDocument="Embedded") */
     public $referenceMany = array();
 
-    /** @EmbedOne(targetDocument="Reference") */
+    /** @EmbedOne(targetDocument="Reference", cascade={"all"}) */
     public $embedOne;
 
     /** @ReferenceOne(targetDocument="Embedded") */
