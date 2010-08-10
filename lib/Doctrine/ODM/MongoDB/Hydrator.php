@@ -107,6 +107,7 @@ class Hydrator
                     $embeddedMetadata = $this->_dm->getClassMetadata($className);
                     $value = $embeddedMetadata->newInstance();
                     $this->hydrate($value, $embeddedDocument);
+                    $this->_dm->getUnitOfWork()->registerManagedEmbeddedDocument($value, $embeddedDocument);
                 } elseif ($mapping['type'] === 'many') {
                     $embeddedDocuments = $rawValue;
                     $coll = new PersistentCollection($this->_dm, new ArrayCollection());
@@ -115,10 +116,11 @@ class Hydrator
                         $embeddedMetadata = $this->_dm->getClassMetadata($className);
                         $embeddedDocumentObject = $embeddedMetadata->newInstance();
                         $this->hydrate($embeddedDocumentObject, $embeddedDocument);
+                        $this->_dm->getUnitOfWork()->registerManagedEmbeddedDocument($embeddedDocumentObject, $embeddedDocument);
                         $coll->add($embeddedDocumentObject);
                     }
-                    $coll->takeSnapshot();
                     $coll->setOwner($document, $mapping);
+                    $coll->takeSnapshot();
                     $value = $coll;
                 }
             // Hydrate reference

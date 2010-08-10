@@ -2,7 +2,7 @@
 
 namespace Documents;
 
-/** @Document */
+/** @Document(collection="tasks") */
 class Task
 {
     /** @Id */

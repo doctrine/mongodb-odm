@@ -46,7 +46,6 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         parent::tearDown();
     }
 
-    /*
     public function testEmbededUpdate()
     {
         $subAddress =  new Address();
@@ -61,7 +60,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $project->setAddress($address);
 
         $originalData = array(
-            'name' => 'test',
+            'name' => 'Test',
             'address' => clone $address
         );
         $this->dm->getUnitOfWork()->registerManaged($project, 'theprojectid', $originalData);
@@ -77,12 +76,24 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         );
         $this->dm->getUnitOfWork()->registerManaged($subAddress, 'thesubaddressid', $originalData);
 
+        $subAddress->count = 10;
+        $subAddress->setCity('New York');
+        $address->count = 5;
         $address->setCity('Atlanta');
-        
-        $this->dm->getUnitOfWork()->computeChangeSets();
-        $changeSet = $this->dm->getUnitOfWork()->getDocumentChangeSet($address);
 
+        $this->dm->getUnitOfWork()->computeChangeSets();
         $update = $this->persister->prepareUpdateData($project);
+
+        $this->assertEquals(array(
+            '$inc' => array(
+                'address.count' => 5,
+                'address.subAddress.count' => 10
+            ),
+            '$set' => array(
+                'address.city' => 'Atlanta',
+                'address.subAddress.city' => 'New York'
+            )
+        ), $update);
     }
 
     public function testOneEmbedded()
@@ -90,32 +101,28 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $address = new Address();
         $address->setCity('Nashville');
 
-        $user = new User();
-        $user->setUsername('jon');
-        $user->setAddress($address);
+        $project = new Project('Test');
+        $project->setAddress($address);
 
         $originalData = array(
-            'username' => 'jon',
-            'address' => clone $address,
-            'count' => 0,
-            'hits' => 0,
-            'createdAt' => $user->getCreatedAt()
+            'name' => 'Test',
+            'address' => clone $address
         );
-        $this->dm->getUnitOfWork()->registerManaged($user, 'theuserid', $originalData);
+        $this->dm->getUnitOfWork()->registerManaged($project, 'theprojectid', $originalData);
         $originalData = array(
-            'city' => 'Nashville'
+            'city' => 'Nashville',
         );
         $this->dm->getUnitOfWork()->registerManaged($address, 'theaddressid', $originalData);
-        $address->setCity('Atlanta');
-        
         $this->dm->getUnitOfWork()->computeChangeSets();
-        $changeSet = $this->dm->getUnitOfWork()->getDocumentChangeSet($address);
-        $this->assertEquals(array('city' => array('Nashville', 'Atlanta'), 'count' => array(null, 0)), $changeSet);
-        
-        $update = $this->persister->prepareUpdateData($user);
-        $this->assertEquals(array('$set' => array('address.city' => 'Atlanta'), '$inc' => array('address.count' => 0)), $update);
+        $changeSet = $this->dm->getUnitOfWork()->getDocumentChangeSet($project);
+        $update = $this->persister->prepareUpdateData($project);
+
+        $address->setCity('Atlanta');
+        $address->count = 100;
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $update = $this->persister->prepareUpdateData($project);
+        $this->assertEquals(array('$set' => array('address.city' => 'Atlanta'), '$inc' => array('address.count' => 100)), $update);
     }
-    */
 
     public function testNewDocumentInsert()
     {
@@ -147,30 +154,9 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testSetStrategy()
     {
-        $data = array(
-            '_id' => 'testid',
-            'logs' => array(
-                array('name' => 'test'),
-                array('name' => 'ok'),
-                array('name' => 'test')
-            ),
-            'messages' => array(
-                array('name' => 'Message1'),
-                array('name' => 'Message2')
-            ),
-            'tasks' => array(
-                array(
-                    '$db' => 'dbname',
-                    '$id' => 'id',
-                    '$ref' => 'collname'
-                )
-            )
-        );
         $test = new Strategy();
-        $this->dm->getHydrator()->hydrate($test, $data);
-        $this->dm->getUnitOfWork()->registerManaged($test, 'testid', $data);
+        $this->dm->getUnitOfWork()->registerManaged($test, 'testid', array());
 
-        unset($test->logs[0]);
         $test->logs[] = 'whatever';
         $test->messages[] = new Message('Message3');
         $test->tasks[] = new Task('Task1');
@@ -190,12 +176,11 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $update = $persister->prepareUpdateData($test);
 
         $this->assertTrue(isset($update['$set']['logs']));
-        $this->assertEquals(3, count($update['$set']['logs']));
+        $this->assertEquals(1, count($update['$set']['logs']));
         $this->assertTrue(isset($update['$set']['messages']));
-        $this->assertEquals(3, count($update['$set']['messages']));
+        $this->assertEquals(1, count($update['$set']['messages']));
         $this->assertTrue(isset($update['$set']['tasks']));
-        $this->assertEquals(3, count($update['$set']['tasks']));
-        
+        $this->assertEquals(2, count($update['$set']['tasks']));
     }
 
     public function testDocumentUpdate()

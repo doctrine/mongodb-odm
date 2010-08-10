@@ -2,14 +2,17 @@
 
 namespace Documents;
 
-/** @Document(collection="accounts") */
-class Account
+/** @Document(collection="albums") */
+class Album
 {
     /** @Id */
     private $id;
 
     /** @String */
     private $name;
+
+    /** @EmbedMany(targetDocument="Song") */
+    private $songs = array();
 
     public function __construct($name)
     {
@@ -31,8 +34,13 @@ class Account
         return $this->name;
     }
 
-    public function __toString()
+    public function addSong(Song $song)
     {
-        return $this->name;
+        $this->songs[] = $song;
+    }
+
+    public function getSongs()
+    {
+        return $this->songs;
     }
 }

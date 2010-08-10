@@ -2,12 +2,9 @@
 
 namespace Documents;
 
-/** @Document(collection="accounts") */
-class Account
+/** @EmbeddedDocument */
+class Song
 {
-    /** @Id */
-    private $id;
-
     /** @String */
     private $name;
 
@@ -16,22 +13,12 @@ class Account
         $this->name = $name;
     }
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
     public function setName($name)
     {
         $this->name = $name;
     }
 
     public function getName()
-    {
-        return $this->name;
-    }
-
-    public function __toString()
     {
         return $this->name;
     }

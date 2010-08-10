@@ -112,15 +112,6 @@ class UnitOfWork
     private $_documentStates = array();
 
     /**
-     * Map of documents that are scheduled for dirty checking at commit time.
-     * This is only used for documents with a change tracking policy of DEFERRED_EXPLICIT.
-     * Keys are object ids (spl_object_hash).
-     * 
-     * @var array
-     */
-    private $_scheduledForDirtyCheck = array();
-
-    /**
      * A list of all pending document insertions.
      *
      * @var array
@@ -299,7 +290,6 @@ class UnitOfWork
         $this->_documentDeletions =
         $this->_documentChangeSets =
         $this->_visitedCollections =
-        $this->_scheduledForDirtyCheck =
         $this->_orphanRemovals = array();
     }
 
@@ -329,6 +319,11 @@ class UnitOfWork
         return array();
     }
 
+    public function getDocumentChangeSets()
+    {
+        return $this->_documentChangeSets;
+    }
+
     /**
      * Computes the changes that happened to a single document.
      *
@@ -353,7 +348,7 @@ class UnitOfWork
      * @param ClassMetadata $class The class descriptor of the document.
      * @param object $document The document for which to compute the changes.
      */
-    public function computeChangeSet(Mapping\ClassMetadata $class, $document)
+    public function computeChangeSet($parentDocument, Mapping\ClassMetadata $class, $document)
     {
         if ( ! $class->isInheritanceTypeNone()) {
             $class = $this->_dm->getClassMetadata(get_class($document));
@@ -377,8 +372,18 @@ class UnitOfWork
                 $coll = new PersistentCollection($this->_dm, $actualData[$name]);
                 $coll->setOwner($document, $mapping);
                 $coll->setDirty( ! $coll->isEmpty());
+                $coll->takeSnapshot();
                 $class->reflFields[$name]->setValue($document, $coll);
                 $actualData[$name] = $coll;
+            }
+            if ($class->isSingleValuedEmbed($name) && is_object($actualData[$name])) {
+                $embeddedDocument = $actualData[$name];
+                $embeddedMetadata = $this->_dm->getClassMetadata(get_class($embeddedDocument));
+                $actualData[$name] = array();
+                foreach ($embeddedMetadata->fieldMappings as $mapping) {
+                    $actualData[$name][$mapping['fieldName']] = $embeddedMetadata->getFieldValue($embeddedDocument, $mapping['fieldName']);
+                }
+                $actualData[$name]['className'] = $embeddedMetadata->name;
             }
         }
 
@@ -386,65 +391,56 @@ class UnitOfWork
             // Document is either NEW or MANAGED but not yet fully persisted (only has an id).
             // These result in an INSERT.
             $this->_originalDocumentData[$oid] = $actualData;
-            $this->_documentChangeSets[$oid] = array_map(
-                function($e) { return array(null, $e, null, null); }, $actualData
-            );
+            $changeSet = array();
+            foreach ($actualData as $propName => $actualValue) {
+                $changeSet[$propName] = array(null, $actualValue);
+            }
+            $this->_documentChangeSets[$oid] = $changeSet;
         } else {
             // Document is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
             $originalData = $this->_originalDocumentData[$oid];
             $changeSet = array();
-            $documentIsDirty = false;
 
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-
-                if (is_object($orgValue) || is_object($actualValue)) {
-                    if ($orgValue instanceof PersistentCollection) {
-                        $orgValue = $orgValue->getSnapshot();
-                    }
-                    if ($actualValue instanceof PersistentCollection) {
-                        $actualValue = $actualValue->toArray();
-                    }
+                if ($orgValue instanceof PersistentCollection) {
+                    $orgValue = $orgValue->getSnapshot();
+                }
+                if ($actualValue instanceof PersistentCollection) {
+                    $actualValue = $actualValue->toArray();
+                }
+                if ((isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one')
+                        || (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one')) {
                     if ($orgValue !== $actualValue) {
                         $changeSet[$propName] = array($orgValue, $actualValue);
                     }
-                } elseif ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+                } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
                     $changeSet[$propName] = array($orgValue, $actualValue);
-                }
-
-                if (isset($changeSet[$propName])) {
-                    $documentIsDirty = true;
-                    if (isset($class->fieldMappings[$propName]['reference'])) {
-                        $mapping = $class->fieldMappings[$propName];
-                        if ($mapping['type'] === 'one') {
-                            if ($actualValue === null) {
-                                $this->scheduleOrphanRemoval($orgValue);
-                            }
-                        }
-                    }
+                } else if (is_object($orgValue) && $orgValue !== $actualValue) {
+                    $changeSet[$propName] = array($orgValue, $actualValue);
+                } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+                    $changeSet[$propName] = array($orgValue, $actualValue);
                 }
             }
             if ($changeSet) {
                 $this->_documentChangeSets[$oid] = $changeSet;
                 $this->_originalDocumentData[$oid] = $actualData;
-
-                if ($documentIsDirty) {
-                    $this->_documentUpdates[$oid] = $document;
-                }
+                $this->_documentUpdates[$oid] = $document;
             }
         }
+
         // Look for changes in references of the document
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['reference'])) {
                 $val = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($val !== null) {
-                    $this->_computeReferenceChanges($mapping, $val);
+                    $this->_computeReferenceChanges($parentDocument, $mapping, $val);
                 }
             } elseif (isset($mapping['embedded'])) {
                 $val = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($val !== null) {
-                    $this->_computeEmbeddedChanges($mapping, $val);
+                    $this->_computeEmbeddedChanges($parentDocument, $mapping, $val);
                 }
             }
         }
@@ -460,7 +456,7 @@ class UnitOfWork
         // Compute changes for INSERTed documents first. This must always happen.
         foreach ($this->_documentInsertions as $document) {
             $class = $this->_dm->getClassMetadata(get_class($document));
-            $this->computeChangeSet($class, $document);
+            $this->computeChangeSet($document, $class, $document);
         }
 
         // Compute changes for other MANAGED documents. Change tracking policies take effect here.
@@ -475,7 +471,7 @@ class UnitOfWork
                 // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION are processed here.
                 $oid = spl_object_hash($document);
                 if ( ! isset($this->_documentInsertions[$oid]) && isset($this->_documentStates[$oid])) {
-                    $this->computeChangeSet($class, $document);
+                    $this->computeChangeSet($document, $class, $document);
                 }
             }
         }
@@ -487,7 +483,7 @@ class UnitOfWork
      * @param array $mapping
      * @param mixed $value The value of the association.
      */
-    private function _computeReferenceChanges($mapping, $value)
+    private function _computeReferenceChanges($parentDocument, $mapping, $value)
     {
         if ($value instanceof PersistentCollection && $value->isDirty()) {
             $this->_visitedCollections[] = $value;
@@ -507,9 +503,9 @@ class UnitOfWork
         } elseif ($value instanceof PersistentCollection) {
             $value = $value->unwrap();
         }
-        
-        $targetClass = $this->_dm->getClassMetadata($mapping['targetDocument']);
+
         foreach ($value as $entry) {
+            $targetClass = $this->_dm->getClassMetadata(get_class($entry));
             $state = $this->getDocumentState($entry, self::STATE_NEW);
             $oid = spl_object_hash($entry);
             if ($state == self::STATE_NEW) {
@@ -524,7 +520,7 @@ class UnitOfWork
 
                 $this->_documentInsertions[$oid] = $entry;
 
-                $this->computeChangeSet($targetClass, $entry);
+                $this->computeChangeSet($parentDocument, $targetClass, $entry);
                 
             } elseif ($state == self::STATE_REMOVED) {
                 throw MongoDBException::removedDocumentInCollectionDetected($entry, $mapping);
@@ -540,7 +536,7 @@ class UnitOfWork
      * @param arra $mapping
      * @param mixed $value The value of the association.
      */
-    private function _computeEmbeddedChanges($mapping, $value)
+    private function _computeEmbeddedChanges($parentDocument, $mapping, $value)
     {
         if ($value instanceof PersistentCollection && $value->isDirty()) {
             $this->_visitedCollections[] = $value;
@@ -551,16 +547,18 @@ class UnitOfWork
         } elseif ($value instanceof PersistentCollection) {
             $value = $value->unwrap();
         }
-
+        $parentState = $this->getDocumentState($parentDocument, self::STATE_NEW);
+        $parentOid = spl_object_hash($parentDocument);
         foreach ($value as $entry) {
             $targetClass = $this->_dm->getClassMetadata(get_class($entry));
-            foreach ($targetClass->fieldMappings as $mapping) {
-                if (isset($mapping['embedded'])) {
-                    $val = $targetClass->reflFields[$mapping['fieldName']]->getValue($entry);
-                    if ($val !== null) {
-                        $this->_computeEmbeddedChanges($mapping, $val);
-                    }
-                }
+            $state = $this->getDocumentState($entry, self::STATE_NEW);
+            $oid = spl_object_hash($entry);
+            if ($state == self::STATE_NEW) {
+                $this->registerManagedEmbeddedDocument($entry, array());
+            }
+            $this->computeChangeSet($parentDocument, $targetClass, $entry);
+            if (isset($this->_documentIdentifiers[$parentOid])) {
+                $this->_documentUpdates[$parentOid] = $parentDocument;
             }
         }
     }
@@ -1118,6 +1116,10 @@ class UnitOfWork
      */
     public function persist($document)
     {
+        $class = $this->_dm->getClassMetadata(get_class($document));
+        if ($class->isEmbeddedDocument || $class->isMappedSuperclass) {
+            throw MongoDBException::cannotPersistEmbeddedDocumentOrMappedSuperclass($class->name);
+        }
         $visited = array();
         $this->_doPersist($document, $visited);
     }
@@ -1144,42 +1146,43 @@ class UnitOfWork
 
         $class = $this->_dm->getClassMetadata(get_class($document));
 
-        if ($class->isEmbeddedDocument || $class->isMappedSuperclass) {
-            throw MongoDBException::documentNotMappedToCollection($class->name);
-        }
-
         $documentState = $this->getDocumentState($document, self::STATE_NEW);
-        
-        switch ($documentState) {
-            case self::STATE_MANAGED:
-                $this->scheduleForDirtyCheck($document);
-                break;
-            case self::STATE_NEW:
-                if (isset($class->lifecycleCallbacks[ODMEvents::prePersist])) {
-                    $class->invokeLifecycleCallbacks(ODMEvents::prePersist, $document);
-                }
-                if ($this->_evm->hasListeners(ODMEvents::prePersist)) {
-                    $this->_evm->dispatchEvent(ODMEvents::prePersist, new LifecycleEventArgs($document, $this->_dm));
-                }
+        if ($class->isEmbeddedDocument) {
+            if ($documentState === self::STATE_NEW) {
+                $this->registerManagedEmbeddedDocument($document, array());
+            }
+        } else {
+            switch ($documentState) {
+                case self::STATE_MANAGED:
+                    // do nothing
+                    break;
+                case self::STATE_NEW:
+                    if (isset($class->lifecycleCallbacks[ODMEvents::prePersist])) {
+                        $class->invokeLifecycleCallbacks(ODMEvents::prePersist, $document);
+                    }
+                    if ($this->_evm->hasListeners(ODMEvents::prePersist)) {
+                        $this->_evm->dispatchEvent(ODMEvents::prePersist, new LifecycleEventArgs($document, $this->_dm));
+                    }
 
-                $this->_documentStates[$oid] = self::STATE_MANAGED;
+                    $this->_documentStates[$oid] = self::STATE_MANAGED;
                 
-                $this->scheduleForInsert($document);
-                break;
-            case self::STATE_DETACHED:
-                throw new \InvalidArgumentException(
-                        "Behavior of persist() for a detached document is not yet defined.");
-            case self::STATE_REMOVED:
-                // Document becomes managed again
-                if ($this->isScheduledForDelete($document)) {
-                    unset($this->_documentDeletions[$oid]);
-                } else {
-                    //FIXME: There's more to think of here...
                     $this->scheduleForInsert($document);
-                }
-                break;
-            default:
-                throw MongoDBException::invalidDocumentState($documentState);
+                    break;
+                case self::STATE_DETACHED:
+                    throw new \InvalidArgumentException(
+                            "Behavior of persist() for a detached document is not yet defined.");
+                case self::STATE_REMOVED:
+                    // Document becomes managed again
+                    if ($this->isScheduledForDelete($document)) {
+                        unset($this->_documentDeletions[$oid]);
+                    } else {
+                        //FIXME: There's more to think of here...
+                        $this->scheduleForInsert($document);
+                    }
+                    break;
+                default:
+                    throw MongoDBException::invalidDocumentState($documentState);
+            }
         }
         
         $this->_cascadePersist($document, $visited);
@@ -1559,20 +1562,7 @@ class UnitOfWork
             if ( ! isset($mapping['embedded']) && (!isset($mapping['reference']) || !$mapping['isCascadePersist'])) {
                 continue;
             }
-            if (isset($mapping['embedded'])) {
-                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
-                        // Unwrap so that foreach() does not initialize
-                        $relatedDocuments = $relatedDocuments->unwrap();
-                    }
-                    foreach ($relatedDocuments as $relatedDocument) {
-                        $this->_cascadePersist($relatedDocument, $visited);
-                    }
-                } elseif ($relatedDocuments !== null) {
-                    $this->_cascadePersist($relatedDocuments, $visited);
-                }
-            } elseif (isset($mapping['reference'])) {
+            if (isset($mapping['embedded']) || isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
                     if ($relatedDocuments instanceof PersistentCollection) {
@@ -1655,7 +1645,6 @@ class UnitOfWork
         $this->_originalDocumentData =
         $this->_documentChangeSets =
         $this->_documentStates =
-        $this->_scheduledForDirtyCheck =
         $this->_documentInsertions =
         $this->_documentUpdates =
         $this->_documentDeletions =
@@ -1799,17 +1788,6 @@ class UnitOfWork
     }
 
     /**
-     * Schedules an document for dirty-checking at commit-time.
-     *
-     * @param object $document The document to schedule for dirty-checking.
-     */
-    public function scheduleForDirtyCheck($document)
-    {
-        $rootClassName = $this->_dm->getClassMetadata(get_class($document))->rootDocumentName;
-        $this->_scheduledForDirtyCheck[$rootClassName][] = $document;
-    }
-
-    /**
      * Checks whether the UnitOfWork has any pending insertions.
      *
      * @return boolean TRUE if this UnitOfWork has pending insertions, FALSE otherwise.
@@ -1849,6 +1827,16 @@ class UnitOfWork
         $this->_documentStates[$oid] = self::STATE_MANAGED;
         $this->_originalDocumentData[$oid] = $data;
         $this->addToIdentityMap($document);
+    }
+
+    public function registerManagedEmbeddedDocument($document, array $data)
+    {
+        $class = $this->_dm->getClassMetadata(get_class($document));
+        $oid = spl_object_hash($document);
+        $this->_documentStates[$oid] = self::STATE_MANAGED;
+        $this->_documentIdentifiers[$oid] = $oid;
+        $this->_originalDocumentData[$oid] = $data;
+        $this->_identityMap[$class->rootDocumentName][$oid] = $document;
     }
 
     /**

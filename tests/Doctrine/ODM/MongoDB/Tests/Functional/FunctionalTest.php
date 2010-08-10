@@ -27,31 +27,70 @@ use Documents\User,
     Documents\Functional\PreUpdateTestSeller,
     Documents\Functional\SameCollection1,
     Documents\Functional\SameCollection2,
-    Documents\Functional\SimpleEmbedAndReference;
+    Documents\Functional\SimpleEmbedAndReference,
+    Documents\Album,
+    Documents\Song;
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    /*
+    public function testManyEmbedded()
+    {
+        $album = new Album('Jon');
+        $album->addSong(new Song('Song #1'));
+        $album->addSong(new Song('Song #2'));
+        $this->dm->persist($album);
+        $this->dm->flush();
+
+        $songs = $album->getSongs();
+
+        $songs[0]->setName('Song #1 Changed');
+        $songs->add(new Song('Song #3'));
+        $this->dm->flush();
+
+        $test = $this->dm->getDocumentCollection('Documents\Album')->findOne(array('name' => 'Jon'));
+        $this->assertEquals('Song #1 Changed', $test['songs'][0]['name']);
+
+        $album->setName('jwage');
+        $songs[1]->setName('ok');
+        $songs->add(new Song('Song #4'));
+        $songs->add(new Song('Song #5'));
+        unset($songs[0]);
+        $this->dm->flush();
+
+        $test = $this->dm->getDocumentCollection('Documents\Album')->findOne(array('name' => 'jwage'));
+
+        $this->assertEquals('jwage', $test['name']);
+        $this->assertEquals('ok', $test['songs'][0]['name']);
+        $this->assertEquals('Song #3', $test['songs'][1]['name']);
+        $this->assertEquals('Song #4', $test['songs'][2]['name']);
+        $this->assertEquals('Song #5', $test['songs'][3]['name']);
+        $this->assertEquals(4, count($test['songs']));
+
+    }
+
     public function testNewEmbedded()
     {
-        $address = new Address();
-        $address->setCity('Nashville');
-        $address->count = 1;
+        $subAddress = new Address();
+        $subAddress->setCity('Old Sub-City');
 
-        $user = new Project('Test');
+        $address = new Address();
+        $address->setCity('Old City');
+        $address->setSubAddress($subAddress);
+
+        $user = new Project('Project');
         $user->setAddress($address);
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $address->count = 5;
-        $address->setCity('Atlanta');
+        $address->setCity('New City');
+        $subAddress->setCity('New Sub-City');
         $this->dm->flush();
 
-        $test = $this->dm->getDocumentCollection('Documents\Project')->findOne(array('name' => 'Test'));
-        $this->assertEquals('Atlanta', $test['address']['city']);
-        $this->assertEquals(5, $test['address']['count']);
+        $test = $this->dm->getDocumentCollection('Documents\Project')->findOne(array('name' => 'Project'));
+
+        $this->assertEquals('New Sub-City', $test['address']['subAddress']['city']);
+        $this->assertEquals('New City', $test['address']['city']);
     }
-    */
 
     public function testPersistingNewDocumentWithOnlyOneReference()
     {
@@ -478,6 +517,8 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $product = $this->dm->findOne('Documents\Functional\PreUpdateTestProduct', array('name' => 'Product'));
+
+        $this->assertInstanceOf('Documents\Functional\PreUpdateTestSellable', $product->sellable);
         $this->assertInstanceOf('Documents\Functional\PreUpdateTestProduct', $product->sellable->getProduct());
         $this->assertInstanceOf('Documents\Functional\PreUpdateTestSeller', $product->sellable->getSeller());
 

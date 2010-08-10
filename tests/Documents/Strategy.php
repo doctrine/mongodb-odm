@@ -2,7 +2,7 @@
 
 namespace Documents;
 
-/** @Document */
+/** @Document(collection="strategy") */
 class Strategy
 {
     /** @Id */

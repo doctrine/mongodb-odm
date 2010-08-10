@@ -27,7 +27,8 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\Common\Collections\Collection,
     Doctrine\ODM\MongoDB\ODMEvents,
     Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs,
-    Doctrine\ODM\MongoDB\MongoDBException;
+    Doctrine\ODM\MongoDB\MongoDBException,
+    Doctrine\ODM\MongoDB\PersistentCollection;
 
 /**
  * The BasicDocumentPersister is responsible for actual persisting the calculated
@@ -211,12 +212,19 @@ class BasicDocumentPersister
                     ODMEvents::onUpdatePrepared, new OnUpdatePreparedArgs($this->_dm, $document, $update)
                 );
             }
+            $id = $this->_class->getDatabaseIdentifierValue($id);
+
+            if ((isset($update[$this->_cmd . 'pushAll']) || isset($update[$this->_cmd . 'pullAll'])) && isset($update[$this->_cmd . 'set'])) {
+                $tempUpdate = array($this->_cmd . 'set' => $update[$this->_cmd . 'set']);
+                unset($update[$this->_cmd . 'set']);
+                $this->_collection->update(array('_id' => $id), $tempUpdate);
+            }
+
             /**
              * temporary fix for @link http://jira.mongodb.org/browse/SERVER-1050
              * atomic modifiers $pushAll and $pullAll, $push, $pop and $pull
              * are not allowed on the same field in one update
              */
-            $id = $this->_class->getDatabaseIdentifierValue($id);
             if (isset($update[$this->_cmd . 'pushAll']) && isset($update[$this->_cmd . 'pullAll'])) {
                 $fields = array_intersect(
                     array_keys($update[$this->_cmd . 'pushAll']),
@@ -317,17 +325,31 @@ class BasicDocumentPersister
     public function prepareUpdateData($document)
     {
         $oid = spl_object_hash($document);
+        $class = $this->_dm->getClassMetadata(get_class($document));
         $changeset = $this->_uow->getDocumentChangeSet($document);
         $result = array();
-        foreach ($this->_class->fieldMappings as $mapping) {
+        foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
                 continue;
             }
+            $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
+            $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
 
-            if ($mapping['type'] === 'many' || $mapping['type'] === 'collection') {
+            if ($mapping['type'] === 'many' || $mapping['type'] === 'collection') {               
+                if (isset($mapping['embedded']) && $new) {
+                    foreach ($new as $k => $v) {
+                        if ( ! isset($old[$k])) {
+                            continue;
+                        }
+                        $update = $this->prepareUpdateData($v);
+                        foreach ($update as $cmd => $values) {
+                            foreach ($values as $key => $value) {
+                                $result[$cmd][$mapping['fieldName'] . '.' . $k . '.' . $key] = $value;
+                            }
+                        }
+                    }
+                }
                 if ($mapping['strategy'] === 'pushPull') {
-                    $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
-                    $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
                     if ($old !== $new) {
                         $old = $old ? $old : array();
                         $new = $new ? $new : array();
@@ -344,8 +366,6 @@ class BasicDocumentPersister
                         }
                     }
                 } elseif ($mapping['strategy'] === 'set') {
-                    $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
-                    $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
                     if ($old !== $new) {
                         $new = $this->_prepareValue($mapping, $new);
                         $old = $this->_prepareValue($mapping, $old);
@@ -353,8 +373,6 @@ class BasicDocumentPersister
                     }
                 }
             } else {
-                $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
-                $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
                 if ($old !== $new) {
                     if ($mapping['type'] === 'increment') {
                         $new = $this->_prepareValue($mapping, $new);
@@ -365,11 +383,22 @@ class BasicDocumentPersister
                             $result[$this->_cmd . 'inc'][$mapping['fieldName']] = ($old - $new) * -1;
                         }
                     } else {
-                        $new = $this->_prepareValue($mapping, $new);
-                        if (isset($new) || $mapping['nullable'] === true) {
-                            $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
+                        if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
+                            $embeddedDocument = $class->getFieldValue($document, $mapping['fieldName']);
+                            $update = $this->prepareUpdateData($embeddedDocument);
+                            foreach ($update as $cmd => $values) {
+                                foreach ($values as $key => $value) {
+                                    $result[$cmd][$mapping['fieldName'] . '.' . $key] = $value;
+                                }
+                            }
                         } else {
-                            $result[$this->_cmd . 'unset'][$mapping['fieldName']] = true;
+                            $old = $this->_prepareValue($mapping, $old);
+                            $new = $this->_prepareValue($mapping, $new);
+                            if (isset($new) || $mapping['nullable'] === true) {
+                                $result[$this->_cmd . 'set'][$mapping['fieldName']] = $new;
+                            } else {
+                                $result[$this->_cmd . 'unset'][$mapping['fieldName']] = true;
+                            }
                         }
                     }
                 }
@@ -517,10 +546,15 @@ class BasicDocumentPersister
      */
     private function _prepareEmbeddedDocValue(array $embeddedMapping, $embeddedDocument)
     {
-        $class = $this->_dm->getClassMetadata(get_class($embeddedDocument));
+        $className = is_object($embeddedDocument) ? get_class($embeddedDocument) : $embeddedDocument['className'];
+        $class = $this->_dm->getClassMetadata($className);
         $embeddedDocumentValue = array();
         foreach ($class->fieldMappings as $mapping) {
-            $rawValue = $class->getFieldValue($embeddedDocument, $mapping['fieldName']);
+            if (is_object($embeddedDocument)) {
+                $rawValue = $class->getFieldValue($embeddedDocument, $mapping['fieldName']);
+            } else {
+                $rawValue = isset($embeddedDocument[$mapping['fieldName']]) ? $embeddedDocument[$mapping['fieldName']] : null;
+            }
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
                 continue;
             }

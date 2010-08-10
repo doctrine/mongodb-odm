@@ -28,11 +28,12 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config->setProxyNamespace('Proxies');
         $config->setDefaultDB('doctrine_odm_tests');
 
-
+        /*
         $config->setLoggerCallable(function(array $log) {
-            //print_r($log);
+            print_r($log);
         });
-        //$config->setMetadataCacheImpl(new ApcCache());
+        $config->setMetadataCacheImpl(new ApcCache());
+        */
 
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
