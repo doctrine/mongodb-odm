@@ -15,11 +15,7 @@ class FlushOptionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush(array('safe' => true));
 
-        print_r($this->dm->getReturnValues());
-
         $user->setUsername('ok');
         $this->dm->flush(array('safe' => true));
-
-        $options = $this->dm->getReturnValues();
     }
 }
