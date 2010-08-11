@@ -476,15 +476,23 @@ class DocumentManager
      * Flushes all changes to objects that have been queued up to now to the database.
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
+     *
+     * @param array $options Array of options to be used with batchInsert(), update() and remove()
      */
-    public function flush()
+    public function flush(array $options = array())
     {
         $this->errorIfClosed();
-        $this->unitOfWork->commit();
+        $this->unitOfWork->commit($options);
     }
 
-    public function ensureDocumentIndexes($class)
+    /**
+     * Ensure the given documents indexes are created.
+     *
+     * @param string $documentName The document name to ensure the indexes for.
+     */
+    public function ensureDocumentIndexes($documentName)
     {
+        $class = $this->getClassMetadata($documentName);
         if ($indexes = $class->getIndexes()) {
             $collection = $this->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
@@ -493,11 +501,26 @@ class DocumentManager
         }
     }
 
+    /**
+     * Delete the given documents indexes.
+     *
+     * @param string $documentName The document name to delete the indexes for.
+     */
     public function deleteDocumentIndexes($documentName)
     {
         return $this->getDocumentCollection($documentName)->deleteIndexes();
     }
 
+    /**
+     * Execute a map reduce operation.
+     *
+     * @param string $documentName The document name to run the operation on.
+     * @param string $map The javascript map function.
+     * @param string $reduce The javascript reduce function.
+     * @param array $query The mongo query.
+     * @param array $options Array of options.
+     * @return MongoCursor $cursor
+     */
     public function mapReduce($documentName, $map, $reduce, array $query = array(), array $options = array())
     {
         $class = $this->getClassMetadata($documentName);
@@ -548,7 +571,6 @@ class DocumentManager
 
         return $document;
     }
-
 
     /**
      * Gets a partial reference to the document identified by the given type and identifier
@@ -622,8 +644,6 @@ class DocumentManager
     /**
      * Clears the DocumentManager. All documents that are currently managed
      * by this DocumentManager become detached.
-     *
-     * @param string $documentName
      */
     public function clear()
     {
@@ -639,18 +659,6 @@ class DocumentManager
     {
         $this->clear();
         $this->closed = true;
-    }
-
-    /**
-     * Throws an exception if the DocumentManager is closed or currently not active.
-     *
-     * @throws MongoDBException If the DocumentManager is closed.
-     */
-    private function errorIfClosed()
-    {
-        if ($this->closed) {
-            throw MongoDBException::documentManagerClosed();
-        }
     }
 
     public function formatDBName($dbName)
@@ -676,5 +684,17 @@ class DocumentManager
             throw new \InvalidArgumentException('Documents involved are not all mapped to the same database collection.');
         }
         return $discriminatorValues;
+    }
+
+    /**
+     * Throws an exception if the DocumentManager is closed or currently not active.
+     *
+     * @throws MongoDBException If the DocumentManager is closed.
+     */
+    private function errorIfClosed()
+    {
+        if ($this->closed) {
+            throw MongoDBException::documentManagerClosed();
+        }
     }
 }

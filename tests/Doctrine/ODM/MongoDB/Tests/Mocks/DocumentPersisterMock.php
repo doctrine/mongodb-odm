@@ -20,7 +20,7 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\BasicDocume
      * @return <type>
      * @override
      */
-    public function insert($document)
+    public function insert($document, array $options = array())
     {
         $this->inserts[] = $document;
         $id = $this->identityColumnValueCounter++;
@@ -36,17 +36,12 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\BasicDocume
         return $id;
     }
 
-    public function executeInserts()
+    public function executeInserts(array $options = array())
     {
         return $this->postInsertIds;
     }
 
-    public function setMockIdGeneratorType($genType)
-    {
-        $this->mockIdGeneratorType = $genType;
-    }
-    
-    public function update($document)
+    public function update($document, array $options = array())
     {
         $this->updates[] = $document;
     }
@@ -56,7 +51,7 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\BasicDocume
         $this->existsCalled = true;
     }
     
-    public function delete($document)
+    public function delete($document, array $options = array())
     {
         $this->deletes[] = $document;
     }

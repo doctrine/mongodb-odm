@@ -134,10 +134,11 @@ class BasicDocumentPersister
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
+     * @param array $options Array of options to be used with batchInsert()
      * @return array An array of any generated post-insert IDs. This will be an empty array
      *               if the document class does not use the IDENTITY generation strategy.
      */
-    public function executeInserts()
+    public function executeInserts(array $options = array())
     {
         if ( ! $this->queuedInserts) {
             return;
@@ -155,7 +156,7 @@ class BasicDocumentPersister
         if (empty($inserts)) {
             return;
         }
-        $this->collection->batchInsert($inserts);
+        $this->collection->batchInsert($inserts, $options);
 
         foreach ($inserts as $oid => $data) {
             $document = $this->queuedInserts[$oid];
@@ -171,9 +172,11 @@ class BasicDocumentPersister
 
     /**
      * Executes reference updates in case document had references to new documents,
-     * without identifier value
+     * without identifier value.
+     *
+     * @param array $options Array of options to be used with update()
      */
-    public function executeReferenceUpdates()
+    public function executeReferenceUpdates(array $options = array())
     {
         foreach ($this->documentsToUpdate as $oid => $document) {
             $update = array();
@@ -188,21 +191,21 @@ class BasicDocumentPersister
                 '_id' => $id
             ), array(
                 $this->cmd . 'set' => $update
-            ));
+            ), $options);
         }
         $this->documentsToUpdate = array();
         $this->fieldsToUpdate = array();
     }
 
     /**
-     * Updates persisted document, using atomic operators
+     * Updates the already persisted document if it has any new changesets.
      *
-     * @param mixed $document
+     * @param object $document
+     * @param array $options Array of options to be used with update()
      */
-    public function update($document)
+    public function update($document, array $options = array())
     {
         $id = $this->uow->getDocumentIdentifier($document);
-
         $update = $this->prepareUpdateData($document);
         if ( ! empty($update)) {
             if ($this->dm->getEventManager()->hasListeners(ODMEvents::onUpdatePrepared)) {
@@ -215,7 +218,7 @@ class BasicDocumentPersister
             if ((isset($update[$this->cmd . 'pushAll']) || isset($update[$this->cmd . 'pullAll'])) && isset($update[$this->cmd . 'set'])) {
                 $tempUpdate = array($this->cmd . 'set' => $update[$this->cmd . 'set']);
                 unset($update[$this->cmd . 'set']);
-                $this->collection->update(array('_id' => $id), $tempUpdate);
+                $this->collection->update(array('_id' => $id), $tempUpdate, $options);
             }
 
             /**
@@ -240,10 +243,10 @@ class BasicDocumentPersister
                     $tempUpdate = array(
                         $this->cmd . 'pullAll' => $tempUpdate
                     );
-                    $this->collection->update(array('_id' => $id), $tempUpdate);
+                    $this->collection->update(array('_id' => $id), $tempUpdate, $options);
                 }
             }
-            $this->collection->update(array('_id' => $id), $update);
+            $this->collection->update(array('_id' => $id), $update, $options);
         }
     }
 
@@ -251,14 +254,100 @@ class BasicDocumentPersister
      * Removes document from mongo
      *
      * @param mixed $document
+     * @param array $options Array of options to be used with remove()
      */
-    public function delete($document)
+    public function delete($document, array $options = array())
     {
         $id = $this->uow->getDocumentIdentifier($document);
 
         $this->collection->remove(array(
             '_id' => $this->class->getDatabaseIdentifierValue($id)
+        ), $options);
+    }
+
+    /**
+     * Gets the ClassMetadata instance of the document class this persister is used for.
+     *
+     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     */
+    public function getClassMetadata()
+    {
+        return $this->class;
+    }
+
+    /**
+     * Refreshes a managed document.
+     *
+     * @param object $document The document to refresh.
+     */
+    public function refresh($document)
+    {
+        $id = $this->uow->getDocumentIdentifier($document);
+        if ($this->dm->loadByID($this->class->name, $id) === null) {
+            throw new \InvalidArgumentException(sprintf('Could not loadByID because ' . $this->class->name . ' '.$id . ' does not exist anymore.'));
+        }
+    }
+
+    /**
+     * Loads an document by a list of field criteria.
+     *
+     * @param array $query The criteria by which to load the document.
+     * @param object $document The document to load the data into. If not specified,
+     *        a new document is created.
+     * @param $assoc The association that connects the document to load to another document, if any.
+     * @param array $hints Hints for document creation.
+     * @return object The loaded and managed document instance or NULL if the document can not be found.
+     * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
+     * @todo Modify DocumentManager to use this method instead of its own hard coded
+     */
+    public function load(array $query = array(), array $select = array())
+    {
+        $result = $this->collection->findOne($query, $select);
+        if ($result !== null) {
+            return $this->uow->getOrCreateDocument($this->documentName, $result);
+        }
+        return null;
+    }
+
+    /**
+     * Lood document by its identifier.
+     *
+     * @param string $id
+     * @return object|null
+     */
+    public function loadById($id)
+    {
+        $result = $this->collection->findOne(array(
+            '_id' => $this->class->getDatabaseIdentifierValue($id)
         ));
+        if ($result !== null) {
+            return $this->uow->getOrCreateDocument($this->documentName, $result);
+        }
+        return null;
+    }
+
+    /**
+     * Loads a list of documents by a list of field criteria.
+     *
+     * @param array $criteria
+     * @return array
+     */
+    public function loadAll(array $query = array(), array $select = array())
+    {
+        $cursor = $this->collection->find($query, $select);
+        return new MongoCursor($this->dm, $this->dm->getHydrator(), $this->class, $cursor);
+    }
+
+    /**
+     * Checks whether the given managed document exists in the database.
+     *
+     * @param object $document
+     * @return boolean TRUE if the document exists in the database, FALSE otherwise.
+     */
+    public function exists($document)
+    {
+        $id = $this->class->getIdentifierObject($document);
+        return (bool) $this->collection->findOne(array(array('_id' => $id)), array('_id'));
     }
 
     /**
@@ -457,79 +546,6 @@ class BasicDocumentPersister
     }
 
     /**
-     * Gets the ClassMetadata instance of the document class this persister is used for.
-     *
-     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
-     */
-    public function getClassMetadata()
-    {
-        return $this->class;
-    }
-
-    /**
-     * Refreshes a managed document.
-     *
-     * @param object $document The document to refresh.
-     */
-    public function refresh($document)
-    {
-        $id = $this->uow->getDocumentIdentifier($document);
-        if ($this->dm->loadByID($this->class->name, $id) === null) {
-            throw new \InvalidArgumentException(sprintf('Could not loadByID because ' . $this->class->name . ' '.$id . ' does not exist anymore.'));
-        }
-    }
-
-    /**
-     * Loads an document by a list of field criteria.
-     *
-     * @param array $query The criteria by which to load the document.
-     * @param object $document The document to load the data into. If not specified,
-     *        a new document is created.
-     * @param $assoc The association that connects the document to load to another document, if any.
-     * @param array $hints Hints for document creation.
-     * @return object The loaded and managed document instance or NULL if the document can not be found.
-     * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
-     * @todo Modify DocumentManager to use this method instead of its own hard coded
-     */
-    public function load(array $query = array(), array $select = array())
-    {
-        $result = $this->collection->findOne($query, $select);
-        if ($result !== null) {
-            return $this->uow->getOrCreateDocument($this->documentName, $result);
-        }
-        return null;
-    }
-
-    /**
-     * Lood document by its identifier.
-     *
-     * @param string $id
-     * @return object|null
-     */
-    public function loadById($id)
-    {
-        $result = $this->collection->findOne(array(
-            '_id' => $this->class->getDatabaseIdentifierValue($id)
-        ));
-        if ($result !== null) {
-            return $this->uow->getOrCreateDocument($this->documentName, $result);
-        }
-        return null;
-    }
-
-    /**
-     * Loads a list of documents by a list of field criteria.
-     *
-     * @param array $criteria
-     * @return array
-     */
-    public function loadAll(array $query = array(), array $select = array())
-    {
-        $cursor = $this->collection->find($query, $select);
-        return new MongoCursor($this->dm, $this->dm->getHydrator(), $this->class, $cursor);
-    }
-
-    /**
      * Returns the reference representation to be stored in mongodb or null if not applicable.
      *
      * @param array $referenceMapping
@@ -614,17 +630,5 @@ class BasicDocumentPersister
             $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
         }
         return $embeddedDocumentValue;
-    }
-
-    /**
-     * Checks whether the given managed document exists in the database.
-     *
-     * @param object $document
-     * @return boolean TRUE if the document exists in the database, FALSE otherwise.
-     */
-    public function exists($document)
-    {
-        $id = $this->class->getIdentifierObject($document);
-        return (bool) $this->collection->findOne(array(array('_id' => $id)), array('_id'));
     }
 }

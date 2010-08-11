@@ -342,7 +342,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test->field = 'test';
         $test->transientField = 'w00t';
         $this->dm->persist($test);
-        $this->dm->flush($test);
+        $this->dm->flush();
         $this->dm->clear();
 
         $test = $this->dm->find('Documents\Functional\NotAnnotatedDocument')

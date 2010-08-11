@@ -103,7 +103,11 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->setExpectedException('Doctrine\ODM\MongoDB\MongoDBException', 'closed');
 
         $this->dm->close();
-        $this->dm->$methodName(new \stdClass());
+        if ($methodName === 'flush') {
+            $this->dm->$methodName();
+        } else {
+            $this->dm->$methodName(new \stdClass());
+        }
     }
 
     protected function getDocumentManager()

@@ -182,7 +182,12 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $hydrator;
 
-    protected $documentPersisters = array();
+    /**
+     * The document persister instances used to persist document instances.
+     *
+     * @var array
+     */
+    private $persisters = array();
 
     /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
@@ -204,11 +209,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getDocumentPersister($documentName)
     {
-        if ( ! isset($this->documentPersisters[$documentName])) {
+        if ( ! isset($this->persisters[$documentName])) {
             $class = $this->dm->getClassMetadata($documentName);
-            $this->documentPersisters[$documentName] = new Persisters\BasicDocumentPersister($this->dm, $class);
+            $this->persisters[$documentName] = new Persisters\BasicDocumentPersister($this->dm, $class);
         }
-        return $this->documentPersisters[$documentName];
+        return $this->persisters[$documentName];
     }
 
     /**
@@ -219,7 +224,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function setDocumentPersister($documentName, Persisters\BasicDocumentPersister $persister)
     {
-        $this->documentPersisters[$documentName] = $persister;
+        $this->persisters[$documentName] = $persister;
     }
 
     /**
@@ -231,12 +236,11 @@ class UnitOfWork implements PropertyChangedListener
      * 
      * 1) All document insertions
      * 2) All document updates
-     * 3) All collection deletions
-     * 4) All collection updates
-     * 5) All document deletions
-     * 
+     * 3) All document deletions
+     *
+     * @param array $options Array of options to be used with batchInsert(), update() and remove()
      */
-    public function commit()
+    public function commit(array $options = array())
     {
         // Compute changes done since last commit.
         $this->computeChangeSets();
@@ -257,23 +261,23 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($this->documentInsertions) {
             foreach ($commitOrder as $class) {
-                $this->executeInserts($class);
+                $this->executeInserts($class, $options);
             }
             foreach ($commitOrder as $class) {
-                $this->executeReferenceUpdates($class);
+                $this->executeReferenceUpdates($class, $options);
             }
         }
         
         if ($this->documentUpdates) {
             foreach ($commitOrder as $class) {
-                $this->executeUpdates($class);
+                $this->executeUpdates($class, $options);
             }
         }
 
         // Document deletions come last and need to be in reverse commit order
         if ($this->documentDeletions) {
             for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
-                $this->executeDeletions($commitOrder[$i]);
+                $this->executeDeletions($commitOrder[$i], $options);
             }
         }
 
@@ -295,12 +299,13 @@ class UnitOfWork implements PropertyChangedListener
      * Executes reference updates
      *
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
+     * @param array $options Array of options to be used for update()
      */
-    private function executeReferenceUpdates(ClassMetadata $class)
+    private function executeReferenceUpdates(ClassMetadata $class, array $options = array())
     {
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
-        $persister->executeReferenceUpdates();
+        $persister->executeReferenceUpdates($options);
     }
 
     /**
@@ -315,11 +320,6 @@ class UnitOfWork implements PropertyChangedListener
             return $this->documentChangeSets[$oid];
         }
         return array();
-    }
-
-    public function getDocumentChangeSets()
-    {
-        return $this->documentChangeSets;
     }
 
     /**
@@ -612,8 +612,9 @@ class UnitOfWork implements PropertyChangedListener
      * Executes all document insertions for documents of the specified type.
      *
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
+     * @param array $options Array of options to be used with batchInsert()
      */
-    private function executeInserts($class)
+    private function executeInserts($class, array $options = array())
     {
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
@@ -636,7 +637,7 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        $postInsertIds = $persister->executeInserts();
+        $postInsertIds = $persister->executeInserts($options);
 
         if ($postInsertIds) {
             foreach ($postInsertIds as $pair) {
@@ -666,8 +667,9 @@ class UnitOfWork implements PropertyChangedListener
      * Executes all document updates for documents of the specified type.
      *
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
+     * @param array $options Array of options to be used with update()
      */
-    private function executeUpdates($class)
+    private function executeUpdates($class, array $options = array())
     {
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
@@ -690,7 +692,7 @@ class UnitOfWork implements PropertyChangedListener
                     );
                 }
 
-                $persister->update($document);
+                $persister->update($document, $options);
                 unset($this->documentUpdates[$oid]);
 
                 if ($hasPostUpdateLifecycleCallbacks) {
@@ -706,8 +708,9 @@ class UnitOfWork implements PropertyChangedListener
      * Executes all document deletions for documents of the specified type.
      *
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
+     * @param array $options Array of options to be used with remove()
      */
-    private function executeDeletions($class)
+    private function executeDeletions($class, array $options = array())
     {
         $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[ODMEvents::postRemove]);
         $hasListeners = $this->evm->hasListeners(ODMEvents::postRemove);
@@ -717,7 +720,7 @@ class UnitOfWork implements PropertyChangedListener
         $collection = $this->dm->getDocumentCollection($className);
         foreach ($this->documentDeletions as $oid => $document) {
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
-                $persister->delete($document);
+                $persister->delete($document, $options);
                 unset(
                     $this->documentDeletions[$oid],
                     $this->documentIdentifiers[$oid],
