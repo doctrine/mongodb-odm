@@ -581,13 +581,25 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-            if (is_object($orgValue) && $orgValue !== $actualValue) {
+            if ($orgValue instanceof PersistentCollection) {
+                $orgValue = $orgValue->getSnapshot();
+            }
+            if ($actualValue instanceof PersistentCollection) {
+                $actualValue = $actualValue->toArray();
+            }
+            if ((isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one')
+                    || (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one')) {
+                if ($orgValue !== $actualValue) {
+                    $changeSet[$propName] = array($orgValue, $actualValue);
+                }
+            } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
                 $changeSet[$propName] = array($orgValue, $actualValue);
-            } elseif ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+            } else if (is_object($orgValue) && $orgValue !== $actualValue) {
+                $changeSet[$propName] = array($orgValue, $actualValue);
+            } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
         }
-
         if ($changeSet) {
             if (isset($this->documentChangeSets[$oid])) {
                 $this->documentChangeSets[$oid] = $changeSet + $this->documentChangeSets[$oid];
