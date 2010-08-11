@@ -175,12 +175,10 @@ class BasicDocumentPersister
      */
     public function executeReferenceUpdates()
     {
-        foreach ($this->documentsToUpdate as $oid => $document)
-        {
+        foreach ($this->documentsToUpdate as $oid => $document) {
             $update = array();
-            foreach ($this->fieldsToUpdate[$oid] as $fieldName => $fieldData)
-            {
-                list ($mapping, $value) = $fieldData;
+            foreach ($this->fieldsToUpdate[$oid] as $fieldName => $fieldData) {
+                list($mapping, $value) = $fieldData;
                 $update[$fieldName] = $this->prepareValue($mapping, $value);
             }
             $classMetadata = $this->dm->getClassMetadata(get_class($document));
@@ -290,12 +288,33 @@ class BasicDocumentPersister
             if (isset($mapping['reference'])) {
                 $scheduleForUpdate = false;
                 if ($mapping['type'] === 'one') {
-                    if (null === $insertData[$mapping['fieldName']][$this->cmd . 'id']) {
+                    if ( ! isset($insertData[$mapping['fieldName']][$this->cmd . 'id'])) {
                         $scheduleForUpdate = true;
                     }
                 } elseif ($mapping['type'] === 'many') {
                     foreach ($insertData[$mapping['fieldName']] as $ref) {
-                        if (null === $ref[$this->cmd . 'id']) {
+                        if ( ! isset($ref[$this->cmd . 'id'])) {
+                            $scheduleForUpdate = true;
+                            break;
+                        }
+                    }
+                }
+                if ($scheduleForUpdate) {
+                    unset($insertData[$mapping['fieldName']]);
+                    $id = spl_object_hash($document);
+                    $this->documentsToUpdate[$id] = $document;
+                    $this->fieldsToUpdate[$id][$mapping['fieldName']] = array($mapping, $new);
+                }
+            }
+            if (isset($mapping['embedded'])) {
+                $scheduleForUpdate = false;
+                if ($mapping['type'] === 'one') {
+                    if ( ! isset($insertData[$mapping['fieldName']]['_id'])) {
+                        $scheduleForUpdate = true;
+                    }
+                } elseif ($mapping['type'] === 'many') {
+                    foreach ($insertData[$mapping['fieldName']] as $ref) {
+                        if ( ! isset($ref['_id'])) {
                             $scheduleForUpdate = true;
                             break;
                         }
@@ -546,7 +565,10 @@ class BasicDocumentPersister
      */
     private function prepareEmbeddedDocValue(array $embeddedMapping, $embeddedDocument)
     {
-        $className = is_object($embeddedDocument) ? get_class($embeddedDocument) : $embeddedDocument['className'];
+        if (is_array($embeddedDocument) && isset($embeddedDocument['originalObject'])) {
+            $embeddedDocument = $embeddedDocument['originalObject'];
+        }
+        $className = get_class($embeddedDocument);
         $class = $this->dm->getClassMetadata($className);
         $embeddedDocumentValue = array();
         foreach ($class->fieldMappings as $mapping) {

@@ -386,7 +386,7 @@ class UnitOfWork implements PropertyChangedListener
                 foreach ($embeddedMetadata->fieldMappings as $mapping) {
                     $actualData[$name][$mapping['fieldName']] = $embeddedMetadata->getFieldValue($embeddedDocument, $mapping['fieldName']);
                 }
-                $actualData[$name]['className'] = $embeddedMetadata->name;
+                $actualData[$name]['originalObject'] = $embeddedDocument;
             }
         }
 
@@ -440,15 +440,10 @@ class UnitOfWork implements PropertyChangedListener
 
         // Look for changes in references of the document
         foreach ($class->fieldMappings as $mapping) {
-            if (isset($mapping['reference'])) {
+            if (isset($mapping['reference']) || isset($mapping['embedded'])) {
                 $val = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($val !== null) {
-                    $this->computeReferenceChanges($parentDocument, $mapping, $val);
-                }
-            } elseif (isset($mapping['embedded'])) {
-                $val = $class->reflFields[$mapping['fieldName']]->getValue($document);
-                if ($val !== null) {
-                    $this->computeEmbeddedChanges($parentDocument, $mapping, $val);
+                    $this->computeAssociationChanges($parentDocument, $mapping, $val);
                 }
             }
         }
@@ -497,67 +492,13 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Computes the changes of a reference.
-     *
-     * @param object $parentDocument The top most parent document of the document we are computing.
-     * @param array $mapping
-     * @param mixed $value The value of the association.
-     */
-    private function computeReferenceChanges($parentDocument, $mapping, $value)
-    {
-        if ($value instanceof PersistentCollection && $value->isDirty()) {
-            $this->visitedCollections[] = $value;
-        }
-
-        if ( ! $mapping['isCascadePersist']) {
-            return; // "Persistence by reachability" only if persist cascade specified
-        }
-
-        // Look through the documents, and in any of their reference, for transient
-        // enities, recursively. ("Persistence by reachability")
-        if ($mapping['type'] === 'one') {
-            if ($value instanceof Proxy && ! $value->__isInitialized__) {
-                return; // Ignore uninitialized proxy objects
-            }
-            $value = array($value);
-        } elseif ($value instanceof PersistentCollection) {
-            $value = $value->unwrap();
-        }
-
-        foreach ($value as $entry) {
-            $targetClass = $this->dm->getClassMetadata(get_class($entry));
-            $state = $this->getDocumentState($entry, self::STATE_NEW);
-            $oid = spl_object_hash($entry);
-            if ($state == self::STATE_NEW) {
-                if (isset($targetClass->lifecycleCallbacks[ODMEvents::prePersist])) {
-                    $targetClass->invokeLifecycleCallbacks(ODMEvents::prePersist, $entry);
-                }
-                if ($this->evm->hasListeners(ODMEvents::prePersist)) {
-                    $this->evm->dispatchEvent(ODMEvents::prePersist, new LifecycleEventArgs($entry, $this->dm));
-                }
-
-                $this->documentStates[$oid] = self::STATE_MANAGED;
-
-                $this->documentInsertions[$oid] = $entry;
-
-                $this->computeChangeSet($parentDocument, $targetClass, $entry);
-                
-            } elseif ($state == self::STATE_REMOVED) {
-                throw MongoDBException::removedDocumentInCollectionDetected($entry, $mapping);
-            }
-            // MANAGED associated documents are already taken into account
-            // during changeset calculation anyway, since they are in the identity map.
-        }
-    }
-
-    /**
      * Computes the changes of an embedded document.
      *
      * @param object $parentDocument The top most parent document of the document we are computing.
      * @param array $mapping
      * @param mixed $value The value of the association.
      */
-    private function computeEmbeddedChanges($parentDocument, $mapping, $value)
+    private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
         if ($value instanceof PersistentCollection && $value->isDirty()) {
             $this->visitedCollections[] = $value;
@@ -574,7 +515,31 @@ class UnitOfWork implements PropertyChangedListener
         }
         foreach ($value as $entry) {
             $targetClass = $this->dm->getClassMetadata(get_class($entry));
-            $this->computeChangeSet($parentDocument, $targetClass, $entry);
+            if ($targetClass->isEmbeddedDocument) {
+                $this->computeChangeSet($parentDocument, $targetClass, $entry);
+            } else {
+                $state = $this->getDocumentState($entry, self::STATE_NEW);
+                $oid = spl_object_hash($entry);
+                if ($state == self::STATE_NEW) {
+                    if (isset($targetClass->lifecycleCallbacks[ODMEvents::prePersist])) {
+                        $targetClass->invokeLifecycleCallbacks(ODMEvents::prePersist, $entry);
+                    }
+                    if ($this->evm->hasListeners(ODMEvents::prePersist)) {
+                        $this->evm->dispatchEvent(ODMEvents::prePersist, new LifecycleEventArgs($entry, $this->dm));
+                    }
+
+                    $this->documentStates[$oid] = self::STATE_MANAGED;
+
+                    $this->documentInsertions[$oid] = $entry;
+
+                    $this->computeChangeSet($parentDocument, $targetClass, $entry);
+
+                } elseif ($state == self::STATE_REMOVED) {
+                    throw MongoDBException::removedDocumentInCollectionDetected($entry, $mapping);
+                }
+                // MANAGED associated documents are already taken into account
+                // during changeset calculation anyway, since they are in the identity map.
+            }
         }
     }
 
