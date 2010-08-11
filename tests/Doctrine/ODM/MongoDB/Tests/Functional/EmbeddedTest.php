@@ -41,6 +41,24 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0');
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $test->level1[0]);
+        
+        $test->level1[0]->name = 'changed';
+        $level1 = new EmbeddedTestLevel1();
+        $level1->name = 'testing';
+        $test->level1->add($level1);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0');
+        $this->assertEquals(2, count($test->level1));
+        $this->assertEquals('changed', $test->level1[0]->name);
+        $this->assertEquals('testing', $test->level1[1]->name);
+
+        unset($test->level1[0]);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $this->assertEquals(1, count($test->level1));
     }
 
     public function testOneEmbedded()

@@ -210,4 +210,21 @@ class AnnotationDriver implements Driver
             }
         }
     }
+
+
+    /**
+     * Factory method for the Annotation Driver
+     * 
+     * @param array|string $paths
+     * @param AnnotationReader $reader
+     * @return AnnotationDriver
+     */
+    static public function create($paths = array(), AnnotationReader $reader = null)
+    {
+        if ($reader == null) {
+            $reader = new AnnotationReader();
+            $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+        }
+        return new self($reader, $paths);
+    }
 }

@@ -20,6 +20,9 @@ use Doctrine\Common\ClassLoader,
 
 abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
+    protected $dm;
+    protected $uow;
+
     public function setUp()
     {
         $config = new Configuration();
@@ -38,6 +41,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
         $this->dm = DocumentManager::create(new Mongo(), $config);
+        $this->uow = $this->dm->getUnitOfWork();
     }
 
     public function tearDown()

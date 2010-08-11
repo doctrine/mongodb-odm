@@ -6,6 +6,9 @@ require_once __DIR__ . '/Doctrine/ODM/MongoDB/Tests/BaseTest.php';
 
 use Doctrine\Common\ClassLoader;
 
+$classLoader = new ClassLoader('Doctrine\ODM\MongoDB\Tests', __DIR__ . '/../tests');
+$classLoader->register();
+
 $classLoader = new ClassLoader('Doctrine\ODM', __DIR__ . '/../lib');
 $classLoader->register();
 

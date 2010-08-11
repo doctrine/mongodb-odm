@@ -60,7 +60,7 @@ class BasicDocumentPersister
      *
      * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
-    private $class;
+    protected $class;
 
     /**
      * The MongoCollection instance for this document.
@@ -592,5 +592,17 @@ class BasicDocumentPersister
             $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
         }
         return $embeddedDocumentValue;
+    }
+
+    /**
+     * Checks whether the given managed document exists in the database.
+     *
+     * @param object $document
+     * @return boolean TRUE if the document exists in the database, FALSE otherwise.
+     */
+    public function exists($document)
+    {
+        $id = $this->class->getIdentifierObject($document);
+        return (bool) $this->collection->findOne(array(array('_id' => $id)), array('_id'));
     }
 }

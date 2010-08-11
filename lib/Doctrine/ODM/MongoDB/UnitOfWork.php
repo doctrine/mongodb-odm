@@ -1025,23 +1025,33 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
         if ( ! isset($this->documentStates[$oid])) {
-            // State can only be NEW or DETACHED, because MANAGED/REMOVED states are immediately
-            // set by the UnitOfWork directly. We treat all documents that have a populated
-            // identifier as DETACHED and all others as NEW. This is not really correct for
-            // manually assigned identifiers but in that case we would need to hit the database
-            // and we would like to avoid that.
+            // State can only be NEW or DETACHED, because MANAGED/REMOVED states are known.
+            // Note that you can not remember the NEW or DETACHED state in _documentStates since
+            // the UoW does not hold references to such objects and the object hash can be reused.
+            // More generally because the state may "change" between NEW/DETACHED without the UoW being aware of it.
             if ($assume === null) {
-                if ($this->dm->getClassMetadata(get_class($document))->getIdentifierValue($document)) {
-                    $this->documentStates[$oid] = self::STATE_DETACHED;
+                $class = $this->dm->getClassMetadata(get_class($document));
+                $id = $class->getIdentifierValue($document);
+                if ( ! $id) {
+                    return self::STATE_NEW;
                 } else {
-                    $this->documentStates[$oid] = self::STATE_NEW;
+                    // Last try before db lookup: check the identity map.
+                    if ($this->tryGetById($id, $class->rootDocumentName)) {
+                        return self::STATE_DETACHED;
+                    } else {
+                        // db lookup
+                        if ($this->getDocumentPersister(get_class($document))->exists($document)) {
+                            return self::STATE_DETACHED;
+                        } else {
+                            return self::STATE_NEW;
+                        }
+                    }
                 }
             } else {
-                $this->documentStates[$oid] = $assume;
+                return $assume;
             }
         }
-        return $this->documentStates[$oid];
-    }
+        return $this->documentStates[$oid];    }
 
     /**
      * INTERNAL:

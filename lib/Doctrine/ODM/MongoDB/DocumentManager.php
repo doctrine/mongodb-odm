@@ -152,6 +152,16 @@ class DocumentManager
     }
 
     /**
+     * Gets the proxy factory used by the DocumentManager to create document proxies.
+     *
+     * @return ProxyFactory
+     */
+    public function getProxyFactory()
+    {
+        return $this->proxyFactory;
+    }
+
+    /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
@@ -534,6 +544,41 @@ class DocumentManager
             return $document;
         }
         $document = $this->proxyFactory->getProxy($class->name, $identifier);
+        $this->unitOfWork->registerManaged($document, $identifier, array());
+
+        return $document;
+    }
+
+
+    /**
+     * Gets a partial reference to the document identified by the given type and identifier
+     * without actually loading it, if the document is not yet loaded.
+     *
+     * The returned reference may be a partial object if the document is not yet loaded/managed.
+     * If it is a partial object it will not initialize the rest of the document state on access.
+     * Thus you can only ever safely access the identifier of an document obtained through
+     * this method.
+     *
+     * The use-cases for partial references involve maintaining bidirectional associations
+     * without loading one side of the association or to update an document without loading it.
+     * Note, however, that in the latter case the original (persistent) document data will
+     * never be visible to the application (especially not event listeners) as it will
+     * never be loaded in the first place.
+     *
+     * @param string $documentName The name of the document type.
+     * @param mixed $identifier The document identifier.
+     * @return object The (partial) document reference.
+     */
+    public function getPartialReference($documentName, $identifier)
+    {
+        $class = $this->metadataFactory->getMetadataFor($documentName);
+
+        // Check identity map first, if its already in there just return it.
+        if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
+            return $entity;
+        }
+        $document = $class->newInstance();
+        $class->setIdentifierValue($document, $identifier);
         $this->unitOfWork->registerManaged($document, $identifier, array());
 
         return $document;
