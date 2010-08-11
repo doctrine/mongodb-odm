@@ -3,7 +3,7 @@
 namespace Documents;
 
 /**
- * @MappedSuperClass
+ * @MappedSuperclass
  * @HasLifecycleCallbacks
  */
 abstract class BaseDocument

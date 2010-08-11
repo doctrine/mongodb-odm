@@ -87,7 +87,7 @@ class YamlDriver extends AbstractFileDriver
             $class->setDiscriminatorMap($element['discriminatorMap']);
         }
         if (isset($element['changeTrackingPolicy'])) {
-            $metadata->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
+            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
                     . strtoupper($element['changeTrackingPolicy'])));
         }
         if (isset($element['fields'])) {

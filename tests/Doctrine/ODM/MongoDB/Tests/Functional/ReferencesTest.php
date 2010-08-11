@@ -140,6 +140,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($groups[1] instanceof Group);
 
         unset($groups[0]);
+        $groups[1]->setName('test');
 
         $this->dm->flush();
         $this->dm->clear();
@@ -147,6 +148,9 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user3 = $this->dm->createQuery('Documents\User')
             ->field('id')->equals($user->getId())
             ->getSingleResult();
-        $this->assertEquals(1, count($user2->getGroups()));
+        $groups = $user3->getGroups();
+
+        $this->assertEquals('test', $groups[0]->getName());
+        $this->assertEquals(1, count($groups));
     }
 }

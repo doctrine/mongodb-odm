@@ -94,7 +94,7 @@ class XmlDriver extends AbstractFileDriver
             $class->Yp = $xmlRoot['inheritance'];
         }
         if (isset($xmlRoot->{'change-tracking-policy'})) {
-            $metadata->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
+            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
                     . strtoupper((string)$xmlRoot->{'change-tracking-policy'})));
         }
         if (isset($xmlRoot->field)) {

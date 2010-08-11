@@ -27,6 +27,8 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Event\LifecycleEventArgs,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\Common\Collections\Collection,
+    Doctrine\Common\NotifyPropertyChanged,
+    Doctrine\Common\PropertyChangedListener,
     Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -39,7 +41,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class UnitOfWork
+class UnitOfWork implements PropertyChangedListener
 {
     /**
      * An document is in MANAGED state when its persistence is managed by an DocumentManager.
@@ -1000,6 +1002,9 @@ class UnitOfWork
             return false;
         }
         $this->identityMap[$className][$id] = $document;
+        if ($document instanceof NotifyPropertyChanged) {
+            $document->addPropertyChangedListener($this);
+        }
         return true;
     }
 
@@ -1750,6 +1755,9 @@ class UnitOfWork
             if ($document instanceof Proxy && ! $document->__isInitialized__) {
                 $document->__isInitialized__ = true;
                 $overrideLocalValues = true;
+                if ($document instanceof NotifyPropertyChanged) {
+                    $document->addPropertyChangedListener($this);
+                }
             } else {
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
             }
@@ -1929,6 +1937,7 @@ class UnitOfWork
             $this->scheduleForDirtyCheck($document);
         }
     }
+
     /**
      * Gets the currently scheduled document insertions in this UnitOfWork.
      * 
