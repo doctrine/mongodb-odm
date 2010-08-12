@@ -8,6 +8,7 @@ use Symfony\Components\Console\Output;
 
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
+ * @author Jeremy Mikola <jmikola@gmail.com>
  */
 class IndexesCommand extends Command
 {
@@ -29,48 +30,45 @@ class IndexesCommand extends Command
 
     protected function execute(Input\InputInterface $input, Output\OutputInterface $output)
     {
-        $mode = $input->getOption('mode');
-        $classNames = array();
-
-        if (null === ($className = $input->getOption('class'))) {
-            foreach ($this->getMetadataFactory()->getAllMetadata() as $metadata) {
-                $classNames[] = $metadata->name;
-            }
-        } else {
-            $classNames[] = $className;
-        }
-        foreach ($classNames as $className) {
-            try {
-                $output->writeln('<info>' . $this->runIndexUpdatesForClass($className, $mode) . '</info>');
-            } catch (\Exception $e) {
-                $output->writeln('<error>' . $e->getMessage() . '</error>');
-            }
+        try {
+            $output->writeln('<info>' . $this->runIndexUpdates($input->getOption('mode'), $input->getOption('class')) . '</info>');
+        } catch (\Exception $e) {
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
         }
     }
 
-    protected function runIndexUpdatesForClass($className, $mode)
+    /**
+     * @param string $mode
+     * @param string $className
+     * @return string
+     */
+    protected function runIndexUpdates($mode, $className = null)
     {
-        $dm = $this->getDocumentManager();
-        $replace = false;
-        $message = null;
-        switch ($mode) {
-            case self::REPLACE:
-                $replace = true;
-                $message = $message ?: 'Sucessfully replaced indexes for ' . $className;
-            case self::DROP:
-                $message = $message ?: 'Sucessfully deleted indexes for ' . $className;
-                $dm->deleteDocumentIndexes($className);
-                if ( ! $replace) {
-                    break;
-                }
-            case self::CREATE:
-                $message = $message ?: 'Sucessfully ensured indexes for ' . $className;
-                $dm->ensureDocumentIndexes($className);
-                break;
-            default:
-                throw new \InvalidArgumentException('Option \'mode\' must be one of \'' . self::CREATE . '\', \'' . self::DROP . '\' or \'' . self::REPLACE . '\'. \'' . $mode . '\' given.');
+        $modes = array(self::CREATE, self::DROP, self::REPLACE);
+
+        if (! in_array($mode, $modes)) {
+            throw new \InvalidArgumentException(sprintf('Option "mode" must be one of %s. "%s" given.', implode(', ', $modes), $mode));
         }
-        return $message;
+
+        $dm = $this->getDocumentManager();
+
+        if ($mode === self::DROP || $mode === self::REPLACE) {
+            if (isset($className)) {
+                $dm->deleteDocumentIndexes($className);
+            } else {
+                $dm->deleteIndexes();
+            }
+        }
+
+        if ($mode === self::CREATE || $mode === self::REPLACE) {
+            if (isset($className)) {
+                $dm->ensureDocumentIndexes($className);
+            } else {
+                $dm->ensureIndexes();
+            }
+        }
+
+        return sprintf('Successfully %sd %s', $mode, (isset($className) ? 'indexes for ' . $className : 'all indexes'));
     }
 
     /**
