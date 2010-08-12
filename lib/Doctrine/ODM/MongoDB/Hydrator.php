@@ -133,17 +133,13 @@ class Hydrator
                     $value = $this->dm->getReference($className, $id);
                 } elseif ($mapping['type'] === 'many' && (is_array($reference) || $reference instanceof Collection)) {
                     $references = $reference;
-                    $coll = new PersistentCollection(new ArrayCollection(), $this->dm);
-                    $coll->setInitialized(false);
-                    foreach ($references as $reference) {
-                        $className = $this->getClassNameFromDiscriminatorValue($mapping, $reference);
-                        $targetMetadata = $this->dm->getClassMetadata($className);
-                        $id = $targetMetadata->getPHPIdentifierValue($reference[$this->cmd . 'id']);
-                        $reference = $this->dm->getReference($className, $id);
-                        $coll->add($reference);
-                    }
-                    $coll->takeSnapshot();
-                    $value = $coll;
+                    $value = new PersistentCollection(new ArrayCollection(), $this->dm);
+                    $value->setInitialized(false);
+                    $value->setOwner($document, $mapping);
+
+                    // Delay any hydration of reference objects until the collection is
+                    // accessed and initialized for the first ime
+                    $value->setReferences($references);
                 }
 
             // Hydrate regular field
@@ -168,12 +164,6 @@ class Hydrator
 
     private function getClassNameFromDiscriminatorValue(array $mapping, $value)
     {
-        $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
-        if (isset($value[$discriminatorField])) {
-            $discriminatorValue = $value[$discriminatorField];
-            return isset($mapping['discriminatorMap'][$discriminatorValue]) ? $mapping['discriminatorMap'][$discriminatorValue] : $discriminatorValue;
-        } else {
-            return $mapping['targetDocument'];
-        }
+        return $this->dm->getClassNameFromDiscriminatorValue($mapping, $value);
     }
 }

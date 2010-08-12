@@ -82,6 +82,13 @@ class PersistentCollection implements Collection
      */
     private $cmd;
 
+    /**
+     * Array of references to load on initialization.
+     *
+     * @var array
+     */
+    private $references = array();
+
     public function __construct(Collection $coll, DocumentManager $dm = null)
     {
         $this->coll = $coll;
@@ -91,19 +98,27 @@ class PersistentCollection implements Collection
         }
     }
 
+    public function setReferences(array $references)
+    {
+        $this->references = $references;
+    }
+
     private function initialize()
     {
         if ( ! $this->initialized) {
-            $groupedIds = array();
-            foreach ($this->coll as $document) {
-                // Skip initialized proxy documents, no need to fetch them
-                if ($document instanceof Proxy && $document->__isInitialized__ === true) {
-                    continue;
-                }
-                $class = $this->dm->getClassMetadata(get_class($document));
-                $groupedIds[$class->name][] = $class->getIdentifierObject($document);
+            if ($this->isDirty) {
+                // Has NEW objects added through add(). Remember them.
+                $newObjects = $this->coll->toArray();
             }
+            $this->coll->clear();
 
+            foreach ($this->references as $reference) {
+                $className = $this->dm->getClassNameFromDiscriminatorValue($this->mapping, $reference);
+                $id = $reference[$this->cmd . 'id'];
+                $groupedIds[$className][] = $id;
+                $reference = $this->dm->getReference($className, (string) $id);
+                $this->add($reference);
+            }
             foreach ($groupedIds as $className => $ids) {
                 $collection = $this->dm->getDocumentCollection($className);
                 $data = $collection->find(array('_id' => array($this->cmd . 'in' => $ids)));
@@ -117,7 +132,15 @@ class PersistentCollection implements Collection
                     }
                 }
             }
-
+            $this->takeSnapshot();
+            // Reattach NEW objects added through add(), if any.
+            if (isset($newObjects)) {
+                foreach ($newObjects as $obj) {
+                    $this->coll->add($obj);
+                }
+                $this->isDirty = true;
+            }
+    
             $this->initialized = true;
         }
     }

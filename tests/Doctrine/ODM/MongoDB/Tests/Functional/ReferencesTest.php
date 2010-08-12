@@ -131,10 +131,6 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $groups = $user2->getGroups();
 
-        $groupsArray = $groups->toArray();
-        $this->assertTrue($groupsArray[0]->__isInitialized__);
-        $this->assertTrue($groupsArray[1]->__isInitialized__);
-
         $this->assertTrue($groups instanceof PersistentCollection);
         $this->assertTrue($groups[0] instanceof Group);
         $this->assertTrue($groups[1] instanceof Group);

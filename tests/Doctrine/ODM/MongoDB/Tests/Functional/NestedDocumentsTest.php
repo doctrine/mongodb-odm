@@ -178,6 +178,11 @@ class Hierarchy
         $this->children[] = $child;
         return $child;
     }
+
+    public function getChildren()
+    {
+        return $this->children;
+    }
 }
 
 /** @MappedSuperclass */
