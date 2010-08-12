@@ -103,7 +103,7 @@ class Hydrator
             if (isset($mapping['embedded'])) {
                 if ($mapping['type'] === 'one') {
                     $embeddedDocument = $rawValue;
-                    $className = $this->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                    $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                     $embeddedMetadata = $this->dm->getClassMetadata($className);
                     $value = $embeddedMetadata->newInstance();
                     $this->hydrate($value, $embeddedDocument);
@@ -112,7 +112,7 @@ class Hydrator
                     $embeddedDocuments = $rawValue;
                     $coll = new PersistentCollection(new ArrayCollection());
                     foreach ($embeddedDocuments as $embeddedDocument) {
-                        $className = $this->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                        $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                         $embeddedMetadata = $this->dm->getClassMetadata($className);
                         $embeddedDocumentObject = $embeddedMetadata->newInstance();
                         $this->hydrate($embeddedDocumentObject, $embeddedDocument);
@@ -127,7 +127,7 @@ class Hydrator
             } elseif (isset($mapping['reference'])) {
                 $reference = $rawValue;
                 if ($mapping['type'] === 'one' && isset($reference[$this->cmd . 'id'])) {
-                    $className = $this->getClassNameFromDiscriminatorValue($mapping, $reference);
+                    $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
                     $targetMetadata = $this->dm->getClassMetadata($className);
                     $id = $targetMetadata->getPHPIdentifierValue($reference[$this->cmd . 'id']);
                     $value = $this->dm->getReference($className, $id);
@@ -160,10 +160,5 @@ class Hydrator
             unset($data['_id']);
         }
         return $document;
-    }
-
-    private function getClassNameFromDiscriminatorValue(array $mapping, $value)
-    {
-        return $this->dm->getClassNameFromDiscriminatorValue($mapping, $value);
     }
 }
