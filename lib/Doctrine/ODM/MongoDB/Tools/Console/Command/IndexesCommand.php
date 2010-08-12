@@ -22,16 +22,35 @@ class IndexesCommand extends Command
             ->setDescription('Ensure all indexes for a document class')
             ->setDefinition(array(
                 new Input\InputOption('mode', 'm', Input\InputOption::PARAMETER_REQUIRED, 'allows to \'' . self::CREATE . '\', \'' . self::DROP . '\', \'' . self::REPLACE . '\' all indexes for a document', self::CREATE),
-                new Input\InputArgument('class', Input\InputArgument::REQUIRED, 'name of the class to ensure indexes for'),
+                new Input\InputOption('class', 'c', Input\InputOption::PARAMETER_OPTIONAL, 'the class name to ensure indexes for', null),
             ))
         ;
     }
 
     protected function execute(Input\InputInterface $input, Output\OutputInterface $output)
     {
-        $dm = $this->getDocumentManager();
-        $className = $input->getArgument('class');
         $mode = $input->getOption('mode');
+		$classNames = array();
+
+		if (null === ($className = $input->getOption('class'))) {
+			foreach ($this->getMetadataFactory()->getAllMetadata() as $metadata) {
+				$classNames[] = $metadata->name;
+			}
+		} else {
+			$classNames[] = $className;
+		}
+		foreach ($classNames as $className) {
+			try {
+				$output->writeln('<info>' . $this->runIndexUpdatesForClass($className, $mode) . '</info>');
+			} catch (\Exception $e) {
+				$output->writeln('<error>' . $e->getMessage() . '</error>');
+			}
+		}
+    }
+
+	protected function runIndexUpdatesForClass($className, $mode)
+	{
+        $dm = $this->getDocumentManager();
         $replace = false;
         $message = null;
         switch ($mode) {
@@ -51,12 +70,22 @@ class IndexesCommand extends Command
             default:
                 throw new \InvalidArgumentException('Option \'mode\' must be one of \'' . self::CREATE . '\', \'' . self::DROP . '\' or \'' . self::REPLACE . '\'. \'' . $mode . '\' given.');
         }
-        $output->write('<info>' . $message . '</info>');
-    }
-    /**
+		return $message;
+	}
+
+	/**
      * @return Doctrine\ODM\MongoDB\DocumentManager
      */
-    protected function getDocumentManager() {
+    protected function getDocumentManager()
+	{
         return $this->getHelper('documentManager')->getDocumentManager();
     }
+	
+	/**
+	 * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+	 */
+	protected function getMetadataFactory()
+	{
+		return $this->getDocumentManager()->getMetadataFactory();
+	}
 }
