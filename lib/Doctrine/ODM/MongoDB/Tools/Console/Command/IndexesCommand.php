@@ -20,10 +20,10 @@ class IndexesCommand extends Command
     {
         $this
             ->setName('odm:mongodb:indexes')
-            ->setDescription('Ensure all indexes for a document class')
+            ->setDescription('Update indexes for all classes or for a specific document')
             ->setDefinition(array(
                 new Input\InputOption('mode', 'm', Input\InputOption::PARAMETER_REQUIRED, 'allows to \'' . self::CREATE . '\', \'' . self::DROP . '\', \'' . self::REPLACE . '\' all indexes for a document', self::CREATE),
-                new Input\InputOption('class', 'c', Input\InputOption::PARAMETER_OPTIONAL, 'the class name to ensure indexes for', null),
+                new Input\InputOption('class', 'c', Input\InputOption::PARAMETER_OPTIONAL, 'the class name to update indexes for', null),
             ))
         ;
     }
