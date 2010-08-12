@@ -36,10 +36,12 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config->setProxyNamespace('Proxies');
         $config->setDefaultDB('doctrine_odm_tests');
 
+        /*
         $config->setLoggerCallable(function(array $log) {
-            //print_r($log);
+            print_r($log);
         });
-        //$config->setMetadataCacheImpl(new ApcCache());
+        $config->setMetadataCacheImpl(new ApcCache());
+        */
 
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
@@ -68,15 +70,17 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        $mongo = $this->dm->getMongo();
-        $dbs = $mongo->listDBs();
-        foreach ($dbs['databases'] as $db) {
-            $collections = $mongo->selectDB($db['name'])->listCollections();
-            foreach ($collections as $collection) {
-                $collection->drop();
+        if ($this->dm) {
+            $mongo = $this->dm->getMongo();
+            $dbs = $mongo->listDBs();
+            foreach ($dbs['databases'] as $db) {
+                $collections = $mongo->selectDB($db['name'])->listCollections();
+                foreach ($collections as $collection) {
+                    $collection->drop();
+                }
             }
+            $this->dm->getMongo()->close();
         }
-        $this->dm->getMongo()->close();
     }
 
     public function escape($command)

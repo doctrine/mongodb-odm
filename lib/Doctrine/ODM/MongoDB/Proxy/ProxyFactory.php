@@ -277,9 +277,6 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
 
     public function __sleep()
     {
-        if ( ! $this->__isInitialized__) {
-            throw new \RuntimeException("Not fully loaded proxy can not be serialized.");
-        }
         <sleepImpl>
     }
 }';

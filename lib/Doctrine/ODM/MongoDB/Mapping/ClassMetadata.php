@@ -1086,9 +1086,16 @@ class ClassMetadata
             'db',
             'collection',
             'rootDocumentName',
-            'allowCustomID',
-            'customRepositoryClassName'
         );
+
+        // The rest of the metadata is only serialized if necessary.
+        if ($this->changeTrackingPolicy != self::CHANGETRACKING_DEFERRED_IMPLICIT) {
+            $serialized[] = 'changeTrackingPolicy';
+        }
+
+        if ($this->customRepositoryClassName) {
+            $serialized[] = 'customRepositoryClassName';
+        }
 
         if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE) {
             $serialized[] = 'inheritanceType';
@@ -1103,8 +1110,15 @@ class ClassMetadata
             $serialized[] = 'isMappedSuperclass';
         }
 
-        return $serialized;
+        if ($this->isEmbeddedDocument) {
+            $serialized[] = 'isEmbeddedDocument';
+        }
 
+        if ($this->lifecycleCallbacks) {
+            $serialized[] = 'lifecycleCallbacks';
+        }
+
+        return $serialized;
     }
 
     /**
@@ -1114,10 +1128,26 @@ class ClassMetadata
      */
     public function __wakeup()
     {
+        // Restore ReflectionClass and properties
         $this->reflClass = new \ReflectionClass($this->name);
 
         foreach ($this->fieldMappings as $field => $mapping) {
-            $reflField = $this->reflClass->getProperty($field);
+            if (isset($mapping['declared'])) {
+                $reflField = new \ReflectionProperty($mapping['declared'], $field);
+            } else {
+                $reflField = $this->reflClass->getProperty($field);
+            }
+            $reflField->setAccessible(true);
+            $this->reflFields[$field] = $reflField;
+        }
+
+        foreach ($this->fieldMappings as $field => $mapping) {
+            if (isset($mapping['declared'])) {
+                $reflField = new \ReflectionProperty($mapping['declared'], $field);
+            } else {
+                $reflField = $this->reflClass->getProperty($field);
+            }
+
             $reflField->setAccessible(true);
             $this->reflFields[$field] = $reflField;
         }

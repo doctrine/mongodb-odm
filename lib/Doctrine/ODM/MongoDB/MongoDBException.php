@@ -143,7 +143,7 @@ class MongoDBException extends \Exception
 
     public static function pathRequired()
     {
-        return new self("Specifying the paths to your entities is required ".
+        return new self("Specifying the paths to your documents is required ".
             "in the AnnotationDriver to retrieve all class names.");
     }
 
@@ -151,4 +151,25 @@ class MongoDBException extends \Exception
     {
         return new self('File mapping drivers must have a valid directory path, however the given path seems to be incorrect!');
     }
+
+    /**
+     * Exception for reflection exceptions - adds the document name,
+     * because there might be long classnames that will be shortened
+     * within the stacktrace
+     *
+     * @param string $document The document's name
+     * @param \ReflectionException $previousException
+     */
+    public static function reflectionFailure($document, \ReflectionException $previousException)
+    {
+        return new self('An error occurred in ' . $document, 0, $previousException);
+    }
+
+
+    public static function identifierRequired($documentName)
+    {
+        return new self("No identifier/primary key specified for Document '$documentName'."
+                . " Every Document must have an identifier/primary key.");
+    }
+
 }

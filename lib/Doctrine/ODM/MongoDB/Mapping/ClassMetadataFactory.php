@@ -120,7 +120,7 @@ class ClassMetadataFactory
         }
 
         $metadata = array();
-        foreach ($this->_driver->getAllClassNames() as $className) {
+        foreach ($this->driver->getAllClassNames() as $className) {
             $metadata[] = $this->getMetadataFor($className);
         }
 
@@ -198,7 +198,7 @@ class ClassMetadataFactory
         foreach ($parentClasses as $className) {
             if (isset($this->loadedMetadata[$className])) {
                 $parent = $this->loadedMetadata[$className];
-                if ( ! $parent->isMappedSuperclass) {
+                if ( ! $parent->isMappedSuperclass && ! $parent->isEmbeddedDocument) {
                     array_unshift($visited, $className);
                 }
                 continue;
@@ -215,7 +215,16 @@ class ClassMetadataFactory
                 $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             }
 
-            $this->driver->loadMetadataForClass($className, $class);
+            // Invoke driver
+            try {
+                $this->driver->loadMetadataForClass($className, $class);
+            } catch(ReflectionException $e) {
+                throw MongoDBException::reflectionFailure($className, $e);
+            }
+
+            if ( ! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
+                throw MongoDBException::identifierRequired($className);
+            }
 
             if ($parent && $parent->isInheritanceTypeSingleCollection()) {
                 $class->setDB($parent->getDB());
@@ -232,15 +241,11 @@ class ClassMetadataFactory
                 $this->evm->dispatchEvent(ODMEvents::loadClassMetadata, $eventArgs);
             }
 
-            if ( ! $class->identifier && ! $class->isEmbeddedDocument && ! $class->isMappedSuperclass) {
-                throw new \Exception($class->name.' must have an id');
-            }
-
             $this->loadedMetadata[$className] = $class;
 
             $parent = $class;
 
-            if ( ! $class->isMappedSuperclass) {
+            if ( ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
                 array_unshift($visited, $className);
             }
 
@@ -296,7 +301,9 @@ class ClassMetadataFactory
         // Collect parent classes, ignoring transient (not-mapped) classes.
         $parentClasses = array();
         foreach (array_reverse(class_parents($name)) as $parentClass) {
-            $parentClasses[] = $parentClass;
+            if ( ! $this->driver->isTransient($parentClass)) {
+                $parentClasses[] = $parentClass;
+            }
         }
         return $parentClasses;
     }

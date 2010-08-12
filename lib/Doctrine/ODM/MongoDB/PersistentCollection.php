@@ -451,13 +451,13 @@ class PersistentCollection implements Collection
      */
     public function clear()
     {
-        $this->initialize();
-        $result = $this->coll->clear();
-        if ($this->mapping->isOwningSide) {
-            $this->changed();
+        if ($this->initialized && $this->isEmpty()) {
+            return;
         }
-        return $result;
-    }
+        $this->coll->clear();
+        $this->changed();
+        $this->takeSnapshot();
+     }
     
     /**
      * Called by PHP when this collection is serialized. Ensures that only the
@@ -468,7 +468,7 @@ class PersistentCollection implements Collection
      */
     public function __sleep()
     {
-        return array('_coll');
+        return array('coll', 'initialized');
     }
     
     /* ArrayAccess implementation */

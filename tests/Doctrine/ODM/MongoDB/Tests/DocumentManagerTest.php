@@ -2,12 +2,12 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-require_once __DIR__ . '/../../../../TestInit.php';
-
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+
+require_once __DIR__ . '/../../../../TestInit.php';
 
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>

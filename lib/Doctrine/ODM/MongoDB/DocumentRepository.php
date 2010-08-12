@@ -91,7 +91,7 @@ class DocumentRepository
      */
     public function find($query = array(), array $select = array())
     {
-        if (is_string($query)) {
+        if (is_scalar($query)) {
             if ($document = $this->dm->getUnitOfWork()->tryGetById($query, $this->documentName)) {
                 return $document; // Hit!
             }
