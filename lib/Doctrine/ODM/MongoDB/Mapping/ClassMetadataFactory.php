@@ -115,8 +115,8 @@ class ClassMetadataFactory
      */
     public function getAllMetadata()
     {
-        if ( ! $this->_initialized) {
-            $this->_initialize();
+        if ( ! $this->initialized) {
+            $this->initialize();
         }
 
         $metadata = array();

@@ -151,10 +151,10 @@ abstract class AbstractFileDriver implements Driver
      */
     public function isTransient($className)
     {
-        $fileName = str_replace('\\', '.', $className) . $this->_fileExtension;
+        $fileName = str_replace('\\', '.', $className) . $this->fileExtension;
 
         // Check whether file exists
-        foreach ((array) $this->_paths as $path) {
+        foreach ((array) $this->paths as $path) {
             if (file_exists($path . DIRECTORY_SEPARATOR . $fileName)) {
                 return false;
             }
@@ -172,8 +172,8 @@ abstract class AbstractFileDriver implements Driver
     {
         $classes = array();
 
-        if ($this->_paths) {
-            foreach ((array) $this->_paths as $path) {
+        if ($this->paths) {
+            foreach ((array) $this->paths as $path) {
                 if ( ! is_dir($path)) {
                     throw MongoDBException::fileMappingDriversRequireConfiguredDirectoryPath();
                 }
@@ -184,7 +184,7 @@ abstract class AbstractFileDriver implements Driver
                 );
         
                 foreach ($iterator as $file) {
-                    if (($fileName = $file->getBasename($this->_fileExtension)) == $file->getBasename()) {
+                    if (($fileName = $file->getBasename($this->fileExtension)) == $file->getBasename()) {
                         continue;
                     }
                     
