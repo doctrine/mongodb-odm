@@ -873,12 +873,7 @@ class ClassMetadata
     public function setIdentifierValue($document, $id)
     {
         $id = $this->getPHPIdentifierValue($id);
-        if (isset($this->reflFields[$this->identifier])) {
-            $this->reflFields[$this->identifier]->setValue($document, $id);
-        } else {
-            $identifier = $this->identifier;
-            $document->$identifier = $id;
-        }
+        $this->reflFields[$this->identifier]->setValue($document, $id);
     }
 
     /**
@@ -889,12 +884,7 @@ class ClassMetadata
      */
     public function getIdentifierValue($document)
     {
-        if (isset($this->reflFields[$this->identifier])) {
-            return (string) $this->reflFields[$this->identifier]->getValue($document);
-        } else {
-            $identifier = $this->identifier;
-            return isset($document->$identifier) ? (string) $document->$identifier : null;
-        }
+        return (string) $this->reflFields[$this->identifier]->getValue($document);
     }
 
     /**
@@ -919,11 +909,7 @@ class ClassMetadata
      */
     public function setFieldValue($document, $field, $value)
     {
-        if (isset($this->reflFields[$field])) {
-            $this->reflFields[$field]->setValue($document, $value);
-        } else {
-            $document->$field = $value;
-        }
+        $this->reflFields[$field]->setValue($document, $value);
     }
 
     /**
@@ -934,11 +920,7 @@ class ClassMetadata
      */
     public function getFieldValue($document, $field)
     {
-        if (isset($this->reflFields[$field])) {
-            return $this->reflFields[$field]->getValue($document);
-        } else {
-            return isset($document->$field) ? $document->$field : null;
-        }
+        return $this->reflFields[$field]->getValue($document);
     }
 
     /**

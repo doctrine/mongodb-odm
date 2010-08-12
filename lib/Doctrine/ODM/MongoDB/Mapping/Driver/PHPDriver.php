@@ -33,7 +33,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 class PHPDriver implements Driver
 {
-    private $_paths = array();
+    private $paths = array();
 
     public function __construct($paths)
     {
@@ -42,7 +42,7 @@ class PHPDriver implements Driver
 
     public function addPaths(array $paths)
     {
-        $this->_paths = array_unique(array_merge($this->_paths, $paths));
+        $this->paths = array_unique(array_merge($this->paths, $paths));
     }
 
     /**
@@ -59,18 +59,18 @@ class PHPDriver implements Driver
      */
     public function getAllClassNames()
     {
-        if ($this->_classNames !== null) {
-            return $this->_classNames;
+        if ($this->classNames !== null) {
+            return $this->classNames;
         }
 
-        if (!$this->_paths) {
+        if (!$this->paths) {
             throw MongoDBException::pathRequired();
         }
 
         $classes = array();
         $includedFiles = array();
 
-        foreach ($this->_paths as $path) {
+        foreach ($this->paths as $path) {
             if ( ! is_dir($path)) {
                 throw MongoDBException::fileMappingDriversRequireConfiguredDirectoryPath();
             }
@@ -81,7 +81,7 @@ class PHPDriver implements Driver
             );
 
             foreach ($iterator as $file) {
-                if (($fileName = $file->getBasename($this->_fileExtension)) == $file->getBasename()) {
+                if (($fileName = $file->getBasename($this->fileExtension)) == $file->getBasename()) {
                     continue;
                 }
 
@@ -101,7 +101,7 @@ class PHPDriver implements Driver
             }
         }
 
-        $this->_classNames = $classes;
+        $this->classNames = $classes;
 
         return $classes;
     }

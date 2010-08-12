@@ -486,6 +486,17 @@ class DocumentManager
     }
 
     /**
+     * Ensure indexes are created for all documents that can be loaded with the
+     * metadata factory.
+     */
+    public function ensureIndexes()
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            $this->ensureDocumentIndexes($class->name);
+        }
+    }
+
+    /**
      * Ensure the given documents indexes are created.
      *
      * @param string $documentName The document name to ensure the indexes for.

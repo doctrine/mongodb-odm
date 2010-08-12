@@ -48,10 +48,21 @@ final class DiscriminatorField extends Annotation
 final class DiscriminatorMap extends Annotation {}
 final class DiscriminatorValue extends Annotation {}
 
-final class Index extends Annotation
+final class Indexes extends Annotation {}
+class Index extends Annotation
 {
     public $keys = array();
+    public $name;
+    public $dropDups;
+    public $background;
+    public $safe;
+    public $order;
+    public $unique = false;
     public $options = array();
+}
+final class UniqueIndex extends Index
+{
+    public $unique = true;
 }
 
 class Field extends Annotation

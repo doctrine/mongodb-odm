@@ -126,9 +126,24 @@ class AnnotationDriver implements Driver
         if (isset($documentAnnot->repositoryClass)) {
             $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
         }
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Indexes'])) {
+            $indexes = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Indexes']->value;
+            $indexes = is_array($indexes) ? $indexes : array($indexes);
+            foreach ($indexes as $index) {
+                $this->addIndex($class, $index);
+            }
+        }
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Index'])) {
+            $index = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Index'];
+            $this->addIndex($class, $index);
+        }
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\UniqueIndex'])) {
+            $index = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\UniqueIndex'];
+            $this->addIndex($class, $index);
+        }
         if (isset($documentAnnot->indexes)) {
             foreach($documentAnnot->indexes as $index) {
-                $class->addIndex($index->keys, $index->options);
+                $this->addIndex($class, $index);
             }
         }
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'])) {
@@ -169,6 +184,25 @@ class AnnotationDriver implements Driver
             }
             if ($notSaved = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\NotSaved')) {
                 $mapping['notSaved'] = true;
+            }
+
+            $indexes = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Indexes');
+            $indexes = $indexes ? $indexes : array();
+            if ($index = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Index')) {
+                $indexes[] = $index;
+            }
+            if ($index = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\UniqueIndex')) {
+                $indexes[] = $index;
+            }
+            if ($indexes) {
+                foreach ($indexes as $index) {
+                    $keys = array();
+                    $keys[$mapping['fieldName']] = 'asc';
+                    if (isset($index->order)) {
+                        $keys[$mapping['fieldName']] = $index->order;
+                    }
+                    $this->addIndex($class, $index, $keys);
+                }
             }
 
             foreach ($this->reader->getPropertyAnnotations($property) as $fieldAnnot) {
@@ -228,6 +262,20 @@ class AnnotationDriver implements Driver
                 }
             }
         }
+    }
+
+    private function addIndex(ClassMetadata $class, $index, array $keys = array())
+    {
+        $keys = array_merge($keys, $index->keys);
+        $options = array();
+        $allowed = array('name', 'dropDups', 'background', 'safe', 'unique');
+        foreach ($allowed as $name) {
+            if (isset($index->$name)) {
+                $options[$name] = $index->$name;
+            }
+        }
+        $options = array_merge($options, $index->options);
+        $class->addIndex($keys, $options);
     }
 
     /**
