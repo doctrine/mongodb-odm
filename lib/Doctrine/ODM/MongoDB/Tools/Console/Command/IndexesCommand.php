@@ -30,26 +30,26 @@ class IndexesCommand extends Command
     protected function execute(Input\InputInterface $input, Output\OutputInterface $output)
     {
         $mode = $input->getOption('mode');
-		$classNames = array();
+        $classNames = array();
 
-		if (null === ($className = $input->getOption('class'))) {
-			foreach ($this->getMetadataFactory()->getAllMetadata() as $metadata) {
-				$classNames[] = $metadata->name;
-			}
-		} else {
-			$classNames[] = $className;
-		}
-		foreach ($classNames as $className) {
-			try {
-				$output->writeln('<info>' . $this->runIndexUpdatesForClass($className, $mode) . '</info>');
-			} catch (\Exception $e) {
-				$output->writeln('<error>' . $e->getMessage() . '</error>');
-			}
-		}
+        if (null === ($className = $input->getOption('class'))) {
+            foreach ($this->getMetadataFactory()->getAllMetadata() as $metadata) {
+                $classNames[] = $metadata->name;
+            }
+        } else {
+            $classNames[] = $className;
+        }
+        foreach ($classNames as $className) {
+            try {
+                $output->writeln('<info>' . $this->runIndexUpdatesForClass($className, $mode) . '</info>');
+            } catch (\Exception $e) {
+                $output->writeln('<error>' . $e->getMessage() . '</error>');
+            }
+        }
     }
 
-	protected function runIndexUpdatesForClass($className, $mode)
-	{
+    protected function runIndexUpdatesForClass($className, $mode)
+    {
         $dm = $this->getDocumentManager();
         $replace = false;
         $message = null;
@@ -70,22 +70,22 @@ class IndexesCommand extends Command
             default:
                 throw new \InvalidArgumentException('Option \'mode\' must be one of \'' . self::CREATE . '\', \'' . self::DROP . '\' or \'' . self::REPLACE . '\'. \'' . $mode . '\' given.');
         }
-		return $message;
-	}
+        return $message;
+    }
 
-	/**
+    /**
      * @return Doctrine\ODM\MongoDB\DocumentManager
      */
     protected function getDocumentManager()
-	{
+    {
         return $this->getHelper('documentManager')->getDocumentManager();
     }
-	
-	/**
-	 * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
-	 */
-	protected function getMetadataFactory()
-	{
-		return $this->getDocumentManager()->getMetadataFactory();
-	}
+
+    /**
+     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     */
+    protected function getMetadataFactory()
+    {
+        return $this->getDocumentManager()->getMetadataFactory();
+    }
 }
