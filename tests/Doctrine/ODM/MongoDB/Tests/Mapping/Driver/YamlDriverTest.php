@@ -24,7 +24,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(
             'fieldName'        => 'id',
             'id'               => true,
-            'name'             => 'id',
             'type'             => 'id',
             'isCascadeDetach'  => '',
             'isCascadeMerge'   => '',
@@ -36,7 +35,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(
             'fieldName'        => 'username',
-            'name'             => 'username',
             'type'             => 'string',
             'isCascadeDetach'  => '',
             'isCascadeMerge'   => '',
@@ -48,7 +46,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(
             'fieldName'        => 'createdAt',
-            'name'             => 'createdAt',
             'type'             => 'date',
             'isCascadeDetach'  => '',
             'isCascadeMerge'   => '',
@@ -60,7 +57,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(
             'fieldName'        => 'address',
-            'name'             => 'address',
             'type'             => 'one',
             'embedded'         => true,
             'targetDocument'   => 'Documents\Address',
@@ -74,7 +70,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(
             'fieldName'        => 'phonenumbers',
-            'name'             => 'phonenumbers',
             'type'             => 'many',
             'embedded'         => true,
             'targetDocument'   => 'Documents\Phonenumber',
@@ -88,7 +83,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(
             'fieldName'        => 'profile',
-            'name'             => 'profile',
             'type'             => 'one',
             'reference'        => true,
             'targetDocument'   => 'Documents\Profile',
@@ -102,7 +96,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(
             'fieldName'        => 'account',
-            'name'             => 'account',
             'type'             => 'one',
             'reference'        => true,
             'targetDocument'   => 'Documents\Account',
@@ -116,7 +109,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(
             'fieldName'        => 'groups',
-            'name'             => 'groups',
             'type'             => 'many',
             'reference'        => true,
             'targetDocument'   => 'Documents\Group',
@@ -140,7 +132,6 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(
             'fieldName'        => 'name',
-            'name'             => 'name',
             'type'             => 'string',
             'isCascadeDetach'  => false,
             'isCascadeMerge'   => false,

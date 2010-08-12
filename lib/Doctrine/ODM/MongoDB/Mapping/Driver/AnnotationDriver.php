@@ -142,6 +142,10 @@ class AnnotationDriver implements Driver
         $methods = $reflClass->getMethods();
 
         foreach ($reflClass->getProperties() as $property) {
+            if ($class->isMappedSuperclass && ! $property->isPrivate()
+                || $class->isInheritedField($property->name)) {
+                continue;
+            }
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
 

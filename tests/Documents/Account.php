@@ -13,7 +13,7 @@ class Account
     /** @Field */
     private $name;
 
-    /** @ReferenceOne(targetDocument="User") */
+    /** @ReferenceOne */
     protected $user;
 
     public function getId()
@@ -31,7 +31,7 @@ class Account
         return $this->name;
     }
 
-    public function setUser(User $user)
+    public function setUser($user)
     {
         $this->user = $user;
     }

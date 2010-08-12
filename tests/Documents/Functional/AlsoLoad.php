@@ -5,6 +5,9 @@ namespace Documents\Functional;
 /** @Document(collection="functional_tests") */
 class AlsoLoad
 {
+    /** @Id */
+    public $id;
+
     /**
      * @AlsoLoad({"bar", "zip"})
      */

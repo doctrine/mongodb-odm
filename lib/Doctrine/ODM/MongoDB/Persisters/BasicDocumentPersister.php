@@ -373,7 +373,12 @@ class BasicDocumentPersister
                 $insertData['_id'] = $this->prepareValue($mapping, $new);
                 continue;
             }
-            $insertData[$mapping['fieldName']] = $this->prepareValue($mapping, $new);
+            $value = $this->prepareValue($mapping, $new);
+            // Don't store empty arrays
+            if (is_array($value) && empty($value)) {
+                continue;
+            }
+            $insertData[$mapping['fieldName']] = $value;
             if (isset($mapping['reference'])) {
                 $scheduleForUpdate = false;
                 if ($mapping['type'] === 'one') {
@@ -476,7 +481,6 @@ class BasicDocumentPersister
                 } elseif ($mapping['strategy'] === 'set') {
                     if ($old !== $new) {
                         $new = $this->prepareValue($mapping, $new);
-                        $old = $this->prepareValue($mapping, $old);
                         $result[$this->cmd . 'set'][$mapping['fieldName']] = $new;
                     }
                 }
@@ -500,7 +504,6 @@ class BasicDocumentPersister
                                 }
                             }
                         } else {
-                            $old = $this->prepareValue($mapping, $old);
                             $new = $this->prepareValue($mapping, $new);
                             if (isset($new) || $mapping['nullable'] === true) {
                                 $result[$this->cmd . 'set'][$mapping['fieldName']] = $new;
@@ -588,14 +591,14 @@ class BasicDocumentPersister
         $class = $this->dm->getClassMetadata($className);
         $embeddedDocumentValue = array();
         foreach ($class->fieldMappings as $mapping) {
-            if (is_object($embeddedDocument)) {
-                $rawValue = $class->getFieldValue($embeddedDocument, $mapping['fieldName']);
-            } else {
-                $rawValue = isset($embeddedDocument[$mapping['fieldName']]) ? $embeddedDocument[$mapping['fieldName']] : null;
-            }
+            // Skip not saved fields
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
                 continue;
             }
+
+            $rawValue = $class->getFieldValue($embeddedDocument, $mapping['fieldName']);
+
+            // Don't store null values unless nullable is specified
             if ($rawValue === null && $mapping['nullable'] === false) {
                 continue;
             }
@@ -621,6 +624,10 @@ class BasicDocumentPersister
                 }
             } else {
                 $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
+            }
+            // Don't store empty arrays
+            if (is_array($value) && empty($value)) {
+                continue;
             }
             $embeddedDocumentValue[$mapping['fieldName']] = $value;
         }

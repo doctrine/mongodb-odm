@@ -7,6 +7,9 @@ namespace Documents\Ecommerce;
  */
 class Option
 {
+    /** @Id */
+    protected $id;
+
     /**
      * @String
      * @var string

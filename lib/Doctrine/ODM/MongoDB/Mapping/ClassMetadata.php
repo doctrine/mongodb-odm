@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
+
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
  * of a document and it's references.
@@ -322,6 +324,16 @@ class ClassMetadata
     }
 
     /**
+     * Checks whether a mapped field is inherited from an entity superclass.
+     *
+     * @return boolean TRUE if the field is inherited, FALSE otherwise.
+     */
+    public function isInheritedField($fieldName)
+    {
+        return isset($this->fieldMappings[$fieldName]['inherited']);
+    }
+
+    /**
      * Registers a custom repository class for the document class.
      *
      * @param string $mapperClassName  The class name of the custom mapper.
@@ -403,6 +415,9 @@ class ClassMetadata
         if ( ! isset($discriminatorField['name']) && isset($discriminatorField['fieldName'])) {
             $discriminatorField['name'] = $discriminatorField['fieldName'];
         }
+        if (isset($this->fieldMappings[$discriminatorField['name']])) {
+            throw MongoDBException::duplicateFieldMapping($this->name, $discriminatorField['name']);
+        }
         $this->discriminatorField = $discriminatorField;
     }
 
@@ -422,6 +437,9 @@ class ClassMetadata
             if ($this->name == $className) {
                 $this->discriminatorValue = $value;
             } else {
+                if ( ! class_exists($className)) {
+                    throw MongoDBException::invalidClassInDiscriminatorMap($className, $this->name);
+                }
                 if (is_subclass_of($className, $this->name)) {
                     $this->subClasses[] = $className;
                 }
@@ -639,8 +657,15 @@ class ClassMetadata
         if (isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
         }
-        $mapping['name'] = $mapping['fieldName'];
-
+        if ( ! isset($mapping['fieldName'])) {
+            throw MongoDBException::missingFieldName($this->name);
+        }
+        if (isset($this->fieldMappings[$mapping['fieldName']])) {
+            throw MongoDBException::duplicateFieldMapping($this->name, $mapping['fieldName']);
+        }
+        if ($this->discriminatorField['name'] === $mapping['fieldName']) {
+            throw MongoDBException::duplicateFieldMapping($this->name, $mapping['fieldName']);
+        }
         if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
         }
@@ -747,6 +772,18 @@ class ClassMetadata
         $mapping['reference'] = true;
         $mapping['type'] = 'many';
         $this->mapField($mapping);
+    }
+
+    /**
+     * INTERNAL:
+     * Adds a field mapping without completing/validating it.
+     * This is mainly used to add inherited field mappings to derived classes.
+     *
+     * @param array $mapping
+     */
+    public function addInheritedFieldMapping(array $fieldMapping)
+    {
+        $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
     }
 
     /**
@@ -902,6 +939,35 @@ class ClassMetadata
     }
 
     /**
+     * Gets the mapping of a field.
+     *
+     * @param string $fieldName  The field name.
+     * @return array  The field mapping.
+     */
+    public function getFieldMapping($fieldName)
+    {
+        if ( ! isset($this->fieldMappings[$fieldName])) {
+            throw MongoDBException::mappingNotFound($this->name, $fieldName);
+        }
+        return $this->fieldMappings[$fieldName];
+    }
+
+    /**
+     * Check if the field is not null.
+     *
+     * @param string $fieldName  The field name
+     * @return boolean  TRUE if the field is not null, FALSE otherwise.
+     */
+    public function isNullable($fieldName)
+    {
+        $mapping = $this->getFieldMapping($fieldName);
+        if ($mapping !== false) {
+            return isset($mapping['nullable']) && $mapping['nullable'] == true;
+        }
+        return false;
+    }
+
+    /**
      * Checks whether the document has a discriminator field and value configured.
      *
      * @return boolean
@@ -939,6 +1005,22 @@ class ClassMetadata
     public function isInheritanceTypeCollectionPerClass()
     {
         return $this->inheritanceType == self::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
+    }
+
+    /**
+     * Sets the mapped subclasses of this class.
+     *
+     * @param array $subclasses The names of all mapped subclasses.
+     */
+    public function setSubclasses(array $subclasses)
+    {
+        foreach ($subclasses as $subclass) {
+            if (strpos($subclass, '\\') === false && strlen($this->namespace)) {
+                $this->subClasses[] = $this->namespace . '\\' . $subclass;
+            } else {
+                $this->subClasses[] = $subclass;
+            }
+        }
     }
 
     /**
@@ -1002,6 +1084,7 @@ class ClassMetadata
             'collection',
             'rootDocumentName',
             'allowCustomID',
+            'customRepositoryClassName'
         );
 
         if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE) {

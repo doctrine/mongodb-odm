@@ -153,7 +153,7 @@ class Hydrator
 
             // Set hydrated field value to document
             if ($value !== null) {
-                $data[$mapping['name']] = $value;
+                $data[$mapping['fieldName']] = $value;
                 $metadata->setFieldValue($document, $mapping['fieldName'], $value);
             }
         }

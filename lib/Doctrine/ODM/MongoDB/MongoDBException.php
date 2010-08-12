@@ -104,4 +104,35 @@ class MongoDBException extends \Exception
     {
         return new self('Cannot persist an embedded document or mapped superclass ' . $className);
     }
+
+    public static function mappingNotFound($fieldName)
+    {
+        return new self("No mapping found for field '$fieldName'.");
+    }
+
+    public static function duplicateFieldMapping($document, $fieldName)
+    {
+        return new self('Property "'.$fieldName.'" in "'.$document.'" was already declared, but it must be declared only once');
+    }
+
+    /**
+     * Throws an exception that indicates that a class used in a discriminator map does not exist.
+     * An example would be an outdated (maybe renamed) classname.
+     *
+     * @param string $className The class that could not be found
+     * @param string $owningClass The class that declares the discriminator map.
+     * @return self
+     */
+    public static function invalidClassInDiscriminatorMap($className, $owningClass)
+    {
+        return new self(
+            "Document class '$className' used in the discriminator map of class '$owningClass' ".
+            "does not exist."
+        );
+    }
+
+    public static function missingFieldName($className)
+    {
+        return new self("The Document class '$className' field mapping misses the 'fieldName' attribute.");
+    }
 }

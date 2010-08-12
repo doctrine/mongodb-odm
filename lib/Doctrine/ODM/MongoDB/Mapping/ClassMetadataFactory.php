@@ -202,12 +202,6 @@ class ClassMetadataFactory
                 $class->setCollection($parent->getCollection());
             }
 
-            if ( ! $class->identifier) {
-                $class->mapField(array(
-                    'id' => true,
-                    'fieldName' => 'id'
-                ));
-            }
             $db = $class->getDB() ?: $this->dm->getConfiguration()->getDefaultDB();
             $class->setDB($this->dm->formatDBName($db));
 
@@ -216,6 +210,10 @@ class ClassMetadataFactory
             if ($this->evm->hasListeners(ODMEvents::loadClassMetadata)) {
                 $eventArgs = new \Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs($class);
                 $this->evm->dispatchEvent(ODMEvents::loadClassMetadata, $eventArgs);
+            }
+
+            if ( ! $class->identifier && ! $class->isEmbeddedDocument && ! $class->isMappedSuperclass) {
+                throw new \Exception($class->name.' must have an id');
             }
 
             $this->loadedMetadata[$className] = $class;
@@ -292,13 +290,13 @@ class ClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
-            if ( ! isset($mapping['inherited'])) {
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
             if ( ! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
-            $subClass->mapField($mapping);
+            $subClass->addInheritedFieldMapping($mapping);
         }
         foreach ($parentClass->reflFields as $name => $field) {
             $subClass->reflFields[$name] = $field;

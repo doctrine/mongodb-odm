@@ -18,6 +18,11 @@ use Doctrine\Common\ClassLoader,
     Documents\File,
     Documents\User;
 
+use Doctrine\ODM\MongoDB\Tests\Mocks\MetadataDriverMock;
+use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+use Doctrine\ODM\MongoDB\Tests\Mocks\MongoMock;
+use Doctrine\Common\EventManager;
+
 abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
     protected $dm;
@@ -42,6 +47,22 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
         $this->dm = DocumentManager::create(new Mongo(), $config);
         $this->uow = $this->dm->getUnitOfWork();
+    }
+
+    protected function getTestDocumentManager($metadataDriver = null)
+    {
+        if ($metadataDriver === null) {
+            $metadataDriver = new MetadataDriverMock();
+        }
+        $mongoMock = new MongoMock();
+        $config = new \Doctrine\ODM\MongoDB\Configuration();
+        $config->setProxyDir(__DIR__ . '/../../Proxies');
+        $config->setProxyNamespace('Doctrine\ODM\MongoDB\Tests\Proxies');
+        $eventManager = new EventManager();
+        $mockDriver = new MetadataDriverMock();
+        $config->setMetadataDriverImpl($metadataDriver);
+
+        return DocumentManagerMock::create($mongoMock, $config, $eventManager);
     }
 
     public function tearDown()
