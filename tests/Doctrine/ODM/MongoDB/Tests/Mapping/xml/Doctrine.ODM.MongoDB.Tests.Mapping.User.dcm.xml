@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                  http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+    <document name="Doctrine\ODM\MongoDB\Tests\Mapping\User" collection="cms_users">
+        <field name="id" id="true" />
+        <field name="name" type="string" />
+        <field name="email" type="string" />
+        <reference-one target-document="Address" field="address">
+            <cascade>
+                <remove />
+            </cascade>
+        </reference-one>
+        <reference-many target-document="Phonenumber" field="phonenumbers">
+            <cascade>
+                <persist />
+            </cascade>
+        </reference-many>
+        <reference-many target-document="Group" field="groups">
+            <cascade>
+                <all />
+            </cascade>
+        </reference-many>
+        <lifecycle-callbacks>
+          <lifecycle-callback method="doStuffOnPrePersist" type="prePersist" />
+          <lifecycle-callback method="doOtherStuffOnPrePersistToo" type="prePersist" />
+          <lifecycle-callback method="doStuffOnPostPersist" type="postPersist" />
+        </lifecycle-callbacks>
+    </document>
+</doctrine-mongo-mapping>

@@ -1,0 +1,25 @@
+Doctrine\ODM\MongoDB\Tests\Mapping\User:
+  type: document
+  collection: cms_users
+  fields:
+    id:
+      type: id
+      id: true
+    name:
+      type: string
+    email:
+      type: string
+  referenceOne:
+    address:
+      targetDocument: Address
+      cascade: [ remove ]
+  referenceMany:
+    phonenumbers:
+      targetDocument: Phonenumber
+      cascade: [ persist ]
+    groups:
+      targetDocument: Group
+      cascade: [ all ]
+  lifecycleCallbacks:
+    prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ] 
+    postPersist: [ doStuffOnPostPersist ]

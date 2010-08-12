@@ -135,4 +135,20 @@ class MongoDBException extends \Exception
     {
         return new self("The Document class '$className' field mapping misses the 'fieldName' attribute.");
     }
+
+    public static function classIsNotAValidDocument($className)
+    {
+        return new self('Class '.$className.' is not a valid document or mapped super class.');
+    }
+
+    public static function pathRequired()
+    {
+        return new self("Specifying the paths to your entities is required ".
+            "in the AnnotationDriver to retrieve all class names.");
+    }
+
+    public static function fileMappingDriversRequireConfiguredDirectoryPath()
+    {
+        return new self('File mapping drivers must have a valid directory path, however the given path seems to be incorrect!');
+    }
 }

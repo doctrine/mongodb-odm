@@ -108,6 +108,26 @@ class ClassMetadataFactory
     }
 
     /**
+     * Forces the factory to load the metadata of all classes known to the underlying
+     * mapping driver.
+     * 
+     * @return array The ClassMetadata instances of all mapped classes.
+     */
+    public function getAllMetadata()
+    {
+        if ( ! $this->_initialized) {
+            $this->_initialize();
+        }
+
+        $metadata = array();
+        foreach ($this->_driver->getAllClassNames() as $className) {
+            $metadata[] = $this->getMetadataFor($className);
+        }
+
+        return $metadata;
+    }
+
+    /**
      * Gets the class metadata descriptor for a class.
      *
      * @param string $className The name of the class.

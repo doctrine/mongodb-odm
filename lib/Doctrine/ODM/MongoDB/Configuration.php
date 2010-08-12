@@ -49,14 +49,6 @@ class Configuration
     private $_attributes = array('mongoCmd' => '$');
 
     /**
-     * Create a new Configuration instance.
-     */
-    public function __construct()
-    {
-        $this->_attributes['metadataDriverImpl'] = new PHPDriver();
-    }
-
-    /**
      * Adds a namespace under a certain alias.
      *
      * @param string $alias
@@ -72,7 +64,7 @@ class Configuration
      *
      * @param string $documentNamespaceAlias 
      * @return string
-     * @throws MappingException
+     * @throws MongoDBException
      */
     public function getDocumentNamespace($documentNamespaceAlias)
     {
@@ -104,6 +96,20 @@ class Configuration
     public function setMetadataDriverImpl(Driver $driverImpl)
     {
         $this->_attributes['metadataDriverImpl'] = $driverImpl;
+    }
+
+    /**
+     * Add a new default annotation driver with a correctly configured annotation reader.
+     * 
+     * @param array $paths
+     * @return Mapping\Driver\AnnotationDriver
+     */
+    public function newDefaultAnnotationDriver($paths = array())
+    {
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+        
+        return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, (array) $paths);
     }
 
     /**

@@ -43,7 +43,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
-        $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+        $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/Documents');
+        $config->setMetadataDriverImpl($this->annotationDriver);
 
         $this->dm = DocumentManager::create(new Mongo(), $config);
         $this->uow = $this->dm->getUnitOfWork();
@@ -75,6 +76,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
                 $collection->drop();
             }
         }
+        $this->dm->getMongo()->close();
     }
 
     public function escape($command)

@@ -171,7 +171,7 @@ class DocumentManager
      */
     public static function create(Mongo $mongo, Configuration $config = null, EventManager $eventManager = null)
     {
-        return new self($mongo, $config, $eventManager);
+        return new DocumentManager($mongo, $config, $eventManager);
     }
 
     /**

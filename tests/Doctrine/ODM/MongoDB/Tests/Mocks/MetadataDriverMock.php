@@ -8,4 +8,14 @@ class MetadataDriverMock implements \Doctrine\ODM\MongoDB\Mapping\Driver\Driver
     {
         return;
     }
+
+    public function isTransient($className)
+    {
+        return false;
+    }
+
+    public function getAllClassNames()
+    {
+        return array();
+    }
 }

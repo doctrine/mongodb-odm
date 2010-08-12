@@ -684,8 +684,11 @@ class ClassMetadata
             $this->reflFields[$mapping['fieldName']] = $reflProp;
         }
 
+        if (isset($mapping['cascade']) && is_string($mapping['cascade'])) {
+            $mapping['cascade'] = array($mapping['cascade']);
+        }
         if (isset($mapping['cascade']) && in_array('all', (array) $mapping['cascade'])) {
-            unset($mapping['all']);
+            unset($mapping['cascade']);
             $default = true;
         } else {
             $default = false;
