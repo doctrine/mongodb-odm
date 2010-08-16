@@ -513,6 +513,17 @@ class DocumentManager
     }
 
     /**
+     * Delete indexes for all documents that can be loaded with the
+     * metadata factory.
+     */
+    public function deleteIndexes()
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            $this->deleteDocumentIndexes($class->name);
+        }
+    }
+
+    /**
      * Delete the given documents indexes.
      *
      * @param string $documentName The document name to delete the indexes for.
