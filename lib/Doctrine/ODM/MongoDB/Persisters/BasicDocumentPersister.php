@@ -374,10 +374,10 @@ class BasicDocumentPersister
                 continue;
             }
             $value = $this->prepareValue($mapping, $new);
-            // Don't store empty arrays
-            if (is_array($value) && empty($value)) {
+            if ($value === null && $mapping['nullable'] === false) {
                 continue;
             }
+
             $insertData[$mapping['fieldName']] = $value;
             if (isset($mapping['reference'])) {
                 $scheduleForUpdate = false;
@@ -530,11 +530,13 @@ class BasicDocumentPersister
         }
         if ($mapping['type'] === 'many') {
             $prepared = array();
-
             $oneMapping = $mapping;
             $oneMapping['type'] = 'one';
             foreach ($value as $rawValue) {
                 $prepared[] = $this->prepareValue($oneMapping, $rawValue);
+            }
+            if (empty($prepared)) {
+                $prepared = null;
             }
         } elseif (isset($mapping['reference']) || isset($mapping['embedded'])) {
             if (isset($mapping['embedded'])) {
@@ -609,14 +611,20 @@ class BasicDocumentPersister
                         foreach ($rawValue as $embeddedDoc) {
                             $value[] = $this->prepareEmbeddedDocValue($mapping, $embeddedDoc);
                         }
+                        if (empty($value)) {
+                            $value = null;
+                        }
                     } elseif ($mapping['type'] == 'one') {
                         $value = $this->prepareEmbeddedDocValue($mapping, $rawValue);
                     }
                 } elseif (isset($mapping['reference'])) {
                     if ($mapping['type'] == 'many') {
-                         $value = array();
+                        $value = array();
                         foreach ($rawValue as $referencedDoc) {
                             $value[] = $this->prepareReferencedDocValue($mapping, $referencedDoc);
+                        }
+                        if (empty($value)) {
+                            $value = null;
                         }
                     } else {
                         $value = $this->prepareReferencedDocValue($mapping, $rawValue);
@@ -625,8 +633,7 @@ class BasicDocumentPersister
             } else {
                 $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
             }
-            // Don't store empty arrays
-            if (is_array($value) && empty($value)) {
+            if ($value === null && $mapping['nullable'] === false) {
                 continue;
             }
             $embeddedDocumentValue[$mapping['fieldName']] = $value;
