@@ -9,6 +9,7 @@ class AlsoLoad
     public $id;
 
     /**
+     * @String
      * @AlsoLoad({"bar", "zip"})
      */
     public $foo;

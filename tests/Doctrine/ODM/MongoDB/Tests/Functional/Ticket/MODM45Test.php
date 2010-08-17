@@ -8,21 +8,21 @@ class MODM45Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $a = new a();
-        $a->setB(new b());
+        $a = new MODM45A();
+        $a->setB(new MODM45B());
 
         $this->dm->persist($a);
         $this->dm->flush();
         $this->dm->clear();
 
-        $a = $this->dm->loadByID(__NAMESPACE__.'\a', $a->getId());
+        $a = $this->dm->loadByID(__NAMESPACE__.'\MODM45A', $a->getId());
         $c = (null !== $a->getB()); 
         $this->assertTrue($c); // returns false, while expecting true
     }
 }
 
 /** @Document(collection="modm45_test") */
-class a
+class MODM45A
 {
     /** @Id */
     protected $id;
@@ -30,7 +30,7 @@ class a
     /** @String */
     protected $tmp = 'WorkaroundToBeSaved';
 
-    /** @EmbedOne(targetDocument="b", cascade="all") */
+    /** @EmbedOne(targetDocument="MODM45B", cascade="all") */
     protected $b;
 
     function getId()  {return $this->id;}
@@ -39,7 +39,7 @@ class a
 }
 
 /** @EmbeddedDocument */
-class b
+class MODM45B
 {
     /** @String */
     protected $val;
