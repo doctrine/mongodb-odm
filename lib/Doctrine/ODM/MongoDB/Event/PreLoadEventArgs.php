@@ -15,45 +15,65 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
- */
+*/
 
 namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Common\EventArgs;
 
 /**
- * Class that holds event arguments for a onUpdatePrepared event.
+ * PreLoad event arguments.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
- * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class OnUpdatePreparedArgs extends LifecycleEventArgs
+class PreLoadEventArgs extends EventArgs
 {
+    /**
+     * @var DocumentManager
+     */
     private $dm;
+
+    /**
+     * @var object
+     */
     private $document;
-    private $update;
 
-    public function __construct(DocumentManager $dm, $document, array &$update)
+    /**
+     * @var array
+     */
+    private $data;
+    
+    public function __construct($document, $em, array &$data)
     {
-        $this->dm = $dm;
         $this->document = $document;
-        $this->update = &$update;
+        $this->dm = $em;
+        $this->data = $data;
     }
-
-    public function getDocumentManager()
-    {
-        return $this->dm;
-    }
-
+    
     public function getDocument()
     {
         return $this->document;
     }
 
-    public function &getUpdate()
+    /**
+     * @return DocumentManager
+     */
+    public function getDocumentManager()
     {
-        return $this->update;
+        return $this->dm;
+    }
+
+    /**
+     * Get the array of data to be loaded and hydrated.
+     *
+     * @return array $data
+     */
+    public function &getData()
+    {
+        return $data;
     }
 }

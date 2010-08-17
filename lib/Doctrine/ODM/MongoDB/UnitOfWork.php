@@ -25,6 +25,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\ODM\MongoDB\Event\LifecycleEventArgs,
+    Doctrine\ODM\MongoDB\Event\PreLoadEventArgs,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\NotifyPropertyChanged,
@@ -1789,6 +1790,19 @@ class UnitOfWork implements PropertyChangedListener
         $id = $class->getPHPIdentifierValue($data['_id']);
         if (isset($this->identityMap[$class->rootDocumentName][$id])) {
             $document = $this->identityMap[$class->rootDocumentName][$id];
+        } else {
+            $document = $class->newInstance();
+        }
+
+        if (isset($class->lifecycleCallbacks[ODMEvents::preLoad])) {
+            $args = array(&$data);
+            $class->invokeLifecycleCallbacks(ODMEvents::preLoad, $document, $args);
+        }
+        if ($this->evm->hasListeners(ODMEvents::preLoad)) {
+            $this->evm->dispatchEvent(ODMEvents::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
+        }
+
+        if (isset($this->identityMap[$class->rootDocumentName][$id])) {
             $oid = spl_object_hash($document);
             if ($document instanceof Proxy && ! $document->__isInitialized__) {
                 $document->__isInitialized__ = true;
@@ -1804,7 +1818,6 @@ class UnitOfWork implements PropertyChangedListener
                 $this->originalDocumentData[$oid] = $data;
             }
         } else {
-            $document = $class->newInstance();
             $this->hydrator->hydrate($document, $data);
             $this->registerManaged($document, $id, $data);
         }

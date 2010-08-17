@@ -256,6 +256,10 @@ class AnnotationDriver implements Driver
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::postRemove);
                     }
 
+                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PreLoad'])) {
+                        $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::preLoad);
+                    }
+
                     if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PostLoad'])) {
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\ODMEvents::postLoad);
                     }

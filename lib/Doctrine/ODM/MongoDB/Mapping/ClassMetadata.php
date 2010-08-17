@@ -350,10 +350,14 @@ class ClassMetadata
      * @param string $event The lifecycle event.
      * @param Document $document The Document on which the event occured.
      */
-    public function invokeLifecycleCallbacks($lifecycleEvent, $document)
+    public function invokeLifecycleCallbacks($lifecycleEvent, $document, array $arguments = null)
     {
         foreach ($this->lifecycleCallbacks[$lifecycleEvent] as $callback) {
-            $document->$callback();
+            if ($arguments !== null) {
+                call_user_func_array(array($document, $callback), $arguments);
+            } else {
+                $document->$callback();
+            }
         }
     }
 
