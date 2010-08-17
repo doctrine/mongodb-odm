@@ -358,7 +358,8 @@ class UnitOfWork implements PropertyChangedListener
         $parentOid = spl_object_hash($parentDocument);
 
         $actualData = array();
-        foreach ($class->fieldMappings as $name => $mapping) {
+        foreach ($class->reflFields as $name => $refProp) {
+            $mapping = $class->fieldMappings[$name];
             if ( ! $class->isIdentifier($name) || $class->getAllowCustomID()) {
                 $actualData[$name] = $class->getFieldValue($document, $mapping['fieldName']);
             }

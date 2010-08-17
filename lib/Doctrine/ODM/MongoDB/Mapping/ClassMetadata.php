@@ -201,6 +201,13 @@ class ClassMetadata
     public $fieldMappings = array();
 
     /**
+     * READ-ONLY: Array of fields to also load with a given method.
+     *
+     * @var array
+     */
+    public $alsoLoadMethods = array();
+
+    /**
      * READ-ONLY: The registered lifecycle callbacks for documents of this class.
      *
      * @var array

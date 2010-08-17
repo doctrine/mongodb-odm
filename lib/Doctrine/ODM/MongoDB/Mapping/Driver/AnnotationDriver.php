@@ -222,7 +222,7 @@ class AnnotationDriver implements Driver
                 if ($alsoLoad = $this->reader->getMethodAnnotation($method, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
                     $fields = (array) $alsoLoad->value;
                     foreach ($fields as $value) {
-                        $class->fieldMappings[$value]['alsoLoadMethods'][] = $method->getName();
+                        $class->alsoLoadMethods[$value] = $method->getName();
                     }
                 }
             }

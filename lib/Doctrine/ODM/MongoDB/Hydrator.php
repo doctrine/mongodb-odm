@@ -71,15 +71,14 @@ class Hydrator
     public function hydrate($document, &$data)
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
-        foreach ($metadata->fieldMappings as $mapping) {
-            if (isset($mapping['alsoLoadMethods'])) {
-                foreach ($mapping['alsoLoadMethods'] as $method) {
-                    if (isset($data[$mapping['fieldName']])) {
-                        $document->$method($data[$mapping['fieldName']]);
-                    }
+        if (isset($metadata->alsoLoadMethods)) {
+            foreach ($metadata->alsoLoadMethods as $fieldName => $method) {
+                if (isset($data[$fieldName])) {
+                    $document->$method($data[$fieldName]);
                 }
             }
-
+        }
+        foreach ($metadata->fieldMappings as $mapping) {
             if (isset($mapping['alsoLoadFields'])) {
                 $rawValue = null;
                 $names = isset($mapping['alsoLoadFields']) ? $mapping['alsoLoadFields'] : array();
