@@ -112,8 +112,12 @@ class PersistentCollection implements Collection
             }
             $this->coll->clear();
 
+            $groupedIds = array();
             foreach ($this->references as $reference) {
                 $className = $this->dm->getClassNameFromDiscriminatorValue($this->mapping, $reference);
+                if ( ! isset($groupedIds[$className])) {
+                    $groupedIds[$className] = array();
+                }
                 $id = $reference[$this->cmd . 'id'];
                 $groupedIds[$className][] = $id;
                 $reference = $this->dm->getReference($className, (string) $id);
