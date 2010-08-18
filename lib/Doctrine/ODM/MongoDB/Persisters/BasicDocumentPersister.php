@@ -430,20 +430,20 @@ class BasicDocumentPersister
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
 
             if ($mapping['type'] === 'many' || $mapping['type'] === 'collection') {               
-                if (isset($mapping['embedded']) && $new) {
-                    foreach ($new as $k => $v) {
-                        if ( ! isset($old[$k])) {
-                            continue;
-                        }
-                        $update = $this->prepareUpdateData($v);
-                        foreach ($update as $cmd => $values) {
-                            foreach ($values as $key => $value) {
-                                $result[$cmd][$mapping['fieldName'] . '.' . $k . '.' . $key] = $value;
+                if ($mapping['strategy'] === 'pushPull') {
+                    if (isset($mapping['embedded']) && $new) {
+                        foreach ($new as $k => $v) {
+                            if ( ! isset($old[$k])) {
+                                continue;
+                            }
+                            $update = $this->prepareUpdateData($v);
+                            foreach ($update as $cmd => $values) {
+                                foreach ($values as $key => $value) {
+                                    $result[$cmd][$mapping['fieldName'] . '.' . $k . '.' . $key] = $value;
+                                }
                             }
                         }
                     }
-                }
-                if ($mapping['strategy'] === 'pushPull') {
                     if ($old !== $new) {
                         $old = $old ? $old : array();
                         $new = $new ? $new : array();
