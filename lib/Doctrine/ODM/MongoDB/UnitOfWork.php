@@ -323,6 +323,12 @@ class UnitOfWork implements PropertyChangedListener
         return array();
     }
 
+    /**
+     * Get a documents actual data, flattening all the objects to arrays.
+     *
+     * @param object $document
+     * @return array
+     */
     public function getDocumentActualData($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
@@ -357,6 +363,9 @@ class UnitOfWork implements PropertyChangedListener
                 $class->reflFields[$name]->setValue($document, $coll);
             }
 
+            // We need to flatten the embedded documents so they are just arrays of
+            // data instead of the actual objects. This is necessary to maintain all the old
+            // values.
             if ($class->isCollectionValuedEmbed($name) && $origValue) {
                 $embeddedDocuments = $origValue;
                 $actualData[$name] = array();

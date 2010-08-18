@@ -248,7 +248,6 @@ class BasicDocumentPersister
                 }
             }
 
-            //print_r($update);
             $this->collection->update(array('_id' => $id), $update, $options);
         }
     }
