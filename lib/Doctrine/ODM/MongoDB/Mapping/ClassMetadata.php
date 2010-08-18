@@ -675,8 +675,11 @@ class ClassMetadata
      */
     public function mapField(array $mapping)
     {
-        if (isset($mapping['name'])) {
+        if ( ! isset($mapping['fieldName']) && isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
+        }
+        if ( ! isset($mapping['name'])) {
+            $mapping['name'] = $mapping['fieldName'];
         }
         if ( ! isset($mapping['fieldName'])) {
             throw MongoDBException::missingFieldName($this->name);

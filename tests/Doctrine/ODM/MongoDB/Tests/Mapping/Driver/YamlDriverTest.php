@@ -30,6 +30,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => '',
             'isCascadeRefresh' => '',
             'isCascadeRemove'  => '',
+            'name'             => 'id',
             'nullable'         => false
         ), $classMetadata->fieldMappings['id']);
 
@@ -41,6 +42,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => '',
             'isCascadeRefresh' => '',
             'isCascadeRemove'  => '',
+            'name'             => 'username',
             'nullable'         => false
         ), $classMetadata->fieldMappings['username']);
 
@@ -52,6 +54,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => '',
             'isCascadeRefresh' => '',
             'isCascadeRemove'  => '',
+            'name'             => 'createdAt',
             'nullable'         => false
         ), $classMetadata->fieldMappings['createdAt']);
 
@@ -65,6 +68,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => '',
             'isCascadeRefresh' => '',
             'isCascadeRemove'  => '',
+            'name'             => 'address',
             'nullable'         => false
         ), $classMetadata->fieldMappings['address']);
 
@@ -78,6 +82,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => '',
             'isCascadeRefresh' => '',
             'isCascadeRemove'  => '',
+            'name'             => 'phonenumbers',
             'nullable'         => false
         ), $classMetadata->fieldMappings['phonenumbers']);
 
@@ -91,6 +96,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => true,
             'isCascadeRefresh' => true,
             'isCascadeRemove'  => true,
+            'name'             => 'profile',
             'nullable'         => false
         ), $classMetadata->fieldMappings['profile']);
 
@@ -104,6 +110,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => true,
             'isCascadeRefresh' => true,
             'isCascadeRemove'  => true,
+            'name'             => 'account',
             'nullable'         => false
         ), $classMetadata->fieldMappings['account']);
 
@@ -117,6 +124,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => true,
             'isCascadeRefresh' => true,
             'isCascadeRemove'  => true,
+            'name'             => 'groups',
             'nullable'         => false
         ), $classMetadata->fieldMappings['groups']);
 
@@ -138,6 +146,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove'  => false,
+            'name'             => 'name',
             'nullable'         => false
         ), $classMetadata->fieldMappings['name']);
     }
