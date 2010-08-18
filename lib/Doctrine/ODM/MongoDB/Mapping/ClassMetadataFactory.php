@@ -213,6 +213,7 @@ class ClassMetadataFactory
                 $class->setIdentifier($parent->identifier);
                 $class->setDiscriminatorMap($parent->discriminatorMap);
                 $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
+                $class->setFile($parent->getFile());
             }
 
             // Invoke driver

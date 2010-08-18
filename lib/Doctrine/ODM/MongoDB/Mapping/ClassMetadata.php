@@ -659,6 +659,16 @@ class ClassMetadata
     }
 
     /**
+     * Set the field name that stores the grid file.
+     *
+     * @param string $file
+     */
+    public function setFile($file)
+    {
+        $this->file = $file;
+    }
+
+    /**
      * Map a field.
      *
      * @param array $mapping The mapping information.
@@ -1032,11 +1042,21 @@ class ClassMetadata
         }
     }
 
-    public function setAllowCustomId($boolean)
+    /**
+     * Set whether or not a custom id is allowed.
+     *
+     * @param bool $bool
+     */
+    public function setAllowCustomId($bool)
     {
-        $this->allowCustomID = (bool) $boolean;
+        $this->allowCustomID = (bool) $bool;
     }
 
+    /**
+     * Get whether or not a custom id is allowed.
+     *
+     * @param bool $bool
+     */
     public function getAllowCustomID()
     {
         return $this->allowCustomID;
