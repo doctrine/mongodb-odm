@@ -207,6 +207,7 @@ class BasicDocumentPersister
     {
         $id = $this->uow->getDocumentIdentifier($document);
         $update = $this->prepareUpdateData($document);
+
         if ( ! empty($update)) {
             if ($this->dm->getEventManager()->hasListeners(ODMEvents::onUpdatePrepared)) {
                 $this->dm->getEventManager()->dispatchEvent(
@@ -418,6 +419,9 @@ class BasicDocumentPersister
      */
     public function prepareUpdateData($document)
     {
+        if (is_array($document) && isset($document['originalObject'])) {
+            $document = $document['originalObject'];
+        }
         $oid = spl_object_hash($document);
         $class = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
@@ -447,8 +451,13 @@ class BasicDocumentPersister
                     if ($old !== $new) {
                         $old = $old ? $old : array();
                         $new = $new ? $new : array();
-                        $deleteDiff = array_udiff_assoc($old, $new, function($a, $b) {return $a === $b ? 0 : 1; });
-                        $insertDiff = array_udiff_assoc($new, $old, function($a, $b) {return $a === $b ? 0 : 1;});
+                        $compare = function($a, $b) {
+                            $a = is_array($a) && isset($a['originalObject']) ? $a['originalObject'] : $a;
+                            $b = is_array($b) && isset($b['originalObject']) ? $b['originalObject'] : $b;
+                            return $a === $b ? 0 : 1;
+                        };
+                        $deleteDiff = array_udiff_assoc($old, $new, $compare);
+                        $insertDiff = array_udiff_assoc($new, $old, $compare);
 
                         // insert diff
                         if ($insertDiff) {
