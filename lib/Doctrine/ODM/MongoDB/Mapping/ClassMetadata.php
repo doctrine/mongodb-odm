@@ -107,6 +107,12 @@ class ClassMetadata
     public $file;
 
     /**
+     * READ-ONLY: The field that stores the calculated distance when performing geo spatial
+     * queries.
+     */
+    public $distance;
+
+    /**
      * READ-ONLY: The array of indexes for the document collection.
      */
     public $indexes = array();
@@ -481,7 +487,12 @@ class ClassMetadata
     {
         $this->indexes[] = array(
             'keys' => array_map(function($value) {
-                return strtolower($value) == 'asc' ? 1 : -1;
+                $lower = strtolower($value);
+                if ($lower === 'asc' || $lower === 'desc') {
+                    return $lower === 'asc' ? 1 : -1;
+                } else {
+                    return $value;
+                }
             }, $keys),
             'options' => $options
         );
@@ -669,6 +680,26 @@ class ClassMetadata
     }
 
     /**
+     * Returns the distance field name.
+     *
+     * @return string $distance The distance field name.
+     */
+    public function getDistance()
+    {
+        return $this->distance;
+    }
+
+    /**
+     * Set the field name that stores the distance.
+     *
+     * @param string $distance
+     */
+    public function setDistance($distance)
+    {
+        $this->file = $distance;
+    }
+
+    /**
      * Map a field.
      *
      * @param array $mapping The mapping information.
@@ -730,6 +761,9 @@ class ClassMetadata
         unset($mapping['cascade']);
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
+        }
+        if (isset($mapping['distance']) && $mapping['distance'] === true) {
+            $this->distance = $mapping['fieldName'];
         }
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $mapping['type'] = isset($mapping['type']) ? $mapping['type'] : 'id';

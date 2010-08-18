@@ -181,7 +181,10 @@ final class ReferenceMany extends Field
     public $cascade;
     public $strategy = 'pushPull'; // pushPull, set
 }
-final class NotSaved extends Field {}
+class NotSaved extends Field {}
+final class Distance extends Field {
+    public $distance = true;
+}
 final class AlsoLoad extends Annotation {
     public $name;
 }

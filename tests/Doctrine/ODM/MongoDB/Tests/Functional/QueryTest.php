@@ -189,7 +189,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             new \MongoDate(strtotime('1985-09-04'))
         );
 
-        $articles = array_values($query->execute());
+        $articles = array_values($query->execute()->getResults());
         $this->assertEquals(2, count($articles));
         $this->assertEquals('1985-09-02', $articles[0]->getCreatedAt()->format('Y-m-d'));
         $this->assertEquals('1985-09-03', $articles[1]->getCreatedAt()->format('Y-m-d'));

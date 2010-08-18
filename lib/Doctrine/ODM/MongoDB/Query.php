@@ -89,6 +89,9 @@ class Query
     /** Field to select distinct values of */
     private $distinctField;
 
+    /** Data to use with $near operator for geospatial indexes */
+    private $near;
+
     /** The type of query */
     private $type = self::TYPE_FIND;
 
@@ -650,6 +653,20 @@ class Query
     }
 
     /**
+     * Add where near criteria.
+     *
+     * @param string $x
+     * @param string $y
+     * @return Query
+     */
+    public function near($x, $y)
+    {
+        list($xMapping, $yMapping) = array_values($this->dm->getClassMetadata($this->class->fieldMappings[$this->currentField]['targetDocument'])->fieldMappings);
+        $this->near = array($xMapping['name'] => $x, $yMapping['name'] => $y);
+        return $this;
+    }
+
+    /**
      * Set sort and erase all old sorts.
      *
      * @param string $order
@@ -940,8 +957,28 @@ class Query
                             'query' => $this->where
                         ));
                     return $result['values'];
+                } elseif ($this->near !== null) {
+                    $result = $this->dm->getDocumentDB($this->className)
+                        ->command(array(
+                            'geoNear' => $this->dm->getDocumentCollection($this->className)->getName(),
+                            'near' => $this->near,
+                            'num' => $this->limit,
+                            'query' => $this->where
+                        ));
+                    if ($this->hydrate) {
+                        $hydrator = $this->dm->getHydrator();
+                        $documents = array();
+                        foreach ($result['results'] as $result) {
+                            $document = $result['obj'];
+                            $document['distance'] = $result['dis'];
+                            $documents[] = $this->dm->getUnitOfWork()->getOrCreateDocument($this->class->name, $document);
+                        }
+                        return $documents;
+                    } else {
+                        return $result['results'];
+                    }
                 }
-                return $this->getCursor()->getResults();
+                return $this->getCursor();
                 break;
 
             case self::TYPE_REMOVE;
@@ -987,7 +1024,13 @@ class Query
      */
     public function getSingleResult()
     {
-        return $this->getCursor()->getSingleResult();
+        if ($results = $this->execute()) {
+            if ($results instanceof MongoCursor) {
+                return $results->getSingleResult();
+            }
+            return array_shift($results);
+        }
+        return null;
     }
 
     /**
