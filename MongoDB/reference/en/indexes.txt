@@ -102,16 +102,23 @@ manually:
     [php]
     /**
      * @Document
-     * @Index(keys={"loc"="2d"}, options={"min"="-500", "max"="500"})
+     * @Index(keys={"coordinates"="2d"})
      */
     class Place
     {
         /** @Id */
         private $id;
 
-        /** @Integer */
-        private $accountId;
+        /** @EmbedOne(targetDocument="Coordinates") */
+        private $coordinates;
+    }
+    
+    /** @EmbeddedDocument */
+    class Coordinates
+    {
+        /** @Float */
+        private $latitude;
 
-        /** @String */
-        private $username;
+        /** @Float */
+        private $longitude;
     }
