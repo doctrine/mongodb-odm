@@ -2,7 +2,7 @@ Working with indexes in the MongoDB ODM is pretty straight forward. You can have
 indexes, they can consist of multiple fields, they can be unique and you can give them an
 order. In this chapter we'll show you examples of indexes using annotations.
 
-First here is an example where we put a unique index on a single property:
+First here is an example where we put an index on a single property:
 
     [php]
     /** @Document */
@@ -15,6 +15,8 @@ First here is an example where we put a unique index on a single property:
         private $username;
     }
 
+++ Index Options
+
 You can customize the index with some additional options:
 
  * **name** - The name of the index. This can be useful if you are indexing many keys and Mongo complains about the index name being too long.
@@ -24,7 +26,7 @@ You can customize the index with some additional options:
  * **order** - The order of the index (asc or desc).
  * **unique** - Create a unique index.
 
--
+++ Unique Index
 
     [php]
     /** @Document */
@@ -56,7 +58,7 @@ the class doc block:
     [php]
     /**
      * @Document
-     * @UniqueIndex(keys={"accountId", "username"})
+     * @UniqueIndex(keys={"accountId"="asc", "username"="asc"})
      */
     class User
     {
@@ -76,11 +78,33 @@ To specify multiple indexes you must use the `@Indexes` annotation:
     /**
      * @Document
      * @Indexes({
-     *   @Index(keys={"accountId"}, order="asc"),
-     *   @Index(keys={"username"}, order="desc") 
+     *   @Index(keys={"accountId"="asc"}),
+     *   @Index(keys={"username"="asc"}) 
      * })
      */
     class User
+    {
+        /** @Id */
+        private $id;
+
+        /** @Integer */
+        private $accountId;
+
+        /** @String */
+        private $username;
+    }
+
+++ Geospatial Indexing
+
+You can specify a geospatial index by just specifying the keys and options structures
+manually:
+
+    [php]
+    /**
+     * @Document
+     * @Index(keys={"loc"="2d"}, options={"min"="-500", "max"="500"})
+     */
+    class Place
     {
         /** @Id */
         private $id;
