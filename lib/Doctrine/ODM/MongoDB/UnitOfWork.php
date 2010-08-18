@@ -380,8 +380,7 @@ class UnitOfWork implements PropertyChangedListener
                 $coll->setDirty( ! $coll->isEmpty());
                 $class->reflFields[$name]->setValue($document, $coll);
                 $actualData[$name] = $coll;
-            }
-            if ($class->isSingleValuedEmbed($name) && is_object($actualData[$name])) {
+            } elseif ($class->isSingleValuedEmbed($name) && is_object($actualData[$name])) {
                 $embeddedDocument = $actualData[$name];
                 $embeddedMetadata = $this->dm->getClassMetadata(get_class($embeddedDocument));
                 $actualData[$name] = array();
@@ -416,11 +415,18 @@ class UnitOfWork implements PropertyChangedListener
                 if ($actualValue instanceof PersistentCollection) {
                     $actualValue = $actualValue->toArray();
                 }
-                if ((isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one')
-                        || (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one')) {
-                    if ($orgValue !== $actualValue) {
-                        $changeSet[$propName] = array($orgValue, $actualValue);
+                if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
+                    if (is_object($orgValue)) {
+                        $embeddedOid = spl_object_hash($orgValue);
+                        $orgValue = isset($this->originalDocumentData[$embeddedOid]) ? $this->originalDocumentData[$embeddedOid] : $orgValue;
                     }
+                    $changeSet[$propName] = array($orgValue, $actualValue);
+                } else if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
+                    if (is_object($orgValue)) {
+                        $referenceOid = spl_object_hash($orgValue);
+                        $orgValue = isset($this->originalDocumentData[$referenceOid]) ? $this->originalDocumentData[$referenceOid] : $orgValue;
+                    }
+                    $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if ($isChangeTrackingNotify) {
                     continue;
                 } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {

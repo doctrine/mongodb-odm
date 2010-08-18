@@ -246,6 +246,8 @@ class BasicDocumentPersister
                     $this->collection->update(array('_id' => $id), $tempUpdate, $options);
                 }
             }
+
+            //print_r($update);
             $this->collection->update(array('_id' => $id), $update, $options);
         }
     }
@@ -400,27 +402,6 @@ class BasicDocumentPersister
                     $this->fieldsToUpdate[$id][$mapping['fieldName']] = array($mapping, $new);
                 }
             }
-            if (isset($mapping['embedded'])) {
-                $scheduleForUpdate = false;
-                if ($mapping['type'] === 'one') {
-                    if ( ! isset($insertData[$mapping['fieldName']]['_id'])) {
-                        $scheduleForUpdate = true;
-                    }
-                } elseif ($mapping['type'] === 'many') {
-                    foreach ($insertData[$mapping['fieldName']] as $ref) {
-                        if ( ! isset($ref['_id'])) {
-                            $scheduleForUpdate = true;
-                            break;
-                        }
-                    }
-                }
-                if ($scheduleForUpdate) {
-                    unset($insertData[$mapping['fieldName']]);
-                    $id = spl_object_hash($document);
-                    $this->documentsToUpdate[$id] = $document;
-                    $this->fieldsToUpdate[$id][$mapping['fieldName']] = array($mapping, $new);
-                }
-            }
         }
         // add discriminator if the class has one
         if ($this->class->hasDiscriminator()) {
@@ -495,14 +476,25 @@ class BasicDocumentPersister
                             $result[$this->cmd . 'inc'][$mapping['fieldName']] = ($old - $new) * -1;
                         }
                     } else {
+                        // Single embedded
                         if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
-                            $embeddedDocument = $class->getFieldValue($document, $mapping['fieldName']);
-                            $update = $this->prepareUpdateData($embeddedDocument);
-                            foreach ($update as $cmd => $values) {
-                                foreach ($values as $key => $value) {
-                                    $result[$cmd][$mapping['fieldName'] . '.' . $key] = $value;
+                            // If we didn't have a value before and now we do
+                            if ( ! $old && $new) {
+                                $new = $this->prepareValue($mapping, $new);
+                                if (isset($new) || $mapping['nullable'] === true) {
+                                    $result[$this->cmd . 'set'][$mapping['fieldName']] = $new;
+                                }
+                            // If we had an old value before and it has changed
+                            } elseif ($old && $new) {
+                                $embeddedDocument = $class->getFieldValue($document, $mapping['fieldName']);
+                                $update = $this->prepareUpdateData($embeddedDocument);
+                                foreach ($update as $cmd => $values) {
+                                    foreach ($values as $key => $value) {
+                                        $result[$cmd][$mapping['fieldName'] . '.' . $key] = $value;
+                                    }
                                 }
                             }
+                        // $set all other fields
                         } else {
                             $new = $this->prepareValue($mapping, $new);
                             if (isset($new) || $mapping['nullable'] === true) {
