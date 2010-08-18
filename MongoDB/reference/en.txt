@@ -3,6 +3,7 @@
 + Reference Mapping
 + Embedded Mapping
 + Inheritance Mapping
++ Indexes
 + Working with Objects
 + Events
 + Migrating Schemas
