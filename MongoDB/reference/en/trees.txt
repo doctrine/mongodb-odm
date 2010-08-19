@@ -16,7 +16,7 @@ some examples!
         /** @String */
         private $body;
 
-        /** @EmbedMany(targetDocument="Comment")
+        /** @EmbedMany(targetDocument="Comment") */
         private $comments = array();
 
         // ...
@@ -31,7 +31,7 @@ some examples!
         /** @String */
         private $text;
 
-        /** @EmbedMany(targetDocument="Comment")
+        /** @EmbedMany(targetDocument="Comment") */
         private $replies = array();
 
         // ...
@@ -57,7 +57,7 @@ You can read more about this pattern on the [MongoDB](http://www.mongodb.org/dis
         /** @String */
         private $name;
 
-        /** @ReferenceOne(targetDocument="Category")
+        /** @ReferenceOne(targetDocument="Category") */
         private $parent;
 
         // ...
@@ -84,7 +84,7 @@ You can read more about this pattern on the [MongoDB](http://www.mongodb.org/dis
         /** @String */
         private $name;
 
-        /** @ReferenceMany(targetDocument="Category")
+        /** @ReferenceMany(targetDocument="Category") */
         private $children = array();
 
         // ...
