@@ -58,7 +58,7 @@ You can also query for cities within a given rectangle using the
         ->execute();
 
 In addition to boxes you can check for cities within a circle using the 
-`withinCenter($x1, $y2, $radius)` method:
+`withinCenter($x, $y, $radius)` method:
 
     [php]
     $cities = $this->dm->createQuery(__NAMESPACE__.'\City')
