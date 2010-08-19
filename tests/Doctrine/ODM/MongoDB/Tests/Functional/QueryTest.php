@@ -77,7 +77,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $query = $this->dm->createQuery('Documents\User')
             ->update()
-            ->username()
+            ->field('username')
             ->set('crap')
             ->equals('boo');
         $result = $query->execute();
@@ -109,7 +109,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query->execute();
         $query->execute();
 
-        $user = $query->from('Documents\User')
+        $user = $query->find('Documents\User')
             ->hydrate(false)
             ->getSingleResult();
         $this->assertEquals(10, $user['hits']);
@@ -123,7 +123,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')->equals('boo');
         $result = $query->execute();
 
-        $user = $query->from('Documents\User')
+        $user = $query->find('Documents\User')
             ->hydrate(false)
             ->getSingleResult();
         $this->assertFalse(isset($user['hits']));

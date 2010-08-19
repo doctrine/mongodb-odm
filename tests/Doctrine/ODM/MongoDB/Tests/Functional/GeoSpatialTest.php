@@ -47,6 +47,26 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('19.999998807907', $city->test);
     }
 
+    public function testGeoSpatial2()
+    {
+        $this->dm->ensureDocumentIndexes(__NAMESPACE__.'\City');
+
+        $city = new City();
+        $city->name = 'Nashville';
+        $city->coordinates = new Coordinates();
+        $city->coordinates->latitude = 34.2055968;
+        $city->coordinates->longitude = -118.8713314;
+
+        $this->dm->persist($city);
+        $this->dm->flush(array('safe' => true));
+        $this->dm->clear();
+
+        $city = $this->dm->createQuery(__NAMESPACE__.'\City')
+            ->field('coordinates')->near(50, 50)
+            ->getSingleResult();
+        $this->assertNotNull($city);
+    }
+
     public function testWithinBox()
     {
         $this->dm->ensureDocumentIndexes(__NAMESPACE__.'\City');

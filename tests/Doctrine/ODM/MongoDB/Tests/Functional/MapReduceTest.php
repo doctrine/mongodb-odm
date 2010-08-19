@@ -173,7 +173,7 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
 
         $cursor = $this->dm->createQuery('Documents\Ecommerce\ConfigurableProduct')
             ->mapReduce($map, $reduce)
-            ->getCursor();
+            ->execute();
         $this->assertEquals(10, $cursor->count());
         $results = $cursor->getResults();
         $this->assertTrue(is_array($results['product_0']));
