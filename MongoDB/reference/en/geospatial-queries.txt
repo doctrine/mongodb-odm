@@ -13,7 +13,7 @@ First, setup some documents like the following:
         /** @Id */
         public $id;
 
-        /** @String
+        /** @String */
         public $name;
 
         /** @EmbedOne(targetDocument="Coordinates") */
