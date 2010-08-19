@@ -41,6 +41,14 @@ nearest cities to a given latitude and longitude with the `near($latitude, $long
         ->field('coordinates')->near(1000000, 11111)
         ->execute();
 
+When you use the `near()` functionality a distance will be calculated and placed in the
+property annotated with `@Distance`:
+
+    [php]
+    foreach ($cities as $city) {
+        echo $city->name.': '.$city->distance."\n";
+    }
+
 You can also query for cities within a given rectangle using the
 `withinBox($x1, $y1, $x2, $y2)` method:
 
