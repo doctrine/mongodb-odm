@@ -13,6 +13,7 @@
 * [@Document](#ann_document)
 * [@DiscriminatorField](#ann_discriminator_field)
 * [@DiscriminatorMap](#ann_discriminator_map)
+* [@Distance](#ann_distance)
 * [@EmbedMany](#ann_embed_many)
 * [@EmbedOne](#ann_embed_one)
 * [@EmbeddedDocument](#ann_embedded_document)
@@ -29,6 +30,8 @@
 * [@Int](#ann_int)
 * [@Key](#ann_key)
 * [@MappedSuperclass](#ann_mapped_superclass)
+* [@NotSaved](#ann_not_saved)
+* [@PreLoad](#ann_pre_load)
 * [@PostLoad](#ann_post_load)
 * [@PostPersist](#ann_post_persist)
 * [@PostRemove](#ann_post_remove)
@@ -40,6 +43,7 @@
 * [@ReferenceMany](#ann_reference_many)
 * [@String](#ann_string)
 * [@Timestamp](#ann_timestamp)
+* [@UniqueIndex](#ann_unique_index)
 
 ++ Reference
 
@@ -49,11 +53,19 @@
 Alias of [@Field](#ann_field), with "type" attribute set to "bin".
 Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::BYTE_ARRAY type.
 
+    [php]
+    /** @Bin */
+    private $data;
+
 <a name="ann_bin_custom"></a>
 +++ @BinCustom
 
 Alias of [@Field](#ann_field), with "type" attribute set to "bin_custom".
 Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::CUSTOM type.
+
+    [php]
+    /** @BinCustom */
+    private $data;
 
 <a name="ann_bin_func"></a>
 +++ @BinFunc
@@ -61,11 +73,20 @@ Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata
 Alias of [@Field](#ann_field), with "type" attribute set to "bin_func".
 Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::FUNC type.
 
+    [php]
+    /** @BinFunc */
+    private $data;
+
 <a name="ann_bin_md5"></a>
 +++ @BinMD5
 
 Alias of [@Field](#ann_field), with "type" attribute set to "bin_md5".
 Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::MD5 type.
+
+    [php]
+    /** @BinMD5 */
+    private $password;
+
 
 <a name="ann_bin_uuid"></a>
 +++ @BinUUID
@@ -73,10 +94,18 @@ Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata
 Alias of [@Field](#ann_field), with "type" attribute set to "bin_uuid".
 Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::UUID type.
 
+    [php]
+    /** @BinUUID */
+    private $uuid;
+
 <a name="ann_boolean"></a>
 +++ @Boolean
 
 Alias of [@Field](#ann_field), with "type" attribute set to "boolean"
+
+    [php]
+    /** @Boolean */
+    private $active;
 
 <a name="ann_collection"></a>
 +++ @Collection
@@ -84,11 +113,19 @@ Alias of [@Field](#ann_field), with "type" attribute set to "boolean"
 Alias of [@Field](#ann_field), with "type" attribute set to "collection".
 Stores and retrieves the value as numeric indexed array.
 
+    [php]
+    /** @Collection */
+    private $tags = array();
+
 <a name="ann_date"></a>
 +++ @Date
 
 Alias of [@Field](#ann_field), with "type" attribute set to "date"
 Converts value to [MongoDate](http://www.php.net/manual/en/class.mongodate.php).
+
+    [php]
+    /** @Date */
+    private $createdAt;
 
 <a name="ann_discriminator_field"></a>
 +++ @DiscriminatorField
@@ -99,6 +136,19 @@ the details of the field which saves the name of the class, which the document i
 Required attributes:
 
 * fieldName - The field name of the discriminator. This name is also used during Array hydration as key to specify the class-name.
+
+-
+
+    [php]
+    /**
+     * @Document
+     * @DiscriminatorField(fieldName="type")
+     */
+    class SuperUser
+    {
+        // ...
+    }
+    
 
 <a name="ann_discriminator_map"></a>
 +++ @DiscriminatorMap
@@ -123,6 +173,49 @@ if the classes are in the namespace or not.
         private $discr;
         // ...
     }
+
+<a name="ann_distance"></a>
++++ @Distance
+
+Use the `@Distance` annotation in combination with geospatial indexes and when running `$near`
+queries the property will be populated with a distance value.
+
+    [php]
+    /**
+     * @Document
+     * @Index(keys={"coordinates"="2d"})
+     */
+    class Place
+    {
+        /** @Id */
+        public $id;
+
+        /** @EmbedOne(targetDocument="Coordinates") */
+        public $coordinates;
+
+        /** @Distance */
+        public $distance;
+    }
+    
+    /** @EmbeddedDocument */
+    class Coordinates
+    {
+        /** @Float */
+        public $latitude;
+
+        /** @Float */
+        public $longitude;
+    }
+
+Now you can run a `near()` query and access the distance. Get the closest city to a set of
+coordinates:
+
+    [php]
+    $city = $this->dm->createQuery('City')
+        ->field('coordinates')->near(50, 60)
+        ->limit(1)
+        ->getSingleResult();
+    echo $city->distance;
 
 <a name="ann_document"></a>
 +++ @Document
@@ -442,45 +535,170 @@ It is then converted to [MongoMaxKey](http://www.php.net/manual/en/class.mongoma
 
 The annotation is used to specify classes that are parents of document classes and should not be managed [read more at](http://www.doctrine-project.org/projects/mongodb_odm/1.0/docs/reference/inheritance/en)
 
+    [php]
+    /** @MappedSuperclass */
+    class BaseDocument
+    {
+        // ...
+    }
+
+<a name="ann_not_saved"></a>
++++ @NotSaved
+
+The annotation is used to specify properties that are loaded if they exist but never saved.
+
+    [php]
+    /** @NotSaved */
+    public $field;
+
+<a name="ann_pre_load"></a>
++++ @PreLoad
+
+Marks a method on the document to be called as a @PreLoad event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
+
+    [php]
+    /** @Document @HasLifecycleCallbacks */
+    class Article
+    {
+        // ...
+
+        /** @PreLoad */
+        public function preLoad(array &$data)
+        {
+            // ...
+        }
+    }
+
 <a name="ann_post_load"></a>
 +++ @PostLoad
 
 Marks a method on the document to be called as a @PostLoad event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
+
+    [php]
+    /** @Document @HasLifecycleCallbacks */
+    class Article
+    {
+        // ...
+
+        /** @PostLoad */
+        public function postLoad()
+        {
+            // ...
+        }
+    }
 
 <a name="ann_post_persist"></a>
 +++ @PostPersist
 
 Marks a method on the document to be called as a @PostPersist event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
+    [php]
+    /** @Document @HasLifecycleCallbacks */
+    class Article
+    {
+        // ...
+
+        /** @PostPersist */
+        public function postPersist()
+        {
+            // ...
+        }
+    }
+
 <a name="ann_post_remove"></a>
 +++ @PostRemove
 
 Marks a method on the document to be called as a @PostRemove event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
+
+    [php]
+    /** @Document @HasLifecycleCallbacks */
+    class Article
+    {
+        // ...
+
+        /** @PostRemove */
+        public function postRemove()
+        {
+            // ...
+        }
+    }
 
 <a name="ann_post_update"></a>
 +++ @PostUpdate
 
 Marks a method on the document to be called as a @PostUpdate event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
+    [php]
+    /** @Document @HasLifecycleCallbacks */
+    class Article
+    {
+        // ...
+
+        /** @PostUpdate */
+        public function postUpdate()
+        {
+            // ...
+        }
+    }
+
 <a name="ann_pre_persist"></a>
 +++ @PrePersist
 
 Marks a method on the document to be called as a @PrePersist event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
+
+    [php]
+    /** @Document @HasLifecycleCallbacks */
+    class Article
+    {
+        // ...
+
+        /** @PrePersist */
+        public function prePersist()
+        {
+            // ...
+        }
+    }
 
 <a name="ann_preremove"></a>
 +++ @PreRemove
 
 Marks a method on the document to be called as a @PreRemove event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
+    [php]
+    /** @Document @HasLifecycleCallbacks */
+    class Article
+    {
+        // ...
+
+        /** @PreRemove */
+        public function preRemove()
+        {
+            // ...
+        }
+    }
+
 <a name="ann_preupdate"></a>
 +++ @PreUpdate
 
 Marks a method on the document to be called as a @PreUpdate event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
+    [php]
+    /** @Document @HasLifecycleCallbacks */
+    class Article
+    {
+        // ...
+
+        /** @PreUpdated */
+        public function preUpdated()
+        {
+            // ...
+        }
+    }
+
 <a name="ann_reference_many"></a>
 +++ @ReferenceMany
 
-Defines that the annotated instance variable holds a collection of related documents.
+Defines that the annotated instance variable holds a collection of referenced documents.
 
 Required attributes:
 
@@ -496,7 +714,34 @@ Example:
     /**
      * @ReferenceMany(targetDocument="Documents\PhoneNumber", cascade="all")
      */
-    private $phones;
+    private $phones = array();
+
+<a name="ann_string"></a>
++++ @String
+
+Defines that the annotated instance variable holds a string.
+
+    [php]
+    /** @String */
+    private $username;
+
+<a name="ann_timestamp"></a>
++++ @Timestamp
+
+Defines that the annotated instance variable holds a timestamp.
+
+    [php]
+    /** @Timestamp */
+    private $created;
+
+<a name="ann_unique_index"></a>
++++ @UniqueIndex
+
+Defines a unique index on the given document.
+
+    [php]
+    /** @String @UniqueIndex */
+    private $email;
 
 <a name="ann_reference_one"></a>
 +++ @ReferenceOne

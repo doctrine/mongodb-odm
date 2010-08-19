@@ -38,7 +38,7 @@ nearest cities to a given latitude and longitude with the `near($latitude, $long
 
     [php]
     $cities = $this->dm->createQuery('City')
-        ->field('coordinates')->near(1000000, 11111)
+        ->field('coordinates')->near(50, 60)
         ->execute();
 
 When you use the `near()` functionality a distance will be calculated and placed in the
