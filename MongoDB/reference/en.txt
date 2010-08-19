@@ -15,6 +15,7 @@
 + Storing Files with MongoGridFS
 + Map Reduce
 + Logging
++ Capped Collections
 + Annotations Reference
 + XML Mapping
 + YML Mapping
