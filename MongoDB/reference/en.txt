@@ -11,6 +11,7 @@
 + Query Builder API
 + Complex Queries
 + Document Query Language
++ Trees
 + Storing Files with MongoGridFS
 + Map Reduce
 + Logging
