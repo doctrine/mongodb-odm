@@ -69,7 +69,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testCreateCollections()
     {
-		$sm = $this->dm->getSchemaManager();
+        $sm = $this->dm->getSchemaManager();
         $sm->dropDocumentCollection(__NAMESPACE__.'\CollectionTest');
         $sm->createDocumentCollection(__NAMESPACE__.'\CollectionTest');
 

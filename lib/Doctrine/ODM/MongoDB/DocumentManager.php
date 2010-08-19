@@ -96,12 +96,12 @@ class DocumentManager
      */
     private $hydrator;
 
-	/**
-	 * SchemaManager instance
-	 *
-	 * @var Doctrine\ODM\MongoDB\SchemaManager
-	 */
-	private $schemaManager;
+    /**
+     * SchemaManager instance
+     *
+     * @var Doctrine\ODM\MongoDB\SchemaManager
+     */
+    private $schemaManager;
 
     /**
      * Array of cached MongoDB instances that are lazily loaded.
@@ -152,7 +152,7 @@ class DocumentManager
         }
         $this->queryParser = new Parser($this);
         $this->unitOfWork = new UnitOfWork($this);
-		$this->schemaManager = new SchemaManager($this);
+        $this->schemaManager = new SchemaManager($this);
         $this->proxyFactory = new ProxyFactory($this,
                 $this->config->getProxyDir(),
                 $this->config->getProxyNamespace(),
@@ -246,17 +246,17 @@ class DocumentManager
         return $this->hydrator;
     }
 
-	/**
-	 * Retuns SchemaManager, used to create/drop indexes/collections/databases
-	 *
-	 * @return Doctrine\ODM\MongoDB\SchemaManager
-	 */
-	public function getSchemaManager()
-	{
-		return $this->schemaManager;
-	}
+    /**
+     * Retuns SchemaManager, used to create/drop indexes/collections/databases
+     *
+     * @return Doctrine\ODM\MongoDB\SchemaManager
+     */
+    public function getSchemaManager()
+    {
+        return $this->schemaManager;
+    }
 
-	/**
+    /**
      * Returns the metadata for a class.
      *
      * @param string $className The class name.

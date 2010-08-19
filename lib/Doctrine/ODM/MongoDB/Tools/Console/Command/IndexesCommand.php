@@ -71,15 +71,15 @@ class IndexesCommand extends Command
         return sprintf('Successfully %sd %s', $mode, (isset($className) ? 'indexes for ' . $className : 'all indexes'));
     }
 
-	/**
-	 * @return Doctrine\ODM\MongoDB\SchemaManager
-	 */
-	protected function getSchemaManager()
-	{
-		return $this->getDocumentManager()->getSchemaManager();
-	}
+    /**
+     * @return Doctrine\ODM\MongoDB\SchemaManager
+     */
+    protected function getSchemaManager()
+    {
+        return $this->getDocumentManager()->getSchemaManager();
+    }
 
-	/**
+    /**
      * @return Doctrine\ODM\MongoDB\DocumentManager
      */
     protected function getDocumentManager()

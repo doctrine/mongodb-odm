@@ -21,18 +21,18 @@ namespace Doctrine\ODM\MongoDB;
 
 class SchemaManager
 {
-	/**
-	 * @var Doctrine\ODM\MongoDB\DocumentManager
-	 */
-	protected $dm;
+    /**
+     * @var Doctrine\ODM\MongoDB\DocumentManager
+     */
+    protected $dm;
 
-	/**
-	 * @param Doctrine\ODM\MongoDB\DocumentManager $dm
-	 */
-	public function __construct(DocumentManager $dm)
-	{
-		$this->dm = $dm;
-	}
+    /**
+     * @param Doctrine\ODM\MongoDB\DocumentManager $dm
+     */
+    public function __construct(DocumentManager $dm)
+    {
+        $this->dm = $dm;
+    }
 
     /**
      * Ensure indexes are created for all documents that can be loaded with the
