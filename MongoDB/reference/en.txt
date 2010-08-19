@@ -5,6 +5,7 @@
 + Inheritance Mapping
 + Indexes
 + Working with Objects
++ Geospatial Queries
 + Events
 + Migrating Schemas
 + Query Builder API

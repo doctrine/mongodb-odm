@@ -1,0 +1,55 @@
+You can execute some special queries when using geospatial indexes like checking for documents
+within a rectangle or circle.
+
+First, setup some documents like the following:
+
+    [php]
+    /**
+     * @Document
+     * @Index(keys={"coordinates"="2d"})
+     */
+    class City
+    {
+        /** @Id */
+        public $id;
+
+        /** @String
+        public $name;
+
+        /** @EmbedOne(targetDocument="Coordinates") */
+        public $coordinates;
+
+        /** @Distance */
+        public $distance;
+    }
+    
+    /** @EmbeddedDocument */
+    class Coordinates
+    {
+        /** @Float */
+        public $latitude;
+
+        /** @Float */
+        public $longitude;
+    }
+
+Now you can execute queries against these documents like the following. Check for the 10
+nearest cities to a given latitude and longitude:
+
+    [php]
+    $cities = $this->dm->createQuery(__NAMESPACE__.'\City')
+        ->field('coordinates')->near(1000000, 11111)
+        ->execute();
+
+You can also query for cities within a given rectangle:
+
+    [php]
+    $cities = $this->dm->createQuery(__NAMESPACE__.'\City')
+        ->field('coordinates')->withinBox(41, 41, 72, 72)
+        ->execute();
+
+In addition to boxes you can check for cities within a circle:
+
+    $cities = $this->dm->createQuery(__NAMESPACE__.'\City')
+        ->field('coordinates')->withinCenter(50, 50, 20)
+        ->execute();

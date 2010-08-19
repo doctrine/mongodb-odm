@@ -9,10 +9,10 @@ First here is an example where we put an index on a single property:
     class User
     {
         /** @Id */
-        private $id;
+        public $id;
 
         /** @String @Index */
-        private $username;
+        public $username;
     }
 
 ++ Index Options
@@ -33,10 +33,10 @@ You can customize the index with some additional options:
     class User
     {
         /** @Id */
-        private $id;
+        public $id;
 
         /** @String @Index(unique=true, order="asc") */
-        private $username;
+        public $username;
     }
 
 For your convenience you can quickly specify a unique index with `@UniqueIndex`:
@@ -46,10 +46,10 @@ For your convenience you can quickly specify a unique index with `@UniqueIndex`:
     class User
     {
         /** @Id */
-        private $id;
+        public $id;
 
         /** @String @UniqueIndex(order="asc") */
-        private $username;
+        public $username;
     }
 
 If you want to specify an index that consists of multiple fields you can specify them on
@@ -63,13 +63,13 @@ the class doc block:
     class User
     {
         /** @Id */
-        private $id;
+        public $id;
 
         /** @Integer */
-        private $accountId;
+        public $accountId;
 
         /** @String */
-        private $username;
+        public $username;
     }
 
 To specify multiple indexes you must use the `@Indexes` annotation:
@@ -85,13 +85,13 @@ To specify multiple indexes you must use the `@Indexes` annotation:
     class User
     {
         /** @Id */
-        private $id;
+        public $id;
 
         /** @Integer */
-        private $accountId;
+        public $accountId;
 
         /** @String */
-        private $username;
+        public $username;
     }
 
 ++ Geospatial Indexing
@@ -107,18 +107,18 @@ manually:
     class Place
     {
         /** @Id */
-        private $id;
+        public $id;
 
         /** @EmbedOne(targetDocument="Coordinates") */
-        private $coordinates;
+        public $coordinates;
     }
     
     /** @EmbeddedDocument */
     class Coordinates
     {
         /** @Float */
-        private $latitude;
+        public $latitude;
 
         /** @Float */
-        private $longitude;
+        public $longitude;
     }
