@@ -27,11 +27,18 @@ class SchemaManager
     protected $dm;
 
     /**
+     *
+     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     */
+    protected $metadataFactory;
+
+    /**
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
      */
     public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
+        $this->metadataFactory = $this->dm->getMetadataFactory();
     }
 
     /**
@@ -40,7 +47,7 @@ class SchemaManager
      */
     public function ensureIndexes()
     {
-        foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
             $this->ensureDocumentIndexes($class->name);
         }
     }
@@ -67,7 +74,7 @@ class SchemaManager
      */
     public function deleteIndexes()
     {
-        foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
             $this->deleteDocumentIndexes($class->name);
         }
     }
@@ -87,7 +94,7 @@ class SchemaManager
      */
     public function createCollections()
     {
-        foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
             $this->createDocumentCollection($class->name);
         }
     }
@@ -112,7 +119,7 @@ class SchemaManager
      */
     public function dropCollections()
     {
-        foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
             $this->dropDocumentCollection($class->name);
         }
     }
@@ -134,7 +141,7 @@ class SchemaManager
      */
     public function dropDatabases()
     {
-        foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
             $this->dropDocumentDatabase($class->name);
         }
     }
@@ -154,7 +161,7 @@ class SchemaManager
      */
     public function createDatabases()
     {
-        foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
             $this->createDocumentDatabase($class->name);
         }
     }
