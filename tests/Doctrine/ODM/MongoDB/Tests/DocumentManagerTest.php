@@ -47,6 +47,11 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetEventManager()
     {
+        $this->assertType('\Doctrine\ODM\MongoDB\SchemaManager', $this->dm->getSchemaManager());
+    }
+
+    public function testGetSchemaManager()
+    {
         $this->assertType('\Doctrine\Common\EventManager', $this->dm->getEventManager());
     }
 

@@ -4,6 +4,9 @@ namespace Documents;
 
 /**
  * @Document
+ * @Indexes({
+ *   @Index(keys={"country"="asc", "zip"="asc", "city"="asc"})
+ * })
  */
 class CmsAddress
 {

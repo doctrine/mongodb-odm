@@ -4,6 +4,9 @@ namespace Documents;
 
 /**
  * @Document
+ * @Indexes({
+ *   @Index(keys={"topic"="asc"})
+ * })
  */
 class CmsComment
 {
