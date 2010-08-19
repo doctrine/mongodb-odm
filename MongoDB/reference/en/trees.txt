@@ -57,7 +57,10 @@ You can read more about this pattern on the [MongoDB](http://www.mongodb.org/dis
         /** @String */
         private $name;
 
-        /** @ReferenceOne(targetDocument="Category") */
+        /**
+         * @ReferenceOne(targetDocument="Category")
+         * @Index
+         */
         private $parent;
 
         // ...
@@ -84,7 +87,10 @@ You can read more about this pattern on the [MongoDB](http://www.mongodb.org/dis
         /** @String */
         private $name;
 
-        /** @ReferenceMany(targetDocument="Category") */
+        /**
+         * @ReferenceMany(targetDocument="Category")
+         * @Index
+         */
         private $children = array();
 
         // ...
@@ -126,10 +132,16 @@ You can read more about this pattern on the [MongoDB](http://www.mongodb.org/dis
         /** @Id */
         private $id;
         
-        /** @ReferenceMany */
+        /**
+         * @ReferenceMany
+         * @Index
+         */
         private $ancestors = array();
 
-        /** @ReferenceOne */
+        /**
+         * @ReferenceOne
+         * @Index
+         */
         private $parent;
 
         // ...
