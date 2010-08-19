@@ -42,6 +42,7 @@ Retrieve a blog post and only select the first 10 comments:
     [php]
     $post = $dm->createQuery('BlogPost')
         ->selectSlice('replies', 0, 10);
+    $replies = $post->getReplies();
 
 You can read more about this pattern on the [MongoDB](http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-FullTreeinSingleDocument) website!
 
