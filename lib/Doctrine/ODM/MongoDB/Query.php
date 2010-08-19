@@ -667,6 +667,35 @@ class Query
     }
 
     /**
+     * Add where $within $box query.
+     *
+     * @param string $x1
+     * @param string $y1
+     * @param string $x2
+     * @param string $y2
+     * @return Query
+     */
+    public function withinBox($x1, $y1, $x2, $y2)
+    {
+        $this->where[$this->currentField][$this->cmd . 'within'][$this->cmd . 'box'] = array(array($x1, $y1), array($x2, $y2));
+        return $this;
+    }
+
+    /**
+     * Add where $within $center query.
+     *
+     * @param string $x
+     * @param string $y
+     * @param string $radius
+     * @return Query
+     */
+    public function withinCenter($x, $y, $radius)
+    {
+        $this->where[$this->currentField][$this->cmd . 'within'][$this->cmd . 'center'] = array(array($x, $y), $radius);
+        return $this;
+    }
+
+    /**
      * Set sort and erase all old sorts.
      *
      * @param string $order
@@ -958,19 +987,27 @@ class Query
                         ));
                     return $result['values'];
                 } elseif ($this->near !== null) {
+                    $command = array(
+                        'geoNear' => $this->dm->getDocumentCollection($this->className)->getName(),
+                        'near' => $this->near,
+                        'query' => $this->where
+                    );
+                    if ($this->limit) {
+                        $command['num'] = $this->limit;
+                    }
                     $result = $this->dm->getDocumentDB($this->className)
-                        ->command(array(
-                            'geoNear' => $this->dm->getDocumentCollection($this->className)->getName(),
-                            'near' => $this->near,
-                            'num' => $this->limit,
-                            'query' => $this->where
-                        ));
+                        ->command($command);
+                    if ( ! isset($result['results'])) {
+                        return array();
+                    }
                     if ($this->hydrate) {
                         $hydrator = $this->dm->getHydrator();
                         $documents = array();
                         foreach ($result['results'] as $result) {
                             $document = $result['obj'];
-                            $document['distance'] = $result['dis'];
+                            if ($this->class->distance) {
+                                $document[$this->class->distance] = $result['dis'];
+                            }
                             $documents[] = $this->dm->getUnitOfWork()->getOrCreateDocument($this->class->name, $document);
                         }
                         return $documents;
@@ -1022,9 +1059,9 @@ class Query
      *
      * @return object $document  The single document.
      */
-    public function getSingleResult()
+    public function getSingleResult(array $options = array())
     {
-        if ($results = $this->execute()) {
+        if ($results = $this->execute($options)) {
             if ($results instanceof MongoCursor) {
                 return $results->getSingleResult();
             }
@@ -1105,6 +1142,7 @@ class Query
             'hydrate' => $this->hydrate,
             'mapReduce' => $this->mapReduce,
             'distinctField' => $this->distinctField,
+            'near' => $this->near
         );
         if ($name !== null) {
             return $debug[$name];
