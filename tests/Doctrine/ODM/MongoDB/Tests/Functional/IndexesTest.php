@@ -9,7 +9,7 @@ class UniqueIndexTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     private function uniqueTest($class)
     {
         $class = __NAMESPACE__.'\\'.$class;
-        $this->dm->ensureDocumentIndexes($class);
+        $this->dm->getSchemaManager()->ensureDocumentIndexes($class);
 
         $test = new $class();
         $test->username = 'jwage';

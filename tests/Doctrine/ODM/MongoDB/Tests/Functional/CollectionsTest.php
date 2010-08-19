@@ -69,8 +69,9 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testCreateCollections()
     {
-        $this->dm->dropDocumentCollection(__NAMESPACE__.'\CollectionTest');
-        $this->dm->createDocumentCollection(__NAMESPACE__.'\CollectionTest');
+		$sm = $this->dm->getSchemaManager();
+        $sm->dropDocumentCollection(__NAMESPACE__.'\CollectionTest');
+        $sm->createDocumentCollection(__NAMESPACE__.'\CollectionTest');
 
         $coll = $this->dm->getMongo()->selectDB('colltest')->selectCollection('testing');
         $coll->batchInsert(array(array(1), array(2), array(3)), array('safe' => true));

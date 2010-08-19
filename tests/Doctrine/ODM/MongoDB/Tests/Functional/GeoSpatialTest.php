@@ -23,7 +23,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGeoSpatial()
     {
-        $this->dm->ensureDocumentIndexes(__NAMESPACE__.'\City');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\City');
 
         $city = new City();
         $city->name = 'Nashville';
@@ -49,7 +49,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testWithinBox()
     {
-        $this->dm->ensureDocumentIndexes(__NAMESPACE__.'\City');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\City');
 
         $city = new City();
         $city->name = 'Nashville';
@@ -75,7 +75,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testWithinCenter()
     {
-        $this->dm->ensureDocumentIndexes(__NAMESPACE__.'\City');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\City');
 
         $city = new City();
         $city->name = 'Nashville';
