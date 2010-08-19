@@ -38,7 +38,7 @@ class SchemaManager
     public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
-        $this->metadataFactory = $this->dm->getMetadataFactory();
+        $this->metadataFactory = $dm->getMetadataFactory();
     }
 
     /**
