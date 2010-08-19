@@ -5,6 +5,8 @@ In addition, capped collections automatically, with high performance, maintain i
 order for the objects in the collection; this is very powerful for certain use cases such
 as logging.
 
+++ Mapping
+
 You can configure the collection in the `collection` attribute of the `@Document`
 annotation:
 
@@ -25,6 +27,8 @@ annotation:
         /** @String */
         public $name;
     }
+
+++ Creating
 
 Remember that you must manually create the collections. If you let MongoDB create the
 collection lazily the first time it is selected, it will not be created with the capped
