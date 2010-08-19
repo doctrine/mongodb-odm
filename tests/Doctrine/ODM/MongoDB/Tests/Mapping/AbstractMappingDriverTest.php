@@ -124,6 +124,18 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
         return $class;
     }
+
+    /**
+     * @depends testLifecycleCallbacksSupportMultipleMethodNames
+     * @param ClassMetadata $class
+     */
+    public function testCustomFieldName($class)
+    {
+        $this->assertEquals('name', $class->fieldMappings['name']['fieldName']);
+        $this->assertEquals('username', $class->fieldMappings['name']['name']);
+
+        return $class;
+    }
 }
 
 /**
@@ -138,7 +150,7 @@ class User
     public $id;
 
     /**
-     * @String
+     * @String(name="username")
      */
     public $name;
 
@@ -196,6 +208,7 @@ class User
           ));
         $metadata->mapField(array(
            'fieldName' => 'name',
+           'name' => 'username',
            'type' => 'string'
           ));
         $metadata->mapField(array(

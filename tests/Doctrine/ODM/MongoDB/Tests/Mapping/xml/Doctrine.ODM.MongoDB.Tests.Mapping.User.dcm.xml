@@ -6,9 +6,9 @@
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="Doctrine\ODM\MongoDB\Tests\Mapping\User" collection="cms_users">
-        <field name="id" id="true" />
-        <field name="name" type="string" />
-        <field name="email" type="string" />
+        <field fieldName="id" id="true" />
+        <field fieldName="name" name="username" type="string" />
+        <field fieldName="email" type="string" />
         <reference-one target-document="Address" field="address">
             <cascade>
                 <remove />
