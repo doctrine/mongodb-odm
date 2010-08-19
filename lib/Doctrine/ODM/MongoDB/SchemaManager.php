@@ -41,7 +41,7 @@ class SchemaManager
     public function ensureIndexes()
     {
         foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
-            $this->dm->ensureDocumentIndexes($class->name);
+            $this->ensureDocumentIndexes($class->name);
         }
     }
 
@@ -68,7 +68,7 @@ class SchemaManager
     public function deleteIndexes()
     {
         foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
-            $this->dm->deleteDocumentIndexes($class->name);
+            $this->deleteDocumentIndexes($class->name);
         }
     }
 
@@ -88,7 +88,7 @@ class SchemaManager
     public function createCollections()
     {
         foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
-            $this->dm->deleteDocumentIndexes($class->name);
+            $this->createDocumentCollection($class->name);
         }
     }
 
@@ -113,7 +113,7 @@ class SchemaManager
     public function dropCollections()
     {
         foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
-            $this->dm->dropDocumentCollection($class->name);
+            $this->dropDocumentCollection($class->name);
         }
     }
 
@@ -135,7 +135,7 @@ class SchemaManager
     public function dropDatabases()
     {
         foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
-            $this->dm->dropDocumentDatabase($class->name);
+            $this->dropDocumentDatabase($class->name);
         }
     }
 
@@ -155,7 +155,7 @@ class SchemaManager
     public function createDatabases()
     {
         foreach ($this->dm->metadataFactory->getAllMetadata() as $class) {
-            $this->dm->createDocumentDatabase($class->name);
+            $this->createDocumentDatabase($class->name);
         }
     }
 
