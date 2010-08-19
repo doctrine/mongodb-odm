@@ -96,6 +96,21 @@ class ClassMetadata
     public $collection;
 
     /**
+     * READ-ONLY: If the collection should be a fixed size.
+     */
+    public $collectionCapped;
+
+    /**
+     * READ-ONLY: If the collection is fixed size, its size in bytes.
+     */
+    public $collectionSize;
+
+    /**
+     * READ-ONLY: If the collection is fixed size, the maximum number of elements to store in the collection.
+     */
+    public $collectionMax;
+
+    /**
      * READ-ONLY: The field name of the document identifier.
      */
     public $identifier;
@@ -634,9 +649,79 @@ class ClassMetadata
      *
      * @param string $collection The collection name.
      */
-    public function setCollection($collection)
+    public function setCollection($name)
     {
-        $this->collection = $collection;
+        if (is_array($name)) {
+            if ( ! isset($name['name'])) {
+                throw new \InvalidArgumentException('A name key is required when passing an array to setCollection()');
+            }
+            $this->collectionCapped = isset($name['capped']) ? $name['capped'] : false;
+            $this->collectionSize = isset($name['size']) ? $name['size'] : 0;
+            $this->collectionMax = isset($name['max']) ? $name['max'] : 0;
+            $this->collection = $name['name'];
+        } else {
+            $this->collection = $name;
+        }
+    }
+
+    /**
+     * Get whether or not the documents collection is capped.
+     *
+     * @return boolean
+     */
+    public function getCollectionCapped()
+    {
+        return $this->collectionCapped;
+    }
+
+    /**
+     * Set whether or not the documents collection is capped.
+     *
+     * @param boolean $bool
+     */
+    public function setCollectionCapped($bool)
+    {
+        $this->collectionCapped = $bool;
+    }
+
+    /**
+     * Get the collection size
+     *
+     * @return integer
+     */
+    public function getCollectionSize()
+    {
+        return $this->collectionSize;
+    }
+
+    /**
+     * Set the collection size.
+     *
+     * @param integer $size
+     */
+    public function setCollectionSize($size)
+    {
+        $this->collectionSize = $size;
+    }
+
+    /**
+     * Get the collection max.
+     *
+     * @return integer
+     */
+    public function getCollectionMax()
+    {
+        return $this->collectionMax;
+    }
+
+    /**
+     * Set the collection max.
+     *
+     * @param integer $max
+     */
+    public function setCollectionMax($max)
+    {
+        $this->collectionMax = $max;
     }
 
     /**

@@ -237,7 +237,7 @@ class DocumentManager
     {
         return $this->hydrator;
     }
- 
+
     /**
      * Returns the metadata for a class.
      *
@@ -323,7 +323,7 @@ class DocumentManager
      *
      * The document will be entered into the database at or before transaction
      * commit or as a result of the flush operation.
-     * 
+     *
      * NOTE: The persist operation always considers documents that are not yet known to
      * this DocumentManager as NEW. Do not pass detached documents to the persist operation.
      *
@@ -534,6 +534,93 @@ class DocumentManager
     }
 
     /**
+     * Create all the mapped document collections in the metadata factory.
+     */
+    public function createCollections()
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            $this->deleteDocumentIndexes($class->name);
+        }
+    }
+
+    /**
+     * Create the document collection for a mapped class.
+     *
+     * @param string $documentName
+     */
+    public function createDocumentCollection($documentName)
+    {
+        $this->getDocumentDB($documentName)->createCollection(
+            $this->getClassMetadata($documentName)->getCollection(),
+            $this->getClassMetadata($documentName)->getCollectionCapped(),
+            $this->getClassMetadata($documentName)->getCollectionSize(),
+            $this->getClassMetadata($documentName)->getCollectionMax()
+        );
+    }
+
+    /**
+     * Drop all the mapped document collections in the metadata factory.
+     */
+    public function dropCollections()
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            $this->dropDocumentCollection($class->name);
+        }
+    }
+
+    /**
+     * Drop the document collection for a mapped class.
+     *
+     * @param string $documentName
+     */
+    public function dropDocumentCollection($documentName)
+    {
+        $this->getDocumentDB($documentName)->dropCollection(
+            $this->getClassMetadata($documentName)->getCollection()
+        );
+    }
+
+    /**
+     * Drop all the mapped document databases in the metadata factory.
+     */
+    public function dropDatabases()
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            $this->dropDocumentDatabase($class->name);
+        }
+    }
+
+    /**
+     * Drop the document database for a mapped class.
+     *
+     * @param string $documentName
+     */
+    public function dropDocumentDatabase($documentName)
+    {
+        $this->getDocumentDB($documentName)->drop();
+    }
+
+    /**
+     * Create all the mapped document databases in the metadata factory.
+     */
+    public function createDatabases()
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            $this->createDocumentDatabase($class->name);
+        }
+    }
+
+    /**
+     * Create the document database for a mapped class.
+     *
+     * @param string $documentName
+     */
+    public function createDocumentDatabase($documentName)
+    {
+        return $this->getDocumentDB($documentName);
+    }
+
+    /**
      * Execute a map reduce operation.
      *
      * @param string $documentName The document name to run the operation on.
@@ -685,8 +772,8 @@ class DocumentManager
 
     public function formatDBName($dbName)
     {
-        return sprintf('%s%s%s', 
-            $this->config->getDBPrefix(), 
+        return sprintf('%s%s%s',
+            $this->config->getDBPrefix(),
             $dbName,
             $this->config->getDBSuffix()
         );

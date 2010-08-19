@@ -66,4 +66,33 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $locations = $bar->getLocations();
         $this->assertEquals(0, count($locations));
     }
+
+    public function testCreateCollections()
+    {
+        $this->dm->dropDocumentCollection(__NAMESPACE__.'\CollectionTest');
+        $this->dm->createDocumentCollection(__NAMESPACE__.'\CollectionTest');
+
+        $coll = $this->dm->getMongo()->selectDB('colltest')->selectCollection('testing');
+        $coll->batchInsert(array(array(1), array(2), array(3)), array('safe' => true));
+
+        $data = iterator_to_array($coll->find());
+        $this->assertEquals(1, count($data));
+    }
+}
+
+/**
+ * @Document(db="colltest", collection={
+ *   "name"="testing",
+ *   "capped"="true",
+ *   "size"="1000",
+ *   "max"="1"
+ * })
+ */
+class CollectionTest
+{
+    /** @Id */
+    public $id;
+
+    /** @String */
+    public $username;
 }
