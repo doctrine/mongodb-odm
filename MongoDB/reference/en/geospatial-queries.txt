@@ -37,7 +37,7 @@ Now you can execute queries against these documents like the following. Check fo
 nearest cities to a given latitude and longitude with the `near($latitude, $longitude)` method:
 
     [php]
-    $cities = $this->dm->createQuery(__NAMESPACE__.'\City')
+    $cities = $this->dm->createQuery('City')
         ->field('coordinates')->near(1000000, 11111)
         ->execute();
 
@@ -53,7 +53,7 @@ You can also query for cities within a given rectangle using the
 `withinBox($x1, $y1, $x2, $y2)` method:
 
     [php]
-    $cities = $this->dm->createQuery(__NAMESPACE__.'\City')
+    $cities = $this->dm->createQuery('City')
         ->field('coordinates')->withinBox(41, 41, 72, 72)
         ->execute();
 
@@ -61,6 +61,6 @@ In addition to boxes you can check for cities within a circle using the
 `withinCenter($x, $y, $radius)` method:
 
     [php]
-    $cities = $this->dm->createQuery(__NAMESPACE__.'\City')
+    $cities = $this->dm->createQuery('City')
         ->field('coordinates')->withinCenter(50, 50, 20)
         ->execute();

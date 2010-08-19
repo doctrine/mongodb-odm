@@ -44,9 +44,9 @@ As a quick start, here is a small example document that makes use of several com
                         http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
 
         <document name="Documents\User" db="documents" collection="users">
-            <field name="id" id="true" />
-            <field name="username" type="string" />
-            <field name="createdAt" type="date" />
+            <field fieldName="id" id="true" />
+            <field fieldName="username" name="login" type="string" />
+            <field fieldName="createdAt" type="date" />
             <embed-one target-document="Documents\Address" field="address" />
             <reference-one target-document="Documents\Profile" field="profile">
                 <cascade>

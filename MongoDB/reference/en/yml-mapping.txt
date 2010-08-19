@@ -29,13 +29,11 @@ As a quick start, here is a small example document that makes use of several com
       collection: user
       fields:
         id:
-          fieldName: id
           id: true
         username:
-          fieldName: username
+          name: username
           type: string
         createdAt:
-          fieldName: createdAt
           type: date
       embedOne:
         address:
