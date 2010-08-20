@@ -106,11 +106,12 @@ class SchemaManager
      */
     public function createDocumentCollection($documentName)
     {
+        $classMetadata = $this->dm->getClassMetadata($documentName);
         $this->dm->getDocumentDB($documentName)->createCollection(
-            $this->dm->getClassMetadata($documentName)->getCollection(),
-            $this->dm->getClassMetadata($documentName)->getCollectionCapped(),
-            $this->dm->getClassMetadata($documentName)->getCollectionSize(),
-            $this->dm->getClassMetadata($documentName)->getCollectionMax()
+            $classMetadata->getCollection(),
+            $classMetadata->getCollectionCapped(),
+            $classMetadata->getCollectionSize(),
+            $classMetadata->getCollectionMax()
         );
     }
 

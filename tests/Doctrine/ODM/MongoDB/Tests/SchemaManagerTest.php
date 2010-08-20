@@ -53,9 +53,34 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $collection = $this->getDocumentCollection();
         $collection->expects($this->once())
-                ->method('ensureIndex');
+            ->method('ensureIndex');
         $this->dm->setDocumentCollection('Documents\CmsArticle', $collection);
         $this->dm->getSchemaManager()->ensureDocumentIndexes('Documents\CmsArticle');
+    }
+    /**
+     * @dataProvider getIndexedClasses
+     */
+    public function testDeleteIndexes(array $classes)
+    {
+        $metadatas = array();
+        foreach ($classes as $className) {
+            $collection = $this->getDocumentCollection();
+            $collection->expects($this->once())
+                ->method('deleteIndexes');
+            $metadatas[] = (object) array('name' => $className);
+
+            $this->dm->setDocumentCollection($className, $collection);
+        }
+
+        $metadataFactory = $this->getMetadataFactory();
+        $metadataFactory->expects($this->once())
+            ->method('getAllMetadata')
+            ->will($this->returnValue($metadatas));
+
+        $this->dm->setMetadataFactory($metadataFactory);
+        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm));
+
+        $this->dm->getSchemaManager()->deleteIndexes();
     }
 
     public function testDeleteDocumentIndexes()
@@ -66,6 +91,54 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->setDocumentCollection('Documents\CmsArticle', $collection);
 
         $this->dm->getSchemaManager()->deleteDocumentIndexes('Documents\CmsArticle');
+    }
+
+    public function testCreateDocumentCollection()
+    {
+        $className = 'Documents\CmsArticle';
+        $classMetadata = $this->getClassMetadata($className);
+        $classMetadata->expects($this->once())
+            ->method('getCollection');
+        $classMetadata->expects($this->once())
+            ->method('getCollectionCapped');
+        $classMetadata->expects($this->once())
+            ->method('getCollectionSize');
+        $classMetadata->expects($this->once())
+            ->method('getCollectionMax');
+
+        $documentDB = $this->getDocumentDB($className);
+        $documentDB->expects($this->once())
+            ->method('createCollection');
+        $this->dm->setDocumentDB($className, $documentDB);
+
+        $this->dm->setClassMetadata($className, $classMetadata);
+
+        $this->dm->getSchemaManager()->createDocumentCollection($className);
+    }
+
+    /**
+     * @dataProvider getIndexedClasses
+     */
+    public function testCreateCollections(array $classes)
+    {
+        $metadatas = array();
+        foreach ($classes as $className) {
+            $metadatas[] = (object) array('name' => $className);
+            $documentDB = $this->getDocumentDB($className);
+            $documentDB->expects($this->once())
+                ->method('createCollection');
+            $this->dm->setDocumentDB($className, $documentDB);
+        }
+
+        $metadataFactory = $this->getMetadataFactory();
+        $metadataFactory->expects($this->once())
+            ->method('getAllMetadata')
+            ->will($this->returnValue($metadatas));
+
+        $this->dm->setMetadataFactory($metadataFactory);
+        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm));
+
+        $this->dm->getSchemaManager()->createCollections();
     }
 
     protected function getDocumentManager()
@@ -87,13 +160,26 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         return $this->getMock('Doctrine\ODM\MongoDB\Mongo');
     }
 
-    protected function getMatadataFactory()
+    protected function getMetadataFactory()
     {
         return $this->getMock('Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory', array('getAllMetadata', 'getMetadataFor'), array(), '', false, false);
+    }
+
+    protected function getClassMetadata($className)
+    {
+        $classMetadata = $this->getMock('Doctrine\ODM\MongoDB\Mapping\ClassMetadata', array('getCollection', 'getCollectionCapped', 'getCollectionSize', 'getCollectionMax'), array($className), '', true, false);
+        $classMetadata->name = $className;
+        return $classMetadata;
     }
 
     protected function getDocumentCollection()
     {
         return $this->getMock('Doctrine\ODM\MongoDB\MongoCollection', array('ensureIndex', 'deleteIndex', 'deleteIndexes'), array(), '', false, false);
+    }
+
+    protected function getDocumentDB($className)
+    {
+        $documentDB = $this->getMock('MongoDB', array('authenticate', 'command', 'createCollection', 'createDBRef', 'drop', 'dropCollection', 'execute', 'forceError', 'getDBRef', '__get', 'getGridFS', 'getProfilingLevel', 'getLastError'), array(), '', false, false);
+        return $documentDB;
     }
 }

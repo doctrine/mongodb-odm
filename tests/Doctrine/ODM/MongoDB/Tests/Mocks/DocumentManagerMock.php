@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
     Doctrine\Common\EventManager,
     Doctrine\ODM\MongoDB\UnitOfWork,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory,
+    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\SchemaManager,
     Doctrine\ODM\MongoDB\MongoCollection;
     
@@ -18,6 +19,8 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
     private $metadataFactory;
     private $schemaManager;
     private $documentCollections = array();
+    private $documentDBs = array();
+    private $documentMetadatas = array();
 
     public function getUnitOfWork()
     {
@@ -59,14 +62,35 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
         return isset($this->schemaManager) ? $this->schemaManager : parent::getSchemaManager();
     }
 
-    public function setDocumentCollection($className, MongoCollection $collection)
+    public function setDocumentCollection($documentName, MongoCollection $collection)
     {
-        $this->documentCollections[$className] = $collection;
+        $this->documentCollections[$documentName] = $collection;
     }
 
-    public function getDocumentCollection($className)
+    public function getDocumentCollection($documentName)
     {
-        return isset($this->documentCollections[$className]) ? $this->documentCollections[$className] : parent::getDocumentCollection($className);
+        return isset($this->documentCollections[$documentName]) ? $this->documentCollections[$documentName] : parent::getDocumentCollection($documentName);
+    }
+
+    public function setDocumentDB($documentName, \MongoDB $documentDB)
+    {
+        $this->documentDBs[$documentName] = $documentDB;
+    }
+
+    public function getDocumentDB($documentName)
+    {
+        return isset($this->documentDBs[$documentName]) ? $this->documentDBs[$documentName] : parent::getDocumentDB($documentName);
+    }
+
+
+    public function setClassMetadata($documentName, ClassMetadata $metadata)
+    {
+        $this->documentMetadatas[$documentName] = $metadata;
+    }
+
+    public function getClassMetadata($documentName)
+    {
+        return isset($this->documentMetadatas[$documentName]) ? $this->documentMetadatas[$documentName] : parent::getClassMetadata($documentName);
     }
 
     public static function create(Mongo $mongo, Configuration $config = null, EventManager $eventManager = null)
