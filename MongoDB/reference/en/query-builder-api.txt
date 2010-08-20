@@ -76,7 +76,7 @@ If you wish to get the cursor to iterate over the results instead of returning
 everything as an array you can use the `getCursor()` method:
 
     [php]
-    $cursor = $query->getCursor();
+    $cursor = $query->execute();
 
     foreach ($cursor as $document) {
         // ...

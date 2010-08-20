@@ -61,7 +61,7 @@ example:
             return sum;
         }');
 
-    $users = $query->getCursor();
+    $users = $query->execute();
     foreach ($users as $user) {
         echo "{$user['_id']} had {$user['value']} sale(s).\n";
     }
