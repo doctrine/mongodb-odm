@@ -10,6 +10,7 @@
 + Migrating Schemas
 + Query Builder API
 + Complex Queries
++ Find and Modify
 + Document Query Language
 + Trees
 + Storing Files with MongoGridFS
