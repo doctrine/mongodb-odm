@@ -15,7 +15,7 @@ $classLoader->register();
 $classLoader = new ClassLoader('Doctrine', __DIR__ . '/../lib/vendor/doctrine-common/lib');
 $classLoader->register();
 
-$classLoader = new ClassLoader('Symfony\Components\Yaml', __DIR__ . '/../lib/vendor');
+$classLoader = new ClassLoader('Symfony\Component\Yaml', __DIR__ . '/../lib/vendor');
 $classLoader->register();
 
 $classLoader = new ClassLoader('Documents', __DIR__);

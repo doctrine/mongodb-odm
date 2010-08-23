@@ -1,6 +1,6 @@
 <?php
 
-namespace Symfony\Components\Yaml;
+namespace Symfony\Component\Yaml;
 
 /*
  * This file is part of the symfony package.
@@ -18,6 +18,6 @@ namespace Symfony\Components\Yaml;
  * @subpackage yaml
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  */
-class Exception extends \Exception
+class ParserException extends Exception
 {
 }
