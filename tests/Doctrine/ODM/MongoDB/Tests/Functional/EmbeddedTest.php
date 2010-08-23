@@ -99,7 +99,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user2 = $this->dm->createQuery('Documents\User')
-            ->id()->equals($user->getId())
+            ->field('id')->equals($user->getId())
             ->getSingleResult();
 
         $this->assertEquals($user->getPhonenumbers()->unwrap(), $user2->getPhonenumbers()->unwrap());
