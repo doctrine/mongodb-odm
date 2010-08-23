@@ -49,7 +49,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGeoSpatial2()
     {
-        $this->dm->ensureDocumentIndexes(__NAMESPACE__.'\City');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\City');
 
         $city = new City();
         $city->name = 'Nashville';
