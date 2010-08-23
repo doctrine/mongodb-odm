@@ -141,6 +141,107 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getSchemaManager()->createCollections();
     }
 
+    /**
+     * @dataProvider getIndexedClasses
+     */
+    public function testDropCollections(array $classes)
+    {
+        $metadatas = array();
+        foreach ($classes as $className) {
+            $metadata = $this->getClassMetadata($className);
+            $metadata->expects($this->once())
+                ->method('getCollection')
+                ->will($this->returnValue($className));
+            $documentDB = $this->getDocumentDB($className);
+            $documentDB->expects($this->once())
+                ->method('dropCollection')
+                ->with($className);
+            $this->dm->setDocumentDB($className, $documentDB);
+            $this->dm->setClassMetadata($className, $metadata);
+            $metadatas[] = $metadata;
+        }
+
+        $metadataFactory = $this->getMetadataFactory();
+        $metadataFactory->expects($this->once())
+            ->method('getAllMetadata')
+            ->will($this->returnValue($metadatas));
+
+        $this->dm->setMetadataFactory($metadataFactory);
+        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm));
+
+        $this->dm->getSchemaManager()->dropCollections();
+    }
+
+    public function testDropDocumentCollection()
+    {
+        $className = 'Documents\CmsArticle';
+        $collectionName = 'cms_articles';
+        $classMetadata = $this->getClassMetadata($className);
+        $classMetadata->expects($this->once())
+            ->method('getCollection')
+            ->will($this->returnValue($collectionName));
+
+        $documentDB = $this->getDocumentDB($className);
+        $documentDB->expects($this->once())
+            ->method('dropCollection')
+            ->with($collectionName);
+        $this->dm->setDocumentDB($className, $documentDB);
+
+        $this->dm->setClassMetadata($className, $classMetadata);
+
+        $this->dm->getSchemaManager()->dropDocumentCollection($className);
+    }
+
+    public function testCreateDocumentDatabase()
+    {
+        $className = 'Documents\CmsArticle';
+        $dbName = 'test_db';
+        $mongo = $this->dm->getMongo();
+        $mongo->expects($this->once())
+            ->method('selectDB')
+            ->will($this->returnValue(new \MongoDB(new \Mongo(), $dbName))); // TODO: find a way to mock MongoDB instance
+
+        $this->dm->getSchemaManager()->createDocumentDatabase($className);
+    }
+
+    public function testDropDocumentDatabase()
+    {
+        $className = 'Documents\CmsArticle';
+        $dbName = 'test_db';
+
+        $documentDB = $this->getDocumentDB($className);
+        $documentDB->expects($this->once())
+            ->method('drop');
+        $this->dm->setDocumentDB($className, $documentDB);
+
+        $this->dm->getSchemaManager()->dropDocumentDatabase($className);
+    }
+
+    /**
+     * @dataProvider getIndexedClasses
+     */
+    public function testDropDatabases(array $classes)
+    {
+        $metadatas = array();
+        foreach ($classes as $className) {
+            $documentDB = $this->getDocumentDB($className);
+            $documentDB->expects($this->once())
+                ->method('drop');
+            $this->dm->setDocumentDB($className, $documentDB);
+            $metadatas[] = (object) array('name' => $className);
+        }
+
+        $metadataFactory = $this->getMetadataFactory();
+        $metadataFactory->expects($this->once())
+            ->method('getAllMetadata')
+            ->will($this->returnValue($metadatas));
+
+        $this->dm->setMetadataFactory($metadataFactory);
+        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm));
+
+        $this->dm->getSchemaManager()->dropDatabases();
+    }
+
     protected function getDocumentManager()
     {
         $config = new Configuration();
@@ -157,7 +258,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     protected function getMongo()
     {
-        return $this->getMock('Doctrine\ODM\MongoDB\Mongo');
+        return $this->getMock('Doctrine\ODM\MongoDB\Mongo', array('selectDB'), array(), '', false, false);
     }
 
     protected function getMetadataFactory()
