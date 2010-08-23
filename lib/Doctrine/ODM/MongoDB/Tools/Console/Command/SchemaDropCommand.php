@@ -7,28 +7,28 @@ use Doctrine\ODM\MongoDB\SchemaManager;
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class SchemaCreateCommand extends AbstractSchemaCommand
+class SchemaDropCommand extends AbstractSchemaCommand
 {
-    protected $_commandName = 'create';
+    protected $_commandName = 'drop';
 
     protected function processDocumentCollection(SchemaManager $sm, $document)
     {
-        $sm->createDocumentCollection($document);
+        $sm->dropDocumentCollection($document);
     }
 
     protected function processCollections(SchemaManager $sm)
     {
-        $sm->createCollections();
+        $sm->dropCollections();
     }
 
     protected function processDocumentDB(SchemaManager $sm, $document)
     {
-        $sm->createDocumentDatabase($document);
+        $sm->dropDocumentDatabase($document);
     }
 
     protected function processDBs(SchemaManager $sm)
     {
-        $sm->createDatabases();
+        $sm->dropDatabases();
     }
 
 }
