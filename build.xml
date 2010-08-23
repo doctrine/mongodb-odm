@@ -36,7 +36,7 @@
       Fileset for source of the Symfony YAML and Console components.
     -->
     <fileset id="symfony-sources" dir="./lib/vendor">
-        <include name="Symfony/Components/**"/>
+        <include name="Symfony/Component/**"/>
     </fileset>
 
     <!--

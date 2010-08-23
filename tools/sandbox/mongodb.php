@@ -2,12 +2,12 @@
 
 require __DIR__ . DIRECTORY_SEPARATOR . 'cli-config.php';
 
-$helperSet = isset($helperSet) ? $helperSet : new \Symfony\Components\Console\Helper\HelperSet();
+$helperSet = isset($helperSet) ? $helperSet : new \Symfony\Component\Console\Helper\HelperSet();
 foreach ($helpers as $helper) {
     $helperSet->set($helper);
 }
 
-$cli = new \Symfony\Components\Console\Application('Doctrine ODM MongoDB Command Line Interface', Doctrine\ODM\MongoDB\Version::VERSION);
+$cli = new \Symfony\Component\Console\Application('Doctrine ODM MongoDB Command Line Interface', Doctrine\ODM\MongoDB\Version::VERSION);
 $cli->setCatchExceptions(true);
 $cli->setHelperSet($helperSet);
 $cli->addCommands(array(

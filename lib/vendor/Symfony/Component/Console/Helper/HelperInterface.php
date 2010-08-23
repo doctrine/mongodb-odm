@@ -1,6 +1,6 @@
 <?php
 
-namespace Symfony\Components\Console\Helper;
+namespace Symfony\Component\Console\Helper;
 
 /*
  * This file is part of the Symfony framework.
@@ -12,31 +12,30 @@ namespace Symfony\Components\Console\Helper;
  */
 
 /**
- * Helper is the base class for all helper classes.
+ * HelperInterface is the interface all helpers must implement.
  *
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  */
-abstract class Helper implements HelperInterface
+interface HelperInterface
 {
-    protected $helperSet = null;
-
     /**
      * Sets the helper set associated with this helper.
      *
      * @param HelperSet $helperSet A HelperSet instance
      */
-    public function setHelperSet(HelperSet $helperSet = null)
-    {
-        $this->helperSet = $helperSet;
-    }
+    function setHelperSet(HelperSet $helperSet = null);
 
     /**
      * Gets the helper set associated with this helper.
      *
      * @return HelperSet A HelperSet instance
      */
-    public function getHelperSet()
-    {
-        return $this->helperSet;
-    }
+    function getHelperSet();
+
+    /**
+     * Returns the canonical name of this helper.
+     *
+     * @return string The canonical name
+     */
+    function getName();
 }

@@ -2,9 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
-use Symfony\Components\Console\Command\Command;
-use Symfony\Components\Console\Input;
-use Symfony\Components\Console\Output;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input;
+use Symfony\Component\Console\Output;
 
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
