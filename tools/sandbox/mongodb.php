@@ -12,5 +12,6 @@ $cli->setCatchExceptions(true);
 $cli->setHelperSet($helperSet);
 $cli->addCommands(array(
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\IndexesCommand(),
+    new \Doctrine\ODM\MongoDB\Tools\Console\Command\SchemaCreateCommand(),
 ));
 $cli->run();
