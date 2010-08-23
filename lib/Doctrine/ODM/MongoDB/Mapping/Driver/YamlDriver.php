@@ -67,7 +67,7 @@ class YamlDriver extends AbstractFileDriver
         }
         if (isset($element['indexes'])) {
             foreach($element['indexes'] as $index) {
-                $class->addIndex($index['keys'], $index['options']);
+                $class->addIndex($index['keys'], isset($index['options']) ? $index['options'] : array());
             }
         }
         if (isset($element['inheritanceType'])) {

@@ -10,6 +10,15 @@ Doctrine\ODM\MongoDB\Tests\Mapping\User:
       name: username
     email:
       type: string
+  indexes:
+    index1:
+      keys:
+        name: asc
+    index2:
+      keys:
+        email: desc
+      options:
+        unique: true
   referenceOne:
     address:
       targetDocument: Address

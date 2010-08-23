@@ -48,7 +48,6 @@ class XmlDriver extends AbstractFileDriver
         if ( ! $xmlRoot) {
             return;
         }
-
         if ($xmlRoot->getName() == 'document') {
             if (isset($xmlRoot['repository-class'])) {
                 $class->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
@@ -63,11 +62,6 @@ class XmlDriver extends AbstractFileDriver
         }
         if (isset($xmlRoot['collection'])) {
             $class->setCollection((string) $xmlRoot['collection']);
-        }
-        if (isset($xmlRoot['indexes'])) {
-            foreach($xmlRoot['indexes'] as $index) {
-                $class->addIndex((array) $index['keys'], (array) $index['options']);
-            }
         }
         if (isset($xmlRoot['customId']) && ((string) $xmlRoot['customId'] === true)) {
             $class->setAllowCustomId(true);
@@ -129,6 +123,12 @@ class XmlDriver extends AbstractFileDriver
                 $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ODM\MongoDB\ODMEvents::' . (string) $lifecycleCallback['type']));
             }
         }
+        if (isset($xmlRoot->{'indexes'})) {
+            foreach($xmlRoot->{'indexes'}->{'index'} as $index) {
+                $index = $this->getIndexMapping($index);
+                $class->addIndex($index['keys'], $index['options']);
+            }
+        }
     }
 
     private function getFieldMapping($field)
@@ -177,6 +177,23 @@ class XmlDriver extends AbstractFileDriver
             'name'           => (string) $attributes['field'],
         );
         return $mapping;
+    }
+
+    private function getIndexMapping($xmlIndex)
+    {
+        $index = array('keys' => array(), 'options' => array());
+        foreach ($xmlIndex->{'keys'}->{'key'} as $key) {
+            $index['keys'][(string) $key['name']] = isset($key['order']) ? (string) $key['order'] : 'asc';
+        }
+        if (isset($xmlIndex->{'options'}->{'option'})) {
+            foreach ($xmlIndex->{'options'}->{'option'} as $option) {
+                $value = (string) $option['value'];
+                $value = $value === 'true' ? true : $value;
+                $value = $value === 'false' ? false : $value;
+                $index['options'][(string) $option['name']] = $value;
+            }
+        }
+        return $index;
     }
 
     protected function loadMappingFile($file)

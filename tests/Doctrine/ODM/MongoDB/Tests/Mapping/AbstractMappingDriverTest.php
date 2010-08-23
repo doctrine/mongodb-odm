@@ -136,6 +136,25 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
         return $class;
     }
+
+    /**
+     * @depends testCustomFieldName
+     * @param ClassMetadata $class
+     */
+    public function testIndexes($class)
+    {
+        $this->assertTrue(isset($class->indexes[0]['keys']['name']));
+        $this->assertEquals(1, $class->indexes[0]['keys']['name']);
+        $this->assertTrue( ! isset($class->indexes[0]['options']['unique']) || $class->indexes[0]['options']['unique'] === false);
+
+        $this->assertTrue(isset($class->indexes[1]['keys']['email']));
+        $this->assertEquals(-1, $class->indexes[1]['keys']['email']);
+        $this->assertTrue( ! empty($class->indexes[1]['options']));
+        $this->assertTrue(isset($class->indexes[1]['options']['unique']));
+        $this->assertEquals(true, $class->indexes[1]['options']['unique']);
+
+        return $class;
+    }
 }
 
 /**
@@ -146,16 +165,18 @@ class User
 {
     /**
      * @Id
-     **/
+     */
     public $id;
 
     /**
      * @String(name="username")
+     * @Index(order="asc")
      */
     public $name;
 
     /**
      * @String
+     * @UniqueIndex(order="desc")
      */
     public $email;
 
@@ -243,5 +264,7 @@ class User
            4 => 'detach',
            ),
           ));
+        $metadata->addIndex(array('name' => 'asc'), array());
+        $metadata->addIndex(array('email' => 'desc'), array('unique' => true));
     }
 }
