@@ -150,3 +150,23 @@ you can use the `discriminatorField` option:
 
         // ...
     }
+
+++ Cascading Operations
+
+By default Doctrine will not cascade any `UnitOfWork` operations to referenced documents so if
+wish to have this functionality you must explicitly enable it:
+
+    [php]
+    /**
+     * @ReferenceMany(discriminatorField="type", cascade={"all"})
+     */
+    private $favorites = array();
+
+The valid values are:
+
+ * **all** - cascade on all operations by default.
+ * **detach** - cascade detach operation to referenced documents.
+ * **merge** - cascade merge operation to referenced documents.
+ * **refresh** - cascade refresh operation to referenced documents.
+ * **remove** - cascade remove operation to referenced documents.
+ * **persist** - cascade persist operation to referenced documents.
