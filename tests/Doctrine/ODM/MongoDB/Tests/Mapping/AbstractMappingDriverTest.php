@@ -41,7 +41,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testFieldMappings($class)
     {
-        $this->assertEquals(6, count($class->fieldMappings));
+        $this->assertEquals(7, count($class->fieldMappings));
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertTrue(isset($class->fieldMappings['email']));
@@ -77,7 +77,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testAssocations($class)
     {
-        $this->assertEquals(6, count($class->fieldMappings));
+        $this->assertEquals(7, count($class->fieldMappings));
 
         return $class;
     }
@@ -143,15 +143,25 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testIndexes($class)
     {
-        $this->assertTrue(isset($class->indexes[0]['keys']['name']));
-        $this->assertEquals(1, $class->indexes[0]['keys']['name']);
-        $this->assertTrue( ! isset($class->indexes[0]['options']['unique']) || $class->indexes[0]['options']['unique'] === false);
+        $this->assertTrue(isset($class->indexes[0]['keys']['username']));
+        $this->assertEquals(-1, $class->indexes[0]['keys']['username']);
+        $this->assertTrue(isset($class->indexes[0]['options']['unique']));
 
         $this->assertTrue(isset($class->indexes[1]['keys']['email']));
         $this->assertEquals(-1, $class->indexes[1]['keys']['email']);
         $this->assertTrue( ! empty($class->indexes[1]['options']));
         $this->assertTrue(isset($class->indexes[1]['options']['unique']));
         $this->assertEquals(true, $class->indexes[1]['options']['unique']);
+        $this->assertTrue(isset($class->indexes[1]['options']['dropDups']));
+        $this->assertEquals(true, $class->indexes[1]['options']['dropDups']);
+
+        $this->assertTrue(isset($class->indexes[2]['keys']['mysqlProfileId']));
+        $this->assertEquals(-1, $class->indexes[2]['keys']['mysqlProfileId']);
+        $this->assertTrue( ! empty($class->indexes[2]['options']));
+        $this->assertTrue(isset($class->indexes[2]['options']['unique']));
+        $this->assertEquals(true, $class->indexes[2]['options']['unique']);
+        $this->assertTrue(isset($class->indexes[2]['options']['dropDups']));
+        $this->assertEquals(true, $class->indexes[2]['options']['dropDups']);
 
         return $class;
     }
@@ -170,15 +180,21 @@ class User
 
     /**
      * @String(name="username")
-     * @Index(order="asc")
+     * @Index(order="desc")
      */
     public $name;
 
     /**
      * @String
-     * @UniqueIndex(order="desc")
+     * @UniqueIndex(order="desc", dropDups="true")
      */
     public $email;
+
+    /**
+     * @Int
+     * @UniqueIndex(order="desc", dropDups="true")
+     */
+    public $mysqlProfileId;
 
     /**
      * @ReferenceOne(targetDocument="Address", cascade={"remove"})
@@ -236,6 +252,10 @@ class User
            'fieldName' => 'email',
            'type' => 'string'
           ));
+          $metadata->mapField(array(
+             'fieldName' => 'mysqlProfileId',
+             'type' => 'integer'
+            ));
         $metadata->mapOneReference(array(
            'fieldName' => 'address',
            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Address',
@@ -264,7 +284,8 @@ class User
            4 => 'detach',
            ),
           ));
-        $metadata->addIndex(array('name' => 'asc'), array());
-        $metadata->addIndex(array('email' => 'desc'), array('unique' => true));
+        $metadata->addIndex(array('username' => 'desc'), array('unique' => true));
+        $metadata->addIndex(array('email' => 'desc'), array('unique' => true, 'dropDups' => true));
+        $metadata->addIndex(array('mysqlProfileId' => 'desc'), array('unique' => true, 'dropDups' => true));
     }
 }

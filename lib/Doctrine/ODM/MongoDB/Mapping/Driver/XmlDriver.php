@@ -19,7 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+    SimpleXmlElement;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -88,34 +89,43 @@ class XmlDriver extends AbstractFileDriver
             $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
                     . strtoupper((string)$xmlRoot->{'change-tracking-policy'})));
         }
+        if (isset($xmlRoot->{'indexes'})) {
+            foreach($xmlRoot->{'indexes'}->{'index'} as $index) {
+                $this->addIndex($class, $index);
+            }
+        }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
-                $mapping = $this->getFieldMapping($field);
-                $class->mapField($mapping);
+                $mapping = array();
+                $attributes = $field->attributes();
+                foreach ($attributes as $key => $value) {
+                    $mapping[$key] = (string) $value;
+                    $booleanAttributes = array('id', 'reference', 'embed', 'unique');
+                    if (in_array($key, $booleanAttributes)) {
+                        $mapping[$key] = ('true' === $mapping[$key]) ? true : false;
+                    }
+                }
+                $this->addFieldMapping($class, $mapping);
             }
         }
         if (isset($xmlRoot->{'embed-one'})) {
             foreach ($xmlRoot->{'embed-one'} as $embed) {
-                $mapping = $this->getEmbedMapping($embed, 'one');
-                $class->mapField($mapping);
+                $this->addEmbedMapping($class, $embed, 'one');
             }
         }
         if (isset($xmlRoot->{'embed-many'})) {
             foreach ($xmlRoot->{'embed-many'} as $embed) {
-                $mapping = $this->getEmbedMapping($embed, 'many');
-                $class->mapField($mapping);
+                $this->addEmbedMapping($class, $embed, 'many');
             }
         }
         if (isset($xmlRoot->{'reference-many'})) {
             foreach ($xmlRoot->{'reference-many'} as $reference) {
-                $mapping = $this->getReferenceMapping($reference, 'many');
-                $class->mapField($mapping);
+                $this->addReferenceMapping($class, $reference, 'many');
             }
         }
         if (isset($xmlRoot->{'reference-one'})) {
             foreach ($xmlRoot->{'reference-one'} as $reference) {
-                $mapping = $this->getReferenceMapping($reference, 'one');
-                $class->mapField($mapping);
+                $this->addReferenceMapping($class, $reference, 'one');
             }
         }
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
@@ -123,29 +133,45 @@ class XmlDriver extends AbstractFileDriver
                 $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ODM\MongoDB\ODMEvents::' . (string) $lifecycleCallback['type']));
             }
         }
-        if (isset($xmlRoot->{'indexes'})) {
-            foreach($xmlRoot->{'indexes'}->{'index'} as $index) {
-                $index = $this->getIndexMapping($index);
-                $class->addIndex($index['keys'], $index['options']);
-            }
-        }
     }
 
-    private function getFieldMapping($field)
+    private function addFieldMapping(ClassMetadata $class, $mapping)
     {
-        $mapping = array();
-        $attributes = $field->attributes();
-        foreach ($attributes as $key => $value) {
-            $mapping[$key] = (string) $value;
-            $booleanAttributes = array('id', 'reference', 'embed');
-            if (in_array($key, $booleanAttributes)) {
-                $mapping[$key] = ('true' === $mapping[$key]) ? true : false;
-            }
+        $keys = null;
+        $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
+        if (isset($mapping['index'])) {
+            $keys = array(
+                $name => isset($mapping['order']) ? $mapping['order'] : 'asc'
+            );
         }
-        return $mapping;
+        if (isset($mapping['unique'])) {
+            $keys = array(
+                $name => isset($mapping['order']) ? $mapping['order'] : 'asc'
+            );
+        }
+        if ($keys !== null) {
+            $options = array();
+            if (isset($mapping['index-name'])) {
+                $options['name'] = (string) $mapping['index-name'];
+            }
+            if (isset($mapping['drop-dups'])) {
+                $options['dropDups'] = (boolean) $mapping['drop-dups'];
+            }
+            if (isset($mapping['background'])) {
+                $options['background'] = (boolean) $mapping['background'];
+            }
+            if (isset($mapping['safe'])) {
+                $options['safe'] = (boolean) $mapping['safe'];
+            }
+            if (isset($mapping['unique'])) {
+                $options['unique'] = (boolean) $mapping['unique'];
+            }
+            $class->addIndex($keys, $options);
+        }
+        $class->mapField($mapping);
     }
 
-    private function getEmbedMapping($embed, $type)
+    private function addEmbedMapping(ClassMetadata $class, $embed, $type)
     {
         $cascade = array_keys((array) $embed->cascade);
         if (1 === count($cascade)) {
@@ -159,10 +185,10 @@ class XmlDriver extends AbstractFileDriver
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
         );
-        return $mapping;
+        $this->addFieldMapping($class, $mapping);
     }
 
-    private function getReferenceMapping($reference, $type)
+    private function addReferenceMapping(ClassMetadata $class, $reference, $type)
     {
         $cascade = array_keys((array) $reference->cascade);
         if (1 === count($cascade)) {
@@ -176,24 +202,44 @@ class XmlDriver extends AbstractFileDriver
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
         );
-        return $mapping;
+        $this->addFieldMapping($class, $mapping);
     }
 
-    private function getIndexMapping($xmlIndex)
+    private function addIndex(ClassMetadata $class, SimpleXmlElement $xmlIndex)
     {
-        $index = array('keys' => array(), 'options' => array());
-        foreach ($xmlIndex->{'keys'}->{'key'} as $key) {
+        $attributes = $xmlIndex->attributes();
+        $options = array();
+        if (isset($attributes['name'])) {
+            $options['name'] = (string) $attributes['name'];
+        }
+        if (isset($attributes['drop-dups'])) {
+            $options['dropDups'] = (boolean) $attributes['drop-dups'];
+        }
+        if (isset($attributes['background'])) {
+            $options['background'] = (boolean) $attributes['background'];
+        }
+        if (isset($attributes['safe'])) {
+            $options['safe'] = (boolean) $attributes['safe'];
+        }
+        if (isset($attributes['unique'])) {
+            $options['unique'] = (boolean) $attributes['unique'];
+        }
+        $index = array(
+            'keys' => array(),
+            'options' => $options
+        );
+        foreach ($xmlIndex->{'key'} as $key) {
             $index['keys'][(string) $key['name']] = isset($key['order']) ? (string) $key['order'] : 'asc';
         }
-        if (isset($xmlIndex->{'options'}->{'option'})) {
-            foreach ($xmlIndex->{'options'}->{'option'} as $option) {
+        if (isset($xmlIndex->{'option'})) {
+            foreach ($xmlIndex->{'option'} as $option) {
                 $value = (string) $option['value'];
                 $value = $value === 'true' ? true : $value;
                 $value = $value === 'false' ? false : $value;
                 $index['options'][(string) $option['name']] = $value;
             }
         }
-        return $index;
+        $class->addIndex($index['keys'], $index['options']);
     }
 
     protected function loadMappingFile($file)

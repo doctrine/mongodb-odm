@@ -10,15 +10,23 @@ Doctrine\ODM\MongoDB\Tests\Mapping\User:
       name: username
     email:
       type: string
+    mysqlProfileId:
+      type: integer
+      unique:
+        dropDups: true
+        order: desc
   indexes:
     index1:
       keys:
-        name: asc
+        username: desc
+      options:
+        unique: true
     index2:
       keys:
         email: desc
       options:
         unique: true
+        dropDups: true
   referenceOne:
     address:
       targetDocument: Address
