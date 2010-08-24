@@ -46,7 +46,14 @@ As a quick start, here is a small example document that makes use of several com
         <document name="Documents\User" db="documents" collection="users">
             <field fieldName="id" id="true" />
             <field fieldName="username" name="login" type="string" />
+            <field fieldName="email" type="string" unique="true" order="desc" />
             <field fieldName="createdAt" type="date" />
+            <indexes>
+                <index unique="true" dropDups="true">
+                    <key name="username" order="desc">
+                    <option name="safe" value="true" />
+                </index>
+            </indexes>
             <embed-one target-document="Documents\Address" field="address" />
             <reference-one target-document="Documents\Profile" field="profile">
                 <cascade>

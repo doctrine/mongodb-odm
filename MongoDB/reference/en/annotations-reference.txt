@@ -486,6 +486,12 @@ Example:
         //...
     }
 
+You can also simply specify an `@Index` or `@UniqueIndex` on a property:
+
+    [php]
+    /** @String @UniqueIndex(safe="true") */
+    private $username;
+
 <a name="ann_int"></a>
 +++ @Int
 

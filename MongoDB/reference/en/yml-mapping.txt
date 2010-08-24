@@ -31,10 +31,21 @@ As a quick start, here is a small example document that makes use of several com
         id:
           id: true
         username:
-          name: username
+          name: login
           type: string
+        email:
+          unique:
+            order: desc
         createdAt:
           type: date
+      indexes:
+        index1:
+          keys:
+            username: desc
+          options:
+            unique: true
+            dropDups: true
+            safe: true
       embedOne:
         address:
           targetDocument: Documents\Address

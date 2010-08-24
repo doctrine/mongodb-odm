@@ -93,7 +93,7 @@ Now the test the `$eventSubscriber` instance to see if the `preFoo()` method was
 
 ++ Lifecycle Events
 
-The DocumentManager and UnitOfWork trigger a bunch of events during the life-time of their registered documents.
+The DocumentManager and UnitOfWork trigger several events during the life-time of their registered documents.
 
 * preRemove - The preRemove event occurs for a given document before the respective DocumentManager remove operation for that document is executed.
 * postRemove - The postRemove event occurs for an document after the document has been removed. It will be invoked after the database delete operations.
