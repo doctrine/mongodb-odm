@@ -155,6 +155,13 @@ class UnitOfWork implements PropertyChangedListener
     private $visitedCollections = array();
 
     /**
+     * Array of new embedded documents.
+     *
+     * @var array
+     */
+    private $newEmbeddedDocuments = array();
+
+    /**
      * The DocumentManager that "owns" this UnitOfWork instance.
      *
      * @var Doctrine\ODM\MongoDB\DocumentManager
@@ -370,13 +377,25 @@ class UnitOfWork implements PropertyChangedListener
                 $embeddedDocuments = $origValue;
                 $actualData[$name] = array();
                 foreach ($embeddedDocuments as $key => $embeddedDocument) {
+                    $oid = spl_object_hash($embeddedDocument);
+                    if ( ! isset($this->documentStates[$oid])) {
+                        $this->registerManagedEmbeddedDocument($embeddedDocument, array());
+                        $this->newEmbeddedDocuments[$oid] = $embeddedDocument;
+                    }
                     $actualData[$name][$key] = $this->getDocumentActualData($embeddedDocument);
                     $actualData[$name][$key]['originalObject'] = $embeddedDocument;
+                    $visited = array();
                 }
             } elseif ($class->isSingleValuedEmbed($name) && is_object($origValue)) {
                 $embeddedDocument = $origValue;
+                $oid = spl_object_hash($embeddedDocument);
+                if ( ! isset($this->documentStates[$oid])) {
+                    $this->registerManagedEmbeddedDocument($embeddedDocument, array());
+                    $this->newEmbeddedDocuments[$oid] = $embeddedDocument;
+                }
                 $actualData[$name] = $this->getDocumentActualData($embeddedDocument);
                 $actualData[$name]['originalObject'] = $embeddedDocument;
+                $visited = array();
             } else {
                 $actualData[$name] = $origValue;
             }
@@ -602,7 +621,7 @@ class UnitOfWork implements PropertyChangedListener
     public function recomputeSingleDocumentChangeSet($class, $document)
     {
         $oid = spl_object_hash($document);
-        
+
         if ( ! isset($this->documentStates[$oid]) || $this->documentStates[$oid] != self::STATE_MANAGED) {
             throw new \InvalidArgumentException('Document must be managed.');
         }
@@ -655,6 +674,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->evm->hasListeners(ODMEvents::prePersist)) {
             $this->evm->dispatchEvent(ODMEvents::prePersist, new LifecycleEventArgs($document, $this->dm));
         }
+        $this->invokeEmbeddedLifecycleCallbacks(ODMEvents::prePersist, $document);
 
         $this->documentStates[$oid] = self::STATE_MANAGED;
 
@@ -701,17 +721,18 @@ class UnitOfWork implements PropertyChangedListener
                 $this->documentStates[$oid] = self::STATE_MANAGED;
                 $this->originalDocumentData[$oid][$class->identifier] = $id;
                 $this->addToIdentityMap($document);
-            }
-        }
 
-        if ($hasLifecycleCallbacks || $hasListeners) {
-            foreach ($documents as $document) {
-                if ($hasLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(ODMEvents::postPersist, $document);
+                if ($hasLifecycleCallbacks || $hasListeners) {
+                    foreach ($documents as $document) {
+                        if ($hasLifecycleCallbacks) {
+                            $class->invokeLifecycleCallbacks(ODMEvents::postPersist, $document);
+                        }
+                        if ($hasListeners) {
+                            $this->evm->dispatchEvent(ODMEvents::postPersist, new LifecycleEventArgs($document, $this->dm));
+                        }
+                    }
                 }
-                if ($hasListeners) {
-                    $this->evm->dispatchEvent(ODMEvents::postPersist, new LifecycleEventArgs($document, $this->dm));
-                }
+                $this->invokeEmbeddedLifecycleCallbacks(ODMEvents::postPersist, $document);
             }
         }
     }
@@ -744,6 +765,7 @@ class UnitOfWork implements PropertyChangedListener
                         $document, $this->dm, $this->documentChangeSets[$oid])
                     );
                 }
+                $this->invokeEmbeddedLifecycleCallbacks(ODMEvents::preUpdate, $document);
 
                 $persister->update($document, $options);
                 unset($this->documentUpdates[$oid]);
@@ -754,6 +776,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($hasPostUpdateListeners) {
                     $this->evm->dispatchEvent(ODMEvents::postUpdate, new LifecycleEventArgs($document, $this->dm));
                 }
+                $this->invokeEmbeddedLifecycleCallbacks(ODMEvents::postUpdate, $document);
             }
         }
     }
@@ -789,6 +812,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($hasListeners) {
                     $this->evm->dispatchEvent(ODMEvents::postRemove, new LifecycleEventArgs($document, $this->dm));
                 }
+                $this->invokeEmbeddedLifecycleCallbacks(ODMEvents::postRemove, $document);
             }
         }
     }
@@ -869,6 +893,51 @@ class UnitOfWork implements PropertyChangedListener
                     $this->addDependencies($targetClass, $calc);
                 }
             }
+        }
+    }
+
+    public function invokeEmbeddedLifecycleCallbacks($event, $document)
+    {
+        $class = $this->dm->getClassMetadata(get_class($document));
+        foreach ($class->fieldMappings as $mapping) {
+            if (isset($mapping['embedded'])) {
+                if ($mapping['isCascadeCallbacks'] === false) {
+                    continue;
+                }
+                $embeddedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if ( ! $embeddedDocuments) {
+                    continue;
+                }
+                if ($mapping['type'] === 'one') {
+                    $embeddedDocuments = array($embeddedDocuments);
+                }
+                foreach ($embeddedDocuments as $embeddedDocument) {
+                    $this->invokeEmbeddedLifecycleCallback($event, $mapping, $embeddedDocument);
+                    $this->invokeEmbeddedLifecycleCallbacks($event, $embeddedDocument);
+                }
+            }
+        }
+    }
+
+    public function invokeEmbeddedLifecycleCallback($event, $mapping, $embeddedDocument)
+    {
+        $embeddedClass = $this->dm->getClassMetadata(get_class($embeddedDocument));
+        if (isset($embeddedClass->lifecycleCallbacks[$event])) {
+            $oid = spl_object_hash($embeddedDocument);
+            if ($event === ODMEvents::preUpdate && isset($this->newEmbeddedDocuments[$oid])) {
+                $event = ODMEvents::prePersist;
+            }
+            if ($event === ODMEvents::postUpdate && isset($this->newEmbeddedDocuments[$oid])) {
+                $event = ODMEvents::postPersist;
+                unset($this->newEmbeddedDocuments[$oid]);
+            }
+            $embeddedClass->invokeLifecycleCallbacks($event, $embeddedDocument);
+            if ($event === ODMEvents::preUpdate) {
+                $this->recomputeSingleDocumentChangeSet($embeddedClass, $embeddedDocument);
+            }
+        }
+        if ($this->evm->hasListeners($event)) {
+            $this->evm->dispatchEvent($event, new LifecycleEventArgs($embeddedDocument, $this->dm));
         }
     }
 
@@ -1200,8 +1269,8 @@ class UnitOfWork implements PropertyChangedListener
     public function persist($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-        if ($class->isEmbeddedDocument || $class->isMappedSuperclass) {
-            throw MongoDBException::cannotPersistEmbeddedDocumentOrMappedSuperclass($class->name);
+        if ($class->isMappedSuperclass) {
+            throw MongoDBException::cannotPersistMappedSuperclass($class->name);
         }
         $visited = array();
         $this->doPersist($document, $visited);
@@ -1320,6 +1389,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($this->evm->hasListeners(ODMEvents::preRemove)) {
                     $this->evm->dispatchEvent(ODMEvents::preRemove, new LifecycleEventArgs($document, $this->dm));
                 }
+                $this->invokeEmbeddedLifecycleCallbacks(ODMEvents::preRemove, $document);
                 $this->scheduleForDelete($document);
                 break;
             case self::STATE_DETACHED:
@@ -1721,7 +1791,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['embedded']) && (!isset($mapping['reference']) || ! $mapping['isCascadeRemove'])) {
+            if ( ! $mapping['isCascadeRemove']) {
                 continue;
             }
             if (isset($mapping['embedded'])) {
@@ -1859,6 +1929,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->evm->hasListeners(ODMEvents::postLoad)) {
             $this->evm->dispatchEvent(ODMEvents::postLoad, new LifecycleEventArgs($document, $this->dm));
         }
+        $this->invokeEmbeddedLifecycleCallbacks(ODMEvents::postLoad, $document);
         return $document;
     }
 

@@ -838,6 +838,7 @@ class ClassMetadata
         $mapping['isCascadeRefresh'] = $default;
         $mapping['isCascadeMerge'] = $default;
         $mapping['isCascadeDetach'] = $default;
+        $mapping['isCascadeCallbacks'] = $default;
         if (isset($mapping['cascade']) && is_array($mapping['cascade'])) {
             foreach ($mapping['cascade'] as $cascade) {
                 $mapping['isCascade' . ucfirst($cascade)] = true;

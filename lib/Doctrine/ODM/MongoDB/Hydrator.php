@@ -105,6 +105,7 @@ class Hydrator
                     $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                     $embeddedMetadata = $this->dm->getClassMetadata($className);
                     $value = $embeddedMetadata->newInstance();
+                    $this->dm->getUnitOfWork()->invokeEmbeddedLifecycleCallback(ODMEvents::preLoad, $mapping, $value);
                     $this->hydrate($value, $embeddedDocument);
                     $this->dm->getUnitOfWork()->registerManagedEmbeddedDocument($value, $embeddedDocument);
                 } elseif ($mapping['type'] === 'many') {
@@ -114,6 +115,7 @@ class Hydrator
                         $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                         $embeddedMetadata = $this->dm->getClassMetadata($className);
                         $embeddedDocumentObject = $embeddedMetadata->newInstance();
+                        $this->dm->getUnitOfWork()->invokeEmbeddedLifecycleCallback(ODMEvents::preLoad, $mapping, $embeddedDocumentObject);
                         $this->hydrate($embeddedDocumentObject, $embeddedDocument);
                         $this->dm->getUnitOfWork()->registerManagedEmbeddedDocument($embeddedDocumentObject, $embeddedDocument);
                         $coll->add($embeddedDocumentObject);

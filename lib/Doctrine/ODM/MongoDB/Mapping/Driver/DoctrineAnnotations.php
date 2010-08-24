@@ -182,10 +182,12 @@ final class ReferenceMany extends Field
     public $strategy = 'pushPull'; // pushPull, set
 }
 class NotSaved extends Field {}
-final class Distance extends Field {
+final class Distance extends Field
+{
     public $distance = true;
 }
-final class AlsoLoad extends Annotation {
+final class AlsoLoad extends Annotation
+{
     public $name;
 }
 final class ChangeTrackingPolicy extends Annotation {}

@@ -22,110 +22,118 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
         $classMetadata = new ClassMetadata('TestDocuments\User');
         $xmlDriver->loadMetadataForClass('TestDocuments\User', $classMetadata);
         $this->assertEquals(array(
-            'fieldName'        => 'id',
-            'id'               => true,
-            'type'             => 'id',
-            'isCascadeDetach'  => '',
-            'isCascadeMerge'   => '',
-            'isCascadePersist' => '',
-            'isCascadeRefresh' => '',
-            'isCascadeRemove'  => '',
-            'name'             => 'id',
-            'nullable'         => false
+            'fieldName'          => 'id',
+            'id'                 => true,
+            'type'               => 'id',
+            'isCascadeCallbacks' => false,
+            'isCascadeDetach'    => false,
+            'isCascadeMerge'     => false,
+            'isCascadePersist'   => false,
+            'isCascadeRefresh'   => false,
+            'isCascadeRemove'    => false,
+            'name'               => 'id',
+            'nullable'           => false
         ), $classMetadata->fieldMappings['id']);
 
         $this->assertEquals(array(
-            'fieldName'        => 'username',
-            'type'             => 'string',
-            'isCascadeDetach'  => '',
-            'isCascadeMerge'   => '',
-            'isCascadePersist' => '',
-            'isCascadeRefresh' => '',
-            'isCascadeRemove'  => '',
-            'name'             => 'username',
-            'nullable'         => false
+            'fieldName'          => 'username',
+            'type'               => 'string',
+            'isCascadeCallbacks' => false,
+            'isCascadeDetach'    => false,
+            'isCascadeMerge'     => false,
+            'isCascadePersist'   => false,
+            'isCascadeRefresh'   => false,
+            'isCascadeRemove'    => false,
+            'name'               => 'username',
+            'nullable'           => false
         ), $classMetadata->fieldMappings['username']);
 
         $this->assertEquals(array(
-            'fieldName'        => 'createdAt',
-            'type'             => 'date',
-            'isCascadeDetach'  => '',
-            'isCascadeMerge'   => '',
-            'isCascadePersist' => '',
-            'isCascadeRefresh' => '',
-            'isCascadeRemove'  => '',
-            'name'             => 'createdAt',
-            'nullable'         => false
+            'fieldName'          => 'createdAt',
+            'type'               => 'date',
+            'isCascadeCallbacks' => false,
+            'isCascadeDetach'    => false,
+            'isCascadeMerge'     => false,
+            'isCascadePersist'   => false,
+            'isCascadeRefresh'   => false,
+            'isCascadeRemove'    => false,
+            'name'               => 'createdAt',
+            'nullable'           => false
         ), $classMetadata->fieldMappings['createdAt']);
 
         $this->assertEquals(array(
-            'fieldName'        => 'address',
-            'type'             => 'one',
-            'embedded'         => true,
-            'targetDocument'   => 'Documents\Address',
-            'isCascadeDetach'  => '',
-            'isCascadeMerge'   => '',
-            'isCascadePersist' => '',
-            'isCascadeRefresh' => '',
-            'isCascadeRemove'  => '',
-            'name'             => 'address',
-            'nullable'         => false
+            'fieldName'          => 'address',
+            'type'               => 'one',
+            'embedded'           => true,
+            'targetDocument'     => 'Documents\Address',
+            'isCascadeCallbacks' => false,
+            'isCascadeDetach'    => false,
+            'isCascadeMerge'     => false,
+            'isCascadePersist'   => false,
+            'isCascadeRefresh'   => false,
+            'isCascadeRemove'    => false,
+            'name'               => 'address',
+            'nullable'           => false
         ), $classMetadata->fieldMappings['address']);
 
         $this->assertEquals(array(
-            'fieldName'        => 'phonenumbers',
-            'type'             => 'many',
-            'embedded'         => true,
-            'targetDocument'   => 'Documents\Phonenumber',
-            'isCascadeDetach'  => '',
-            'isCascadeMerge'   => '',
-            'isCascadePersist' => '',
-            'isCascadeRefresh' => '',
-            'isCascadeRemove'  => '',
-            'name'             => 'phonenumbers',
-            'nullable'         => false
+            'fieldName'          => 'phonenumbers',
+            'type'               => 'many',
+            'embedded'           => true,
+            'targetDocument'     => 'Documents\Phonenumber',
+            'isCascadeCallbacks' => false,
+            'isCascadeDetach'    => false,
+            'isCascadeMerge'     => false,
+            'isCascadePersist'   => false,
+            'isCascadeRefresh'   => false,
+            'isCascadeRemove'    => false,
+            'name'               => 'phonenumbers',
+            'nullable'           => false
         ), $classMetadata->fieldMappings['phonenumbers']);
 
         $this->assertEquals(array(
-            'fieldName'        => 'profile',
-            'type'             => 'one',
-            'reference'        => true,
-            'targetDocument'   => 'Documents\Profile',
-            'isCascadeDetach'  => true,
-            'isCascadeMerge'   => true,
-            'isCascadePersist' => true,
-            'isCascadeRefresh' => true,
-            'isCascadeRemove'  => true,
-            'name'             => 'profile',
-            'nullable'         => false
+            'fieldName'          => 'profile',
+            'type'               => 'one',
+            'reference'          => true,
+            'targetDocument'     => 'Documents\Profile',
+            'isCascadeCallbacks' => true,
+            'isCascadeDetach'    => true,
+            'isCascadeMerge'     => true,
+            'isCascadePersist'   => true,
+            'isCascadeRefresh'   => true,
+            'isCascadeRemove'    => true,
+            'name'               => 'profile',
+            'nullable'           => false
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
-            'fieldName'        => 'account',
-            'type'             => 'one',
-            'reference'        => true,
-            'targetDocument'   => 'Documents\Account',
-            'isCascadeDetach'  => true,
-            'isCascadeMerge'   => true,
-            'isCascadePersist' => true,
-            'isCascadeRefresh' => true,
-            'isCascadeRemove'  => true,
-            'name'             => 'account',
-            'nullable'         => false
+            'fieldName'          => 'account',
+            'type'               => 'one',
+            'reference'          => true,
+            'targetDocument'     => 'Documents\Account',
+            'isCascadeCallbacks' => true,
+            'isCascadeDetach'    => true,
+            'isCascadeMerge'     => true,
+            'isCascadePersist'   => true,
+            'isCascadeRefresh'   => true,
+            'isCascadeRemove'    => true,
+            'name'               => 'account',
+            'nullable'           => false
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
-            'fieldName'        => 'groups',
-            'type'             => 'many',
-            'reference'        => true,
-            'targetDocument'   => 'Documents\Group',
-            'isCascadeDetach'  => true,
-            'isCascadeMerge'   => true,
-            'isCascadePersist' => true,
-            'isCascadeRefresh' => true,
-            'isCascadeRemove'  => true,
-            'name'             => 'groups',
-            'nullable'         => false
+            'fieldName'          => 'groups',
+            'type'               => 'many',
+            'reference'          => true,
+            'targetDocument'     => 'Documents\Group',
+            'isCascadeCallbacks' => true,
+            'isCascadeDetach'    => true,
+            'isCascadeMerge'     => true,
+            'isCascadePersist'   => true,
+            'isCascadeRefresh'   => true,
+            'isCascadeRemove'    => true,
+            'name'               => 'groups',
+            'nullable'           => false
         ), $classMetadata->fieldMappings['groups']);
 
         $this->assertEquals(array(
@@ -139,15 +147,16 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
         $xmlDriver->loadMetadataForClass('TestDocuments\EmbeddedDocument', $classMetadata);
 
         $this->assertEquals(array(
-            'fieldName'        => 'name',
-            'type'             => 'string',
-            'isCascadeDetach'  => false,
-            'isCascadeMerge'   => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeRemove'  => false,
-            'name'             => 'name',
-            'nullable'         => false
+            'fieldName'          => 'name',
+            'type'               => 'string',
+            'isCascadeCallbacks' => false,
+            'isCascadeDetach'    => false,
+            'isCascadeMerge'     => false,
+            'isCascadePersist'   => false,
+            'isCascadeRefresh'   => false,
+            'isCascadeRemove'    => false,
+            'name'               => 'name',
+            'nullable'           => false
         ), $classMetadata->fieldMappings['name']);
     }
 }

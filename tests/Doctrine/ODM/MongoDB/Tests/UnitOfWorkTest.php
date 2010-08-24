@@ -174,17 +174,6 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->_unitOfWork->getDocumentState($ph2));
         $this->assertFalse($persister->isExistsCalled());
     }
-    
-    /**
-     * @expectedException Doctrine\ODM\MongoDB\MongoDBException
-     */
-    public function testThrowsOnPersistOfEmbeddedDocument()
-    {
-        $documentManager = $this->getDocumentManager();
-        $documentManager->setClassMetadata('Documents\Address', $this->getClassMetadata('Documents\Address', 'EmbeddedDocument'));
-        $unitOfWork = $this->getUnitOfWork($documentManager);
-        $unitOfWork->persist(new \Documents\Address());
-    }
 
     /**
      * @expectedException Doctrine\ODM\MongoDB\MongoDBException
