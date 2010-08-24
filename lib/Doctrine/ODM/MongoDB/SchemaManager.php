@@ -174,6 +174,6 @@ class SchemaManager
      */
     public function createDocumentDatabase($documentName)
     {
-        return $this->dm->getDocumentDB($documentName);
+        return $this->dm->getDocumentDB($documentName)->execute("function() { return true; }");
     }
 }

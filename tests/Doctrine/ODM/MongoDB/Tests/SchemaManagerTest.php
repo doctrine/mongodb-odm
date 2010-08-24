@@ -196,10 +196,10 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $className = 'Documents\CmsArticle';
         $dbName = 'test_db';
-        $mongo = $this->dm->getMongo();
-        $mongo->expects($this->once())
-            ->method('selectDB')
-            ->will($this->returnValue(new \MongoDB(new \Mongo(), $dbName))); // TODO: find a way to mock MongoDB instance
+        $documentDB = $this->getDocumentDB($className);
+        $documentDB->expects($this->once())
+            ->method('execute');
+        $this->dm->setDocumentDB($className, $documentDB);
 
         $this->dm->getSchemaManager()->createDocumentDatabase($className);
     }
