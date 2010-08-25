@@ -332,7 +332,9 @@ class MongoCollection
         }
 
         if ($this->mongoCollection instanceof \MongoGridFS) {
-            $file = $this->mongoCollection->findOne($query);
+            if (($file = $this->mongoCollection->findOne($query)) === null) {
+                return null;
+            }
             $data = $file->file;
             $data[$this->class->file] = $file;
             return $data;

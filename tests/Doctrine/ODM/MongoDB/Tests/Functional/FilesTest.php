@@ -34,4 +34,9 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('testing', $image->getName());
         $this->assertEquals('These are the bytes...', $image->getFile()->getBytes());
     }
+
+    public function testFilesEmptyQueryReturnsNull()
+    {
+        $this->assertNull($this->dm->findOne('Documents\File',array('_id' => 'definitelynotanid')));
+    }
 }
