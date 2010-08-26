@@ -492,7 +492,7 @@ class PersistentCollection implements Collection
     public function slice($offset, $length = null)
     {
         $this->initialize();
-        return $this->coll->slice();
+        return $this->coll->slice($offset, $length);
     }
     
     /**
