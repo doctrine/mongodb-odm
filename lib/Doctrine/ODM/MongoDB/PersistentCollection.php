@@ -485,6 +485,15 @@ class PersistentCollection implements Collection
         $this->changed();
         $this->takeSnapshot();
      }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function slice($offset, $length = null)
+    {
+        $this->initialize();
+        return $this->coll->slice();
+    }
     
     /**
      * Called by PHP when this collection is serialized. Ensures that only the
