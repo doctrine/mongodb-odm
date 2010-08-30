@@ -636,7 +636,7 @@ class BasicDocumentPersister
             if ($value === null && $mapping['nullable'] === false) {
                 continue;
             }
-            $embeddedDocumentValue[$mapping['fieldName']] = $value;
+            $embeddedDocumentValue[$mapping['name']] = $value;
         }
         if ( ! isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_name';
