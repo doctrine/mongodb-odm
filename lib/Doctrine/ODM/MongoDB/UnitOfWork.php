@@ -350,6 +350,11 @@ class UnitOfWork implements PropertyChangedListener
 
             $origValue = $class->getFieldValue($document, $mapping['fieldName']);
 
+            // Skip MongoGridFSFile instances as we never store these objects
+            if ($origValue instanceof \MongoGridFSFile) {
+                continue;
+            }
+
             if (($class->isCollectionValuedReference($name) || $class->isCollectionValuedEmbed($name))
                     && $origValue !== null && ! ($origValue instanceof PersistentCollection)) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
@@ -436,7 +441,6 @@ class UnitOfWork implements PropertyChangedListener
         
         $oid = spl_object_hash($document);
         $actualData = $this->getDocumentActualData($document);
-
         if ( ! isset($this->originalDocumentData[$oid])) {
             // Document is either NEW or MANAGED but not yet fully persisted (only has an id).
             // These result in an INSERT.

@@ -9,6 +9,20 @@ use Documents\File,
 
 class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function testFlushTwice()
+    {
+        $image = new File();
+        $image->setName('Test');
+        $image->setFile(__DIR__ . '/file.txt');
+        $this->dm->persist($image);
+        $this->dm->flush();
+        $this->dm->flush();
+
+        $test = $this->dm->getDocumentCollection('Documents\File')->findOne();
+        $this->assertFalse(isset($test['file']->file['file']));
+
+    }
+
     public function testFiles()
     {
         $image = new File();
