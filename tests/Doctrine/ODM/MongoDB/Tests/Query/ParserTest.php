@@ -44,10 +44,10 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testWhereMod()
     {
         $query = $this->parser->parse("find all Documents\User where a mod '[10, 1]'");
-        $this->assertEquals(array('a' => array($this->escape('mod') => array(10, 1))), $query->debug('where'));
+        $this->assertEquals(array('a' => array($this->escape('mod') => array(10, 1))), $query->debug('query'));
 
         $query = $this->parser->parse("find all Documents\User where not a mod '[10, 1]'");
-        $this->assertEquals(array('a' => array($this->escape('not') => array($this->escape('mod') => array(10, 1)))), $query->debug('where'));
+        $this->assertEquals(array('a' => array($this->escape('not') => array($this->escape('mod') => array(10, 1)))), $query->debug('query'));
     }
 
     public function testWhereNot()
@@ -57,7 +57,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'username' => array($this->escape('not') => 'jwage'),
             'count' => array($this->escape('not') => array($this->escape('gt') => 1)),
             'groups' => array($this->escape('not') => array($this->escape('in') => array(1, 2, 3)))
-        ), $query->debug('where'));
+        ), $query->debug('query'));
     }
 
     public function testElemMatch()
@@ -67,7 +67,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('phonenumbers.phonenumber' => array(
                 $this->escape('in') => array(1)
             )),
-            $query->debug('where')
+            $query->debug('query')
         );
 
         $query = $this->parser->parse("find all Documents\User where all accounts.name = 'test' and all accounts.type_name = 'test' and accounts.name = 'test'");
@@ -81,7 +81,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                 ),
                 'accounts.name' => 'test'
             ),
-            $query->debug('where')
+            $query->debug('query')
         );
     }
 
@@ -155,7 +155,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'field9' => array(
               $this->escape('nin') => array(5, 6)
             )
-          ), $query->debug('where'));
+          ), $query->debug('query'));
 
         $this->assertEquals(array(
             $this->escape('set') => array(
@@ -204,13 +204,13 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPlaceholders()
     {
         $query = $this->dm->query('find all Documents\User where username = ? and password = ?', array('jwage', 'changeme'));
-        $this->assertEquals(array('username' => 'jwage', 'password' => 'changeme'), $query->debug('where'));
+        $this->assertEquals(array('username' => 'jwage', 'password' => 'changeme'), $query->debug('query'));
     }
 
     public function testWhereInJsonValue()
     {
         $query = $this->parser->parse("find all Documents\User where groups in '[1, 2, 3]'");
-        $this->assertEquals(array('groups' => array($this->escape('in') => array(1, 2, 3))), $query->debug('where'));
+        $this->assertEquals(array('groups' => array($this->escape('in') => array(1, 2, 3))), $query->debug('query'));
     }
 
     public function testPushAllJsonValue()
@@ -234,7 +234,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testNotEquals()
     {
         $query = $this->parser->parse("find all Documents\User where username != 'jwage'");
-        $this->assertEquals(array('username' => array($this->escape('ne') => 'jwage')), $query->debug('where'));
+        $this->assertEquals(array('username' => array($this->escape('ne') => 'jwage')), $query->debug('query'));
     }
 
     public function testReduce()
@@ -279,7 +279,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $query = $this->parser->parse("remove Documents\User where username = 'jwage'");
         $this->assertEquals(Query::TYPE_REMOVE, $query->debug('type'));
-        $this->assertEquals(array('username' => 'jwage'), $query->debug('where'));
+        $this->assertEquals(array('username' => 'jwage'), $query->debug('query'));
     }
 
     public function testUpdate()
@@ -292,7 +292,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUpdateWithWhere()
     {
         $query = $this->parser->parse("update Documents\User set password = 'changeme' where username = 'jwage'");
-        $this->assertEquals(array('username' => 'jwage'), $query->debug('where'));
+        $this->assertEquals(array('username' => 'jwage'), $query->debug('query'));
     }
 
     public function testIncrementOperator()
@@ -358,7 +358,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testWhere()
     {
         $query = $this->parser->parse("find all Documents\User where username = 'jwage' and password = 'changeme'");
-        $this->assertEquals(array('username' => 'jwage', 'password' => 'changeme'), $query->debug('where'));
+        $this->assertEquals(array('username' => 'jwage', 'password' => 'changeme'), $query->debug('query'));
     }
 
     public function testSelectAll()
@@ -370,25 +370,25 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testGreaterThan()
     {
         $query = $this->parser->parse('find username Documents\User where count > 1');
-        $this->assertEquals(array('count' => array($this->escape('gt') => 1)), $query->debug('where'));
+        $this->assertEquals(array('count' => array($this->escape('gt') => 1)), $query->debug('query'));
     }
 
     public function testGreaterThanOrEqualTo()
     {
         $query = $this->parser->parse('find username Documents\User where count >= 1');
-        $this->assertEquals(array('count' => array($this->escape('gte') => 1)), $query->debug('where'));
+        $this->assertEquals(array('count' => array($this->escape('gte') => 1)), $query->debug('query'));
     }
 
     public function testLessThan()
     {
         $query = $this->parser->parse('find username Documents\User where count < 1');
-        $this->assertEquals(array('count' => array($this->escape('lt') => 1)), $query->debug('where'));
+        $this->assertEquals(array('count' => array($this->escape('lt') => 1)), $query->debug('query'));
     }
 
     public function testLessThanOrEqualTo()
     {
         $query = $this->parser->parse('find username Documents\User where count <= 1');
-        $this->assertEquals(array('count' => array($this->escape('lte') => 1)), $query->debug('where'));
+        $this->assertEquals(array('count' => array($this->escape('lte') => 1)), $query->debug('query'));
     }
 
     public function testFindSpecificFields()
@@ -407,42 +407,42 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testLiteralValuesInWhere()
     {
         $query = $this->parser->parse("find all Documents\User where username = 'jwage' AND password = 'changeme' AND isActive = true AND isNew = false");
-        $this->assertEquals(array('username' => 'jwage', 'password' => 'changeme', 'isActive' => true, 'isNew' => false), $query->debug('where'));
+        $this->assertEquals(array('username' => 'jwage', 'password' => 'changeme', 'isActive' => true, 'isNew' => false), $query->debug('query'));
     }
 
     public function testWhereIn()
     {
         $query = $this->parser->parse("find all Documents\User where groups in :groups", array(':groups' => array(1, 2, 3)));
-        $this->assertEquals(array('groups' => array($this->escape('in') => array(1, 2, 3))), $query->debug('where'));
+        $this->assertEquals(array('groups' => array($this->escape('in') => array(1, 2, 3))), $query->debug('query'));
     }
 
     public function testWhereNotIn()
     {
         $query = $this->parser->parse('find all Documents\User where groups notIn :groups', array(':groups' => array(1, 2, 3)));
-        $this->assertEquals(array('groups' => array($this->escape('nin') => array(1, 2, 3))), $query->debug('where'));
+        $this->assertEquals(array('groups' => array($this->escape('nin') => array(1, 2, 3))), $query->debug('query'));
     }
 
     public function testWhereAll()
     {
         $query = $this->parser->parse('find all Documents\User where groups all :groups', array(':groups' => array(1, 2, 3)));
-        $this->assertEquals(array('groups' => array($this->escape('all') => array(1, 2, 3))), $query->debug('where'));
+        $this->assertEquals(array('groups' => array($this->escape('all') => array(1, 2, 3))), $query->debug('query'));
     }
 
     public function testWhereSize()
     {
         $query = $this->parser->parse('find all Documents\User where groups size 3');
-        $this->assertEquals(array('groups' => array($this->escape('size') => 3)), $query->debug('where'));
+        $this->assertEquals(array('groups' => array($this->escape('size') => 3)), $query->debug('query'));
     }
 
     public function testWhereExists()
     {
         $query = $this->parser->parse('find all Documents\User where groups exists true and comments exists false');
-        $this->assertEquals(array('groups' => array($this->escape('exists') => true), 'comments' => array($this->escape('exists') => false)), $query->debug('where'));
+        $this->assertEquals(array('groups' => array($this->escape('exists') => true), 'comments' => array($this->escape('exists') => false)), $query->debug('query'));
     }
 
     public function testWhereType()
     {
         $query = $this->parser->parse('find all Documents\User where username type string');
-        $this->assertEquals(array('username' => array($this->escape('type') => 2)), $query->debug('where'));
+        $this->assertEquals(array('username' => array($this->escape('type') => 2)), $query->debug('query'));
     }
 }

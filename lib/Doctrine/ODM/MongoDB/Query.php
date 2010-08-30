@@ -50,8 +50,8 @@ class Query
     /** Array of fields to select */
     private $select = array();
 
-    /** Array of criteria to query for */
-    private $where = array();
+    /** Array that stores the built up query to execute. */
+    private $query = array();
 
     /** Array to pass to MongoCollection::update() 2nd argument */
     private $newObj = array();
@@ -144,6 +144,11 @@ class Query
     public function getType()
     {
         return $this->type;
+    }
+
+    public function setQuery($query)
+    {
+        $this->query = $query;
     }
 
     /**
@@ -368,11 +373,7 @@ class Query
             return $this->not($value, $options);
         }
 
-        if (isset($this->where[$this->currentField])) {
-            $this->where[$this->currentField] = array_merge_recursive($this->where[$this->currentField], $value);
-        } else {
-            $this->where[$this->currentField] = $value;
-        }
+        $this->query[$this->currentField] = $value;
 
         return $this;
     }
@@ -400,7 +401,7 @@ class Query
         $e = explode('.', $this->currentField);
         $fieldName = array_pop($e);
         $embeddedPath = implode('.', $e);
-        $this->where[$embeddedPath][$this->cmd . 'elemMatch'][$fieldName] = $value;
+        $this->query[$embeddedPath][$this->cmd . 'elemMatch'][$fieldName] = $value;
         return $this;
     }
 
@@ -416,7 +417,7 @@ class Query
         $e = explode('.', $this->currentField);
         $fieldName = array_pop($e);
         $embeddedPath = implode('.', $e);
-        $this->where[$embeddedPath][$this->cmd . 'elemMatch'][$fieldName][$operator] = $value;
+        $this->query[$embeddedPath][$this->cmd . 'elemMatch'][$fieldName][$operator] = $value;
         return $this;
     }
 
@@ -434,10 +435,10 @@ class Query
             return $this->elemMatchOperator($operator, $value);
         }
         if (isset($options['not'])) {
-            $this->where[$this->currentField][$this->cmd . 'not'][$operator] = $value;
+            $this->query[$this->currentField][$this->cmd . 'not'][$operator] = $value;
             return $this;
         }
-        $this->where[$this->currentField][$operator] = $value;
+        $this->query[$this->currentField][$operator] = $value;
         return $this;
     }
 
@@ -660,7 +661,7 @@ class Query
      */
     public function withinBox($x1, $y1, $x2, $y2)
     {
-        $this->where[$this->currentField][$this->cmd . 'within'][$this->cmd . 'box'] = array(array($x1, $y1), array($x2, $y2));
+        $this->query[$this->currentField][$this->cmd . 'within'][$this->cmd . 'box'] = array(array($x1, $y1), array($x2, $y2));
         return $this;
     }
 
@@ -674,7 +675,7 @@ class Query
      */
     public function withinCenter($x, $y, $radius)
     {
-        $this->where[$this->currentField][$this->cmd . 'within'][$this->cmd . 'center'] = array(array($x, $y), $radius);
+        $this->query[$this->currentField][$this->cmd . 'within'][$this->cmd . 'center'] = array(array($x, $y), $radius);
         return $this;
     }
 
@@ -974,7 +975,7 @@ class Query
                     return $this->executeFindAndModify($options);
                 } else {
                     return $this->dm->getDocumentCollection($this->className)
-                        ->remove($this->where, $options);
+                        ->remove($this->query, $options);
                 }
                 break;
 
@@ -983,7 +984,7 @@ class Query
                     return $this->executeFindAndModify($options);
                 } else {
                     return $this->dm->getDocumentCollection($this->className)
-                        ->update($this->where, $this->newObj, $options);
+                        ->update($this->query, $this->newObj, $options);
                 }
                 break;
 
@@ -996,7 +997,7 @@ class Query
                 return $this->dm->getDocumentCollection($this->className)
                     ->group(
                         $this->group['keys'], $this->group['initial'],
-                        $this->mapReduce['reduce'], $this->where
+                        $this->mapReduce['reduce'], $this->query
                     );
                 break;
         }
@@ -1048,7 +1049,8 @@ class Query
     public function debug($name = null)
     {
         $debug = get_object_vars($this);
-        unset($debug['dm']);
+
+        unset($debug['dm'], $debug['hydrator'], $debug['class']);
         if ($name !== null) {
             return $debug[$name];
         }
@@ -1074,13 +1076,13 @@ class Query
         }
 
         if (isset($this->mapReduce['map']) && $this->mapReduce['reduce']) {
-            $cursor = $this->dm->mapReduce($this->className, $this->mapReduce['map'], $this->mapReduce['reduce'], $this->where, isset($this->mapReduce['options']) ? $this->mapReduce['options'] : array());
+            $cursor = $this->dm->mapReduce($this->className, $this->mapReduce['map'], $this->mapReduce['reduce'], $this->query, isset($this->mapReduce['options']) ? $this->mapReduce['options'] : array());
             $cursor->hydrate(false);
         } else {
             if (isset($this->mapReduce['reduce'])) {
-                $this->where[$this->cmd . 'where'] = $this->mapReduce['reduce'];
+                $this->query[$this->cmd . 'where'] = $this->mapReduce['reduce'];
             }
-            $cursor = $this->dm->find($this->className, $this->where, $this->select);
+            $cursor = $this->dm->find($this->className, $this->query, $this->select);
             $cursor->hydrate($this->hydrate);
         }
         $cursor->limit($this->limit);
@@ -1106,8 +1108,8 @@ class Query
     {
         $command = array();
         $command['findandmodify'] = $this->dm->getDocumentCollection($this->className)->getName();
-        if ($this->where) {
-            $command['query'] = $this->where;
+        if ($this->query) {
+            $command['query'] = $this->query;
         }
         if ($this->sort) {
             $command['sort'] = $this->sort;
@@ -1150,7 +1152,7 @@ class Query
             ->command(array(
                 'distinct' => $this->dm->getDocumentCollection($this->className)->getName(),
                 'key' => $this->distinctField,
-                'query' => $this->where
+                'query' => $this->query
             ));
         return $result['values'];
     }
@@ -1165,7 +1167,7 @@ class Query
         $command = array(
             'geoNear' => $this->dm->getDocumentCollection($this->className)->getName(),
             'near' => $this->near,
-            'query' => $this->where
+            'query' => $this->query
         );
         if ($this->limit) {
             $command['num'] = $this->limit;
