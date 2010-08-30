@@ -461,6 +461,12 @@ class UnitOfWork implements PropertyChangedListener
                 if ($actualValue instanceof PersistentCollection) {
                     $actualValue = $actualValue->toArray();
                 }
+                if ($orgValue instanceof ArrayCollection) {
+                    $orgValue = $orgValue->toArray();
+                }
+                if ($actualValue instanceof ArrayCollection) {
+                    $actualValue = $actualValue->toArray();
+                }
                 if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
                     if (is_object($orgValue)) {
                         $embeddedOid = spl_object_hash($orgValue);
