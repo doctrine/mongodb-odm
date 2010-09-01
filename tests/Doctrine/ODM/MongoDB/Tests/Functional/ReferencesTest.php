@@ -130,10 +130,21 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getSingleResult();
 
         $groups = $user2->getGroups();
+        $this->assertFalse($groups->isInitialized());
+
+        $groups->count();
+        $this->assertFalse($groups->isInitialized());
+
+        $groups->isEmpty();
+        $this->assertFalse($groups->isInitialized());
+
+        $groups = $user2->getGroups();
 
         $this->assertTrue($groups instanceof PersistentCollection);
         $this->assertTrue($groups[0] instanceof Group);
         $this->assertTrue($groups[1] instanceof Group);
+
+        $this->assertTrue($groups->isInitialized());
 
         unset($groups[0]);
         $groups[1]->setName('test');

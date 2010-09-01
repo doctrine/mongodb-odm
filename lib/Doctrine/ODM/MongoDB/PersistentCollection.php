@@ -98,6 +98,11 @@ class PersistentCollection implements Collection
         }
     }
 
+    /**
+     * Set the array of mongo database references to be used to initialize this collection.
+     *
+     * @param array $references
+     */
     public function setReferences(array $references)
     {
         $this->references = $references;
@@ -144,7 +149,8 @@ class PersistentCollection implements Collection
                 }
                 $this->isDirty = true;
             }
-    
+
+            $this->references = array();
             $this->initialized = true;
         }
     }
@@ -386,8 +392,7 @@ class PersistentCollection implements Collection
      */
     public function count()
     {
-        $this->initialize();
-        return $this->coll->count();
+        return count($this->references) + $this->coll->count();
     }
 
     /**
@@ -415,8 +420,7 @@ class PersistentCollection implements Collection
      */
     public function isEmpty()
     {
-        $this->initialize();
-        return $this->coll->isEmpty();
+        return $this->coll->count() === 0 ? true : false;
     }
     
     /**
