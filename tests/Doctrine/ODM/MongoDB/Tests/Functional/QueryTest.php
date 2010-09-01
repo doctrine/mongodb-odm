@@ -185,7 +185,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $query = $this->dm->createQuery('Documents\Article');
         $query->field('createdAt')->range(
-            new \MongoDate(strtotime('1985-09-01')),
+            new \MongoDate(strtotime('1985-09-01 01:00:00')),
             new \MongoDate(strtotime('1985-09-04'))
         );
 

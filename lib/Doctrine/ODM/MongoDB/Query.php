@@ -548,7 +548,7 @@ class Query
      */
     public function range($start, $end, array $options = array())
     {
-        return $this->operator($this->cmd . 'gt', $start, $options)
+        return $this->operator($this->cmd . 'gte', $start, $options)
             ->operator($this->cmd . 'lt', $end, $options);
     }
 
