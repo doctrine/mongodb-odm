@@ -460,13 +460,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($orgValue instanceof PersistentCollection) {
                     $orgValue = $orgValue->getSnapshot();
                 }
-                if ($actualValue instanceof PersistentCollection) {
-                    $actualValue = $actualValue->toArray();
-                }
-                if ($orgValue instanceof ArrayCollection) {
-                    $orgValue = $orgValue->toArray();
-                }
-                if ($actualValue instanceof ArrayCollection) {
+                if ($actualValue instanceof PersistentCollection || $actualValue instanceof ArrayCollection) {
                     $actualValue = $actualValue->toArray();
                 }
                 if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
