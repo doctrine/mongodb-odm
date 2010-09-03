@@ -366,13 +366,13 @@ class UnitOfWork implements PropertyChangedListener
 
                 // Inject PersistentCollection
                 if ($class->isCollectionValuedReference($name)) {
-                    $coll = new PersistentCollection($value, $this->dm);
+                    $origValue = new PersistentCollection($value, $this->dm);
                 } else {
-                    $coll = new PersistentCollection($value);
+                    $origValue = new PersistentCollection($value);
                 }
-                $coll->setOwner($document, $mapping);
-                $coll->setDirty( ! $coll->isEmpty());
-                $class->reflFields[$name]->setValue($document, $coll);
+                $origValue->setOwner($document, $mapping);
+                $origValue->setDirty( ! $origValue->isEmpty());
+                $class->reflFields[$name]->setValue($document, $origValue);
             }
 
             // We need to flatten the embedded documents so they are just arrays of
