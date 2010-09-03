@@ -26,7 +26,31 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals(array(
             $b1->getId(), $b2->getId()
-        ), array(
+            ), array(
+            $b[0]->getId(), $b[1]->getId()
+        ));
+    }
+
+    public function testRefresh()
+    {
+        $b1 = new B('first');
+        $a = new A(array($b1));
+        $this->dm->persist($a);
+        $this->dm->flush();
+        $b2 = new B('second');
+
+        $this->dm->refresh($a);
+
+        $a->getB()->add($b2);
+        $this->dm->flush();
+        $this->dm->refresh($a);
+        $b = $a->getB()->toArray();
+
+        $this->assertEquals(2, count($b));
+
+        $this->assertEquals(array(
+            $b1->getId(), $b2->getId()
+            ), array(
             $b[0]->getId(), $b[1]->getId()
         ));
     }

@@ -458,6 +458,9 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
                 if ($orgValue instanceof PersistentCollection) {
+                    if ( ! $orgValue->isInitialized()) {
+                        $orgValue->toArray();
+                    }
                     $orgValue = $orgValue->getSnapshot();
                 }
                 if ($actualValue instanceof PersistentCollection || $actualValue instanceof ArrayCollection) {
