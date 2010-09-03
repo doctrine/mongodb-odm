@@ -256,15 +256,21 @@ Document Mapper setup and running!
 
 ## Setup
 
-The setup for the MongoDB ODM is very similar to that of Doctrine 2 ORM. You'll
-quickly notice that the "style" of the ODM is pretty much identical to the ORM.
+Before we can begin setting up the code we need to download the Doctrine MongoDB package.
+You can learn about how to download the code [here](http://www.doctrine-project.org/projects/mongodb_odm/download).
+The easiest way is to just clone it using git:
 
-First you need to require the `ClassLoader` from the `Doctrine\Common` namespace:
+    $ git clone git://github.com/doctrine/mongodb-odm.git mongodb_odm
+    $ git submodule init
+    $ git submodule update
+
+Now that we have the code, we can begin our setup. First in your bootstrap file you need to require the
+`ClassLoader` from the `Doctrine\Common` namespace which included in the vendor libraries:
 
     [php]
-    require '/path/to/doctrine/lib/Doctrine/Common/ClassLoader.php';
+    require 'mongodb_odm/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
-Now lets tell PHP what namespaces and classes we want to use:
+At the top of your bootstrap file you need to tell PHP which namespaces you want to use:
 
     [php]
     // ...
@@ -276,28 +282,63 @@ Now lets tell PHP what namespaces and classes we want to use:
         Doctrine\ODM\MongoDB\Configuration,
         Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
-Next we need to setup the `ClassLoader` instances for all of the classes we need
-to autoload:
+Next we need to setup the `ClassLoader` instances for all of the classes we need to autoload:
 
     [php]
     // ...
 
     // ODM Classes
-    $classLoader = new ClassLoader('Doctrine\ODM', '/path/to/doctrine/odm/lib');
+    $classLoader = new ClassLoader('Doctrine\ODM', 'mongodb_odm/lib');
     $classLoader->register();
 
     // Common Classes
-    $classLoader = new ClassLoader('Doctrine\Common', '/path/to/doctrine/lib');
+    $classLoader = new ClassLoader('Doctrine\Common', 'mongodb_odm/lib');
     $classLoader->register();
 
     // Document classes
-    $classLoader = new ClassLoader('Documents', '/path/to/documents');
+    $classLoader = new ClassLoader('Documents', __DIR__);
     $classLoader->register();
 
 Now we can configure the ODM and create our `DocumentManager` instance:
 
     [php]
     // ...
+
+    $config = new Configuration();
+    $config->setProxyDir('/path/to/generate/proxies');
+    $config->setProxyNamespace('Proxies');
+
+    $reader = new AnnotationReader();
+    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+
+    $dm = DocumentManager::create(new Mongo(), $config);
+
+Your final bootstrap code should look like the following:
+
+    [php]
+    // bootstrap.php
+
+    require 'mongodb_odm/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
+
+    use Doctrine\Common\ClassLoader,
+        Doctrine\Common\Annotations\AnnotationReader,
+        Doctrine\ODM\MongoDB\DocumentManager,
+        Doctrine\ODM\MongoDB\Mongo,
+        Doctrine\ODM\MongoDB\Configuration,
+        Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+
+    // ODM Classes
+    $classLoader = new ClassLoader('Doctrine\ODM', 'mongodb_odm/lib');
+    $classLoader->register();
+
+    // Common Classes
+    $classLoader = new ClassLoader('Doctrine\Common', 'mongodb_odm/lib');
+    $classLoader->register();
+
+    // Document classes
+    $classLoader = new ClassLoader('Documents', __DIR__);
+    $classLoader->register();
 
     $config = new Configuration();
     $config->setProxyDir('/path/to/generate/proxies');
