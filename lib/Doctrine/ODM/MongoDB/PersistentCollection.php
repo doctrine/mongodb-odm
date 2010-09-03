@@ -124,9 +124,11 @@ class PersistentCollection implements Collection
                     $groupedIds[$className] = array();
                 }
                 $id = $reference[$this->cmd . 'id'];
-                $groupedIds[$className][] = $id;
                 $reference = $this->dm->getReference($className, (string) $id);
                 $this->add($reference);
+                if ($reference instanceof Proxy && ! $reference->__isInitialized__) {
+                    $groupedIds[$className][] = $id;
+                }
             }
             foreach ($groupedIds as $className => $ids) {
                 $collection = $this->dm->getDocumentCollection($className);
