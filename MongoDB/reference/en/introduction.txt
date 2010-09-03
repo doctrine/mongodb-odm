@@ -265,7 +265,7 @@ The easiest way is to just clone it using git:
     $ git submodule update
 
 Now that we have the code, we can begin our setup. First in your bootstrap file you need to require the
-`ClassLoader` from the `Doctrine\Common` namespace which included in the vendor libraries:
+`ClassLoader` from the `Doctrine\Common` namespace which is included in the vendor libraries:
 
     [php]
     require 'mongodb_odm/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
