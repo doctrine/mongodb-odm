@@ -74,7 +74,8 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist'   => false,
             'isCascadeRefresh'   => false,
             'isCascadeRemove'    => false,
-            'nullable'           => false
+            'nullable'           => false,
+            'strategy'           => 'pushPull'
         ), $classMetadata->fieldMappings['address']);
 
         $this->assertEquals(array(
@@ -89,7 +90,8 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist'   => false,
             'isCascadeRefresh'   => false,
             'isCascadeRemove'    => false,
-            'nullable'           => false
+            'nullable'           => false,
+            'strategy'           => 'pushPull'
         ), $classMetadata->fieldMappings['phonenumbers']);
 
         $this->assertEquals(array(
@@ -104,7 +106,8 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist'   => true,
             'isCascadeRefresh'   => true,
             'isCascadeRemove'    => true,
-            'nullable'           => false
+            'nullable'           => false,
+            'strategy'           => 'pushPull'
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
@@ -119,7 +122,8 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist'   => true,
             'isCascadeRefresh'   => true,
             'isCascadeRemove'    => true,
-            'nullable'           => false
+            'nullable'           => false,
+            'strategy'           => 'pushPull'
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
@@ -134,7 +138,8 @@ class XmlDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist'   => true,
             'isCascadeRefresh'   => true,
             'isCascadeRemove'    => true,
-            'nullable'           => false
+            'nullable'           => false,
+            'strategy'           => 'pushPull'
         ), $classMetadata->fieldMappings['groups']);
 
         $this->assertEquals(array(
