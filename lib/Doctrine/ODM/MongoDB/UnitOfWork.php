@@ -348,38 +348,36 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            $origValue = $class->getFieldValue($document, $mapping['fieldName']);
+            $value = $class->getFieldValue($document, $mapping['fieldName']);
 
             // Skip MongoGridFSFile instances as we never store these objects
-            if ($origValue instanceof \MongoGridFSFile) {
+            if ($value instanceof \MongoGridFSFile) {
                 continue;
             }
 
             if (($class->isCollectionValuedReference($name) || $class->isCollectionValuedEmbed($name))
-                    && $origValue !== null && ! ($origValue instanceof PersistentCollection)) {
+                    && $value !== null && ! ($value instanceof PersistentCollection)) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
-                if ( ! $origValue instanceof Collection) {
-                    $value = new ArrayCollection($origValue);
-                } else {
-                    $value = $origValue;
+                if ( ! $value instanceof Collection) {
+                    $value = new ArrayCollection($value);
                 }
 
                 // Inject PersistentCollection
                 if ($class->isCollectionValuedReference($name)) {
-                    $coll = new PersistentCollection($value, $this->dm);
+                    $value = new PersistentCollection($value, $this->dm);
                 } else {
-                    $coll = new PersistentCollection($value);
+                    $value = new PersistentCollection($value);
                 }
-                $coll->setOwner($document, $mapping);
-                $coll->setDirty( ! $coll->isEmpty());
-                $class->reflFields[$name]->setValue($document, $coll);
+                $value->setOwner($document, $mapping);
+                $value->setDirty( ! $value->isEmpty());
+                $class->reflFields[$name]->setValue($document, $value);
             }
 
             // We need to flatten the embedded documents so they are just arrays of
             // data instead of the actual objects. This is necessary to maintain all the old
             // values.
-            if ($class->isCollectionValuedEmbed($name) && $origValue) {
-                $embeddedDocuments = $origValue;
+            if ($class->isCollectionValuedEmbed($name) && $value) {
+                $embeddedDocuments = $value;
                 $actualData[$name] = array();
                 foreach ($embeddedDocuments as $key => $embeddedDocument) {
                     $oid = spl_object_hash($embeddedDocument);
@@ -391,8 +389,8 @@ class UnitOfWork implements PropertyChangedListener
                     $actualData[$name][$key]['originalObject'] = $embeddedDocument;
                     $visited = array();
                 }
-            } elseif ($class->isSingleValuedEmbed($name) && is_object($origValue)) {
-                $embeddedDocument = $origValue;
+            } elseif ($class->isSingleValuedEmbed($name) && is_object($value)) {
+                $embeddedDocument = $value;
                 $oid = spl_object_hash($embeddedDocument);
                 if ( ! isset($this->documentStates[$oid])) {
                     $this->registerManagedEmbeddedDocument($embeddedDocument, array());
@@ -402,7 +400,7 @@ class UnitOfWork implements PropertyChangedListener
                 $actualData[$name]['originalObject'] = $embeddedDocument;
                 $visited = array();
             } else {
-                $actualData[$name] = $origValue;
+                $actualData[$name] = $value;
             }
         }
         return $actualData;
@@ -459,17 +457,11 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
+                if ($actualValue instanceof PersistentCollection || $actualValue instanceof ArrayCollection) {
+                    $actualValue = $actualValue->toArray();
+                }
                 if ($orgValue instanceof PersistentCollection) {
                     $orgValue = $orgValue->getSnapshot();
-                }
-                if ($actualValue instanceof PersistentCollection) {
-                    $actualValue = $actualValue->toArray();
-                }
-                if ($orgValue instanceof ArrayCollection) {
-                    $orgValue = $orgValue->toArray();
-                }
-                if ($actualValue instanceof ArrayCollection) {
-                    $actualValue = $actualValue->toArray();
                 }
                 if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
                     if (is_object($orgValue)) {
