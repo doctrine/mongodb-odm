@@ -526,7 +526,6 @@ class UnitOfWork implements PropertyChangedListener
             if ($class->isEmbeddedDocument) {
                 continue;
             }
-            $class = $this->dm->getClassMetadata($className);
 
             // If change tracking is explicit or happens through notification, then only compute
             // changes on documents of that type that are explicitly marked for synchronization.
