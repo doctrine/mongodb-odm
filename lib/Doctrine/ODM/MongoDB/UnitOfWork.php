@@ -458,9 +458,11 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
                 if ($actualValue instanceof PersistentCollection || $actualValue instanceof ArrayCollection) {
+                    $this->visitCollection($actualValue);
                     $actualValue = $actualValue->toArray();
                 }
                 if ($orgValue instanceof PersistentCollection) {
+                    $this->visitCollection($orgValue);
                     $orgValue = $orgValue->getSnapshot();
                 }
                 if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
@@ -557,10 +559,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
-        if ($value instanceof PersistentCollection && $value->isDirty()) {
-            $this->visitedCollections[] = $value;
-        }
-
         if ( ! $mapping['isCascadePersist']) {
             return; // "Persistence by reachability" only if persist cascade specified
         }
@@ -571,6 +569,7 @@ class UnitOfWork implements PropertyChangedListener
             }
             $value = array($value);
         } elseif ($value instanceof PersistentCollection) {
+            $this->visitCollection($value);
             $value = $value->unwrap();
         }
 
@@ -637,11 +636,13 @@ class UnitOfWork implements PropertyChangedListener
         $changeSet = array();
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-            if ($orgValue instanceof PersistentCollection) {
-                $orgValue = $orgValue->getSnapshot();
-            }
             if ($actualValue instanceof PersistentCollection) {
+                $this->visitCollection($actualValue);
                 $actualValue = $actualValue->toArray();
+            }
+            if ($orgValue instanceof PersistentCollection) {
+                $this->visitCollection($orgValue);
+                $orgValue = $orgValue->getSnapshot();
             }
             if ((isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one')
                     || (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one')) {
@@ -663,6 +664,13 @@ class UnitOfWork implements PropertyChangedListener
                 $this->documentChangeSets[$oid] = $changeSet + $this->documentChangeSets[$oid];
             }
             $this->originalDocumentData[$oid] = $actualData;
+        }
+    }
+
+    private function visitCollection(PersistentCollection $coll)
+    {
+        if ($coll->isDirty() && !in_array($coll, $this->visitedCollections, true)) {
+            $this->visitedCollections[] = $coll;
         }
     }
 
