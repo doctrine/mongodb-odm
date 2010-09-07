@@ -1641,7 +1641,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference']) || ( ! isset($mapping['embedded']) && ! $mapping['isCascadeRefresh'])) {
+            if (isset($mapping['reference']) && ! $mapping['isCascadeRefresh']) {
                 continue;
             }
             if (isset($mapping['embedded'])) {
@@ -1684,7 +1684,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['embedded']) && (!isset($mapping['reference']) || ! $mapping['isCascadeDetach'])) {
+            if ( ! isset($mapping['embedded']) && ! $mapping['isCascadeDetach']) {
                 continue;
             }
             if (isset($mapping['embedded'])) {
