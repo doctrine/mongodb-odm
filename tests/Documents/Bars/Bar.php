@@ -11,7 +11,7 @@ class Bar
     /** @String */
     private $name;
 
-    /** @EmbedMany(targetDocument="Documents\Bars\Location", cascade={"all"}) */
+    /** @EmbedMany(targetDocument="Documents\Bars\Location") */
     private $locations = array();
 
     public function __construct($name = null)

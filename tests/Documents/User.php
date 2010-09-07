@@ -22,13 +22,13 @@ class User extends BaseDocument
     /** @Date */
     protected $createdAt;
 
-    /** @EmbedOne(targetDocument="Address", cascade={"all"}) */
+    /** @EmbedOne(targetDocument="Address") */
     protected $address;
 
     /** @ReferenceOne(targetDocument="Profile", cascade={"all"}) */
     protected $profile;
 
-    /** @EmbedMany(targetDocument="Phonenumber", cascade={"all"}) */
+    /** @EmbedMany(targetDocument="Phonenumber") */
     protected $phonenumbers;
 
     /** @ReferenceMany(targetDocument="Group", cascade={"all"}) */

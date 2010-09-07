@@ -17,7 +17,7 @@ class Option
     protected $name;
 
     /**
-     * @EmbedOne(targetDocument="Documents\Ecommerce\Money", cascade={"all"})
+     * @EmbedOne(targetDocument="Documents\Ecommerce\Money")
      * @var float
      */
     protected $money;

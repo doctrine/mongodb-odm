@@ -51,7 +51,7 @@ class MODM29Doc
     /** @Id */
     protected $id;
 
-    /** @EmbedMany(targetDocument="MODM29Embedded", strategy="set", cascade="all") */
+    /** @EmbedMany(targetDocument="MODM29Embedded", strategy="set") */
     protected $collection;
 
     function __construct($c) {$this->set($c);}

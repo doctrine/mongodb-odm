@@ -191,7 +191,7 @@ class BaseCategory
     /** @String */
     protected $name;
 
-    /** @EmbedMany(targetDocument="ChildCategory", cascade={"all"}) */
+    /** @EmbedMany(targetDocument="ChildCategory") */
     protected $children = array();
 
     public function __construct($name)
@@ -263,7 +263,7 @@ class Order
     /** @String */
     public $title;
 
-    /** @EmbedOne(targetDocument="Product", cascade={"persist"}) */
+    /** @EmbedOne(targetDocument="Product") */
     public $product;
 }
 
