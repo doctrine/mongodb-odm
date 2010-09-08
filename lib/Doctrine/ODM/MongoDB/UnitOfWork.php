@@ -559,7 +559,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
-        if ( ! $mapping['isCascadePersist']) {
+        if ($value instanceof PersistentCollection && $value->isDirty()) {
+            $this->visitedCollections[] = $value;
+        }
+
+        if ( ! isset($mapping['embedded']) && ! $mapping['isCascadePersist']) {
             return; // "Persistence by reachability" only if persist cascade specified
         }
 
@@ -910,9 +914,6 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
-                if ($mapping['isCascadeCallbacks'] === false) {
-                    continue;
-                }
                 $embeddedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ( ! $embeddedDocuments) {
                     continue;
@@ -1490,7 +1491,7 @@ class UnitOfWork implements PropertyChangedListener
                         } else if ($other instanceof Proxy && !$other->__isInitialized__) {
                             // do not merge fields marked lazy that have not been fetched.
                             continue;
-                        } else if ( ! $assoc2['isCascadeMerge']) {
+                        } else if ( ! isset($assoc2['embedded']) && ! $assoc2['isCascadeMerge']) {
                             if ($this->getDocumentState($other, self::STATE_DETACHED) == self::STATE_MANAGED) {
                                 $prop->setValue($managedCopy, $other);
                             } else {
@@ -1652,7 +1653,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['reference']) || ! $mapping['isCascadeRefresh']) {
+            if (isset($mapping['reference']) && ! $mapping['isCascadeRefresh']) {
                 continue;
             }
             if (isset($mapping['embedded'])) {
@@ -1695,7 +1696,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['embedded']) && (!isset($mapping['reference']) || ! $mapping['isCascadeDetach'])) {
+            if ( ! isset($mapping['embedded']) && ! $mapping['isCascadeDetach']) {
                 continue;
             }
             if (isset($mapping['embedded'])) {
@@ -1739,7 +1740,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! $mapping['isCascadeMerge']) {
+            if ( ! isset($mapping['embedded']) && ! $mapping['isCascadeMerge']) {
                 continue;
             }
             if (isset($mapping['embedded']) || isset($mapping['reference'])) {
@@ -1770,7 +1771,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! $mapping['isCascadePersist']) {
+            if ( ! isset($mapping['embedded']) && ! $mapping['isCascadePersist']) {
                 continue;
             }
             if (isset($mapping['embedded']) || isset($mapping['reference'])) {
@@ -1800,7 +1801,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if ( ! $mapping['isCascadeRemove']) {
+            if ( ! isset($mapping['embedded']) && ! $mapping['isCascadeRemove']) {
                 continue;
             }
             if (isset($mapping['embedded'])) {

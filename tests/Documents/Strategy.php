@@ -11,7 +11,7 @@ class Strategy
     /** @Collection(strategy="set") */
     public $logs = array();
 
-    /** @EmbedMany(targetDocument="Message", strategy="set", cascade={"all"}) */
+    /** @EmbedMany(targetDocument="Message", strategy="set") */
     public $messages = array();
 
     /** @ReferenceMany(targetDocument="Task", strategy="set") */

@@ -20,7 +20,7 @@ class Address
     /** @Increment */
     public $count = 0;
 
-    /** @EmbedOne(targetDocument="Address", cascade={"all"}) */
+    /** @EmbedOne(targetDocument="Address") */
     private $subAddress;
 
     public function setSubAddress(Address $subAddress)

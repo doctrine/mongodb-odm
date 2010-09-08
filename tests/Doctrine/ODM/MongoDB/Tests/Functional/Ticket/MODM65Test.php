@@ -41,8 +41,7 @@ class MODM65User
 	 * 	discriminatorMap={
 	 * 		"fbu"="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\MODM65SocialNetworkUser"
 	 * 	},
-	 * 	name="snu",
-	 * 	cascade={"persist", "remove"}
+	 * 	name="snu"
 	 * )
 	 */
 	public $socialNetworkUser;

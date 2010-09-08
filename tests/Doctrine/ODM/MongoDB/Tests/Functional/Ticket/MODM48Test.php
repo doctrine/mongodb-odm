@@ -33,7 +33,7 @@ class MODM48A
     /** @Id */
     public $id;
 
-    /** @EmbedOne(targetDocument="MODM48B", cascade="all") */
+    /** @EmbedOne(targetDocument="MODM48B") */
     public $b;
 
     function getId()  {return $this->id;}

@@ -8,13 +8,13 @@ class SimpleEmbedAndReference
     /** @Id */
     public $id;
 
-    /** @EmbedMany(targetDocument="Reference", cascade={"all"}) */
+    /** @EmbedMany(targetDocument="Reference") */
     public $embedMany = array();
 
     /** @ReferenceMany(targetDocument="Embedded") */
     public $referenceMany = array();
 
-    /** @EmbedOne(targetDocument="Reference", cascade={"all"}) */
+    /** @EmbedOne(targetDocument="Reference") */
     public $embedOne;
 
     /** @ReferenceOne(targetDocument="Embedded") */

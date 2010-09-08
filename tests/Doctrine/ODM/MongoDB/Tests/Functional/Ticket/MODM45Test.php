@@ -30,7 +30,7 @@ class MODM45A
     /** @String */
     protected $tmp = 'WorkaroundToBeSaved';
 
-    /** @EmbedOne(targetDocument="MODM45B", cascade="all") */
+    /** @EmbedOne(targetDocument="MODM45B") */
     protected $b;
 
     function getId()  {return $this->id;}

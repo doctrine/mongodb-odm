@@ -23,7 +23,7 @@ class StockItem
     private $inventory;
 
     /**
-     * @EmbedOne(targetDocument="Documents\Ecommerce\Money", cascade={"all"})
+     * @EmbedOne(targetDocument="Documents\Ecommerce\Money")
      */
     private $cost;
 

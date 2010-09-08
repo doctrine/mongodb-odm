@@ -186,17 +186,17 @@ class User extends BaseDocument
     /** @Id */
     public $id;
 
-    /** @EmbedOne(targetDocument="Profile", cascade={"persist", "callbacks"}) */
+    /** @EmbedOne(targetDocument="Profile") */
     public $profile;
 
-    /** @EmbedMany(targetDocument="Profile", cascade={"persist", "callbacks"}) */
+    /** @EmbedMany(targetDocument="Profile") */
     public $profiles = array();
 }
 
 /** @EmbeddedDocument */
 class Profile extends BaseDocument
 {
-    /** @EmbedOne(targetDocument="Profile", cascade={"persist", "callbacks"}) */
+    /** @EmbedOne(targetDocument="Profile") */
     public $profile;
 }
 

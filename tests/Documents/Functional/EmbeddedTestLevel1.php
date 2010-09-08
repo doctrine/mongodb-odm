@@ -7,6 +7,6 @@ class EmbeddedTestLevel1
 {
     /** @String */
     public $name;
-    /** @EmbedMany(targetDocument="EmbeddedTestLevel2", cascade={"all"}) */
+    /** @EmbedMany(targetDocument="EmbeddedTestLevel2") */
     public $level2 = array();
 }

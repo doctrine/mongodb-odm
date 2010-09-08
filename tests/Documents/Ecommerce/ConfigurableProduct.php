@@ -18,7 +18,7 @@ class ConfigurableProduct
     protected $name;
 
     /**
-     * @EmbedMany(targetDocument="Documents\Ecommerce\Option", cascade={"all"})
+     * @EmbedMany(targetDocument="Documents\Ecommerce\Option")
      */
     protected $options = array();
 

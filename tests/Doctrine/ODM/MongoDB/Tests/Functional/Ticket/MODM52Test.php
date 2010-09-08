@@ -37,7 +37,7 @@ class MODM52Container
     /** @String */
     protected $tmp = 'ensureSaved';
 
-    /** @EmbedMany(targetDocument="MODM52Embedded", cascade="all", strategy="set") */
+    /** @EmbedMany(targetDocument="MODM52Embedded", strategy="set") */
     protected $items = array();
 
     function __construct($items = null) {if($items) $this->items = $items;}
