@@ -458,9 +458,15 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
                 if ($actualValue instanceof PersistentCollection || $actualValue instanceof ArrayCollection) {
+                    if ($actualValue instanceof PersistentCollection && $actualValue->isDirty()) {
+                        $this->visitedCollections[] = $actualValue;
+                    }
                     $actualValue = $actualValue->toArray();
                 }
                 if ($orgValue instanceof PersistentCollection) {
+                    if ($orgValue !== $actualValue && $orgValue->isDirty()) {
+                        $this->visitedCollections[] = $orgValue;
+                    }
                     $orgValue = $orgValue->getSnapshot();
                 }
                 if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
@@ -637,11 +643,17 @@ class UnitOfWork implements PropertyChangedListener
         $changeSet = array();
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-            if ($orgValue instanceof PersistentCollection) {
-                $orgValue = $orgValue->getSnapshot();
-            }
             if ($actualValue instanceof PersistentCollection) {
+                if ($actualValue->isDirty()) {
+                    $this->visitedCollections[] = $actualValue;
+                }
                 $actualValue = $actualValue->toArray();
+            }
+            if ($orgValue instanceof PersistentCollection) {
+                if ($orgValue !== $actualValue && $orgValue->isDirty()) {
+                    $this->visitedCollections[] = $orgValue;
+                }
+                $orgValue = $orgValue->getSnapshot();
             }
             if ((isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one')
                     || (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one')) {
