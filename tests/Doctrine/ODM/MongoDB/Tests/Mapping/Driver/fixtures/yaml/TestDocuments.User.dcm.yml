@@ -11,6 +11,8 @@ TestDocuments\User:
     createdAt:
       fieldName: createdAt
       type: date
+    tags:
+      type: collection
   embedOne:
     address:
       targetDocument: Documents\Address

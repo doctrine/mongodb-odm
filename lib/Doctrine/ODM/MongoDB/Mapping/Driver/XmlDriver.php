@@ -139,6 +139,9 @@ class XmlDriver extends AbstractFileDriver
     {
         $keys = null;
         $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
+        if (isset($mapping['type']) && $mapping['type'] === 'collection') {
+            $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushPull';
+        }
         if (isset($mapping['index'])) {
             $keys = array(
                 $name => isset($mapping['order']) ? $mapping['order'] : 'asc'
@@ -179,7 +182,6 @@ class XmlDriver extends AbstractFileDriver
         }
         $attributes = $embed->attributes();
         $mapping = array(
-            'cascade'        => $cascade,
             'type'           => $type,
             'embedded'       => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
