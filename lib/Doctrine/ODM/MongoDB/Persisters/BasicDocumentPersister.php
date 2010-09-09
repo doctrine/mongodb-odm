@@ -432,7 +432,8 @@ class BasicDocumentPersister
             $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
 
-            if ($mapping['type'] === 'many' || $mapping['type'] === 'collection') {               
+            if ($mapping['type'] === 'many' || $mapping['type'] === 'collection') {
+                $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushPull';
                 if ($mapping['strategy'] === 'pushPull') {
                     if (isset($mapping['embedded']) && $new) {
                         foreach ($new as $k => $v) {
