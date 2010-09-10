@@ -68,7 +68,7 @@ method:
     [php]
     $user = $dm->createQuery('User')
         ->field('username')->equals('jwage')
-        ->getSingleResults();
+        ->getSingleResult();
 
 +++ Getting Query Cursor
 
