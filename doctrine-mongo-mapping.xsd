@@ -16,9 +16,19 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="embedded-document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="mapped-superclass" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <xs:complexType name="embedded-document">
+    <xs:attribute name="name" type="xs:NMTOKEN" />
+  </xs:complexType>
+
+  <xs:complexType name="mapped-superclass">
+    <xs:attribute name="name" type="xs:NMTOKEN" />
+  </xs:complexType>
 
   <xs:complexType name="document">
     <xs:sequence>
@@ -29,6 +39,7 @@
       <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="db" type="xs:NMTOKEN" />
+    <xs:attribute name="name" type="xs:NMTOKEN" />
     <xs:attribute name="collection" type="xs:NMTOKEN" />
     <xs:attribute name="repository-class" type="xs:NMTOKEN"/>
     <xs:attribute name="inheritance-type" type="odm:inheritance-type"/>
@@ -54,7 +65,7 @@
     <xs:sequence>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="target-document" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="target-document" type="xs:NMTOKEN" use="optional" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
   </xs:complexType>
 
@@ -62,7 +73,7 @@
     <xs:sequence>
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="target-document" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="target-document" type="xs:NMTOKEN" use="optional" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
   </xs:complexType>
 
