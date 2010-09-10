@@ -217,6 +217,55 @@ as the identifier with the `@Id` marker annotation. Here is an example:
         //...
     }
 
+The default identifier in MongoDB is a MongoId object. In some cases you might need custom
+identifiers. MongoDB allows any unique scalar to serve as an identifier. Therefore Doctrine
+MongoDB ODM allows you to use 'CustomId' field type:
+
+    [php]
+    /** Document */
+    class MyPersistentClass
+    {
+        /** @Id(custom=true) */
+        private $id;
+        
+        public function setId($id)
+        {
+            $this->id = $id;
+        }
+        //...
+    }
+    
+    [xml]
+    <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                                                http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+        <document name="MyPersistentClass" customId="true">
+            <field name="id" id="true" type="custom_id" />
+        </document>
+    </doctrine-mongo-mapping>
+    
+    [yaml]
+    MyPersistentClass:
+      customId: true
+      fields:
+        id:
+          type: custom_id
+          id: true
+
+
+And to use it, you will have to explicitly set an id before persisting the document:
+
+    [php]
+    //...
+    $document = new MyPersistentClass();
+    $document->setId('my_unique_identifier');
+    $dm->persist($document);
+    $dm->flush();
+    //...
+    $document = $dm->find('MyPersistentClass', 'my_unique_identifier');
+
 ++ Multiple Document Types in a Collection
 
 You can easily store multiple types of documents in a single collection. It only requires
