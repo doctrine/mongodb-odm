@@ -120,17 +120,5 @@ you can use the `discriminatorField` option:
 
 ++ Cascading Operations
 
-By default Doctrine will not cascade any `UnitOfWork` operations to embedded documents so if
-wish to have this functionality you must explicitly enable it:
-
-    [php]
-    /** @EmbedMany(targetDocument="Phonenumber", cascade={"all"}) */
-    private $phonenumbers = array();
-
-The valid values are:
-
- * **all** - cascade on all operations by default.
- * **callbacks** - cascade to embedded documents and execute lifecycle callbacks on them.
- * **merge** - cascade merge operation to referenced documents.
- * **refresh** - cascade refresh operation to referenced documents.
- * **persist** - cascade persist operation to referenced documents.
+All operations on embedded documents are automatically cascaded. This is because embedded documents
+are part of their parent document and cannot exist without those by nature.
