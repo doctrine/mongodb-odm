@@ -736,13 +736,11 @@ class UnitOfWork implements PropertyChangedListener
                 $this->addToIdentityMap($document);
 
                 if ($hasLifecycleCallbacks || $hasListeners) {
-                    foreach ($documents as $document) {
-                        if ($hasLifecycleCallbacks) {
-                            $class->invokeLifecycleCallbacks(ODMEvents::postPersist, $document);
-                        }
-                        if ($hasListeners) {
-                            $this->evm->dispatchEvent(ODMEvents::postPersist, new LifecycleEventArgs($document, $this->dm));
-                        }
+                    if ($hasLifecycleCallbacks) {
+                        $class->invokeLifecycleCallbacks(ODMEvents::postPersist, $document);
+                    }
+                    if ($hasListeners) {
+                        $this->evm->dispatchEvent(ODMEvents::postPersist, new LifecycleEventArgs($document, $this->dm));
                     }
                 }
                 $this->invokeEmbeddedLifecycleCallbacks(ODMEvents::postPersist, $document);
