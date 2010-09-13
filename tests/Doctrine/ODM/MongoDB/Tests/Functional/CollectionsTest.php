@@ -77,7 +77,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $coll->batchInsert(array(array(1), array(2), array(3)), array('safe' => true));
 
         $data = iterator_to_array($coll->find());
-        $this->assertEquals(1, count($data));
+        $this->assertEquals(3, count($data));
     }
 }
 
