@@ -47,6 +47,9 @@ class MongoCursor implements \Iterator, \Countable
     /** Whether or not to try and hydrate the returned data */
     private $hydrate = true;
 
+    /** A callable for logging statements. */
+    private $loggerCallable;
+
     /**
      * Create a new MongoCursor which wraps around a given PHP MongoCursor.
      *
@@ -62,6 +65,23 @@ class MongoCursor implements \Iterator, \Countable
         $this->hydrator = $hydrator;
         $this->class = $class;
         $this->mongoCursor = $mongoCursor;
+        $this->loggerCallable = $this->dm->getConfiguration()->getLoggerCallable();
+    }
+
+    /**
+     * Log something using the configured logger callable.
+     *
+     * @param array $log The array of data to log.
+     */
+    public function log(array $log)
+    {
+        if ( ! $this->loggerCallable) {
+            return;
+        }
+        $log['class'] = $this->class->name;
+        $log['db'] = $this->class->db;
+        $log['collection'] = $this->class->collection;
+        call_user_func_array($this->loggerCallable, array($log));
     }
 
     /**
@@ -135,6 +155,21 @@ class MongoCursor implements \Iterator, \Countable
     public function count()
     {
         return $this->mongoCursor->count();
+    }
+
+    /** @override */
+    public function sort($fields)
+    {
+        if ($this->loggerCallable) {
+            $this->log(array(
+                'sort' => true,
+                'fields' => $fields,
+            ));
+        }
+
+        $this->mongoCursor->sort($fields);
+
+        return $this;
     }
 
     /**
