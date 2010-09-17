@@ -292,7 +292,7 @@ Next we need to setup the `ClassLoader` instances for all of the classes we need
     $classLoader->register();
 
     // Common Classes
-    $classLoader = new ClassLoader('Doctrine\Common', 'mongodb_odm/lib');
+    $classLoader = new ClassLoader('Doctrine\Common', 'mongodb_odm/lib/vendor/doctrine-common/lib');
     $classLoader->register();
 
     // Document classes
@@ -333,7 +333,7 @@ Your final bootstrap code should look like the following:
     $classLoader->register();
 
     // Common Classes
-    $classLoader = new ClassLoader('Doctrine\Common', 'mongodb_odm/lib');
+    $classLoader = new ClassLoader('Doctrine\Common', 'mongodb_odm/lib/vendor/doctrine-common/lib');
     $classLoader->register();
 
     // Document classes
