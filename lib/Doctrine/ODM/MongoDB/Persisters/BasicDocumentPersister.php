@@ -561,15 +561,13 @@ class BasicDocumentPersister
     private function prepareReferencedDocValue(array $referenceMapping, $document)
     {
         $id = null;
-
-				if (is_array($document)) {
-					$className = $referenceMapping['targetDocument'];
-				} else {
-					$className = get_class($document);
-					$id = $this->uow->getDocumentIdentifier($document);
-				}
-
-				$class = $this->dm->getClassMetadata($className);
+        if (is_array($document)) {
+          $className = $referenceMapping['targetDocument'];
+        } else {
+          $className = get_class($document);
+          $id = $this->uow->getDocumentIdentifier($document);
+        }
+        $class = $this->dm->getClassMetadata($className);
         if (null !== $id) {
             $id = $class->getDatabaseIdentifierValue($id);
         }
