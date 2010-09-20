@@ -9,10 +9,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest {
 	
 	public function testTest() {
-		$c1 = new C;
-		$c2 = new C;
-		$b = new B(array($c1, $c2));
-		$a = new A(array($b), array($c1));
+		$c1 = new MODM76C;
+		$c2 = new MODM76C;
+		$b = new MODM76B(array($c1, $c2));
+		$a = new MODM76A(array($b), array($c1));
 		$this->dm->persist($a);
 		$this->dm->flush();
 
@@ -21,12 +21,12 @@ class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest {
 }
 
 /** @Document(db="tests", collection="tests") */
-class A {
+class MODM76A {
 	/** @Id */
 	protected $id;
-	/** @EmbedMany(targetDocument="b") */
+	/** @EmbedMany(targetDocument="MODM76B") */
 	protected $b = array();
-	/** @ReferenceMany(targetDocument="c") */
+	/** @ReferenceMany(targetDocument="MODM76C") */
 	protected $c = array();
 
 	public function __construct($b, $c) {
@@ -48,8 +48,8 @@ class A {
 }
 
 /** @EmbeddedDocument */
-class B {
-	/** @ReferenceOne(targetDocument="c") */
+class MODM76B {
+	/** @ReferenceOne(targetDocument="MODM76C") */
 	protected $c;
 
 	public function __construct($c) {
@@ -61,7 +61,7 @@ class B {
 	}
 }
 /** @Document(db="tests", collection="tests2") */
-class C {
+class MODM76C {
 	/** @Id */
 	protected $id;
 }
