@@ -392,6 +392,128 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(3, count($user->getGroups()));
     }
 
+    public function testModifyGroupsArrayDirectly()
+    {
+        $this->dm->getUnitOfWork()->setDocumentPersister(
+            'Documents\User', new BasicDocumentPersister($this->dm, $this->classMetadata)
+        );
+
+        $account = new Account();
+        $account->setName('Jon Test Account');
+
+        $user = new User();
+        $user->setUsername('jon333');
+        $user->setPassword('changeme');
+        $user->setAccount($account);
+
+        $user->addGroup(new Group('administrator'));
+        $user->addGroup(new Group('member'));
+        $user->addGroup(new Group('moderator'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user, $account);
+
+        $user = $this->dm->findOne('Documents\User');
+
+        // remove two of the groups and pass the groups back into the User
+        $groups = $user->getGroups();
+        unset($groups[0]);
+        unset($groups[2]);
+        $user->setGroups($groups);
+
+        $this->assertEquals(1, count($user->getGroups()));
+
+        $this->dm->getUnitOfWork()->setDocumentPersister(
+            'Documents\User', $this->persister
+        );
+
+        $this->persister->expects($this->once())
+            ->method('update')
+            ->with($user);
+
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $update = $this->persister->prepareUpdateData($user);
+
+        // the correct diff is just a pullAll of the two old Groups
+        $this->assertFalse(array_key_exists($this->escape('set'), $update));
+        $this->assertFalse(array_key_exists($this->escape('unset'), $update));
+        $this->assertFalse(array_key_exists($this->escape('pushAll'), $update));
+        $this->assertTrue(array_key_exists($this->escape('pullAll'), $update));
+        $this->assertTrue(array_key_exists('groups', $update[$this->escape('pullAll')]));
+        $this->assertEquals(2, count($update[$this->escape('pullAll')]['groups']));
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user);
+
+        $user = $this->dm->findOne('Documents\User');
+        $this->assertEquals(1, count($user->getGroups()));
+    }
+
+    public function testReplaceEntireGroupsArray()
+    {
+        $this->dm->getUnitOfWork()->setDocumentPersister(
+            'Documents\User', new BasicDocumentPersister($this->dm, $this->classMetadata)
+        );
+
+        $account = new Account();
+        $account->setName('Jon Test Account');
+
+        $user = new User();
+        $user->setUsername('jon333');
+        $user->setPassword('changeme');
+        $user->setAccount($account);
+
+        $group2 = new Group('member');
+        $user->addGroup(new Group('administrator'));
+        $user->addGroup($group2);
+        $user->addGroup(new Group('moderator'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user, $account);
+
+        $user = $this->dm->findOne('Documents\User');
+
+        // reffectively remove two of the groups
+        $user->setGroups(array($group2));
+
+        $this->assertEquals(1, count($user->getGroups()));
+
+        $this->dm->getUnitOfWork()->setDocumentPersister(
+            'Documents\User', $this->persister
+        );
+
+        $this->persister->expects($this->once())
+            ->method('update')
+            ->with($user);
+
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $update = $this->persister->prepareUpdateData($user);
+
+        // the correct diff is just a pullAll of the two old Groups
+        $this->assertFalse(array_key_exists($this->escape('set'), $update));
+        $this->assertFalse(array_key_exists($this->escape('unset'), $update));
+        $this->assertFalse(array_key_exists($this->escape('pushAll'), $update));
+        $this->assertTrue(array_key_exists($this->escape('pullAll'), $update));
+        $this->assertTrue(array_key_exists('groups', $update[$this->escape('pullAll')]));
+        $this->assertEquals(2, count($update[$this->escape('pullAll')]['groups']));
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user);
+
+        $user = $this->dm->findOne('Documents\User');
+        $this->assertEquals(1, count($user->getGroups()));
+    }
+
     public function testCollectionField()
     {
         $classMetadata = $this->dm->getClassMetadata('Documents\Article');
