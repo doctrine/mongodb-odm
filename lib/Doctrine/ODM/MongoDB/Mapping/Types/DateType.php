@@ -38,7 +38,7 @@ class DateType extends Type
         if (is_string($value)) {
             $value = strtotime($value);
         }
-        if (!$value) {
+        if ($value === null || $value === false) {
             return null;
         }
         return new \MongoDate($value);
