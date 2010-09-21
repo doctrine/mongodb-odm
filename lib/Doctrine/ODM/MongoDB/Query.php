@@ -1069,7 +1069,7 @@ class Query
      */
     private function getCursor()
     {
-        if ($this->type !== self::TYPE_FIND) {
+        if (!in_array($this->type, array(self::TYPE_FIND, self::TYPE_GROUP))) {
             throw new \InvalidArgumentException(
                 'Cannot get cursor for an update or remove query. Use execute() method.'
             );
