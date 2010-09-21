@@ -32,14 +32,14 @@ class DateType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        if ($value === null) {
-            return null;
-        }
         if ($value instanceof \DateTime) {
             $value = $value->getTimestamp();
         }
         if (is_string($value)) {
             $value = strtotime($value);
+        }
+        if ($value === null || $value === false) {
+            return null;
         }
         return new \MongoDate($value);
     }
