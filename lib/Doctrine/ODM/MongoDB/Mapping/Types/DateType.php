@@ -35,18 +35,17 @@ class DateType extends Type
         if ($value === null) {
           return null;
         }
+        $timestamp = false;
         if ($value instanceof \DateTime) {
             $timestamp = $value->getTimestamp();
         }
         if (is_string($value)) {
             $timestamp = strtotime($value);
         }
-        // If we have tried to create a timestamp but got false
-        // then it is likely an invalid timestamp before the unix epoch
-        // so we can only store the original $value that is just a string
-        if (isset($timestamp) && $timestamp === false) {
-          return $value;
-        // Otherwise set $value to $timestamp to create a MongoDate instance from
+        // Could not convert date to timestamp so store ISO 8601 formatted date instead
+        if ($timestamp === false) {
+          $date = new \DateTime($value);
+          return $date->format('c');
         } else {
           $value = $timestamp;
         }
