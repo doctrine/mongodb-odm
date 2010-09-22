@@ -24,7 +24,9 @@ use Doctrine\ODM\MongoDB\Query,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\Collections\Collection;
+    Doctrine\Common\Collections\Collection,
+    Doctrine\ODM\MongoDB\Event\LifecycleEventArgs,
+    Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 
 /**
  * The Hydrator class is responsible for converting a document from MongoDB
@@ -38,11 +40,18 @@ use Doctrine\ODM\MongoDB\Query,
 class Hydrator
 {
     /**
-     * The DocumentManager associationed with this Hydrator
+     * The DocumentManager associated with this Hydrator
      *
      * @var Doctrine\ODM\MongoDB\DocumentManager
      */
     private $dm;
+
+    /**
+     * The EventManager associated with this Hydrator
+     *
+     * @var Doctrine\Common\EventManager
+     */
+    private $evm;
 
     /**
      * Mongo command prefix
@@ -58,6 +67,7 @@ class Hydrator
     public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
+        $this->evm = $this->dm->getEventManager();
         $this->cmd = $dm->getConfiguration()->getMongoCmd();
     }
 
@@ -71,6 +81,15 @@ class Hydrator
     public function hydrate($document, &$data)
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
+
+        if (isset($metadata->lifecycleCallbacks[ODMEvents::preLoad])) {
+            $args = array(&$data);
+            $metadata->invokeLifecycleCallbacks(ODMEvents::preLoad, $document, $args);
+        }
+        if ($this->evm->hasListeners(ODMEvents::preLoad)) {
+            $this->evm->dispatchEvent(ODMEvents::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
+        }
+
         if (isset($metadata->alsoLoadMethods)) {
             foreach ($metadata->alsoLoadMethods as $fieldName => $method) {
                 if (isset($data[$fieldName])) {
@@ -105,9 +124,8 @@ class Hydrator
                     $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                     $embeddedMetadata = $this->dm->getClassMetadata($className);
                     $value = $embeddedMetadata->newInstance();
-                    $this->dm->getUnitOfWork()->invokeEmbeddedLifecycleCallback(ODMEvents::preLoad, $mapping, $value);
                     $this->hydrate($value, $embeddedDocument);
-                    $this->dm->getUnitOfWork()->registerManagedEmbeddedDocument($value, $embeddedDocument);
+                    $this->dm->getUnitOfWork()->registerManaged($value, null, $embeddedDocument);
                 } elseif ($mapping['type'] === 'many') {
                     $embeddedDocuments = $rawValue;
                     $coll = new PersistentCollection(new ArrayCollection());
@@ -115,9 +133,8 @@ class Hydrator
                         $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                         $embeddedMetadata = $this->dm->getClassMetadata($className);
                         $embeddedDocumentObject = $embeddedMetadata->newInstance();
-                        $this->dm->getUnitOfWork()->invokeEmbeddedLifecycleCallback(ODMEvents::preLoad, $mapping, $embeddedDocumentObject);
                         $this->hydrate($embeddedDocumentObject, $embeddedDocument);
-                        $this->dm->getUnitOfWork()->registerManagedEmbeddedDocument($embeddedDocumentObject, $embeddedDocument);
+                        $this->dm->getUnitOfWork()->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
                         $coll->add($embeddedDocumentObject);
                     }
                     $coll->setOwner($document, $mapping);
@@ -160,6 +177,14 @@ class Hydrator
             $data[$metadata->identifier] = $data['_id'];
             unset($data['_id']);
         }
+
+        if (isset($metadata->lifecycleCallbacks[ODMEvents::postLoad])) {
+            $metadata->invokeLifecycleCallbacks(ODMEvents::postLoad, $document);
+        }
+        if ($this->evm->hasListeners(ODMEvents::postLoad)) {
+            $this->evm->dispatchEvent(ODMEvents::postLoad, new LifecycleEventArgs($document, $this->dm));
+        }
+
         return $document;
     }
 }
