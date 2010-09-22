@@ -173,15 +173,6 @@ class User extends BaseDocument
         return false;
     }
 
-    public function setGroups($groups)
-    {
-        $this->groups = array();
-        foreach ($groups as $group)
-        {
-            $this->addGroup($group);
-        }
-    }
-
     public function getHits()
     {
         return $this->hits;
