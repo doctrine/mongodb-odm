@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Types;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * The Collection type.
  *
@@ -33,6 +35,9 @@ class CollectionType extends Type
 {
     public function convertToDatabaseValue($value)
     {
+        if($value instanceof ArrayCollection) {
+            return $value->toArray();
+        }
         return $value !== null ? array_values($value) : null;
     }
 
