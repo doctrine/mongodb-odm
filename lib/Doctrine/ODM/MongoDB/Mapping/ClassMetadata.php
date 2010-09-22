@@ -781,7 +781,7 @@ class ClassMetadata
      */
     public function setDistance($distance)
     {
-        $this->file = $distance;
+        $this->distance = $distance;
     }
 
     /**

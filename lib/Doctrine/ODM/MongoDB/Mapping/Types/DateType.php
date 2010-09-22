@@ -33,13 +33,21 @@ class DateType extends Type
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
-            return null;
+          return null;
         }
+        $timestamp = false;
         if ($value instanceof \DateTime) {
-            $value = $value->getTimestamp();
+            $timestamp = $value->getTimestamp();
         }
         if (is_string($value)) {
-            $value = strtotime($value);
+            $timestamp = strtotime($value);
+        }
+        // Could not convert date to timestamp so store ISO 8601 formatted date instead
+        if ($timestamp === false) {
+          $date = new \DateTime($value);
+          return $date->format('c');
+        } else {
+          $value = $timestamp;
         }
         return new \MongoDate($value);
     }
@@ -49,8 +57,12 @@ class DateType extends Type
         if ($value === null) {
             return null;
         }
-        $date = new \DateTime();
-        $date->setTimestamp($value->sec);
+        if ($value instanceof \MongoDate) {
+            $date = new \DateTime();
+            $date->setTimestamp($value->sec);
+        } else {
+            $date = new \DateTime($value);
+        }
         return $date;
     }
 }

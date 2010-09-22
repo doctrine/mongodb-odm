@@ -484,12 +484,8 @@ class PersistentCollection implements Collection
      */
     public function clear()
     {
-        if ($this->initialized && $this->isEmpty()) {
-            return;
-        }
+        $this->initialize();
         $this->coll->clear();
-        $this->changed();
-        $this->takeSnapshot();
      }
 
     /**

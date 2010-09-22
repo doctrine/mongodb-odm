@@ -152,6 +152,11 @@ class User extends BaseDocument
         return $this->groups;
     }
 
+    public function setGroups($groups)
+    {
+        $this->groups = $groups;
+    }
+
     public function addGroup(Group $group)
     {
         $this->groups[] = $group;

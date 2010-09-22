@@ -88,17 +88,25 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbedManyEvent()
     {
-        $user = $this->createUser();
+        $user = new User();
+        $user->name = 'jon';
         $profile = new Profile();
-        $profile->name = 'test';
+        $profile->name = 'testing cool ya';
         $user->profiles[] = $profile;
 
+        $this->dm->persist($user);
         $this->dm->flush();
 
         $this->assertTrue($profile->prePersist);
         $this->assertTrue($profile->postPersist);
         $this->assertFalse($profile->preUpdate);
         $this->assertFalse($profile->postUpdate);
+
+        $profile->name = 'changed';
+        $this->dm->flush();
+
+        $this->assertTrue($profile->preUpdate);
+        $this->assertTrue($profile->postUpdate);
 
         $this->dm->clear();
         $user = $this->dm->findOne(__NAMESPACE__.'\User');

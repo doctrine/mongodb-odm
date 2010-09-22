@@ -300,7 +300,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user = $this->dm->findOne('Documents\User');
         $this->assertEquals(3, count($user->getGroups()));
-  
+
         $user->removeGroup('moderator');
         $user->removeGroup('member');
 
@@ -426,25 +426,6 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals(1, count($user->getGroups()));
 
-        $this->dm->getUnitOfWork()->setDocumentPersister(
-            'Documents\User', $this->persister
-        );
-
-        $this->persister->expects($this->once())
-            ->method('update')
-            ->with($user);
-
-        $this->dm->getUnitOfWork()->computeChangeSets();
-        $update = $this->persister->prepareUpdateData($user);
-
-        // the correct diff is just a pullAll of the two old Groups
-        $this->assertFalse(array_key_exists($this->escape('set'), $update));
-        $this->assertFalse(array_key_exists($this->escape('unset'), $update));
-        $this->assertFalse(array_key_exists($this->escape('pushAll'), $update));
-        $this->assertTrue(array_key_exists($this->escape('pullAll'), $update));
-        $this->assertTrue(array_key_exists('groups', $update[$this->escape('pullAll')]));
-        $this->assertEquals(2, count($update[$this->escape('pullAll')]['groups']));
-
         $this->dm->flush();
         $this->dm->clear();
 
@@ -481,29 +462,17 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user = $this->dm->findOne('Documents\User');
 
+        // Issue is collection must be initialized
+        $groups = $user->getGroups();
+        $groups[0]; // initialize collection
+
         // reffectively remove two of the groups
+        //$user->getGroups()->clear();
+        //$user->getGroups()->add($group2);
+
         $user->setGroups(array($group2));
 
         $this->assertEquals(1, count($user->getGroups()));
-
-        $this->dm->getUnitOfWork()->setDocumentPersister(
-            'Documents\User', $this->persister
-        );
-
-        $this->persister->expects($this->once())
-            ->method('update')
-            ->with($user);
-
-        $this->dm->getUnitOfWork()->computeChangeSets();
-        $update = $this->persister->prepareUpdateData($user);
-
-        // the correct diff is just a pullAll of the two old Groups
-        $this->assertFalse(array_key_exists($this->escape('set'), $update));
-        $this->assertFalse(array_key_exists($this->escape('unset'), $update));
-        $this->assertFalse(array_key_exists($this->escape('pushAll'), $update));
-        $this->assertTrue(array_key_exists($this->escape('pullAll'), $update));
-        $this->assertTrue(array_key_exists('groups', $update[$this->escape('pullAll')]));
-        $this->assertEquals(2, count($update[$this->escape('pullAll')]['groups']));
 
         $this->dm->flush();
         $this->dm->clear();
