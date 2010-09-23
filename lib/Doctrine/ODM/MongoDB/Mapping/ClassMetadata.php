@@ -794,11 +794,11 @@ class ClassMetadata
         if ( ! isset($mapping['fieldName']) && isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
         }
-        if ( ! isset($mapping['name'])) {
-            $mapping['name'] = $mapping['fieldName'];
-        }
         if ( ! isset($mapping['fieldName'])) {
             throw MongoDBException::missingFieldName($this->name);
+        }
+        if ( ! isset($mapping['name'])) {
+            $mapping['name'] = $mapping['fieldName'];
         }
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
             throw MongoDBException::duplicateFieldMapping($this->name, $mapping['fieldName']);
