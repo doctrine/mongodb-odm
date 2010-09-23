@@ -843,6 +843,9 @@ class UnitOfWork implements PropertyChangedListener
                 foreach ($value as $entry) {
                     $entryOid = spl_object_hash($entry);
                     $entryClass = $this->dm->getClassMetadata(get_class($entry));
+                    if ( ! isset($this->documentChangeSets[$entryOid])) {
+                        continue;
+                    }
                     if ( ! isset($this->newEmbeddedDocuments[$entryOid])) {
                         if (isset($entryClass->lifecycleCallbacks[ODMEvents::preUpdate])) {
                             $entryClass->invokeLifecycleCallbacks(ODMEvents::preUpdate, $entry);
@@ -880,6 +883,9 @@ class UnitOfWork implements PropertyChangedListener
                 foreach ($value as $entry) {
                     $entryOid = spl_object_hash($entry);
                     $entryClass = $this->dm->getClassMetadata(get_class($entry));
+                    if ( ! isset($this->documentChangeSets[$entryOid])) {
+                        continue;
+                    }
                     if (isset($this->newEmbeddedDocuments[$entryOid])) {
                         if (isset($entryClass->lifecycleCallbacks[ODMEvents::postPersist])) {
                             $entryClass->invokeLifecycleCallbacks(ODMEvents::postPersist, $entry);
