@@ -198,7 +198,9 @@ class ProxyFactory
 
                 $methods .= $parameterString . ')';
                 $methods .= PHP_EOL . '    {' . PHP_EOL;
-                $methods .= '        $this->load();' . PHP_EOL;
+				if($method->getName() != 'getId') {
+					$methods .= '        $this->load();' . PHP_EOL;
+				}
                 $methods .= '        return parent::' . $method->getName() . '(' . $argumentString . ');';
                 $methods .= PHP_EOL . '    }' . PHP_EOL;
             }
