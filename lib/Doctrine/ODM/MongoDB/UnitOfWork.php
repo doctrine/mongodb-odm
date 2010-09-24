@@ -2045,11 +2045,11 @@ class UnitOfWork implements PropertyChangedListener
             }
             if ($overrideLocalValues) {
                 $this->hydrator->hydrate($document, $data);
-                $this->originalDocumentData[$oid] = $data;
+                $this->originalDocumentData[$oid] = $this->getDocumentActualData($document);
             }
         } else {
             $this->hydrator->hydrate($document, $data);
-            $this->registerManaged($document, $id, $data);
+            $this->registerManaged($document, $id, $this->getDocumentActualData($document));
         }
         return $document;
     }
