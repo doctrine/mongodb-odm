@@ -16,6 +16,7 @@ use Documents\User,
     Documents\GuestServer,
     Documents\Functional\AlsoLoad,
     Documents\Functional\EmbeddedTestLevel0,
+    Documents\Functional\EmbeddedTestLevel0b,
     Documents\Functional\EmbeddedTestLevel1,
     Documents\Functional\EmbeddedTestLevel2,
     Documents\Functional\FavoritesUser,
@@ -661,5 +662,43 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $test->level1[0]->level2[0]);
         $this->assertEquals(2, count($test->level1));
         $this->assertEquals(2, count($test->level1[0]->level2));
+    }
+
+    public function testEmbeddedInheritance()
+    {
+        // create a level0b (inherits from level0)
+        $test = new EmbeddedTestLevel0b();
+        $test->name = 'test b';
+
+        // embed a level1
+        $level1 = new EmbeddedTestLevel1();
+        $level1->name = 'level 1';
+        $test->oneLevel1 = $level1;
+
+        // save the level0b
+        $this->dm->persist($test);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // fetch the level0b from db
+        $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0b');
+
+        // add a level2 in the level0b.level1
+        $level2 = new EmbeddedTestLevel2();
+        $level2->name = 'level 2';
+        $test->oneLevel1->level2[] = $level2;
+
+        // OK, there is one level2
+        $this->assertEquals(1, count($test->oneLevel1->level2));
+
+        // save again
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // fetch again
+        $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0b');
+
+        // Uh oh, the level2 was not persisted!
+        $this->assertEquals(1, count($test->oneLevel1->level2));
     }
 }
