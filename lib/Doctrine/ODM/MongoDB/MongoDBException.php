@@ -105,9 +105,9 @@ class MongoDBException extends \Exception
         return new self('Cannot persist an embedded document or mapped superclass ' . $className);
     }
 
-    public static function mappingNotFound($fieldName)
+    public static function mappingNotFound($className, $fieldName)
     {
-        return new self("No mapping found for field '$fieldName'.");
+        return new self("No mapping found for field '$fieldName' in class '$className'.");
     }
 
     public static function duplicateFieldMapping($document, $fieldName)
