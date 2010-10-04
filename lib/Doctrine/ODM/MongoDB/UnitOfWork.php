@@ -155,13 +155,6 @@ class UnitOfWork implements PropertyChangedListener
     private $visitedCollections = array();
 
     /**
-     * A list of all the new embedded documents.
-     *
-     * @var array
-     */
-    private $newEmbeddedDocuments = array();
-
-    /**
      * The DocumentManager that "owns" this UnitOfWork instance.
      *
      * @var Doctrine\ODM\MongoDB\DocumentManager
@@ -299,7 +292,6 @@ class UnitOfWork implements PropertyChangedListener
         $this->documentUpdates =
         $this->documentDeletions =
         $this->documentChangeSets =
-        $this->newEmbeddedDocuments =
         $this->visitedCollections =
         $this->scheduledForDirtyCheck = array();
     }
@@ -679,11 +671,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->documentStates[$oid] = self::STATE_MANAGED;
 
-        if ($class->isEmbeddedDocument) {
-            $this->newEmbeddedDocuments[$oid] = $document;
-        } else {
-            $this->scheduleForInsert($document);
-        }
+        $this->scheduleForInsert($document);
     }
 
     /**
@@ -842,7 +830,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ( ! isset($this->documentChangeSets[$entryOid])) {
                         continue;
                     }
-                    if ( ! isset($this->newEmbeddedDocuments[$entryOid])) {
+                    if ( ! isset($this->documentInsertions[$entryOid])) {
                         if (isset($entryClass->lifecycleCallbacks[ODMEvents::preUpdate])) {
                             $entryClass->invokeLifecycleCallbacks(ODMEvents::preUpdate, $entry);
                             $this->recomputeSingleDocumentChangeSet($entryClass, $entry);
@@ -882,7 +870,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ( ! isset($this->documentChangeSets[$entryOid])) {
                         continue;
                     }
-                    if (isset($this->newEmbeddedDocuments[$entryOid])) {
+                    if (isset($this->documentInsertions[$entryOid])) {
                         if (isset($entryClass->lifecycleCallbacks[ODMEvents::postPersist])) {
                             $entryClass->invokeLifecycleCallbacks(ODMEvents::postPersist, $entry);
                         }
