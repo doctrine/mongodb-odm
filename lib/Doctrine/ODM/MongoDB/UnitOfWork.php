@@ -382,14 +382,10 @@ class UnitOfWork implements PropertyChangedListener
                 $actualData[$name] = array();
                 foreach ($embeddedDocuments as $key => $embeddedDocument) {
                     $actualData[$name][$key] = $this->getDocumentActualData($embeddedDocument);
-                    $actualData[$name][$key]['originalObject'] = $embeddedDocument;
-                    $visited = array();
                 }
             } elseif ($class->isSingleValuedEmbed($name) && is_object($value)) {
                 $embeddedDocument = $value;
                 $actualData[$name] = $this->getDocumentActualData($embeddedDocument);
-                $actualData[$name]['originalObject'] = $embeddedDocument;
-                $visited = array();
             } else {
                 $actualData[$name] = $value;
             }

@@ -125,15 +125,17 @@ class Hydrator
                     $embeddedMetadata = $this->dm->getClassMetadata($className);
                     $value = $embeddedMetadata->newInstance();
                     $this->hydrate($value, $embeddedDocument);
+                    $data[$mapping['name']] = $embeddedDocument;
                     $this->dm->getUnitOfWork()->registerManaged($value, null, $embeddedDocument);
                 } elseif ($mapping['type'] === 'many') {
                     $embeddedDocuments = $rawValue;
                     $coll = new PersistentCollection(new ArrayCollection());
-                    foreach ($embeddedDocuments as $embeddedDocument) {
+                    foreach ($embeddedDocuments as $key => $embeddedDocument) {
                         $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                         $embeddedMetadata = $this->dm->getClassMetadata($className);
                         $embeddedDocumentObject = $embeddedMetadata->newInstance();
                         $this->hydrate($embeddedDocumentObject, $embeddedDocument);
+                        $data[$mapping['name']][$key] = $embeddedDocument;
                         $this->dm->getUnitOfWork()->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
                         $coll->add($embeddedDocumentObject);
                     }
@@ -159,15 +161,15 @@ class Hydrator
                     // accessed and initialized for the first ime
                     $value->setReferences($references);
                 }
-
+                $data[$mapping['name']] = $value;
             // Hydrate regular field
             } else {
                 $value = Type::getType($mapping['type'])->convertToPHPValue($rawValue);
+                $data[$mapping['name']] = $value;
             }
 
             // Set hydrated field value to document
             if ($value !== null) {
-                $data[$mapping['name']] = $value;
                 $metadata->setFieldValue($document, $mapping['fieldName'], $value);
             }
         }

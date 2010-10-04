@@ -375,7 +375,8 @@ class BasicDocumentPersister
                 $insertData['_id'] = $this->prepareValue($mapping, $new);
                 continue;
             }
-            $value = $this->prepareValue($mapping, $new);
+            $current = $this->class->getFieldValue($document, $mapping['fieldName']);
+            $value = $this->prepareValue($mapping, $current);
             if ($value === null && $mapping['nullable'] === false) {
                 continue;
             }
@@ -418,9 +419,6 @@ class BasicDocumentPersister
      */
     public function prepareUpdateData($document)
     {
-        if (is_array($document) && isset($document['originalObject'])) {
-            $document = $document['originalObject'];
-        }
         $oid = spl_object_hash($document);
         $class = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
@@ -431,6 +429,7 @@ class BasicDocumentPersister
             }
             $old = isset($changeset[$mapping['fieldName']][0]) ? $changeset[$mapping['fieldName']][0] : null;
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
+            $current = $class->getFieldValue($document, $mapping['fieldName']);
 
             if ($mapping['type'] === 'many' || $mapping['type'] === 'collection') {
                 $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushPull';
@@ -440,7 +439,7 @@ class BasicDocumentPersister
                             if ( ! isset($old[$k])) {
                                 continue;
                             }
-                            $update = $this->prepareUpdateData($v);
+                            $update = $this->prepareUpdateData($current[$k]);
                             foreach ($update as $cmd => $values) {
                                 foreach ($values as $key => $value) {
                                     $result[$cmd][$mapping['name'] . '.' . $k . '.' . $key] = $value;
@@ -449,15 +448,18 @@ class BasicDocumentPersister
                         }
                     }
                     if ($old !== $new) {
-                        $old = $old ? $old : array();
-                        $new = $new ? $new : array();
-                        $compare = function($a, $b) {
-                            $a = is_array($a) && isset($a['originalObject']) ? $a['originalObject'] : $a;
-                            $b = is_array($b) && isset($b['originalObject']) ? $b['originalObject'] : $b;
-                            return $a === $b ? 0 : 1;
-                        };
-                        $deleteDiff = array_udiff_assoc($old, $new, $compare);
-                        $insertDiff = array_udiff_assoc($new, $old, $compare);
+                        if ($mapping['type'] === 'collection' || isset($mapping['reference'])) {
+                            $old = $old ? $old : array();
+                            $new = $new ? $new : array();
+                            $compare = function($a, $b) {
+                                return $a === $b ? 0 : 1;
+                            };
+                            $deleteDiff = array_udiff_assoc($old, $new, $compare);
+                            $insertDiff = array_udiff_assoc($new, $old, $compare);
+                        } elseif (isset($mapping['embedded'])) {
+                            $deleteDiff = $current->getDeleteDiff();
+                            $insertDiff = $current->getInsertDiff();
+                        }
 
                         // insert diff
                         if ($insertDiff) {
@@ -470,7 +472,7 @@ class BasicDocumentPersister
                     }
                 } elseif ($mapping['strategy'] === 'set') {
                     if ($old !== $new) {
-                        $new = $this->prepareValue($mapping, $new);
+                        $new = $this->prepareValue($mapping, $current);
                         $result[$this->cmd . 'set'][$mapping['name']] = $new;
                     }
                 }
@@ -489,14 +491,13 @@ class BasicDocumentPersister
                         if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
                             // If we didn't have a value before and now we do
                             if ( ! $old && $new) {
-                                $new = $this->prepareValue($mapping, $new);
+                                $new = $this->prepareValue($mapping, $current);
                                 if (isset($new) || $mapping['nullable'] === true) {
                                     $result[$this->cmd . 'set'][$mapping['name']] = $new;
                                 }
                             // If we had an old value before and it has changed
                             } elseif ($old && $new) {
-                                $embeddedDocument = $class->getFieldValue($document, $mapping['fieldName']);
-                                $update = $this->prepareUpdateData($embeddedDocument);
+                                $update = $this->prepareUpdateData($current);
                                 foreach ($update as $cmd => $values) {
                                     foreach ($values as $key => $value) {
                                         $result[$cmd][$mapping['name'] . '.' . $key] = $value;
@@ -505,7 +506,7 @@ class BasicDocumentPersister
                             }
                         // $set all other fields
                         } else {
-                            $new = $this->prepareValue($mapping, $new);
+                            $new = $this->prepareValue($mapping, $current);
                             if (isset($new) || $mapping['nullable'] === true) {
                                 $result[$this->cmd . 'set'][$mapping['name']] = $new;
                             } else {
@@ -593,9 +594,6 @@ class BasicDocumentPersister
      */
     private function prepareEmbeddedDocValue(array $embeddedMapping, $embeddedDocument)
     {
-        if (is_array($embeddedDocument) && isset($embeddedDocument['originalObject'])) {
-            $embeddedDocument = $embeddedDocument['originalObject'];
-        }
         $className = get_class($embeddedDocument);
         $class = $this->dm->getClassMetadata($className);
         $embeddedDocumentValue = array();
