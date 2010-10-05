@@ -38,8 +38,9 @@ class DateType extends Type
         $timestamp = false;
         if ($value instanceof \DateTime) {
             $timestamp = $value->getTimestamp();
-        }
-        if (is_string($value)) {
+        } elseif (is_numeric($value)) {
+          $timestamp = $value;
+        } elseif (is_string($value)) {
             $timestamp = strtotime($value);
         }
         // Could not convert date to timestamp so store ISO 8601 formatted date instead
