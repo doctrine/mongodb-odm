@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -30,25 +31,26 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  */
 class DateType extends Type
 {
+
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
-          return null;
+            return null;
         }
         $timestamp = false;
         if ($value instanceof \DateTime) {
             $timestamp = $value->getTimestamp();
         } elseif (is_numeric($value)) {
-          $timestamp = $value;
+            $timestamp = $value;
         } elseif (is_string($value)) {
             $timestamp = strtotime($value);
         }
         // Could not convert date to timestamp so store ISO 8601 formatted date instead
         if ($timestamp === false) {
-          $date = new \DateTime($value);
-          return $date->format('c');
+            $date = new \DateTime($value);
+            return $date->format('c');
         } else {
-          $value = $timestamp;
+            $value = $timestamp;
         }
         return new \MongoDate($value);
     }
@@ -66,4 +68,5 @@ class DateType extends Type
         }
         return $date;
     }
+
 }
