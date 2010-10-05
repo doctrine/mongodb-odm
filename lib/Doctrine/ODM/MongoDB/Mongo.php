@@ -32,6 +32,12 @@ class Mongo
     /** The PHP Mongo instance. */
     private $mongo;
 
+    /** The server string */
+    private $server;
+
+    /** The array of server options to use when connecting */
+    private $options = array();
+
     /**
      * Create a new Mongo wrapper instance.
      *
@@ -43,9 +49,8 @@ class Mongo
         if ($server instanceof \Mongo) {
             $this->mongo = $server;
         } elseif ($server !== null) {
-            $this->mongo = new \Mongo($server, $options);
-        } else {
-            $this->mongo = new \Mongo();
+            $this->server = $server;
+            $this->options = $options;
         }
     }
 
@@ -66,20 +71,28 @@ class Mongo
      */
     public function getMongo()
     {
+        if ($this->mongo === null) {
+            if ($this->server) {
+                $this->mongo = new \Mongo($this->server, $this->options);
+            } else {
+                $this->mongo = new \Mongo();
+            }
+        }
         return $this->mongo;
     }
 
     /** @proxy */
     public function __get($key)
     {
-        return $this->mongo->$key;
+        return $this->getMongo()->$key;
     }
 
     /** @proxy */
     public function __call($method, $arguments)
     {
-        if (method_exists($this->mongo, $method)) {
-            return call_user_func_array(array($this->mongo, $method), $arguments);
+        $mongo = $this->getMongo();
+        if (method_exists($mongo, $method)) {
+            return call_user_func_array(array($mongo, $method), $arguments);
         }
         throw new \BadMethodCallException(sprintf('Method %s does not exist on %s', $method, get_class($this)));
     }
