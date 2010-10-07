@@ -390,18 +390,18 @@ class UnitOfWork implements PropertyChangedListener
      *
      * Modifies/populates the following properties:
      *
-     * {@link _originalDocumentData}
+     * {@link originalDocumentData}
      * If the document is NEW or MANAGED but not yet fully persisted (only has an id)
      * then it was not fetched from the database and therefore we have no original
      * document data yet. All of the current document data is stored as the original document data.
      *
-     * {@link _documentChangeSets}
+     * {@link documentChangeSets}
      * The changes detected on all properties of the document are stored there.
      * A change is a tuple array where the first entry is the old value and the second
      * entry is the new value of the property. Changesets are used by persisters
      * to INSERT/UPDATE the persistent document state.
      *
-     * {@link _documentUpdates}
+     * {@link documentUpdates}
      * If the document is already fully MANAGED (has been fetched from the database before)
      * and any changes to its properties are detected, then a reference to the document is stored
      * there to mark it for an update.
