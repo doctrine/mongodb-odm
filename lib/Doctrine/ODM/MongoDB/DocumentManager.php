@@ -62,7 +62,7 @@ class DocumentManager
     private $config;
 
     /**
-     * The metadata factory, used to retrieve the ORM metadata of document classes.
+     * The metadata factory, used to retrieve the ODM metadata of document classes.
      *
      * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
      */
