@@ -298,7 +298,7 @@ Query for users that have a login field before it was renamed to username:
 
     [php]
     $query = $dm->createQuery('User')
-        ->field('login')->exists();
+        ->field('login')->exists(true);
 
 Read more about the [$exists operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24exists) in the Mongo docs.
 
@@ -412,7 +412,7 @@ Unset the login field from users where the login field still exists:
 
     [php]
     $dm->createQuery('User')
-        ->field('login')->unsetField()->exists()
+        ->field('login')->unsetField()->exists(true)
         ->execute();
 
 Read more about the [$unset modifier](http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset) in the Mongo docs.
