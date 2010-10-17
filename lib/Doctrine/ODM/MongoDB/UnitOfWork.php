@@ -118,7 +118,7 @@ class UnitOfWork implements PropertyChangedListener
      * Map of documents that are scheduled for dirty checking at commit time.
      * This is only used for documents with a change tracking policy of DEFERRED_EXPLICIT.
      * Keys are object ids (spl_object_hash).
-     * 
+     *
      * @var array
      * @todo rename: scheduledForSynchronization
      */
@@ -205,7 +205,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Get the document persister instance for the given document name
      *
-     * @param string $documentName 
+     * @param string $documentName
      * @return BasicDocumentPersister
      */
     public function getDocumentPersister($documentName)
@@ -220,7 +220,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Set the document persister instance to use for the given document name
      *
-     * @param string $documentName 
+     * @param string $documentName
      * @param BasicDocumentPersister $persister
      */
     public function setDocumentPersister($documentName, Persisters\BasicDocumentPersister $persister)
@@ -232,9 +232,9 @@ class UnitOfWork implements PropertyChangedListener
      * Commits the UnitOfWork, executing all operations that have been postponed
      * up to this point. The state of all managed documents will be synchronized with
      * the database.
-     * 
+     *
      * The operations are executed in the following order:
-     * 
+     *
      * 1) All document insertions
      * 2) All document updates
      * 3) All document deletions
@@ -268,7 +268,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->executeReferenceUpdates($class, $options);
             }
         }
-        
+
         if ($this->documentUpdates) {
             foreach ($commitOrder as $class) {
                 $this->executeUpdates($class, $options);
@@ -335,7 +335,7 @@ class UnitOfWork implements PropertyChangedListener
         $actualData = array();
         foreach ($class->reflFields as $name => $refProp) {
             $mapping = $class->fieldMappings[$name];
-            
+
             // Skip identifiers if custom ones are not allowed
             if ($class->isIdentifier($name) && ! $class->getAllowCustomID()) {
                 continue;
@@ -415,7 +415,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! $class->isInheritanceTypeNone()) {
             $class = $this->dm->getClassMetadata(get_class($document));
         }
-        
+
         $oid = spl_object_hash($document);
         $actualData = $this->getDocumentActualData($document);
         if ( ! isset($this->originalDocumentData[$oid])) {
@@ -596,11 +596,11 @@ class UnitOfWork implements PropertyChangedListener
      * INTERNAL:
      * Computes the changeset of an individual document, independently of the
      * computeChangeSets() routine that is used at the beginning of a UnitOfWork#commit().
-     * 
+     *
      * The passed document must be a managed document. If the document already has a change set
      * because this method is invoked during a commit cycle then the change sets are added.
      * whereby changes detected in this method prevail.
-     * 
+     *
      * @ignore
      * @param ClassMetadata $class The class descriptor of the document.
      * @param object $document The document for which to (re)calculate the change set.
@@ -785,7 +785,7 @@ class UnitOfWork implements PropertyChangedListener
                     $class->invokeLifecycleCallbacks(ODMEvents::preUpdate, $document);
                     $this->recomputeSingleDocumentChangeSet($class, $document);
                 }
-                
+
                 if ($hasPreUpdateListeners) {
                     $this->evm->dispatchEvent(ODMEvents::preUpdate, new Event\PreUpdateEventArgs(
                         $document, $this->dm, $this->documentChangeSets[$oid])
@@ -945,14 +945,14 @@ class UnitOfWork implements PropertyChangedListener
                 $this->documentDeletions
             );
         }
-        
+
         $calc = $this->getCommitOrderCalculator();
-        
+
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (dont have a node).
         $newNodes = array();
         foreach ($documentChangeSet as $oid => $document) {
-            $className = get_class($document);         
+            $className = get_class($document);
             if ( ! $calc->hasClass($className)) {
                 $class = $this->dm->getClassMetadata($className);
                 $calc->addClass($class);
@@ -1090,13 +1090,13 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Schedules an document for deletion.
-     * 
+     *
      * @param object $document
      */
     public function scheduleForDelete($document)
     {
         $oid = spl_object_hash($document);
-        
+
         if (isset($this->documentInsertions[$oid])) {
             if ($this->isInIdentityMap($document)) {
                 $this->removeFromIdentityMap($document);
@@ -1133,7 +1133,7 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether an document is scheduled for insertion, update or deletion.
-     * 
+     *
      * @param $document
      * @return boolean
      */
@@ -1181,7 +1181,7 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the state of an document within the current unit of work.
-     * 
+     *
      * NOTE: This method sees documents that are not MANAGED or REMOVED and have a
      *       populated identifier, whether it is generated or manually assigned, as
      *       DETACHED. This can be incorrect for manually assigned identifiers.
@@ -1316,7 +1316,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($id === '') {
             return false;
         }
-        
+
         return isset($this->identityMap[$classMetadata->rootDocumentName][$id]);
     }
 
@@ -1353,7 +1353,7 @@ class UnitOfWork implements PropertyChangedListener
      * Saves an document as part of the current unit of work.
      * This method is internally called during save() cascades as it tracks
      * the already visited documents to prevent infinite recursions.
-     * 
+     *
      * NOTE: This method always considers documents that are not yet known to
      * this UnitOfWork as NEW.
      *
@@ -1399,7 +1399,7 @@ class UnitOfWork implements PropertyChangedListener
             default:
                 throw MongoDBException::invalidDocumentState($documentState);
         }
-        
+
         $this->cascadePersist($document, $visited);
     }
 
@@ -1670,7 +1670,7 @@ class UnitOfWork implements PropertyChangedListener
 
         return $managedCopy;
     }
-    
+
     /**
      * Detaches an document from the persistence management. It's persistence will
      * no longer be managed by Doctrine.
@@ -1682,10 +1682,10 @@ class UnitOfWork implements PropertyChangedListener
         $visited = array();
         $this->doDetach($document, $visited);
     }
-    
+
     /**
      * Executes a detach operation on the given document.
-     * 
+     *
      * @param object $document
      * @param array $visited
      * @internal This method always considers documents with an assigned identifier as DETACHED.
@@ -1698,7 +1698,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $visited[$oid] = $document; // mark visited
-        
+
         switch ($this->getDocumentState($document, self::STATE_DETACHED)) {
             case self::STATE_MANAGED:
                 $this->removeFromIdentityMap($document);
@@ -1710,14 +1710,14 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_DETACHED:
                 return;
         }
-        
+
         $this->cascadeDetach($document, $visited);
     }
-    
+
     /**
      * Refreshes the state of the given document from the database, overwriting
      * any local, unpersisted changes.
-     * 
+     *
      * @param object $document The document to refresh.
      * @throws InvalidArgumentException If the document is not MANAGED.
      */
@@ -1726,10 +1726,10 @@ class UnitOfWork implements PropertyChangedListener
         $visited = array();
         $this->doRefresh($document, $visited);
     }
-    
+
     /**
      * Executes a refresh operation on an document.
-     * 
+     *
      * @param object $document The document to refresh.
      * @param array $visited The already visited documents during cascades.
      * @throws InvalidArgumentException If the document is not MANAGED.
@@ -1749,10 +1749,10 @@ class UnitOfWork implements PropertyChangedListener
         } else {
             throw new \InvalidArgumentException("Document is not MANAGED.");
         }
-        
+
         $this->cascadeRefresh($document, $visited);
     }
-    
+
     /**
      * Cascades a refresh operation to associated documents.
      *
@@ -1795,7 +1795,7 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
     }
-    
+
     /**
      * Cascades a detach operation to associated documents.
      *
@@ -2096,7 +2096,7 @@ class UnitOfWork implements PropertyChangedListener
         }
         return array();
     }
-    
+
     /**
      * @ignore
      */
@@ -2219,27 +2219,27 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the currently scheduled document insertions in this UnitOfWork.
-     * 
+     *
      * @return array
      */
     public function getScheduledDocumentInsertions()
     {
         return $this->documentInsertions;
     }
-    
+
     /**
      * Gets the currently scheduled document updates in this UnitOfWork.
-     * 
+     *
      * @return array
      */
     public function getScheduledDocumentUpdates()
     {
         return $this->documentUpdates;
     }
-    
+
     /**
      * Gets the currently scheduled document deletions in this UnitOfWork.
-     * 
+     *
      * @return array
      */
     public function getScheduledDocumentDeletions()

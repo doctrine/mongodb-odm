@@ -18,10 +18,10 @@ abstract class AbstractCommand extends Command
 
     /**
      * Dropping and Replacement of schema happens in reverse order (indexes <- collections <- dbs)
-     * 
+     *
      * @var array
      */
-    protected $avaialbleOptions = array(self::INDEXES, self::COLLECTIONS, self::DBS);
+    protected $availableOptions = array(self::INDEXES, self::COLLECTIONS, self::DBS);
 
     protected $_commandName;
 
@@ -43,7 +43,7 @@ abstract class AbstractCommand extends Command
     {
         $class = $input->getOption('class');
         $sm = $this->getSchemaManager();
-        foreach ($this->avaialbleOptions as $option) {
+        foreach ($this->availableOptions as $option) {
             if (false !== $input->getOption($option)) {
                 try {
                     if (isset($class)) {
