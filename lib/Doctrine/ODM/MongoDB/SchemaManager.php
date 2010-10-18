@@ -48,7 +48,9 @@ class SchemaManager
     public function ensureIndexes()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            $this->ensureDocumentIndexes($class->name);
+            if(!$class->isMappedSuperclass) {
+                $this->ensureDocumentIndexes($class->name);
+            }
         }
     }
 
@@ -60,6 +62,10 @@ class SchemaManager
     public function ensureDocumentIndexes($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
+        if($class->isMappedSuperclass) {
+            throw new \InvalidArgumentException(sprintf('Can not ensure indexes, "%s" is a mapped superclass and has no collection'));
+        }
+
         if ($indexes = $class->getIndexes()) {
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
