@@ -60,6 +60,10 @@ class SchemaManager
     public function ensureDocumentIndexes($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
+        // mapped superclasses have no mongodb collection
+        if($class->isMappedSuperclass) {
+            return;
+        }
         if ($indexes = $class->getIndexes()) {
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
