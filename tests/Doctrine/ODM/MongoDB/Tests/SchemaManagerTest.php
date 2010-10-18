@@ -45,7 +45,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function getIndexedClasses()
     {
         return array(
-            array(array('Documents\CmsArticle', 'Documents\CmsAddress', 'Documents\CmsComment'))
+            array(array('Documents\CmsArticle', 'Documents\CmsAddress', 'Documents\CmsComment', 'Documents\CmsProduct'))
         );
     }
 
@@ -57,6 +57,16 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->setDocumentCollection('Documents\CmsArticle', $collection);
         $this->dm->getSchemaManager()->ensureDocumentIndexes('Documents\CmsArticle');
     }
+
+    public function testEnsureDocumentIndexesWithTwoLevelInheritance()
+    {
+        $collection = $this->getDocumentCollection();
+        $collection->expects($this->once())
+            ->method('ensureIndex');
+        $this->dm->setDocumentCollection('Documents\CmsProduct', $collection);
+        $this->dm->getSchemaManager()->ensureDocumentIndexes('Documents\CmsProduct');
+    }
+
     /**
      * @dataProvider getIndexedClasses
      */
@@ -87,7 +97,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $collection = $this->getDocumentCollection();
         $collection->expects($this->once())
-                ->method('deleteIndexes');
+            ->method('deleteIndexes');
         $this->dm->setDocumentCollection('Documents\CmsArticle', $collection);
 
         $this->dm->getSchemaManager()->deleteDocumentIndexes('Documents\CmsArticle');
