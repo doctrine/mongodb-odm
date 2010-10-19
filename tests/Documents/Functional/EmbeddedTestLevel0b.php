@@ -11,4 +11,6 @@ class EmbeddedTestLevel0b
     public $name;
     /** @EmbedOne(targetDocument="EmbeddedTestLevel1") */
     public $oneLevel1;
+    /** @EmbedMany(targetDocument="EmbeddedTestLevel1") */
+    public $level1 = array();
 }
