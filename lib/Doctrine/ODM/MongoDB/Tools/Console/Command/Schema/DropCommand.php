@@ -41,4 +41,14 @@ class DropCommand extends AbstractCommand
     {
         $sm->deleteIndexes();
     }
+    protected function processDocumentProxy(SchemaManager $sm, $document)
+    {
+        throw new \Exception("Cannot delete proxy files");
+    }
+
+    protected function processProxy(SchemaManager $sm)
+    {
+        throw new \Exception("Cannot delete proxy files");
+    }
+
 }

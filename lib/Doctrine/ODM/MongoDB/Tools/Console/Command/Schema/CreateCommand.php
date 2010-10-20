@@ -44,6 +44,16 @@ class CreateCommand extends AbstractCommand
         $sm->ensureIndexes();
     }
 
+    protected function processDocumentProxy(SchemaManager $sm, $document)
+    {
+        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses(array($this->getMetadataFactory()->getMetadataFor($document)));
+    }
+
+    protected function processProxy(SchemaManager $sm)
+    {
+        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($this->getMetadataFactory()->getAllMetadata());
+    }
+
     /**
      * Creation of schema should happen in direct order (dbs -> collections -> indexes)
      *
