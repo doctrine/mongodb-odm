@@ -490,7 +490,30 @@ class BasicDocumentPersister
                         // Single embedded
                         if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
                             // If we didn't have a value before and now we do
-                            if ( ! $old && $new) {
+
+                            /*
+                             * If the value is an array, we need to check to see if it has
+                             * at least one non-null value. If it contains only null values,
+                             * it's effectively empty and needs to be added new.
+                             */
+                            if (is_array($old))
+                            {
+                                $hasOldValue = false;
+                                foreach ($old as $oldVal)
+                                {
+                                    if ($oldVal !== null)
+                                    {
+                                        $hasOldValue = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                $hasOldValue = $old;
+                            }
+
+                            if ( ! $hasOldValue && $new) {
                                 $new = $this->prepareValue($mapping, $current);
                                 if (isset($new) || $mapping['nullable'] === true) {
                                     $result[$this->cmd . 'set'][$mapping['name']] = $new;
