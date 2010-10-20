@@ -15,13 +15,14 @@ abstract class AbstractCommand extends Command
     const DBS = 'db';
     const COLLECTIONS = 'collection';
     const INDEXES = 'index';
+    const PROXIES = 'proxy';
 
     /**
      * Dropping and Replacement of schema happens in reverse order (indexes <- collections <- dbs)
      *
      * @var array
      */
-    protected $availableOptions = array(self::INDEXES, self::COLLECTIONS, self::DBS);
+    protected $availableOptions = array(self::INDEXES, self::COLLECTIONS, self::DBS, self::PROXIES);
 
     protected $_commandName;
 
@@ -35,6 +36,7 @@ abstract class AbstractCommand extends Command
                 new Input\InputOption(self::DBS, null, Input\InputOption::PARAMETER_NONE, ''),
                 new Input\InputOption(self::COLLECTIONS, null, Input\InputOption::PARAMETER_NONE, ''),
                 new Input\InputOption(self::INDEXES, null, Input\InputOption::PARAMETER_NONE, ''),
+                new Input\InputOption(self::PROXIES, null, Input\InputOption::PARAMETER_NONE, ''),
             ))
         ;
     }
@@ -65,6 +67,8 @@ abstract class AbstractCommand extends Command
     abstract protected function processDb(SchemaManager $sm);
     abstract protected function processDocumentIndex(SchemaManager $sm, $document);
     abstract protected function processIndex(SchemaManager $sm);
+    abstract protected function processDocumentProxy(SchemaManager $sm, $document);
+    abstract protected function processProxy(SchemaManager $sm);
 
     /**
      * @return Doctrine\ODM\MongoDB\SchemaManager
