@@ -112,6 +112,8 @@ class Hydrator
                 $rawValue = isset($data[$mapping['name']]) ? $data[$mapping['name']] : null;
             }
             if ($rawValue === null) {
+                $data[$mapping['name']] = null;
+
                 continue;
             }
 
