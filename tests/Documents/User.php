@@ -22,7 +22,7 @@ class User extends BaseDocument
     /** @Date */
     protected $createdAt;
 
-    /** @EmbedOne(targetDocument="Address") */
+    /** @EmbedOne(targetDocument="Address", nullable=true) */
     protected $address;
 
     /** @ReferenceOne(targetDocument="Profile", cascade={"all"}) */
@@ -118,7 +118,7 @@ class User extends BaseDocument
 
     public function removeAddress()
     {
-        $this->adress = null;
+        $this->address = null;
     }
 
     public function setProfile(Profile $profile)

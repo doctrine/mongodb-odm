@@ -503,6 +503,11 @@ class BasicDocumentPersister
                                         $result[$cmd][$mapping['name'] . '.' . $key] = $value;
                                     }
                                 }
+                            // If we had an old value before and now we don't
+                            } elseif ($old && !$new) {
+                                if ($mapping['nullable'] === true) {
+                                    $result[$this->cmd . 'set'][$mapping['name']] = null;
+                                }
                             }
                         // $set all other fields
                         } else {
