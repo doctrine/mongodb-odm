@@ -116,6 +116,11 @@ class User extends BaseDocument
         $this->address = $address;
     }
 
+    public function removeAddress()
+    {
+        $this->adress = null;
+    }
+
     public function setProfile(Profile $profile)
     {
         $this->profile = $profile;

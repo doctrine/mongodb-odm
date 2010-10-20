@@ -41,7 +41,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0');
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $test->level1[0]);
-        
+
         $test->level1[0]->name = 'changed';
         $level1 = new EmbeddedTestLevel1();
         $level1->name = 'testing';
@@ -86,6 +86,30 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('id')->equals($user->getId())
             ->getSingleResult();
         $this->assertEquals($addressClone, $user->getAddress());
+    }
+
+    public function testRemoveOneEmbedded()
+    {
+        $address = new Address();
+        $address->setAddress('6512 Mercomatic Ct.');
+
+        $user = new User();
+        $user->setUsername('jwage');
+        $user->setAddress($address);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $user->removeAddress();
+        $this->assertNull($user->getAddress());
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->createQuery('Documents\User')
+            ->field('id')->equals($user->getId())
+            ->getSingleResult();
+        $this->assertNull($user->getAddress());
     }
 
     public function testManyEmbedded()
