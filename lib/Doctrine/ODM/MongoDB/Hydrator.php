@@ -124,6 +124,14 @@ class Hydrator
                     $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                     $embeddedMetadata = $this->dm->getClassMetadata($className);
                     $value = $embeddedMetadata->newInstance();
+
+                    // unset a potential discriminator map field (unless it's a persisted property)
+                    $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
+                    if (!isset($embeddedMetadata->fieldMappings[$discriminatorField]))
+                    {
+                        unset($embeddedDocument[$discriminatorField]);
+                    }
+
                     $this->hydrate($value, $embeddedDocument);
                     $data[$mapping['name']] = $embeddedDocument;
                     $this->dm->getUnitOfWork()->registerManaged($value, null, $embeddedDocument);
@@ -134,6 +142,14 @@ class Hydrator
                         $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                         $embeddedMetadata = $this->dm->getClassMetadata($className);
                         $embeddedDocumentObject = $embeddedMetadata->newInstance();
+
+                        // unset a potential discriminator map field (unless it's a persisted property)
+                        $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
+                        if (!isset($embeddedMetadata->fieldMappings[$discriminatorField]))
+                        {
+                            unset($embeddedDocument[$discriminatorField]);
+                        }
+
                         $this->hydrate($embeddedDocumentObject, $embeddedDocument);
                         $data[$mapping['name']][$key] = $embeddedDocument;
                         $this->dm->getUnitOfWork()->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
