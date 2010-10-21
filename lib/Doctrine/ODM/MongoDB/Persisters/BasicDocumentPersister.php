@@ -496,20 +496,15 @@ class BasicDocumentPersister
                              * at least one non-null value. If it contains only null values,
                              * it's effectively empty and needs to be added new.
                              */
-                            if (is_array($old))
-                            {
+                            if (is_array($old)) {
                                 $hasOldValue = false;
-                                foreach ($old as $oldVal)
-                                {
-                                    if ($oldVal !== null)
-                                    {
+                                foreach ($old as $oldVal) {
+                                    if ($oldVal !== null) {
                                         $hasOldValue = true;
                                         break;
                                     }
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 $hasOldValue = $old;
                             }
 
