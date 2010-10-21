@@ -617,6 +617,7 @@ class DocumentManager
             $discriminatorValues = $this->getDiscriminatorValues($classNames);
             $query[$discriminatorField] = array('$in' => $discriminatorValues);
         }
+
         return $this->getRepository($documentName)->find($query, $select);
     }
 
@@ -630,6 +631,15 @@ class DocumentManager
      */
     public function findOne($documentName, array $query = array(), array $select = array())
     {
+        if (is_array($documentName)) {
+            $classNames = $documentName;
+            $documentName = $classNames[0];
+
+            $discriminatorField = $this->getClassMetadata($documentName)->discriminatorField['name'];
+            $discriminatorValues = $this->getDiscriminatorValues($classNames);
+            $query[$discriminatorField] = array('$in' => $discriminatorValues);
+        }
+        
         return $this->getRepository($documentName)->findOne($query, $select);
     }
 
