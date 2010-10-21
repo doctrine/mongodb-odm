@@ -127,8 +127,7 @@ class Hydrator
 
                     // unset a potential discriminator map field (unless it's a persisted property)
                     $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
-                    if (!isset($embeddedMetadata->fieldMappings[$discriminatorField]))
-                    {
+                    if (!isset($embeddedMetadata->fieldMappings[$discriminatorField])) {
                         unset($embeddedDocument[$discriminatorField]);
                     }
 
@@ -145,8 +144,7 @@ class Hydrator
 
                         // unset a potential discriminator map field (unless it's a persisted property)
                         $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
-                        if (!isset($embeddedMetadata->fieldMappings[$discriminatorField]))
-                        {
+                        if (!isset($embeddedMetadata->fieldMappings[$discriminatorField])) {
                             unset($embeddedDocument[$discriminatorField]);
                         }
 
