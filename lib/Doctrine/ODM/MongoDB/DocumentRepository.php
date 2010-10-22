@@ -97,21 +97,28 @@ class DocumentRepository
             }
 
             return $this->dm->getUnitOfWork()->getDocumentPersister($this->documentName)->loadById($query);
-        } else {
-            return $this->dm->getUnitOfWork()->getDocumentPersister($this->documentName)->loadAll($query, $select);
         }
+
+        return $this->dm->getUnitOfWork()->getDocumentPersister($this->documentName)->loadAll($query, $select);
     }
 
     /**
      * Find a single document with the given query and select fields.
      *
-     * @param string $documentName The document to find.
-     * @param array $query The query criteria.
+     * @param mixed $query A single identifier or an array of criteria.
      * @param array $select The fields to select
      * @return object $document
      */
-    public function findOne(array $query = array(), array $select = array())
+    public function findOne($query = array(), array $select = array())
     {
+        if (is_scalar($query)) {
+            if ($document = $this->dm->getUnitOfWork()->tryGetById($query, $this->documentName)) {
+                return $document; // Hit!
+            }
+
+            return $this->dm->getUnitOfWork()->getDocumentPersister($this->documentName)->loadById($query);
+        }
+        
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->documentName)->load($query, $select);
     }
 
