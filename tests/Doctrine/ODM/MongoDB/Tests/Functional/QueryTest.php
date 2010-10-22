@@ -26,6 +26,21 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
     }
 
+    public function testPrepareWhereValue()
+    {
+        $q = $this->dm->createQuery('Documents\User')
+            ->field('profile.profileId')->equals(1);
+        $this->assertEquals(array('profile.$id' => new \MongoId(1)), $q->debug('query'));
+
+        $q = $this->dm->createQuery('Documents\User')
+            ->field('profile.$id')->equals(1);
+        $this->assertEquals(array('profile.$id' => new \MongoId(1)), $q->debug('query'));
+
+        $q = $this->dm->createQuery('Documents\User')
+            ->field('id')->equals(1);
+        $this->assertEquals(array('_id' => new \MongoId(1)), $q->debug('query'));
+    }
+
     public function testDistinct()
     {
         $user = new User();

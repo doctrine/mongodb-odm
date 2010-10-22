@@ -46,12 +46,12 @@ class CreateCommand extends AbstractCommand
 
     /**
      * Creation of schema should happen in direct order (dbs -> collections -> indexes)
-     * 
+     *
      * @param Input\InputInterface $input
      * @param Output\OutputInterface $output
      */
     protected function initialize(Input\InputInterface $input, Output\OutputInterface $output)
     {
-        $this->avaialbleOptions = array_reverse($this->avaialbleOptions);
+        $this->availableOptions = array_reverse($this->availableOptions);
     }
 }

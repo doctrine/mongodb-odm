@@ -1203,14 +1203,31 @@ class Query
      */
     private function prepareWhereValue(&$fieldName, $value)
     {
-        if ($fieldName === $this->class->identifier) {
-            $fieldName = '_id';
-            if (is_array($value)) {
-                foreach ($value as $k => $v) {
-                    $value[$k] = $this->class->getDatabaseIdentifierValue($v);
-                }
-            } else {
+        if (strpos($fieldName, '.') !== false) {
+            $e = explode('.', $fieldName);
+            if ($e[1] === '$id') {
+                $fieldName = $e[0] . '.$id';
                 $value = $this->class->getDatabaseIdentifierValue($value);
+            } elseif ($this->class->hasField($e[0])) {
+                $mapping = $this->class->getFieldMapping($e[0]);
+                if (isset($mapping['targetDocument'])) {
+                    $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+                    if ($targetClass->hasField($e[1]) && $targetClass->identifier === $e[1]) {
+                        $fieldName = $e[0] . '.$id';
+                        $value = $targetClass->getDatabaseIdentifierValue($value);
+                    }
+                }
+            }
+        } else {
+            if ($fieldName === $this->class->identifier) {
+                $fieldName = '_id';
+                if (is_array($value)) {
+                    foreach ($value as $k => $v) {
+                        $value[$k] = $this->class->getDatabaseIdentifierValue($v);
+                    }
+                } else {
+                    $value = $this->class->getDatabaseIdentifierValue($value);
+                }
             }
         }
         return $value;
