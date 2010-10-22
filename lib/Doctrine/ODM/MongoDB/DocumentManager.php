@@ -616,7 +616,7 @@ class DocumentManager
             $discriminatorField = $this->getClassMetadata($documentName)->discriminatorField['name'];
             $discriminatorValues = $this->getDiscriminatorValues($classNames);
 
-            if(is_scalar($query)) {
+            if (is_scalar($query)) {
                 $query = array('_id' => $this->getRepository($documentName)->getClassMetadata()->getDatabaseIdentifierValue($query));
             }
 
@@ -643,7 +643,7 @@ class DocumentManager
             $discriminatorField = $this->getClassMetadata($documentName)->discriminatorField['name'];
             $discriminatorValues = $this->getDiscriminatorValues($classNames);
 
-            if(is_scalar($query)) {
+            if (is_scalar($query)) {
                 $query = array('_id' => $this->getRepository($documentName)->getClassMetadata()->getDatabaseIdentifierValue($query));
             }
 
