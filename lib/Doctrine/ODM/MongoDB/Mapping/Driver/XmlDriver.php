@@ -174,39 +174,35 @@ class XmlDriver extends AbstractFileDriver
         $class->mapField($mapping);
     }
 
-    private function addEmbedMapping(ClassMetadata $class, $embed, $type)
+    private function addDocumentMapping(ClassMetadata $class, $document, $type, $embedRef)
     {
-        $cascade = array_keys((array) $embed->cascade);
+        $cascade = array_keys((array) $document->cascade);
         if (1 === count($cascade)) {
             $cascade = current($cascade) ?: next($cascade);
         }
-        $attributes = $embed->attributes();
+        $attributes = $document->attributes();
         $mapping = array(
-            'type'           => $type,
-            'embedded'       => true,
-            'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
-            'name'           => (string) $attributes['field'],
-            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushPull',
+            'cascade'            => $cascade,
+            'type'               => $type,
+            'embedded'           => ($embedRef == 'embedded') ? true : null,
+            'reference'          => ($embedRef == 'reference') ? true : null,
+            'targetDocument'     => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
+            'name'               => (string) $attributes['field'],
+            'strategy'           => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushPull',
+            'discriminatorField' => isset($attributes['discriminator-field']) ? (string) $attributes['discriminator-field'] : null,
+            'discriminatorMap'   => $this->getDiscriminatorMap($document),
         );
         $this->addFieldMapping($class, $mapping);
     }
 
+    private function addEmbedMapping(ClassMetadata $class, $embed, $type)
+    {
+        $this->addDocumentMapping($class, $embed, $type, 'embedded');
+    }
+
     private function addReferenceMapping(ClassMetadata $class, $reference, $type)
     {
-        $cascade = array_keys((array) $reference->cascade);
-        if (1 === count($cascade)) {
-            $cascade = current($cascade) ?: next($cascade);
-        }
-        $attributes = $reference->attributes();
-        $mapping = array(
-            'cascade'        => $cascade,
-            'type'           => $type,
-            'reference'      => true,
-            'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
-            'name'           => (string) $attributes['field'],
-            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushPull',
-        );
-        $this->addFieldMapping($class, $mapping);
+        $this->addDocumentMapping($class, $reference, $type, 'reference');
     }
 
     private function addIndex(ClassMetadata $class, SimpleXmlElement $xmlIndex)
@@ -261,5 +257,18 @@ class XmlDriver extends AbstractFileDriver
         }
 
         return $result;
+    }
+
+    private function getDiscriminatorMap($xml)
+    {
+        $map = null;
+        if (isset($xml->{'discriminator-map'})) {
+            $map = array();
+            foreach ($xml->{'discriminator-map'}->{'discriminator-mapping'} AS $discrMapElement) {
+                $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
+            }
+        }
+
+        return $map;
     }
 }
