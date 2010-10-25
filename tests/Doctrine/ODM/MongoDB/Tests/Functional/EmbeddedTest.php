@@ -204,4 +204,34 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($level2->preRemove, 'the removed embedded document executed the PreRemove lifecycle callback');
         $this->assertTrue($level2->postRemove, 'the removed embedded document executed the PostRemove lifecycle callback');
     }
+
+    public function testEmbeddedLoadEvents()
+    {
+        // create a test document
+        $test = new EmbeddedTestLevel0b();
+        $test->name = 'embedded test';
+
+        $level1 = new EmbeddedTestLevel1();
+        $level1->name = 'test level1 #1';
+        $test->oneLevel1 = $level1;
+
+        $level2 = new EmbeddedTestLevel2();
+        $level2->name = 'test level2 #1';
+        $level1->level2[] = $level2;
+
+        $this->dm->persist($test);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->createQuery(get_class($test))
+            ->field('id')->equals($test->id)
+            ->getSingleResult();
+        $level1 = $test->oneLevel1;
+        $level2 = $level1->level2[0];
+
+        $this->assertTrue($level1->preLoad);
+        $this->assertTrue($level1->postLoad);
+        $this->assertTrue($level2->preLoad);
+        $this->assertTrue($level2->postLoad);
+    }
 }

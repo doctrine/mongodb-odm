@@ -13,6 +13,8 @@ class EmbeddedTestLevel2
 
     public $preRemove = false;
     public $postRemove = false;
+    public $preLoad = false;
+    public $postLoad = false;
 
     /** @PreRemove */
     public function onPreRemove()
@@ -24,5 +26,17 @@ class EmbeddedTestLevel2
     public function onPostRemove()
     {
         $this->postRemove = true;
+    }
+
+    /** @PreLoad */
+    public function onPreLoad()
+    {
+        $this->preLoad = true;
+    }
+
+    /** @PostLoad */
+    public function onPostLoad()
+    {
+        $this->postLoad = true;
     }
 }
