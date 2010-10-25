@@ -136,7 +136,7 @@ class Hydrator
                     $this->dm->getUnitOfWork()->registerManaged($value, null, $embeddedDocument);
                 } elseif ($mapping['type'] === 'many') {
                     $embeddedDocuments = $rawValue;
-                    $coll = new PersistentCollection(new ArrayCollection());
+                    $coll = new PersistentCollection(new ArrayCollection(), $this->dm);
                     foreach ($embeddedDocuments as $key => $embeddedDocument) {
                         $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                         $embeddedMetadata = $this->dm->getClassMetadata($className);

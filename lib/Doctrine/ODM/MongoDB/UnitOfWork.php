@@ -177,6 +177,13 @@ class UnitOfWork implements PropertyChangedListener
     private $evm;
 
     /**
+     * Embedded documents that are scheduled for removal.
+     *
+     * @var array
+     */
+    private $embeddedRemovals = array();
+
+    /**
      * The Hydrator used for hydrating array Mongo documents to Doctrine object documents.
      *
      * @var string
@@ -248,8 +255,15 @@ class UnitOfWork implements PropertyChangedListener
 
         if ( ! ($this->documentInsertions ||
                 $this->documentDeletions ||
-                $this->documentUpdates)) {
+                $this->documentUpdates ||
+                $this->embeddedRemovals)) {
             return; // Nothing to do.
+        }
+
+        if ($this->embeddedRemovals) {
+            foreach ($this->embeddedRemovals as $removal) {
+                $this->remove($removal);
+            }
         }
 
         // Raise onFlush
@@ -262,9 +276,15 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($this->documentInsertions) {
             foreach ($commitOrder as $class) {
+                if ($class->isEmbeddedDocument) {
+                    continue;
+                }
                 $this->executeInserts($class, $options);
             }
             foreach ($commitOrder as $class) {
+                if ($class->isEmbeddedDocument) {
+                    continue;
+                }
                 $this->executeReferenceUpdates($class, $options);
             }
         }
@@ -293,7 +313,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->documentDeletions =
         $this->documentChangeSets =
         $this->visitedCollections =
-        $this->scheduledForDirtyCheck = array();
+        $this->scheduledForDirtyCheck =
+        $this->embeddedRemovals = array();
     }
 
     /**
@@ -356,11 +377,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // Inject PersistentCollection
-                if ($class->isCollectionValuedReference($name)) {
-                    $value = new PersistentCollection($value, $this->dm);
-                } else {
-                    $value = new PersistentCollection($value);
-                }
+                $value = new PersistentCollection($value, $this->dm);
                 $value->setOwner($document, $mapping);
                 $value->setDirty( ! $value->isEmpty());
                 $class->reflFields[$name]->setValue($document, $value);
@@ -452,6 +469,9 @@ class UnitOfWork implements PropertyChangedListener
                     if (is_object($orgValue)) {
                         $embeddedOid = spl_object_hash($orgValue);
                         $orgValue = isset($this->originalDocumentData[$embeddedOid]) ? $this->originalDocumentData[$embeddedOid] : $orgValue;
+                        if ($orgValue !== null) {
+                            $this->scheduleEmbeddedRemoval($orgValue);
+                        }
                     }
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
@@ -579,14 +599,14 @@ class UnitOfWork implements PropertyChangedListener
                     $this->computeChangeSet($parentDocument, $targetClass, $entry);
                 } else if ($state == self::STATE_REMOVED) {
                     return new \InvalidArgumentException("Removed document detected during flush: "
-                            . self::objToStr($removedDocument).". Remove deleted entities from associations.");
+                            . self::objToStr($removedDocument).". Remove deleted documents from associations.");
                 } else if ($state == self::STATE_DETACHED) {
                     // Can actually not happen right now as we assume STATE_NEW,
                     // so the exception will be raised from the DBAL layer (constraint violation).
                     throw new \InvalidArgumentException("A detached document was found through a "
                             . "relationship during cascading a persist operation.");
                 }
-                // MANAGED associated entities are already taken into account
+                // MANAGED associated documents are already taken into account
                 // during changeset calculation anyway, since they are in the identity map.
             }
         }
@@ -910,7 +930,9 @@ class UnitOfWork implements PropertyChangedListener
         $collection = $this->dm->getDocumentCollection($className);
         foreach ($this->documentDeletions as $oid => $document) {
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
-                $persister->delete($document, $options);
+                if ( ! $class->isEmbeddedDocument) {
+                    $persister->delete($document, $options);
+                }
                 unset(
                     $this->documentDeletions[$oid],
                     $this->documentIdentifiers[$oid],
@@ -964,7 +986,7 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($newNodes as $class) {
             $this->addDependencies($class, $calc);
         }
-
+        return $calc->getCommitOrder();
         $classes = $calc->getCommitOrder();
         foreach ($classes as $key => $class) {
             if ($class->isEmbeddedDocument) {
@@ -1242,7 +1264,9 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($document);
         $classMetadata = $this->dm->getClassMetadata(get_class($document));
         $id = $this->documentIdentifiers[$oid];
-        $id = $classMetadata->getPHPIdentifierValue($id);
+        if ( ! $classMetadata->isEmbeddedDocument) {
+            $id = $classMetadata->getPHPIdentifierValue($id);
+        }
         if ($id === '') {
             throw new \InvalidArgumentException("The given document has no identity.");
         }
@@ -1312,7 +1336,9 @@ class UnitOfWork implements PropertyChangedListener
         }
         $classMetadata = $this->dm->getClassMetadata(get_class($document));
         $id = $this->documentIdentifiers[$oid];
-        $id = $classMetadata->getPHPIdentifierValue($id);
+        if ( ! $classMetadata->isEmbeddedDocument) {
+            $id = $classMetadata->getPHPIdentifierValue($id);
+        }
         if ($id === '') {
             return false;
         }
@@ -1970,10 +1996,25 @@ class UnitOfWork implements PropertyChangedListener
         $this->scheduledForDirtyCheck =
         $this->documentInsertions =
         $this->documentUpdates =
-        $this->documentDeletions = array();
+        $this->documentDeletions =
+        $this->embeddedRemovals = array();
         if ($this->commitOrderCalculator !== null) {
             $this->commitOrderCalculator->clear();
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Schedules an embedded document for removal. The remove() operation will be
+     * invoked on that document at the beginning of the next commit of this
+     * UnitOfWork.
+     *
+     * @ignore
+     * @param object $document
+     */
+    public function scheduleEmbeddedRemoval($document)
+    {
+        $this->embeddedRemovals[spl_object_hash($document)] = $document;
     }
 
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)

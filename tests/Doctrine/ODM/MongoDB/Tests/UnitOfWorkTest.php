@@ -141,8 +141,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($itemPersister->getInserts()));
         $persister->reset();
         $itemPersister->reset();
-    
-    
+
         $entity->getItems()->removeElement($item);
         $item->setOwner(null);
         $this->assertTrue($entity->getItems()->isDirty());

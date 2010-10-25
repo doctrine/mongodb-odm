@@ -89,13 +89,11 @@ class PersistentCollection implements Collection
      */
     private $references = array();
 
-    public function __construct(Collection $coll, DocumentManager $dm = null)
+    public function __construct(Collection $coll, DocumentManager $dm)
     {
         $this->coll = $coll;
-        if ($dm !== null) {
-            $this->dm = $dm;
-            $this->cmd = $dm->getConfiguration()->getMongoCmd();
-        }
+        $this->dm = $dm;
+        $this->cmd = $dm->getConfiguration()->getMongoCmd();
     }
 
     /**
@@ -312,6 +310,13 @@ class PersistentCollection implements Collection
     {
         $this->initialize();
         $removed = $this->coll->remove($key);
+        if ($removed) {
+            $this->changed();
+            if ($this->mapping !== null && isset($this->mapping['embedded'])) {
+                $this->dm->getUnitOfWork()->scheduleEmbeddedRemoval($removed);
+            }
+        }
+
         return $removed;
     }
 
@@ -321,11 +326,15 @@ class PersistentCollection implements Collection
     public function removeElement($element)
     {
         $this->initialize();
-        $result = $this->coll->removeElement($element);
-        $this->changed();
-        return $result;
+        $removed = $this->coll->removeElement($element);
+        if ($removed) {
+            $this->changed();
+            if ($this->mapping !== null && isset($this->mapping['embedded'])) {
+                $this->dm->getUnitOfWork()->scheduleEmbeddedRemoval($element);
+            }
+        }
+        return $removed;
     }
-
     /**
      * {@inheritdoc}
      */
@@ -484,9 +493,18 @@ class PersistentCollection implements Collection
      */
     public function clear()
     {
-        $this->initialize();
+        if ($this->initialized && $this->isEmpty()) {
+            return;
+        }
+        if ($this->mapping !== null && isset($this->mapping['embedded'])) {
+            foreach ($this->coll as $element) {
+                $this->dm->getUnitOfWork()->scheduleEmbeddedRemoval($element);
+            }
+        }
         $this->coll->clear();
-     }
+        $this->changed();
+        $this->takeSnapshot();
+    }
 
     /**
      * {@inheritdoc}
