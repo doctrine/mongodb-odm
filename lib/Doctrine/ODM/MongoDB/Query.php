@@ -151,6 +151,11 @@ class Query
         $this->query = $query;
     }
 
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
     /**
      * Whether or not to hydrate the data into objects or to return the raw results
      * from mongo.
@@ -937,6 +942,25 @@ class Query
     public function pullAll(array $valueArray)
     {
         $this->newObj[$this->cmd . 'pullAll'][$this->currentField] = $valueArray;
+        return $this;
+    }
+
+    /**
+     * Adds an "or" expression to the current query.
+     *
+     * You can create the expression using another query object:
+     *
+     *     $this->createQuery()
+     *         ->addOr($this->createQuery()->field('first_name')->equals('Kris')->getQuery())
+     *         ->addOr($this->createQuery()->field('first_name')->equals('Chris')->getQuery())
+     *         ->execute();
+     *
+     * @param array $expression
+     * @return Query
+     */
+    public function addOr(array $expression)
+    {
+        $this->query[$this->cmd . 'or'][] = $expression;
         return $this;
     }
 
