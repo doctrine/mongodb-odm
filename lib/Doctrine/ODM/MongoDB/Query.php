@@ -393,10 +393,9 @@ class Query
      * Add element match to query.
      *
      * @param string $value
-     * @param array $options
      * @return Query
      */
-    public function elemMatch($value, array $options = array())
+    public function elemMatch($value)
     {
         $e = explode('.', $this->currentField);
         $fieldName = array_pop($e);
