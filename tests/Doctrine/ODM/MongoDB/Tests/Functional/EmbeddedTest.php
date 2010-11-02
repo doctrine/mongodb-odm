@@ -165,6 +165,47 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($level1->postRemove, 'the removed embedded document executed the PostRemove lifecycle callback');
     }
 
+    public function testRemoveEmbeddedManyDocument()
+    {
+        // create a test document
+        $test = new EmbeddedTestLevel0b();
+        $test->name = 'embedded test';
+
+        // embed one level1 in test
+        $level1 = new EmbeddedTestLevel1();
+        $level1->name = 'test level1 #1';
+        $test->level1[] = $level1;
+
+        // persist test
+        $this->dm->persist($test);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // retrieve test
+        $test = $this->dm->createQuery(get_class($test))
+            ->field('id')->equals($test->id)
+            ->getSingleResult();
+
+        // $test->level1[0] is available
+        $this->assertEquals('test level1 #1', $test->level1[0]->name);
+
+        // remove all level1 from test
+        $test->level1->clear();
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // verify that test has no more level1
+        $this->assertEquals(0, $test->level1->count());
+
+        // retrieve test
+        $test = $this->dm->createQuery(get_class($test))
+            ->field('id')->equals($test->id)
+            ->getSingleResult();
+
+        // verify that test has no more level1
+        $this->assertEquals(0, $test->level1->count());
+    }
+
     public function testRemoveDeepEmbeddedManyDocument()
     {
         // create a test document
@@ -200,6 +241,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $level1->level2->clear();
         $this->dm->flush();
         $this->dm->clear();
+
+        // verify that level1 has no more level2
+        $this->assertEquals(0, $level1->level2->count());
 
         // retrieve test
         $test = $this->dm->createQuery(get_class($test))
