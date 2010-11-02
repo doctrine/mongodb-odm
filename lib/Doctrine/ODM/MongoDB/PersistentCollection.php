@@ -501,9 +501,9 @@ class PersistentCollection implements Collection
                 $this->dm->getUnitOfWork()->scheduleEmbeddedRemoval($element);
             }
         }
+        $this->takeSnapshot();
         $this->coll->clear();
         $this->changed();
-        $this->takeSnapshot();
     }
 
     /**
