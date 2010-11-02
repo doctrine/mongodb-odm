@@ -165,6 +165,52 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($level1->postRemove, 'the removed embedded document executed the PostRemove lifecycle callback');
     }
 
+    public function testRemoveDeepEmbeddedManyDocument()
+    {
+        // create a test document
+        $test = new EmbeddedTestLevel0b();
+        $test->name = 'embedded test';
+
+        // embed one level1 in test
+        $level1 = new EmbeddedTestLevel1();
+        $level1->name = 'test level1 #1';
+        $test->oneLevel1 = $level1;
+
+        // embed one level2 in level1
+        $level2 = new EmbeddedTestLevel2();
+        $level2->name = 'test level2 #1';
+        $level1->level2[] = $level2;
+
+        // persist test
+        $this->dm->persist($test);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // retrieve test
+        $test = $this->dm->createQuery(get_class($test))
+            ->field('id')->equals($test->id)
+            ->getSingleResult();
+        $level1 = $test->oneLevel1;
+        $level2 = $level1->level2[0];
+
+        // $test->oneLevel1->level2[0] is available
+        $this->assertEquals('test level2 #1', $level2->name);
+
+        // remove all level2 from level1
+        $level1->level2->clear();
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // retrieve test
+        $test = $this->dm->createQuery(get_class($test))
+            ->field('id')->equals($test->id)
+            ->getSingleResult();
+        $level1 = $test->oneLevel1;
+
+        // verify that level1 has no more level2
+        $this->assertEquals(0, $level1->level2->count());
+    }
+
     public function testPostRemoveEventOnDeepEmbeddedManyDocument()
     {
         // create a test document
