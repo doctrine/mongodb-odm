@@ -77,7 +77,7 @@ class Query
     /** Pass snapshot to cursor */
     private $snapshot = false;
 
-    /** Pass slaveOkaye to cursor */
+    /** Pass slaveOkay to cursor */
     private $slaveOkay = false;
 
     /** Whether or not to try and hydrate the returned data */

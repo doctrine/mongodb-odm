@@ -169,7 +169,7 @@ class PersistentCollection implements Collection
     }
 
     /**
-     * Gets a boolean flag indicating whether this colleciton is dirty which means
+     * Gets a boolean flag indicating whether this collection is dirty which means
      * its state needs to be synchronized with the database.
      *
      * @return boolean TRUE if the collection is dirty, FALSE otherwise.

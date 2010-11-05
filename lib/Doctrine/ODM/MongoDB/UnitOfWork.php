@@ -971,7 +971,7 @@ class UnitOfWork implements PropertyChangedListener
         $calc = $this->getCommitOrderCalculator();
 
         // See if there are any new classes in the changeset, that are not in the
-        // commit order graph yet (dont have a node).
+        // commit order graph yet (dontt have a node).
         $newNodes = array();
         foreach ($documentChangeSet as $oid => $document) {
             $className = get_class($document);

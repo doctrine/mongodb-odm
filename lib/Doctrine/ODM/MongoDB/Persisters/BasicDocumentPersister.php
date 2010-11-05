@@ -77,7 +77,7 @@ class BasicDocumentPersister
     private $documentName;
 
     /**
-     * Array of quered inserts for the persister to insert.
+     * Array of queued inserts for the persister to insert.
      *
      * @var array
      */
@@ -312,7 +312,7 @@ class BasicDocumentPersister
     }
 
     /**
-     * Lood document by its identifier.
+     * Load document by its identifier.
      *
      * @param string $id
      * @return object|null
