@@ -146,11 +146,21 @@ class Query
         return $this->type;
     }
 
+    /**
+     * Sets the current query array.
+     *
+     * @param array $query A query array
+     */
     public function setQuery($query)
     {
         $this->query = $query;
     }
 
+    /**
+     * Returns the current query array.
+     *
+     * @return array The query array
+     */
     public function getQuery()
     {
         return $this->query;
@@ -951,8 +961,10 @@ class Query
      * You can create the expression using another query object:
      *
      *     $this->createQuery()
-     *         ->addOr($this->createQuery()->field('first_name')->equals('Kris')->getQuery())
-     *         ->addOr($this->createQuery()->field('first_name')->equals('Chris')->getQuery())
+     *         ->addOr($this->createQuery()
+     *             ->field('first_name')->equals('Kris')->getQuery())
+     *         ->addOr($this->createQuery()
+     *             ->field('first_name')->equals('Chris')->getQuery())
      *         ->execute();
      *
      * @param array $expression
