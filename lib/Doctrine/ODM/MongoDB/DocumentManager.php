@@ -151,7 +151,7 @@ class DocumentManager
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }
         $this->queryParser = new Parser($this);
-        $this->unitOfWork = new UnitOfWork($this);
+        $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydrator);
         $this->schemaManager = new SchemaManager($this);
         $this->proxyFactory = new ProxyFactory($this,
                 $this->config->getProxyDir(),

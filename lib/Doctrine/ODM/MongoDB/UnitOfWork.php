@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
+    Doctrine\Common\EventManager,
     Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
@@ -201,12 +202,14 @@ class UnitOfWork implements PropertyChangedListener
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
      *
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param Doctrine\Common\EventManager $evm
+     * @param Doctrine\ODM\MongoDB\Hydrator $h
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, EventManager $evm, Hydrator $h)
     {
         $this->dm = $dm;
-        $this->evm = $dm->getEventManager();
-        $this->hydrator = $dm->getHydrator();
+        $this->evm = $evm;
+        $this->hydrator = $h;
     }
 
     /**

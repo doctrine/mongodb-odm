@@ -23,22 +23,22 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->_dmMock = DocumentManagerMock::create(new MongoMock());
         $this->_unitOfWork = $this->_dmMock->getUnitOfWork();
     }
-    
+
     protected function tearDown() {
     }
-    
+
     public function testRegisterRemovedOnNewEntityIsIgnored()
     {
         $user = new ForumUser();
         $user->username = 'romanb';
         $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));
         $this->_unitOfWork->scheduleForDelete($user);
-        $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));        
+        $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));
     }
-    
-    
+
+
     /* Operational tests */
-    
+
     public function testSavingSingleEntityWithIdentityColumnForcesInsert()
     {
         // Setup fake persister and id generator for identity generation
@@ -49,30 +49,30 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $user = new ForumUser();
         $user->username = 'romanb';
         $this->_unitOfWork->persist($user);
-    
+
         // Check
         $this->assertEquals(0, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
-        $this->assertEquals(0, count($userPersister->getDeletes()));   
+        $this->assertEquals(0, count($userPersister->getDeletes()));
         $this->assertFalse($this->_unitOfWork->isInIdentityMap($user));
         // should no longer be scheduled for insert
         $this->assertTrue($this->_unitOfWork->isScheduledForInsert($user));
-    
+
         // Now lets check whether a subsequent commit() does anything
         $userPersister->reset();
-    
+
         // Test
         $this->_unitOfWork->commit();
-    
+
         // Check.
         $this->assertEquals(1, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
         $this->assertEquals(0, count($userPersister->getDeletes()));
-    
+
         // should have an id
         $this->assertTrue(is_numeric($user->id));
     }
-    
+
     /**
      * Tests a scenario where a save() operation is cascaded from a ForumUser
      * to its associated ForumAvatar, both entities using IDENTITY id generation.
@@ -93,50 +93,50 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $avatar = new ForumAvatar();
         $user->avatar = $avatar;
         $this->_unitOfWork->persist($user); // save cascaded to avatar
-    
+
         $this->_unitOfWork->commit();
-    
+
         $this->assertTrue(is_numeric($user->id));
         $this->assertTrue(is_numeric($avatar->id));
-    
+
         $this->assertEquals(1, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
         $this->assertEquals(0, count($userPersister->getDeletes()));
-    
+
         $this->assertEquals(1, count($avatarPersister->getInserts()));
         $this->assertEquals(0, count($avatarPersister->getUpdates()));
         $this->assertEquals(0, count($avatarPersister->getDeletes()));
     }
-    
+
     public function testChangeTrackingNotify()
     {
         $persister = new DocumentPersisterMock($this->_dmMock, $this->_dmMock->getClassMetadata("Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument"));
         $this->_unitOfWork->setDocumentPersister('Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument', $persister);
         $itemPersister = new DocumentPersisterMock($this->_dmMock, $this->_dmMock->getClassMetadata("Doctrine\ODM\MongoDB\Tests\NotifyChangedRelatedItem"));
         $this->_unitOfWork->setDocumentPersister('Doctrine\ODM\MongoDB\Tests\NotifyChangedRelatedItem', $itemPersister);
-    
+
         $entity = new NotifyChangedDocument;
         $entity->setData('thedata');
         $this->_unitOfWork->persist($entity);
-    
+
         $this->_unitOfWork->commit();
         $this->assertEquals(1, count($persister->getInserts()));
         $persister->reset();
-    
+
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
-    
+
         $entity->setData('newdata');
         $entity->setTransient('newtransientvalue');
-    
+
         $this->assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity));
-    
+
         $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->_unitOfWork->getDocumentChangeSet($entity));
-    
+
         $item = new NotifyChangedRelatedItem();
         $entity->getItems()->add($item);
         $item->setOwner($entity);
         $this->_unitOfWork->persist($item);
-    
+
         $this->_unitOfWork->commit();
         $this->assertEquals(1, count($itemPersister->getInserts()));
         $persister->reset();
@@ -150,20 +150,20 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($updates));
         $this->assertTrue($updates[0] === $item);
     }
-    
+
     public function testGetDocumentStateWithAssignedIdentity()
     {
         $persister = new DocumentPersisterMock($this->_dmMock, $this->_dmMock->getClassMetadata("Documents\CmsPhonenumber"));
         $this->_unitOfWork->setDocumentPersister('Documents\CmsPhonenumber', $persister);
-    
+
         $ph = new \Documents\CmsPhonenumber();
         $ph->phonenumber = '12345';
-    
+
         $this->assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getDocumentState($ph));
         $this->assertTrue($persister->isExistsCalled());
-    
+
         $persister->reset();
-    
+
         // if the document is already managed the exists() check should be skipped
         $this->_unitOfWork->registerManaged($ph, '12345', array());
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getDocumentState($ph));
@@ -192,7 +192,33 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     protected function getUnitOfWork(DocumentManager $dm)
     {
-        return new UnitOfWork($dm);
+        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydrator());
+    }
+
+    /**
+     * Gets mock Hydrator instance
+     *
+     * @return Doctrine\ODM\MongoDB\Hydrator
+     */
+    private function getMockHydrator()
+    {
+        return $this->getMockBuilder('Doctrine\ODM\MongoDB\Hydrator')
+            ->disableOriginalClone()
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * Gets mock EventManager instance
+     *
+     * @return Doctrine\Common\EventManager
+     */
+    private function getMockEventManager()
+    {
+        return $this->getMockBuilder('Doctrine\Common\EventManager')
+            ->disableOriginalClone()
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     protected function getClassMetadata($class, $flag)
