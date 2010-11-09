@@ -19,7 +19,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function setUp()
     {
         $this->dm = $this->getDocumentManager();
-        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm));
+        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm, $this->dm->getMetadataFactory()));
     }
 
     public function tearDown()
@@ -88,7 +88,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($metadatas));
 
         $this->dm->setMetadataFactory($metadataFactory);
-        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm));
+        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm, $metadataFactory));
 
         $this->dm->getSchemaManager()->deleteIndexes();
     }
@@ -146,7 +146,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($metadatas));
 
         $this->dm->setMetadataFactory($metadataFactory);
-        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm));
+        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm, $metadataFactory));
 
         $this->dm->getSchemaManager()->createCollections();
     }
@@ -177,7 +177,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($metadatas));
 
         $this->dm->setMetadataFactory($metadataFactory);
-        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm));
+        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm, $metadataFactory));
 
         $this->dm->getSchemaManager()->dropCollections();
     }
@@ -247,7 +247,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($metadatas));
 
         $this->dm->setMetadataFactory($metadataFactory);
-        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm));
+        $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm, $metadataFactory));
 
         $this->dm->getSchemaManager()->dropDatabases();
     }

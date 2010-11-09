@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+
 use InvalidArgumentException;
 
 class SchemaManager
@@ -37,10 +39,10 @@ class SchemaManager
     /**
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {
         $this->dm = $dm;
-        $this->metadataFactory = $dm->getMetadataFactory();
+        $this->metadataFactory = $cmf;
     }
 
     /**

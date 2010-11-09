@@ -152,7 +152,7 @@ class DocumentManager
         }
         $this->queryParser = new Parser($this);
         $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydrator);
-        $this->schemaManager = new SchemaManager($this);
+        $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory = new ProxyFactory($this,
                 $this->config->getProxyDir(),
                 $this->config->getProxyNamespace(),
