@@ -333,7 +333,7 @@ class DocumentManager
      */
     public function createQuery($documentName = null)
     {
-        return new Query($this, $documentName);
+        return new Query($this, $this->hydrator, $this->config->getMongoCmd(), $documentName);
     }
 
     /**

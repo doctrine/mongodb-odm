@@ -113,7 +113,7 @@ class Parser
     {
         $this->lexer->moveNext();
 
-        $query = new Query($this->dm);
+        $query = new Query($this->dm, $this->dm->getHydrator(), $this->dm->getConfiguration()->getMongoCmd());
 
         switch ($this->lexer->lookahead['type']) {
             case Lexer::T_FIND:

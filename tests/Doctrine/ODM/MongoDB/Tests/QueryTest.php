@@ -17,28 +17,24 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $dm = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\DocumentManager')
             ->disableOriginalConstructor()
             ->getMock();
-        $config = $this->getMock('Doctrine\\ODM\\MongoDB\\Configuration');
-        $cursor = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\MongoCursor')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $dm
-            ->expects($this->once())
-            ->method('getConfiguration')
-            ->will($this->returnValue($config));
-        $config
-            ->expects($this->once())
-            ->method('getMongoCmd')
-            ->will($this->returnValue('$'));
         $dm
             ->expects($this->once())
             ->method('find')
             ->with($class, array(
                 '$or' => array($expression1, $expression2),
             ))
-            ->will($this->returnValue($cursor));
+            ->will($this->returnValue(
+                $cursor = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\MongoCursor')
+                    ->disableOriginalConstructor()
+                    ->getMock()
+            ));
 
-        $query = new Query($dm, $class);
+        $hydrator = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\Hydrator')
+            ->disableOriginalConstructor()
+            ->disableOriginalClone()
+            ->getMock();
+
+        $query = new Query($dm, $hydrator, '$', $class);
         $query->addOr($expression1);
         $query->addOr($expression2);
 

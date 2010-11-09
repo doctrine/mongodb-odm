@@ -116,11 +116,11 @@ class Query
      * @param DocumentManager $dm
      * @param string $className
      */
-    public function __construct(DocumentManager $dm, $className = null)
+    public function __construct(DocumentManager $dm, Hydrator $h, $cmd, $className = null)
     {
         $this->dm = $dm;
-        $this->hydrator = $dm->getHydrator();
-        $this->cmd = $dm->getConfiguration()->getMongoCmd();
+        $this->hydrator = $h;
+        $this->cmd = $cmd;
         if ($className !== null) {
             $this->find($className);
         }
