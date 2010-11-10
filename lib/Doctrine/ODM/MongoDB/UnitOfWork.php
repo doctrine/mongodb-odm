@@ -380,7 +380,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // Inject PersistentCollection
-                $value = new PersistentCollection($value, $this->dm);
+                $value = new PersistentCollection($value, $this->dm, $this->dm->getConfiguration());
                 $value->setOwner($document, $mapping);
                 $value->setDirty( ! $value->isEmpty());
                 $class->reflFields[$name]->setValue($document, $value);
@@ -1662,7 +1662,7 @@ class UnitOfWork implements PropertyChangedListener
                         }
 
                         if ( ! $mergeCol instanceof PersistentCollection) {
-                            $mergeCol = new PersistentCollection($mergeCol, $this->dm);
+                            $mergeCol = new PersistentCollection($mergeCol, $this->dm, $this->dm->getConfiguration());
                             $mergeCol->setOwner($managedCopy, $assoc2);
                             $mergeCol->setInitialized(true);
                         }

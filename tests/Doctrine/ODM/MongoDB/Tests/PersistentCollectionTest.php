@@ -25,10 +25,7 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
             ->method('getMongoCmd')
             ->will($this->returnValue('$'));
         $dm = $this->getDocumentManagerMock();
-        $dm->expects($this->once())
-            ->method('getConfiguration')
-            ->will($this->returnValue($configuration));
-        $pCollection = new PersistentCollection($collection, $dm);
+        $pCollection = new PersistentCollection($collection, $dm, $configuration);
         $pCollection->slice($start, $limit);
     }
 

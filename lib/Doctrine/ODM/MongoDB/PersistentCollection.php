@@ -57,14 +57,14 @@ class PersistentCollection implements Collection
 
     /**
      * Whether the collection has already been initialized.
-     * 
+     *
      * @var boolean
      */
     private $initialized = true;
-    
+
     /**
      * The wrapped Collection instance.
-     * 
+     *
      * @var Collection
      */
     private $coll;
@@ -89,11 +89,11 @@ class PersistentCollection implements Collection
      */
     private $references = array();
 
-    public function __construct(Collection $coll, DocumentManager $dm)
+    public function __construct(Collection $coll, DocumentManager $dm, Configuration $c)
     {
         $this->coll = $coll;
         $this->dm = $dm;
-        $this->cmd = $dm->getConfiguration()->getMongoCmd();
+        $this->cmd = $c->getMongoCmd();
     }
 
     /**
@@ -271,14 +271,14 @@ class PersistentCollection implements Collection
 
     /**
      * Sets the initialized flag of the collection, forcing it into that state.
-     * 
+     *
      * @param boolean $bool
      */
     public function setInitialized($bool)
     {
         $this->initialized = $bool;
     }
-    
+
     /**
      * Checks whether this collection has been initialized.
      *
@@ -433,7 +433,7 @@ class PersistentCollection implements Collection
     {
         return $this->coll->count() === 0 ? true : false;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -460,7 +460,7 @@ class PersistentCollection implements Collection
         $this->initialize();
         return $this->coll->filter($p);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -478,7 +478,7 @@ class PersistentCollection implements Collection
         $this->initialize();
         return $this->coll->partition($p);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -514,7 +514,7 @@ class PersistentCollection implements Collection
         $this->initialize();
         return $this->coll->slice($offset, $length);
     }
-    
+
     /**
      * Called by PHP when this collection is serialized. Ensures that only the
      * elements are properly serialized.
@@ -526,7 +526,7 @@ class PersistentCollection implements Collection
     {
         return array('coll', 'initialized');
     }
-    
+
     /* ArrayAccess implementation */
 
     /**
@@ -564,12 +564,12 @@ class PersistentCollection implements Collection
     {
         return $this->remove($offset);
     }
-    
+
     public function key()
     {
         return $this->coll->key();
     }
-    
+
     /**
      * Gets the element of the collection at the current iterator position.
      */
@@ -577,7 +577,7 @@ class PersistentCollection implements Collection
     {
         return $this->coll->current();
     }
-    
+
     /**
      * Moves the internal iterator position to the next element.
      */
@@ -585,7 +585,7 @@ class PersistentCollection implements Collection
     {
         return $this->coll->next();
     }
-    
+
     /**
      * Retrieves the wrapped Collection instance.
      */

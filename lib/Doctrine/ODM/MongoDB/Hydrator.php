@@ -140,7 +140,7 @@ class Hydrator
                     $this->dm->getUnitOfWork()->registerManaged($value, null, $embeddedDocument);
                 } elseif ($mapping['type'] === 'many') {
                     $embeddedDocuments = $rawValue;
-                    $coll = new PersistentCollection(new ArrayCollection(), $this->dm);
+                    $coll = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getConfiguration());
                     foreach ($embeddedDocuments as $key => $embeddedDocument) {
                         $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                         $embeddedMetadata = $this->dm->getClassMetadata($className);
@@ -171,7 +171,7 @@ class Hydrator
                     $value = $this->dm->getReference($className, $id);
                 } elseif ($mapping['type'] === 'many' && (is_array($reference) || $reference instanceof Collection)) {
                     $references = $reference;
-                    $value = new PersistentCollection(new ArrayCollection(), $this->dm);
+                    $value = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getConfiguration());
                     $value->setInitialized(false);
                     $value->setOwner($document, $mapping);
 
