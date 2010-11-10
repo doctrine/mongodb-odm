@@ -2042,7 +2042,7 @@ class UnitOfWork implements PropertyChangedListener
             $data[$class->file] = $file;
         }
 
-        if ($class->hasDiscriminator()) {
+        if ($class->discriminatorField) {
             if (isset($data[$class->discriminatorField['name']])) {
                 $type = $data[$class->discriminatorField['name']];
                 $class = $this->dm->getClassMetadata($class->discriminatorMap[$data[$class->discriminatorField['name']]]);
