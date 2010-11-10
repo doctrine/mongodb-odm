@@ -145,7 +145,7 @@ class DocumentManager
         $this->mongo = $mongo ? $mongo : new Mongo();
         $this->config = $config ? $config : new Configuration();
         $this->eventManager = $eventManager ? $eventManager : new EventManager();
-        $this->hydrator = new Hydrator($this);
+        $this->hydrator = new Hydrator($this, $this->eventManager, $this->config->getMongoCmd());
         $this->metadataFactory = new ClassMetadataFactory($this);
         if ($cacheDriver = $this->config->getMetadataCacheImpl()) {
             $this->metadataFactory->setCacheDriver($cacheDriver);

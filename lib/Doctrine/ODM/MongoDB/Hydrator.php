@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\Common\EventManager;
+
 use Doctrine\ODM\MongoDB\Query,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
@@ -63,12 +65,14 @@ class Hydrator
      * Create a new Hydrator instance
      *
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param Doctrine\Common\EventManager $evm
+     * @param string $cmd
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, EventManager $evm, $cmd)
     {
         $this->dm = $dm;
-        $this->evm = $this->dm->getEventManager();
-        $this->cmd = $dm->getConfiguration()->getMongoCmd();
+        $this->evm = $evm;
+        $this->cmd = $cmd;
     }
 
     /**
