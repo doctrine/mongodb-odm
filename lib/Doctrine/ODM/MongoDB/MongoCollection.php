@@ -19,7 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+    Doctrine\Common\EventManager,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\ODM\MongoDB\Event\CollectionEventArgs,
     Doctrine\ODM\MongoDB\Event\CollectionUpdateEventArgs;
@@ -62,15 +64,16 @@ class MongoCollection
      *
      * @param MongoCollection $mongoColleciton The MongoCollection instance.
      * @param ClassMetadata $class The ClassMetadata instance.
-     * @param DocumentManager $dm The DocumentManager instance.
+     * @param EventManager $evm The EventManager instance.
+     * @param Configuration $c The Configuration instance
      */
-    public function __construct(\MongoCollection $mongoCollection, ClassMetadata $class, DocumentManager $dm)
+    public function __construct(\MongoCollection $mongoCollection, ClassMetadata $class, EventManager $evm, Configuration $c)
     {
         $this->mongoCollection = $mongoCollection;
         $this->class = $class;
-        $this->loggerCallable = $dm->getConfiguration()->getLoggerCallable();
-        $this->cmd = $dm->getConfiguration()->getMongoCmd();
-        $this->eventManager = $dm->getEventManager();
+        $this->eventManager = $evm;
+        $this->loggerCallable = $c->getLoggerCallable();
+        $this->cmd = $c->getMongoCmd();
     }
 
     /**
@@ -130,7 +133,7 @@ class MongoCollection
     }
 
     /**
-     * Save a file whether it exists or not already. Deletes previous file 
+     * Save a file whether it exists or not already. Deletes previous file
      * contents before trying to store new file contents.
      *
      * @param array $a Array to store

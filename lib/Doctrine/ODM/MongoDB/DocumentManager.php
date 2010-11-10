@@ -308,7 +308,7 @@ class DocumentManager
             } else {
                 $collection = $this->getDocumentDB($className)->selectCollection($collection);
             }
-            $mongoCollection = new MongoCollection($collection, $metadata, $this);
+            $mongoCollection = new MongoCollection($collection, $metadata, $this->eventManager, $this->config);
             $this->documentCollections[$key] = $mongoCollection;
         }
         if ( ! isset($this->documentCollections[$key])) {
