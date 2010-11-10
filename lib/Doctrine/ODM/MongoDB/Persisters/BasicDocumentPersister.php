@@ -337,7 +337,7 @@ class BasicDocumentPersister
     public function loadAll(array $query = array(), array $select = array())
     {
         $cursor = $this->collection->find($query, $select);
-        return new MongoCursor($this->dm, $this->dm->getHydrator(), $this->class, $cursor);
+        return new MongoCursor($this->dm, $this->dm->getUnitOfWork(), $this->dm->getHydrator(), $this->class, $this->dm->getConfiguration(), $cursor);
     }
 
     /**

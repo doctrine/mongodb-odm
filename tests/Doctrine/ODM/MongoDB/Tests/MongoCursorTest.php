@@ -13,8 +13,10 @@ class MongoCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cursor = $this->dm->getDocumentCollection('Documents\User')->find($find);
         return new MongoCursor(
             $this->dm,
+            $this->dm->getUnitOfWork(),
             $this->dm->getHydrator(),
             $this->dm->getClassMetadata('Documents\User'),
+            $this->dm->getConfiguration(),
             $cursor
         );
     }
@@ -27,7 +29,7 @@ class MongoCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->setUsername('joncursor');
         $this->dm->persist($user);
         $this->dm->flush();
-        
+
         $this->cursor = $this->getMongoCursor(array('username' => 'joncursor'));
     }
 

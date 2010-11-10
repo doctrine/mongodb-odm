@@ -535,7 +535,7 @@ class DocumentManager
             throw new \RuntimeException($result['errmsg']);
         }
         $cursor = $db->selectCollection($result['result'])->find();
-        $cursor = new MongoCursor($this, $this->hydrator, $class, $cursor);
+        $cursor = new MongoCursor($this, $this->unitOfWork, $this->hydrator, $class, $this->config, $cursor);
         $cursor->hydrate(false);
         return $cursor;
     }

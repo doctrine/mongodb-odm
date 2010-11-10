@@ -54,18 +54,20 @@ class MongoCursor implements \Iterator, \Countable
      * Create a new MongoCursor which wraps around a given PHP MongoCursor.
      *
      * @param DocumentManager $dm
+     * @param UnitOfWork $uow
      * @param Hydrator $hydrator
      * @param ClassMetadata $class
+     * @param Configuration $c
      * @param MongoCursor $mongoCursor
      */
-    public function __construct(DocumentManager $dm, Hydrator $hydrator, ClassMetadata $class, \MongoCursor $mongoCursor)
+    public function __construct(DocumentManager $dm, UnitOfWork $uow, Hydrator $hydrator, ClassMetadata $class, Configuration $c, \MongoCursor $mongoCursor)
     {
         $this->dm = $dm;
-        $this->uow = $this->dm->getUnitOfWork();
+        $this->uow = $uow;
         $this->hydrator = $hydrator;
         $this->class = $class;
+        $this->loggerCallable = $c->getLoggerCallable();
         $this->mongoCursor = $mongoCursor;
-        $this->loggerCallable = $this->dm->getConfiguration()->getLoggerCallable();
     }
 
     /**
