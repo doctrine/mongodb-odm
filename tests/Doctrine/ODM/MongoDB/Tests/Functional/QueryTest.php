@@ -68,11 +68,11 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->distinct('count')
             ->field('username')->equals('distinct_test')
             ->execute();
-        $this->assertEquals(array(1, 2, 3), $results);
+        $this->assertEquals(new \Doctrine\ODM\MongoDB\MongoArrayIterator(array(1, 2, 3)), $results);
 
         $results = $this->dm->query('find distinct count from Documents\User WHERE username = ?', array('distinct_test'))
             ->execute();
-        $this->assertEquals(array(1, 2, 3), $results);
+        $this->assertEquals(new \Doctrine\ODM\MongoDB\MongoArrayIterator(array(1, 2, 3)), $results);
     }
 
     public function testFindQuery()
@@ -208,5 +208,19 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(2, count($articles));
         $this->assertEquals('1985-09-02', $articles[0]->getCreatedAt()->format('Y-m-d'));
         $this->assertEquals('1985-09-03', $articles[1]->getCreatedAt()->format('Y-m-d'));
+    }
+
+    public function testQueryIsIterable()
+    {
+        $article = new Article();
+        $article->setTitle('test');
+        $this->dm->persist($article);
+        $this->dm->flush(array('safe' => true));
+
+        $query = $this->dm->createQuery('Documents\Article');
+        $this->assertTrue($query instanceof \Doctrine\ODM\MongoDB\MongoIterator);
+        foreach ($query as $article) {
+            $this->assertEquals('Documents\Article', get_class($article));
+        }
     }
 }
