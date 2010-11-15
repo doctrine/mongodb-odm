@@ -171,33 +171,6 @@ class BasicDocumentPersister
     }
 
     /**
-     * Executes reference updates in case document had references to new documents,
-     * without identifier value.
-     *
-     * @param array $options Array of options to be used with update()
-     */
-    public function executeReferenceUpdates(array $options = array())
-    {
-        foreach ($this->documentsToUpdate as $oid => $document) {
-            $update = array();
-            foreach ($this->fieldsToUpdate[$oid] as $fieldName => $fieldData) {
-                list($mapping, $value) = $fieldData;
-                $update[$fieldName] = $this->prepareValue($mapping, $value);
-            }
-            $classMetadata = $this->dm->getClassMetadata(get_class($document));
-            $id = $this->uow->getDocumentIdentifier($document);
-            $id = $classMetadata->getDatabaseIdentifierValue($id);
-            $this->collection->update(array(
-                '_id' => $id
-            ), array(
-                $this->cmd . 'set' => $update
-            ), $options);
-        }
-        $this->documentsToUpdate = array();
-        $this->fieldsToUpdate = array();
-    }
-
-    /**
      * Updates the already persisted document if it has any new changesets.
      *
      * @param object $document
@@ -398,9 +371,9 @@ class BasicDocumentPersister
                 }
                 if ($scheduleForUpdate) {
                     unset($insertData[$mapping['name']]);
-                    $id = spl_object_hash($document);
-                    $this->documentsToUpdate[$id] = $document;
-                    $this->fieldsToUpdate[$id][$mapping['fieldName']] = array($mapping, $new);
+                    $this->uow->scheduleExtraUpdate($document, array(
+                        $mapping['fieldName'] => array(null, $new)
+                    ));
                 }
             }
         }

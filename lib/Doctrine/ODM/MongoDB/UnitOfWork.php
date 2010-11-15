@@ -140,11 +140,32 @@ class UnitOfWork implements PropertyChangedListener
     private $documentUpdates = array();
 
     /**
+     * Any pending extra updates that have been scheduled by persisters.
+     *
+     * @var array
+     */
+    private $extraUpdates = array();
+
+    /**
      * A list of all pending document deletions.
      *
      * @var array
      */
     private $documentDeletions = array();
+
+    /**
+     * All pending collection deletions.
+     *
+     * @var array
+     */
+    private $collectionDeletions = array();
+
+    /**
+     * All pending collection updates.
+     *
+     * @var array
+     */
+    private $collectionUpdates = array();
 
     /**
      * List of collections visited during changeset calculation on a commit-phase of a UnitOfWork.
@@ -259,6 +280,8 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! ($this->documentInsertions ||
                 $this->documentDeletions ||
                 $this->documentUpdates ||
+                $this->collectionUpdates ||
+                $this->collectionDeletions ||
                 $this->orphanRemovals)) {
             return; // Nothing to do.
         }
@@ -284,12 +307,6 @@ class UnitOfWork implements PropertyChangedListener
                 }
                 $this->executeInserts($class, $options);
             }
-            foreach ($commitOrder as $class) {
-                if ($class->isEmbeddedDocument) {
-                    continue;
-                }
-                $this->executeReferenceUpdates($class, $options);
-            }
         }
 
         if ($this->documentUpdates) {
@@ -297,6 +314,22 @@ class UnitOfWork implements PropertyChangedListener
                 $this->executeUpdates($class, $options);
             }
         }
+
+        // Extra updates that were requested by persisters.
+        if ($this->extraUpdates) {
+            $this->executeExtraUpdates();
+        }
+
+//        // Collection deletions (deletions of complete collections)
+//        foreach ($this->collectionDeletions as $collectionToDelete) {
+//            $this->getCollectionPersister($collectionToDelete->getMapping())
+//                    ->delete($collectionToDelete);
+//        }
+//        // Collection updates (deleteRows, updateRows, insertRows)
+//        foreach ($this->collectionUpdates as $collectionToUpdate) {
+//            $this->getCollectionPersister($collectionToUpdate->getMapping())
+//                    ->update($collectionToUpdate);
+//        }
 
         // Document deletions come last and need to be in reverse commit order
         if ($this->documentDeletions) {
@@ -314,6 +347,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->documentInsertions =
         $this->documentUpdates =
         $this->documentDeletions =
+        $this->extraUpdates =
         $this->documentChangeSets =
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
@@ -322,15 +356,14 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes reference updates
-     *
-     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
-     * @param array $options Array of options to be used for update()
      */
-    private function executeReferenceUpdates(ClassMetadata $class, array $options = array())
+    private function executeExtraUpdates()
     {
-        $className = $class->name;
-        $persister = $this->getDocumentPersister($className);
-        $persister->executeReferenceUpdates($options);
+        foreach ($this->extraUpdates as $oid => $update) {
+            list ($document, $changeset) = $update;
+            $this->documentChangeSets[$oid] = $changeset;
+            $this->getDocumentPersister(get_class($document))->update($document);
+        }
     }
 
     /**
@@ -566,6 +599,7 @@ class UnitOfWork implements PropertyChangedListener
     private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
         if ($value instanceof PersistentCollection && $value->isDirty()) {
+            $this->collectionUpdates[] = $value;
             $this->visitedCollections[] = $value;
         }
 
@@ -1090,6 +1124,28 @@ class UnitOfWork implements PropertyChangedListener
 
         if ( ! isset($this->documentUpdates[$oid]) && ! isset($this->documentInsertions[$oid])) {
             $this->documentUpdates[$oid] = $document;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Schedules an extra update that will be executed immediately after the
+     * regular entity updates within the currently running commit cycle.
+     *
+     * Extra updates for entities are stored as (entity, changeset) tuples.
+     *
+     * @ignore
+     * @param object $entity The entity for which to schedule an extra update.
+     * @param array $changeset The changeset of the entity (what to update).
+     */
+    public function scheduleExtraUpdate($document, array $changeset)
+    {
+        $oid = spl_object_hash($document);
+        if (isset($this->extraUpdates[$oid])) {
+            list($ignored, $changeset2) = $this->extraUpdates[$oid];
+            $this->extraUpdates[$oid] = array($document, $changeset + $changeset2);
+        } else {
+            $this->extraUpdates[$oid] = array($document, $changeset);
         }
     }
 
@@ -2000,6 +2056,9 @@ class UnitOfWork implements PropertyChangedListener
         $this->documentInsertions =
         $this->documentUpdates =
         $this->documentDeletions =
+        $this->collectionUpdates =
+        $this->collectionDeletions =
+        $this->extraUpdates =
         $this->orphanRemovals = array();
         if ($this->commitOrderCalculator !== null) {
             $this->commitOrderCalculator->clear();
@@ -2018,6 +2077,19 @@ class UnitOfWork implements PropertyChangedListener
     public function scheduleOrphanRemoval($document)
     {
         $this->orphanRemovals[spl_object_hash($document)] = $document;
+    }
+
+    /**
+     * INTERNAL:
+     * Schedules a complete collection for removal when this UnitOfWork commits.
+     *
+     * @param PersistentCollection $coll
+     */
+    public function scheduleCollectionDeletion(PersistentCollection $coll)
+    {
+        //TODO: if $coll is already scheduled for recreation ... what to do?
+        // Just remove $coll from the scheduled recreations?
+        $this->collectionDeletions[] = $coll;
     }
 
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
@@ -2289,6 +2361,26 @@ class UnitOfWork implements PropertyChangedListener
     public function getScheduledDocumentDeletions()
     {
         return $this->documentDeletions;
+    }
+
+    /**
+     * Get the currently scheduled complete collection deletions
+     *
+     * @return array
+     */
+    public function getScheduledCollectionDeletions()
+    {
+        return $this->collectionDeletions;
+    }
+
+    /**
+     * Gets the currently scheduled collection inserts, updates and deletes.
+     *
+     * @return array
+     */
+    public function getScheduledCollectionUpdates()
+    {
+        return $this->collectionUpdates;
     }
 
     private static function objToStr($obj)
