@@ -182,7 +182,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @var array
      */
-    private $embeddedRemovals = array();
+    private $orphanRemovals = array();
 
     /**
      * The Hydrator used for hydrating array Mongo documents to Doctrine object documents.
@@ -259,12 +259,12 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! ($this->documentInsertions ||
                 $this->documentDeletions ||
                 $this->documentUpdates ||
-                $this->embeddedRemovals)) {
+                $this->orphanRemovals)) {
             return; // Nothing to do.
         }
 
-        if ($this->embeddedRemovals) {
-            foreach ($this->embeddedRemovals as $removal) {
+        if ($this->orphanRemovals) {
+            foreach ($this->orphanRemovals as $removal) {
                 $this->remove($removal);
             }
         }
@@ -317,7 +317,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->documentChangeSets =
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
-        $this->embeddedRemovals = array();
+        $this->orphanRemovals = array();
     }
 
     /**
@@ -473,7 +473,7 @@ class UnitOfWork implements PropertyChangedListener
                         $embeddedOid = spl_object_hash($orgValue);
                         $orgValue = isset($this->originalDocumentData[$embeddedOid]) ? $this->originalDocumentData[$embeddedOid] : $orgValue;
                         if ($orgValue !== null) {
-                            $this->scheduleEmbeddedRemoval($orgValue);
+                            $this->scheduleOrphanRemoval($orgValue);
                         }
                     }
                     $changeSet[$propName] = array($orgValue, $actualValue);
@@ -2000,7 +2000,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->documentInsertions =
         $this->documentUpdates =
         $this->documentDeletions =
-        $this->embeddedRemovals = array();
+        $this->orphanRemovals = array();
         if ($this->commitOrderCalculator !== null) {
             $this->commitOrderCalculator->clear();
         }
@@ -2015,9 +2015,9 @@ class UnitOfWork implements PropertyChangedListener
      * @ignore
      * @param object $document
      */
-    public function scheduleEmbeddedRemoval($document)
+    public function scheduleOrphanRemoval($document)
     {
-        $this->embeddedRemovals[spl_object_hash($document)] = $document;
+        $this->orphanRemovals[spl_object_hash($document)] = $document;
     }
 
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)

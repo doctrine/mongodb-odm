@@ -313,7 +313,7 @@ class PersistentCollection implements Collection
         if ($removed) {
             $this->changed();
             if ($this->mapping !== null && isset($this->mapping['embedded'])) {
-                $this->dm->getUnitOfWork()->scheduleEmbeddedRemoval($removed);
+                $this->dm->getUnitOfWork()->scheduleOrphanRemoval($removed);
             }
         }
 
@@ -330,7 +330,7 @@ class PersistentCollection implements Collection
         if ($removed) {
             $this->changed();
             if ($this->mapping !== null && isset($this->mapping['embedded'])) {
-                $this->dm->getUnitOfWork()->scheduleEmbeddedRemoval($element);
+                $this->dm->getUnitOfWork()->scheduleOrphanRemoval($element);
             }
         }
         return $removed;
@@ -498,7 +498,7 @@ class PersistentCollection implements Collection
         }
         if ($this->mapping !== null && isset($this->mapping['embedded'])) {
             foreach ($this->coll as $element) {
-                $this->dm->getUnitOfWork()->scheduleEmbeddedRemoval($element);
+                $this->dm->getUnitOfWork()->scheduleOrphanRemoval($element);
             }
         }
         $this->coll->clear();
