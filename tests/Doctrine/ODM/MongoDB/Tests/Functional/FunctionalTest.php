@@ -637,13 +637,17 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
          )->execute();
     }
 
-    public function testEmbedded()
+    public function testEmbeddedNesting()
     {
         $test = new EmbeddedTestLevel0();
         $test->name = 'test';
 
         $level1 = new EmbeddedTestLevel1();
         $level1->name = 'test level1 #1';
+        $test->level1[] = $level1;
+
+        $level1 = new EmbeddedTestLevel1();
+        $level1->name = 'test level1 #2';
         $test->level1[] = $level1;
 
         $level2 = new EmbeddedTestLevel2();
@@ -654,20 +658,16 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $level2->name = 'test level2 #2';
         $level1->level2[] = $level2;
 
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'test level1 #2';
-        $test->level1[] = $level1;
-
         $this->dm->persist($test);
         $this->dm->flush();
         $this->dm->clear();
 
         $check = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0');
         $this->assertEquals('test', $check->name);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $test->level1[0]);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $test->level1[0]->level2[0]);
-        $this->assertEquals(2, count($test->level1));
-        $this->assertEquals(2, count($test->level1[0]->level2));
+        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $check->level1[0]);
+        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $check->level1[0]->level2[0]);
+        $this->assertEquals(2, count($check->level1));
+        $this->assertEquals(2, count($check->level1[0]->level2));
     }
 
     public function testEmbeddedInheritance()
@@ -706,5 +706,65 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Uh oh, the level2 was not persisted!
         $this->assertEquals(1, count($test->oneLevel1->level2));
+    }
+
+    public function testFunctionalParentAssociations()
+    {
+        $a = new ParentAssociationTestA('a');
+        $a->child = new ParentAssociationTestB('b');
+        $a->child->children[] = new ParentAssociationTestC('c1');
+        $a->child->children[] = new ParentAssociationTestC('c2');
+        $this->dm->persist($a);
+        $this->dm->flush();
+
+        $unitOfWork = $this->dm->getUnitOfWork();
+
+        list($mapping, $document) = $unitOfWork->getParentAssociation($a->child->children[0]);
+        $this->assertSame($a->child, $document);
+
+        list($mapping, $document) = $unitOfWork->getParentAssociation($a->child->children[1]);
+        $this->assertSame($a->child, $document);
+
+        list($mapping, $document) = $unitOfWork->getParentAssociation($a->child);
+        $this->assertSame($a, $document);
+    }
+}
+
+/** @Document */
+class ParentAssociationTestA
+{
+    /** @Id */
+    public $id;
+    /** @String */
+    public $name;
+    /** @EmbedOne */
+    public $child;
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+}
+
+/** @EmbeddedDocument */
+class ParentAssociationTestB
+{
+    /** @String */
+    public $name;
+    /** @EmbedMany */
+    public $children = array();
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+}
+
+/** @EmbeddedDocument */
+class ParentAssociationTestC
+{
+    /** @String */
+    public $name;
+    public function __construct($name)
+    {
+        $this->name = $name;
     }
 }

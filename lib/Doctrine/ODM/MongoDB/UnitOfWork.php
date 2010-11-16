@@ -681,6 +681,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->setParentAssociation($entry, $mapping, $parentDocument);
                 $this->computeChangeSet($targetClass, $entry);
             } else if ($state == self::STATE_MANAGED && $targetClass->isEmbeddedDocument) {
+                $this->setParentAssociation($entry, $mapping, $parentDocument);
                 $this->computeChangeSet($targetClass, $entry);
             } else if ($state == self::STATE_REMOVED) {
                 return new \InvalidArgumentException("Removed document detected during flush: "

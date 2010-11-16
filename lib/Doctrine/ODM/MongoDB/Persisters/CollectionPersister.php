@@ -76,9 +76,7 @@ class CollectionPersister
             }
         }
         if ($pull) {
-
             list($propertyPath, $parentDocument) = $this->getPathAndParent($document);
-
             $query = array($this->cmd . 'pullAll' => array($propertyPath => $pull));
             $this->executeQuery($parentDocument, $coll->getOwner(), $mapping, $query);
         }
@@ -93,21 +91,20 @@ class CollectionPersister
         $push = array();
 
         $mapping = $coll->getMapping();
+        $owner = $coll->getOwner();
+        list($propertyPath, $parent) = $this->getPathAndParent($owner);
         $insertDiff = $coll->getInsertDiff();
-        $push = array();
-        foreach ($insertDiff as $document) {
-            if (isset($mapping['reference'])) {
-                $push[] = $this->dp->prepareReferencedDocValue($mapping, $document);
-            } else {
-                $push[] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
+        if ($insertDiff) {
+            $query = array($this->cmd.'pushAll' => array());
+            foreach ($insertDiff as $key => $document) {
+                $path = $propertyPath ? $propertyPath.'.'.$key.'.' : $propertyPath;
+                if (isset($mapping['reference'])) {
+                    $query[$this->cmd.'pushAll'][$path.$mapping['name']][] = $this->dp->prepareReferencedDocValue($mapping, $document);
+                } else {
+                    $query[$this->cmd.'pushAll'][$path.$mapping['name']][] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
+                }
             }
-        }
-        if ($push) {
-
-            list($propertyPath, $parentDocument) = $this->getPathAndParent($document);
-
-            $query = array($this->cmd.'pushAll' => array($propertyPath => $push));
-            $this->executeQuery($parentDocument, $mapping, $query);
+            $this->executeQuery($parent, $mapping, $query);
         }
     }
 
@@ -133,7 +130,6 @@ class CollectionPersister
         $class = $this->dm->getClassMetadata($className);
         $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($parentDocument));
         $collection = $this->dm->getDocumentCollection($className);
-        var_dump($query);
         $collection->update(array('_id' => $id), $query, array('safe' => true));
     }
 }

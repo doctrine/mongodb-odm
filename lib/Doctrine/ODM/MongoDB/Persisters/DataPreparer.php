@@ -248,6 +248,7 @@ class DataPreparer
             if (isset($mapping['embedded']) || isset($mapping['reference'])) {
                 if (isset($mapping['embedded'])) {
                     if ($mapping['type'] == 'many') {
+                        /*
                         $value = array();
                         foreach ($rawValue as $embeddedDoc) {
                             $value[] = $this->prepareEmbeddedDocValue($mapping, $embeddedDoc);
@@ -255,6 +256,8 @@ class DataPreparer
                         if (empty($value)) {
                             $value = null;
                         }
+                        */
+                        $value = null;
                     } elseif ($mapping['type'] == 'one') {
                         $value = $this->prepareEmbeddedDocValue($mapping, $rawValue);
                     }
