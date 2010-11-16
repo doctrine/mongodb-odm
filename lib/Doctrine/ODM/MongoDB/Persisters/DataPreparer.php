@@ -106,7 +106,7 @@ class DataPreparer
         $result = array();
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
-            if (isset($mapping['reference'])) {
+            if (isset($mapping['reference']) && $mapping['type'] === 'many') {
                 continue;
             }
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {

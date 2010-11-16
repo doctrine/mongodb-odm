@@ -8,18 +8,23 @@ class MODM42Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $file1 = new File(__DIR__ . '/MODM42/test.txt');
-        $file2 = new File(__DIR__ . '/MODM42/test.txt');
+        $file1 = new File(__DIR__ . '/MODM42/test1.txt');
+        $file2 = new File(__DIR__ . '/MODM42/test2.txt');
         $dir = new Directory(array($file1, $file2));
 
         $this->dm->persist($file1);
         $this->dm->persist($file2);
         $this->dm->persist($dir);
 
+        $this->assertTrue($this->dm->getUnitOfWork()->isScheduledForInsert($dir));
+        $this->assertTrue($this->dm->getUnitOfWork()->isScheduledForInsert($file1));
+        $this->assertTrue($this->dm->getUnitOfWork()->isScheduledForInsert($file2));
+
         $this->dm->flush();
         $this->dm->clear();
 
         $dir = $this->dm->findOne(__NAMESPACE__.'\Directory', array());
+        $this->assertNotNull($dir);
         $this->assertEquals(2, count($dir->getFiles()));
         foreach($dir->getFiles() as $file) {
             $this->assertInstanceOf('MongoGridFSFile', $file->getMongoFile());
@@ -32,6 +37,9 @@ class Directory
 {
     /** @Id */
     protected $id;
+
+    /** @String */
+    protected $test = 'test';
 
     /** @ReferenceMany(targetDocument="File") */
     protected $files = array();

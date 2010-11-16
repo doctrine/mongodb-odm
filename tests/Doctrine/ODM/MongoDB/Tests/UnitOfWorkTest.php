@@ -7,13 +7,13 @@ require_once __DIR__ . '/../../../../TestInit.php';
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Persisters\DataPreparer;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\MongoMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
 use Documents\ForumUser;
 use Documents\ForumAvatar;
-
 
 class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 {
@@ -42,7 +42,9 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
     public function testSavingSingleEntityWithIdentityColumnForcesInsert()
     {
         // Setup fake persister and id generator for identity generation
-        $userPersister = new DocumentPersisterMock($this->_dmMock, $this->_dmMock->getClassMetadata('Documents\ForumUser'));
+        $dp = $this->getMockDataPreparer();
+        $class = $this->_dmMock->getClassMetadata('Documents\ForumUser');
+        $userPersister = $this->getMockDocumentPersister($dp, $class);
         $this->_unitOfWork->setDocumentPersister('Documents\ForumUser', $userPersister);
 
         // Test
@@ -81,10 +83,15 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
     {
         // Setup fake persister and id generator for identity generation
         //ForumUser
-        $userPersister = new DocumentPersisterMock($this->_dmMock, $this->_dmMock->getClassMetadata("Documents\ForumUser"));
+        $dp = $this->getMockDataPreparer();
+        $class = $this->_dmMock->getClassMetadata('Documents\ForumUser');
+        $userPersister = $this->getMockDocumentPersister($dp, $class);
         $this->_unitOfWork->setDocumentPersister('Documents\ForumUser', $userPersister);
+
         // ForumAvatar
-        $avatarPersister = new DocumentPersisterMock($this->_dmMock, $this->_dmMock->getClassMetadata("Documents\ForumAvatar"));
+        $dp = $this->getMockDataPreparer();
+        $class = $this->_dmMock->getClassMetadata('Documents\ForumAvatar');
+        $avatarPersister = $this->getMockDocumentPersister($dp, $class);
         $this->_unitOfWork->setDocumentPersister('Documents\ForumAvatar', $avatarPersister);
 
         // Test
@@ -110,9 +117,14 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     public function testChangeTrackingNotify()
     {
-        $persister = new DocumentPersisterMock($this->_dmMock, $this->_dmMock->getClassMetadata("Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument"));
+        $dp = $this->getMockDataPreparer();
+        $class = $this->_dmMock->getClassMetadata("Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument");
+        $persister = $this->getMockDocumentPersister($dp, $class);
         $this->_unitOfWork->setDocumentPersister('Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument', $persister);
-        $itemPersister = new DocumentPersisterMock($this->_dmMock, $this->_dmMock->getClassMetadata("Doctrine\ODM\MongoDB\Tests\NotifyChangedRelatedItem"));
+
+        $dp = $this->getMockDataPreparer();
+        $class = $this->_dmMock->getClassMetadata("Doctrine\ODM\MongoDB\Tests\NotifyChangedRelatedItem");
+        $itemPersister = $this->getMockDocumentPersister($dp, $class);
         $this->_unitOfWork->setDocumentPersister('Doctrine\ODM\MongoDB\Tests\NotifyChangedRelatedItem', $itemPersister);
 
         $entity = new NotifyChangedDocument;
@@ -153,7 +165,9 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     public function testGetDocumentStateWithAssignedIdentity()
     {
-        $persister = new DocumentPersisterMock($this->_dmMock, $this->_dmMock->getClassMetadata("Documents\CmsPhonenumber"));
+        $dp = $this->getMockDataPreparer();
+        $class = $this->_dmMock->getClassMetadata("Documents\CmsPhonenumber");
+        $persister = $this->getMockDocumentPersister($dp, $class);
         $this->_unitOfWork->setDocumentPersister('Documents\CmsPhonenumber', $persister);
 
         $ph = new \Documents\CmsPhonenumber();
@@ -235,6 +249,16 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalClone()
             ->disableOriginalConstructor()
             ->getMock();
+    }
+
+    private function getMockDataPreparer()
+    {
+        return $this->getMock('Doctrine\ODM\MongoDB\Persisters\DataPreparer', array(), array(), '', false, false);
+    }
+
+    private function getMockDocumentPersister(DataPreparer $dp, ClassMetadata $class)
+    {
+        return new DocumentPersisterMock($dp, $this->_dmMock, $class);
     }
 
     protected function getClassMetadata($class, $flag)

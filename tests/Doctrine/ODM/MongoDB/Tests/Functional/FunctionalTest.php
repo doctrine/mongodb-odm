@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 require_once __DIR__ . '/../../../../../TestInit.php';
 
 use Documents\User,
+    Documents\Account,
     Documents\Phonenumber,
     Documents\Employee,
     Documents\Manager,
@@ -706,6 +707,89 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Uh oh, the level2 was not persisted!
         $this->assertEquals(1, count($test->oneLevel1->level2));
+    }
+
+    public function testModifyGroupsArrayDirectly()
+    {
+        $account = new Account();
+        $account->setName('Jon Test Account');
+
+        $user = new User();
+        $user->setUsername('jon333');
+        $user->setPassword('changeme');
+        $user->setAccount($account);
+
+        $user->addGroup(new Group('administrator'));
+        $user->addGroup(new Group('member'));
+        $user->addGroup(new Group('moderator'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user, $account);
+
+        $user = $this->dm->findOne('Documents\User');
+
+        // remove two of the groups and pass the groups back into the User
+        $groups = $user->getGroups();
+        unset($groups[0]);
+        unset($groups[2]);
+        $user->setGroups($groups);
+
+        $this->assertEquals(1, count($user->getGroups()));
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user);
+
+        $user = $this->dm->findOne('Documents\User');
+        $this->assertEquals(1, count($user->getGroups()));
+    }
+
+    public function testReplaceEntireGroupsArray()
+    {
+        $account = new Account();
+        $account->setName('Jon Test Account');
+
+        $user = new User();
+        $user->setUsername('jon333');
+        $user->setPassword('changeme');
+        $user->setAccount($account);
+
+        $group2 = new Group('member');
+        $user->addGroup(new Group('administrator'));
+        $user->addGroup($group2);
+        $user->addGroup(new Group('moderator'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user, $account);
+
+        $user = $this->dm->findOne('Documents\User');
+
+        // Issue is collection must be initialized
+        $groups = $user->getGroups();
+        $groups[0]; // initialize collection
+
+        // reffectively remove two of the groups
+        //$user->getGroups()->clear();
+        //$user->getGroups()->add($group2);
+
+        $user->setGroups(array($group2));
+
+        $this->assertEquals(1, count($user->getGroups()));
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user);
+
+        $user = $this->dm->findOne('Documents\User');
+        $this->assertEquals(1, count($user->getGroups()));
     }
 
     public function testFunctionalParentAssociations()
