@@ -67,11 +67,20 @@ class CollectionPersister
 
         $mapping = $coll->getMapping();
         $deleteDiff = $coll->getDeleteDiff();
-        $pull = $this->preparePushAndPullData($mapping, $deleteDiff);
+        $pull = array();
+        foreach ($deleteDiff as $document) {
+            if (isset($mapping['reference'])) {
+                $pull[] = $this->dp->prepareReferencedDocValue($mapping, $document);
+            } else {
+                $pull[] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
+            }
+        }
         if ($pull) {
-            $path = $this->getDocumentFieldPath($mapping);
-            $query = array($this->cmd . 'pullAll' => array($path => $pull));
-            $this->executeQuery($id, $coll->getOwner(), $mapping, $query);
+
+            list($propertyPath, $parentDocument) = $this->getPathAndParent($document);
+
+            $query = array($this->cmd . 'pullAll' => array($propertyPath => $pull));
+            $this->executeQuery($parentDocument, $coll->getOwner(), $mapping, $query);
         }
     }
 
@@ -85,12 +94,20 @@ class CollectionPersister
 
         $mapping = $coll->getMapping();
         $insertDiff = $coll->getInsertDiff();
-        $push = $this->preparePushAndPullData($mapping, $insertDiff);
+        $push = array();
+        foreach ($insertDiff as $document) {
+            if (isset($mapping['reference'])) {
+                $push[] = $this->dp->prepareReferencedDocValue($mapping, $document);
+            } else {
+                $push[] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
+            }
+        }
         if ($push) {
-            $path = $this->getDocumentFieldPath($mapping);
-            $query = array($this->cmd.'pushAll' => array($path => $push));
-            list($parent, $path) = $this->uow->getParentAssociations($)
-            $this->executeQuery(, $mapping, $query);
+
+            list($propertyPath, $parentDocument) = $this->getPathAndParent($document);
+
+            $query = array($this->cmd.'pushAll' => array($propertyPath => $push));
+            $this->executeQuery($parentDocument, $mapping, $query);
         }
     }
 
@@ -99,28 +116,15 @@ class CollectionPersister
         return $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
     }
 
-    private function getDocumentFieldPath($document)
+    private function getPathAndParent($document)
     {
-        $fieldNames = array();
+        $fields = array();
         $parent = $document;
-        while (null !== ($association = $this->getParentAssociation($parent))) {
+        while (null !== ($association = $this->uow->getParentAssociation($parent))) {
             list($mapping, $parent) = $association;
-            $fieldNames[] = $mapping['name'];
+            $fields[] = $mapping['name'];
         }
-        return implode('.', array_reverse($fieldNames));
-    }
-
-    private function preparePushAndPullData(array $mapping, array $documents)
-    {
-        $data = array();
-        foreach ($documents as $document) {
-            if (isset($mapping['reference'])) {
-                $data[] = $this->dp->prepareReferencedDocValue($mapping, $document);
-            } else {
-                $data[] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
-            }
-        }
-        return $data;
+        return array(implode('.', array_reverse($fields)), $parent);
     }
 
     private function executeQuery($parentDocument, array $mapping, array $query)
@@ -129,6 +133,7 @@ class CollectionPersister
         $class = $this->dm->getClassMetadata($className);
         $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($parentDocument));
         $collection = $this->dm->getDocumentCollection($className);
+        var_dump($query);
         $collection->update(array('_id' => $id), $query, array('safe' => true));
     }
 }
