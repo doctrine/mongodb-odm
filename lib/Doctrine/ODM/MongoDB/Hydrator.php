@@ -123,6 +123,7 @@ class Hydrator
 
             // Hydrate embedded
             if (isset($mapping['embedded'])) {
+                $uow = $this->dm->getUnitOfWork();
                 if ($mapping['type'] === 'one') {
                     $embeddedDocument = $rawValue;
                     $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
@@ -136,7 +137,8 @@ class Hydrator
                     }
 
                     $this->hydrate($value, $embeddedDocument);
-                    $this->dm->getUnitOfWork()->registerManaged($value, null, $embeddedDocument);
+                    $uow->registerManaged($value, null, $embeddedDocument);
+                    $uow->setParentAssociation($value, $mapping, $document);
                 } elseif ($mapping['type'] === 'many') {
                     $embeddedDocuments = $rawValue;
                     $coll = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getConfiguration());
@@ -152,7 +154,8 @@ class Hydrator
                         }
 
                         $this->hydrate($embeddedDocumentObject, $embeddedDocument);
-                        $this->dm->getUnitOfWork()->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
+                        $uow->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
+                        $uow->setParentAssociation($embeddedDocumentObject, $mapping, $document);
                         $coll->add($embeddedDocumentObject);
                     }
                     $coll->setOwner($document, $mapping);

@@ -228,6 +228,23 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $collectionPersister;
 
+    private $parentAssociations = array();
+
+    public function setParentAssociation($document, $mapping, $parent)
+    {
+        $oid = spl_object_hash($document);
+        $this->parentAssociations[$oid] = array($mapping, $parent);
+    }
+
+    public function getParentAssociation($document)
+    {
+        $oid = spl_object_hash($document);
+        if ( ! isset($this->parentAssociations[$oid])) {
+            return null;
+        }
+        return $this->parentAssociations[$oid];
+    }
+
     /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
      *
@@ -251,7 +268,7 @@ class UnitOfWork implements PropertyChangedListener
      * Get the document persister instance for the given document name
      *
      * @param string $documentName
-     * @return BasicDocumentPersister
+     * @return DocumentPersister
      */
     public function getDocumentPersister($documentName)
     {
@@ -282,9 +299,9 @@ class UnitOfWork implements PropertyChangedListener
      * Set the document persister instance to use for the given document name
      *
      * @param string $documentName
-     * @param BasicDocumentPersister $persister
+     * @param DocumentPersister $persister
      */
-    public function setDocumentPersister($documentName, Persisters\BasicDocumentPersister $persister)
+    public function setDocumentPersister($documentName, Persisters\DocumentPersister $persister)
     {
         $this->persisters[$documentName] = $persister;
     }
@@ -553,7 +570,7 @@ class UnitOfWork implements PropertyChangedListener
             if (isset($mapping['reference']) || isset($mapping['embedded'])) {
                 $val = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($val !== null) {
-                    $this->computeAssociationChanges($mapping, $val);
+                    $this->computeAssociationChanges($document, $mapping, $val);
                     if (isset($mapping['type']) && $mapping['type'] === 'one') {
                         $oid2 = spl_object_hash($val);
                         if (isset($this->documentChangeSets[$oid2])) {
@@ -623,18 +640,17 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Computes the changes of an embedded document.
      *
+     * @param object $parentDocument
      * @param array $mapping
      * @param mixed $value The value of the association.
      */
-    private function computeAssociationChanges($mapping, $value)
+    private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
         if ($value instanceof PersistentCollection && $value->isDirty()) {
             $owner = $value->getOwner();
             $className = get_class($owner);
             $class = $this->dm->getClassMetadata($className);
-            if ( ! $class->isEmbeddedDocument) {
-                $this->collectionUpdates[] = $value;
-            }
+            $this->collectionUpdates[] = $value;
             $this->visitedCollections[] = $value;
         }
 
@@ -662,6 +678,7 @@ class UnitOfWork implements PropertyChangedListener
                             . " on the relationship.");
                 }
                 $this->persistNew($targetClass, $entry);
+                $this->setParentAssociation($entry, $mapping, $parentDocument);
                 $this->computeChangeSet($targetClass, $entry);
             } else if ($state == self::STATE_MANAGED && $targetClass->isEmbeddedDocument) {
                 $this->computeChangeSet($targetClass, $entry);

@@ -5,7 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 /**
  * DocumentPersister implementation used for mocking during tests.
  */
-class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\BasicDocumentPersister
+class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
 {
     private $inserts = array();
     private $updates = array();

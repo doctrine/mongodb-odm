@@ -4,7 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 require_once __DIR__ . '/../../../../../TestInit.php';
 
-use Doctrine\ODM\MongoDB\Persisters\BasicDocumentPersister,
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister,
     Documents\Account,
     Documents\Article,
     Documents\Address,
@@ -21,7 +21,7 @@ use Doctrine\ODM\MongoDB\Persisters\BasicDocumentPersister,
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
-class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     protected $persister;
     protected $classMetadata;
@@ -31,7 +31,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         parent::setUp();
         $this->classMetadata = $this->dm->getClassMetadata('Documents\User');
         $this->persister = $this->getMock(
-            'Doctrine\ODM\MongoDB\Persisters\BasicDocumentPersister',
+            'Doctrine\ODM\MongoDB\Persisters\DocumentPersister',
             array('update', 'delete', 'executeInserts'),
             array($this->dm, $this->classMetadata)
         );
@@ -164,7 +164,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $classMetadata = $this->dm->getClassMetadata('Documents\Strategy');
         $persister = $this->getMock(
-            'Doctrine\ODM\MongoDB\Persisters\BasicDocumentPersister',
+            'Doctrine\ODM\MongoDB\Persisters\DocumentPersister',
             array('update', 'delete', 'executeInserts'),
             array($this->dm, $classMetadata)
         );
@@ -186,7 +186,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testDocumentUpdate()
     {
         $this->dm->getUnitOfWork()->setDocumentPersister(
-            'Documents\User', new BasicDocumentPersister($this->dm, $this->classMetadata)
+            'Documents\User', new DocumentPersister($this->dm, $this->classMetadata)
         );
 
         $account = new Account();
@@ -277,7 +277,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testRemoveGroups()
     {
         $this->dm->getUnitOfWork()->setDocumentPersister(
-            'Documents\User', new BasicDocumentPersister($this->dm, $this->classMetadata)
+            'Documents\User', new DocumentPersister($this->dm, $this->classMetadata)
         );
 
         $account = new Account();
@@ -330,7 +330,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testReplaceGroups()
     {
         $this->dm->getUnitOfWork()->setDocumentPersister(
-            'Documents\User', new BasicDocumentPersister($this->dm, $this->classMetadata)
+            'Documents\User', new DocumentPersister($this->dm, $this->classMetadata)
         );
 
         $account = new Account();
@@ -395,7 +395,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testModifyGroupsArrayDirectly()
     {
         $this->dm->getUnitOfWork()->setDocumentPersister(
-            'Documents\User', new BasicDocumentPersister($this->dm, $this->classMetadata)
+            'Documents\User', new DocumentPersister($this->dm, $this->classMetadata)
         );
 
         $account = new Account();
@@ -438,7 +438,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testReplaceEntireGroupsArray()
     {
         $this->dm->getUnitOfWork()->setDocumentPersister(
-            'Documents\User', new BasicDocumentPersister($this->dm, $this->classMetadata)
+            'Documents\User', new DocumentPersister($this->dm, $this->classMetadata)
         );
 
         $account = new Account();
@@ -486,7 +486,7 @@ class BasicDocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testCollectionField()
     {
         $classMetadata = $this->dm->getClassMetadata('Documents\Article');
-        $persister = new BasicDocumentPersister($this->dm, $classMetadata);
+        $persister = new DocumentPersister($this->dm, $classMetadata);
         $this->dm->getUnitOfWork()->setDocumentPersister(
             'Documents\Article', $persister
         );

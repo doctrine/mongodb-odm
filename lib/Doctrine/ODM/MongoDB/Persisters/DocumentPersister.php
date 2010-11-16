@@ -109,7 +109,7 @@ class DocumentPersister
     private $cmd;
 
     /**
-     * Initializes a new BasicDocumentPersister instance.
+     * Initializes a new DocumentPersister instance.
      *
      * @param Doctrine\ODM\MongoDB\Persisters\DataPreparer $dp
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm

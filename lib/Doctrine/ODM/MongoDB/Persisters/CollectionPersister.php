@@ -5,7 +5,8 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 use Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Persisters\DataPreparer,
-    Doctrine\ODM\MongoDB\UnitOfWork;
+    Doctrine\ODM\MongoDB\UnitOfWork,
+    Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 class CollectionPersister
 {
@@ -56,52 +57,78 @@ class CollectionPersister
     public function update(PersistentCollection $coll)
     {
         $this->deleteRows($coll);
+        $this->updateRows($coll);
         $this->insertRows($coll);
     }
 
     private function deleteRows(PersistentCollection $coll)
     {
         $pull = array();
+
         $mapping = $coll->getMapping();
-        $owner = $coll->getOwner();
-        $className = get_class($owner);
-        $class = $this->dm->getClassMetadata($className);
-        $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($owner));
-        $collection = $this->dm->getDocumentCollection($className);
         $deleteDiff = $coll->getDeleteDiff();
-        foreach ($deleteDiff as $delete) {
-            if (isset($mapping['reference'])) {
-                $pull[] = $this->dp->prepareReferencedDocValue($mapping, $delete);
-            } else {
-                $pull[] = $this->dp->prepareEmbeddedDocValue($mapping, $delete);
-            }
-        }
+        $pull = $this->preparePushAndPullData($mapping, $deleteDiff);
         if ($pull) {
-            $query = array($this->cmd . 'pullAll' => array($mapping['name'] => $pull));
-            $collection->update(array('_id' => $id), $query, array('safe' => true));
+            $path = $this->getDocumentFieldPath($mapping);
+            $query = array($this->cmd . 'pullAll' => array($path => $pull));
+            $this->executeQuery($id, $coll->getOwner(), $mapping, $query);
         }
+    }
+
+    private function updateRows(PersistentCollection $coll)
+    {
     }
 
     private function insertRows(PersistentCollection $coll)
     {
         $push = array();
+
         $mapping = $coll->getMapping();
-        $owner = $coll->getOwner();
-        $className = get_class($owner);
-        $class = $this->dm->getClassMetadata($className);
-        $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($owner));
-        $collection = $this->dm->getDocumentCollection($className);
         $insertDiff = $coll->getInsertDiff();
-        foreach ($insertDiff as $insert) {
+        $push = $this->preparePushAndPullData($mapping, $insertDiff);
+        if ($push) {
+            $path = $this->getDocumentFieldPath($mapping);
+            $query = array($this->cmd.'pushAll' => array($path => $push));
+            list($parent, $path) = $this->uow->getParentAssociations($)
+            $this->executeQuery(, $mapping, $query);
+        }
+    }
+
+    private function getDocumentId($document, ClassMetadata $class)
+    {
+        return $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
+    }
+
+    private function getDocumentFieldPath($document)
+    {
+        $fieldNames = array();
+        $parent = $document;
+        while (null !== ($association = $this->getParentAssociation($parent))) {
+            list($mapping, $parent) = $association;
+            $fieldNames[] = $mapping['name'];
+        }
+        return implode('.', array_reverse($fieldNames));
+    }
+
+    private function preparePushAndPullData(array $mapping, array $documents)
+    {
+        $data = array();
+        foreach ($documents as $document) {
             if (isset($mapping['reference'])) {
-                $push[] = $this->dp->prepareReferencedDocValue($mapping, $insert);
+                $data[] = $this->dp->prepareReferencedDocValue($mapping, $document);
             } else {
-                $push[] = $this->dp->prepareEmbeddedDocValue($mapping, $insert);
+                $data[] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
             }
         }
-        if ($push) {
-            $query = array($this->cmd.'pushAll' => array($mapping['name'] => $push));
-            $collection->update(array('_id' => $id), $query, array('safe' => true));
-        }
+        return $data;
+    }
+
+    private function executeQuery($parentDocument, array $mapping, array $query)
+    {
+        $className = get_class($parentDocument);
+        $class = $this->dm->getClassMetadata($className);
+        $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($parentDocument));
+        $collection = $this->dm->getDocumentCollection($className);
+        $collection->update(array('_id' => $id), $query, array('safe' => true));
     }
 }

@@ -503,9 +503,7 @@ class PersistentCollection implements Collection
         }
         $this->coll->clear();
         $this->changed();
-        if (!$this->dm->getClassMetadata(get_class($this->getOwner()))->isEmbeddedDocument) {
-            $this->dm->getUnitOfWork()->scheduleCollectionDeletion($this);
-        }
+        $this->dm->getUnitOfWork()->scheduleCollectionDeletion($this);
         $this->takeSnapshot();
     }
 

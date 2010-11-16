@@ -143,7 +143,7 @@ final class ODMEvents
     const onFlush = 'onFlush';
 
     /**
-     * The onUpdatePrepared event occurs when the BasicDocumentPersister prepared
+     * The onUpdatePrepared event occurs when the DocumentPersister prepared
      * update array for document, including atomic operators, right before that
      * array is executed in mongo.
      */

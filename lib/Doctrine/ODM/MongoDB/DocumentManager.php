@@ -456,7 +456,7 @@ class DocumentManager
      * @param string $id  The id the document to load.
      * @return object $document  The loaded document.
      * @todo this function seems to be doing to much, should we move parts of it
-     * to BasicDocumentPersister maybe?
+     * to DocumentPersister maybe?
      */
     public function loadByID($documentName, $id)
     {

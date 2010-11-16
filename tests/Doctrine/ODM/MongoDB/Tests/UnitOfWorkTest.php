@@ -185,6 +185,22 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $unitOfWork->persist(new \Documents\Address());
     }
 
+    public function testParentAssociations()
+    {
+        $a = new ParentAssociationTest('a');
+        $b = new ParentAssociationTest('b');
+        $c = new ParentAssociationTest('c');
+        $d = new ParentAssociationTest('c');
+
+        $documentManager = $this->getDocumentManager();
+        $unitOfWork = $this->getUnitOfWork($documentManager);
+        $unitOfWork->setParentAssociation($b, array('name' => 'b'), $a);
+        $unitOfWork->setParentAssociation($c, array('name' => 'c'), $b);
+        $unitOfWork->setParentAssociation($d, array('name' => 'd'), $c);
+
+        $this->assertEquals(array(array('name' => 'd'), $c), $unitOfWork->getParentAssociation($d));
+    }
+
     protected function getDocumentManager()
     {
         return new \Stubs\DocumentManager();
@@ -226,6 +242,15 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $classMetadata = new ClassMetadata($class);
         $classMetadata->{'is' . ucfirst($flag)} = true;
         return $classMetadata;
+    }
+}
+
+class ParentAssociationTest
+{
+    public $name;
+    public function __construct($name)
+    {
+        $this->name = $name;
     }
 }
 
