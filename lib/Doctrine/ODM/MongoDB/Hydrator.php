@@ -136,7 +136,6 @@ class Hydrator
                     }
 
                     $this->hydrate($value, $embeddedDocument);
-                    $data[$mapping['name']] = $embeddedDocument;
                     $this->dm->getUnitOfWork()->registerManaged($value, null, $embeddedDocument);
                 } elseif ($mapping['type'] === 'many') {
                     $embeddedDocuments = $rawValue;
@@ -153,7 +152,6 @@ class Hydrator
                         }
 
                         $this->hydrate($embeddedDocumentObject, $embeddedDocument);
-                        $data[$mapping['name']][$key] = $embeddedDocument;
                         $this->dm->getUnitOfWork()->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
                         $coll->add($embeddedDocumentObject);
                     }
@@ -179,16 +177,16 @@ class Hydrator
                     // accessed and initialized for the first ime
                     $value->setReferences($references);
                 }
-                $data[$mapping['name']] = $value;
             // Hydrate regular field
             } else {
                 $value = Type::getType($mapping['type'])->convertToPHPValue($rawValue);
-                $data[$mapping['name']] = $value;
             }
 
+            unset($data[$mapping['name']]);
             // Set hydrated field value to document
             if ($value !== null) {
                 $metadata->setFieldValue($document, $mapping['fieldName'], $value);
+                $data[$mapping['fieldName']] = $value;
             }
         }
         // Set the document identifier

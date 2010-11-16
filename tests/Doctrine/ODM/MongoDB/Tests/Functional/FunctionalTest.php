@@ -47,7 +47,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $child1->setName('Child 1 Changed');
         $child2->setName('Child 2 Changed');
-        $root->setname('Root Changed');
+        $root->setName('Root Changed');
         $this->dm->flush();
 
         $test = $this->dm->getDocumentCollection('Documents\Category')->findOne();
@@ -102,6 +102,12 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Song #5', $test['songs'][3]['name']);
         $this->assertEquals(4, count($test['songs']));
 
+        $songs->clear();
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->getDocumentCollection('Documents\Album')->findOne(array('name' => 'jwage'));
+        $this->assertFalse(isset($test['songs']));
     }
 
     public function testNewEmbedded()

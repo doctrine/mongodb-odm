@@ -234,4 +234,26 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($level2->preLoad);
         $this->assertTrue($level2->postLoad);
     }
+
+    public function testEmbeddedDocumentChangesParent()
+    {
+        $address = new Address();
+        $address->setAddress('6512 Mercomatic Ct.');
+        $user = new User();
+        $user->setUsername('jwagettt');
+        $user->setAddress($address);
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->findOne('Documents\User');
+        $address = $user->getAddress();
+        $address->setAddress('changed');
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->findOne('Documents\User');
+        $this->assertEquals('changed', $user->getAddress()->getAddress());
+    }
 }
