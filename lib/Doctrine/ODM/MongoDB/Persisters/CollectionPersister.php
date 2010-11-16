@@ -63,22 +63,27 @@ class CollectionPersister
 
     private function deleteRows(PersistentCollection $coll)
     {
-        $pull = array();
-
         $mapping = $coll->getMapping();
-        $deleteDiff = $coll->getDeleteDiff();
-        $pull = array();
-        foreach ($deleteDiff as $document) {
-            if (isset($mapping['reference'])) {
-                $pull[] = $this->dp->prepareReferencedDocValue($mapping, $document);
-            } else {
-                $pull[] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
+        $owner = $coll->getOwner();
+        list($propertyPath, $parent, $parentMapping) = $this->getPathAndParent($owner, $mapping);
+        $insertDiff = $coll->getDeleteDiff();
+        if ($insertDiff) {
+            $query = array($this->cmd.'pullAll' => array());
+            foreach ($insertDiff as $key => $document) {
+                $path = '';
+                if ($propertyPath) {
+                    $path = $propertyPath.'.';
+                    if ($parentMapping['type'] === 'many') {
+                        $path .= $key.'.';
+                    }
+                }
+                if (isset($mapping['reference'])) {
+                    $query[$this->cmd.'pullAll'][$path.$mapping['name']][] = $this->dp->prepareReferencedDocValue($mapping, $document);
+                } else {
+                    $query[$this->cmd.'pullAll'][$path.$mapping['name']][] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
+                }
             }
-        }
-        if ($pull) {
-            list($propertyPath, $parentDocument) = $this->getPathAndParent($document);
-            $query = array($this->cmd . 'pullAll' => array($propertyPath => $pull));
-            $this->executeQuery($parentDocument, $coll->getOwner(), $mapping, $query);
+            $this->executeQuery($parent, $mapping, $query);
         }
     }
 
@@ -88,16 +93,20 @@ class CollectionPersister
 
     private function insertRows(PersistentCollection $coll)
     {
-        $push = array();
-
         $mapping = $coll->getMapping();
         $owner = $coll->getOwner();
-        list($propertyPath, $parent) = $this->getPathAndParent($owner);
+        list($propertyPath, $parent, $parentMapping) = $this->getPathAndParent($owner, $mapping);
         $insertDiff = $coll->getInsertDiff();
         if ($insertDiff) {
             $query = array($this->cmd.'pushAll' => array());
             foreach ($insertDiff as $key => $document) {
-                $path = $propertyPath ? $propertyPath.'.'.$key.'.' : $propertyPath;
+                $path = '';
+                if ($propertyPath) {
+                    $path = $propertyPath.'.';
+                    if ($parentMapping['type'] === 'many') {
+                        $path .= $key.'.';
+                    }
+                }
                 if (isset($mapping['reference'])) {
                     $query[$this->cmd.'pushAll'][$path.$mapping['name']][] = $this->dp->prepareReferencedDocValue($mapping, $document);
                 } else {
@@ -113,7 +122,7 @@ class CollectionPersister
         return $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
     }
 
-    private function getPathAndParent($document)
+    private function getPathAndParent($document, array $mapping)
     {
         $fields = array();
         $parent = $document;
@@ -121,7 +130,7 @@ class CollectionPersister
             list($mapping, $parent) = $association;
             $fields[] = $mapping['name'];
         }
-        return array(implode('.', array_reverse($fields)), $parent);
+        return array(implode('.', array_reverse($fields)), $parent, $mapping);
     }
 
     private function executeQuery($parentDocument, array $mapping, array $query)
