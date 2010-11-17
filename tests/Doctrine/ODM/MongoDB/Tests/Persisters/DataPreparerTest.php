@@ -1,10 +1,11 @@
 <?php
 
+use Doctrine\ODM\MongoDB\Tests\Persisters\DataPreparerTest;
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
-use Doctrine\ODM\MongoDB\Tests\Functional\Product;
-
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+
+use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\ConfigurableProduct;
 
 class DataPreparerTest extends BaseTest
@@ -24,15 +25,28 @@ class DataPreparerTest extends BaseTest
         parent::tearDown();
     }
 
-    public function testPrepareInsertData()
+    /**
+     * @dataProvider getDocumentsAndExpectedData
+     */
+    public function testPrepareInsertData($document, array $expectedData)
     {
-        $product = new ConfigurableProduct('Test Product');
-        $this->dm->persist($product);
+        $this->dm->persist($document);
         $this->uow->computeChangeSets();
-        $this->assertEquals(array(
-            '_id'  => new \MongoId(),
-            'name' => 'Test Product',
-        ), $this->dp->prepareInsertData($product));
+        $this->assertEquals($expectedData, $this->dp->prepareInsertData($document));
+    }
+
+    /**
+     * Provides data for @see DataPreparerTest::testPrepareInsertData()
+     * Returns arrays of array(document => expected data)
+     *
+     * @return array
+     */
+    public function getDocumentsAndExpectedData()
+    {
+        return array(
+            array(new ConfigurableProduct('Test Product'), array('_id'  => new \MongoId(), 'name' => 'Test Product')),
+            array(new Currency('USD', 1), array('_id' => new \MongoId(), 'name' => 'USD', 'multiplier' => 1)),
+        );
     }
 
 }
