@@ -63,12 +63,6 @@ class A
     /** @Id */
     protected $id;
 
-    /**
-     * @todo Fix this
-     * @String
-     */
-    protected $test = 'test';
-
     /** @ReferenceMany(targetDocument="b", cascade="all") */
     protected $b;
 
@@ -89,12 +83,13 @@ class B
 
     /** @Id */
     protected $id;
+
     /** @String */
-    protected $tmp;
+    protected $value;
 
     function __construct($v)
     {
-        $this->tmp = $v;
+        $this->value = $v;
     }
 
     public function getId()

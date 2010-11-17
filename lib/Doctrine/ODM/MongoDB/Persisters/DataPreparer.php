@@ -56,11 +56,14 @@ class DataPreparer
                 continue;
             }
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
-            if ($new === null && $mapping['nullable'] === false) {
+            if ($class->isIdentifier($mapping['fieldName'])) {
+                if ($new === null) {
+                    $new = new \MongoId();
+                }
+                $insertData['_id'] = $this->prepareValue($mapping, $new);
                 continue;
             }
-            if ($class->isIdentifier($mapping['fieldName'])) {
-                $insertData['_id'] = $this->prepareValue($mapping, $new);
+            if ($new === null && $mapping['nullable'] === false) {
                 continue;
             }
             $current = $class->getFieldValue($document, $mapping['fieldName']);

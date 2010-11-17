@@ -51,14 +51,6 @@ class MODM29Doc
     /** @Id */
     protected $id;
 
-    /**
-     * @todo This is a hack to force the document to insert since the document
-     * does not have any non collection based associations.
-     */
-
-    /** @String */
-    protected $test = 'test';
-
     /** @EmbedMany(targetDocument="MODM29Embedded", strategy="set") */
     protected $collection;
 

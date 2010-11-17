@@ -27,9 +27,6 @@ class MODM45A
     /** @Id */
     protected $id;
 
-    /** @String */
-    protected $tmp = 'WorkaroundToBeSaved';
-
     /** @EmbedOne(targetDocument="MODM45B") */
     protected $b;
 

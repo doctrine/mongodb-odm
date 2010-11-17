@@ -25,6 +25,7 @@ class MappedSuperclassTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
         
         $e2 = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\DocumentSubClass', 1);
+        $this->assertNotNull($e2);
         $this->assertEquals(1, $e2->getId());
         $this->assertEquals('Roman', $e2->getName());
         $this->assertNotNull($e2->getMappedRelated1());
