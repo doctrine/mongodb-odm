@@ -2,90 +2,37 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
+use Doctrine\ODM\MongoDB\Tests\Functional\Product;
+
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Ecommerce\ConfigurableProduct;
 
-use Doctrine\ODM\MongoDB\Persisters\DataPreparer;
-
-class DataPreparerTest extends \PHPUnit_Framework_TestCase
+class DataPreparerTest extends BaseTest
 {
-    private $dataPreparer;
-    private $dm;
-    private $uow;
+
+    private $dp;
 
     public function setUp()
     {
-        $this->dm = $this->getMockDocumentManager();
-        $this->uow = $this->getMockUnitOfWork();
-        $this->dataPreparer = new DataPreparer($this->dm, $this->uow, '$');
+        parent::setUp();
+        $this->dp = $this->dm->getUnitOfWork()->getDataPreparer();
+    }
+
+    public function tearDown()
+    {
+        unset($this->dp);
+        parent::tearDown();
     }
 
     public function testPrepareInsertData()
     {
-        $document = new ConfigurableProduct('Test Product');
-
-        $classMetadata = $this->getMockClassMetadata();
-        $classMetadata->fieldMappings = array(
-            'id' => array(
-                'name'      => 'id',
-                'fieldName' => 'id',
-                'type'      => 'id',
-                'nullable' => 'false',
-            ),
-            'name' => array(
-                'name'      => 'name',
-                'fieldName' => 'name',
-                'type'      => 'string',
-                'nullable' => 'false',
-            ),
-        );
-        $classMetadata->identifier = 'id';
-        $classMetadata->expects($this->exactly(2))
-            ->method('isIdentifier')
-            ->will($this->returnCallback(function ($name)
-            {
-                return 'id' === $name;
-            }))
-        ;
-
-        $this->dm->expects($this->once())
-            ->method('getClassMetadata')
-            ->with(get_class($document))
-            ->will($this->returnValue($classMetadata))
-        ;
-
-        $this->uow->expects($this->once())
-            ->method('getDocumentChangeSet')
-            ->with($document)
-            ->will($this->returnValue(array(
-                'name' => array(null, 'Test Product'),
-            )))
-        ;
-
+        $product = new ConfigurableProduct('Test Product');
+        $this->dm->persist($product);
+        $this->uow->computeChangeSets();
         $this->assertEquals(array(
+            '_id'  => new \MongoId(),
             'name' => 'Test Product',
-            '_id'   => new \MongoId(),
-        ), $this->dataPreparer->prepareInsertData($document));
-    }
-
-    private function getMockDocumentManager()
-    {
-        return $this->getMockBuilder('Doctrine\ODM\MongoDB\DocumentManager')
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-    private function getMockUnitOfWork()
-    {
-        return $this->getMockBuilder('Doctrine\ODM\MongoDB\UnitOfWork')
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-    private function getMockClassMetadata()
-    {
-        return $this->getMockBuilder('Doctrine\ODM\MongoDB\Mapping\ClassMetadata')
-            ->disableOriginalConstructor()
-            ->getMock();
+        ), $this->dp->prepareInsertData($product));
     }
 
 }
