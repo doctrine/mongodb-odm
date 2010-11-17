@@ -66,8 +66,7 @@ class DataPreparer
             if ($new === null && $mapping['nullable'] === false) {
                 continue;
             }
-            $current = $class->getFieldValue($document, $mapping['fieldName']);
-            $value = $this->prepareValue($mapping, $current);
+            $value = $this->prepareValue($mapping, $new);
             if ($value === null && $mapping['nullable'] === false) {
                 continue;
             }
