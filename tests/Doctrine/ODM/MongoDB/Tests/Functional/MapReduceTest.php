@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,

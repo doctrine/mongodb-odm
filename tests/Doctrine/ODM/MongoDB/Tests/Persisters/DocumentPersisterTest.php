@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister,
     Documents\Account,
     Documents\Article,

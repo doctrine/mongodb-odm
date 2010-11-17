@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-require_once __DIR__ . '/../../../../TestInit.php';
-
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\Common\Annotations\AnnotationReader;

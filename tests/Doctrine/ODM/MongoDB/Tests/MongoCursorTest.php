@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-require_once __DIR__ . '/../../../../TestInit.php';
-
 use Doctrine\ODM\MongoDB\MongoCursor;
 
 class MongoCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest

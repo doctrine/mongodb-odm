@@ -7,8 +7,6 @@ use Documents\CmsPhonenumber;
 use Documents\CmsAddress;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testSimpleDetachMerge()

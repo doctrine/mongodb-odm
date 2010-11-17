@@ -5,8 +5,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\ODMEvents;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 class ClassMetadataLoadEventTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testEvent()

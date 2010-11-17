@@ -5,8 +5,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Events;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
     /**

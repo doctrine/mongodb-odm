@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-require_once __DIR__ . '/../../../../../../TestInit.php';
-
 class MODM46Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()

@@ -5,8 +5,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\Driver\Driver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 class DriverChainTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testDelegateToMatchingNamespaceDriver()

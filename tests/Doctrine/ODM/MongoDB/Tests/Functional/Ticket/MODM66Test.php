@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-require_once __DIR__ . '/../../../../../../TestInit.php';
-
 use Doctrine\Common\Collections\ArrayCollection;
 
 class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest

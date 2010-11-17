@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 use Doctrine\ODM\MongoDB\Query\Parser,
     Doctrine\ODM\MongoDB\Query;
 

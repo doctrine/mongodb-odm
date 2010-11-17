@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 class UniqueIndexTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function uniqueTest($class)

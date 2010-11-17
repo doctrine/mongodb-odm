@@ -8,8 +8,6 @@ use Doctrine\ODM\MongoDB\Tests\Mocks\MongoMock;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Common\EventManager;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testGetMetadataForSingleClass()

@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 use Documents\Address,
     Documents\Profile,
     Documents\Phonenumber,

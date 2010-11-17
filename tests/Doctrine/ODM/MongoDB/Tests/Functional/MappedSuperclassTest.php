@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 class MappedSuperclassTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testCRUD()

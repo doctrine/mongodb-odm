@@ -4,8 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private $factory;

@@ -6,8 +6,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver,
     Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     abstract protected function _loadDriver();

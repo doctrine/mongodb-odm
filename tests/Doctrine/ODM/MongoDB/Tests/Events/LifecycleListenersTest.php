@@ -4,8 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use Doctrine\ODM\MongoDB\ODMEvents;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function getDocumentManager()

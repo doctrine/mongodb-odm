@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-require_once __DIR__ . '/../../../../../../TestInit.php';
-
 use Doctrine\ODM\MongoDB\ODMEvents;
 
 class MODM83Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest

@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 use Doctrine\ODM\MongoDB\CollectionEvents,
     Doctrine\ODM\MongoDB\Event\CollectionEventArgs;
 

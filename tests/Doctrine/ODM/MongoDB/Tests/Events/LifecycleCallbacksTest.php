@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
-require_once __DIR__ . '/../../../../../TestInit.php';
-
 class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function createUser()
