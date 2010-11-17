@@ -42,28 +42,24 @@ class CollectionPersister
         $this->cmd = $cmd;
     }
 
-    public function delete(PersistentCollection $coll)
+    public function delete(PersistentCollection $coll, array $options)
     {
         $mapping = $coll->getMapping();
         $owner = $coll->getOwner();
         list($propertyPath, $parent, $parentMapping) = $this->getPathAndParent($owner, $mapping);
         $propertyPath = $propertyPath ? $propertyPath : $mapping['name'];
-        $className = get_class($parent);
-        $class = $this->dm->getClassMetadata($className);
-        $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($parent));
-        $collection = $this->dm->getDocumentCollection($className);
         $query = array($this->cmd . 'unset' => array($propertyPath => true));
-        $collection->update(array('_id' => $id), $query, array('safe' => true));
+        $this->executeQuery($parent, $mapping, $query, $options);
     }
 
-    public function update(PersistentCollection $coll)
+    public function update(PersistentCollection $coll, array $options)
     {
-        $this->deleteRows($coll);
-        $this->updateRows($coll);
-        $this->insertRows($coll);
+        $this->deleteRows($coll, $options);
+        $this->updateRows($coll, $options);
+        $this->insertRows($coll, $options);
     }
 
-    private function deleteRows(PersistentCollection $coll)
+    private function deleteRows(PersistentCollection $coll, array $options)
     {
         $mapping = $coll->getMapping();
         $owner = $coll->getOwner();
@@ -82,15 +78,15 @@ class CollectionPersister
                     $query[$this->cmd.'pullAll'][$path][] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
                 }
             }
-            $this->executeQuery($parent, $mapping, $query);
+            $this->executeQuery($parent, $mapping, $query, $options);
         }
     }
 
-    private function updateRows(PersistentCollection $coll)
+    private function updateRows(PersistentCollection $coll, array $options)
     {
     }
 
-    private function insertRows(PersistentCollection $coll)
+    private function insertRows(PersistentCollection $coll, array $options)
     {
         $mapping = $coll->getMapping();
         $owner = $coll->getOwner();
@@ -109,7 +105,7 @@ class CollectionPersister
                     $query[$this->cmd.'pushAll'][$path][] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
                 }
             }
-            $this->executeQuery($parent, $mapping, $query);
+            $this->executeQuery($parent, $mapping, $query, $options);
         }
     }
 
@@ -129,12 +125,12 @@ class CollectionPersister
         return array(implode('.', array_reverse($fields)), $parent, $mapping);
     }
 
-    private function executeQuery($parentDocument, array $mapping, array $query)
+    private function executeQuery($parentDocument, array $mapping, array $query, array $options)
     {
         $className = get_class($parentDocument);
         $class = $this->dm->getClassMetadata($className);
         $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($parentDocument));
         $collection = $this->dm->getDocumentCollection($className);
-        $collection->update(array('_id' => $id), $query, array('safe' => true));
+        $collection->update(array('_id' => $id), $query, $options);
     }
 }

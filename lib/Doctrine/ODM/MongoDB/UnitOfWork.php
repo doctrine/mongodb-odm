@@ -370,18 +370,18 @@ class UnitOfWork implements PropertyChangedListener
 
         // Extra updates that were requested by persisters.
         if ($this->extraUpdates) {
-            $this->executeExtraUpdates();
+            $this->executeExtraUpdates($options);
         }
 
         // Collection deletions (deletions of complete collections)
         foreach ($this->collectionDeletions as $collectionToDelete) {
             $this->getCollectionPersister($collectionToDelete->getMapping())
-                    ->delete($collectionToDelete);
+                    ->delete($collectionToDelete, $options);
         }
         // Collection updates (deleteRows, updateRows, insertRows)
         foreach ($this->collectionUpdates as $collectionToUpdate) {
             $this->getCollectionPersister($collectionToUpdate->getMapping())
-                    ->update($collectionToUpdate);
+                    ->update($collectionToUpdate, $options);
         }
 
         // Document deletions come last and need to be in reverse commit order
@@ -412,12 +412,12 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes reference updates
      */
-    private function executeExtraUpdates()
+    private function executeExtraUpdates(array $options)
     {
         foreach ($this->extraUpdates as $oid => $update) {
             list ($document, $changeset) = $update;
             $this->documentChangeSets[$oid] = $changeset;
-            $this->getDocumentPersister(get_class($document))->update($document);
+            $this->getDocumentPersister(get_class($document))->update($document, $options);
         }
     }
 
