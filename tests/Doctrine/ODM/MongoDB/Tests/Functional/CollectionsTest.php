@@ -52,16 +52,17 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $bar = $this->dm->findOne('Documents\Bars\Bar');
+        $this->assertEquals($bar->getId(), $this->dm->getUnitOfWork()->getDocumentIdentifier($bar));
+
         $this->assertNotNull($bar);
         $locations = $bar->getLocations();
         $this->assertEquals(3, count($locations));
         $locations = $bar->getLocations();
-        unset($locations[0], $locations[1], $locations[2]);
+        //unset($locations[0], $locations[1], $locations[2]);
         $locations->clear();
         $this->assertEquals(0, count($locations));
-        $this->dm->flush();
+        $this->dm->flush(array('safe' => true));
         $this->dm->clear();
-
         $bar = $this->dm->findOne('Documents\Bars\Bar');
         $locations = $bar->getLocations();
         $this->assertEquals(0, count($locations));

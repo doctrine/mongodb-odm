@@ -60,9 +60,15 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /** @Document(db="tests", collection="tests") */
 class A
 {
-
     /** @Id */
     protected $id;
+
+    /**
+     * @todo Fix this
+     * @String
+     */
+    protected $test = 'test';
+
     /** @ReferenceMany(targetDocument="b", cascade="all") */
     protected $b;
 
@@ -75,7 +81,6 @@ class A
     {
         return $this->b;
     }
-
 }
 
 /** @Document(db="tests", collection="tests2") */

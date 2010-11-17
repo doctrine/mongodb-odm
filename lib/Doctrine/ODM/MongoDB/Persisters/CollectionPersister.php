@@ -46,11 +46,13 @@ class CollectionPersister
     {
         $mapping = $coll->getMapping();
         $owner = $coll->getOwner();
-        $className = get_class($owner);
+        list($propertyPath, $parent, $parentMapping) = $this->getPathAndParent($owner, $mapping);
+        $propertyPath = $propertyPath ? $propertyPath : $mapping['name'];
+        $className = get_class($parent);
         $class = $this->dm->getClassMetadata($className);
-        $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($owner));
+        $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($parent));
         $collection = $this->dm->getDocumentCollection($className);
-        $query = array($this->cmd . 'unset' => array($mapping['name'] => true));
+        $query = array($this->cmd . 'unset' => array($propertyPath => true));
         $collection->update(array('_id' => $id), $query, array('safe' => true));
     }
 

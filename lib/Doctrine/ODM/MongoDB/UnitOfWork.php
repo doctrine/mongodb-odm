@@ -228,22 +228,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $collectionPersister;
 
+    /**
+     * Array of parent associations between embedded documents
+     *
+     * @todo We might need to clean up this array in clear(), doDetch(), etc.
+     * @var array
+     */
     private $parentAssociations = array();
-
-    public function setParentAssociation($document, $mapping, $parent)
-    {
-        $oid = spl_object_hash($document);
-        $this->parentAssociations[$oid] = array($mapping, $parent);
-    }
-
-    public function getParentAssociation($document)
-    {
-        $oid = spl_object_hash($document);
-        if ( ! isset($this->parentAssociations[$oid])) {
-            return null;
-        }
-        return $this->parentAssociations[$oid];
-    }
 
     /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
@@ -262,6 +253,21 @@ class UnitOfWork implements PropertyChangedListener
     public function getDataPreparer()
     {
         return new DataPreparer($this->dm, $this, $this->dm->getConfiguration()->getMongoCmd());
+    }
+
+    public function setParentAssociation($document, $mapping, $parent)
+    {
+        $oid = spl_object_hash($document);
+        $this->parentAssociations[$oid] = array($mapping, $parent);
+    }
+
+    public function getParentAssociation($document)
+    {
+        $oid = spl_object_hash($document);
+        if ( ! isset($this->parentAssociations[$oid])) {
+            return null;
+        }
+        return $this->parentAssociations[$oid];
     }
 
     /**
@@ -534,16 +540,12 @@ class UnitOfWork implements PropertyChangedListener
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if ($isChangeTrackingNotify) {
                     continue;
-                } else if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'many') {
+                } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
                     if ($orgValue !== $actualValue) {
                         $changeSet[$propName] = array($orgValue, $actualValue);
                         if ($orgValue instanceof PersistentCollection) {
                             $this->collectionDeletions[] = $orgValue;
                         }
-                    }
-                } else if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'many') {
-                    if ($orgValue !== $actualValue) {
-                        $changeSet[$propName] = array($orgValue, $actualValue);
                     }
                 } else if (is_object($orgValue) && $orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
@@ -2103,6 +2105,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionUpdates =
         $this->collectionDeletions =
         $this->extraUpdates =
+        $this->parentAssociations =
         $this->orphanRemovals = array();
         if ($this->commitOrderCalculator !== null) {
             $this->commitOrderCalculator->clear();

@@ -115,8 +115,13 @@ class DataPreparer
             list($old, $new) = $change;
 
             if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
-                if ($this->uow->isScheduledForInsert($new)) {
+                // If we have a new embedded document then lets set it
+                if ($new && $this->uow->isScheduledForInsert($new)) {
                     $result[$this->cmd . 'set'] = array($mapping['name'] => $this->prepareEmbeddedDocValue($mapping, $new));
+                // If we don't have a new value then lets unset the embedded document
+                } else if ( ! $new) {
+                    $result[$this->cmd . 'unset'] = array($mapping['name'] => true);
+                // Update existing embedded document
                 } else {
                     $update = $this->prepareUpdateData($new);
                     foreach ($update as $cmd => $values) {
@@ -286,6 +291,9 @@ class DataPreparer
             $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_name';
             $discriminatorValue = isset($embeddedMapping['discriminatorMap']) ? array_search($class->getName(), $embeddedMapping['discriminatorMap']) : $class->getName();
             $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
+        }
+        if (empty($embeddedDocumentValue)) {
+            return (object) $embeddedDocumentValue;
         }
         return $embeddedDocumentValue;
     }

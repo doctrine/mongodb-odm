@@ -13,7 +13,7 @@ class MODM62Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->refresh($test);
 
-        $test->setB(new \Doctrine\Common\Collections\ArrayCollection(array('test', 'test2')));
+        $test->setB(array('test', 'test2'));
         $this->dm->flush();
         $this->dm->clear();
 
