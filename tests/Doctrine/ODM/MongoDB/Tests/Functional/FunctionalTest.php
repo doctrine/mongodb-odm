@@ -643,21 +643,21 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = new EmbeddedTestLevel0();
         $test->name = 'test';
 
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'test level1 #1';
-        $test->level1[] = $level1;
+        $level1_0 = new EmbeddedTestLevel1();
+        $level1_0->name = 'test level1 #1';
+        $test->level1[0] = $level1_0;
 
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'test level1 #2';
-        $test->level1[] = $level1;
+        $level1_1 = new EmbeddedTestLevel1();
+        $level1_1->name = 'test level1 #2';
+        $test->level1[1] = $level1_1;
 
-        $level2 = new EmbeddedTestLevel2();
-        $level2->name = 'test level2 #1';
-        $level1->level2[] = $level2;
+        $level2_0 = new EmbeddedTestLevel2();
+        $level2_0->name = 'test level2 #1';
+        $level1_1->level2[0] = $level2_0;
 
-        $level2 = new EmbeddedTestLevel2();
-        $level2->name = 'test level2 #2';
-        $level1->level2[] = $level2;
+        $level2_1 = new EmbeddedTestLevel2();
+        $level2_1->name = 'test level2 #2';
+        $level1_1->level2[1] = $level2_1;
 
         $this->dm->persist($test);
         $this->dm->flush();
@@ -666,9 +666,11 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $check = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0');
         $this->assertEquals('test', $check->name);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $check->level1[0]);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $check->level1[0]->level2[0]);
+        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $check->level1[1]);
+        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $check->level1[1]->level2[0]);
+        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $check->level1[1]->level2[1]);
         $this->assertEquals(2, count($check->level1));
-        $this->assertEquals(2, count($check->level1[0]->level2));
+        $this->assertEquals(2, count($check->level1[1]->level2));
     }
 
     public function testEmbeddedInheritance()

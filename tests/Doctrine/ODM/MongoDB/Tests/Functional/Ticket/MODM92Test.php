@@ -40,6 +40,9 @@ class MODM92TestDocument
     /** @Id */
     public $id;
 
+    /** @String */
+    public $test = 'test';
+
     // Note: Test case fails with default "pushPull" strategy, but "set" works 
     /** @EmbedMany(targetDocument="MODM92TestEmbeddedDocument") */
     public $embeddedDocuments;

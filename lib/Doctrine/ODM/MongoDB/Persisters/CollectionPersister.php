@@ -72,17 +72,14 @@ class CollectionPersister
         if ($insertDiff) {
             $query = array($this->cmd.'pullAll' => array());
             foreach ($insertDiff as $key => $document) {
-                $path = '';
+                $path = $mapping['name'];
                 if ($propertyPath) {
-                    $path = $propertyPath.'.';
-                    if ($parentMapping['type'] === 'many') {
-                        $path .= $key.'.';
-                    }
+                    $path = $propertyPath.'.'.$path;
                 }
                 if (isset($mapping['reference'])) {
-                    $query[$this->cmd.'pullAll'][$path.$mapping['name']][] = $this->dp->prepareReferencedDocValue($mapping, $document);
+                    $query[$this->cmd.'pullAll'][$path][] = $this->dp->prepareReferencedDocValue($mapping, $document);
                 } else {
-                    $query[$this->cmd.'pullAll'][$path.$mapping['name']][] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
+                    $query[$this->cmd.'pullAll'][$path][] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
                 }
             }
             $this->executeQuery($parent, $mapping, $query);
@@ -102,17 +99,14 @@ class CollectionPersister
         if ($insertDiff) {
             $query = array($this->cmd.'pushAll' => array());
             foreach ($insertDiff as $key => $document) {
-                $path = '';
+                $path = $mapping['name'];
                 if ($propertyPath) {
-                    $path = $propertyPath.'.';
-                    if ($parentMapping['type'] === 'many') {
-                        $path .= $key.'.';
-                    }
+                    $path = $propertyPath.'.'.$path;
                 }
                 if (isset($mapping['reference'])) {
-                    $query[$this->cmd.'pushAll'][$path.$mapping['name']][] = $this->dp->prepareReferencedDocValue($mapping, $document);
+                    $query[$this->cmd.'pushAll'][$path][] = $this->dp->prepareReferencedDocValue($mapping, $document);
                 } else {
-                    $query[$this->cmd.'pushAll'][$path.$mapping['name']][] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
+                    $query[$this->cmd.'pushAll'][$path][] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
                 }
             }
             $this->executeQuery($parent, $mapping, $query);
@@ -129,8 +123,8 @@ class CollectionPersister
         $fields = array();
         $parent = $document;
         while (null !== ($association = $this->uow->getParentAssociation($parent))) {
-            list($mapping, $parent) = $association;
-            $fields[] = $mapping['name'];
+            list($mapping, $parent, $path) = $association;
+            $fields[] = $path;
         }
         return array(implode('.', array_reverse($fields)), $parent, $mapping);
     }

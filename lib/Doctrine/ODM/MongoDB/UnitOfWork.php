@@ -255,10 +255,10 @@ class UnitOfWork implements PropertyChangedListener
         return new DataPreparer($this->dm, $this, $this->dm->getConfiguration()->getMongoCmd());
     }
 
-    public function setParentAssociation($document, $mapping, $parent)
+    public function setParentAssociation($document, $mapping, $parent, $propertyPath)
     {
         $oid = spl_object_hash($document);
-        $this->parentAssociations[$oid] = array($mapping, $parent);
+        $this->parentAssociations[$oid] = array($mapping, $parent, $propertyPath);
     }
 
     public function getParentAssociation($document)
@@ -647,7 +647,9 @@ class UnitOfWork implements PropertyChangedListener
             $owner = $value->getOwner();
             $className = get_class($owner);
             $class = $this->dm->getClassMetadata($className);
-            $this->collectionUpdates[] = $value;
+            if (!in_array($value, $this->collectionUpdates, true)) {
+                $this->collectionUpdates[] = $value;
+            }
             $this->visitedCollections[] = $value;
         }
 
@@ -663,10 +665,11 @@ class UnitOfWork implements PropertyChangedListener
         } elseif ($value instanceof PersistentCollection) {
             $value = $value->unwrap();
         }
-        foreach ($value as $entry) {
+        foreach ($value as $key => $entry) {
             $targetClass = $this->dm->getClassMetadata(get_class($entry));
             $state = $this->getDocumentState($entry, self::STATE_NEW);
             $oid = spl_object_hash($entry);
+            $path = $mapping['type'] === 'many' ? $mapping['name'].'.'.$key : $mapping['name'];
             if ($state == self::STATE_NEW) {
                 if ( ! $targetClass->isEmbeddedDocument && ! $mapping['isCascadePersist']) {
                     throw new \InvalidArgumentException("A new document was found through a relationship that was not"
@@ -675,10 +678,10 @@ class UnitOfWork implements PropertyChangedListener
                             . " on the relationship.");
                 }
                 $this->persistNew($targetClass, $entry);
-                $this->setParentAssociation($entry, $mapping, $parentDocument);
+                $this->setParentAssociation($entry, $mapping, $parentDocument, $path);
                 $this->computeChangeSet($targetClass, $entry);
             } else if ($state == self::STATE_MANAGED && $targetClass->isEmbeddedDocument) {
-                $this->setParentAssociation($entry, $mapping, $parentDocument);
+                $this->setParentAssociation($entry, $mapping, $parentDocument, $path);
                 $this->computeChangeSet($targetClass, $entry);
             } else if ($state == self::STATE_REMOVED) {
                 return new \InvalidArgumentException("Removed document detected during flush: "

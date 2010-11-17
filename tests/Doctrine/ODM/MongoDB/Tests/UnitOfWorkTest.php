@@ -208,11 +208,11 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
         $documentManager = $this->getDocumentManager();
         $unitOfWork = $this->getUnitOfWork($documentManager);
-        $unitOfWork->setParentAssociation($b, array('name' => 'b'), $a);
-        $unitOfWork->setParentAssociation($c, array('name' => 'c'), $b);
-        $unitOfWork->setParentAssociation($d, array('name' => 'd'), $c);
+        $unitOfWork->setParentAssociation($b, array('name' => 'b'), $a, 'b');
+        $unitOfWork->setParentAssociation($c, array('name' => 'c'), $b, 'b.c');
+        $unitOfWork->setParentAssociation($d, array('name' => 'd'), $c, 'b.c.d');
 
-        $this->assertEquals(array(array('name' => 'd'), $c), $unitOfWork->getParentAssociation($d));
+        $this->assertEquals(array(array('name' => 'd'), $c, 'b.c.d'), $unitOfWork->getParentAssociation($d));
     }
 
     protected function getDocumentManager()

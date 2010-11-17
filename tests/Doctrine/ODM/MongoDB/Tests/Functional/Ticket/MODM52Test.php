@@ -8,11 +8,12 @@ class MODM52Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $emb = new MODM52Embedded(array(new MODM52Embedded(), new MODM52Embedded()));
-        $doc = new MODM52Doc(array($emb));
+        $emb = new MODM52Embedded(array(new MODM52Embedded(null, 'c1'), new MODM52Embedded(null, 'c2')), 'b');
+        $doc = new MODM52Doc(array($emb), 'a');
 
         $this->dm->persist($doc);
         $this->dm->flush(array('safe' => true));
+
         $this->dm->refresh($doc);
 
         // change nested embedded collection:
@@ -35,15 +36,33 @@ class MODM52Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 class MODM52Container
 {
     /** @String */
-    protected $tmp = 'ensureSaved';
+    public $value;
 
     /** @EmbedMany(targetDocument="MODM52Embedded", strategy="set") */
-    protected $items = array();
+    public $items = array();
 
-    function __construct($items = null) {if($items) $this->items = $items;}
-    function getItems() {return $this->items;}
-    function getItem($index) {return $this->items[$index];}
-    function removeItem($i) {unset($this->items[$i]);}
+    public function __construct($items = null, $value = null)
+    {
+        if ($items) {
+            $this->items = $items;
+        }
+        $this->value = $value;
+    }
+
+    public function getItems()
+    {
+        return $this->items;
+    }
+
+    public function getItem($index)
+    {
+        return $this->items[$index];
+    }
+
+    public function removeItem($i)
+    {
+        unset($this->items[$i]);
+    }
 }
 
 /** @EmbeddedDocument */

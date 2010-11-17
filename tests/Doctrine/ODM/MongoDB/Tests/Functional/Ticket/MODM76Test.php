@@ -12,8 +12,10 @@ class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $c1 = new MODM76C;
         $c2 = new MODM76C;
-        $b = new MODM76B(array($c1, $c2));
+
+        $b = new MODM76B($c1);
         $a = new MODM76A(array($b), array($c1));
+
         $this->dm->persist($a);
         $this->dm->flush();
 
@@ -26,8 +28,13 @@ class MODM76A
 {
     /** @Id */
     protected $id;
+
+    /** @String */
+    protected $test = 'test';
+
     /** @EmbedMany(targetDocument="MODM76B") */
     protected $b = array();
+
     /** @ReferenceMany(targetDocument="MODM76C") */
     protected $c = array();
 
@@ -69,6 +76,7 @@ class MODM76B
         return $this->c;
     }
 }
+
 /** @Document(db="tests", collection="tests2") */
 class MODM76C
 {
