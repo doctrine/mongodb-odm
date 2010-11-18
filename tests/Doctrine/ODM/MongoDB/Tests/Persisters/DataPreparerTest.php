@@ -1,6 +1,5 @@
 <?php
 
-use Doctrine\ODM\MongoDB\Tests\Persisters\DataPreparerTest;
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
