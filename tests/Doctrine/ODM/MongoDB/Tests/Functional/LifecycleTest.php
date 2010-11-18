@@ -13,15 +13,26 @@ class LifecycleTest extends BaseTest
 
         $this->dm->persist($parent);
 
+        $this->dm->flush();
+//
+//        unset($parent);
+//        $this->dm->clear();
+//        $parent = $this->dm->findOne(__NAMESPACE__.'\ParentObject');
+
+        $this->assertEquals(1, count($parent->getChildren()));
+
+        $parent->setName('parent #changed');
+
+        $this->dm->flush();
+        $this->dm->flush();
+
+        $this->assertEquals(1, count($parent->getChildren()));
+
         unset($parent);
-        $this->dm->flush();
-        $this->dm->flush();
         $this->dm->clear();
 
         $parent = $this->dm->findOne(__NAMESPACE__.'\ParentObject');
-        $this->assertEquals(1, count($parent->getChildren()));
-        $this->dm->flush();
-        $this->dm->flush();
+        $this->assertEquals('parent #changed', $parent->getName());
         $this->assertEquals(1, count($parent->getChildren()));
     }
 
@@ -52,6 +63,11 @@ class ParentObject
         return $this->id;
     }
 
+    public function getName()
+    {
+        return $this->name;
+    }
+
     /** @PrePersist @PreUpdate */
     public function updateChildrenCollection()
     {
@@ -61,6 +77,11 @@ class ParentObject
     public function getChildren()
     {
         return $this->children;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 }
 
