@@ -15,23 +15,25 @@ class LifecycleTest extends BaseTest
 
         unset($parent);
         $this->dm->flush();
+        $this->dm->flush();
         $this->dm->clear();
 
         $parent = $this->dm->findOne(__NAMESPACE__.'\ParentObject');
         $this->assertEquals(1, count($parent->getChildren()));
+        $this->dm->flush();
         $this->dm->flush();
         $this->assertEquals(1, count($parent->getChildren()));
     }
 
 }
 
-/** @Document */
+/** @Document @HasLifecycleCallbacks */
 class ParentObject
 {
     /** @Id */
     private $id;
 
-    /** @ReferenceMany(targetDocument="ChildObject") */
+    /** @ReferenceMany(targetDocument="ChildObject", cascade="all") */
     private $children;
 
     /** @String */
@@ -50,7 +52,7 @@ class ParentObject
         return $this->id;
     }
 
-    /** @PrePresist @PreUpdate */
+    /** @PrePersist @PreUpdate */
     public function updateChildrenCollection()
     {
         $this->children = array($this->child);
