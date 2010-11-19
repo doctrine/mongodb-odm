@@ -239,7 +239,7 @@ class ClassMetadataFactory
             $class->setParentClasses($visited);
 
             if ($this->evm->hasListeners(ODMEvents::loadClassMetadata)) {
-                $eventArgs = new \Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs($class);
+                $eventArgs = new \Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs($class, $this->dm);
                 $this->evm->dispatchEvent(ODMEvents::loadClassMetadata, $eventArgs);
             }
 
