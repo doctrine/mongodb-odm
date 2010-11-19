@@ -31,7 +31,7 @@ class DataPreparerTest extends BaseTest
     {
         $this->dm->persist($document);
         $this->uow->computeChangeSets();
-        $this->assertEquals($expectedData, $this->dp->prepareInsertData($document));
+        $this->assertDocumentInsertData($expectedData, $this->dp->prepareInsertData($document));
     }
 
     /**
@@ -43,9 +43,25 @@ class DataPreparerTest extends BaseTest
     public function getDocumentsAndExpectedData()
     {
         return array(
-            array(new ConfigurableProduct('Test Product'), array('_id'  => new \MongoId(), 'name' => 'Test Product')),
-            array(new Currency('USD', 1), array('_id' => new \MongoId(), 'name' => 'USD', 'multiplier' => 1)),
+            array(new ConfigurableProduct('Test Product'), array('name' => 'Test Product')),
+            array(new Currency('USD', 1), array('name' => 'USD', 'multiplier' => 1)),
         );
+    }
+
+    private function assertDocumentInsertData(array $expectedData, array $preparedData = null)
+    {
+        foreach ($preparedData as $key => $value) {
+            if ($key === '_id') {
+                $this->assertInstanceOf('MongoId', $value);
+                continue;
+            }
+            $this->assertEquals($expectedData[$key], $value);
+        }
+        if ( ! isset($preparedData['_id'])) {
+            $this->fail('insert data should always contain id');
+        }
+        unset($preparedData['_id']);
+        $this->assertEquals(array_keys($expectedData), array_keys($preparedData));
     }
 
 }
