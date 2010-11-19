@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class LifecycleTest extends BaseTest
 {
-    public function testEvent()
+    public function testEventOnDoubleFlush()
     {
         $parent = new ParentObject('parent', new ChildObject('child'), new ChildEmbeddedObject('child embedded'));
         $this->dm->persist($parent);
@@ -28,6 +28,24 @@ class LifecycleTest extends BaseTest
         $this->assertEquals('parent #changed', $parent->getName());
         $this->assertEquals(1, count($parent->getChildren()));
         $this->assertEquals('changed', $parent->getChildEmbedded()->getName());
+    }
+
+    public function testEvent()
+    {
+        $parent = new ParentObject('parent', new ChildObject('child'), new ChildEmbeddedObject('child embedded'));
+
+        $this->dm->persist($parent);
+        $this->dm->flush();
+
+        $parent->setName('parent #changed');
+
+        $this->dm->flush();
+        unset($parent);
+        $this->dm->clear();
+
+        $parent = $this->dm->findOne(__NAMESPACE__.'\ParentObject');
+
+        $this->assertEquals(1, count($parent->getChildren()));
     }
 }
 
