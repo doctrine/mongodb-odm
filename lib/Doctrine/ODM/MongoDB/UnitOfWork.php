@@ -510,8 +510,8 @@ class UnitOfWork implements PropertyChangedListener
 
         $oid = spl_object_hash($document);
         $actualData = $this->getDocumentActualData($document);
-        $new = false;
-        if ( ! isset($this->originalDocumentData[$oid])) {
+        $isNewDocument = ! isset($this->originalDocumentData[$oid]);
+        if ($isNewDocument) {
             // Document is either NEW or MANAGED but not yet fully persisted (only has an id).
             // These result in an INSERT.
             $this->originalDocumentData[$oid] = $actualData;
@@ -520,9 +520,7 @@ class UnitOfWork implements PropertyChangedListener
                 $changeSet[$propName] = array(null, $actualValue);
             }
             $this->documentChangeSets[$oid] = $changeSet;
-            $new = true;
         } else {
-            $new = false;
             // Document is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
             $originalData = $this->originalDocumentData[$oid];
@@ -556,36 +554,28 @@ class UnitOfWork implements PropertyChangedListener
             if ($changeSet) {
                 $this->documentChangeSets[$oid] = $changeSet;
                 $this->originalDocumentData[$oid] = $actualData;
-                if ( ! $class->isEmbeddedDocument) {
-                    $this->documentUpdates[$oid] = $document;
-                }
+                $this->documentUpdates[$oid] = $document;
             }
         }
 
-        // Look for changes in references of the document
+        // Look for changes in associations of the document
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['reference']) || isset($mapping['embedded'])) {
-                $val = $class->reflFields[$mapping['fieldName']]->getValue($document);
-                if ($val !== null) {
-                    $this->computeAssociationChanges($document, $mapping, $val);
+                $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
+                if ($value !== null) {
+                    $this->computeAssociationChanges($document, $mapping, $value);
+                    $values = $value;
                     if (isset($mapping['type']) && $mapping['type'] === 'one') {
-                        $oid2 = spl_object_hash($val);
+                        $values = array($values);
+                    }
+                    foreach ($values as $obj) {
+                        $oid2 = spl_object_hash($obj);
                         if (isset($this->documentChangeSets[$oid2])) {
-                            $this->documentChangeSets[$oid][$mapping['fieldName']] = array($val, $val);
-                            if (!$new) {
+                            $this->documentChangeSets[$oid][$mapping['fieldName']] = array($value, $value);
+                            if (!$isNewDocument) {
                                 $this->documentUpdates[$oid] = $document;
                             }
-                        }
-                    } else {
-                        foreach ($val as $obj) {
-                            $oid2 = spl_object_hash($obj);
-                            if (isset($this->documentChangeSets[$oid2])) {
-                                $this->documentChangeSets[$oid][$mapping['fieldName']] = array($val, $val);
-                                if (!$new) {
-                                    $this->documentUpdates[$oid] = $document;
-                                }
-                                break;
-                            }
+                            break;
                         }
                     }
                  }
@@ -609,9 +599,6 @@ class UnitOfWork implements PropertyChangedListener
         // Compute changes for other MANAGED documents. Change tracking policies take effect here.
         foreach ($this->identityMap as $className => $documents) {
             $class = $this->dm->getClassMetadata($className);
-            if ($class->isEmbeddedDocument) {
-                continue;
-            }
 
             // If change tracking is explicit or happens through notification, then only compute
             // changes on documents of that type that are explicitly marked for synchronization.

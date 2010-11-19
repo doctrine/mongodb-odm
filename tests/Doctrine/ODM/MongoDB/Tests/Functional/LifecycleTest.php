@@ -8,7 +8,7 @@ class LifecycleTest extends BaseTest
 {
     public function testEvent()
     {
-        $parent = new ParentObject('parent', new ChildObject('child'));
+        $parent = new ParentObject('parent', new ChildObject('child'), new ChildEmbeddedObject('child embedded'));
         $this->dm->persist($parent);
         $this->dm->flush();
 
@@ -27,6 +27,7 @@ class LifecycleTest extends BaseTest
         $parent = $this->dm->findOne(__NAMESPACE__.'\ParentObject');
         $this->assertEquals('parent #changed', $parent->getName());
         $this->assertEquals(1, count($parent->getChildren()));
+        $this->assertEquals('changed', $parent->getChildEmbedded()->getName());
     }
 }
 
@@ -42,12 +43,16 @@ class ParentObject
     /** @String */
     private $name;
 
+    /** @EmbedOne(targetDocument="ChildEmbeddedObject") */
+    private $childEmbedded;
+
     private $child;
 
-    public function __construct($name, ChildObject $child)
+    public function __construct($name, ChildObject $child, ChildEmbeddedObject $childEmbedded)
     {
         $this->name = $name;
         $this->child = $child;
+        $this->childEmbedded = $childEmbedded;
     }
 
     public function getId()
@@ -61,14 +66,25 @@ class ParentObject
     }
 
     /** @PrePersist @PreUpdate */
-    public function updateChildrenCollection()
+    public function prePersistPreUpdate()
     {
         $this->children = array($this->child);
+    }
+
+    /** @PreUpdate */
+    public function preUpdate()
+    {
+        $this->childEmbedded->setName('changed');
     }
 
     public function getChildren()
     {
         return $this->children;
+    }
+
+    public function getChildEmbedded()
+    {
+        return $this->childEmbedded;
     }
 
     public function setName($name)
@@ -94,6 +110,28 @@ class ChildObject
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+}
+
+/** @EmbeddedDocument */
+class ChildEmbeddedObject
+{
+    /** @String */
+    private $name;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 
     public function getName()
