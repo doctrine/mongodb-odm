@@ -722,31 +722,27 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $actualData = $this->getDocumentActualData($document);
+        $isChangeTrackingNotify = $class->isChangeTrackingNotify();
 
         $originalData = isset($this->originalDocumentData[$oid]) ? $this->originalDocumentData[$oid] : array();
         $changeSet = array();
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-            if ($actualValue instanceof PersistentCollection) {
-                if ($actualValue->isDirty()) {
-                    $this->visitedCollections[] = $actualValue;
+            if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
+                if ($orgValue !== null) {
+                    $this->scheduleOrphanRemoval($orgValue);
                 }
-                $actualValue = $actualValue->toArray();
-            }
-            if ($orgValue instanceof PersistentCollection) {
-                if ($orgValue !== $actualValue && $orgValue->isDirty()) {
-                    $this->visitedCollections[] = $orgValue;
-                }
-                $orgValue = $orgValue->getSnapshot();
-            }
-            if ((isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one')
-                    || (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one')) {
-                if ($orgValue !== $actualValue) {
-                    $changeSet[$propName] = array($orgValue, $actualValue);
-                }
+                $changeSet[$propName] = array($orgValue, $actualValue);
+            } else if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
+                $changeSet[$propName] = array($orgValue, $actualValue);
+            } else if ($isChangeTrackingNotify) {
+                continue;
             } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
                 if ($orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
+                    if ($orgValue instanceof PersistentCollection) {
+                        $this->collectionDeletions[] = $orgValue;
+                    }
                 }
             } else if (is_object($orgValue) && $orgValue !== $actualValue) {
                 $changeSet[$propName] = array($orgValue, $actualValue);

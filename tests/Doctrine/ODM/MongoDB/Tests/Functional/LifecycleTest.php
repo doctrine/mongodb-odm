@@ -6,18 +6,11 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class LifecycleTest extends BaseTest
 {
-
     public function testEvent()
     {
         $parent = new ParentObject('parent', new ChildObject('child'));
-
         $this->dm->persist($parent);
-
         $this->dm->flush();
-//
-//        unset($parent);
-//        $this->dm->clear();
-//        $parent = $this->dm->findOne(__NAMESPACE__.'\ParentObject');
 
         $this->assertEquals(1, count($parent->getChildren()));
 
@@ -35,7 +28,6 @@ class LifecycleTest extends BaseTest
         $this->assertEquals('parent #changed', $parent->getName());
         $this->assertEquals(1, count($parent->getChildren()));
     }
-
 }
 
 /** @Document @HasLifecycleCallbacks */
