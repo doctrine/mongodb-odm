@@ -30,7 +30,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class MongoCursor implements \Iterator, \Countable
+class MongoCursor implements MongoIterator
 {
     /** The DocumentManager instance. */
     private $dm;
@@ -182,6 +182,11 @@ class MongoCursor implements \Iterator, \Countable
     public function getResults()
     {
         return iterator_to_array($this);
+    }
+
+    public function toArray()
+    {
+        return $this->getResults();
     }
 
     /**

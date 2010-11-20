@@ -43,6 +43,12 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getSingleResult();
         $this->assertNotNull($city);
         $this->assertEquals('19.999998807907', $city->test);
+
+        $query = $this->dm->createQuery(__NAMESPACE__.'\City')
+            ->field('coordinates')->near(50, 50);
+        foreach ($query as $city2) {
+            $this->assertEquals($city, $city2);
+        }
     }
 
     public function testGeoSpatial2()

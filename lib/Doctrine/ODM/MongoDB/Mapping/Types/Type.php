@@ -56,7 +56,11 @@ abstract class Type
         'increment' => 'Doctrine\ODM\MongoDB\Mapping\Types\IncrementType'
     );
 
-    
+    /**
+     * Array of instantiated type classes.
+     */
+    private static $types = array();
+
     /**
      * Converts a value from its PHP representation to its database representation
      * of this type.
@@ -80,11 +84,6 @@ abstract class Type
     {
         return $value;
     }
-
-    /**
-     * Array of instantiated type classes.
-     */
-    private static $types = array();
 
     /**
      * Register a new type in the type map.

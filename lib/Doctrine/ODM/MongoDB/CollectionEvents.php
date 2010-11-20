@@ -33,6 +33,8 @@ namespace Doctrine\ODM\MongoDB;
  */
 final class CollectionEvents
 {
+    private function __construct() {}
+
     const preBatchInsert = 'collectionPreBatchInsert';
     const postBatchInsert = 'collectionPostBatchInsert';
 

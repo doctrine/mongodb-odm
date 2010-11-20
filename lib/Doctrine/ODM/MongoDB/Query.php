@@ -30,7 +30,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class Query
+class Query implements MongoIterator
 {
     const TYPE_FIND     = 1;
     const TYPE_INSERT   = 2;
@@ -106,6 +106,11 @@ class Query
 
     /** Whether or not the query is a findAndModify query. Stores an array of options if not false. */
     private $findAndModify = false;
+
+    /**
+     * @var MongoIterator
+     */
+    private $iterator;
 
     /** Refresh hint */
     const HINT_REFRESH = 1;
@@ -977,17 +982,6 @@ class Query
     }
 
     /**
-     * Proxy to execute() method
-     *
-     * @param array $options
-     * @return Query
-     */
-    public function getResult(array $options = array())
-    {
-        return $this->execute($options);
-    }
-
-    /**
      * Execute the query and return an array of results
      *
      * @param array $options
@@ -1000,9 +994,9 @@ class Query
                 if ($this->distinctField !== null) {
                     return $this->executeDistinctFieldQuery($options);
                 } elseif ($this->near !== null) {
-                    return $this->executeGeoLocationQuery($options);
+                    return $this->executeGeoLocationFindQuery($options);
                 } else {
-                    return $this->getCursor();
+                    return $this->executeFindQuery();
                 }
                 break;
             case self::TYPE_REMOVE;
@@ -1039,6 +1033,24 @@ class Query
     }
 
     /**
+     * Executes the query and gets the iterator.
+     *
+     * @param array $options
+     * @return MongoIterator $iterator
+     */
+    public function getIterator(array $options = array())
+    {
+        if ($this->iterator === null) {
+            $iterator = $this->execute($options);
+            if ($iterator !== null && !$iterator instanceof MongoIterator) {
+                throw new \BadMethodCallException('Query execution did not return an iterator. This query may not support returning iterators. ');
+            }
+            $this->iterator = $iterator;
+        }
+        return $this->iterator;
+    }
+
+    /**
      * Count the number of results for this query.
      *
      * @param bool $all
@@ -1046,7 +1058,7 @@ class Query
      */
     public function count($all = false)
     {
-        return $this->getCursor()->count($all);
+        return $this->getIterator()->count($all);
     }
 
     /**
@@ -1056,11 +1068,9 @@ class Query
      */
     public function getSingleResult(array $options = array())
     {
-        if ($results = $this->execute($options)) {
-            if ($results instanceof MongoCursor) {
-                return $results->getSingleResult();
-            }
-            return array_shift($results);
+        if ($results = $this->getIterator($options)) {
+            $array = $results->toArray();
+            return array_shift($array);
         }
         return null;
     }
@@ -1072,7 +1082,7 @@ class Query
      */
     public function iterate()
     {
-        return $this->getCursor();
+        return $this->getIterator();
     }
 
     /**
@@ -1098,18 +1108,12 @@ class Query
     }
 
     /**
-     * Get the MongoCursor for this query instance.
+     * Execute find query.
      *
      * @return MongoCursor $cursor
      */
-    private function getCursor()
+    private function executeFindQuery()
     {
-        if ($this->type !== self::TYPE_FIND) {
-            throw new \InvalidArgumentException(
-                'Cannot get cursor for an update or remove query. Use execute() method.'
-            );
-        }
-
         if (isset($this->mapReduce['map']) && $this->mapReduce['reduce']) {
             $cursor = $this->dm->mapReduce($this->className, $this->mapReduce['map'], $this->mapReduce['reduce'], $this->query, isset($this->mapReduce['options']) ? $this->mapReduce['options'] : array());
             $cursor->hydrate(false);
@@ -1189,7 +1193,7 @@ class Query
                 'key' => $this->distinctField,
                 'query' => $this->query
             ));
-        return $result['values'];
+        return new MongoArrayIterator($result['values']);
     }
 
     /**
@@ -1197,7 +1201,7 @@ class Query
      *
      * @return array $documents Array of documents.
      */
-    private function executeGeoLocationQuery()
+    private function executeGeoLocationFindQuery()
     {
         $command = array(
             'geoNear' => $this->dm->getDocumentCollection($this->className)->getName(),
@@ -1210,7 +1214,7 @@ class Query
         $result = $this->dm->getDocumentDB($this->className)
             ->command($command);
         if ( ! isset($result['results'])) {
-            return array();
+            return new MongoArrayIterator(array());
         }
         if ($this->hydrate) {
             $uow = $this->dm->getUnitOfWork();
@@ -1222,10 +1226,11 @@ class Query
                 }
                 $documents[] = $uow->getOrCreateDocument($this->class->name, $document);
             }
-            return $documents;
+            $results = $documents;
         } else {
-            return $result['results'];
+            $results = $result['results'];
         }
+        return new MongoArrayIterator($results);
     }
 
     /**
@@ -1283,5 +1288,53 @@ class Query
             $this->className = $className;
             $this->class = $this->dm->getClassMetadata($className);
         }
+    }
+
+    /** @inheritDoc */
+    public function first()
+    {
+        return $this->getIterator()->first();
+    }
+
+    /** @inheritDoc */
+    public function last()
+    {
+        return $this->getIterator()->last();
+    }
+
+    /** @inheritDoc */
+    public function key()
+    {
+        return $this->getIterator()->key();
+    }
+
+    /** @inheritDoc */
+    public function next()
+    {
+        return $this->getIterator()->next();
+    }
+
+    /** @inheritDoc */
+    public function current()
+    {
+        return $this->getIterator()->current();
+    }
+
+    /** @inheritDoc */
+    public function rewind()
+    {
+        return $this->getIterator()->rewind();
+    }
+
+    /** @inheritDoc */
+    public function valid()
+    {
+        return $this->getIterator()->valid();
+    }
+
+    /** @inheritDoc */
+    public function toArray()
+    {
+        return $this->getIterator()->toArray();
     }
 }
