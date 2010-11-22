@@ -30,7 +30,7 @@ class LifecycleTest extends BaseTest
         $this->assertEquals('changed', $parent->getChildEmbedded()->getName());
     }
 
-    public function testEvent()
+    public function testEventEmptyFlush()
     {
         $parent = new ParentObject('parent', new ChildObject('child'), new ChildEmbeddedObject('child embedded'));
 
@@ -44,7 +44,6 @@ class LifecycleTest extends BaseTest
         $this->dm->clear();
 
         $parent = $this->dm->findOne(__NAMESPACE__.'\ParentObject');
-
         $this->assertEquals(1, count($parent->getChildren()));
     }
 }

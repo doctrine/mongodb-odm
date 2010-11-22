@@ -729,6 +729,8 @@ class UnitOfWork implements PropertyChangedListener
                     $changeSet[$propName] = array($orgValue, $actualValue);
                     if ($orgValue instanceof PersistentCollection) {
                         $this->collectionDeletions[] = $orgValue;
+                        $this->collectionUpdates[] = $actualValue;
+                        $this->visitedCollections[] = $actualValue;
                     }
                 }
             } else if (is_object($orgValue) && $orgValue !== $actualValue) {
