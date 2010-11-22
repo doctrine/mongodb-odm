@@ -24,7 +24,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
  * of a document and it's references.
- * 
+ *
  * Once populated, ClassMetadata instances are usually cached in a serialized form.
  *
  * <b>IMPORTANT NOTE:</b>
@@ -116,7 +116,7 @@ class ClassMetadata
     public $identifier;
 
     /**
-     * READ-ONLY: The field that stores a file reference and indicates the 
+     * READ-ONLY: The field that stores a file reference and indicates the
      * document is a file and should be stored on the MongoGridFS.
      */
     public $file;
@@ -164,7 +164,7 @@ class ClassMetadata
 
     /**
      * Whether custom id value is allowed or not
-     * 
+     *
      * @var bool
      */
     public $allowCustomID = false;
@@ -189,10 +189,10 @@ class ClassMetadata
      * @var array
      */
     public $reflFields = array();
-    
+
     /**
      * The prototype from which new instances of the mapped class are created.
-     * 
+     *
      * @var object
      */
     private $prototype;
@@ -1187,7 +1187,7 @@ class ClassMetadata
 
     /**
      * Creates a new instance of the mapped class, without invoking the constructor.
-     * 
+     *
      * @return object
      */
     public function newInstance()
@@ -1204,11 +1204,11 @@ class ClassMetadata
      * It is only serialized what is necessary for best unserialization performance.
      * That means any metadata properties that are not set or empty or simply have
      * their default value are NOT serialized.
-     * 
+     *
      * Parts that are also NOT serialized because they can not be properly unserialized:
      *      - reflClass (ReflectionClass)
      *      - reflFields (ReflectionProperty array)
-     * 
+     *
      * @return array The names of all the fields that should be serialized.
      */
     public function __sleep()
@@ -1259,7 +1259,7 @@ class ClassMetadata
 
     /**
      * Restores some state that can not be serialized/unserialized.
-     * 
+     *
      * @return void
      */
     public function __wakeup()
