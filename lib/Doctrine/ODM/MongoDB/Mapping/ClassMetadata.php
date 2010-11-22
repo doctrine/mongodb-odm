@@ -1222,6 +1222,7 @@ class ClassMetadata
             'db',
             'collection',
             'rootDocumentName',
+            'allowCustomID'
         );
 
         // The rest of the metadata is only serialized if necessary.
