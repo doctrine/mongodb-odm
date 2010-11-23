@@ -1245,17 +1245,12 @@ class Query implements MongoIterator
     {
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
-            if ($e[1] === '$id') {
-                $fieldName = $e[0] . '.$id';
-                $value = $this->class->getDatabaseIdentifierValue($value);
-            } elseif ($this->class->hasField($e[0])) {
-                $mapping = $this->class->getFieldMapping($e[0]);
-                if (isset($mapping['targetDocument'])) {
-                    $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-                    if ($targetClass->hasField($e[1]) && $targetClass->identifier === $e[1]) {
-                        $fieldName = $e[0] . '.$id';
-                        $value = $targetClass->getDatabaseIdentifierValue($value);
-                    }
+            $mapping = $this->class->getFieldMapping($e[0]);
+            if (isset($mapping['targetDocument'])) {
+                $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+                if ($targetClass->hasField($e[1]) && $targetClass->identifier === $e[1]) {
+                    $fieldName = $e[0] . '.$id';
+                    $value = $targetClass->getDatabaseIdentifierValue($value);
                 }
             }
         } else {
