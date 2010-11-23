@@ -119,10 +119,10 @@ class DataPreparer
             if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
                 // If we have a new embedded document then lets set it
                 if ($new && $this->uow->isScheduledForInsert($new)) {
-                    $result[$this->cmd . 'set'] = array($mapping['name'] => $this->prepareEmbeddedDocValue($mapping, $new));
+                    $result[$this->cmd . 'set'][$mapping['name']] = $this->prepareEmbeddedDocValue($mapping, $new);
                 // If we don't have a new value then lets unset the embedded document
                 } else if ( ! $new) {
-                    $result[$this->cmd . 'unset'] = array($mapping['name'] => true);
+                    $result[$this->cmd . 'unset'][$mapping['name']] = true;
                 // Update existing embedded document
                 } else {
                     $update = $this->prepareUpdateData($new);
