@@ -1251,6 +1251,8 @@ class Query implements MongoIterator
                 if ($targetClass->hasField($e[1]) && $targetClass->identifier === $e[1]) {
                     $fieldName = $e[0] . '.$id';
                     $value = $targetClass->getDatabaseIdentifierValue($value);
+                } elseif ($e[1] === '$id') {
+                    $value = $targetClass->getDatabaseIdentifierValue($value);
                 }
             }
         } else {

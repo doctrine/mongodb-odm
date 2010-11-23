@@ -115,16 +115,15 @@ class Hydrator
             } else {
                 $rawValue = isset($data[$mapping['name']]) ? $data[$mapping['name']] : null;
             }
-            if ($rawValue === null) {
-                continue;
-            }
-
             $value = null;
 
             // Hydrate embedded
             if (isset($mapping['embedded'])) {
                 $uow = $this->dm->getUnitOfWork();
                 if ($mapping['type'] === 'one') {
+                    if ($rawValue === null) {
+                        continue;
+                    }
                     $embeddedDocument = $rawValue;
                     $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                     $embeddedMetadata = $this->dm->getClassMetadata($className);
@@ -142,21 +141,23 @@ class Hydrator
                 } elseif ($mapping['type'] === 'many') {
                     $embeddedDocuments = $rawValue;
                     $coll = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getConfiguration());
-                    foreach ($embeddedDocuments as $key => $embeddedDocument) {
-                        $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
-                        $embeddedMetadata = $this->dm->getClassMetadata($className);
-                        $embeddedDocumentObject = $embeddedMetadata->newInstance();
+                    if ($embeddedDocuments) {
+                        foreach ($embeddedDocuments as $key => $embeddedDocument) {
+                            $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                            $embeddedMetadata = $this->dm->getClassMetadata($className);
+                            $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
-                        // unset a potential discriminator map field (unless it's a persisted property)
-                        $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
-                        if (!isset($embeddedMetadata->fieldMappings[$discriminatorField])) {
-                            unset($embeddedDocument[$discriminatorField]);
+                            // unset a potential discriminator map field (unless it's a persisted property)
+                            $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
+                            if (!isset($embeddedMetadata->fieldMappings[$discriminatorField])) {
+                                unset($embeddedDocument[$discriminatorField]);
+                            }
+
+                            $this->hydrate($embeddedDocumentObject, $embeddedDocument);
+                            $uow->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
+                            $uow->setParentAssociation($embeddedDocumentObject, $mapping, $document, $mapping['name'].'.'.$key);
+                            $coll->add($embeddedDocumentObject);
                         }
-
-                        $this->hydrate($embeddedDocumentObject, $embeddedDocument);
-                        $uow->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
-                        $uow->setParentAssociation($embeddedDocumentObject, $mapping, $document, $mapping['name'].'.'.$key);
-                        $coll->add($embeddedDocumentObject);
                     }
                     $coll->setOwner($document, $mapping);
                     $coll->takeSnapshot();
@@ -166,6 +167,9 @@ class Hydrator
             } elseif (isset($mapping['reference'])) {
                 $reference = $rawValue;
                 if ($mapping['type'] === 'one' && isset($reference[$this->cmd . 'id'])) {
+                    if ($reference === null) {
+                        continue;
+                    }
                     $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
                     $targetMetadata = $this->dm->getClassMetadata($className);
                     $id = $targetMetadata->getPHPIdentifierValue($reference[$this->cmd . 'id']);

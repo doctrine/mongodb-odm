@@ -200,6 +200,8 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('id')->equals($test->id)
             ->getSingleResult();
 
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $test->level1);
+
         // verify that test has no more level1
         $this->assertEquals(0, $test->level1->count());
     }

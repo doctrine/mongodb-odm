@@ -37,6 +37,9 @@ class User extends BaseDocument
     /** @ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
+    /** @ReferenceMany(targetDocument="Account", cascade={"all"}) */
+    protected $accounts;
+
     /** @Int */
     protected $hits = 0;
 
