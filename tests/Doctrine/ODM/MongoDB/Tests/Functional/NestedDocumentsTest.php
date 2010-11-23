@@ -11,9 +11,16 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $order = new Order();
         $order->title = 'Order';
-        $order->product = $product;
 
+        $this->dm->persist($product);
         $this->dm->persist($order);
+        $this->dm->flush();
+
+        $productBackup = new ProductBackup();
+        $productBackup->title = $product->title;
+        $productBackup->id = $product->id;
+        $order->product = $productBackup;
+
         $this->dm->flush();
         $this->dm->clear();
 
@@ -261,7 +268,7 @@ class Order
     /** @String */
     public $title;
 
-    /** @EmbedOne(targetDocument="Product") */
+    /** @EmbedOne(targetDocument="ProductBackup") */
     public $product;
 }
 
@@ -273,4 +280,9 @@ class Product
 
     /** @String */
     public $title;
+}
+
+/** @EmbeddedDocument */
+class ProductBackup extends Product
+{
 }

@@ -2183,6 +2183,9 @@ class UnitOfWork implements PropertyChangedListener
                 $this->originalDocumentData[$oid] = $data;
             }
         } else {
+            $oid = spl_object_hash($document);
+            $this->documentStates[$oid] = self::STATE_MANAGED;
+            $this->identityMap[$class->rootDocumentName][$id] = $document;
             $this->hydrator->hydrate($document, $data);
             $this->registerManaged($document, $id, $data);
         }

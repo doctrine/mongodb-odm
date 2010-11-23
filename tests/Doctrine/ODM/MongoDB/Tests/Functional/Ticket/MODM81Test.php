@@ -2,10 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-require_once __DIR__ . '/../../../../../../TestInit.php';
-
 use Doctrine\ODM\MongoDB\ODMEvents,
- Doctrine\Common\Collections\ArrayCollection;
+  Doctrine\Common\Collections\ArrayCollection;
 
 class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest {
 
@@ -28,8 +26,6 @@ class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest {
         $dm->persist($doc1);
         $dm->persist($doc2);
         $dm->flush();
-        $dm->refresh($doc1);
-        $dm->refresh($doc2);
 
         $embedded = new MODM81TestEmbeddedDocument($doc1, $doc2, 'Test1');
         $doc1->setEmbeddedDocuments(array($embedded));
@@ -41,10 +37,13 @@ class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest {
         $doc1 = $dm->findOne(__NAMESPACE__ . '\MODM81TestDocument', array('_id' => new \MongoId($doc1->getId())));
         $doc1->setName('Document1Change');
 
+        $this->assertSame($doc1, $doc1->getEmbeddedDocuments()->get(0)->getRefTodocument1());
+
         $dm->flush();
         $dm->clear();
 
         $doc1 = $dm->findOne(__NAMESPACE__ . '\MODM81TestDocument', array('_id' => new \MongoId($doc1->getId())));
+        $this->assertNotNull($doc1);
         $this->assertEquals('Document1Change', $doc1->getName());
 
         $doc1->getEmbeddedDocuments()->get(0)->getRefTodocument1()->setName('Document1ProxyChange');
