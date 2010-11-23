@@ -39,6 +39,17 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('_id' => new \MongoId('4ce6a8cdfdc212f420500100')), $q->debug('query'));
     }
 
+    public function testPrepareWhereValueWithCustomId()
+    {
+        $q = $this->dm->createQuery('Documents\CustomUser')
+            ->field('id')->equals('4ce6a8cdfdc212f420500100');
+        $this->assertEquals(array('_id' => '4ce6a8cdfdc212f420500100'), $q->debug('query'));
+
+        $q = $this->dm->createQuery('Documents\CustomUser')
+            ->field('account.$id')->equals('4ce6a8cdfdc212f420500100');
+        $this->assertEquals(array('account.$id' => new \MongoId('4ce6a8cdfdc212f420500100')), $q->debug('query'));
+    }
+
     public function testDistinct()
     {
         $user = new User();
