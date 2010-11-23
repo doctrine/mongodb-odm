@@ -574,7 +574,7 @@ class ClassMetadata
     }
 
     /**
-     * Gets the ReflectionPropertys of the mapped class.
+     * Gets the ReflectionProperties of the mapped class.
      *
      * @return array An array of ReflectionProperty instances.
      */
@@ -725,7 +725,7 @@ class ClassMetadata
     }
 
     /**
-     * Reeturns TRUE if this Document is mapped to a collection FALSE otherwise.
+     * Returns TRUE if this Document is mapped to a collection FALSE otherwise.
      *
      * @return boolean
      */

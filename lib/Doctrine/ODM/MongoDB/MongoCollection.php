@@ -62,7 +62,7 @@ class MongoCollection
      * Create a new MongoCollection instance that wraps a PHP MongoCollection instance
      * for a given ClassMetadata instance.
      *
-     * @param MongoCollection $mongoColleciton The MongoCollection instance.
+     * @param MongoCollection $mongoCollection The MongoCollection instance.
      * @param ClassMetadata $class The ClassMetadata instance.
      * @param EventManager $evm The EventManager instance.
      * @param Configuration $c The Configuration instance
