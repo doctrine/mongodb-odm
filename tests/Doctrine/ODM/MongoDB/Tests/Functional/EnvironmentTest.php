@@ -124,8 +124,9 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
         $doc = array('name' => 'test doc');
         $coll->insert($doc);
 
-        $docName = $this->dm->createQuery('Doctrine\ODM\MongoDB\Tests\Functional\TestDocument')
+        $docName = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\TestDocument')
             ->field('name')->equals('test doc')
+            ->getQuery()
             ->getSingleResult();
 
         $this->assertEquals((string)$doc['_id'], $docName->getId());

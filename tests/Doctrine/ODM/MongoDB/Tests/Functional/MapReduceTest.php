@@ -169,9 +169,10 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
         $cursor = $this->dm->mapReduce('Documents\Ecommerce\ConfigurableProduct', $map, $reduce);
         $this->assertEquals(10, $cursor->count());
 
-        $cursor = $this->dm->createQuery('Documents\Ecommerce\ConfigurableProduct')
-            ->mapReduce($map, $reduce)
-            ->execute();
+        $qb = $this->dm->createQueryBuilder('Documents\Ecommerce\ConfigurableProduct')
+            ->mapReduce($map, $reduce);
+        $query = $qb->getQuery();
+        $cursor = $query->execute();
         $this->assertEquals(10, $cursor->count());
         $results = $cursor->getResults();
         $this->assertTrue(is_array($results['product_0']));
@@ -203,7 +204,7 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
         $this->dm->persist($event3);
         $this->dm->flush();
 
-        $query = $this->dm->createQuery('Documents\Event')
+        $qb = $this->dm->createQueryBuilder('Documents\Event')
             ->field('type')
             ->equals('sale')
             ->map('function() { emit(this.user.$id, 1); }')
@@ -214,7 +215,7 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
                 }
                 return sum;
             }");
-
+        $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
         $this->assertEquals($user->getId(), (string) $user2['_id']);
         $this->assertEquals(3, $user2['value']);

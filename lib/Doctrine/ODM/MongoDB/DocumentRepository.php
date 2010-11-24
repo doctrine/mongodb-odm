@@ -67,9 +67,9 @@ class DocumentRepository
      *
      * @return Query $qb
      */
-    public function createQuery()
+    public function createQueryBuilder()
     {
-        return $this->dm->createQuery()
+        return $this->dm->createQueryBuilder()
             ->find($this->documentName);
     }
 

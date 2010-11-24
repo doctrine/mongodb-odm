@@ -24,8 +24,9 @@ class IdentifiersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $query = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('id')->equals($user->getId());
+        $query = $qb->getQuery();
 
         $user = $query->getSingleResult();
         $this->assertSame($user, $user);

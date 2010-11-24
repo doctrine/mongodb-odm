@@ -13,9 +13,10 @@ class MODM88Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->createQuery('Documents\Article')
-            ->select('_id', 'title')
-            ->getSingleResult();
+        $qb = $this->dm->createQueryBuilder('Documents\Article')
+            ->select('_id', 'title');
+        $q = $qb->getQuery();
+        $document = $q->getSingleResult();
         
         $this->assertEquals('Test Title', $document->getTitle());
         $this->assertNull($document->getBody());

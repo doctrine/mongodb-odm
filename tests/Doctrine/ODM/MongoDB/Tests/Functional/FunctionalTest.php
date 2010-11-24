@@ -217,37 +217,37 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertNotNull($this->dm->find('Documents\User', array('phonenumbers.phonenumber' => '6155139185'))->getSingleResult());
 
-        $query = $this->dm->query("find all Documents\User where phonenumbers.phonenumber = '6155139185'");
+        $query = $this->dm->createQuery("find all Documents\User where phonenumbers.phonenumber = '6155139185'");
         $this->assertNotNull($query->getSingleResult());
 
-        $query = $this->dm->query("find all Documents\User where phonenumbers.phonenumber = ?", array('6155139185'));
+        $query = $this->dm->createQuery("find all Documents\User where phonenumbers.phonenumber = ?", array('6155139185'));
         $this->assertNotNull($query->getSingleResult());
 
-        $query = $this->dm->query('find all Documents\User where address.city = ?', 'nashville');
+        $query = $this->dm->createQuery('find all Documents\User where address.city = ?', 'nashville');
         $this->assertNotNull($query->getSingleResult());
 
-        $query = $this->dm->query('find all Documents\User where phonenumbers size :size', array(':size' => 1));
+        $query = $this->dm->createQuery('find all Documents\User where phonenumbers size :size', array(':size' => 1));
         $this->assertNotNull($query->getSingleResult());
 
-        $query = $this->dm->query('find all Documents\User where phonenumbers size ?', 1);
+        $query = $this->dm->createQuery('find all Documents\User where phonenumbers size ?', 1);
         $this->assertNotNull($query->getSingleResult());
 
-        $query = $this->dm->query('find all Documents\User where phonenumbers size 1');
+        $query = $this->dm->createQuery('find all Documents\User where phonenumbers size 1');
         $this->assertNotNull($query->getSingleResult());
 
-        $this->dm->query('update Documents\User set address.city = ?', 'atlanta')
+        $this->dm->createQuery('update Documents\User set address.city = ?', 'atlanta')
             ->execute();
 
-        $query = $this->dm->query('find all Documents\User where address.city = ?', 'atlanta');
+        $query = $this->dm->createQuery('find all Documents\User where address.city = ?', 'atlanta');
         $this->assertNotNull($query->getSingleResult());
 
-        $this->dm->query('remove Documents\User where address.city = ?', 'atlanta')
+        $this->dm->createQuery('remove Documents\User where address.city = ?', 'atlanta')
             ->execute();
 
-        $query = $this->dm->query('find all Documents\User where address.city = ?', 'atlanta');
+        $query = $this->dm->createQuery('find all Documents\User where address.city = ?', 'atlanta');
         $this->assertNull($query->getSingleResult());
 
-        $this->dm->query("insert Documents\User set username = 'jonwage', address.city = 'atlanta'")
+        $this->dm->createQuery("insert Documents\User set username = 'jonwage', address.city = 'atlanta'")
             ->execute();
         $document = $this->dm->getDocumentCollection('Documents\User')->findOne(array('username' => 'jonwage'));
         $this->assertEquals('atlanta', $document['address']['city']);
@@ -261,7 +261,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $query = $this->dm->query("find all Documents\User where username = :username", array(':username' => 'jwage'));
+        $query = $this->dm->createQuery("find all Documents\User where username = :username", array(':username' => 'jwage'));
         $this->assertNotNull($query->getSingleResult());
     }
 
@@ -611,17 +611,20 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         )->getResults();
         $this->assertEquals(2, count($test));
 
-        $q = $this->dm->createQuery(array(
+        $qb = $this->dm->createQueryBuilder(array(
             'Documents\Functional\SameCollection1',
             'Documents\Functional\SameCollection2')
         );
-        $test = $q->execute();
+        $q = $qb->getQuery();
+        $text = $q->execute();
         $this->assertEquals(2, count($test));
 
         $test = $this->dm->find('Documents\Functional\SameCollection1')->getResults();
         $this->assertEquals(1, count($test));
 
-        $test = $this->dm->createQuery('Documents\Functional\SameCollection1')->execute();
+        $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
+        $query = $qb->getQuery();
+        $test = $query->execute();
         $this->assertEquals(1, count($test));
     }
 
@@ -630,10 +633,10 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testNotSameCollectionThrowsException()
     {
-        $test = $this->dm->createQuery(array(
+        $test = $this->dm->createQueryBuilder(array(
              'Documents\User',
              'Documents\Profile')
-         )->execute();
+         )->getQuery()->execute();
     }
 
     public function testEmbeddedNesting()

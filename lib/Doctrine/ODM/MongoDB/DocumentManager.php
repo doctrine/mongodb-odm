@@ -23,6 +23,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory,
     Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
     Doctrine\ODM\MongoDB\Query,
+    Doctrine\ODM\MongoDB\QueryBuilder,
     Doctrine\ODM\MongoDB\Mongo,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
@@ -317,7 +318,7 @@ class DocumentManager
         return $this->documentCollections[$key];
     }
 
-    public function query($queryString, $parameters = array())
+    public function createQuery($queryString, $parameters = array())
     {
         if ( ! is_array($parameters)) {
             $parameters = array($parameters);
@@ -331,9 +332,9 @@ class DocumentManager
      * @param string $documentName The document class name.
      * @return Document\ODM\MongoDB\Query
      */
-    public function createQuery($documentName = null)
+    public function createQueryBuilder($documentName = null)
     {
-        return new Query($this, $this->hydrator, $this->config->getMongoCmd(), $documentName);
+        return new QueryBuilder($this, $this->hydrator, $this->config->getMongoCmd(), $documentName);
     }
 
     /**
@@ -483,7 +484,7 @@ class DocumentManager
     public function load($documentName, $id, $data)
     {
         if ($data !== null) {
-            $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
+            $hints = array(QueryBuilder::HINT_REFRESH => QueryBuilder::HINT_REFRESH);
             $document = $this->unitOfWork->getOrCreateDocument($documentName, $data, $hints);
             return $document;
         }

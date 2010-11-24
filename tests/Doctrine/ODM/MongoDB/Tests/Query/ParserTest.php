@@ -3,7 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use Doctrine\ODM\MongoDB\Query\Parser,
-    Doctrine\ODM\MongoDB\Query;
+    Doctrine\ODM\MongoDB\QueryBuilder;
 
 class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -88,7 +88,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testMixingException()
     {
-        $query = $this->dm->query('find all Documents\User where username = ? and password = :password', array('jwage', ':password' => 'changeme'));
+        $query = $this->dm->createQuery('find all Documents\User where username = ? and password = :password', array('jwage', ':password' => 'changeme'));
     }
 
     public function testComplexQuery()
@@ -201,7 +201,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPlaceholders()
     {
-        $query = $this->dm->query('find all Documents\User where username = ? and password = ?', array('jwage', 'changeme'));
+        $query = $this->dm->createQuery('find all Documents\User where username = ? and password = ?', array('jwage', 'changeme'));
         $this->assertEquals(array('username' => 'jwage', 'password' => 'changeme'), $query->debug('query'));
     }
 
@@ -225,7 +225,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testMultipleOperators()
     {
-        $query = $this->dm->query("update Documents\User set username = 'jwage', set password = 'changeme', inc count = 1, push groups = 1");
+        $query = $this->dm->createQuery("update Documents\User set username = 'jwage', set password = 'changeme', inc count = 1, push groups = 1");
         $this->assertEquals(array($this->escape('set') => array('username' => 'jwage', 'password' => 'changeme'), $this->escape('inc') => array('count' => 1), $this->escape('push') => array('groups' => 1)), $query->debug('newObj'));
     }
 
@@ -250,7 +250,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testInsert()
     {
         $query = $this->parser->parse("insert Documents\User set username = 'jwage', password = 'changeme'");
-        $this->assertEquals(Query::TYPE_INSERT, $query->debug('type'));
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Query\InsertQuery', $query);
         $this->assertEquals(array('username' => 'jwage', 'password' => 'changeme'), $query->debug('newObj'));
     }
 
@@ -276,14 +276,14 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testRemove()
     {
         $query = $this->parser->parse("remove Documents\User where username = 'jwage'");
-        $this->assertEquals(Query::TYPE_REMOVE, $query->debug('type'));
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Query\RemoveQuery', $query);
         $this->assertEquals(array('username' => 'jwage'), $query->debug('query'));
     }
 
     public function testUpdate()
     {
         $query = $this->parser->parse("update Documents\User set username = 'jwage', set password = 'changeme', set groups = '[1, 2, 3]'");
-        $this->assertEquals(Query::TYPE_UPDATE, $query->debug('type'));
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Query\UpdateQuery', $query);
         $this->assertEquals(array($this->escape('set') => array('username' => 'jwage', 'password' => 'changeme', 'groups' => array(1, 2, 3))), $query->debug('newObj'));
     }
 
@@ -350,7 +350,7 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testFind()
     {
         $query = $this->parser->parse("find all Documents\User");
-        $this->assertEquals(Query::TYPE_FIND, $query->debug('type'));
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Query\FindQuery', $query);
     }
 
     public function testWhere()
@@ -392,8 +392,9 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testFindSpecificFields()
     {
         $query = $this->parser->parse('find username, password Documents\User');
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Query\FindQuery', $query);
         $this->assertEquals(array('username', 'password'), $query->debug('select'));
-        $this->assertEquals('Documents\User', $query->debug('className'));
+        $this->assertEquals('Documents\User', $query->debug('class')->name);
     }
 
     public function testFindAllFields()

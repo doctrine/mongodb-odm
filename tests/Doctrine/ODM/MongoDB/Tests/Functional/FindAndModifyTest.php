@@ -13,11 +13,12 @@ class FindAndModifyTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $coll->batchInsert($docs);
 
         // test update findAndModify
-        $q = $this->dm->createQuery()
+        $q = $this->dm->createQueryBuilder()
             ->update('Documents\User')
             ->findAndModify(array('new' => true))
             ->field('count')->inc(5)
-            ->field('username')->set('jwage');
+            ->field('username')->set('jwage')
+            ->getQuery();
         $result = $q->execute();
 
         // Test the username was set and count incremented
@@ -25,10 +26,11 @@ class FindAndModifyTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(5, $result->getCount());
 
         // Test remove findAndModify
-        $q = $this->dm->createQuery()
+        $q = $this->dm->createQueryBuilder()
             ->remove('Documents\User')
             ->findAndModify()
-            ->field('username')->equals('jwage');
+            ->field('username')->equals('jwage')
+            ->getQuery();
         $result = $q->execute();
 
         // Test the object was returned

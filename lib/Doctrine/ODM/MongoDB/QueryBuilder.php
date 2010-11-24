@@ -20,7 +20,8 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\Hydrator;
+    Doctrine\ODM\MongoDB\Hydrator,
+    Doctrine\ODM\MongoDB\Query\AbstractQuery;
 
 /**
  * Query object that represents a query using a documents MongoCollection::find()
@@ -30,87 +31,161 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class Query implements MongoIterator
+class QueryBuilder
 {
-    const TYPE_FIND     = 1;
-    const TYPE_INSERT   = 2;
-    const TYPE_UPDATE   = 3;
-    const TYPE_REMOVE   = 4;
-    const TYPE_GROUP    = 5;
-
-    /** The DocumentManager instance for this query */
+    /**
+     * The DocumentManager instance for this query
+     *
+     * @var DocumentManager
+     */
     private $dm;
 
-    /** The Document class name being queried */
+    /**
+     * The Document class name being queried
+     *
+     * @var string
+     */
     private $className;
 
-    /** The ClassMetadata instance for the class being queried */
+    /**
+     * The ClassMetadata instance for the class being queried
+     *
+     * @var ClassMetadata
+     */
     private $class;
 
-    /** Array of fields to select */
+    /**
+     * Array of fields to select
+     *
+     * @var array
+     */
     private $select = array();
 
-    /** Array that stores the built up query to execute. */
+    /**
+     * Array that stores the built up query to execute.
+     *
+     * @var array
+     */
     private $query = array();
 
-    /** Array to pass to MongoCollection::update() 2nd argument */
+    /**
+     * Array to pass to MongoCollection::update() 2nd argument
+     *
+     * @var array
+     */
     private $newObj = array();
 
-    /** Array of sort options */
+    /**
+     * Array of sort options
+     *
+     * @var array
+     */
     private $sort = array();
 
-    /** Limit number of records */
+    /**
+     * Limit number of records
+     *
+     * @var integer
+     */
     private $limit = null;
 
-    /** Skip a specified number of records (offset) */
+    /**
+     * Skip a specified number of records (offset)
+     *
+     * @var integer
+     */
     private $skip = null;
 
-    /** Group information. */
+    /**
+     * Group information.
+     *
+     * @var array
+     */
     private $group = array();
 
-    /** Pass hints to the MongoCursor */
+    /**
+     * Pass hints to the MongoCursor
+     *
+     * @var array
+     */
     private $hints = array();
 
-    /** Pass immortal to cursor */
+    /**
+     * Pass immortal to cursor
+     *
+     * @var bool
+     */
     private $immortal = false;
 
-    /** Pass snapshot to cursor */
+    /**
+     * Pass snapshot to cursor
+     *
+     * @var bool
+     */
     private $snapshot = false;
 
-    /** Pass slaveOkay to cursor */
+    /**
+     * Pass slaveOkay to cursor
+     *
+     * @var bool
+     */
     private $slaveOkay = false;
 
-    /** Whether or not to try and hydrate the returned data */
+    /**
+     * Whether or not to try and hydrate the returned data
+     *
+     * @var bool
+     */
     private $hydrate = true;
 
-    /** Map reduce information */
+    /**
+     * Map reduce information
+     *
+     * @var array
+     */
     private $mapReduce = array();
 
-    /** Field to select distinct values of */
+    /**
+     * Field to select distinct values of
+     *
+     * @var string
+     */
     private $distinctField;
 
-    /** Data to use with $near operator for geospatial indexes */
+    /**
+     * Data to use with $near operator for geospatial indexes
+     *
+     * @var array
+     */
     private $near;
 
-    /** The type of query */
-    private $type = self::TYPE_FIND;
+    /**
+     * The type of query
+     *
+     * @var integer
+     */
+    private $type = AbstractQuery::TYPE_FIND;
 
     /**
      * Mongo command prefix
+     *
      * @var string
      */
     private $cmd;
 
-    /** The current field adding conditions to */
+    /**
+     * The current field adding conditions to
+     *
+     * @var string
+     */
     private $currentField;
 
-    /** Whether or not the query is a findAndModify query. Stores an array of options if not false. */
-    private $findAndModify = false;
-
     /**
-     * @var MongoIterator
+     * Whether or not the query is a findAndModify query. Stores an array of options if not false.
+     *
+     * @var mixed
      */
-    private $iterator;
+    private $findAndModify = false;
 
     /** Refresh hint */
     const HINT_REFRESH = 1;
@@ -156,7 +231,7 @@ class Query implements MongoIterator
      *
      * @param array $query A query array
      */
-    public function setQuery($query)
+    public function setQueryArray($query)
     {
         $this->query = $query;
     }
@@ -166,7 +241,7 @@ class Query implements MongoIterator
      *
      * @return array The query array
      */
-    public function getQuery()
+    public function getQueryArray()
     {
         return $this->query;
     }
@@ -240,7 +315,7 @@ class Query implements MongoIterator
     public function find($className = null)
     {
         $this->setClassName($className);
-        $this->type = self::TYPE_FIND;
+        $this->type = AbstractQuery::TYPE_FIND;
         return $this;
     }
 
@@ -268,7 +343,7 @@ class Query implements MongoIterator
     public function update($className = null)
     {
         $this->setClassName($className);
-        $this->type = self::TYPE_UPDATE;
+        $this->type = AbstractQuery::TYPE_UPDATE;
         return $this;
     }
 
@@ -281,7 +356,7 @@ class Query implements MongoIterator
     public function insert($className = null)
     {
         $this->setClassName($className);
-        $this->type = self::TYPE_INSERT;
+        $this->type = AbstractQuery::TYPE_INSERT;
         return $this;
     }
 
@@ -294,7 +369,7 @@ class Query implements MongoIterator
     public function remove($className = null)
     {
         $this->setClassName($className);
-        $this->type = self::TYPE_REMOVE;
+        $this->type = AbstractQuery::TYPE_REMOVE;
         return $this;
     }
 
@@ -313,7 +388,7 @@ class Query implements MongoIterator
             'keys' => $keys,
             'initial' => $initial
         );
-        $this->type = self::TYPE_GROUP;
+        $this->type = AbstractQuery::TYPE_GROUP;
         return $this;
     }
 
@@ -816,7 +891,7 @@ class Query implements MongoIterator
      */
     public function set($value, $atomic = true)
     {
-        if ($this->type == self::TYPE_INSERT) {
+        if ($this->type == AbstractQuery::TYPE_INSERT) {
             $atomic = false;
         }
         if ($atomic === true) {
@@ -984,124 +1059,125 @@ class Query implements MongoIterator
      *
      * You can create the expression using another query object:
      *
-     *     $this->createQuery()
-     *         ->addOr($this->createQuery()
-     *             ->field('first_name')->equals('Kris')->getQuery())
-     *         ->addOr($this->createQuery()
-     *             ->field('first_name')->equals('Chris')->getQuery())
+     *     $qb = $this->createQueryBuilder('User');
+     *     $qb
+     *         ->addOr($qb->expr()->field('first_name')->equals('Kris'))
+     *         ->addOr($qb->expr()->field('first_name')->equals('Chris'))
      *         ->execute();
      *
-     * @param array $expression
+     * @param array|QueryBuilder $expression
      * @return Query
      */
-    public function addOr(array $expression)
+    public function addOr($expression)
     {
+        if ($expression instanceof QueryBuilder) {
+            $expression = $expression->getQueryArray();
+        }
         $this->query[$this->cmd . 'or'][] = $expression;
         return $this;
     }
 
     /**
-     * Execute the query and return an array of results
+     * Create a new QueryBuilder instance that can be used as an expression with the addOr()
+     * method.
+     *
+     * @return QueryBuilder $expr
+     */
+    public function expr()
+    {
+        $expr = new self($this->dm, $this->hydrator, $this->cmd);
+        $expr->className = $this->className;
+        $expr->class = $this->class;
+        return $expr;
+    }
+
+    /**
+     * Gets the Query executable.
      *
      * @param array $options
-     * @return mixed $result The result of the query.
+     * @return QueryInterface $query
      */
-    public function execute(array $options = array())
+    public function getQuery()
     {
         switch ($this->type) {
-            case self::TYPE_FIND;
+            case AbstractQuery::TYPE_FIND;
                 if ($this->distinctField !== null) {
-                    return $this->executeDistinctFieldQuery($options);
+                    $query = new Query\DistinctFieldQuery($this->dm, $this->class, $this->cmd);
+                    $query->setDistinctField($this->distinctField);
+                    $query->setQuery($this->query);
+                    return $query;
                 } elseif ($this->near !== null) {
-                    return $this->executeGeoLocationFindQuery($options);
+                    $query = new Query\GeoLocationFindQuery($this->dm, $this->class, $this->cmd);
+                    $query->setQuery($this->query);
+                    $query->setNear($this->near);
+                    $query->setLimit($this->limit);
+                    $query->setHydrate($this->hydrate);
+                    return $query;
                 } else {
-                    return $this->executeFindQuery();
+                    $query = new Query\FindQuery($this->dm, $this->class, $this->cmd);
+                    $query->setMapReduce($this->mapReduce);
+                    $query->setSelect($this->select);
+                    $query->setQuery($this->query);
+                    $query->setHydrate($this->hydrate);
+                    $query->setLimit($this->limit);
+                    $query->setSkip($this->skip);
+                    $query->setSort($this->sort);
+                    $query->setImmortal($this->immortal);
+                    $query->setSlaveOkay($this->slaveOkay);
+                    $query->setSnapshot($this->snapshot);
+                    $query->setHints($this->hints);
+                    return $query;
                 }
                 break;
-            case self::TYPE_REMOVE;
+            case AbstractQuery::TYPE_REMOVE;
                 if ($this->findAndModify !== false) {
-                    return $this->executeFindAndModify($options);
+                    $query = new Query\FindAndRemoveQuery($this->dm, $this->class, $this->cmd);
+                    $query->setSelect($this->select);
+                    $query->setQuery($this->query);
+                    $query->setSort($this->sort);
+                    $query->setLimit($this->limit);
+                    return $query;
                 } else {
-                    return $this->dm->getDocumentCollection($this->className)
-                        ->remove($this->query, $options);
+                    $query = new Query\RemoveQuery($this->dm, $this->class, $this->cmd);
+                    $query->setQuery($this->query);
+                    return $query;
                 }
                 break;
 
-            case self::TYPE_UPDATE;
+            case AbstractQuery::TYPE_UPDATE;
                 if ($this->findAndModify !== false) {
-                    return $this->executeFindAndModify($options);
+                    $query = new Query\FindAndUpdateQuery($this->dm, $this->class, $this->cmd);
+                    $query->setSelect($this->select);
+                    $query->setQuery($this->query);
+                    $query->setNewObj($this->newObj);
+                    $query->setSort($this->sort);
+                    $query->setUpsert(isset($this->findAndModify['upsert']));
+                    $query->setNew(isset($this->findAndModify['new']));
+                    $query->setLimit($this->limit);
+                    return $query;
                 } else {
-                    return $this->dm->getDocumentCollection($this->className)
-                        ->update($this->query, $this->newObj, $options);
+                    $query = new Query\UpdateQuery($this->dm, $this->class, $this->cmd);
+                    $query->setQuery($this->query);
+                    $query->setNewObj($this->newObj);
+                    return $query;
                 }
                 break;
 
-            case self::TYPE_INSERT;
-                return $this->dm->getDocumentCollection($this->className)
-                    ->insert($this->newObj);
+            case AbstractQuery::TYPE_INSERT;
+                $query = new Query\InsertQuery($this->dm, $this->class, $this->cmd);
+                $query->setNewObj($this->newObj);
+                return $query;
                 break;
 
-            case self::TYPE_GROUP;
-                return $this->dm->getDocumentCollection($this->className)
-                    ->group(
-                        $this->group['keys'], $this->group['initial'],
-                        $this->mapReduce['reduce'], $this->query
-                    );
+            case AbstractQuery::TYPE_GROUP;
+                $query = new Query\GroupQuery($this->dm, $this->class, $this->cmd);
+                $query->setKeys($this->group['keys']);
+                $query->setInitial($this->group['initial']);
+                $query->setReduce($this->mapReduce['reduce']);
+                $query->setQuery($this->query);
+                return $query;
                 break;
         }
-    }
-
-    /**
-     * Executes the query and gets the iterator.
-     *
-     * @param array $options
-     * @return MongoIterator $iterator
-     */
-    public function getIterator(array $options = array())
-    {
-        if ($this->iterator === null) {
-            $iterator = $this->execute($options);
-            if ($iterator !== null && !$iterator instanceof MongoIterator) {
-                throw new \BadMethodCallException('Query execution did not return an iterator. This query may not support returning iterators. ');
-            }
-            $this->iterator = $iterator;
-        }
-        return $this->iterator;
-    }
-
-    /**
-     * Count the number of results for this query.
-     *
-     * @param bool $all
-     * @return integer $count
-     */
-    public function count($all = false)
-    {
-        return $this->getIterator()->count($all);
-    }
-
-    /**
-     * Execute the query and get a single result
-     *
-     * @return object $document  The single document.
-     */
-    public function getSingleResult(array $options = array())
-    {
-        if ($results = $this->getIterator($options)) {
-            $array = $results->toArray();
-            return array_shift($array);
-        }
-        return null;
-    }
-
-    /**
-     * Iterator over the query using the MongoCursor.
-     *
-     * @return MongoCursor $cursor
-     */
-    public function iterate()
-    {
-        return $this->getIterator();
     }
 
     /**
@@ -1127,132 +1203,6 @@ class Query implements MongoIterator
     }
 
     /**
-     * Execute find query.
-     *
-     * @return MongoCursor $cursor
-     */
-    private function executeFindQuery()
-    {
-        if (isset($this->mapReduce['map']) && $this->mapReduce['reduce']) {
-            $cursor = $this->dm->mapReduce($this->className, $this->mapReduce['map'], $this->mapReduce['reduce'], $this->query, isset($this->mapReduce['options']) ? $this->mapReduce['options'] : array());
-            $cursor->hydrate(false);
-        } else {
-            if (isset($this->mapReduce['reduce'])) {
-                $this->query[$this->cmd . 'where'] = $this->mapReduce['reduce'];
-            }
-            $cursor = $this->dm->find($this->className, $this->query, $this->select);
-            $cursor->hydrate($this->hydrate);
-        }
-        $cursor->limit($this->limit);
-        $cursor->skip($this->skip);
-        $cursor->sort($this->sort);
-        $cursor->immortal($this->immortal);
-        $cursor->slaveOkay($this->slaveOkay);
-        if ($this->snapshot) {
-            $cursor->snapshot();
-        }
-        foreach ($this->hints as $keyPattern) {
-            $cursor->hint($keyPattern);
-        }
-        return $cursor;
-    }
-
-    /**
-     * Execute find and modify query.
-     *
-     * @return mixed  Returns either a managed document or an array with information if something went wrong.
-     */
-    private function executeFindAndModify()
-    {
-        $command = array();
-        $command['findandmodify'] = $this->dm->getDocumentCollection($this->className)->getName();
-        if ($this->query) {
-            $command['query'] = $this->query;
-        }
-        if ($this->sort) {
-            $command['sort'] = $this->sort;
-        }
-        if ($this->select) {
-            $command['fields'] = $this->select;
-        }
-        if ($this->type == self::TYPE_REMOVE) {
-            $command['remove'] = true;
-        } elseif ($this->type === self::TYPE_UPDATE) {
-            $command['update'] = $this->newObj;
-        }
-        if (isset($this->findAndModify['upsert']) && $this->findAndModify['upsert']) {
-            $command['upsert'] = true;
-        }
-        if (isset($this->findAndModify['new']) && $this->findAndModify['new']) {
-            $command['new'] = true;
-        }
-        if ($this->limit) {
-            $command['num'] = $this->limit;
-        }
-        $result = $this->dm->getDocumentDB($this->className)
-            ->command($command);
-        if (isset($result['value'])) {
-            return $this->dm->getUnitOfWork()->getOrCreateDocument(
-                $this->class->name, $result['value']
-            );
-        }
-        return $result;
-    }
-
-    /**
-     * Execute distinct field query.
-     *
-     * @return array $values Array of distinct values.
-     */
-    private function executeDistinctFieldQuery()
-    {
-        $result = $this->dm->getDocumentDB($this->className)
-            ->command(array(
-                'distinct' => $this->dm->getDocumentCollection($this->className)->getName(),
-                'key' => $this->distinctField,
-                'query' => $this->query
-            ));
-        return new MongoArrayIterator($result['values']);
-    }
-
-    /**
-     * Execute geo location query.
-     *
-     * @return array $documents Array of documents.
-     */
-    private function executeGeoLocationFindQuery()
-    {
-        $command = array(
-            'geoNear' => $this->dm->getDocumentCollection($this->className)->getName(),
-            'near' => $this->near,
-            'query' => $this->query
-        );
-        if ($this->limit) {
-            $command['num'] = $this->limit;
-        }
-        $result = $this->dm->getDocumentDB($this->className)
-            ->command($command);
-        if ( ! isset($result['results'])) {
-            return new MongoArrayIterator(array());
-        }
-        if ($this->hydrate) {
-            $uow = $this->dm->getUnitOfWork();
-            $documents = array();
-            foreach ($result['results'] as $result) {
-                $document = $result['obj'];
-                if ($this->class->distance) {
-                    $document[$this->class->distance] = $result['dis'];
-                }
-                $documents[] = $uow->getOrCreateDocument($this->class->name, $document);
-            }
-            $results = $documents;
-        } else {
-            $results = $result['results'];
-        }
-        return new MongoArrayIterator($results);
-    }
-
-    /**
      * Prepare where values converting document object field names to the document collection
      * field name.
      *
@@ -1262,6 +1212,9 @@ class Query implements MongoIterator
      */
     private function prepareWhereValue(&$fieldName, $value)
     {
+        if ( ! $this->class) {
+            return $value;
+        }
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
             $mapping = $this->class->getFieldMapping($e[0]);
@@ -1304,53 +1257,5 @@ class Query implements MongoIterator
             $this->className = $className;
             $this->class = $this->dm->getClassMetadata($className);
         }
-    }
-
-    /** @inheritDoc */
-    public function first()
-    {
-        return $this->getIterator()->first();
-    }
-
-    /** @inheritDoc */
-    public function last()
-    {
-        return $this->getIterator()->last();
-    }
-
-    /** @inheritDoc */
-    public function key()
-    {
-        return $this->getIterator()->key();
-    }
-
-    /** @inheritDoc */
-    public function next()
-    {
-        return $this->getIterator()->next();
-    }
-
-    /** @inheritDoc */
-    public function current()
-    {
-        return $this->getIterator()->current();
-    }
-
-    /** @inheritDoc */
-    public function rewind()
-    {
-        return $this->getIterator()->rewind();
-    }
-
-    /** @inheritDoc */
-    public function valid()
-    {
-        return $this->getIterator()->valid();
-    }
-
-    /** @inheritDoc */
-    public function toArray()
-    {
-        return $this->getIterator()->toArray();
     }
 }

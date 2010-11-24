@@ -131,7 +131,7 @@ class PersistentCollection implements Collection
             foreach ($groupedIds as $className => $ids) {
                 $collection = $this->dm->getDocumentCollection($className);
                 $data = $collection->find(array('_id' => array($this->cmd . 'in' => $ids)));
-                $hints = array(Query::HINT_REFRESH => Query::HINT_REFRESH);
+                $hints = array(QueryBuilder::HINT_REFRESH => QueryBuilder::HINT_REFRESH);
                 foreach ($data as $id => $documentData) {
                     $document = $this->dm->getUnitOfWork()->getOrCreateDocument($className, $documentData, $hints);
                     if ($document instanceof Proxy) {

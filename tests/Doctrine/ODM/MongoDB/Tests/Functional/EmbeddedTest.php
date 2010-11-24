@@ -82,8 +82,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->createQuery('Documents\User')
+        $user = $this->dm->createQueryBuilder('Documents\User')
             ->field('id')->equals($user->getId())
+            ->getQuery()
             ->getSingleResult();
         $this->assertEquals($addressClone, $user->getAddress());
     }
@@ -106,8 +107,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->createQuery('Documents\User')
+        $user = $this->dm->createQueryBuilder('Documents\User')
             ->field('id')->equals($user->getId())
+            ->getQuery()
             ->getSingleResult();
         $this->assertNull($user->getAddress());
     }
@@ -122,8 +124,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user2 = $this->dm->createQuery('Documents\User')
+        $user2 = $this->dm->createQueryBuilder('Documents\User')
             ->field('id')->equals($user->getId())
+            ->getQuery()
             ->getSingleResult();
 
         $this->assertEquals($user->getPhonenumbers()->unwrap(), $user2->getPhonenumbers()->unwrap());
@@ -146,8 +149,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQuery(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
+            ->getQuery()
             ->getSingleResult();
         $level1 = $test->level1[0];
 
@@ -180,8 +184,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQuery(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
+            ->getQuery()
             ->getSingleResult();
 
         // $test->level1[0] is available
@@ -196,8 +201,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(0, $test->level1->count());
 
         // retrieve test
-        $test = $this->dm->createQuery(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
+            ->getQuery()
             ->getSingleResult();
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $test->level1);
@@ -228,8 +234,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQuery(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
+            ->getQuery()
             ->getSingleResult();
         $level1 = $test->oneLevel1;
         $level2 = $level1->level2[0];
@@ -246,8 +253,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(0, $level1->level2->count());
 
         // retrieve test
-        $test = $this->dm->createQuery(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
+            ->getQuery()
             ->getSingleResult();
         $level1 = $test->oneLevel1;
 
@@ -277,8 +285,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQuery(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
+            ->getQuery()
             ->getSingleResult();
         $level1 = $test->oneLevel1;
         $level2 = $level1->level2[0];
@@ -313,8 +322,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->createQuery(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
+            ->getQuery()
             ->getSingleResult();
         $level1 = $test->oneLevel1;
         $level2 = $level1->level2[0];

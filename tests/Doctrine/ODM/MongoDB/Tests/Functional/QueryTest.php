@@ -26,28 +26,28 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPrepareWhereValue()
     {
-        $q = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('profile.profileId')->equals('4ce6a8cdfdc212f420500100');
-        $this->assertEquals(array('profile.$id' => new \MongoId('4ce6a8cdfdc212f420500100')), $q->debug('query'));
+        $this->assertEquals(array('profile.$id' => new \MongoId('4ce6a8cdfdc212f420500100')), $qb->debug('query'));
 
-        $q = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('profile.$id')->equals('4ce6a8cdfdc212f420500100');
-        $this->assertEquals(array('profile.$id' => new \MongoId('4ce6a8cdfdc212f420500100')), $q->debug('query'));
+        $this->assertEquals(array('profile.$id' => new \MongoId('4ce6a8cdfdc212f420500100')), $qb->debug('query'));
 
-        $q = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('id')->equals('4ce6a8cdfdc212f420500100');
-        $this->assertEquals(array('_id' => new \MongoId('4ce6a8cdfdc212f420500100')), $q->debug('query'));
+        $this->assertEquals(array('_id' => new \MongoId('4ce6a8cdfdc212f420500100')), $qb->debug('query'));
     }
 
     public function testPrepareWhereValueWithCustomId()
     {
-        $q = $this->dm->createQuery('Documents\CustomUser')
+        $qb = $this->dm->createQueryBuilder('Documents\CustomUser')
             ->field('id')->equals('4ce6a8cdfdc212f420500100');
-        $this->assertEquals(array('_id' => '4ce6a8cdfdc212f420500100'), $q->debug('query'));
+        $this->assertEquals(array('_id' => '4ce6a8cdfdc212f420500100'), $qb->debug('query'));
 
-        $q = $this->dm->createQuery('Documents\CustomUser')
+        $qb = $this->dm->createQueryBuilder('Documents\CustomUser')
             ->field('account.$id')->equals('4ce6a8cdfdc212f420500100');
-        $this->assertEquals(array('account.$id' => new \MongoId('4ce6a8cdfdc212f420500100')), $q->debug('query'));
+        $this->assertEquals(array('account.$id' => new \MongoId('4ce6a8cdfdc212f420500100')), $qb->debug('query'));
     }
 
     public function testDistinct()
@@ -73,37 +73,41 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $results = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->distinct('count')
-            ->field('username')->equals('distinct_test')
-            ->execute();
+            ->field('username')->equals('distinct_test');
+        $q = $qb->getQuery();
+        $results = $q->execute();
         $this->assertEquals(new \Doctrine\ODM\MongoDB\MongoArrayIterator(array(1, 2, 3)), $results);
 
-        $results = $this->dm->query('find distinct count from Documents\User WHERE username = ?', array('distinct_test'))
+        $results = $this->dm->createQuery('find distinct count from Documents\User WHERE username = ?', array('distinct_test'))
             ->execute();
         $this->assertEquals(new \Doctrine\ODM\MongoDB\MongoArrayIterator(array(1, 2, 3)), $results);
     }
 
     public function testFindQuery()
     {
-        $query = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->where("function() { return this.username == 'boo' }");
+        $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertEquals('boo', $user->getUsername());
 
-        $query = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->reduce("function() { return this.username == 'boo' }");
+        $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertEquals('boo', $user->getUsername());
     }
 
     public function testUpdateQuery()
     {
-        $query = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->update()
             ->field('username')
             ->set('crap')
             ->equals('boo');
+        $query = $qb->getQuery();
         $result = $query->execute();
 
         $this->dm->refresh($this->user);
@@ -115,9 +119,10 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testRemoveQuery()
     {
-        $query = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->remove()
             ->field('username')->equals('boo');
+        $query = $qb->getQuery();
         $result = $query->execute();
 
         // should invoke exception because $this->user doesn't exist anymore
@@ -126,54 +131,61 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testIncUpdateQuery()
     {
-        $query = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->update()
             ->field('hits')->inc(5)
             ->field('username')->equals('boo');
+        $query = $qb->getQuery();
         $query->execute();
         $query->execute();
 
-        $user = $query->find('Documents\User')
-            ->hydrate(false)
-            ->getSingleResult();
+        $qb->find('Documents\User')
+            ->hydrate(false);
+        $query = $qb->getQuery();
+        $user = $query->getSingleResult();
         $this->assertEquals(10, $user['hits']);
     }
 
     public function testUnsetFieldUpdateQuery()
     {
-        $query = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->update()
             ->field('hits')->unsetField()
             ->field('username')->equals('boo');
+        $query = $qb->getQuery();
         $result = $query->execute();
 
-        $user = $query->find('Documents\User')
-            ->hydrate(false)
-            ->getSingleResult();
+        $qb->find('Documents\User')
+            ->hydrate(false);
+        $query = $qb->getQuery();
+        $user = $query->getSingleResult();
         $this->assertFalse(isset($user['hits']));
     }
 
     public function testGroup()
     {
-        $query = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->group(array(), array('count' => 0))
             ->reduce('function (obj, prev) { prev.count++; }');
+        $query = $qb->getQuery();
         $result = $query->execute();
         $this->assertEquals(1, $result['retval'][0]['count']);
     }
 
     public function testUnsetField()
     {
-        $this->dm->createQuery()
+        $qb = $this->dm->createQueryBuilder()
             ->update('Documents\User')
             ->field('nullTest')
             ->type('null')
-            ->unsetField('nullTest')
-            ->execute();
+            ->unsetField('nullTest');
+        $query = $qb->getQuery();
+        $query->execute();
 
-        $user = $this->dm->createQuery('Documents\User')
-            ->field('nullTest')->type('null')
-            ->getSingleResult();
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('nullTest')->type('null');
+        $query = $qb->getQuery();
+        $user = $query->getSingleResult();
         $this->assertNull($user);
     }
 
@@ -207,12 +219,12 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $query = $this->dm->createQuery('Documents\Article');
-        $query->field('createdAt')->range(
+        $qb = $this->dm->createQueryBuilder('Documents\Article');
+        $qb->field('createdAt')->range(
             new \MongoDate(strtotime('1985-09-01 01:00:00')),
             new \MongoDate(strtotime('1985-09-04'))
         );
-
+        $query = $qb->getQuery();
         $articles = array_values($query->execute()->getResults());
         $this->assertEquals(2, count($articles));
         $this->assertEquals('1985-09-02', $articles[0]->getCreatedAt()->format('Y-m-d'));
@@ -226,7 +238,8 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($article);
         $this->dm->flush(array('safe' => true));
 
-        $query = $this->dm->createQuery('Documents\Article');
+        $qb = $this->dm->createQueryBuilder('Documents\Article');
+        $query = $qb->getQuery();
         $this->assertTrue($query instanceof \Doctrine\ODM\MongoDB\MongoIterator);
         foreach ($query as $article) {
             $this->assertEquals('Documents\Article', get_class($article));

@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\Query;
+use Doctrine\ODM\MongoDB\QueryBuilder;
 
 class QueryTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,15 +27,28 @@ class QueryTest extends \PHPUnit_Framework_TestCase
                     ->getMock()
             ));
 
+        $metadata = $this->getMock('Doctrine\ODM\MongoDB\Mapping\ClassMetadata', array(), array(), '', false, false);
+        $metadata->name = $class;
+        $dm
+            ->expects($this->once())
+            ->method('getClassMetadata')
+            ->with('Person')
+            ->will($this->returnValue($metadata));
+
         $hydrator = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\Hydrator')
             ->disableOriginalConstructor()
             ->disableOriginalClone()
             ->getMock();
 
-        $query = new Query($dm, $hydrator, '$', $class);
-        $query->addOr($expression1);
-        $query->addOr($expression2);
+        $qb = new QueryBuilder($dm, $hydrator, '$', $class);
+        $qb->addOr($qb->expr()->field('first_name')->equals('Kris'));
+        $qb->addOr($qb->expr()->field('first_name')->equals('Chris'));
+        $query = $qb->getQuery();
 
+        $this->assertEquals(array('$or' => array(
+            array('first_name' => 'Kris'),
+            array('first_name' => 'Chris')
+        )), $qb->getQueryArray());
         $this->assertSame($cursor, $query->execute());
     }
 }

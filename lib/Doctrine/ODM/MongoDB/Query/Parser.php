@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
-use Doctrine\ODM\MongoDB\Query,
+use Doctrine\ODM\MongoDB\QueryBuilder,
     Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
@@ -113,7 +113,7 @@ class Parser
     {
         $this->lexer->moveNext();
 
-        $query = new Query($this->dm, $this->dm->getHydrator(), $this->dm->getConfiguration()->getMongoCmd());
+        $query = new QueryBuilder($this->dm, $this->dm->getHydrator(), $this->dm->getConfiguration()->getMongoCmd());
 
         switch ($this->lexer->lookahead['type']) {
             case Lexer::T_FIND:
@@ -132,13 +132,13 @@ class Parser
                 $this->syntaxError('FIND, INSERT, UPDATE or REMOVE');
                 break;
         }
-        return $query;
+        return $query->getQuery();
     }
 
     /**
      * FindQuery ::= FindClause [WhereClause] [MapClause] [ReduceClause] [SortClause] [LimitClause] [SkipClause]
      */
-    public function FindQuery(Query $query, array &$parameters)
+    public function FindQuery(QueryBuilder $query, array &$parameters)
     {
         $this->FindClause($query);
 
@@ -175,7 +175,7 @@ class Parser
     /**
      * FindClause ::= "FIND" all | SelectField {"," SelectField}
      */
-    public function FindClause(Query $query)
+    public function FindClause(QueryBuilder $query)
     {
         $this->match(Lexer::T_FIND);
 
@@ -200,7 +200,7 @@ class Parser
     /**
      * SelectField ::= DocumentFieldName
      */
-    public function SelectField(Query $query)
+    public function SelectField(QueryBuilder $query)
     {
         if ($this->lexer->isNextToken(Lexer::T_DISTINCT)) {
             $this->match(Lexer::T_DISTINCT);
@@ -244,7 +244,7 @@ class Parser
     /**
      * UpdateQuery ::= UpdateClause [WhereClause]
      */
-    public function UpdateQuery(Query $query, array &$parameters)
+    public function UpdateQuery(QueryBuilder $query, array &$parameters)
     {
         $this->match(Lexer::T_UPDATE);
         $this->match(Lexer::T_IDENTIFIER);
@@ -267,7 +267,7 @@ class Parser
      *                  [PullAllExpression], [AddToSetExpression], [AddManyToSetExpression],
      *                  [PopFirstExpression], [PopLastExpression]
      */
-    public function UpdateClause(Query $query, array &$parameters)
+    public function UpdateClause(QueryBuilder $query, array &$parameters)
     {
         $this->match($this->lexer->lookahead['type']);
         switch ($this->lexer->token['type']) {
@@ -310,7 +310,7 @@ class Parser
     /**
      * InsertQuery ::= InsertClause InsertSetClause {"," InsertSetClause}
      */
-    public function InsertQuery(Query $query, array &$parameters)
+    public function InsertQuery(QueryBuilder $query, array &$parameters)
     {
         $this->match(Lexer::T_INSERT);
         $this->match(Lexer::T_IDENTIFIER);
@@ -327,7 +327,7 @@ class Parser
     /**
      * InsertSetClause ::= DocumentFieldName "=" Value
      */
-    public function InsertSetClause(Query $query, array &$parameters)
+    public function InsertSetClause(QueryBuilder $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
@@ -338,7 +338,7 @@ class Parser
      * RemoveQuery ::= RemoveClause [WhereClause]
      * RemoveClause ::= "REMOVE" DocumentClassName
      */
-    public function RemoveQuery(Query $query, array &$parameters)
+    public function RemoveQuery(QueryBuilder $query, array &$parameters)
     {
         $this->match(Lexer::T_REMOVE);
         $this->match(Lexer::T_IDENTIFIER);
@@ -352,7 +352,7 @@ class Parser
     /**
      * SortClause ::= SortClauseField {"," SortClauseField}
      */
-    public function SortClause(Query $query)
+    public function SortClause(QueryBuilder $query)
     {
         $this->SortClauseField($query);
         while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
@@ -364,7 +364,7 @@ class Parser
     /**
      * SortClauseField ::= DocumentFieldName "ASC | DESC"
      */
-    public function SortClauseField(Query $query)
+    public function SortClauseField(QueryBuilder $query)
     {
         $fieldName = $this->DocumentFieldName();
         $this->match(Lexer::T_IDENTIFIER);
@@ -375,7 +375,7 @@ class Parser
     /**
      * LimitClause ::= "LIMIT" LimitInteger
      */
-    public function LimitClause(Query $query)
+    public function LimitClause(QueryBuilder $query)
     {
         $this->match($this->lexer->lookahead['type']);
         $query->limit($this->lexer->token['value']);
@@ -384,7 +384,7 @@ class Parser
     /**
      * SkipClause ::= "SKIP" SkipInteger
      */
-    public function SkipClause(Query $query)
+    public function SkipClause(QueryBuilder $query)
     {
         $this->match($this->lexer->lookahead['type']);
         $query->skip($this->lexer->token['value']);
@@ -393,7 +393,7 @@ class Parser
     /**
      * MapClause ::= "MAP" MapFunction
      */
-    public function MapClause(Query $query, array &$parameters)
+    public function MapClause(QueryBuilder $query, array &$parameters)
     {
         $this->match(Lexer::T_MAP);
         $this->match(Lexer::T_STRING);
@@ -403,7 +403,7 @@ class Parser
     /**
      * ReduceClause ::= "REDUCE" ReduceFunction
      */
-    public function ReduceClause(Query $query, array &$parameters)
+    public function ReduceClause(QueryBuilder $query, array &$parameters)
     {
         $this->match(Lexer::T_REDUCE);
         $this->match(Lexer::T_STRING);
@@ -428,7 +428,7 @@ class Parser
     /**
      * WhereClause ::= "WHERE" WhereClausePart {"AND" WhereClausePart}
      */
-    public function WhereClause(Query $query, array &$parameters)
+    public function WhereClause(QueryBuilder $query, array &$parameters)
     {
         $this->match(Lexer::T_WHERE);
         $this->WhereClauseExpression($query, $parameters);
@@ -443,7 +443,7 @@ class Parser
      * WhereClauseExpression ::= "=" | "!=" | ">=" | "<=" | ">" | "<" | "in"
      *                         "notIn" | "all" | "size" | "exists" | "type"
      */
-    public function WhereClauseExpression(Query $query, array &$parameters)
+    public function WhereClauseExpression(QueryBuilder $query, array &$parameters)
     {
         $options = array();
         switch ($this->lexer->lookahead['type']) {
@@ -539,7 +539,7 @@ class Parser
     /**
      * SetExpression ::= "SET" DocumentFieldName "=" Value {"," SetExpression}
      */
-    public function SetExpression(Query $query, array &$parameters)
+    public function SetExpression(QueryBuilder $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
@@ -549,7 +549,7 @@ class Parser
     /**
      * UnsetExpression ::= "UNSET" DocumentFieldName {"," UnsetExpression}
      */
-    public function UnsetExpression(Query $query, array &$parameters)
+    public function UnsetExpression(QueryBuilder $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->field($this->lexer->token['value'])->unsetField();
@@ -558,7 +558,7 @@ class Parser
     /**
      * PushExpression ::= "PUSH" DocumentFieldName Value {"," PushExpression}
      */
-    public function PushExpression(Query $query, array &$parameters)
+    public function PushExpression(QueryBuilder $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
@@ -568,7 +568,7 @@ class Parser
     /**
      * PushAllExpression ::= "PUSHALL" DocumentFieldName Value {"," PushAllExpression}
      */
-    public function PushAllExpression(Query $query, array &$parameters)
+    public function PushAllExpression(QueryBuilder $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
@@ -578,7 +578,7 @@ class Parser
     /**
      * PullExpression ::= "PULL" DocumentFieldName Value {"," PullExpression}
      */
-    public function PullExpression(Query $query, array &$parameters)
+    public function PullExpression(QueryBuilder $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
@@ -588,7 +588,7 @@ class Parser
     /**
      * PullAllExpression ::= "PULLALL" DocumentFieldName Value {"," PullAllExpression}
      */
-    public function PullAllExpression(Query $query, array &$parameters)
+    public function PullAllExpression(QueryBuilder $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
@@ -598,7 +598,7 @@ class Parser
     /**
      * PopFirstExpression ::= "POPFIRST" DocumentFieldName {"," PopFirstExpression}
      */
-    public function PopFirstExpression(Query $query, array &$parameters)
+    public function PopFirstExpression(QueryBuilder $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->field($this->lexer->token['value'])->popFirst();
@@ -607,7 +607,7 @@ class Parser
     /**
      * PopLastExpression ::= "POPLAST" DocumentFieldName {"," PopLastExpression}
      */
-    public function PopLastExpression(Query $query, array &$parameters)
+    public function PopLastExpression(QueryBuilder $query, array &$parameters)
     {
         $this->match(Lexer::T_IDENTIFIER);
         $query->field($this->lexer->token['value'])->popLast();
@@ -616,7 +616,7 @@ class Parser
     /**
      * AddToSetExpression ::= "ADDTOSET" DocumentFieldName Value {"," AddToSetExpression}
      */
-    public function AddToSetExpression(Query $query, array &$parameters)
+    public function AddToSetExpression(QueryBuilder $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
@@ -626,7 +626,7 @@ class Parser
     /**
      * AddManyToSetExpression ::= "ADDMANYTOSET" DocumentFieldName Value {"," AddManyToSetExpression}
      */
-    public function AddManyToSetExpression(Query $query, array &$parameters)
+    public function AddManyToSetExpression(QueryBuilder $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);
@@ -636,7 +636,7 @@ class Parser
     /**
      * IncrementExpression ::= "INC" DocumentFieldName "=" IncrementInteger {"," IncrementExpression}
      */
-    public function IncrementExpression(Query $query, array &$parameters)
+    public function IncrementExpression(QueryBuilder $query, array &$parameters)
     {
         $fieldName = $this->DocumentFieldName();
         $value = $this->Value($parameters);

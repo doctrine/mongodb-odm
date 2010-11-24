@@ -25,8 +25,9 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $query = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('id')->equals($user->getId());
+        $query = $qb->getQuery();
 
         $user = $query->getSingleResult();
 
@@ -38,7 +39,6 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals('Jonathan', $profile->getFirstName());
         $this->assertEquals('Wage', $profile->getLastName());
-
     }
 
     public function testOneEmbedded()
@@ -60,9 +60,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user2 = $this->dm->createQuery('Documents\User')
-            ->field('id')->equals($user->getId())
-            ->getSingleResult();
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('id')->equals($user->getId());
+        $query = $qb->getQuery();
+        $user2 = $query->getSingleResult();
         $this->assertEquals($user->getAddress(), $user2->getAddress());
     }
 
@@ -76,10 +77,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user2 = $this->dm->createQuery('Documents\User')
-            ->field('id')->equals($user->getId())
-            ->getSingleResult();
-
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('id')->equals($user->getId());
+        $query = $qb->getQuery();
+        $user2 = $query->getSingleResult();
         $this->assertEquals($user->getPhonenumbers()->unwrap(), $user2->getPhonenumbers()->unwrap());
     }
 
@@ -100,10 +101,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $accountId = $user->getAccount()->getId();
 
-        $user2 = $this->dm->createQuery('Documents\User')
-            ->field('id')->equals($user->getId())
-            ->getSingleResult();
-
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('id')->equals($user->getId());
+        $query = $qb->getQuery();
+        $user2 = $query->getSingleResult();
     }
 
     public function testManyReference()
@@ -122,11 +123,11 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($groups[1]->getId() !== '');
         $this->dm->clear();
 
-        $user2 = $this->dm->createQuery('Documents\User')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('id')
-            ->equals($user->getId())
-            ->getSingleResult();
-
+            ->equals($user->getId());
+        $query = $qb->getQuery();
+        $user2 = $query->getSingleResult();
         $groups = $user2->getGroups();
         $this->assertFalse($groups->isInitialized());
 
@@ -150,9 +151,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user3 = $this->dm->createQuery('Documents\User')
-            ->field('id')->equals($user->getId())
-            ->getSingleResult();
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('id')->equals($user->getId());
+        $query = $qb->getQuery();
+        $user3 = $query->getSingleResult();
         $groups = $user3->getGroups();
 
         $this->assertEquals('test', $groups[0]->getName());

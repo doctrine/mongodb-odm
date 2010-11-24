@@ -6,17 +6,17 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testQueries()
     {
-        $q = $this->dm->createQuery(__NAMESPACE__.'\City')
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->near(1000000, 11111);
-        $this->assertEquals(array('latitude' => 1000000, 'longitude' => 11111), $q->debug('near'));
+        $this->assertEquals(array('latitude' => 1000000, 'longitude' => 11111), $qb->debug('near'));
 
-        $q = $this->dm->createQuery(__NAMESPACE__.'\City')
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->withinBox(41, 41, 72, 72);
         $this->assertEquals(array(
             'coordinates' => array(
                 '$within' => array('$box' => array(array(41, 41), array(72, 72)))
             )
-        ), $q->debug('query'));
+        ), $qb->debug('query'));
     }
 
     public function testGeoSpatial()
@@ -33,19 +33,22 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush(array('safe' => true));
         $this->dm->clear();
 
-        $city = $this->dm->createQuery(__NAMESPACE__.'\City')
+        $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->near(1000000, 11111)
+            ->getQuery()
             ->getSingleResult();
         $this->assertNull($city);
 
-        $city = $this->dm->createQuery(__NAMESPACE__.'\City')
+        $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->near(50, 50)
+            ->getQuery()
             ->getSingleResult();
         $this->assertNotNull($city);
         $this->assertEquals('19.999998807907', $city->test);
 
-        $query = $this->dm->createQuery(__NAMESPACE__.'\City')
-            ->field('coordinates')->near(50, 50);
+        $query = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
+            ->field('coordinates')->near(50, 50)
+            ->getQuery();
         foreach ($query as $city2) {
             $this->assertEquals($city, $city2);
         }
@@ -65,8 +68,9 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush(array('safe' => true));
         $this->dm->clear();
 
-        $city = $this->dm->createQuery(__NAMESPACE__.'\City')
+        $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->near(50, 50)
+            ->getQuery()
             ->getSingleResult();
         $this->assertNotNull($city);
     }
@@ -85,14 +89,16 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush(array('safe' => true));
         $this->dm->clear();
 
-        $city = $this->dm->createQuery(__NAMESPACE__.'\City')
+        $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->withinBox(41, 41, 72, 72)
+            ->getQuery()
             ->getSingleResult();
         $this->assertNull($city);
 
-        $city = $this->dm->createQuery(__NAMESPACE__.'\City')
+        $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->withinBox(30, 30, 80, 80)
             ->field('name')->equals('Nashville')
+            ->getQuery()
             ->getSingleResult();
         $this->assertNotNull($city);
     }
@@ -111,9 +117,10 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush(array('safe' => true));
         $this->dm->clear();
 
-        $city = $this->dm->createQuery(__NAMESPACE__.'\City')
+        $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->withinCenter(50, 50, 20)
             ->field('name')->equals('Nashville')
+            ->getQuery()
             ->getSingleResult();
         $this->assertNotNull($city);
     }
