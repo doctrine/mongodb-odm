@@ -699,6 +699,25 @@ class Query implements MongoIterator
     }
 
     /**
+     * Uses $elemMatch to limit results to documents that reference another document.
+     *
+     * @param mixed $document A document
+     * @return Query
+     */
+    public function references($document)
+    {
+        $class = $this->dm->getClassMetadata(get_class($document));
+
+        $this->query[$this->currentField][$this->cmd . 'elemMatch'] = array(
+            $this->cmd . 'db'  => $class->getDB(),
+            $this->cmd . 'ref' => $class->getCollection(),
+            $this->cmd . 'id'  => $class->getIdentifierValue($document),
+        );
+
+        return $this;
+    }
+
+    /**
      * Set sort and erase all old sorts.
      *
      * @param string $order
