@@ -104,6 +104,7 @@ class DocumentPersister
 
     /**
      * Mongo command prefix
+     *
      * @var string
      */
     private $cmd;

@@ -1,4 +1,21 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
@@ -8,6 +25,17 @@ use Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\UnitOfWork,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+/**
+ * The CollectionPersister is responsible for inserting, updating and deleting collections
+ * embedded of referenced documents.
+ *
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.com
+ * @since       1.0
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @author      Roman Borschel <roman@code-factory.org>
+ */
 class CollectionPersister
 {
     /**
@@ -24,6 +52,11 @@ class CollectionPersister
      */
     private $dp;
 
+    /**
+     * Mongo command prefix
+     *
+     * @var string
+     */
     private $cmd;
 
     /**
@@ -42,33 +75,47 @@ class CollectionPersister
         $this->cmd = $cmd;
     }
 
+    /**
+     * Deletes a PersistentCollection instance completely from a document using $unset.
+     *
+     * @param PersistentCollection $coll
+     * @param array $options
+     */
     public function delete(PersistentCollection $coll, array $options)
     {
-        $mapping = $coll->getMapping();
-        $owner = $coll->getOwner();
-        list($propertyPath, $parent, $parentMapping) = $this->getPathAndParent($owner, $mapping);
+        list($propertyPath, $parent) = $this->getPathAndParent($coll);
         $query = array($this->cmd . 'unset' => array($propertyPath => true));
-        $this->executeQuery($parent, $mapping, $query, $options);
+        $this->executeQuery($parent, $query, $options);
     }
 
+    /**
+     * Updates a PersistentCollection instance deleting removed rows and inserting new rows.
+     *
+     * @param PersistentCollection $coll
+     * @param array $options
+     */
     public function update(PersistentCollection $coll, array $options)
     {
         $this->deleteRows($coll, $options);
         $this->insertRows($coll, $options);
     }
 
+    /**
+     * Deletes removed rows from a PersistentCollection instance.
+     *
+     * @param PersistentCollection $coll
+     * @param array $options
+     */
     private function deleteRows(PersistentCollection $coll, array $options)
     {
-        $mapping = $coll->getMapping();
-        $owner = $coll->getOwner();
-        list($propertyPath, $parent, $parentMapping) = $this->getPathAndParent($owner, $mapping);
+        list($propertyPath, $parent) = $this->getPathAndParent($coll);
         $deleteDiff = $coll->getDeleteDiff();
         if ($deleteDiff) {
             $query = array($this->cmd.'unset' => array());
             foreach ($deleteDiff as $key => $document) {
                 $query[$this->cmd.'unset'][$propertyPath.'.'.$key] = true;
             }
-            $this->executeQuery($parent, $mapping, $query, $options);
+            $this->executeQuery($parent, $query, $options);
 
             /**
              * @todo This is a hack right now because we don't have a proper way to remove
@@ -78,15 +125,20 @@ class CollectionPersister
              * "Using "$unset" with an expression like this "array.$" will result in the array item becoming null, not being removed. You can issue an update with "{$pull:{x:null}}" to remove all nulls."
              * http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset
              */
-            $this->executeQuery($parent, $mapping, array($this->cmd.'pull' => array($propertyPath => null)), $options);
+            $this->executeQuery($parent, array($this->cmd.'pull' => array($propertyPath => null)), $options);
         }
     }
 
+    /**
+     * Inserts new rows for a PersistentCollection instance.
+     *
+     * @param PersistentCollection $coll
+     * @param array $options
+     */
     private function insertRows(PersistentCollection $coll, array $options)
     {
         $mapping = $coll->getMapping();
-        $owner = $coll->getOwner();
-        list($propertyPath, $parent, $parentMapping) = $this->getPathAndParent($owner, $mapping);
+        list($propertyPath, $parent) = $this->getPathAndParent($coll);
         $insertDiff = $coll->getInsertDiff();
         if ($insertDiff) {
             $query = array($this->cmd.'pushAll' => array());
@@ -97,19 +149,40 @@ class CollectionPersister
                     $query[$this->cmd.'pushAll'][$propertyPath][] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
                 }
             }
-            $this->executeQuery($parent, $mapping, $query, $options);
+            $this->executeQuery($parent, $query, $options);
         }
     }
 
+    /**
+     * Gets the document database identifier value for the given document.
+     *
+     * @param object $document
+     * @param ClassMetadata $class
+     * @return mixed $id
+     */
     private function getDocumentId($document, ClassMetadata $class)
     {
         return $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
     }
 
-    private function getPathAndParent($document, array $mapping)
+    /**
+     * Gets the parent information for a given PersistentCollection. It will retrieve the top
+     * level persistent @Document that the PersistentCollection lives in. We can use this to issue
+     * queries when updating a PersistentCollection that is multiple levels deep inside an
+     * embedded document.
+     *
+     *     <code>
+     *     list($path, $parent) = $this->getPathAndParent($coll)
+     *     </code>
+     *
+     * @param PersistentCollection $coll
+     * @return array $pathAndParent
+     */
+    private function getPathAndParent(PersistentCollection $coll)
     {
+        $mapping = $coll->getMapping();
         $fields = array();
-        $parent = $document;
+        $parent = $coll->getOwner();
         while (null !== ($association = $this->uow->getParentAssociation($parent))) {
             list($m, $parent, $path) = $association;
             $fields[] = $path;
@@ -119,14 +192,21 @@ class CollectionPersister
         if ($propertyPath) {
             $path = $propertyPath.'.'.$path;
         }
-        return array($path, $parent, $mapping);
+        return array($path, $parent);
     }
 
-    private function executeQuery($parentDocument, array $mapping, array $query, array $options)
+    /**
+     * Executes a query updating the given document.
+     *
+     * @param object $document
+     * @param array $query
+     * @param array $options
+     */
+    private function executeQuery($document, array $query, array $options)
     {
-        $className = get_class($parentDocument);
+        $className = get_class($document);
         $class = $this->dm->getClassMetadata($className);
-        $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($parentDocument));
+        $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
         $collection = $this->dm->getDocumentCollection($className);
         $collection->update(array('_id' => $id), $query, $options);
     }

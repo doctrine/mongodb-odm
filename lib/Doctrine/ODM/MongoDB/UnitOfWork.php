@@ -250,17 +250,41 @@ class UnitOfWork implements PropertyChangedListener
         $this->hydrator = $h;
     }
 
+    /**
+     * Factory for returning new DataPreparer instances used for preparing data into
+     * queries for insert persistence.
+     *
+     * @return DataPreparer $dp
+     */
     public function getDataPreparer()
     {
         return new DataPreparer($this->dm, $this, $this->dm->getConfiguration()->getMongoCmd());
     }
 
+    /**
+     * Sets the parent association for a given embedded document.
+     *
+     * @param object $document
+     * @param array $mapping
+     * @param object $parent
+     * @param string $propertyPath
+     */
     public function setParentAssociation($document, $mapping, $parent, $propertyPath)
     {
         $oid = spl_object_hash($document);
         $this->parentAssociations[$oid] = array($mapping, $parent, $propertyPath);
     }
 
+    /**
+     * Gets the parent association for a given embedded document.
+     *
+     *     <code>
+     *     list($mapping, $parent, $propertyPath) = $this->getParentAssociation($embeddedDocument);
+     *     </code>
+     *
+     * @param object $document
+     * @return array $association
+     */
     public function getParentAssociation($document)
     {
         $oid = spl_object_hash($document);
