@@ -215,6 +215,17 @@ class PersistentCollection implements Collection
 
     /**
      * INTERNAL:
+     * Clears the internal snapshot information and sets isDirty to true if the collection
+     * has elements.
+     */
+    public function clearSnapshot()
+    {
+        $this->snapshot = array();
+        $this->isDirty = $this->count() ? true : false;
+    }
+
+    /**
+     * INTERNAL:
      * Returns the last snapshot of the elements in the collection.
      *
      * @return array The last snapshot of the elements.

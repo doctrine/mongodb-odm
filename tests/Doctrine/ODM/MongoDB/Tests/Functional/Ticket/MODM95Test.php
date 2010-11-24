@@ -32,6 +32,7 @@ class MODM95Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $testDocLoad = $this->dm->findOne(__NAMESPACE__.'\MODM95TestDocument');
         $this->assertNotNull($testDocLoad);
+
         $this->assertEquals($embeddedDocuments, $testDocLoad->embeddedDocuments->toArray());
     }
 }

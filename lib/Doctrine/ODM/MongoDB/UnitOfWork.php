@@ -1033,6 +1033,18 @@ class UnitOfWork implements PropertyChangedListener
                     $this->documentIdentifiers[$oid],
                     $this->originalDocumentData[$oid]
                 );
+
+                // Clear snapshot information for any referenced PersistentCollection
+                // http://www.doctrine-project.org/jira/browse/MODM-95
+                foreach ($class->fieldMappings as $fieldMapping) {
+                    if (isset($fieldMapping['type']) && $fieldMapping['type'] === 'many') {
+                        $value = $class->reflFields[$fieldMapping['fieldName']]->getValue($document);
+                        if ($value instanceof PersistentCollection) {
+                            $value->clearSnapshot();
+                        }
+                    }
+                }
+
                 // Document with this $oid after deletion treated as NEW, even if the $oid
                 // is obtained by a new document because the old one went out of scope.
                 $this->documentStates[$oid] = self::STATE_NEW;
