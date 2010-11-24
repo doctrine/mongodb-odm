@@ -101,7 +101,7 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['fieldName'] = $fieldName;
                 }
                 if (isset($mapping['type']) && $mapping['type'] === 'collection') {
-                    $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushPull';
+                    $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
                 }
                 $this->addFieldMapping($class, $mapping);
             }
@@ -169,7 +169,7 @@ class YamlDriver extends AbstractFileDriver
             'embedded'       => true,
             'targetDocument' => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
             'fieldName'      => $fieldName,
-            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : 'pushPull',
+            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : 'pushAll',
         );
         $this->addFieldMapping($class, $mapping);
     }
@@ -182,7 +182,7 @@ class YamlDriver extends AbstractFileDriver
             'reference'      => true,
             'targetDocument' => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'fieldName'      => $fieldName,
-            'strategy'       => isset($reference['strategy']) ? (string) $reference['strategy'] : 'pushPull',
+            'strategy'       => isset($reference['strategy']) ? (string) $reference['strategy'] : 'pushAll',
         );
         $this->addFieldMapping($class, $mapping);
     }

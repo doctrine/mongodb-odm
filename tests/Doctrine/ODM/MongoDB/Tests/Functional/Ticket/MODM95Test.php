@@ -43,7 +43,7 @@ class MODM95TestDocument
     /** @Id */
     public $id;
 
-    // Note: Test case fails with default "pushPull" strategy, but "set" works
+    // Note: Test case fails with default "pushAll" strategy, but "set" works
     /** @EmbedMany(targetDocument="MODM95TestEmbeddedDocument") */
     public $embeddedDocuments;
 

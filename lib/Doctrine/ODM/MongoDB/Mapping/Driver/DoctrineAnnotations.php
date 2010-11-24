@@ -141,7 +141,7 @@ final class Increment extends Field
 final class Collection extends Field
 {
     public $type = 'collection';
-    public $strategy = 'pushPull'; // pushPull, set
+    public $strategy = 'pushAll'; // pushAll, set
 }
 final class EmbedOne extends Field
 {
@@ -158,7 +158,7 @@ final class EmbedMany extends Field
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
-    public $strategy = 'pushPull'; // pushPull, set
+    public $strategy = 'pushAll'; // pushAll, set
 }
 final class ReferenceOne extends Field
 {
@@ -177,7 +177,7 @@ final class ReferenceMany extends Field
     public $discriminatorField;
     public $discriminatorMap;
     public $cascade;
-    public $strategy = 'pushPull'; // pushPull, set
+    public $strategy = 'pushAll'; // pushAll, set
 }
 class NotSaved extends Field {}
 final class Distance extends Field

@@ -81,7 +81,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRefresh' => false,
             'isCascadeRemove' => false,
             'nullable' => false,
-            'strategy' => 'pushPull',
+            'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['tags']);
 
         $this->assertEquals(array(
@@ -97,7 +97,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRefresh' => false,
             'isCascadeRemove' => false,
             'nullable' => false,
-            'strategy' => 'pushPull',
+            'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['address']);
 
         $this->assertEquals(array(
@@ -113,7 +113,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRefresh' => false,
             'isCascadeRemove' => false,
             'nullable' => false,
-            'strategy' => 'pushPull',
+            'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['phonenumbers']);
 
         $this->assertEquals(array(
@@ -129,7 +129,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRefresh' => true,
             'isCascadeRemove' => true,
             'nullable' => false,
-            'strategy' => 'pushPull',
+            'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
@@ -145,7 +145,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRefresh' => true,
             'isCascadeRemove' => true,
             'nullable' => false,
-            'strategy' => 'pushPull',
+            'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
@@ -161,7 +161,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRefresh' => true,
             'isCascadeRemove' => true,
             'nullable' => false,
-            'strategy' => 'pushPull',
+            'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['groups']);
 
         $this->assertEquals(array(

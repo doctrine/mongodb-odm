@@ -140,7 +140,7 @@ class XmlDriver extends AbstractFileDriver
         $keys = null;
         $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
         if (isset($mapping['type']) && $mapping['type'] === 'collection') {
-            $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushPull';
+            $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
         }
         if (isset($mapping['index'])) {
             $keys = array(
@@ -186,7 +186,7 @@ class XmlDriver extends AbstractFileDriver
             'embedded'       => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
-            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushPull',
+            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
         );
         $this->addFieldMapping($class, $mapping);
     }
@@ -204,7 +204,7 @@ class XmlDriver extends AbstractFileDriver
             'reference'      => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
-            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushPull',
+            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
         );
         $this->addFieldMapping($class, $mapping);
     }
