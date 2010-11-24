@@ -162,29 +162,29 @@ class YamlDriver extends AbstractFileDriver
         $class->mapField($mapping);
     }
 
-    private function addMappingFromDocument(ClassMetadata $class, $fieldName, $yml, $type, $embedRef)
+    private function addMappingFromEmbed(ClassMetadata $class, $fieldName, $embed, $type)
     {
         $mapping = array(
-            'type'                  => $type,
-            'embedded'              => ($embedRef == 'embedded') ? true : null,
-            'reference'             => ($embedRef == 'reference') ? true : null,
-            'targetDocument'        => isset($yml['targetDocument']) ? $yml['targetDocument'] : null,
-            'fieldName'             => $fieldName,
-            'strategy'              => isset($yml['strategy']) ? (string) $yml['strategy'] : 'pushPull',
-            'discriminatorField'    => isset($yml['discriminatorField']) ? $yml['discriminatorField'] : null,
-            'discriminatorMapping'  => isset($yml['discriminatorMapping']) ? $yml['discriminatorMapping'] : null,
+            'type'           => $type,
+            'embedded'       => true,
+            'targetDocument' => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
+            'fieldName'      => $fieldName,
+            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : 'pushPull',
         );
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addMappingFromEmbed(ClassMetadata $class, $fieldName, $embed, $type)
-    {
-        $this->addMappingFromDocument($class, $fieldName, $embed, $type, 'embedded');
-    }
-
     private function addMappingFromReference(ClassMetadata $class, $fieldName, $reference, $type)
     {
-        $this->addMappingFromDocument($class, $fieldName, $reference, $type, 'reference');
+        $mapping = array(
+            'cascade'        => isset($reference['cascade']) ? $reference['cascade'] : null,
+            'type'           => $type,
+            'reference'      => true,
+            'targetDocument' => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
+            'fieldName'      => $fieldName,
+            'strategy'       => isset($reference['strategy']) ? (string) $reference['strategy'] : 'pushPull',
+        );
+        $this->addFieldMapping($class, $mapping);
     }
 
     protected function loadMappingFile($file)
