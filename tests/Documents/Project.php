@@ -6,7 +6,7 @@ namespace Documents;
  * @Document(db="my_db", collection="projects")
  * @InheritanceType("SINGLE_COLLECTION")
  * @DiscriminatorField(fieldName="type")
- * @DiscriminatorMap({"project"="Documents\Project", "sub-project"="Documents\SubProject"})
+ * @DiscriminatorMap({"project"="Documents\Project", "sub-project"="Documents\SubProject", "other-sub-project"="Documents\OtherSubProject"})
  */
 class Project
 {

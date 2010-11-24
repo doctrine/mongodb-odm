@@ -24,11 +24,11 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('id')
             ->equals($user->getId());
         $user = $query->getSingleResult();
-  
+
         $user->getProfile()->setLastName('Wage');
         $this->dm->flush();
         $this->dm->clear();
-        
+
         $user = $query->getSingleResult();
         $this->assertEquals('Wage', $user->getProfile()->getLastName());
         $this->assertTrue($user instanceof \Documents\SpecialUser);
@@ -36,14 +36,6 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testSingleCollectionInhertiance()
     {
-        $project = new \Documents\Project('Project');
-        $this->dm->persist($project);
-        $this->dm->flush();
-
-        $coll = $this->dm->getDocumentCollection('Documents\Project');
-        $document = $coll->findOne(array('name' => 'Project'));
-        $this->assertEquals('project', $document['type']);
-
         $subProject = new \Documents\SubProject('Sub Project');
         $this->dm->persist($subProject);
         $this->dm->flush();
@@ -52,13 +44,15 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = $coll->findOne(array('name' => 'Sub Project'));
         $this->assertEquals('sub-project', $document['type']);
 
+        $project = new \Documents\OtherSubProject('Other Sub Project');
+        $this->dm->persist($project);
+        $this->dm->flush();
+
+        $coll = $this->dm->getDocumentCollection('Documents\OtherSubProject');
+        $document = $coll->findOne(array('name' => 'Other Sub Project'));
+        $this->assertEquals('other-sub-project', $document['type']);
+
         $this->dm->clear();
-
-        $document = $this->dm->findOne('Documents\Project', array('name' => 'Project'));
-        $this->assertInstanceOf('Documents\Project', $document);
-
-        $document = $this->dm->findOne('Documents\Project', array('name' => 'Project'));
-        $this->assertInstanceOf('Documents\Project', $document);
 
         $document = $this->dm->findOne('Documents\SubProject', array('name' => 'Sub Project'));
         $this->assertInstanceOf('Documents\SubProject', $document);
@@ -73,6 +67,10 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $id = $document->getId();
         $document = $this->dm->find('Documents\Project', $id);
         $this->assertInstanceOf('Documents\SubProject', $document);
+
+        $document = $this->dm->findOne('Documents\Project', array('name' => 'Other Sub Project'));
+        $this->assertInstanceOf('Documents\OtherSubProject', $document);
+
     }
 
     public function testPrePersistIsCalledFromMappedSuperClass()
