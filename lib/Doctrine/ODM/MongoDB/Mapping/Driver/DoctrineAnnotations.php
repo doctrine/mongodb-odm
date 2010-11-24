@@ -70,6 +70,7 @@ class Field extends Annotation
     public $name;
     public $type = 'string';
     public $nullable = false;
+    public $options = array();
 }
 final class Id extends Field
 {
