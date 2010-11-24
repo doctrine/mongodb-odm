@@ -43,6 +43,11 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  */
 class ClassMetadata
 {
+    const REFERENCE_ONE  = 1;
+    const REFERENCE_MANY = 2;
+    const EMBED_ONE      = 3;
+    const EMBED_MANY     = 4;
+
     /* The inheritance mapping types */
     /**
      * NONE means the class does not participate in an inheritance hierarchy
@@ -858,6 +863,18 @@ class ClassMetadata
         if ( ! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
         }
+        if (isset($mapping['reference']) && $mapping['type'] === 'one') {
+            $mapping['association'] = self::REFERENCE_ONE;
+        }
+        if (isset($mapping['reference']) && $mapping['type'] === 'many') {
+            $mapping['association'] = self::REFERENCE_MANY;
+        }
+        if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
+            $mapping['association'] = self::EMBED_ONE;
+        }
+        if (isset($mapping['embedded']) && $mapping['type'] === 'many') {
+            $mapping['association'] = self::EMBED_MANY;
+        }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
 
@@ -945,6 +962,52 @@ class ClassMetadata
     }
 
     /**
+     * Checks whether the class has a mapped embed with the given field name.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    public function hasEmbed($fieldName)
+    {
+        return isset($this->fieldMappings[$fieldName]['embedded']);
+    }
+
+    /**
+     * Checks whether the class has a mapped association (embed or reference) with the given field name.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    public function hasAssociation($fieldName)
+    {
+        return $this->hasReference($fieldName) || $this->hasEmbed($fieldName);
+    }
+
+    /**
+     * Checks whether the class has a mapped reference or embed for the specified field and
+     * is a single valued association.
+     *
+     * @param string $fieldName
+     * @return boolean TRUE if the association exists and is single-valued, FALSE otherwise.
+     */
+    public function isSingleValuedAssociation($fieldName)
+    {
+        return $this->isSingleValuedReference($fieldName) || $this->isSingleValuedEmbed($fieldName);
+    }
+
+    /**
+     * Checks whether the class has a mapped reference or embed for the specified field and
+     * is a collection valued association.
+     *
+     * @param string $fieldName
+     * @return boolean TRUE if the association exists and is collection-valued, FALSE otherwise.
+     */
+    public function isCollectionValuedAssociation($fieldName)
+    {
+        return $this->isCollectionValuedReference($fieldName) || $this->isCollectionValuedEmbed($fieldName);
+    }
+
+    /**
      * Checks whether the class has a mapped association for the specified field
      * and if yes, checks whether it is a single-valued association (to-one).
      *
@@ -953,8 +1016,8 @@ class ClassMetadata
      */
     public function isSingleValuedReference($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]['reference']) &&
-                $this->fieldMappings[$fieldName]['type'] === 'one';
+        return isset($this->fieldMappings[$fieldName]['association']) &&
+                $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_ONE;
     }
 
     /**
@@ -966,8 +1029,8 @@ class ClassMetadata
      */
     public function isCollectionValuedReference($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]['reference']) &&
-                $this->fieldMappings[$fieldName]['type'] === 'many';
+        return isset($this->fieldMappings[$fieldName]['association']) &&
+                $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_MANY;
     }
 
     /**
@@ -979,8 +1042,8 @@ class ClassMetadata
      */
     public function isSingleValuedEmbed($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]['embedded']) &&
-                $this->fieldMappings[$fieldName]['type'] === 'one';
+        return isset($this->fieldMappings[$fieldName]['association']) &&
+                $this->fieldMappings[$fieldName]['association'] === self::EMBED_ONE;
     }
 
     /**
@@ -992,16 +1055,28 @@ class ClassMetadata
      */
     public function isCollectionValuedEmbed($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]['embedded']) &&
-                $this->fieldMappings[$fieldName]['type'] === 'many';
+        return isset($this->fieldMappings[$fieldName]['association']) &&
+                $this->fieldMappings[$fieldName]['association'] === self::EMBED_MANY;
     }
 
+    /**
+     * Casts the identifier to its portable PHP type.
+     *
+     * @param mixed $id
+     * @return mixed $id
+     */
     public function getPHPIdentifierValue($id)
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
         return Types\Type::getType($idType)->convertToPHPValue($id);
     }
 
+    /**
+     * Casts the identifier to its database type.
+     *
+     * @param mixed $id
+     * @return mixed $id
+     */
     public function getDatabaseIdentifierValue($id)
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];

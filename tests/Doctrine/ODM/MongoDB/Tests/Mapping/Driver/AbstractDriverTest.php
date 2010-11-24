@@ -85,6 +85,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         ), $classMetadata->fieldMappings['tags']);
 
         $this->assertEquals(array(
+            'association' => 3,
             'fieldName' => 'address',
             'name' => 'address',
             'type' => 'one',
@@ -101,6 +102,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         ), $classMetadata->fieldMappings['address']);
 
         $this->assertEquals(array(
+            'association' => 4,
             'fieldName' => 'phonenumbers',
             'name' => 'phonenumbers',
             'type' => 'many',
@@ -117,6 +119,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         ), $classMetadata->fieldMappings['phonenumbers']);
 
         $this->assertEquals(array(
+            'association' => 1,
             'fieldName' => 'profile',
             'name' => 'profile',
             'type' => 'one',
@@ -133,6 +136,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
+            'association' => 1,
             'fieldName' => 'account',
             'name' => 'account',
             'type' => 'one',
@@ -149,6 +153,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
+            'association' => 2,
             'fieldName' => 'groups',
             'name' => 'groups',
             'type' => 'many',
