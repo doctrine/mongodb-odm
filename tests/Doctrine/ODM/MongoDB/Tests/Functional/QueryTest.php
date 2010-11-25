@@ -254,10 +254,6 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->setUsername('cool');
         $user->addGroup($group);
 
-        $noGroups = new User();
-        $noGroups->setUsername('not cool');
-
-        $this->dm->persist($noGroups);
         $this->dm->persist($user);
         $this->dm->flush();
 
