@@ -784,9 +784,9 @@ class QueryBuilder
         $class = $this->dm->getClassMetadata(get_class($document));
 
         $this->query[$this->currentField][$this->cmd . 'elemMatch'] = array(
-            $this->cmd . 'db'  => $class->getDB(),
             $this->cmd . 'ref' => $class->getCollection(),
-            $this->cmd . 'id'  => $class->getIdentifierValue($document),
+            $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($class->getIdentifierValue($document)),
+            $this->cmd . 'db'  => $class->getDB()
         );
 
         return $this;

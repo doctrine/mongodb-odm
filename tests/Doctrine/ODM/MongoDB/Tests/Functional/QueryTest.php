@@ -245,4 +245,26 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->assertEquals('Documents\Article', get_class($article));
         }
     }
+
+    public function testQueryReferences()
+    {
+        $group = new \Documents\Group('Test Group');
+
+        $user = new User();
+        $user->setUsername('cool');
+        $user->addGroup($group);
+
+        $noGroups = new User();
+        $noGroups->setUsername('not cool');
+
+        $this->dm->persist($noGroups);
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('groups')->references($group);
+        $query = $qb->getQuery();
+        $user2 = $query->getSingleResult();
+        $this->assertSame($user, $user2);
+    }
 }
