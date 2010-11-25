@@ -19,7 +19,7 @@
 namespace Doctrine\ODM\MongoDB;
 
 /**
- * MongoGridFSFile
+ * MongoGridFSFile is a wrapper around the native PHP MongoGridFSFile class.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
@@ -28,6 +28,11 @@ namespace Doctrine\ODM\MongoDB;
  */
 class MongoGridFSFile
 {
+    /**
+     * Stores \MongoGridFSFile instance or a string path to a file.
+     *
+     * @var string|\MongoGridFSFile
+     */
     private $mongoGridFSFile;
 
     public function __construct($file)
