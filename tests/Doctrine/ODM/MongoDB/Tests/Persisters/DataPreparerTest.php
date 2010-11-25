@@ -9,7 +9,6 @@ use Documents\Ecommerce\ConfigurableProduct;
 
 class DataPreparerTest extends BaseTest
 {
-
     private $dp;
 
     public function setUp()
@@ -63,5 +62,4 @@ class DataPreparerTest extends BaseTest
         unset($preparedData['_id']);
         $this->assertEquals(array_keys($expectedData), array_keys($preparedData));
     }
-
 }

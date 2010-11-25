@@ -117,8 +117,10 @@ class Hydrator
             }
             $value = null;
 
+            if (isset($mapping['file'])) {
+                $value = new MongoGridFSFile($rawValue);
             // Hydrate embedded
-            if (isset($mapping['embedded'])) {
+            } elseif (isset($mapping['embedded'])) {
                 $uow = $this->dm->getUnitOfWork();
                 if ($mapping['type'] === 'one') {
                     if ($rawValue === null) {

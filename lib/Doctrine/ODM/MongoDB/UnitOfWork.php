@@ -480,7 +480,7 @@ class UnitOfWork implements PropertyChangedListener
             $value = $class->getFieldValue($document, $mapping['fieldName']);
 
             // Skip MongoGridFSFile instances as we never store these objects
-            if ($value instanceof \MongoGridFSFile) {
+            if ($value instanceof MongoGridFSFile) {
                 continue;
             }
 
@@ -2181,8 +2181,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getOrCreateDocument($className, $data, &$hints = array())
     {
-        $class = $this->dm->getClassMetadata($className);
         if ($data instanceof \MongoGridFSFile) {
+            $data = new MongoGridFSFile($data);
+        }
+        $class = $this->dm->getClassMetadata($className);
+        if ($data instanceof MongoGridFSFile) {
             $file = $data;
             $data = $file->file;
             $data[$class->file] = $file;

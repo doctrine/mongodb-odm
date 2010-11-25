@@ -148,7 +148,7 @@ class MongoCollection
         $fileName = $this->class->fieldMappings[$this->class->file]['fieldName'];
         $file = $a[$fileName];
         unset($a[$fileName]);
-        if ($file instanceof \MongoGridFSFile) {
+        if ($file instanceof MongoGridFSFile) {
             $id = $a['_id'];
             unset($a['_id']);
             $set = array($this->cmd . 'set' => $a);
