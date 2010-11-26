@@ -181,9 +181,6 @@ class DocumentPersister
         foreach ($inserts as $oid => $data) {
             $document = $this->queuedInserts[$oid];
             $postInsertIds[] = array($data['_id'], $document);
-            if ($this->class->isFile()) {
-                $this->dm->getHydrator()->hydrate($document, $data);
-            }
         }
         $this->queuedInserts = array();
 

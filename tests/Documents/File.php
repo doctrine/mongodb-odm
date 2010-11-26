@@ -16,6 +16,12 @@ class File
     /** @File */
     private $file;
 
+    /** @Integer @NotSaved */
+    private $length;
+
+    /** @Integer @NotSaved */
+    private $md5;
+
     public function getId()
     {
         return $this->id;

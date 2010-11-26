@@ -16,12 +16,6 @@ class CollectionEventsTEst extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'postBatchInsert',
             'preUpdate',
             'postUpdate',
-            'preSaveFile',
-            'postSaveFile',
-            'preGetDBRef',
-            'postGetDBRef',
-            'preSave',
-            'postSave',
             'preFind',
             'postFind',
             'preFindOne',
@@ -38,12 +32,8 @@ class CollectionEventsTEst extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection = $this->dm->getDocumentCollection('Documents\User');
         $collection->batchInsert($insert);
         $collection->update(array(), array('username' => 'test'));
-        $file = array('file' => 'file');
-        $this->dm->getDocumentCollection('Documents\File')->saveFile($file);
         $cmd = $this->dm->getConfiguration()->getMongoCmd();
-        $collection->getDbRef(array($this->escape('ref') => 'users', $this->escape('id') => 'theid'));
         $document = array('_id' => 'test', 'username' => 'jwage');
-        $collection->save($document);
         $collection->find();
         $collection->findOne(array('username' => 'jwage'));
         $this->assertEquals($events, $this->_called);

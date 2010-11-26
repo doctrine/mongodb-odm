@@ -41,14 +41,11 @@ final class CollectionEvents
     const preUpdate = 'collectionPreUpdate';
     const postUpdate = 'collectionPostUpdate';
 
-    const preSaveFile = 'collectionPreSaveFile';
-    const postSaveFile = 'collectionPostSaveFile';
+    const preInsertFile = 'collectionPreInsertFile';
+    const postInsertFile = 'collectionPostInsertFile';
 
-    const preGetDBRef = 'collectionPreGetDBRef';
-    const postGetDBRef = 'collectionPostGetDBRef';
-
-    const preSave = 'collectionPreSave';
-    const postSave = 'collectionPostSave';
+    const preUpdateFile = 'collectionPreUpdateFile';
+    const postUpdateFile = 'collectionPostUpdateFile';
 
     const preFind = 'collectionPreFind';
     const postFind = 'collectionPostFind';

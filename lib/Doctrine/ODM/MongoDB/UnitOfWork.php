@@ -479,9 +479,9 @@ class UnitOfWork implements PropertyChangedListener
 
             $value = $class->getFieldValue($document, $mapping['fieldName']);
 
-            // Skip MongoGridFSFile instances as we never store these objects
-            if ($value instanceof MongoGridFSFile) {
-                continue;
+            if (isset($mapping['file']) && ! $value instanceof MongoGridFSFile) {
+                $value = new MongoGridFSFile($value);
+                $class->reflFields[$name]->setValue($document, $value);
             }
 
             if (($class->isCollectionValuedReference($name) || $class->isCollectionValuedEmbed($name))
@@ -568,6 +568,10 @@ class UnitOfWork implements PropertyChangedListener
                         if ($orgValue instanceof PersistentCollection) {
                             $this->collectionDeletions[] = $orgValue;
                         }
+                    }
+                } else if (isset($class->fieldMappings[$propName]['file'])) {
+                    if ($orgValue !== $actualValue || $actualValue->isDirty()) {
+                        $changeSet[$propName] = array($orgValue, $actualValue);
                     }
                 } else if (is_object($orgValue) && $orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
@@ -2181,14 +2185,12 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getOrCreateDocument($className, $data, &$hints = array())
     {
-        if ($data instanceof \MongoGridFSFile) {
-            $data = new MongoGridFSFile($data);
-        }
         $class = $this->dm->getClassMetadata($className);
-        if ($data instanceof MongoGridFSFile) {
+
+        if ($data instanceof \MongoGridFSFile) {
             $file = $data;
             $data = $file->file;
-            $data[$class->file] = $file;
+            $data[$class->file] = new MongoGridFSFile($file);
         }
 
         if ($class->discriminatorField) {

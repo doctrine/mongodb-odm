@@ -36,13 +36,32 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
  */
 class MongoCollection
 {
-    /** The PHP MongoCollection being wrapped. */
+    /**
+     * The PHP MongoCollection being wrapped.
+     *
+     * @var \MongoCollection
+     */
     private $mongoCollection;
 
-    /** The ClassMetadata instance for this collection. */
+    /**
+     * The PHP MongoDB that the collection lives in.
+     *
+     * @var \MongoDB
+     */
+    private $db;
+
+    /**
+     * The ClassMetadata instance for this collection.
+     *
+     * @var ClassMetadata
+     */
     private $class;
 
-    /** A callable for logging statements. */
+    /**
+     * A callable for logging statements.
+     *
+     * @var mixed
+     */
     private $loggerCallable;
 
     /**
@@ -54,6 +73,7 @@ class MongoCollection
 
     /**
      * Mongo command prefix
+     *
      * @var string
      */
     private $cmd;
@@ -67,9 +87,10 @@ class MongoCollection
      * @param EventManager $evm The EventManager instance.
      * @param Configuration $c The Configuration instance
      */
-    public function __construct(\MongoCollection $mongoCollection, ClassMetadata $class, EventManager $evm, Configuration $c)
+    public function __construct(\MongoCollection $mongoCollection, MongoDB $db, ClassMetadata $class, EventManager $evm, Configuration $c)
     {
         $this->mongoCollection = $mongoCollection;
+        $this->db = $db;
         $this->class = $class;
         $this->eventManager = $evm;
         $this->loggerCallable = $c->getLoggerCallable();
@@ -109,13 +130,14 @@ class MongoCollection
             $this->eventManager->dispatchEvent(CollectionEvents::preBatchInsert, new CollectionEventArgs($this, $a));
         }
 
-        if ($this->mongoCollection instanceof \MongoGridFS) {
-            foreach ($a as $key => $array) {
-                $this->saveFile($array);
-                $a[$key] = $array;
+        if ($this->class->isFile()) {
+            foreach ($a as $key => &$array) {
+                $this->insertFile($array);
             }
-            return $a;
+        } else {
+            $this->mongoCollection->batchInsert($a, $options);
         }
+
         if ($this->loggerCallable) {
             $this->log(array(
                 'batchInsert' => true,
@@ -123,13 +145,12 @@ class MongoCollection
                 'data' => $a
             ));
         }
-        $result = $this->mongoCollection->batchInsert($a, $options);
 
         if ($this->eventManager->hasListeners(CollectionEvents::postBatchInsert)) {
             $this->eventManager->dispatchEvent(CollectionEvents::postBatchInsert, new CollectionEventArgs($this, $result));
         }
 
-        return $result;
+        return $a;
     }
 
     /**
@@ -139,123 +160,78 @@ class MongoCollection
      * @param array $a Array to store
      * @return array $a
      */
-    public function saveFile(array &$a)
+    public function insertFile(array &$a)
     {
-        if ($this->eventManager->hasListeners(CollectionEvents::preSaveFile)) {
-            $this->eventManager->dispatchEvent(CollectionEvents::preSaveFile, new CollectionEventArgs($this, $a));
+        if ($this->eventManager->hasListeners(CollectionEvents::preInsertFile)) {
+            $this->eventManager->dispatchEvent(CollectionEvents::preInsertFile, new CollectionEventArgs($this, $a));
+        }
+        $fileName = $this->class->fieldMappings[$this->class->file]['fieldName'];
+
+        // If file exists and is dirty then lets persist the file and store the file path or the bytes
+        if (isset($a[$fileName]) && $a[$fileName]->isDirty()) {
+            $file = $a[$fileName]; // instanceof MongoGridFSFile
+
+            $document = $a;
+            unset($document[$fileName]);
+
+            $this->storeFile($file, $document);
+        }
+
+        if ($this->eventManager->hasListeners(CollectionEvents::postInsertFile)) {
+            $this->eventManager->dispatchEvent(CollectionEvents::postInsertFile, new CollectionEventArgs($this, $file));
+        }
+        return $a;
+    }
+
+    public function updateFile(array $criteria, array &$a, array $options = array())
+    {
+        if ($this->eventManager->hasListeners(CollectionEvents::preUpdateFile)) {
+            $this->eventManager->dispatchEvent(CollectionEvents::preUpdateFile, new CollectionEventArgs($this, $a));
         }
 
         $fileName = $this->class->fieldMappings[$this->class->file]['fieldName'];
-        $file = $a[$fileName];
-        unset($a[$fileName]);
-        if ($file instanceof MongoGridFSFile) {
-            $id = $a['_id'];
-            unset($a['_id']);
-            $set = array($this->cmd . 'set' => $a);
+        $file = isset($a[$this->cmd.'set'][$fileName]) ? $a[$this->cmd.'set'][$fileName] : null;
+        unset($a[$this->cmd.'set'][$fileName]);
 
+        // Has file to be persisted
+        if (isset($file) && $file->isDirty()) {
+            // It is impossible to update a file on the grid so we have to remove it and
+            // persist a new file with the same data
+
+            // First do a find and remove query to remove the file metadata and chunks so
+            // we can restore the file below
+            $document = $this->findAndRemove($criteria, $options);
+            unset(
+                $document['filename'],
+                $document['length'],
+                $document['chunkSize'],
+                $document['uploadDate'],
+                $document['md5'],
+                $document['file']
+            );
+
+            // Store the file
+            $this->storeFile($file, $document);
+        }
+
+        // Now send the original update bringing the file up to date
+        if ($a) {
             if ($this->loggerCallable) {
                 $this->log(array(
                     'updating' => true,
                     'file' => true,
                     'id' => $id,
-                    'set' => $set
+                    'set' => $a
                 ));
             }
-
-            $this->mongoCollection->update(array('_id' => $id), $set);
-        } else {
-            if (isset($a['_id'])) {
-                $this->mongoCollection->chunks->remove(array('files_id' => $a['_id']));
-            }
-            if (file_exists($file)) {
-                if ($this->loggerCallable) {
-                    $this->log(array(
-                        'storing' => true,
-                        'file' => $file,
-                        'document' => $a
-                    ));
-                }
-
-                $id = $this->mongoCollection->storeFile($file, $a);
-            } elseif (is_string($file)) {
-                if ($this->loggerCallable) {
-                    $this->log(array(
-                        'storing' => true,
-                        'bytes' => true,
-                        'document' => $a
-                    ));
-                }
-
-                $id = $this->mongoCollection->storeBytes($file, $a);
-            }
-
-            $file = $this->mongoCollection->findOne(array('_id' => $id));
+            $this->mongoCollection->update($criteria, $a, $options);
         }
 
-        if ($this->eventManager->hasListeners(CollectionEvents::postSaveFile)) {
-            $this->eventManager->dispatchEvent(CollectionEvents::postSaveFile, new CollectionEventArgs($this, $file));
+        if ($this->eventManager->hasListeners(CollectionEvents::postUpdateFile)) {
+            $this->eventManager->dispatchEvent(CollectionEvents::postUpdateFile, new CollectionEventArgs($this, $file));
         }
 
-        $a = $file->file;
-        $a[$this->class->file] = $file;
         return $a;
-    }
-
-    /** @override */
-    public function getDBRef(array $reference)
-    {
-        if ($this->eventManager->hasListeners(CollectionEvents::preGetDBRef)) {
-            $this->eventManager->dispatchEvent(CollectionEvents::preGetDBRef, new CollectionEventArgs($this, $reference));
-        }
-
-        if ($this->loggerCallable) {
-            $this->log(array(
-                'get' => true,
-                'reference' => $reference,
-            ));
-        }
-
-        if ($this->class->isFile()) {
-            $ref = $this->mongoCollection->getDBRef($reference);
-            $file = $this->mongoCollection->findOne(array('_id' => $ref['_id']));
-            $data = $file->file;
-            $data[$this->class->file] = $file;
-            return $data;
-        }
-        $dbRef = $this->mongoCollection->getDBRef($reference);
-
-        if ($this->eventManager->hasListeners(CollectionEvents::postGetDBRef)) {
-            $this->eventManager->dispatchEvent(CollectionEvents::postGetDBRef, new CollectionEventArgs($this, $dbRef));
-        }
-
-        return $dbRef;
-    }
-
-    /** @override */
-    public function save(array &$a, array $options = array())
-    {
-        if ($this->eventManager->hasListeners(CollectionEvents::preSave)) {
-            $this->eventManager->dispatchEvent(CollectionEvents::preSave, new CollectionEventArgs($this, $a));
-        }
-
-        if ($this->loggerCallable) {
-            $this->log(array(
-                'save' => true,
-                'document' => $a,
-                'options' => $options
-            ));
-        }
-        if ($this->class->isFile()) {
-            $result = $this->saveFile($a);
-        } else {
-            $result = $this->mongoCollection->save($a, $options);
-        }
-
-        if ($this->eventManager->hasListeners(CollectionEvents::postSave)) {
-            $this->eventManager->dispatchEvent(CollectionEvents::postSave, new CollectionEventArgs($this, $result));
-        }
-
-        return $result;
     }
 
     /** @override */
@@ -273,7 +249,11 @@ class MongoCollection
                 'options' => $options
             ));
         }
-        $result = $this->mongoCollection->update($criteria, $newObj, $options);
+        if ($this->class->isFile()) {
+            $result = $this->updateFile($criteria, $newObj, $options);
+        } else {
+            $result = $this->mongoCollection->update($criteria, $newObj, $options);
+        }
 
         if ($this->eventManager->hasListeners(CollectionEvents::postUpdate)) {
             $this->eventManager->dispatchEvent(CollectionEvents::postUpdate, new CollectionEventArgs($this, $result));
@@ -335,20 +315,62 @@ class MongoCollection
         }
 
         if ($this->mongoCollection instanceof \MongoGridFS) {
-            if (($file = $this->mongoCollection->findOne($query)) === null) {
-                return null;
+            if (($result = $this->mongoCollection->findOne($query)) !== null) {
+                $data = $result->file;
+                $data[$this->class->file] = $result;
+                $result = $data;
             }
-            $data = $file->file;
-            $data[$this->class->file] = $file;
-            return $data;
+        } else {
+            $result = $this->mongoCollection->findOne($query, $fields);
         }
-        $result = $this->mongoCollection->findOne($query, $fields);
 
         if ($this->eventManager->hasListeners(CollectionEvents::postFindOne)) {
             $this->eventManager->dispatchEvent(CollectionEvents::postFindOne, new CollectionEventArgs($this, $result));
         }
 
         return $result;
+    }
+
+    public function findAndRemove(array $query, array $options = array())
+    {
+        $command = array();
+        $command['findandmodify'] = $this->getName();
+        $command['query'] = $query;
+        $command['remove'] = true;
+        $result = $this->db->command($command);
+        $document = $result['value'];
+        if ($this->class->isFile()) {
+            // Remove the file data from the chunks collection
+            $this->mongoCollection->chunks->remove(array('files_id' => $document['_id']), $options);
+        }
+        return $document;
+    }
+
+    private function storeFile(MongoGridFSFile $file, array &$document)
+    {
+        if ($file->hasUnpersistedFile()) {
+            $filename = $file->getFilename();
+            if ($this->loggerCallable) {
+                $this->log(array(
+                    'storing' => true,
+                    'file' => $file,
+                    'document' => $document
+                ));
+            }
+            $id = $this->mongoCollection->storeFile($filename, $document);
+        } else {
+            $bytes = $file->getBytes();
+            if ($this->loggerCallable) {
+                $this->log(array(
+                    'storing' => true,
+                    'bytes' => true,
+                    'document' => $document
+                ));
+            }
+            $id = $this->mongoCollection->storeBytes($bytes, $document);
+        }
+        $file->setMongoGridFSFile(new \MongoGridFSFile($this->mongoCollection, $document));
+        return $file;
     }
 
     private function getClassDiscriminatorValues(ClassMetadata $metadata)

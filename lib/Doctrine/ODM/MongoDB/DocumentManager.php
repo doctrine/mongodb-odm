@@ -304,12 +304,13 @@ class DocumentManager
         $collection = $metadata->getCollection();
         $key = $db . '.' . $collection . '.' . $className;
         if ($collection && ! isset($this->documentCollections[$key])) {
+            $db = $this->getDocumentDB($className);
             if ($metadata->isFile()) {
-                $collection = $this->getDocumentDB($className)->getGridFS($collection);
+                $collection = $db->getGridFS($collection);
             } else {
-                $collection = $this->getDocumentDB($className)->selectCollection($collection);
+                $collection = $db->selectCollection($collection);
             }
-            $mongoCollection = new MongoCollection($collection, $metadata, $this->eventManager, $this->config);
+            $mongoCollection = new MongoCollection($collection, $db, $metadata, $this->eventManager, $this->config);
             $this->documentCollections[$key] = $mongoCollection;
         }
         if ( ! isset($this->documentCollections[$key])) {
