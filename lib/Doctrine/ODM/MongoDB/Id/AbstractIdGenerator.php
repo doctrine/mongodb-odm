@@ -22,10 +22,28 @@ namespace Doctrine\ODM\MongoDB\Id;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+/**
+ * AbstractIdGenerator
+ *
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.com
+ * @since       1.0
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ */
 abstract class AbstractIdGenerator
 {
+    /**
+     * The ClassMetadataInstance for this id generator instance.
+     *
+     * @var ClassMetadata
+     */
     protected $class;
 
+    /**
+     * Constructs a new id generator instance.
+     *
+     * @param ClassMetadata $class
+     */
     public function __construct(ClassMetadata $class)
     {
         $this->class = $class;

@@ -22,6 +22,14 @@ namespace Doctrine\ODM\MongoDB\Id;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+/**
+ * UuidGenerator generates a uuid for the id.
+ *
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.com
+ * @since       1.0
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ */
 class UuidGenerator extends AbstractIdGenerator
 {
     /**
