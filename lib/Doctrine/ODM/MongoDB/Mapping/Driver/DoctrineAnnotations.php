@@ -76,7 +76,7 @@ final class Id extends Field
 {
     public $id = true;
     public $type = 'id';
-    public $custom = false;
+    public $strategy = 'auto';
 }
 final class Hash extends Field
 {

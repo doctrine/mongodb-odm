@@ -43,6 +43,29 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  */
 class ClassMetadata
 {
+    /* The Id generator types. */
+    /**
+     * AUTO means Doctrine will automatically create a new \MongoId instance for us.
+     */
+    const GENERATOR_TYPE_AUTO = 1;
+
+    /**
+     * INCREMENT means a separate collection is used for maintaining and incrementing id generation.
+     * Offers full portability.
+     */
+    const GENERATOR_TYPE_INCREMENT = 2;
+
+    /**
+     * UUID means Doctrine will generate a uuid for us.
+     */
+    const GENERATOR_TYPE_UUID = 3;
+
+    /**
+     * NONE means Doctrine will not generate any id for us and you are responsible for manually
+     * assigning an id.
+     */
+    const GENERATOR_TYPE_NONE = 4;
+
     const REFERENCE_ONE  = 1;
     const REFERENCE_MANY = 2;
     const EMBED_ONE      = 3;
@@ -168,13 +191,6 @@ class ClassMetadata
     public $customRepositoryClassName;
 
     /**
-     * Whether custom id value is allowed or not
-     *
-     * @var bool
-     */
-    public $allowCustomID = false;
-
-    /**
      * READ-ONLY: The names of the parent classes (ancestors).
      *
      * @var array
@@ -210,6 +226,13 @@ class ClassMetadata
     public $inheritanceType = self::INHERITANCE_TYPE_NONE;
 
     /**
+     * READ-ONLY: The Id generator type used by the class.
+     *
+     * @var string
+     */
+    public $generatorType = self::GENERATOR_TYPE_AUTO;
+
+    /**
      * READ-ONLY: The field mappings of the class.
      * Keys are field names and values are mapping definitions.
      *
@@ -225,6 +248,13 @@ class ClassMetadata
      * @var array
      */
     public $fieldMappings = array();
+
+    /**
+     * READ-ONLY: The ID generator used for generating IDs for this class.
+     *
+     * @var AbstractIdGenerator
+     */
+    public $idGenerator;
 
     /**
      * READ-ONLY: Array of fields to also load with a given method.
@@ -859,6 +889,13 @@ class ClassMetadata
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $mapping['type'] = isset($mapping['type']) ? $mapping['type'] : 'id';
             $this->identifier = $mapping['fieldName'];
+            if (isset($mapping['strategy'])) {
+                $generatorType = constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
+                if ($generatorType !== self::GENERATOR_TYPE_AUTO) {
+                    $mapping['type'] = 'custom_id';
+                }
+                $this->generatorType = $generatorType;
+            }
         }
         if ( ! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
@@ -1060,6 +1097,16 @@ class ClassMetadata
     }
 
     /**
+     * Sets the ID generator used to generate IDs for instances of this class.
+     *
+     * @param AbstractIdGenerator $generator
+     */
+    public function setIdGenerator($generator)
+    {
+        $this->idGenerator = $generator;
+    }
+
+    /**
      * Casts the identifier to its portable PHP type.
      *
      * @param mixed $id
@@ -1182,6 +1229,14 @@ class ClassMetadata
     }
 
     /**
+     * Sets the type of Id generator to use for the mapped class.
+     */
+    public function setIdGeneratorType($generatorType)
+    {
+        $this->generatorType = $generatorType;
+    }
+
+    /**
      * @return boolean
      */
     public function isInheritanceTypeNone()
@@ -1241,23 +1296,43 @@ class ClassMetadata
     }
 
     /**
-     * Set whether or not a custom id is allowed.
+     * Checks whether the class will generate a new \MongoId instance for us.
      *
-     * @param bool $bool
+     * @return boolean TRUE if the class uses the AUTO generator, FALSE otherwise.
      */
-    public function setAllowCustomId($bool)
+    public function isIdGeneratorAuto()
     {
-        $this->allowCustomID = (bool) $bool;
+        return $this->generatorType == self::GENERATOR_TYPE_AUTO;
     }
 
     /**
-     * Get whether or not a custom id is allowed.
+     * Checks whether the class will use a collection to generate incremented identifiers.
      *
-     * @param bool $bool
+     * @return boolean TRUE if the class uses the INCREMENT generator, FALSE otherwise.
      */
-    public function getAllowCustomID()
+    public function isIdGeneratorIncrement()
     {
-        return $this->allowCustomID;
+        return $this->generatorType == self::GENERATOR_TYPE_INCREMENT;
+    }
+
+    /**
+     * Checks whether the class will generate a uuid id.
+     *
+     * @return boolean TRUE if the class uses the UUID generator, FALSE otherwise.
+     */
+    public function isIdGeneratorUuid()
+    {
+        return $this->generatorType == self::GENERATOR_TYPE_UUID;
+    }
+
+    /**
+     * Checks whether the class uses no id generator.
+     *
+     * @return boolean TRUE if the class does not use any id generator, FALSE otherwise.
+     */
+    public function isIdGeneratorNone()
+    {
+        return $this->generatorType == self::GENERATOR_TYPE_NONE;
     }
 
     /**
@@ -1297,7 +1372,7 @@ class ClassMetadata
             'db',
             'collection',
             'rootDocumentName',
-            'allowCustomID'
+            'idGenerator'
         );
 
         // The rest of the metadata is only serialized if necessary.

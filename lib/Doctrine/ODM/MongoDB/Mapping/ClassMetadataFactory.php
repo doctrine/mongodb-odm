@@ -227,6 +227,16 @@ class ClassMetadataFactory
             if ( ! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
                 throw MongoDBException::identifierRequired($className);
             }
+            if ($parent && ! $parent->isMappedSuperclass && ! $class->isEmbeddedDocument) {
+                if ($parent->generatorType) {
+                    $class->setIdGeneratorType($parent->generatorType);
+                }
+                if ($parent->idGenerator) {
+                    $class->setIdGenerator($parent->idGenerator);
+                }
+            } else {
+                $this->completeIdGeneratorMapping($class);
+            }
 
             if ($parent && $parent->isInheritanceTypeSingleCollection()) {
                 $class->setDB($parent->getDB());
@@ -308,6 +318,28 @@ class ClassMetadataFactory
             }
         }
         return $parentClasses;
+    }
+
+    private function completeIdGeneratorMapping(ClassMetadata $class)
+    {
+        $idGenType = $class->generatorType;
+        switch ($class->generatorType) {
+            case ClassMetadata::GENERATOR_TYPE_AUTO:
+                $class->setIdGenerator(new \Doctrine\ODM\MongoDB\Id\AutoGenerator($class));
+                break;
+            case ClassMetadata::GENERATOR_TYPE_INCREMENT:
+                $class->setIdGenerator(new \Doctrine\ODM\MongoDB\Id\IncrementGenerator($class));
+                break;
+            case ClassMetadata::GENERATOR_TYPE_UUID:
+                $uuidGenerator = new \Doctrine\ODM\MongoDB\Id\UuidGenerator($class);
+                $uuidGenerator->setSalt($class->name);
+                $class->setIdGenerator($uuidGenerator);
+                break;
+            case ClassMetadata::GENERATOR_TYPE_NONE;
+                break;
+            default:
+                throw new MongoDBException("Unknown generator type: " . $class->generatorType);
+        }
     }
 
     /**

@@ -24,32 +24,6 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
     }
 
-    public function testPrepareWhereValue()
-    {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->field('profile.profileId')->equals('4ce6a8cdfdc212f420500100');
-        $this->assertEquals(array('profile.$id' => new \MongoId('4ce6a8cdfdc212f420500100')), $qb->debug('query'));
-
-        $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->field('profile.$id')->equals('4ce6a8cdfdc212f420500100');
-        $this->assertEquals(array('profile.$id' => new \MongoId('4ce6a8cdfdc212f420500100')), $qb->debug('query'));
-
-        $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->field('id')->equals('4ce6a8cdfdc212f420500100');
-        $this->assertEquals(array('_id' => new \MongoId('4ce6a8cdfdc212f420500100')), $qb->debug('query'));
-    }
-
-    public function testPrepareWhereValueWithCustomId()
-    {
-        $qb = $this->dm->createQueryBuilder('Documents\CustomUser')
-            ->field('id')->equals('4ce6a8cdfdc212f420500100');
-        $this->assertEquals(array('_id' => '4ce6a8cdfdc212f420500100'), $qb->debug('query'));
-
-        $qb = $this->dm->createQueryBuilder('Documents\CustomUser')
-            ->field('account.$id')->equals('4ce6a8cdfdc212f420500100');
-        $this->assertEquals(array('account.$id' => new \MongoId('4ce6a8cdfdc212f420500100')), $qb->debug('query'));
-    }
-
     public function testDistinct()
     {
         $user = new User();

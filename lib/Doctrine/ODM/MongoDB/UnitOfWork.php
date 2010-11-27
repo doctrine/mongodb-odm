@@ -471,20 +471,12 @@ class UnitOfWork implements PropertyChangedListener
         $actualData = array();
         foreach ($class->reflFields as $name => $refProp) {
             $mapping = $class->fieldMappings[$name];
-
-            // Skip identifiers if custom ones are not allowed
-            if ($class->isIdentifier($name) && ! $class->getAllowCustomID()) {
-                continue;
-            }
-
-            $value = $class->getFieldValue($document, $mapping['fieldName']);
-
+            $value = $refProp->getValue($document);
             if (isset($mapping['file']) && ! $value instanceof MongoGridFSFile) {
                 $value = new MongoGridFSFile($value);
                 $class->reflFields[$name]->setValue($document, $value);
-            }
-
-            if (($class->isCollectionValuedReference($name) || $class->isCollectionValuedEmbed($name))
+                $actualData[$name] = $value;
+            } elseif (($class->isCollectionValuedReference($name) || $class->isCollectionValuedEmbed($name))
                     && $value !== null && ! ($value instanceof PersistentCollection)) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
                 if ( ! $value instanceof Collection) {
@@ -492,12 +484,14 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // Inject PersistentCollection
-                $value = new PersistentCollection($value, $this->dm, $this->dm->getConfiguration());
-                $value->setOwner($document, $mapping);
-                $value->setDirty( ! $value->isEmpty());
-                $class->reflFields[$name]->setValue($document, $value);
+                $coll = new PersistentCollection($value, $this->dm, $this->dm->getConfiguration());
+                $coll->setOwner($document, $mapping);
+                $coll->setDirty( ! $value->isEmpty());
+                $class->reflFields[$name]->setValue($document, $coll);
+                $actualData[$name] = $coll;
+            } else if ( ! $class->isIdentifier($name) || $class->isIdGeneratorNone()) {
+                $actualData[$name] = $value;
             }
-            $actualData[$name] = $value;
         }
         return $actualData;
     }

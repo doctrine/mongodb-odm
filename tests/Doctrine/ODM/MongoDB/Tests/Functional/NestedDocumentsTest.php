@@ -26,14 +26,14 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $test = $this->dm->getDocumentCollection(__NAMESPACE__.'\Order')->findOne();
 
-        $this->assertInstanceOf('\MongoId', $test['product']['id']);
+        $this->assertInstanceOf('\MongoId', $test['product']['_id']);
         $this->assertEquals('Order', $test['title']);
         $this->assertEquals('Product', $test['product']['title']);
 
         $doc = $this->dm->findOne(__NAMESPACE__.'\Order');
         $this->assertInstanceOf(__NAMESPACE__.'\Order', $order);
         $this->assertTrue(is_string($doc->product->id));
-        $this->assertEquals((string) $test['product']['id'], $doc->product->id);
+        $this->assertEquals((string) $test['product']['_id'], $doc->product->id);
         $this->assertEquals('Order', $doc->title);
         $this->assertEquals('Product', $doc->product->title);
 

@@ -85,9 +85,8 @@ class DataPreparer
 
             // Prepare new document identifier
             if ($class->isIdentifier($mapping['fieldName'])) {
-                if ($new === null) {
-                    $new = new \MongoId();
-                    $insertData['_id'] = $this->prepareValue($mapping, $new);
+                if ( ! $class->isIdGeneratorNone() && $new === null) {
+                    $insertData['_id'] = $class->idGenerator->generate($this->dm, $document);
                 } else {
                     $insertData['_id'] = $this->prepareValue($mapping, $new);
                 }
@@ -279,6 +278,17 @@ class DataPreparer
             }
 
             $rawValue = $class->getFieldValue($embeddedDocument, $mapping['fieldName']);
+
+            // Generate embedded document identifiers
+            if ($class->isIdentifier($mapping['fieldName'])) {
+                if ( ! $class->isIdGeneratorNone() && $rawValue === null) {
+                    $embeddedDocumentValue['_id'] = $class->idGenerator->generate($this->dm, $embeddedDocument);
+                    $class->setIdentifierValue($embeddedDocument, $embeddedDocumentValue['_id']);
+                } else {
+                    $embeddedDocumentValue['_id'] = $this->prepareValue($mapping, $rawValue);
+                }
+                continue;
+            }
 
             // Don't store null values unless nullable is specified
             if ($rawValue === null && $mapping['nullable'] === false) {

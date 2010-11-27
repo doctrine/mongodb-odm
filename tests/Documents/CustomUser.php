@@ -5,7 +5,7 @@ namespace Documents;
 /** @Document(collection="custom_users") */
 class CustomUser
 {
-    /** @Id(custom=true) */
+    /** @Id(strategy="none") */
     protected $id;
 
     /** @String */

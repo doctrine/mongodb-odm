@@ -86,6 +86,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('id')->equals($user->getId())
             ->getQuery()
             ->getSingleResult();
+        $this->assertNotNull($user);
         $this->assertEquals($addressClone, $user->getAddress());
     }
 

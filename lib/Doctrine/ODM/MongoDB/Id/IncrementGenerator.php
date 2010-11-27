@@ -17,27 +17,40 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Id;
+
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
- * The Id type.
+ * IncrementGenerator is responsible for generating auto increment identifiers. It uses
+ * a collection named "doctrine_increment_ids" which stores a document for each document
+ * type and generates the next id by using $inc on a field named "current_id".
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
+ * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
- * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class CustomIdType extends Type
+class IncrementGenerator extends AbstractIdGenerator
 {
-    public function convertToDatabaseValue($value)
+    /** @inheritDoc */
+    public function generate(DocumentManager $dm, $document)
     {
-        return $value !== null ? $value : null;
-    }
+        $className = get_class($document);
+        $db = $dm->getDocumentDB($className);
+        $coll = $dm->getDocumentCollection($className);
 
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? $value : null;
+        $query = array('_id' => $coll->getName());
+        $newObj = array('$inc' => array('current_id' => 1));
+
+        $command = array();
+        $command['findandmodify'] = 'doctrine_increment_ids';
+        $command['query'] = $query;
+        $command['update'] = $newObj;
+        $command['upsert'] = true;
+        $command['new'] = true;
+        $result = $db->command($command);
+        return $result['value']['current_id'];
     }
 }

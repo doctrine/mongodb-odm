@@ -17,27 +17,25 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Id;
 
-/**
- * The Id type.
- *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
- * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
- */
-class CustomIdType extends Type
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+
+abstract class AbstractIdGenerator
 {
-    public function convertToDatabaseValue($value)
+    protected $class;
+
+    public function __construct(ClassMetadata $class)
     {
-        return $value !== null ? $value : null;
+        $this->class = $class;
     }
 
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? $value : null;
-    }
+    /**
+     * Generates an identifier for a document.
+     *
+     * @param Doctrine\ORM\Document $document
+     * @return mixed
+     */
+    abstract public function generate(DocumentManager $dm, $document);
 }

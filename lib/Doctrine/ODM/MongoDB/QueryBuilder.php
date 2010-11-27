@@ -458,8 +458,6 @@ class QueryBuilder
      */
     public function equals($value, array $options = array())
     {
-        $value = $this->prepareWhereValue($this->currentField, $value);
-
         if (isset($options['elemMatch'])) {
             return $this->elemMatch($value, $options);
         }
@@ -1200,46 +1198,6 @@ class QueryBuilder
             }
         }
         return $debug;
-    }
-
-    /**
-     * Prepare where values converting document object field names to the document collection
-     * field name.
-     *
-     * @param string $fieldName
-     * @param string $value
-     * @return string $value
-     */
-    private function prepareWhereValue(&$fieldName, $value)
-    {
-        if ( ! $this->class) {
-            return $value;
-        }
-        if (strpos($fieldName, '.') !== false) {
-            $e = explode('.', $fieldName);
-            $mapping = $this->class->getFieldMapping($e[0]);
-            if (isset($mapping['targetDocument'])) {
-                $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-                if ($targetClass->hasField($e[1]) && $targetClass->identifier === $e[1]) {
-                    $fieldName = $e[0] . '.$id';
-                    $value = $targetClass->getDatabaseIdentifierValue($value);
-                } elseif ($e[1] === '$id') {
-                    $value = $targetClass->getDatabaseIdentifierValue($value);
-                }
-            }
-        } else {
-            if ($fieldName === $this->class->identifier) {
-                $fieldName = '_id';
-                if (is_array($value)) {
-                    foreach ($value as $k => $v) {
-                        $value[$k] = $this->class->getDatabaseIdentifierValue($v);
-                    }
-                } else {
-                    $value = $this->class->getDatabaseIdentifierValue($value);
-                }
-            }
-        }
-        return $value;
     }
 
     private function setClassName($className)
