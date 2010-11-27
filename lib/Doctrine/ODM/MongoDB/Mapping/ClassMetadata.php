@@ -1372,7 +1372,8 @@ class ClassMetadata
             'db',
             'collection',
             'rootDocumentName',
-            'idGenerator'
+            'idGenerator',
+            'generatorType'
         );
 
         // The rest of the metadata is only serialized if necessary.
