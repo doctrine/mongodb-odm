@@ -772,20 +772,22 @@ class QueryBuilder
     }
 
     /**
-     * Uses $elemMatch to limit results to documents that reference another document.
+     * Checks that the current field references the supplied document.
      *
-     * @param mixed $document A document
+     * @param object $document A document
      * @return Query
      */
     public function references($document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $ref = $this->dm->createDbRef($document);
 
-        $this->query[$this->currentField][$this->cmd . 'elemMatch'] = array(
-            $this->cmd . 'ref' => $class->getCollection(),
-            $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($class->getIdentifierValue($document)),
-            $this->cmd . 'db'  => $class->getDB()
-        );
+        if ($this->class->isSingleValuedReference($this->currentField)) {
+            foreach ($ref as $key => $value) {
+                $this->query[$this->currentField . '.' . $key] = $value;
+            }
+        } elseif ($this->class->isCollectionValuedReference($this->currentField)) {
+            $this->query[$this->currentField][$this->cmd . 'elemMatch'] = $ref;
+        }
 
         return $this;
     }

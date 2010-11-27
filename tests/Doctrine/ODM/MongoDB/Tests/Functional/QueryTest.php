@@ -220,7 +220,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         }
     }
 
-    public function testQueryReferences()
+    public function testQueryReferencesCollection()
     {
         $group = new \Documents\Group('Test Group');
 
@@ -233,6 +233,23 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('groups')->references($group);
+        $query = $qb->getQuery();
+        $user2 = $query->getSingleResult();
+        $this->assertSame($user, $user2);
+    }
+
+    public function testQueryReferencesSingle()
+    {
+        $profile = new Profile();
+
+        $user = new User();
+        $user->setProfile($profile);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('profile')->references($profile);
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
         $this->assertSame($user, $user2);
