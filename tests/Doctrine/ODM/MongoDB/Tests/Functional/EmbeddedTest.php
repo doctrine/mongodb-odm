@@ -357,4 +357,29 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = $this->dm->findOne('Documents\User');
         $this->assertEquals('changed', $user->getAddress()->getAddress());
     }
+
+    public function testRemoveEmbeddedDocument()
+    {
+        $address = new Address();
+        $address->setAddress('6512 Mercomatic Ct.');
+        $user = new User();
+        $user->setUsername('jwagettt');
+        $user->setAddress($address);
+        $user->addPhonenumber(new Phonenumber('6155139185'));
+        $user->addPhonenumber(new Phonenumber('6155139185'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $user->removeAddress();
+
+        $user->getPhonenumbers()->remove(0);
+        $user->getPhonenumbers()->remove(1);
+
+        $this->dm->flush();
+
+        $check = $this->dm->getDocumentCollection('Documents\User')->findOne();
+        $this->assertEmpty($check['phonenumbers']);
+        $this->assertFalse(isset($check['address']));
+    }
 }
