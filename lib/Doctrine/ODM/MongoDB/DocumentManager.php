@@ -339,6 +339,30 @@ class DocumentManager
     }
 
     /**
+     * Create a database reference array for the supplied document.
+     *
+     * @param object $document The instance to reference
+     * @return array A database reference array
+     * @uses Configuration::getDBAwareRefs()
+     */
+    public function createDBRef($document)
+    {
+        $class = $this->getClassMetadata(get_class($document));
+        $cmd = $this->config->getMongoCmd();
+
+        $ref = array(
+            $cmd . 'ref' => $class->getCollection(),
+            $cmd . 'id'  => $class->getDatabaseIdentifierValue($class->getIdentifierValue($document)),
+        );
+
+        if ($this->config->getDBAwareRefs()) {
+            $ref[$cmd . 'db'] = $class->getDB();
+        }
+
+        return $ref;
+    }
+
+    /**
      * Tells the DocumentManager to make an instance managed and persistent.
      *
      * The document will be entered into the database at or before transaction
