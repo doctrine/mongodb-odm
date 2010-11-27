@@ -343,4 +343,23 @@ class Configuration
     {
         $this->attributes['mongoCmd'] = $cmd;
     }
+
+    /**
+     * Get whether database references are database-aware (false by default).
+     * @return boolean
+     */
+    public function getDBAwareRefs()
+    {
+        return isset($this->attributes['dbAwareRefs']) ?
+            $this->attributes['dbAwareRefs'] : false;
+    }
+
+    /**
+     * Set whether database references are database-aware.
+     * @param boolean $bool
+     */
+    public function setDBAwareRefs($bool)
+    {
+        $this->attributes['dbAwareRefs'] = $bool;
+    }
 }
