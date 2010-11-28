@@ -524,7 +524,7 @@ class DocumentManager
      * @param int $lockVersion
      * @return object $document
      */
-    public function find($documentName, $identifier = null, $lockMode = LockMode::NONE, $lockVersion = null)
+    public function find($documentName, $identifier, $lockMode = LockMode::NONE, $lockVersion = null)
     {
         return $this->getRepository($documentName)->find($identifier, $lockMode, $lockVersion);
     }
