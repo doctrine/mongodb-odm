@@ -92,10 +92,6 @@ class CustomFieldNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $query->getSingleResult();
         $this->assertNotNull($test);
         $this->assertEquals('test', $test->username);
-
-        $test = $this->dm->createQuery('find all from '.__NAMESPACE__.'\CustomFieldName where username = ?', 'test')->getSingleResult();
-        $this->assertNotNull($test);
-        $this->assertEquals('test', $test->username);
     }
 }
 

@@ -27,7 +27,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mongo,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
-    Doctrine\ODM\MongoDB\Query\Parser,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\EventManager;
 
@@ -119,13 +118,6 @@ class DocumentManager
     private $documentCollections = array();
 
     /**
-     * The Query\Parser instance for parsing string based queries.
-     *
-     * @var Query\Parser $parser
-     */
-    private $queryParser;
-
-    /**
      * Whether the DocumentManager is closed or not.
      */
     private $closed = false;
@@ -151,7 +143,6 @@ class DocumentManager
         if ($cacheDriver = $this->config->getMetadataCacheImpl()) {
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }
-        $this->queryParser = new Parser($this);
         $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydrator);
         $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory = new ProxyFactory($this,
@@ -302,14 +293,6 @@ class DocumentManager
             throw MongoDBException::documentNotMappedToCollection($className);
         }
         return $this->documentCollections[$key];
-    }
-
-    public function createQuery($queryString, $parameters = array())
-    {
-        if ( ! is_array($parameters)) {
-            $parameters = array($parameters);
-        }
-        return $this->queryParser->parse($queryString, $parameters);
     }
 
     /**

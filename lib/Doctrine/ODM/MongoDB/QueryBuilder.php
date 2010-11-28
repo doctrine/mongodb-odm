@@ -458,8 +458,11 @@ class QueryBuilder
      */
     public function equals($value, array $options = array())
     {
-        $this->query[$this->currentField] = $value;
-
+        if ($this->currentField) {
+            $this->query[$this->currentField] = $value;
+        } else {
+            $this->query = $value;
+        }
         return $this;
     }
 
@@ -475,21 +478,6 @@ class QueryBuilder
     }
 
     /**
-     * Add element match to query.
-     *
-     * @param array|QueryBuilder $expression
-     * @return Query
-     */
-    public function addElemMatch($expression)
-    {
-        if ($expression instanceof QueryBuilder) {
-            $expression = $expression->getQueryArray();
-        }
-        $this->query[$this->cmd . 'elemMatch'] = $expression;
-        return $this;
-    }
-
-    /**
      * Add MongoDB operator to the query.
      *
      * @param string $operator
@@ -498,7 +486,11 @@ class QueryBuilder
      */
     public function operator($operator, $value)
     {
-        $this->query[$this->currentField][$operator] = $value;
+        if ($this->currentField) {
+            $this->query[$this->currentField][$operator] = $value;
+        } else {
+            $this->query[$operator] = $value;
+        }
         return $this;
     }
 
@@ -708,7 +700,11 @@ class QueryBuilder
      */
     public function withinBox($x1, $y1, $x2, $y2)
     {
-        $this->query[$this->currentField][$this->cmd . 'within'][$this->cmd . 'box'] = array(array($x1, $y1), array($x2, $y2));
+        if ($this->currentField) {
+            $this->query[$this->currentField][$this->cmd . 'within'][$this->cmd . 'box'] = array(array($x1, $y1), array($x2, $y2));
+        } else {
+            $this->query[$this->cmd . 'within'][$this->cmd . 'box'] = array(array($x1, $y1), array($x2, $y2));
+        }
         return $this;
     }
 
@@ -722,7 +718,11 @@ class QueryBuilder
      */
     public function withinCenter($x, $y, $radius)
     {
-        $this->query[$this->currentField][$this->cmd . 'within'][$this->cmd . 'center'] = array(array($x, $y), $radius);
+        if ($this->currentField) {
+            $this->query[$this->currentField][$this->cmd . 'within'][$this->cmd . 'center'] = array(array($x, $y), $radius);
+        } else {
+            $this->query[$this->cmd . 'within'][$this->cmd . 'center'] = array(array($x, $y), $radius);
+        }
         return $this;
     }
 
@@ -736,11 +736,17 @@ class QueryBuilder
     {
         $class = $this->dm->getClassMetadata(get_class($document));
 
-        $this->query[$this->currentField][$this->cmd . 'elemMatch'] = array(
+        $reference = array(
             $this->cmd . 'ref' => $class->getCollection(),
             $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($class->getIdentifierValue($document)),
             $this->cmd . 'db'  => $class->getDB()
         );
+
+        if ($this->currentField) {
+            $this->query[$this->currentField][$this->cmd . 'elemMatch'] = $reference;
+        } else {
+            $this->query[$this->cmd . 'elemMatch'] = $reference;
+        }
 
         return $this;
     }
@@ -1010,13 +1016,12 @@ class QueryBuilder
     /**
      * Adds an "or" expression to the current query.
      *
-     * You can create the expression using another query object:
+     * You can create the expression using the expr() method:
      *
      *     $qb = $this->createQueryBuilder('User');
      *     $qb
      *         ->addOr($qb->expr()->field('first_name')->equals('Kris'))
-     *         ->addOr($qb->expr()->field('first_name')->equals('Chris'))
-     *         ->execute();
+     *         ->addOr($qb->expr()->field('first_name')->equals('Chris'));
      *
      * @param array|QueryBuilder $expression
      * @return Query
@@ -1031,6 +1036,58 @@ class QueryBuilder
     }
 
     /**
+     * Adds an "elemMatch" expression to the current query.
+     *
+     * You can create the expression using the expr() method:
+     *
+     *     $qb = $this->createQueryBuilder('User');
+     *     $qb
+     *         ->field('phonenumbers')
+     *         ->addElemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
+     *
+     * @param array|QueryBuilder $expression
+     * @return Query
+     */
+    public function addElemMatch($expression)
+    {
+        if ($expression instanceof QueryBuilder) {
+            $expression = $expression->getQueryArray();
+        }
+        if ($this->currentField) {
+            $this->query[$this->currentField][$this->cmd . 'elemMatch'] = $expression;
+        } else {
+            $this->query[$this->cmd . 'elemMatch'] = $expression;
+        }
+        return $this;
+    }
+
+    /**
+     * Adds a "not" expression to the current query.
+     *
+     * You can create the expression using the expr() method:
+     *
+     *     $qb = $this->createQueryBuilder('User');
+     *     $qb
+     *         ->field('id')
+     *         ->addNot($qb->expr()->in(1));
+     *
+     * @param array|QueryBuilder $expression
+     * @return Query
+     */
+    public function addNot($expression)
+    {
+        if ($expression instanceof QueryBuilder) {
+            $expression = $expression->getQueryArray();
+        }
+        if ($this->currentField) {
+            $this->query[$this->currentField][$this->cmd . 'not'] = $expression;
+        } else {
+            $this->query[$this->cmd . 'not'] = $expression;
+        }
+        return $this;
+    }
+
+    /**
      * Create a new QueryBuilder instance that can be used as an expression with the addOr()
      * method.
      *
@@ -1039,8 +1096,13 @@ class QueryBuilder
     public function expr()
     {
         $expr = new self($this->dm, $this->hydrator, $this->cmd);
-        $expr->className = $this->className;
-        $expr->class = $this->class;
+        if (isset($this->class->fieldMappings[$this->currentField]['targetDocument'])) {
+            $expr->className = $this->class->fieldMappings[$this->currentField]['targetDocument'];
+            $expr->class = $this->dm->getClassMetadata($expr->className);
+        } else {
+            $expr->className = $this->className;
+            $expr->class = $this->class;
+        }
         return $expr;
     }
 

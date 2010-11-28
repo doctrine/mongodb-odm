@@ -24,6 +24,43 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
     }
 
+    public function testAddElemMatch()
+    {
+        $user = new User();
+        $user->setUsername('boo');
+        $phonenumber = new Phonenumber('6155139185');
+        $user->addPhonenumber($phonenumber);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $qb->field('phonenumbers')->addElemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
+        $query = $qb->getQuery();
+        $user = $query->getSingleResult();
+        $this->assertNotNull($user);
+    }
+
+    public function testAddNot()
+    {
+        $user = new User();
+        $user->setUsername('boo');
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $qb->field('username')->addNot($qb->expr()->in(array('boo')));
+        $query = $qb->getQuery();
+        $user = $query->getSingleResult();
+        $this->assertNull($user);
+
+        $qb->field('username')->addNot($qb->expr()->in(array('1boo')));
+        $query = $qb->getQuery();
+        $user = $query->getSingleResult();
+        $this->assertNotNull($user);
+    }
+
     public function testDistinct()
     {
         $user = new User();
@@ -54,7 +91,10 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $results = $q->execute();
         $this->assertEquals(new \Doctrine\ODM\MongoDB\MongoArrayIterator(array(1, 2, 3)), $results);
 
-        $results = $this->dm->createQuery('find distinct count from Documents\User WHERE username = ?', array('distinct_test'))
+        $results = $this->dm->createQueryBuilder('Documents\User')
+            ->distinct('count')
+            ->field('username')->equals('distinct_test')
+            ->getQuery()
             ->execute();
         $this->assertEquals(new \Doctrine\ODM\MongoDB\MongoArrayIterator(array(1, 2, 3)), $results);
     }
