@@ -32,11 +32,11 @@ abstract class AbstractCommand extends Command
             ->setName('odm:schema:' . $this->_commandName)
             ->setDescription('Allows to create databases and/or collections for your documents')
             ->setDefinition(array(
-                new Input\InputOption('class', 'c', Input\InputOption::PARAMETER_OPTIONAL, 'the class name to create "db" or "collection" for, all classes will be used if none specified', null),
-                new Input\InputOption(self::DBS, null, Input\InputOption::PARAMETER_NONE, ''),
-                new Input\InputOption(self::COLLECTIONS, null, Input\InputOption::PARAMETER_NONE, ''),
-                new Input\InputOption(self::INDEXES, null, Input\InputOption::PARAMETER_NONE, ''),
-                new Input\InputOption(self::PROXIES, null, Input\InputOption::PARAMETER_NONE, ''),
+                new Input\InputOption('class', 'c', Input\InputOption::VALUE_OPTIONAL, 'the class name to create "db" or "collection" for, all classes will be used if none specified', null),
+                new Input\InputOption(self::DBS, null, Input\InputOption::VALUE_NONE, ''),
+                new Input\InputOption(self::COLLECTIONS, null, Input\InputOption::VALUE_NONE, ''),
+                new Input\InputOption(self::INDEXES, null, Input\InputOption::VALUE_NONE, ''),
+                new Input\InputOption(self::PROXIES, null, Input\InputOption::VALUE_NONE, ''),
             ))
         ;
     }
