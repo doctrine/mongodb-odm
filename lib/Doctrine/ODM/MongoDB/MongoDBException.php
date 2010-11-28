@@ -165,11 +165,9 @@ class MongoDBException extends \Exception
         return new self('An error occurred in ' . $document, 0, $previousException);
     }
 
-
     public static function identifierRequired($documentName)
     {
         return new self("No identifier/primary key specified for Document '$documentName'."
                 . " Every Document must have an identifier/primary key.");
     }
-
 }

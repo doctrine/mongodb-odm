@@ -104,6 +104,6 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testFilesEmptyQueryReturnsNull()
     {
-        $this->assertNull($this->dm->findOne('Documents\File',array('_id' => 'definitelynotanid')));
+        $this->assertNull($this->dm->find('Documents\File', 'definitelynotanid'));
     }
 }

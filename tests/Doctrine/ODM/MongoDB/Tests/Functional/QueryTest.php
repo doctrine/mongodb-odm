@@ -93,11 +93,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testRemoveQuery()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->remove()
-            ->field('username')->equals('boo');
-        $query = $qb->getQuery();
-        $result = $query->execute();
+        $this->dm->remove($this->user);
 
         // should invoke exception because $this->user doesn't exist anymore
         $this->dm->refresh($this->user);

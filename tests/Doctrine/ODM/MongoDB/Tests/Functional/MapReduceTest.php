@@ -166,7 +166,9 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
             };
         }';
 
-        $cursor = $this->dm->mapReduce('Documents\Ecommerce\ConfigurableProduct', $map, $reduce);
+        $cursor = $this->dm->createQueryBuilder('Documents\Ecommerce\ConfigurableProduct')
+            ->map($map)->reduce($reduce)
+            ->getQuery()->execute();
         $this->assertEquals(10, $cursor->count());
 
         $qb = $this->dm->createQueryBuilder('Documents\Ecommerce\ConfigurableProduct')
@@ -244,6 +246,8 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
             };
         }';
 
-        $results = $this->dm->mapReduce('Documents\Ecommerce\ConfigurableProduct', $map, $reduce);
+        $results = $this->dm->createQueryBuilder('Documents\Ecommerce\ConfigurableProduct')
+            ->map($map)->reduce($reduce)
+            ->getQuery()->execute();
     }
 }

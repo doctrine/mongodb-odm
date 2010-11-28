@@ -6,10 +6,11 @@ class MODM43Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $this->dm->getMongo()->modm43_test->people->insert(array(
+        $person = array(
             'name' => 'Jonathan Wage'
-        ));
-        $user = $this->dm->findOne(__NAMESPACE__.'\Person');
+        );
+        $this->dm->getMongo()->modm43_test->people->insert($person);
+        $user = $this->dm->find(__NAMESPACE__.'\Person', $person['_id']);
         $this->assertEquals('Jonathan', $user->firstName);
         $this->assertEquals('Wage', $user->lastName);
     }

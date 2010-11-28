@@ -16,7 +16,7 @@ class MODM92Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $testDoc = $this->dm->findOne(__NAMESPACE__.'\MODM92TestDocument');
+        $testDoc = $this->dm->find(__NAMESPACE__.'\MODM92TestDocument', $testDoc->id);
         $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
 
         $embeddedDocuments = array(new MODM92TestEmbeddedDocument('bar'));
@@ -26,7 +26,7 @@ class MODM92Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->flush();
         $this->dm->clear();
-        $testDoc = $this->dm->findOne(__NAMESPACE__.'\MODM92TestDocument');
+        $testDoc = $this->dm->find(__NAMESPACE__.'\MODM92TestDocument', $testDoc->id);
 
         $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
     }

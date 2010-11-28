@@ -238,13 +238,14 @@ class ParserTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testReduce()
     {
         $query = $this->parser->parse("find all Documents\User reduce 'function () { return this.a == 3 || this.b == 4; }'");
-        $this->assertEquals(array('reduce' => 'function () { return this.a == 3 || this.b == 4; }'), $query->debug('mapReduce'));
+        $this->assertEquals('function () { return this.a == 3 || this.b == 4; }', $query->debug('reduce'));
     }
 
     public function testMapAndReduce()
     {
         $query = $this->parser->parse("find all Documents\User map 'function () { return 1; }' reduce 'function () { return this.a == 3 || this.b == 4; }'");
-        $this->assertEquals(array('map' => 'function () { return 1; }', 'reduce' => 'function () { return this.a == 3 || this.b == 4; }'), $query->debug('mapReduce'));
+        $this->assertEquals('function () { return 1; }', $query->debug('map'));
+        $this->assertEquals('function () { return this.a == 3 || this.b == 4; }', $query->debug('reduce'));
     }
 
     public function testInsert()

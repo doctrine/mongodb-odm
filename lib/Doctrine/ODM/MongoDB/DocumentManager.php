@@ -178,22 +178,9 @@ class DocumentManager
      * @param Doctrine\ODM\MongoDB\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
-    public static function create(Mongo $mongo, Configuration $config = null, EventManager $eventManager = null)
+    public static function create(Mongo $mongo = null, Configuration $config = null, EventManager $eventManager = null)
     {
         return new DocumentManager($mongo, $config, $eventManager);
-    }
-
-    /**
-     * Determines whether an document instance is managed in this DocumentManager.
-     *
-     * @param object $document
-     * @return boolean TRUE if this DocumentManager currently manages the given document, FALSE otherwise.
-     */
-    public function contains($document)
-    {
-        return $this->unitOfWork->isScheduledForInsert($document) ||
-               $this->unitOfWork->isInIdentityMap($document) &&
-               ! $this->unitOfWork->isScheduledForDelete($document);
     }
 
     /**
@@ -206,11 +193,9 @@ class DocumentManager
         return $this->eventManager;
     }
 
-    public function getConfiguration()
-    {
-        return $this->config;
-    }
-
+    /**
+     * Gets the PHP Mongo instance that this DocumentManager wraps.
+     */
     public function getMongo()
     {
         return $this->mongo;
@@ -425,6 +410,30 @@ class DocumentManager
     }
 
     /**
+     * Acquire a lock on the given document.
+     *
+     * @param object $document
+     * @param int $lockMode
+     * @param int $lockVersion
+     * @throws LockException
+     * @throws LockException
+     */
+    public function lock($document, $lockMode, $lockVersion = null)
+    {
+        $this->unitOfWork->lock($document, $lockMode, $lockVersion);
+    }
+
+    /**
+     * Releases a lock on the given document.
+     *
+     * @param object $document
+     */
+    public function unlock($document)
+    {
+        $this->unitOfWork->unlock($document);
+    }
+
+    /**
      * Gets the repository for a document class.
      *
      * @param string $documentName  The name of the Document.
@@ -451,48 +460,6 @@ class DocumentManager
     }
 
     /**
-     * Loads a given document by its ID refreshing the values with the data from
-     * the database if the document already exists in the identity map.
-     *
-     * @param string $documentName The document name to load.
-     * @param string $id  The id the document to load.
-     * @return object $document  The loaded document.
-     * @todo this function seems to be doing to much, should we move parts of it
-     * to DocumentPersister maybe?
-     */
-    public function loadByID($documentName, $id)
-    {
-        $class = $this->getClassMetadata($documentName);
-        $collection = $this->getDocumentCollection($documentName);
-
-        $result = $collection->findOne(array('_id' => $class->getDatabaseIdentifierValue($id)));
-
-        if ( ! $result) {
-            return null;
-        }
-        return $this->load($documentName, $id, $result);
-    }
-
-    /**
-     * Loads data for a document id refreshing and overriding any local values
-     * if the document already exists in the identity map.
-     *
-     * @param string $documentName  The document name to load.
-     * @param string $id  The id of the document being loaded.
-     * @param string $data  The data to load into the document.
-     * @return object $document The loaded document.
-     */
-    public function load($documentName, $id, $data)
-    {
-        if ($data !== null) {
-            $hints = array(QueryBuilder::HINT_REFRESH => QueryBuilder::HINT_REFRESH);
-            $document = $this->unitOfWork->getOrCreateDocument($documentName, $data, $hints);
-            return $document;
-        }
-        return false;
-    }
-
-    /**
      * Flushes all changes to objects that have been queued up to now to the database.
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
@@ -503,43 +470,6 @@ class DocumentManager
     {
         $this->errorIfClosed();
         $this->unitOfWork->commit($options);
-    }
-
-    /**
-     * Execute a map reduce operation.
-     *
-     * @param string $documentName The document name to run the operation on.
-     * @param string $map The javascript map function.
-     * @param string $reduce The javascript reduce function.
-     * @param array $query The mongo query.
-     * @param array $options Array of options.
-     * @return MongoCursor $cursor
-     */
-    public function mapReduce($documentName, $map, $reduce, array $query = array(), array $options = array())
-    {
-        $class = $this->getClassMetadata($documentName);
-        $db = $this->getDocumentDB($documentName);
-        if (is_string($map)) {
-            $map = new \MongoCode($map);
-        }
-        if (is_string($reduce)) {
-            $reduce = new \MongoCode($reduce);
-        }
-        $command = array(
-            'mapreduce' => $class->getCollection(),
-            'map' => $map,
-            'reduce' => $reduce,
-            'query' => $query
-        );
-        $command = array_merge($command, $options);
-        $result = $db->command($command);
-        if ( ! $result['ok']) {
-            throw new \RuntimeException($result['errmsg']);
-        }
-        $cursor = $db->selectCollection($result['result'])->find();
-        $cursor = new MongoCursor($this, $this->unitOfWork, $this->hydrator, $class, $this->config, $cursor);
-        $cursor->hydrate(false);
-        return $cursor;
     }
 
     /**
@@ -590,8 +520,8 @@ class DocumentManager
         $class = $this->metadataFactory->getMetadataFor($documentName);
 
         // Check identity map first, if its already in there just return it.
-        if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
-            return $entity;
+        if ($document = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
+            return $document;
         }
         $document = $class->newInstance();
         $class->setIdentifierValue($document, $identifier);
@@ -601,67 +531,35 @@ class DocumentManager
     }
 
     /**
-     * Find a single document by its identifier or multiple by a given criteria.
+     * Finds a Document by its identifier.
      *
-     * @param string $documentName The document to find.
-     * @param mixed $query A single identifier or an array of criteria.
-     * @param array $select The fields to select.
-     * @return Doctrine\ODM\MongoDB\MongoCursor $cursor
+     * This is just a convenient shortcut for getRepository($documentName)->find($id).
+     *
+     * @param string $documentName
+     * @param mixed $identifier
+     * @param int $lockMode
+     * @param int $lockVersion
      * @return object $document
      */
-    public function find($documentName, $query = array(), array $select = array())
+    public function find($documentName, $identifier = null, $lockMode = LockMode::NONE, $lockVersion = null)
     {
-        if (is_array($documentName)) {
-            $classNames = $documentName;
-            $documentName = $classNames[0];
-
-            $discriminatorField = $this->getClassMetadata($documentName)->discriminatorField['name'];
-            $discriminatorValues = $this->getDiscriminatorValues($classNames);
-
-            if (is_scalar($query)) {
-                $query = array('_id' => $this->getRepository($documentName)->getClassMetadata()->getDatabaseIdentifierValue($query));
-            }
-
-            $query[$discriminatorField] = array('$in' => $discriminatorValues);
-        }
-
-        return $this->getRepository($documentName)->find($query, $select);
+        return $this->getRepository($documentName)->find($identifier, $lockMode, $lockVersion);
     }
 
     /**
-     * Find a single document with the given query and select fields.
-     *
-     * @param string $documentName The document to find.
-     * @param array $query The query criteria.
-     * @param array $select The fields to select
-     * @return object $document
-     */
-    public function findOne($documentName, array $query = array(), array $select = array())
-    {
-        if (is_array($documentName)) {
-            $classNames = $documentName;
-            $documentName = $classNames[0];
-
-            $discriminatorField = $this->getClassMetadata($documentName)->discriminatorField['name'];
-            $discriminatorValues = $this->getDiscriminatorValues($classNames);
-
-            if (is_scalar($query)) {
-                $query = array('_id' => $this->getRepository($documentName)->getClassMetadata()->getDatabaseIdentifierValue($query));
-            }
-
-            $query[$discriminatorField] = array('$in' => $discriminatorValues);
-        }
-        
-        return $this->getRepository($documentName)->findOne($query, $select);
-    }
-
-    /**
-     * Clears the DocumentManager. All documents that are currently managed
+     * Clears the DocumentManager. All entities that are currently managed
      * by this DocumentManager become detached.
+     *
+     * @param string $documentName
      */
-    public function clear()
+    public function clear($documentName = null)
     {
-        $this->unitOfWork->clear();
+        if ($documentName === null) {
+            $this->unitOfWork->clear();
+        } else {
+            //TODO
+            throw new MongoDBException("DocumentManager#clear(\$documentName) not yet implemented.");
+        }
     }
 
     /**
@@ -673,6 +571,29 @@ class DocumentManager
     {
         $this->clear();
         $this->closed = true;
+    }
+
+    /**
+     * Determines whether a document instance is managed in this DocumentManager.
+     *
+     * @param object $document
+     * @return boolean TRUE if this DocumentManager currently manages the given document, FALSE otherwise.
+     */
+    public function contains($document)
+    {
+        return $this->unitOfWork->isScheduledForInsert($document) ||
+               $this->unitOfWork->isInIdentityMap($document) &&
+               ! $this->unitOfWork->isScheduledForDelete($document);
+    }
+
+    /**
+     * Gets the Configuration used by the DocumentManager.
+     *
+     * @return Doctrine\ODM\MongoDB\Configuration
+     */
+    public function getConfiguration()
+    {
+        return $this->config;
     }
 
     public function formatDBName($dbName)

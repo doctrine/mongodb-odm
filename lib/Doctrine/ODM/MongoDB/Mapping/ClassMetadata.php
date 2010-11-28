@@ -19,7 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\MongoDBException,
+    Doctrine\ODM\MongoDB\LockException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -327,6 +328,36 @@ class ClassMetadata
      * @var integer
      */
     public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
+
+    /**
+     * READ-ONLY: A flag for whether or not instances of this class are to be versioned
+     * with optimistic locking.
+     *
+     * @var boolean $isVersioned
+     */
+    public $isVersioned;
+
+    /**
+     * READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).
+     *
+     * @var mixed $versionField
+     */
+    public $versionField;
+
+    /**
+     * READ-ONLY: A flag for whether or not instances of this class are to allow pessimistic
+     * locking.
+     *
+     * @var boolean $isLockable
+     */
+    public $isLockable;
+
+    /**
+     * READ-ONLY: The name of the field which is used for locking a document.
+     *
+     * @var mixed $lockField
+     */
+    public $lockField;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
@@ -912,6 +943,12 @@ class ClassMetadata
         if (isset($mapping['embedded']) && $mapping['type'] === 'many') {
             $mapping['association'] = self::EMBED_MANY;
         }
+        if (isset($mapping['version'])) {
+            $this->setVersionMapping($mapping);
+        }
+        if (isset($mapping['lock'])) {
+            $this->setLockMapping($mapping);
+        }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
 
@@ -1336,6 +1373,78 @@ class ClassMetadata
     }
 
     /**
+     * Sets the version field mapping used for versioning. Sets the default
+     * value to use depending on the column type.
+     *
+     * @param array $mapping   The version field mapping array
+     */
+    public function setVersionMapping(array &$mapping)
+    {
+        if ($mapping['type'] !== 'int' && $mapping['type'] !== 'date') {
+            throw LockException::invalidVersionFieldType($mapping['type']);
+        }
+        $this->isVersioned = true;
+        $this->versionField = $mapping['fieldName'];
+    }
+
+    /**
+     * Sets whether this class is to be versioned for optimistic locking.
+     *
+     * @param boolean $bool
+     */
+    public function setVersioned($bool)
+    {
+        $this->isVersioned = $bool;
+    }
+
+    /**
+     * Sets the name of the field that is to be used for versioning if this class is
+     * versioned for optimistic locking.
+     *
+     * @param string $versionField
+     */
+    public function setVersionField($versionField)
+    {
+        $this->versionField = $versionField;
+    }
+
+    /**
+     * Sets the version field mapping used for versioning. Sets the default
+     * value to use depending on the column type.
+     *
+     * @param array $mapping   The version field mapping array
+     */
+    public function setLockMapping(array &$mapping)
+    {
+        if ($mapping['type'] !== 'int') {
+            throw LockException::invalidLockFieldType($mapping['type']);
+        }
+        $this->isLockable = true;
+        $this->lockField = $mapping['fieldName'];
+    }
+
+    /**
+     * Sets whether this class is to allow pessimistic locking.
+     *
+     * @param boolean $bool
+     */
+    public function setLockable($bool)
+    {
+        $this->isLockable = $bool;
+    }
+
+    /**
+     * Sets the name of the field that is to be used for storing whether a document
+     * is currently locked or not.
+     *
+     * @param string $lockField
+     */
+    public function setLockField($lockField)
+    {
+        $this->lockField = $lockField;
+    }
+
+    /**
      * Creates a new instance of the mapped class, without invoking the constructor.
      *
      * @return object
@@ -1399,6 +1508,11 @@ class ClassMetadata
 
         if ($this->isEmbeddedDocument) {
             $serialized[] = 'isEmbeddedDocument';
+        }
+
+        if ($this->isVersioned) {
+            $serialized[] = 'isVersioned';
+            $serialized[] = 'versionField';
         }
 
         if ($this->lifecycleCallbacks) {

@@ -77,7 +77,7 @@ class EcommerceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, count($product->getOptions()));
         $this->assertEquals(12.99, $product->getOption('small')->getPrice());
 
-        $usdCurrency = $this->dm->findOne('Documents\Ecommerce\Currency', array('name' => 'USD'));
+        $usdCurrency = $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(array('name' => 'USD'));
         $this->assertNotNull($usdCurrency);
         $usdCurrency->setMultiplier('2');
 
@@ -93,7 +93,7 @@ class EcommerceTest extends \PHPUnit_Framework_TestCase
         $currency = $price->getCurrency();
         $this->assertTrue($currency instanceof Currency);
         $this->assertNotNull($currency->getId());
-        $this->assertEquals($currency, $this->dm->findOne('Documents\Ecommerce\Currency', array('name' => Currency::USD)));
+        $this->assertEquals($currency, $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(array('name' => Currency::USD)));
     }
 
     public function testRemoveOption()
@@ -122,7 +122,10 @@ class EcommerceTest extends \PHPUnit_Framework_TestCase
 
     protected function getProduct()
     {
-        $products = $this->dm->find('Documents\Ecommerce\ConfigurableProduct');
+        $products = $this->dm->getRepository('Documents\Ecommerce\ConfigurableProduct')
+            ->createQueryBuilder()
+            ->getQuery()
+            ->execute();
         $products->valid() ?: $products->next();
         return $products->current();
     }

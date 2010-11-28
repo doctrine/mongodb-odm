@@ -17,7 +17,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $bar = $this->dm->findOne('Documents\Bars\Bar');
+        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
 
         $locations = $bar->getLocations();
         unset($locations[0]);
@@ -28,7 +28,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $this->dm->getDocumentCollection('Documents\Bars\Bar')->findOne();
         $this->assertEquals(2, count($test['locations']));
 
-        $bar = $this->dm->findOne('Documents\Bars\Bar');
+        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
         $this->assertNotNull($bar);
         $locations = $bar->getLocations();
         $this->assertEquals(2, count($locations));
@@ -38,7 +38,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $bar = $this->dm->findOne('Documents\Bars\Bar');
+        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
         $this->assertNotNull($bar);
         $locations = $bar->getLocations();
         $this->assertEquals(0, count($locations));
@@ -49,7 +49,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $bar = $this->dm->findOne('Documents\Bars\Bar');
+        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
         $this->assertEquals($bar->getId(), $this->dm->getUnitOfWork()->getDocumentIdentifier($bar));
 
         $this->assertNotNull($bar);
@@ -61,7 +61,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(0, count($locations));
         $this->dm->flush(array('safe' => true));
         $this->dm->clear();
-        $bar = $this->dm->findOne('Documents\Bars\Bar');
+        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
         $locations = $bar->getLocations();
         $this->assertEquals(0, count($locations));
     }

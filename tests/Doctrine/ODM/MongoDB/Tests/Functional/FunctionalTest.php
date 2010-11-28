@@ -173,19 +173,19 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = $coll->findOne(array('username' => 'joncolltest'));
         $this->assertEquals(2, count($document['logs']));
 
-        $document = $this->dm->findOne('Documents\User', array('username' => 'joncolltest'));
+        $document = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'joncolltest'));
         $this->assertEquals(2, count($document->getLogs()));
         $document->log(array('test'));
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->findOne('Documents\User', array('username' => 'joncolltest'));
+        $document = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'joncolltest'));
         $this->assertEquals(3, count($document->getLogs()));
         $document->setLogs(array('ok', 'test'));
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->findOne('Documents\User', array('username' => 'joncolltest'));
+        $document = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'joncolltest'));
         $this->assertEquals(array('ok', 'test'), $document->getLogs());
     }
 
@@ -199,7 +199,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->findOne('Documents\User', array('username' => 'testing'));
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'testing'));
         $this->assertEquals(2, count($user->getPhonenumbers()));
     }
 
@@ -215,7 +215,8 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertNotNull($this->dm->find('Documents\User', array('phonenumbers.phonenumber' => '6155139185'))->getSingleResult());
+        $check = $this->dm->getRepository('Documents\User')->findOneBy(array('phonenumbers.phonenumber' => '6155139185'));
+        $this->assertNotNull($check);
 
         $query = $this->dm->createQuery("find all Documents\User where phonenumbers.phonenumber = '6155139185'");
         $this->assertNotNull($query->getSingleResult());
@@ -275,20 +276,20 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->findOne('Documents\User', array('username' => 'jon'));
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
 
         $user->incrementCount(5);
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->findOne('Documents\User', array('username' => 'jon'));
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
         $this->assertEquals(105, $user->getCount());
 
         $user->setCount(50);
 
         $this->dm->flush();
         $this->dm->clear();
-        $user = $this->dm->findOne('Documents\User', array('username' => 'jon'));
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
         $this->assertEquals(50, $user->getCount());
     }
 
@@ -328,12 +329,12 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $results = $this->dm->find('Documents\Manager', array('name' => 'Manager'))
+        $result = $this->dm->createQueryBuilder('Documents\Manager')
+            ->field('name')->equals('Manager')
             ->hydrate(false)
-            ->getResults();
-        $result = current($results);
+            ->getQuery()
+            ->getSingleResult();
 
-        $this->assertEquals(1, count($results));
         $this->assertEquals(200000.00, $result['salary']);
         $this->assertEquals(2, count($result['projects']));
         $this->assertEquals(1, count($result['notes']));
@@ -351,8 +352,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find('Documents\Functional\NotAnnotatedDocument')
-            ->getSingleResult();
+        $test = $this->dm->find('Documents\Functional\NotAnnotatedDocument', $test->id);
         $this->assertNotNull($test);
         $this->assertFalse(isset($test->transientField));
     }
@@ -366,28 +366,28 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($test);
         $this->dm->flush();
 
-        $test = $this->dm->find('Documents\Functional\NullFieldValues')
+        $document = $this->dm->createQueryBuilder('Documents\Functional\NullFieldValues')
             ->hydrate(false)
-            ->getResults();
-        $document = current($test);
-        $this->assertNotNull($test);
+            ->getQuery()
+            ->getSingleResult();
+
+        $this->assertNotNull($document);
         $this->assertNull($document['field']);
 
-        $document = $this->dm->find('Documents\Functional\NullFieldValues')
-            ->getSingleResult();
+        $document = $this->dm->find('Documents\Functional\NullFieldValues', $test->id);
         $document->field = 'test';
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->find('Documents\Functional\NullFieldValues')
-            ->getSingleResult();
+        $document = $this->dm->find('Documents\Functional\NullFieldValues', $test->id);
         $this->assertEquals('test', $document->field);
         $document->field = null;
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find('Documents\Functional\NullFieldValues')
+        $test = $this->dm->createQueryBuilder('Documents\Functional\NullFieldValues')
             ->hydrate(false)
+            ->getQuery()
             ->getSingleResult();
         $this->assertNull($test['field']);
         $this->assertFalse(isset($test['transientField']));
@@ -400,22 +400,19 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection->insert(array(
             'bar' => 'w00t'
         ));
-        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('bar' => 'w00t'))
-            ->getSingleResult();
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
         $this->assertEquals('w00t', $document->foo);
 
         $collection->insert(array(
             'foo' => 'cool'
         ));
-        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('bar' => 'w00t'))
-            ->getSingleResult();
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
         $this->assertNotNull($document->foo);
 
         $collection->insert(array(
             'zip' => 'test'
         ));
-        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('bar' => 'w00t'))
-            ->getSingleResult();
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
         $this->assertNotNull($document->foo);
     }
 
@@ -427,8 +424,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'name' => 'Jonathan Wage',
             'test1' => 'test1'
         ));
-        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('name' => 'Jonathan Wage'))
-            ->getSingleResult();
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('name' => 'Jonathan Wage'));
         $this->assertEquals('Jonathan', $document->firstName);
         $this->assertEquals('Wage', $document->lastName);
         $this->assertEquals('test1', $document->test);
@@ -437,8 +433,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fullName' => 'Jonathan Wage',
             'test2' => 'test2'
         ));
-        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('fullName' => 'Jonathan Wage'))
-            ->getSingleResult();
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('fullName' => 'Jonathan Wage'));
         $this->assertEquals('Jonathan', $document->firstName);
         $this->assertEquals('Wage', $document->lastName);
         $this->assertEquals('test2', $document->test);
@@ -446,8 +441,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection->insert(array(
             'test' => 'test'
         ));
-        $document = $this->dm->find('Documents\Functional\AlsoLoad', array('test' => 'test'))
-            ->getSingleResult();
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('test' => 'test'));
         $this->assertEquals('test', $document->test);
     }
 
@@ -464,11 +458,12 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $collection = $this->dm->getDocumentCollection('Documents\Functional\NotSaved');
         $collection->drop();
-        $collection->insert(array(
+        $test = array(
             'name' => 'Jonathan Wage',
             'notSaved' => 'test'
-        ));
-        $notSaved = $this->dm->findOne('Documents\Functional\NotSaved');
+        );
+        $collection->insert($test);
+        $notSaved = $this->dm->find('Documents\Functional\NotSaved', $test['_id']);
         $this->assertEquals('Jonathan Wage', $notSaved->name);
         $this->assertEquals('test', $notSaved->notSaved);
 
@@ -523,7 +518,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(isset($test['favorite']['_doctrine_class_name']));
         $this->assertEquals('Documents\Project', $test['favorite']['_doctrine_class_name']);
 
-        $user = $this->dm->findOne('Documents\Functional\FavoritesUser', array('name' => 'favorites'));
+        $user = $this->dm->getRepository('Documents\Functional\FavoritesUser')->findOneBy(array('name' => 'favorites'));
         $favorites = $user->getFavorites();
         $this->assertInstanceOf('Documents\Project', $favorites[0]);
         $this->assertInstanceOf('Documents\Group', $favorites[1]);
@@ -557,7 +552,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $product = $this->dm->findOne('Documents\Functional\PreUpdateTestProduct', array('name' => 'Product'));
+        $product = $this->dm->getRepository('Documents\Functional\PreUpdateTestProduct')->findOneBy(array('name' => 'Product'));
 
         $this->assertInstanceOf('Documents\Functional\PreUpdateTestSellable', $product->sellable);
         $this->assertInstanceOf('Documents\Functional\PreUpdateTestProduct', $product->sellable->getProduct());
@@ -571,14 +566,14 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $sellable = new PreUpdateTestSellable();
         $sellable->product = $product;
-        $sellable->seller = $this->dm->findOne('Documents\Functional\PreUpdateTestSeller', array('name' => 'Seller'));
+        $sellable->seller = $this->dm->getRepository('Documents\Functional\PreUpdateTestSeller')->findOneBy(array('name' => 'Seller'));
 
         $product->sellable = $sellable;
 
         $this->dm->flush();
         $this->dm->clear();
 
-        $product = $this->dm->findOne('Documents\Functional\PreUpdateTestProduct', array('name' => 'Product2'));
+        $product = $this->dm->getRepository('Documents\Functional\PreUpdateTestProduct')->findOneBy(array('name' => 'Product2'));
         $this->assertEquals('Seller', $product->sellable->getSeller()->getName());
         $this->assertEquals('Product2', $product->sellable->getProduct()->getName());
     }
@@ -594,32 +589,26 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($test2);
         $this->dm->flush();
 
-        $test = $this->dm->findOne('Documents\Functional\SameCollection1', array('name' => 'test1'));
+        $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findOneBy(array('name' => 'test1'));
         $this->assertNotNull($test);
         $this->assertInstanceOf('Documents\Functional\SameCollection1', $test);
 
-        $test = $this->dm->findOne('Documents\Functional\SameCollection2', array('name' => 'test2'));
+        $test = $this->dm->getRepository('Documents\Functional\SameCollection2')->findOneBy(array('name' => 'test2'));
         $this->assertNotNull($test);
         $this->assertInstanceOf('Documents\Functional\SameCollection2', $test);
 
-        $test = $this->dm->findOne('Documents\Functional\SameCollection2', array('name' => 'test1'));
+        $test = $this->dm->getRepository('Documents\Functional\SameCollection2')->findOneBy(array('name' => 'test1'));
         $this->assertNull($test);
-
-        $test = $this->dm->find(array(
-            'Documents\Functional\SameCollection1',
-            'Documents\Functional\SameCollection2')
-        )->getResults();
-        $this->assertEquals(2, count($test));
 
         $qb = $this->dm->createQueryBuilder(array(
             'Documents\Functional\SameCollection1',
             'Documents\Functional\SameCollection2')
         );
         $q = $qb->getQuery();
-        $text = $q->execute();
+        $test = $q->execute();
         $this->assertEquals(2, count($test));
 
-        $test = $this->dm->find('Documents\Functional\SameCollection1')->getResults();
+        $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findAll();
         $this->assertEquals(1, count($test));
 
         $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
@@ -664,7 +653,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0');
+        $check = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->find($test->id);
         $this->assertEquals('test', $check->name);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $check->level1[0]);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $check->level1[1]);
@@ -691,7 +680,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         // fetch the level0b from db
-        $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0b');
+        $test = $this->dm->find('Documents\Functional\EmbeddedTestLevel0b', $test->id);
 
         // add a level2 in the level0b.level1
         $level2 = new EmbeddedTestLevel2();
@@ -706,7 +695,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         // fetch again
-        $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0b');
+        $test = $this->dm->find('Documents\Functional\EmbeddedTestLevel0b', $test->id);
 
         // Uh oh, the level2 was not persisted!
         $this->assertEquals(1, count($test->oneLevel1->level2));
@@ -730,14 +719,13 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        unset($user, $account);
-
-        $user = $this->dm->findOne('Documents\User');
+        $user = $this->dm->find('Documents\User', $user->getId());
 
         // remove two of the groups and pass the groups back into the User
         $groups = $user->getGroups();
         unset($groups[0]);
         unset($groups[2]);
+
         $user->setGroups($groups);
 
         $this->assertEquals(1, count($user->getGroups()));
@@ -745,9 +733,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        unset($user);
-
-        $user = $this->dm->findOne('Documents\User');
+        $user = $this->dm->find('Documents\User', $user->getId());
         $this->assertEquals(1, count($user->getGroups()));
     }
 
@@ -770,9 +756,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        unset($user, $account);
-
-        $user = $this->dm->findOne('Documents\User');
+        $user = $this->dm->find('Documents\User', $user->getId());
 
         // Issue is collection must be initialized
         $groups = $user->getGroups();
@@ -789,9 +773,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        unset($user);
-
-        $user = $this->dm->findOne('Documents\User');
+        $user = $this->dm->find('Documents\User', $user->getId());
         $this->assertEquals(1, count($user->getGroups()));
     }
 

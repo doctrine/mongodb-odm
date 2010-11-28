@@ -48,7 +48,7 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
       $test = $this->dm->getDocumentCollection('Documents\User')->findOne(array('username' => 'datetest2'));
       $this->assertTrue(isset($test['createdAt']));
 
-      $user = $this->dm->findOne('Documents\User', array('username' => 'datetest2'));
+      $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'datetest2'));
       $this->assertTrue($user->getCreatedAt() instanceof \DateTime);
       $this->assertEquals('1900-01-01', $user->getCreatedAt()->format('Y-m-d'));
     }

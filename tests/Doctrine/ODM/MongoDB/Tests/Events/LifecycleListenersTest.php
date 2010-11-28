@@ -54,7 +54,7 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = array();
 
-        $document = $dm->findOne(__NAMESPACE__.'\TestDocument');
+        $document = $dm->find(__NAMESPACE__.'\TestDocument', $test->id);
         $called = array(
             ODMEvents::preLoad => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'),
             ODMEvents::postLoad => array('Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument')
@@ -114,7 +114,7 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
         $dm->clear();
 
-        $test = $dm->findOne(__NAMESPACE__.'\TestProfile');
+        $test = $dm->find(__NAMESPACE__.'\TestProfile', $test->id);
         $this->listener->called = array();
 
         $test->image->thumbnails[] = new Image('Thumbnail #1');

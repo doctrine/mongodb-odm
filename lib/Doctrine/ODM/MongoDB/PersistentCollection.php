@@ -106,41 +106,19 @@ class PersistentCollection implements Collection
         $this->references = $references;
     }
 
-    private function initialize()
+    /**
+     * Initializes the collection by loading its contents from the database
+     * if the collection is not yet initialized.
+     */
+    public function initialize()
     {
-        if ( ! $this->initialized) {
+        if ( ! $this->initialized && $this->mapping) {
             if ($this->isDirty) {
                 // Has NEW objects added through add(). Remember them.
                 $newObjects = $this->coll->toArray();
             }
             $this->coll->clear();
-
-            $groupedIds = array();
-            foreach ($this->references as $reference) {
-                $className = $this->dm->getClassNameFromDiscriminatorValue($this->mapping, $reference);
-                if ( ! isset($groupedIds[$className])) {
-                    $groupedIds[$className] = array();
-                }
-                $id = $reference[$this->cmd . 'id'];
-                $reference = $this->dm->getReference($className, (string) $id);
-                $this->add($reference);
-                if ($reference instanceof Proxy && ! $reference->__isInitialized__) {
-                    $groupedIds[$className][] = $id;
-                }
-            }
-            foreach ($groupedIds as $className => $ids) {
-                $collection = $this->dm->getDocumentCollection($className);
-                $data = $collection->find(array('_id' => array($this->cmd . 'in' => $ids)));
-                $hints = array(QueryBuilder::HINT_REFRESH => QueryBuilder::HINT_REFRESH);
-                foreach ($data as $id => $documentData) {
-                    $document = $this->dm->getUnitOfWork()->getOrCreateDocument($className, $documentData, $hints);
-                    if ($document instanceof Proxy) {
-                        $document->__isInitialized__ = true;
-                        unset($document->__dm);
-                        unset($document->__identifier);
-                    }
-                }
-            }
+            $this->dm->getUnitOfWork()->loadCollection($this);
             $this->takeSnapshot();
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {
@@ -149,10 +127,14 @@ class PersistentCollection implements Collection
                 }
                 $this->isDirty = true;
             }
-
             $this->references = array();
             $this->initialized = true;
         }
+    }
+
+    public function getReferences()
+    {
+        return $this->references;
     }
 
     /**

@@ -16,21 +16,22 @@ class MODM95Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $testDoc = $this->dm->findOne(__NAMESPACE__.'\MODM95TestDocument');
+        $testDoc = $this->dm->find(__NAMESPACE__.'\MODM95TestDocument', $testDoc->id);
+
         $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
 
         $this->dm->remove($testDoc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $testDocLoad = $this->dm->findOne(__NAMESPACE__.'\MODM95TestDocument');
+        $testDocLoad = $this->dm->find(__NAMESPACE__.'\MODM95TestDocument', $testDoc->id);
         $this->assertNull($testDocLoad);
 
         $this->dm->persist($testDoc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $testDocLoad = $this->dm->findOne(__NAMESPACE__.'\MODM95TestDocument');
+        $testDocLoad = $this->dm->find(__NAMESPACE__.'\MODM95TestDocument', $testDoc->id);
         $this->assertNotNull($testDocLoad);
 
         $this->assertEquals($embeddedDocuments, $testDocLoad->embeddedDocuments->toArray());

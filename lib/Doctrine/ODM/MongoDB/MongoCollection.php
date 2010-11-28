@@ -245,6 +245,8 @@ class MongoCollection
     /** @override */
     public function update(array $criteria, array $newObj, array $options = array())
     {
+        $criteria = $this->prepareQuery($criteria);
+
         if ($this->eventManager->hasListeners(CollectionEvents::preUpdate)) {
             $this->eventManager->dispatchEvent(CollectionEvents::preUpdate, new CollectionUpdateEventArgs($this, $criteria, $newObj, $options));
         }
@@ -346,12 +348,31 @@ class MongoCollection
         $command['query'] = $query;
         $command['remove'] = true;
         $result = $this->db->command($command);
-        $document = $result['value'];
-        if ($this->class->isFile()) {
-            // Remove the file data from the chunks collection
-            $this->mongoCollection->chunks->remove(array('files_id' => $document['_id']), $options);
+        if (isset($result['value'])) {
+            $document = $result['value'];
+            if ($this->class->isFile()) {
+                // Remove the file data from the chunks collection
+                $this->mongoCollection->chunks->remove(array('files_id' => $document['_id']), $options);
+            }
+            return $document;
         }
-        return $document;
+        return null;
+    }
+
+    public function findAndModify(array $query, array $newObj, array $options = array())
+    {
+        $command = array();
+        $command['findandmodify'] = $this->mongoCollection->getName();
+        $command['query'] = $query;
+        $command['update'] = $newObj;
+        if (isset($options['upsert'])) {
+            $command['upsert'] = true;
+        }
+        if (isset($options['new'])) {
+            $command['new'] = true;
+        }
+        $result = $this->db->command($command);
+        return $result['value'];
     }
 
     private function storeFile(MongoGridFSFile $file, array &$document)
@@ -429,11 +450,17 @@ class MongoCollection
                 $fieldName = $name;
             }
         } else {
-            if ($fieldName === $this->class->identifier) {
+            if ($fieldName === $this->class->identifier || $fieldName === '_id') {
                 $fieldName = '_id';
                 if (is_array($value)) {
-                    foreach ($value as $k => $v) {
-                        $value[$k] = $this->class->getDatabaseIdentifierValue($v);
+                    if (isset($value[$this->cmd.'in'])) {
+                        foreach ($value[$this->cmd.'in'] as $k => $v) {
+                            $value[$this->cmd.'in'][$k] = $this->class->getDatabaseIdentifierValue($v);
+                        }
+                    } else {
+                        foreach ($value as $k => $v) {
+                            $value[$k] = $this->class->getDatabaseIdentifierValue($v);
+                        }
                     }
                 } else {
                     $value = $this->class->getDatabaseIdentifierValue($value);

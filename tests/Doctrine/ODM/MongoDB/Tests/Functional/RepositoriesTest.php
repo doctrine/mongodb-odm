@@ -33,10 +33,9 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testFindAll()
     {
-        $cursor = $this->repository->findAll();
-        $users = $cursor->getResults();
+        $users = $this->repository->findAll();
 
-        $this->assertTrue(is_array($users));
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\MongoArrayIterator', $users);
         $this->assertEquals(1, count($users));
     }
 
@@ -45,7 +44,7 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user2 = $this->repository->find($this->user->getId());
         $this->assertTrue($this->user === $user2);
 
-        $user3 = $this->repository->findOne(array('username' => 'w00ting'));
+        $user3 = $this->repository->findOneBy(array('username' => 'w00ting'));
         $this->assertTrue($user2 === $user3);
     }
 }

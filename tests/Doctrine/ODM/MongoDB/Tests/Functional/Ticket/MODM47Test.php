@@ -6,11 +6,12 @@ class MODM47Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $this->dm->getMongo()->modm47_test->a->insert(array(
+        $a = array(
             'c' => 'c value'
-        ));
+        );
+        $this->dm->getMongo()->modm47_test->a->insert($a);
 
-        $a = $this->dm->findOne(__NAMESPACE__.'\MODM47A');
+        $a = $this->dm->find(__NAMESPACE__.'\MODM47A', $a['_id']);
         $this->assertEquals('c value', $a->b);
     }
 }

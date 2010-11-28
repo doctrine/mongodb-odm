@@ -12,7 +12,7 @@ class MODM48Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $a = $this->dm->findOne(__NAMESPACE__.'\MODM48A');
+        $a = $this->dm->find(__NAMESPACE__.'\MODM48A', $a->id);
         $this->assertNotNull($a);
 
         $a->getB()->setVal('test');
@@ -20,7 +20,7 @@ class MODM48Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush(array('safe' => true));
         $this->dm->clear();
 
-        $a = $this->dm->findOne(__NAMESPACE__.'\MODM48A');
+        $a = $this->dm->find(__NAMESPACE__.'\MODM48A', $a->id);
         $this->assertEquals('test', $a->getB()->getVal());
     }
 }

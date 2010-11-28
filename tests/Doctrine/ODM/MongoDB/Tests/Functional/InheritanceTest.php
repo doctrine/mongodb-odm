@@ -55,13 +55,13 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->clear();
 
-        $document = $this->dm->findOne('Documents\SubProject', array('name' => 'Sub Project'));
+        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(array('name' => 'Sub Project'));
         $this->assertInstanceOf('Documents\SubProject', $document);
 
-        $document = $this->dm->findOne('Documents\SubProject', array('name' => 'Sub Project'));
+        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(array('name' => 'Sub Project'));
         $this->assertInstanceOf('Documents\SubProject', $document);
 
-        $document = $this->dm->findOne('Documents\Project', array('name' => 'Sub Project'));
+        $document = $this->dm->getRepository('Documents\Project')->findOneBy(array('name' => 'Sub Project'));
         $this->assertInstanceOf('Documents\SubProject', $document);
         $this->dm->clear();
 
@@ -69,9 +69,8 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = $this->dm->find('Documents\Project', $id);
         $this->assertInstanceOf('Documents\SubProject', $document);
 
-        $document = $this->dm->findOne('Documents\Project', array('name' => 'Other Sub Project'));
+        $document = $this->dm->getRepository('Documents\Project')->findOneBy(array('name' => 'Other Sub Project'));
         $this->assertInstanceOf('Documents\OtherSubProject', $document);
-
     }
 
     public function testPrePersistIsCalledFromMappedSuperClass()

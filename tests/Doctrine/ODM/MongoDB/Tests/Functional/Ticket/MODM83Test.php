@@ -33,8 +33,8 @@ class MODM83Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
         $dm->clear();
 
-        $won = $dm->findOne(__NAMESPACE__.'\MODM83TestDocument');
-        $too = $dm->findOne(__NAMESPACE__.'\MODM83OtherDocument');
+        $won = $dm->find(__NAMESPACE__.'\MODM83TestDocument', $won->id);
+        $too = $dm->find(__NAMESPACE__.'\MODM83OtherDocument', $too->id);
         $too->name = 'Bob';
         $dm->flush();
         $dm->clear();

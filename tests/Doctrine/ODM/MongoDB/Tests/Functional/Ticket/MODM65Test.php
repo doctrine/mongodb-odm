@@ -18,7 +18,7 @@ class MODM65Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(isset($user['snu']['lN']));
         $this->assertTrue(isset($user['snu']['fN']));
 
-        $user = $this->dm->findOne(__NAMESPACE__.'\MODM65User');
+        $user = $this->dm->find(__NAMESPACE__.'\MODM65User', $user['_id']);
         $this->assertEquals('Jonathan', $user->socialNetworkUser->firstName);
         $this->assertEquals('Wage', $user->socialNetworkUser->lastName);
     }

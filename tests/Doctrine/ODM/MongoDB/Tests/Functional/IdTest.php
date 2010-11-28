@@ -12,7 +12,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $id = $user->id;
 
         $this->dm->clear();
-        $check1 = $this->dm->findOne(__NAMESPACE__.'\UuidUser', array('id' => $id));
+        $check1 = $this->dm->getRepository(__NAMESPACE__.'\UuidUser')->findOneBy(array('id' => $id));
         $this->assertNotNull($check1);
 
         $check2 = $this->dm->createQueryBuilder(__NAMESPACE__.'\UuidUser')
@@ -48,8 +48,8 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($reference1->id, 1);
         $this->assertEquals($reference2->id, 2);
 
-        $check1 = $this->dm->findOne(__NAMESPACE__.'\CollectionIdUser', array('id' => $user1->id));
-        $check2 = $this->dm->findOne(__NAMESPACE__.'\CollectionIdUser', array('id' => $user2->id));
+        $check1 = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->findOneBy(array('id' => $user1->id));
+        $check2 = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->findOneBy(array('id' => $user2->id));
         $this->assertNotNull($check1);
         $this->assertNotNull($check2);
 

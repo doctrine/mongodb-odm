@@ -20,7 +20,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = $this->createUser();
         $this->dm->clear();
 
-        $user = $this->dm->findOne(__NAMESPACE__.'\User');
+        $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
         $this->assertInstanceOf('DateTime', $user->createdAt);
         $this->assertInstanceOf('DateTime', $user->profile->createdAt);
 
@@ -29,7 +29,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->findOne(__NAMESPACE__.'\User');
+        $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
         $this->assertInstanceOf('DateTime', $user->updatedAt);
         $this->assertInstanceOf('DateTime', $user->profile->updatedAt);
     }
@@ -63,7 +63,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = $this->createUser();
         $this->dm->clear();
 
-        $user = $this->dm->findOne(__NAMESPACE__.'\User');
+        $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
 
         $this->assertTrue($user->preLoad);
         $this->assertTrue($user->profile->preLoad);
@@ -107,7 +107,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($profile->postUpdate);
 
         $this->dm->clear();
-        $user = $this->dm->findOne(__NAMESPACE__.'\User');
+        $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
         $profile = $user->profiles[0];
 
         $this->assertTrue($profile->preLoad);
@@ -150,7 +150,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($profile->postUpdate);
 
         $this->dm->clear();
-        $user = $this->dm->findOne(__NAMESPACE__.'\User');
+        $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
         $profile = $user->profile->profile;
         $profile->name = '2nd level changed again';
         

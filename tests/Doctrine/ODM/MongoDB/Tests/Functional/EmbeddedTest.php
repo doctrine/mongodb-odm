@@ -25,7 +25,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0', array('name' => 'test'));
+        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(array('name' => 'test'));
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
 
         // Adding this flush here makes level1 not to be inserted.
@@ -38,7 +38,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0');
+        $test = $this->dm->find('Documents\Functional\EmbeddedTestLevel0', $test->id);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $test->level1[0]);
 
@@ -49,7 +49,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->findOne('Documents\Functional\EmbeddedTestLevel0');
+        $test = $this->dm->find('Documents\Functional\EmbeddedTestLevel0', $test->id);
         $this->assertEquals(2, count($test->level1));
         $this->assertEquals('changed', $test->level1[0]->name);
         $this->assertEquals('testing', $test->level1[1]->name);
@@ -347,14 +347,14 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->findOne('Documents\User');
+        $user = $this->dm->find('Documents\User', $user->getId());
         $address = $user->getAddress();
         $address->setAddress('changed');
 
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->findOne('Documents\User');
+        $user = $this->dm->find('Documents\User', $user->getId());
         $this->assertEquals('changed', $user->getAddress()->getAddress());
     }
 

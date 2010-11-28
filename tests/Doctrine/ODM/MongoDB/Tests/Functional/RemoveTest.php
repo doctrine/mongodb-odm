@@ -46,10 +46,9 @@ class RemoveTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         
         $this->dm->persist($user);
         $this->dm->flush();
-        unset($user);
         $this->dm->clear();
 
-        $user = $this->dm->findOne('Documents\User');
+        $user = $this->dm->find('Documents\User', $user->getId());
 
         $groups = $user->getGroups();
         unset($groups[0]);
@@ -58,7 +57,7 @@ class RemoveTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->findOne('Documents\User', array('username' => 'jon'));
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
 
         $this->assertEquals(2, count($user->getGroups()));
     }

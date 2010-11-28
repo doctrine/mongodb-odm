@@ -28,7 +28,12 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\ODMEvents,
     Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs,
     Doctrine\ODM\MongoDB\MongoDBException,
-    Doctrine\ODM\MongoDB\PersistentCollection;
+    Doctrine\ODM\MongoDB\LockException,
+    Doctrine\ODM\MongoDB\PersistentCollection,
+    Doctrine\ODM\MongoDB\QueryBuilder,
+    Doctrine\ODM\MongoDB\MongoArrayIterator,
+    Doctrine\ODM\MongoDB\Proxy\Proxy,
+    Doctrine\ODM\MongoDB\LockMode;
 
 /**
  * The DocumentPersister is responsible for actual persisting the calculated
@@ -171,6 +176,20 @@ class DocumentPersister
             if ( ! $data) {
                 continue;
             }
+
+            if ($this->class->isVersioned) {
+                $versionMapping = $this->class->fieldMappings[$this->class->versionField];
+                if ($versionMapping['type'] === 'int') {
+                    $nextVersion = 1;
+                    $data[$versionMapping['name']] = $nextVersion;
+                    $this->class->setFieldValue($document, $this->class->versionField, $nextVersion);
+                } elseif ($versionMapping['type'] === 'date') {
+                    $nextVersion = new \DateTime();
+                    $data[$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
+                    $this->class->setFieldValue($document, $this->class->versionField, $nextVersion);
+                }
+            }
+
             $inserts[$oid] = $data;
         }
         if (empty($inserts)) {
@@ -199,13 +218,49 @@ class DocumentPersister
         $update = $this->dp->prepareUpdateData($document);
 
         if ( ! empty($update)) {
+
+            $id = $this->class->getDatabaseIdentifierValue($id);
+            $query = array('_id' => $id);
+
+            // Include versioning updates
+            if ($this->class->isVersioned) {
+                $versionMapping = $this->class->fieldMappings[$this->class->versionField];
+                $currentVersion = $this->class->getFieldValue($document, $this->class->versionField);
+                if ($versionMapping['type'] === 'int') {
+                    $nextVersion = $currentVersion + 1;
+                    $update[$this->cmd . 'inc'][$versionMapping['name']] = 1;
+                    $query[$versionMapping['name']] = $currentVersion;
+                    $this->class->setFieldValue($document, $this->class->versionField, $nextVersion);
+                } elseif ($versionMapping['type'] === 'date') {
+                    $nextVersion = new \DateTime();
+                    $update[$this->cmd . 'set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
+                    $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
+                    $this->class->setFieldValue($document, $this->class->versionField, $nextVersion);
+                }
+                $options['safe'] = true;
+            }
+
+            if ($this->class->isLockable) {
+                $isLocked = $this->class->getFieldValue($document, $this->class->lockField);
+                $lockMapping = $this->class->fieldMappings[$this->class->lockField];
+                if ($isLocked) {
+                    $update[$this->cmd . 'unset'] = array($lockMapping['name'] => true);
+                } else {
+                    $query[$lockMapping['name']] = array($this->cmd . 'exists' => false);
+                }
+            }
+
             if ($this->dm->getEventManager()->hasListeners(ODMEvents::onUpdatePrepared)) {
                 $this->dm->getEventManager()->dispatchEvent(
                     ODMEvents::onUpdatePrepared, new OnUpdatePreparedArgs($this->dm, $document, $update)
                 );
             }
-            $id = $this->class->getDatabaseIdentifierValue($id);
-            $this->collection->update(array('_id' => $id), $update, $options);
+
+            $result = $this->collection->update($query, $update, $options);
+
+            if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
+                throw LockException::lockFailed($document);
+            }
         }
     }
 
@@ -219,72 +274,77 @@ class DocumentPersister
     {
         $id = $this->uow->getDocumentIdentifier($document);
 
-        $this->collection->remove(array(
+        $query = array(
             '_id' => $this->class->getDatabaseIdentifierValue($id)
-        ), $options);
+        );
+
+        if ($this->class->isVersioned) {
+            $query['locked'] = array($this->cmd . 'exists' => false);
+            $options['safe'] = true;
+        }
+
+        $result = $this->collection->remove($query, $options);
+
+        if (($this->class->isVersioned || $this->class->isLockable)  && ! $result['n']) {
+            throw LockException::lockFailed($document);
+        }
     }
 
     /**
      * Refreshes a managed document.
-     *
+     * 
+     * @param array $id The identifier of the document.
      * @param object $document The document to refresh.
      */
-    public function refresh($document)
+    public function refresh($id, $document)
     {
-        $id = $this->uow->getDocumentIdentifier($document);
-        if ($this->dm->loadByID($this->class->name, $id) === null) {
-            throw new \InvalidArgumentException(sprintf('Could not loadByID because ' . $this->class->name . ' '.$id . ' does not exist anymore.'));
-        }
+        $data = $this->collection->findOne(array('_id' => $id));
+        $this->dm->getHydrator()->hydrate($document, $data);
+        $this->uow->setOriginalDocumentData($document, $data);
     }
 
     /**
      * Loads an document by a list of field criteria.
      *
-     * @param array $query The criteria by which to load the document.
+     * @param array $criteria The criteria by which to load the document.
      * @param object $document The document to load the data into. If not specified,
      *        a new document is created.
-     * @param $assoc The association that connects the document to load to another document, if any.
      * @param array $hints Hints for document creation.
+     * @param int $lockMode
      * @return object The loaded and managed document instance or NULL if the document can not be found.
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
-     * @todo Modify DocumentManager to use this method instead of its own hard coded
      */
-    public function load(array $query = array(), array $select = array())
+    public function load($criteria, $document = null, array $hints = array(), $lockMode = 0)
     {
-        $result = $this->collection->findOne($query, $select);
-        if ($result !== null) {
-            return $this->uow->getOrCreateDocument($this->documentName, $result);
+        if (is_scalar($criteria)) {
+            $criteria = array('_id' => $criteria);
         }
-        return null;
-    }
+        $result = $this->collection->findOne($criteria);
 
-    /**
-     * Lood document by its identifier.
-     *
-     * @param string $id
-     * @return object|null
-     */
-    public function loadById($id)
-    {
-        $result = $this->collection->findOne(array(
-            '_id' => $this->class->getDatabaseIdentifierValue($id)
-        ));
-        if ($result !== null) {
-            return $this->uow->getOrCreateDocument($this->documentName, $result);
+        if ($this->class->isLockable) {
+            $lockMapping = $this->class->fieldMappings[$this->class->lockField];
+            if (isset($result[$lockMapping['name']]) && $result[$lockMapping['name']] === LockMode::PESSIMISTIC_WRITE) {
+                throw LockException::lockFailed($result);
+            }
         }
-        return null;
+
+        return $this->createDocument($result, $document, $hints);
     }
 
     /**
      * Loads a list of documents by a list of field criteria.
-     *
+     * 
      * @param array $criteria
      * @return array
      */
-    public function loadAll(array $query = array(), array $select = array())
+    public function loadAll(array $criteria = array())
     {
-        $cursor = $this->collection->find($query, $select);
-        return new MongoCursor($this->dm, $this->dm->getUnitOfWork(), $this->dm->getHydrator(), $this->class, $this->dm->getConfiguration(), $cursor);
+        $documents = array();
+        $cursor = $this->collection->find($criteria);
+        foreach ($cursor as $document) {
+            $documents[] = $this->createDocument($document);
+        }
+        return new MongoArrayIterator($documents);
     }
 
     /**
@@ -297,5 +357,83 @@ class DocumentPersister
     {
         $id = $this->class->getIdentifierObject($document);
         return (bool) $this->collection->findOne(array(array('_id' => $id)), array('_id'));
+    }
+
+    /**
+     * Locks document by storing the lock mode on the mapped lock field.
+     *
+     * @param object $document
+     * @param int $lockMode
+     */
+    public function lock($document, $lockMode)
+    {
+        $criteria = array('_id' => $this->dm->getUnitOfWork()->getDocumentIdentifier($document));
+        $lockMapping = $this->class->fieldMappings[$this->class->lockField];
+        $this->collection->update($criteria, array($this->cmd.'set' => array($lockMapping['name'] => $lockMode)));
+        $this->class->reflFields[$this->class->lockField]->setValue($document, $lockMode);
+    }
+
+    /**
+     * Releases any lock that exists on this document.
+     *
+     * @param object $document
+     */
+    public function unlock($document)
+    {
+        $criteria = array('_id' => $this->dm->getUnitOfWork()->getDocumentIdentifier($document));
+        $lockMapping = $this->class->fieldMappings[$this->class->lockField];
+        $this->collection->update($criteria, array($this->cmd.'unset' => array($lockMapping['name'] => true)));
+        $this->class->reflFields[$this->class->lockField]->setValue($document, null);
+    }
+
+    /**
+     * Creates or fills a single document object from an query result.
+     * 
+     * @param $result The query result.
+     * @param object $document The document object to fill, if any.
+     * @param array $hints Hints for document creation.
+     * @return object The filled and managed document object or NULL, if the query result is empty.
+     */
+    private function createDocument($result, $document = null, array $hints = array())
+    {
+        if ($result === null) {
+            return null;
+        }
+
+        if ($document !== null) {
+            $hints[QueryBuilder::HINT_REFRESH] = true;
+            $id = $result['_id'];
+            $this->dm->getUnitOfWork()->registerManaged($document, $id, $result);
+        }
+
+        return $this->dm->getUnitOfWork()->getOrCreateDocument($this->class->name, $result, $hints);
+    }
+
+    public function loadCollection(PersistentCollection $collection)
+    {
+        $mapping = $collection->getMapping();
+        $cmd = $this->dm->getConfiguration()->getMongoCmd();
+        $groupedIds = array();
+        foreach ($collection->getReferences() as $reference) {
+            $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
+            $id = $reference[$cmd . 'id'];
+            $reference = $this->dm->getReference($className, (string) $id);
+            $collection->add($reference);
+            if ($reference instanceof Proxy && ! $reference->__isInitialized__) {
+                if ( ! isset($groupedIds[$className])) {
+                    $groupedIds[$className] = array();
+                }
+                $groupedIds[$className][] = $id;
+            }
+        }
+
+        foreach ($groupedIds as $className => $ids) {
+            $mongoCollection = $this->dm->getDocumentCollection($className);
+            $data = $mongoCollection->find(array('_id' => array($cmd . 'in' => $ids)));
+            $hints = array(QueryBuilder::HINT_REFRESH => QueryBuilder::HINT_REFRESH);
+            foreach ($data as $id => $documentData) {
+                $document = $this->dm->getUnitOfWork()->getOrCreateDocument($className, $documentData, $hints);
+            }
+        }
     }
 }

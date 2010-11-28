@@ -17,7 +17,7 @@ class SimpleTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $bar = $this->dm->findOne('Documents\Bars\Bar');
+        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
 
         $locations = $bar->getLocations();
         unset($locations[0]);

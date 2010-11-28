@@ -21,7 +21,7 @@ class MODM42Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $dir = $this->dm->findOne(__NAMESPACE__.'\Directory', array());
+        $dir = $this->dm->find(__NAMESPACE__.'\Directory', $dir->getId());
         $this->assertNotNull($dir);
         $this->assertEquals(2, count($dir->getFiles()));
         foreach($dir->getFiles() as $file) {
@@ -47,6 +47,11 @@ class Directory
         $this->files = $files;
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function getFiles()
     {
         return $this->files;
@@ -65,6 +70,11 @@ class File
     public function __construct($path)
     {
         $this->file = $path;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     public function getMongoFile() 

@@ -93,7 +93,7 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
         return isset($this->documentMetadatas[$documentName]) ? $this->documentMetadatas[$documentName] : parent::getClassMetadata($documentName);
     }
 
-    public static function create(Mongo $mongo, Configuration $config = null, EventManager $eventManager = null)
+    public static function create(Mongo $mongo = null, Configuration $config = null, EventManager $eventManager = null)
     {
         if (is_null($config)) {
             $config = new \Doctrine\ODM\MongoDB\Configuration();
@@ -104,7 +104,6 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
         if (is_null($eventManager)) {
             $eventManager = new \Doctrine\Common\EventManager();
         }
-        
         return new DocumentManagerMock($mongo, $config, $eventManager);   
     }
 }

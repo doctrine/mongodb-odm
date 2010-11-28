@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
+use Doctrine\ODM\MongoDB\MongoCursor;
+
 /**
  * FindQuery
  *
@@ -28,7 +30,7 @@ namespace Doctrine\ODM\MongoDB\Query;
  */
 class FindQuery extends AbstractQuery
 {
-    protected $mapReduce;
+    protected $reduce;
     protected $select = array();
     protected $query;
     protected $hydrate;
@@ -40,9 +42,9 @@ class FindQuery extends AbstractQuery
     protected $snapshot;
     protected $hints = array();
 
-    public function setMapReduce(array $mapReduce)
+    public function setReduce($reduce)
     {
-        $this->mapReduce = $mapReduce;
+        $this->reduce = $reduce;
     }
 
     public function setSelect($select)
@@ -97,16 +99,12 @@ class FindQuery extends AbstractQuery
 
     public function execute(array $options = array())
     {
-        if (isset($this->mapReduce['map']) && $this->mapReduce['reduce']) {
-            $cursor = $this->dm->mapReduce($this->class->name, $this->mapReduce['map'], $this->mapReduce['reduce'], $this->query, isset($this->mapReduce['options']) ? $this->mapReduce['options'] : array());
-            $cursor->hydrate(false);
-        } else {
-            if (isset($this->mapReduce['reduce'])) {
-                $this->query[$this->cmd . 'where'] = $this->mapReduce['reduce'];
-            }
-            $cursor = $this->dm->find($this->class->name, $this->query, $this->select);
-            $cursor->hydrate($this->hydrate);
+        if ($this->reduce) {
+            $this->query[$this->cmd . 'where'] = $this->reduce;
         }
+        $cursor = $this->dm->getDocumentCollection($this->class->name)->find($this->query, $this->select, $options);
+        $cursor = new MongoCursor($this->dm, $this->dm->getUnitOfWork(), $this->dm->getHydrator(), $this->class, $this->dm->getConfiguration(), $cursor);
+        $cursor->hydrate($this->hydrate);
         $cursor->limit($this->limit);
         $cursor->skip($this->skip);
         $cursor->sort($this->sort);

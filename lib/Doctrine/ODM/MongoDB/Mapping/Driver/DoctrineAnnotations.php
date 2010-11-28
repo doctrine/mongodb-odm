@@ -65,6 +65,9 @@ final class UniqueIndex extends Index
     public $unique = true;
 }
 
+final class Version extends Annotation {}
+final class Lock extends Annotation {}
+
 class Field extends Annotation
 {
     public $name;

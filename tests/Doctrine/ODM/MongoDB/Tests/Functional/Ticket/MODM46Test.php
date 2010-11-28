@@ -6,11 +6,12 @@ class MODM46Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $this->dm->getMongo()->modm46_test->a->insert(array(
+        $a = array(
             'c' => array('value' => 'value')
-        ));
+        );
+        $this->dm->getMongo()->modm46_test->a->insert($a);
 
-        $a = $this->dm->findOne(__NAMESPACE__.'\MODM46A');
+        $a = $this->dm->find(__NAMESPACE__.'\MODM46A', $a['_id']);
 
         $this->assertTrue(isset($a->b));
         $this->assertEquals('value', $a->b->value);

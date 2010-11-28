@@ -30,7 +30,7 @@ class MODM91Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
         $dm->clear();
 
-        $testDoc = $dm->findOne(__NAMESPACE__.'\MODM91TestDocument');
+        $testDoc = $dm->find(__NAMESPACE__.'\MODM91TestDocument', $testDoc->id);
         $dm->flush();
         $dm->clear();
 

@@ -15,7 +15,7 @@ class MODM62Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->findOne(__NAMESPACE__.'\MODM62Document');
+        $test = $this->dm->find(__NAMESPACE__.'\MODM62Document', $test->id);
         $this->assertEquals(array('test', 'test2'), $test->b);
     }
 }

@@ -30,7 +30,7 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Order', $test['title']);
         $this->assertEquals('Product', $test['product']['title']);
 
-        $doc = $this->dm->findOne(__NAMESPACE__.'\Order');
+        $doc = $this->dm->find(__NAMESPACE__.'\Order', $order->id);
         $this->assertInstanceOf(__NAMESPACE__.'\Order', $order);
         $this->assertTrue(is_string($doc->product->id));
         $this->assertEquals((string) $test['product']['_id'], $doc->product->id);
@@ -39,10 +39,10 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->clear();
 
-        $order = $this->dm->findOne(__NAMESPACE__.'\Order');
+        $order = $this->dm->find(__NAMESPACE__.'\Order', $order->id);
         $this->assertInstanceOf(__NAMESPACE__.'\Order', $order);
 
-        $product = $this->dm->findOne(__NAMESPACE__.'\Product');
+        $product = $this->dm->find(__NAMESPACE__.'\Product', $product->id);
         $this->assertInstanceOf(__NAMESPACE__.'\Product', $product);
 
         $order->product->title = 'tesgttttt';
@@ -53,8 +53,8 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test2 = $this->dm->getDocumentCollection(__NAMESPACE__.'\Order')->findOne();
         $this->assertNotEquals($test1['title'], $test2['product']['title']);
 
-        $order = $this->dm->findOne(__NAMESPACE__.'\Order');
-        $product = $this->dm->findOne(__NAMESPACE__.'\Product');
+        $order = $this->dm->find(__NAMESPACE__.'\Order', $order->id);
+        $product = $this->dm->find(__NAMESPACE__.'\Product', $product->id);
         $this->assertNotEquals($product->title, $order->product->title);
     }
 
@@ -67,7 +67,7 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $category = $this->dm->findOne(__NAMESPACE__.'\Category');
+        $category = $this->dm->find(__NAMESPACE__.'\Category', $category->getId());
         $category->setName('Root Changed');
         $children = $category->getChildren();
 
@@ -77,7 +77,7 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $category = $this->dm->findOne(__NAMESPACE__.'\Category');
+        $category = $this->dm->find(__NAMESPACE__.'\Category', $category->getId());
 
         $children = $category->getChildren();
         $this->assertEquals('Child 1 Changed', $children[0]->getName());
@@ -100,7 +100,8 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->findOne(__NAMESPACE__.'\Hierarchy', array('name' => 'Root'));
+        $test = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(array('name' => 'Root'));
+ 
         $this->assertNotNull($test);
         $child1 = $test->getChild('Child 1')->setName('Child 1 Changed');
         $child2 = $test->getChild('Child 2')->setName('Child 2 Changed');
@@ -110,18 +111,18 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->findOne(__NAMESPACE__.'\Hierarchy');
+        $test = $this->dm->find(__NAMESPACE__.'\Hierarchy', $test->getId());
         $this->assertNotNull($test);
         $this->assertEquals('Root Changed', $test->getName());
         $this->assertEquals('Child 1 Changed', $test->getChild(0)->getName());
         $this->assertEquals('Child 2 Changed', $test->getChild(1)->getName());
 
-        $child3 = $this->dm->findOne(__NAMESPACE__.'\Hierarchy', array('name' => 'Child 3'));
+        $child3 = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(array('name' => 'Child 3'));
         $this->assertNotNull($child3);
         $child3->setName('Child 3 Changed');
         $this->dm->flush();
 
-        $child3 = $this->dm->findOne(__NAMESPACE__.'\Hierarchy', array('name' => 'Child 3 Changed'));
+        $child3 = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(array('name' => 'Child 3 Changed'));
         $this->assertNotNull($child3);
         $this->assertEquals('Child 3 Changed', $child3->getName());
 

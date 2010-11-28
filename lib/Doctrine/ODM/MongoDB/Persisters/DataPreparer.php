@@ -81,6 +81,11 @@ class DataPreparer
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
                 continue;
             }
+            // Skip version and lock fields
+            if (isset($mapping['version']) || isset($mapping['lock'])) {
+                continue;
+            }
+
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
 
             // Prepare new document identifier
@@ -144,6 +149,11 @@ class DataPreparer
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
                 continue;
             }
+            // Skip version and lock fields
+            if (isset($mapping['version']) || isset($mapping['lock'])) {
+                continue;
+            }
+
             list($old, $new) = $change;
 
             // Build query to persist updates to an embedded one association

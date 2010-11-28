@@ -1203,7 +1203,7 @@ class UnitOfWork implements PropertyChangedListener
      * Extra updates for entities are stored as (entity, changeset) tuples.
      *
      * @ignore
-     * @param object $entity The entity for which to schedule an extra update.
+     * @param object $document The entity for which to schedule an extra update.
      * @param array $changeset The changeset of the entity (what to update).
      */
     public function scheduleExtraUpdate($document, array $changeset)
@@ -1358,15 +1358,24 @@ class UnitOfWork implements PropertyChangedListener
                 if ( ! $id) {
                     return self::STATE_NEW;
                 } else {
-                    // Last try before db lookup: check the identity map.
-                    if ($this->tryGetById($id, $class->rootDocumentName)) {
-                        return self::STATE_DETACHED;
-                    } else {
-                        // db lookup
-                        if ($this->getDocumentPersister(get_class($document))->exists($document)) {
+                    // Check for a version field, if available, to avoid a db lookup.
+                    if ($class->isVersioned) {
+                        if ($class->getFieldValue($document, $class->versionField)) {
                             return self::STATE_DETACHED;
                         } else {
                             return self::STATE_NEW;
+                        }
+                    } else {
+                        // Last try before db lookup: check the identity map.
+                        if ($this->tryGetById($id, $class->rootDocumentName)) {
+                            return self::STATE_DETACHED;
+                        } else {
+                            // db lookup
+                            if ($this->getDocumentPersister(get_class($document))->exists($document)) {
+                                return self::STATE_DETACHED;
+                            } else {
+                                return self::STATE_NEW;
+                            }
                         }
                     }
                 }
@@ -1741,6 +1750,15 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
+            if ($class->isVersioned) {
+                $managedCopyVersion = $class->reflFields[$class->versionField]->getValue($managedCopy);
+                $documentVersion = $class->reflFields[$class->versionField]->getValue($document);
+                // Throw exception if versions dont match.
+                if ($managedCopyVersion != $documentVersion) {
+                    throw LockException::lockFailedVersionMissmatch($documentVersion, $managedCopyVersion);
+                }
+            }
+
             // Merge state of $document into existing (managed) entity
             foreach ($class->reflFields as $name => $prop) {
                 if ( ! isset($class->fieldMappings[$name]['embedded']) &&  ! isset($class->fieldMappings[$name]['reference'])) {
@@ -1898,7 +1916,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->dm->getClassMetadata(get_class($document));
         if ($this->getDocumentState($document) == self::STATE_MANAGED) {
-            $this->getDocumentPersister($class->name)->refresh($document);
+            $this->getDocumentPersister($class->name)->refresh($this->documentIdentifiers[$oid], $document);
         } else {
             throw new \InvalidArgumentException("Document is not MANAGED.");
         }
@@ -2098,6 +2116,52 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Acquire a lock on the given document.
+     *
+     * @param object $document
+     * @param int $lockMode
+     * @param int $lockVersion
+     */
+    public function lock($document, $lockMode, $lockVersion = null)
+    {
+        if ($this->getDocumentState($document) != self::STATE_MANAGED) {
+            throw new \InvalidArgumentException("Document is not MANAGED.");
+        }
+        
+        $documentName = get_class($document);
+        $class = $this->dm->getClassMetadata($documentName);
+
+        if ($lockMode == \Doctrine\ODM\MongoDB\LockMode::OPTIMISTIC) {
+            if (!$class->isVersioned) {
+                throw LockException::notVersioned($documentName);
+            }
+
+            if ($lockVersion != null) {
+                $documentVersion = $class->reflFields[$class->versionField]->getValue($document);
+                if ($documentVersion != $lockVersion) {
+                    throw LockException::lockFailedVersionMissmatch($document, $lockVersion, $documentVersion);
+                }
+            }
+        } else if (in_array($lockMode, array(\Doctrine\ODM\MongoDB\LockMode::PESSIMISTIC_READ, \Doctrine\ODM\MongoDB\LockMode::PESSIMISTIC_WRITE))) {
+            $this->getDocumentPersister($class->name)->lock($document, $lockMode);
+        }
+    }
+
+    /**
+     * Releases a lock on the given document.
+     *
+     * @param object $document
+     */
+    public function unlock($document)
+    {
+        if ($this->getDocumentState($document) != self::STATE_MANAGED) {
+            throw new \InvalidArgumentException("Document is not MANAGED.");
+        }
+        $documentName = get_class($document);
+        $this->getDocumentPersister($documentName)->unlock($document);
+    }
+
+    /**
      * Gets the CommitOrderCalculator used by the UnitOfWork to order commits.
      *
      * @return Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator
@@ -2258,6 +2322,17 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
         }
+    }
+
+    /**
+     * Initializes (loads) an uninitialized persistent collection of a document.
+     *
+     * @param PeristentCollection $collection The collection to initialize.
+     */
+    public function loadCollection(PersistentCollection $collection)
+    {
+        $mapping = $collection->getMapping();
+        $this->getDocumentPersister(get_class($collection->getOwner()))->loadCollection($collection);
     }
 
     /**

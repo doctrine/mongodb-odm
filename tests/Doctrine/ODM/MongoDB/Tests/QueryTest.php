@@ -4,51 +4,48 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\QueryBuilder;
 
-class QueryTest extends \PHPUnit_Framework_TestCase
+class QueryTest extends BaseTest
 {
     public function testThatOrAcceptsAnotherQuery()
     {
-        $class = 'Person';
-        $expression1 = array('first_name' => 'Kris');
-        $expression2 = array('first_name' => 'Chris');
+        $kris = new Person('Kris');
+        $chris = new Person('Chris');
+        $this->dm->persist($kris);
+        $this->dm->persist($chris);
+        $this->dm->flush();
 
-        $dm = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\DocumentManager')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $dm
-            ->expects($this->once())
-            ->method('find')
-            ->with($class, array(
-                '$or' => array($expression1, $expression2),
-            ))
-            ->will($this->returnValue(
-                $cursor = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\MongoCursor')
-                    ->disableOriginalConstructor()
-                    ->getMock()
-            ));
+        $class = __NAMESPACE__.'\Person';
+        $expression1 = array('firstName' => 'Kris');
+        $expression2 = array('firstName' => 'Chris');
 
-        $metadata = $this->getMock('Doctrine\ODM\MongoDB\Mapping\ClassMetadata', array(), array(), '', false, false);
-        $metadata->name = $class;
-        $dm
-            ->expects($this->once())
-            ->method('getClassMetadata')
-            ->with('Person')
-            ->will($this->returnValue($metadata));
-
-        $hydrator = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\Hydrator')
-            ->disableOriginalConstructor()
-            ->disableOriginalClone()
-            ->getMock();
-
-        $qb = new QueryBuilder($dm, $hydrator, '$', $class);
-        $qb->addOr($qb->expr()->field('first_name')->equals('Kris'));
-        $qb->addOr($qb->expr()->field('first_name')->equals('Chris'));
-        $query = $qb->getQuery();
+        $qb = $this->dm->createQueryBuilder($class);
+        $qb->addOr($qb->expr()->field('firstName')->equals('Kris'));
+        $qb->addOr($qb->expr()->field('firstName')->equals('Chris'));
 
         $this->assertEquals(array('$or' => array(
-            array('first_name' => 'Kris'),
-            array('first_name' => 'Chris')
+            array('firstName' => 'Kris'),
+            array('firstName' => 'Chris')
         )), $qb->getQueryArray());
-        $this->assertSame($cursor, $query->execute());
+
+        $query = $qb->getQuery();
+        $users = $query->execute();
+
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\MongoCursor', $users);
+        $this->assertEquals(2, count($users));
+    }
+}
+
+/** @Document */
+class Person
+{
+    /** @Id */
+    public $id;
+
+    /** @String */
+    public $firstName;
+
+    public function __construct($firstName)
+    {
+        $this->firstName = $firstName;
     }
 }

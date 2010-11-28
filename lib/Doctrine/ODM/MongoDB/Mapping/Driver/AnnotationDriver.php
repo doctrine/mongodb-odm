@@ -186,6 +186,14 @@ class AnnotationDriver implements Driver
                 $mapping['notSaved'] = true;
             }
 
+            if ($versionAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Version')) {
+                $mapping['version'] = true;
+            }
+
+            if ($versionAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Lock')) {
+                $mapping['lock'] = true;
+            }
+
             $indexes = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Indexes');
             $indexes = $indexes ? $indexes : array();
             if ($index = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Index')) {

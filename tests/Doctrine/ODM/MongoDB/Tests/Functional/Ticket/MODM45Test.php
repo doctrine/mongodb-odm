@@ -13,7 +13,7 @@ class MODM45Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $a = $this->dm->loadByID(__NAMESPACE__.'\MODM45A', $a->getId());
+        $a = $this->dm->find(__NAMESPACE__.'\MODM45A', $a->getId());
         $c = (null !== $a->getB()); 
         $this->assertTrue($c); // returns false, while expecting true
     }
