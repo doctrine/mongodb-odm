@@ -180,9 +180,9 @@ class DocumentPersister
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 if ($versionMapping['type'] === 'int') {
-                    $nextVersion = 1;
-                    $data[$versionMapping['name']] = $nextVersion;
-                    $this->class->setFieldValue($document, $this->class->versionField, $nextVersion);
+                    $currentVersion = $this->class->getFieldValue($document, $this->class->versionField);
+                    $data[$versionMapping['name']] = $currentVersion;
+                    $this->class->setFieldValue($document, $this->class->versionField, $currentVersion);
                 } elseif ($versionMapping['type'] === 'date') {
                     $nextVersion = new \DateTime();
                     $data[$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());

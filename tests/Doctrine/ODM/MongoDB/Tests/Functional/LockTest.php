@@ -358,7 +358,7 @@ abstract class AbstractVersionBase
 class LockInt extends AbstractVersionBase
 {
     /** @Version @Int */
-    public $version = 0;
+    public $version = 1;
 }
 
 /** @Document */
