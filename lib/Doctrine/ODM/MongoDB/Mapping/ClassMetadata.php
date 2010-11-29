@@ -590,6 +590,16 @@ class ClassMetadata
     }
 
     /**
+     * Checks whether this document has indexes or not.
+     *
+     * @return boolean
+     */
+    public function hasIndexes()
+    {
+        return $this->indexes ? true : false;
+    }
+
+    /**
      * Gets the ReflectionClass instance of the mapped class.
      *
      * @return ReflectionClass

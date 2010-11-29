@@ -29,6 +29,19 @@ class UniqueIndexTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush(array('safe' => true));
     }
 
+    public function testEmbeddedIndexes()
+    {
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\DocumentWithEmbeddedIndexes');
+        $sm = $this->dm->getSchemaManager();
+        $indexes = $sm->getDocumentIndexes($class->name);
+
+        $this->assertTrue(isset($indexes[0]['keys']['embedded.name']));
+        $this->assertEquals(1, $indexes[0]['keys']['embedded.name']);
+
+        $this->assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
+        $this->assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
+    }
+
     public function testIndexDefinitions()
     {
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\UniqueOnFieldTest');
@@ -180,4 +193,34 @@ class MultipleFieldIndexes
 
     /** @String @Index(unique=true) */
     public $email;
+}
+
+/** @Document */
+class DocumentWithEmbeddedIndexes
+{
+    /** @Id */
+    public $id;
+
+    /** @String */
+    public $name;
+
+    /** @EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
+    public $embedded;
+}
+
+/** @EmbeddedDocument */
+class EmbeddedDocumentWithIndexes
+{
+    /** @String @Index */
+    public $name;
+
+    /** @EmbedMany(targetDocument="EmbeddedManyDocumentWithIndexes") */
+    public $embeddedMany;
+}
+
+/** @EmbeddedDocument */
+class EmbeddedManyDocumentWithIndexes
+{
+    /** @String @Index */
+    public $name;
 }

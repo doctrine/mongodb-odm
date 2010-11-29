@@ -59,6 +59,40 @@ class SchemaManager
         }
     }
 
+    public function  getDocumentIndexes($documentName)
+    {
+        $visited = array();
+        return $this->doGetDocumentIndexes($documentName, $visited);
+    }
+
+    private function doGetDocumentIndexes($documentName, array &$visited)
+    {
+        if (isset($visited[$documentName])) {
+            return array();
+        }
+
+        $visited[$documentName] = true;
+
+        $class = $this->dm->getClassMetadata($documentName);
+        $indexes = $class->getIndexes();
+
+        // Add indexes from embedded documents
+        foreach ($class->fieldMappings as $fieldMapping) {
+            if (isset($fieldMapping['embedded']) && isset($fieldMapping['targetDocument'])) {
+                $embeddedClass = $this->dm->getClassMetadata($fieldMapping['targetDocument']);
+                $embeddedIndexes = $this->doGetDocumentIndexes($fieldMapping['targetDocument'], $visited);
+                foreach ($embeddedIndexes as $embeddedIndex) {
+                    foreach ($embeddedIndex['keys'] as $key => $value) {
+                        $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
+                        unset($embeddedIndex['keys'][$key]);
+                    }
+                    $indexes[] = $embeddedIndex;
+                }
+            }
+        }
+        return $indexes;
+    }
+
     /**
      * Ensure the given documents indexes are created.
      *
@@ -70,7 +104,7 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
             throw new InvalidArgumentException('Cannot create document indexes for mapped super classes or embedded documents.');
         }
-        if ($indexes = $class->getIndexes()) {
+        if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
                 $collection->ensureIndex($index['keys'], $index['options']);
