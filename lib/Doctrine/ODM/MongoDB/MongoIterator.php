@@ -7,4 +7,5 @@ use Countable, Iterator;
 interface MongoIterator extends Iterator, Countable
 {
     function toArray();
+    function getSingleResult();
 }

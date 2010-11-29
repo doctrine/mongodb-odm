@@ -26,7 +26,7 @@ class MongoCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = new \Documents\User();
         $user->setUsername('joncursor');
         $this->dm->persist($user);
-        $this->dm->flush();
+        $this->dm->flush(array('safe' => true));
 
         $this->cursor = $this->getMongoCursor(array('username' => 'joncursor'));
     }
@@ -40,8 +40,8 @@ class MongoCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->cursor->hydrate(true);
         $this->assertTrue($this->cursor->hydrate());
-        $this->assertTrue(is_array($this->cursor->getResults()));
         $this->assertInstanceOf('Documents\User', $this->cursor->getSingleResult());
+        $this->assertTrue(is_array($this->cursor->toArray()));
     }
 
     public function testCountableInterface()
@@ -57,14 +57,6 @@ class MongoCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $success = true;
         }
         $this->assertTrue($success);
-    }
-
-    /**
-     * @expectedException BadMethodCallException
-     */
-    public function testBadMethodCall()
-    {
-        $this->cursor->noMethodExists();
     }
 
     public function testCall()

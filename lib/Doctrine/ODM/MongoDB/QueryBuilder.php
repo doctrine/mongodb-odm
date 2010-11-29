@@ -21,7 +21,8 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Hydrator,
-    Doctrine\ODM\MongoDB\Query\AbstractQuery;
+    Doctrine\ODM\MongoDB\Query\AbstractQuery,
+    Doctrine\ODM\MongoDB\Query\Expr;
 
 /**
  * Query object that represents a query using a documents MongoCollection::find()
@@ -33,6 +34,12 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  */
 class QueryBuilder
 {
+    const TYPE_FIND     = 1;
+    const TYPE_INSERT   = 2;
+    const TYPE_UPDATE   = 3;
+    const TYPE_REMOVE   = 4;
+    const TYPE_GROUP    = 5;
+
     /**
      * The DocumentManager instance for this query
      *
@@ -55,25 +62,25 @@ class QueryBuilder
     private $class;
 
     /**
+     * The current field we are operating on.
+     *
+     * @var string
+     */
+    private $currentField;
+
+    /**
+     * Field to select distinct values of
+     *
+     * @var string
+     */
+    private $distinctField;
+
+    /**
      * Array of fields to select
      *
      * @var array
      */
     private $select = array();
-
-    /**
-     * Array that stores the built up query to execute.
-     *
-     * @var array
-     */
-    private $query = array();
-
-    /**
-     * Array to pass to MongoCollection::update() 2nd argument
-     *
-     * @var array
-     */
-    private $newObj = array();
 
     /**
      * Array of sort options
@@ -146,13 +153,6 @@ class QueryBuilder
     private $mapReduce = array();
 
     /**
-     * Field to select distinct values of
-     *
-     * @var string
-     */
-    private $distinctField;
-
-    /**
      * Data to use with $near operator for geospatial indexes
      *
      * @var array
@@ -160,11 +160,18 @@ class QueryBuilder
     private $near;
 
     /**
+     * Whether or not the query is a findAndModify query. Stores an array of options if not false.
+     *
+     * @var mixed
+     */
+    private $findAndModify = false;
+
+    /**
      * The type of query
      *
      * @var integer
      */
-    private $type = AbstractQuery::TYPE_FIND;
+    private $type = QueryBuilder::TYPE_FIND;
 
     /**
      * Mongo command prefix
@@ -174,18 +181,11 @@ class QueryBuilder
     private $cmd;
 
     /**
-     * The current field adding conditions to
+     * Holds a Query\Expr instance used for generating query expressions using the operators.
      *
-     * @var string
+     * @var Query\Expr $expr
      */
-    private $currentField;
-
-    /**
-     * Whether or not the query is a findAndModify query. Stores an array of options if not false.
-     *
-     * @var mixed
-     */
-    private $findAndModify = false;
+    private $expr;
 
     /** Refresh hint */
     const HINT_REFRESH = 1;
@@ -201,6 +201,7 @@ class QueryBuilder
         $this->dm = $dm;
         $this->hydrator = $h;
         $this->cmd = $cmd;
+        $this->expr = new Query\Expr($dm, $cmd);
         if ($className !== null) {
             $this->find($className);
         }
@@ -224,26 +225,6 @@ class QueryBuilder
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * Sets the current query array.
-     *
-     * @param array $query A query array
-     */
-    public function setQueryArray($query)
-    {
-        $this->query = $query;
-    }
-
-    /**
-     * Returns the current query array.
-     *
-     * @return array The query array
-     */
-    public function getQueryArray()
-    {
-        return $this->query;
     }
 
     /**
@@ -315,7 +296,7 @@ class QueryBuilder
     public function find($className = null)
     {
         $this->setClassName($className);
-        $this->type = AbstractQuery::TYPE_FIND;
+        $this->type = QueryBuilder::TYPE_FIND;
         return $this;
     }
 
@@ -343,7 +324,7 @@ class QueryBuilder
     public function update($className = null)
     {
         $this->setClassName($className);
-        $this->type = AbstractQuery::TYPE_UPDATE;
+        $this->type = QueryBuilder::TYPE_UPDATE;
         return $this;
     }
 
@@ -356,7 +337,7 @@ class QueryBuilder
     public function insert($className = null)
     {
         $this->setClassName($className);
-        $this->type = AbstractQuery::TYPE_INSERT;
+        $this->type = QueryBuilder::TYPE_INSERT;
         return $this;
     }
 
@@ -369,7 +350,7 @@ class QueryBuilder
     public function remove($className = null)
     {
         $this->setClassName($className);
-        $this->type = AbstractQuery::TYPE_REMOVE;
+        $this->type = QueryBuilder::TYPE_REMOVE;
         return $this;
     }
 
@@ -388,7 +369,7 @@ class QueryBuilder
             'keys' => $keys,
             'initial' => $initial
         );
-        $this->type = AbstractQuery::TYPE_GROUP;
+        $this->type = QueryBuilder::TYPE_GROUP;
         return $this;
     }
 
@@ -439,243 +420,6 @@ class QueryBuilder
     }
 
     /**
-     * Set the current field to operate on.
-     *
-     * @param string $field
-     * @return Query
-     */
-    public function field($field)
-    {
-        $this->currentField = $field;
-        return $this;
-    }
-
-    /**
-     * Add a new where criteria erasing all old criteria.
-     *
-     * @param string $value
-     * @return Query
-     */
-    public function equals($value, array $options = array())
-    {
-        if ($this->currentField) {
-            $this->query[$this->currentField] = $value;
-        } else {
-            $this->query = $value;
-        }
-        return $this;
-    }
-
-    /**
-     * Add $where javascript function to reduce result sets.
-     *
-     * @param string $javascript
-     * @return Query
-     */
-    public function where($javascript)
-    {
-        return $this->field($this->cmd . 'where')->equals($javascript);
-    }
-
-    /**
-     * Add MongoDB operator to the query.
-     *
-     * @param string $operator
-     * @param string $value
-     * @return Query
-     */
-    public function operator($operator, $value)
-    {
-        if ($this->currentField) {
-            $this->query[$this->currentField][$operator] = $value;
-        } else {
-            $this->query[$operator] = $value;
-        }
-        return $this;
-    }
-
-    /**
-     * Add a new where not criteria
-     *
-     * @param string $value
-     * @param array $options
-     * @return Query
-     */
-    public function not($value)
-    {
-        return $this->operator($this->cmd . 'not', $value);
-    }
-
-    /**
-     * Add a new where in criteria.
-     *
-     * @param mixed $values
-     * @return Query
-     */
-    public function in($values)
-    {
-        return $this->operator($this->cmd . 'in', $values);
-    }
-
-    /**
-     * Add where not in criteria.
-     *
-     * @param mixed $values
-     * @return Query
-     */
-    public function notIn($values)
-    {
-        return $this->operator($this->cmd . 'nin', (array) $values);
-    }
-
-    /**
-     * Add where not equal criteria.
-     *
-     * @param string $value
-     * @return Query
-     */
-    public function notEqual($value)
-    {
-        return $this->operator($this->cmd . 'ne', $value);
-    }
-
-    /**
-     * Add where greater than criteria.
-     *
-     * @param string $value
-     * @return Query
-     */
-    public function greaterThan($value)
-    {
-        return $this->operator($this->cmd . 'gt', $value);
-    }
-
-    /**
-     * Add where greater than or equal to criteria.
-     *
-     * @param string $value
-     * @return Query
-     */
-    public function greaterThanOrEq($value)
-    {
-        return $this->operator($this->cmd . 'gte', $value);
-    }
-
-    /**
-     * Add where less than criteria.
-     *
-     * @param string $value
-     * @return Query
-     */
-    public function lessThan($value)
-    {
-        return $this->operator($this->cmd . 'lt', $value);
-    }
-
-    /**
-     * Add where less than or equal to criteria.
-     *
-     * @param string $value
-     * @return Query
-     */
-    public function lessThanOrEq($value)
-    {
-        return $this->operator($this->cmd . 'lte', $value);
-    }
-
-    /**
-     * Add where range criteria.
-     *
-     * @param string $start
-     * @param string $end
-     * @return Query
-     */
-    public function range($start, $end)
-    {
-        return $this->operator($this->cmd . 'gte', $start)
-            ->operator($this->cmd . 'lt', $end);
-    }
-
-    /**
-     * Add where size criteria.
-     *
-     * @param string $size
-     * @return Query
-     */
-    public function size($size)
-    {
-        return $this->operator($this->cmd . 'size', $size);
-    }
-
-    /**
-     * Add where exists criteria.
-     *
-     * @param string $bool
-     * @return Query
-     */
-    public function exists($bool)
-    {
-        return $this->operator($this->cmd . 'exists', $bool);
-    }
-
-    /**
-     * Add where type criteria.
-     *
-     * @param string $type
-     * @return Query
-     */
-    public function type($type)
-    {
-        $map = array(
-            'double' => 1,
-            'string' => 2,
-            'object' => 3,
-            'array' => 4,
-            'binary' => 5,
-            'undefined' => 6,
-            'objectid' => 7,
-            'boolean' => 8,
-            'date' => 9,
-            'null' => 10,
-            'regex' => 11,
-            'jscode' => 13,
-            'symbol' => 14,
-            'jscodewithscope' => 15,
-            'integer32' => 16,
-            'timestamp' => 17,
-            'integer64' => 18,
-            'minkey' => 255,
-            'maxkey' => 127
-        );
-        if (is_string($type) && isset($map[$type])) {
-            $type = $map[$type];
-        }
-        return $this->operator($this->cmd . 'type', $type);
-    }
-
-    /**
-     * Add where all criteria.
-     *
-     * @param mixed $values
-     * @return Query
-     */
-    public function all($values)
-    {
-        return $this->operator($this->cmd . 'all', (array) $values);
-    }
-
-    /**
-     * Add where mod criteria.
-     *
-     * @param string $mod
-     * @return Query
-     */
-    public function mod($mod)
-    {
-        return $this->operator($this->cmd . 'mod', $mod);
-    }
-
-    /**
      * Add where near criteria.
      *
      * @param string $x
@@ -690,6 +434,200 @@ class QueryBuilder
     }
 
     /**
+     * Set the current field to operate on.
+     *
+     * @param string $field
+     * @return Query
+     */
+    public function field($field)
+    {
+        $this->currentField = $field;
+        $this->expr->field($field);
+        return $this;
+    }
+
+    /**
+     * Add a new where criteria erasing all old criteria.
+     *
+     * @param string $value
+     * @return Query
+     */
+    public function equals($value)
+    {
+        $this->expr->equals($value);
+        return $this;
+    }
+
+    /**
+     * Add $where javascript function to reduce result sets.
+     *
+     * @param string $javascript
+     * @return Query
+     */
+    public function where($javascript)
+    {
+        $this->expr->where($javascript);
+        return $this;
+    }
+
+    /**
+     * Add a new where in criteria.
+     *
+     * @param mixed $values
+     * @return Query
+     */
+    public function in($values)
+    {
+        $this->expr->in($values);
+        return $this;
+    }
+
+    /**
+     * Add where not in criteria.
+     *
+     * @param mixed $values
+     * @return Query
+     */
+    public function notIn($values)
+    {
+        $this->expr->notIn($values);
+        return $this;
+    }
+
+    /**
+     * Add where not equal criteria.
+     *
+     * @param string $value
+     * @return Query
+     */
+    public function notEqual($value)
+    {
+        $this->expr->notEquals($value);
+        return $this;
+    }
+
+    /**
+     * Add where greater than criteria.
+     *
+     * @param string $value
+     * @return Query
+     */
+    public function gt($value)
+    {
+        $this->expr->gt($value);
+        return $this;
+    }
+
+    /**
+     * Add where greater than or equal to criteria.
+     *
+     * @param string $value
+     * @return Query
+     */
+    public function gte($value)
+    {
+        $this->expr->gte($value);
+        return $this;
+    }
+
+    /**
+     * Add where less than criteria.
+     *
+     * @param string $value
+     * @return Query
+     */
+    public function lt($value)
+    {
+        $this->expr->lt($value);
+        return $this;
+    }
+
+    /**
+     * Add where less than or equal to criteria.
+     *
+     * @param string $value
+     * @return Query
+     */
+    public function lte($value)
+    {
+        $this->expr->lte($value);
+        return $this;
+    }
+
+    /**
+     * Add where range criteria.
+     *
+     * @param string $start
+     * @param string $end
+     * @return Query
+     */
+    public function range($start, $end)
+    {
+        $this->expr->range($start, $end);
+        return $this;
+    }
+
+    /**
+     * Add where size criteria.
+     *
+     * @param string $size
+     * @return Query
+     */
+    public function size($size)
+    {
+        $this->expr->size($size);
+        return $this;
+    }
+
+    /**
+     * Add where exists criteria.
+     *
+     * @param string $bool
+     * @return Query
+     */
+    public function exists($bool)
+    {
+        $this->expr->exists($bool);
+        return $this;
+    }
+
+    /**
+     * Add where type criteria.
+     *
+     * @param string $type
+     * @return Query
+     */
+    public function type($type)
+    {
+        $this->expr->type($type);
+        return $this;
+    }
+
+    /**
+     * Add where all criteria.
+     *
+     * @param mixed $values
+     * @return Query
+     */
+    public function all($values)
+    {
+        $this->expr->all($values);
+        return $this;
+    }
+
+    /**
+     * Add where mod criteria.
+     *
+     * @param string $mod
+     * @return Query
+     */
+    public function mod($mod)
+    {
+        $this->expr->mod($mod);
+        return $this;
+    }
+
+    /**
      * Add where $within $box query.
      *
      * @param string $x1
@@ -700,11 +638,7 @@ class QueryBuilder
      */
     public function withinBox($x1, $y1, $x2, $y2)
     {
-        if ($this->currentField) {
-            $this->query[$this->currentField][$this->cmd . 'within'][$this->cmd . 'box'] = array(array($x1, $y1), array($x2, $y2));
-        } else {
-            $this->query[$this->cmd . 'within'][$this->cmd . 'box'] = array(array($x1, $y1), array($x2, $y2));
-        }
+        $this->expr->withinBox($x1, $y1, $x2, $y2);
         return $this;
     }
 
@@ -718,11 +652,7 @@ class QueryBuilder
      */
     public function withinCenter($x, $y, $radius)
     {
-        if ($this->currentField) {
-            $this->query[$this->currentField][$this->cmd . 'within'][$this->cmd . 'center'] = array(array($x, $y), $radius);
-        } else {
-            $this->query[$this->cmd . 'within'][$this->cmd . 'center'] = array(array($x, $y), $radius);
-        }
+        $this->expr->withinCenter($x, $y, $radius);
         return $this;
     }
 
@@ -734,20 +664,7 @@ class QueryBuilder
      */
     public function references($document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
-
-        $reference = array(
-            $this->cmd . 'ref' => $class->getCollection(),
-            $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($class->getIdentifierValue($document)),
-            $this->cmd . 'db'  => $class->getDB()
-        );
-
-        if ($this->currentField) {
-            $this->query[$this->currentField][$this->cmd . 'elemMatch'] = $reference;
-        } else {
-            $this->query[$this->cmd . 'elemMatch'] = $reference;
-        }
-
+        $this->expr->references($document);
         return $this;
     }
 
@@ -850,35 +767,10 @@ class QueryBuilder
      */
     public function set($value, $atomic = true)
     {
-        if ($this->type == AbstractQuery::TYPE_INSERT) {
+        if ($this->type == QueryBuilder::TYPE_INSERT) {
             $atomic = false;
         }
-        if ($atomic === true) {
-            $this->newObj[$this->cmd . 'set'][$this->currentField] = $value;
-        } else {
-            if (strpos($this->currentField, '.') !== false) {
-                $e = explode('.', $this->currentField);
-                $current = &$this->newObj;
-                foreach ($e as $v) {
-                    $current[$v] = null;
-                    $current = &$current[$v];
-                }
-                $current = $value;
-            } else {
-                $this->newObj[$this->currentField] = $value;
-            }
-        }
-        return $this;
-    }
-
-    /**
-     * Set the $newObj array
-     *
-     * @param array $newObj
-     */
-    public function setNewObj($newObj)
-    {
-        $this->newObj = $newObj;
+        $this->expr->set($value, $atomic);
         return $this;
     }
 
@@ -891,7 +783,7 @@ class QueryBuilder
      */
     public function inc($value)
     {
-        $this->newObj[$this->cmd . 'inc'][$this->currentField] = $value;
+        $this->expr->inc($value);
         return $this;
     }
 
@@ -902,7 +794,7 @@ class QueryBuilder
      */
     public function unsetField()
     {
-        $this->newObj[$this->cmd . 'unset'][$this->currentField] = 1;
+        $this->expr->unsetField();
         return $this;
     }
 
@@ -916,7 +808,7 @@ class QueryBuilder
      */
     public function push($value)
     {
-        $this->newObj[$this->cmd . 'push'][$this->currentField] = $value;
+        $this->expr->push($value);
         return $this;
     }
 
@@ -931,7 +823,7 @@ class QueryBuilder
      */
     public function pushAll(array $valueArray)
     {
-        $this->newObj[$this->cmd . 'pushAll'][$this->currentField] = $valueArray;
+        $this->expr->pushAll($valueArray);
         return $this;
     }
 
@@ -943,7 +835,7 @@ class QueryBuilder
      */
     public function addToSet($value)
     {
-        $this->newObj[$this->cmd . 'addToSet'][$this->currentField] = $value;
+        $this->expr->addToSet($value);
         return $this;
     }
 
@@ -955,13 +847,8 @@ class QueryBuilder
      */
     public function addManyToSet(array $values)
     {
-        if ( ! isset($this->newObj[$this->cmd . 'addToSet'][$this->currentField])) {
-            $this->newObj[$this->cmd . 'addToSet'][$this->currentField][$this->cmd . 'each'] = array();
-        }
-        if ( ! is_array($this->newObj[$this->cmd . 'addToSet'][$this->currentField])) {
-            $this->newObj[$this->cmd . 'addToSet'][$this->currentField] = array($this->cmd . 'each' => array($this->newObj[$this->cmd . 'addToSet'][$this->currentField]));
-        }
-        $this->newObj[$this->cmd . 'addToSet'][$this->currentField][$this->cmd . 'each'] = array_merge_recursive($this->newObj[$this->cmd . 'addToSet'][$this->currentField][$this->cmd . 'each'], $values);
+        $this->expr->addManyToSet($values);
+        return $this;
     }
 
     /**
@@ -971,7 +858,7 @@ class QueryBuilder
      */
     public function popFirst()
     {
-        $this->newObj[$this->cmd . 'pop'][$this->currentField] = 1;
+        $this->expr->popFirst();
         return $this;
     }
 
@@ -982,7 +869,7 @@ class QueryBuilder
      */
     public function popLast()
     {
-        $this->newObj[$this->cmd . 'pop'][$this->currentField] = -1;
+        $this->expr->popLast();
         return $this;
     }
 
@@ -995,7 +882,7 @@ class QueryBuilder
      */
     public function pull($value)
     {
-        $this->newObj[$this->cmd . 'pull'][$this->currentField] = $value;
+        $this->expr->pull($value);
         return $this;
     }
 
@@ -1009,7 +896,7 @@ class QueryBuilder
      */
     public function pullAll(array $valueArray)
     {
-        $this->newObj[$this->cmd . 'pullAll'][$this->currentField] = $valueArray;
+        $this->expr->pullAll($valueArray);
         return $this;
     }
 
@@ -1028,10 +915,7 @@ class QueryBuilder
      */
     public function addOr($expression)
     {
-        if ($expression instanceof QueryBuilder) {
-            $expression = $expression->getQueryArray();
-        }
-        $this->query[$this->cmd . 'or'][] = $expression;
+        $this->expr->addOr($expression);
         return $this;
     }
 
@@ -1043,21 +927,14 @@ class QueryBuilder
      *     $qb = $this->createQueryBuilder('User');
      *     $qb
      *         ->field('phonenumbers')
-     *         ->addElemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
+     *         ->elemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
      *
      * @param array|QueryBuilder $expression
      * @return Query
      */
-    public function addElemMatch($expression)
+    public function elemMatch($expression)
     {
-        if ($expression instanceof QueryBuilder) {
-            $expression = $expression->getQueryArray();
-        }
-        if ($this->currentField) {
-            $this->query[$this->currentField][$this->cmd . 'elemMatch'] = $expression;
-        } else {
-            $this->query[$this->cmd . 'elemMatch'] = $expression;
-        }
+        $this->expr->elemMatch($expression);
         return $this;
     }
 
@@ -1067,43 +944,35 @@ class QueryBuilder
      * You can create the expression using the expr() method:
      *
      *     $qb = $this->createQueryBuilder('User');
-     *     $qb
-     *         ->field('id')
-     *         ->addNot($qb->expr()->in(1));
+     *     $qb->field('id')->not($qb->expr()->in(1));
      *
      * @param array|QueryBuilder $expression
      * @return Query
      */
-    public function addNot($expression)
+    public function not($expression)
     {
-        if ($expression instanceof QueryBuilder) {
-            $expression = $expression->getQueryArray();
-        }
-        if ($this->currentField) {
-            $this->query[$this->currentField][$this->cmd . 'not'] = $expression;
-        } else {
-            $this->query[$this->cmd . 'not'] = $expression;
-        }
+        $this->expr->not($expression);
         return $this;
     }
 
     /**
-     * Create a new QueryBuilder instance that can be used as an expression with the addOr()
-     * method.
+     * Create a new Query\Expr instance that can be used as an expression with the QueryBuilder
      *
-     * @return QueryBuilder $expr
+     * @return Query\Expr $expr
      */
     public function expr()
     {
-        $expr = new self($this->dm, $this->hydrator, $this->cmd);
-        if (isset($this->class->fieldMappings[$this->currentField]['targetDocument'])) {
-            $expr->className = $this->class->fieldMappings[$this->currentField]['targetDocument'];
-            $expr->class = $this->dm->getClassMetadata($expr->className);
-        } else {
-            $expr->className = $this->className;
-            $expr->class = $this->class;
-        }
-        return $expr;
+        return new Expr($this->dm, $this->cmd);
+    }
+
+    public function getQueryArray()
+    {
+        return $this->expr->getQuery();
+    }
+
+    public function getNewObj()
+    {
+        return $this->expr->getNewObj();
     }
 
     /**
@@ -1115,31 +984,41 @@ class QueryBuilder
     public function getQuery()
     {
         switch ($this->type) {
-            case AbstractQuery::TYPE_FIND;
+            case QueryBuilder::TYPE_FIND;
                 if ($this->distinctField !== null) {
                     $query = new Query\DistinctFieldQuery($this->dm, $this->class, $this->cmd);
                     $query->setDistinctField($this->distinctField);
-                    $query->setQuery($this->query);
+                    $query->setQuery($this->expr->getQuery());
                     return $query;
                 } elseif ($this->near !== null) {
                     $query = new Query\GeoLocationFindQuery($this->dm, $this->class, $this->cmd);
-                    $query->setQuery($this->query);
+                    $query->setQuery($this->expr->getQuery());
                     $query->setNear($this->near);
                     $query->setLimit($this->limit);
                     $query->setHydrate($this->hydrate);
                     return $query;
                 } else if (isset($this->mapReduce['map']) && $this->mapReduce['reduce']) {
                     $query = new Query\MapReduceQuery($this->dm, $this->class, $this->cmd);
-                    $query->setQuery($this->query);
+                    $query->setQuery($this->expr->getQuery());
                     $query->setMap(isset($this->mapReduce['map']) ? $this->mapReduce['map'] : null);
                     $query->setReduce(isset($this->mapReduce['reduce']) ? $this->mapReduce['reduce'] : null);
                     $query->setOptions(isset($this->mapReduce['options']) ? $this->mapReduce['options'] : array());
+                    $query->setSelect($this->select);
+                    $query->setQuery($this->expr->getQuery());
+                    $query->setHydrate($this->hydrate);
+                    $query->setLimit($this->limit);
+                    $query->setSkip($this->skip);
+                    $query->setSort($this->sort);
+                    $query->setImmortal($this->immortal);
+                    $query->setSlaveOkay($this->slaveOkay);
+                    $query->setSnapshot($this->snapshot);
+                    $query->setHints($this->hints);
                     return $query;
                 } else {
                     $query = new Query\FindQuery($this->dm, $this->class, $this->cmd);
                     $query->setReduce(isset($this->mapReduce['reduce']) ? $this->mapReduce['reduce'] : null);
                     $query->setSelect($this->select);
-                    $query->setQuery($this->query);
+                    $query->setQuery($this->expr->getQuery());
                     $query->setHydrate($this->hydrate);
                     $query->setLimit($this->limit);
                     $query->setSkip($this->skip);
@@ -1151,27 +1030,27 @@ class QueryBuilder
                     return $query;
                 }
                 break;
-            case AbstractQuery::TYPE_REMOVE;
+            case QueryBuilder::TYPE_REMOVE;
                 if ($this->findAndModify !== false) {
                     $query = new Query\FindAndRemoveQuery($this->dm, $this->class, $this->cmd);
                     $query->setSelect($this->select);
-                    $query->setQuery($this->query);
+                    $query->setQuery($this->expr->getQuery());
                     $query->setSort($this->sort);
                     $query->setLimit($this->limit);
                     return $query;
                 } else {
                     $query = new Query\RemoveQuery($this->dm, $this->class, $this->cmd);
-                    $query->setQuery($this->query);
+                    $query->setQuery($this->expr->getQuery());
                     return $query;
                 }
                 break;
 
-            case AbstractQuery::TYPE_UPDATE;
+            case QueryBuilder::TYPE_UPDATE;
                 if ($this->findAndModify !== false) {
                     $query = new Query\FindAndUpdateQuery($this->dm, $this->class, $this->cmd);
                     $query->setSelect($this->select);
-                    $query->setQuery($this->query);
-                    $query->setNewObj($this->newObj);
+                    $query->setQuery($this->expr->getQuery());
+                    $query->setNewObj($this->expr->getNewObj());
                     $query->setSort($this->sort);
                     $query->setUpsert(isset($this->findAndModify['upsert']));
                     $query->setNew(isset($this->findAndModify['new']));
@@ -1179,24 +1058,24 @@ class QueryBuilder
                     return $query;
                 } else {
                     $query = new Query\UpdateQuery($this->dm, $this->class, $this->cmd);
-                    $query->setQuery($this->query);
-                    $query->setNewObj($this->newObj);
+                    $query->setQuery($this->expr->getQuery());
+                    $query->setNewObj($this->expr->getNewObj());
                     return $query;
                 }
                 break;
 
-            case AbstractQuery::TYPE_INSERT;
+            case QueryBuilder::TYPE_INSERT;
                 $query = new Query\InsertQuery($this->dm, $this->class, $this->cmd);
-                $query->setNewObj($this->newObj);
+                $query->setNewObj($this->expr->getNewObj());
                 return $query;
                 break;
 
-            case AbstractQuery::TYPE_GROUP;
+            case QueryBuilder::TYPE_GROUP;
                 $query = new Query\GroupQuery($this->dm, $this->class, $this->cmd);
                 $query->setKeys($this->group['keys']);
                 $query->setInitial($this->group['initial']);
                 $query->setReduce($this->mapReduce['reduce']);
-                $query->setQuery($this->query);
+                $query->setQuery($this->expr->getQuery());
                 return $query;
                 break;
         }

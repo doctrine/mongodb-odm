@@ -30,10 +30,64 @@ use Doctrine\ODM\MongoDB\MongoCursor;
  */
 class MapReduceQuery extends AbstractQuery
 {
+    protected $select = array();
+    protected $query;
+    protected $hydrate;
+    protected $limit;
+    protected $skip;
+    protected $sort;
+    protected $immortal;
+    protected $slaveOkay;
+    protected $snapshot;
+    protected $hints = array();
     protected $map;
     protected $reduce;
     protected $options = array();
-    protected $query = array();
+
+    public function setSelect($select)
+    {
+        $this->select = $select;
+    }
+
+    public function setHydrate($hydrate)
+    {
+        $this->hydrate = $hydrate;
+    }
+
+    public function setLimit($limit)
+    {
+        $this->limit = $limit;
+    }
+
+    public function setSkip($skip)
+    {
+        $this->skip = $skip;
+    }
+
+    public function setSort($sort)
+    {
+        $this->sort = $sort;
+    }
+
+    public function setImmortal($immortal)
+    {
+        $this->immortal = $immortal;
+    }
+
+    public function setSlaveOkay($slaveOkay)
+    {
+        $this->slaveOkay = $slaveOkay;
+    }
+
+    public function setSnapshot($snapshot)
+    {
+        $this->snapshot = $snapshot;
+    }
+
+    public function setHints(array $hints)
+    {
+        $this->hints = $hints;
+    }
 
     public function setMap($map)
     {
@@ -78,6 +132,17 @@ class MapReduceQuery extends AbstractQuery
         $cursor = $db->selectCollection($result['result'])->find();
         $cursor = new MongoCursor($this->dm, $this->dm->getUnitOfWork(), $this->dm->getHydrator(), $this->class, $this->dm->getConfiguration(), $cursor);
         $cursor->hydrate(false);
+        $cursor->limit($this->limit);
+        $cursor->skip($this->skip);
+        $cursor->sort($this->sort);
+        $cursor->immortal($this->immortal);
+        $cursor->slaveOkay($this->slaveOkay);
+        if ($this->snapshot) {
+            $cursor->snapshot();
+        }
+        foreach ($this->hints as $keyPattern) {
+            $cursor->hint($keyPattern);
+        }
         return $cursor;
     }
 }

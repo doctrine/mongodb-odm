@@ -32,12 +32,6 @@ use Doctrine\ODM\MongoDB\MongoIterator,
  */
 abstract class AbstractQuery implements QueryInterface, MongoIterator
 {
-    const TYPE_FIND     = 1;
-    const TYPE_INSERT   = 2;
-    const TYPE_UPDATE   = 3;
-    const TYPE_REMOVE   = 4;
-    const TYPE_GROUP    = 5;
-
     /**
      * The DocumentManager instance for this query
      *
@@ -123,11 +117,7 @@ abstract class AbstractQuery implements QueryInterface, MongoIterator
      */
     public function getSingleResult(array $options = array())
     {
-        if ($results = $this->getIterator($options)) {
-            $array = $results->toArray();
-            return array_shift($array);
-        }
-        return null;
+        return $this->getIterator($options)->getSingleResult();
     }
 
     /**

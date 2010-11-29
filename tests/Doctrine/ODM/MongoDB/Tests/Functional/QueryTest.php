@@ -35,7 +35,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
-        $qb->field('phonenumbers')->addElemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
+        $qb->field('phonenumbers')->elemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertNotNull($user);
@@ -50,12 +50,12 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
-        $qb->field('username')->addNot($qb->expr()->in(array('boo')));
+        $qb->field('username')->not($qb->expr()->in(array('boo')));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertNull($user);
 
-        $qb->field('username')->addNot($qb->expr()->in(array('1boo')));
+        $qb->field('username')->not($qb->expr()->in(array('1boo')));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertNotNull($user);
@@ -235,7 +235,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             new \MongoDate(strtotime('1985-09-04'))
         );
         $query = $qb->getQuery();
-        $articles = array_values($query->execute()->getResults());
+        $articles = array_values($query->execute()->toArray());
         $this->assertEquals(2, count($articles));
         $this->assertEquals('1985-09-02', $articles[0]->getCreatedAt()->format('Y-m-d'));
         $this->assertEquals('1985-09-03', $articles[1]->getCreatedAt()->format('Y-m-d'));

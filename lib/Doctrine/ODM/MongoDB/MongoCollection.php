@@ -402,6 +402,102 @@ class MongoCollection
         return $file;
     }
 
+    /** @proxy */
+    public function count(array $query = array(), $limit = 0, $skip = 0)
+    {
+        return $this->mongoCollection->count($query, $limit, $skip);
+    }
+
+    /** @proxy */
+    public function createDBRef(array $a)
+    {
+        return $this->mongoCollection->createDBRef($a);
+    }
+
+    /** @proxy */
+    public function deleteIndex($keys)
+    {
+        return $this->mongoCollection->deleteIndex($keys);
+    }
+
+    /** @proxy */
+    public function deleteIndexes()
+    {
+        return $this->mongoCollection->deleteIndexes();
+    }
+
+    /** @proxy */
+    public function drop()
+    {
+        return $this->mongoCollection->drop();
+    }
+
+    /** @proxy */
+    public function ensureIndex(array $keys, array $options)
+    {
+        return $this->mongoCollection->ensureIndex($keys, $options);
+    }
+
+    /** @proxy */
+    public function __get($name)
+    {
+        return $this->mongoCollection->__get($name);
+    }
+
+    /** @proxy */
+    public function getDBRef(array $ref)
+    {
+        return $this->mongoCollection->getDBRef($ref);
+    }
+
+    /** @proxy */
+    public function getIndexInfo()
+    {
+        return $this->mongoCollection->getIndexInfo();
+    }
+
+    /** @proxy */
+    public function getName()
+    {
+        return $this->mongoCollection->getName();
+    }
+
+    /** @proxy */
+    public function group($keys, array $initial, $reduce, array $options = array())
+    {
+        return $this->mongoCollection->group($keys, $initial, $reduce, $options);
+    }
+
+    /** @proxy */
+    public function insert(array $a, array $options = array())
+    {
+        return $this->mongoCollection->insert($a, $options);
+    }
+
+    /** @proxy */
+    public function remove(array $criteria, array $options = array())
+    {
+        return $this->mongoCollection->remove($criteria, $options);
+    }
+
+    /** @proxy */
+    public function save(array $a, array $options = array())
+    {
+        return $this->mongoCollection->save($a, $options);
+    }
+
+    /** @proxy */
+    public function validate($scanData = false)
+    {
+        return $this->mongoCollection->validate($scanData);
+    }
+
+    /** @proxy */
+    public function __toString()
+    {
+        return $this->mongoCollection->__toString();
+    }
+
     private function getClassDiscriminatorValues(ClassMetadata $metadata)
     {
         $discriminatorValues = array($metadata->discriminatorValue);
@@ -478,14 +574,5 @@ class MongoCollection
             $newQuery[$key] = $value;
         }
         return $newQuery;
-    }
-
-    /** @proxy */
-    public function __call($method, $arguments)
-    {
-        if (method_exists($this->mongoCollection, $method)) {
-            return call_user_func_array(array($this->mongoCollection, $method), $arguments);
-        }
-        throw new \BadMethodCallException(sprintf('Method %s does not exist on %s', $method, get_class($this)));
     }
 }

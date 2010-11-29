@@ -82,18 +82,56 @@ class Mongo
     }
 
     /** @proxy */
+    public function close()
+    {
+        return $this->getMongo()->close();
+    }
+
+    /** @proxy */
+    public function connect()
+    {
+        return $this->getMongo()->connect();
+    }
+
+    /** @proxy */
+    public function connectUntil()
+    {
+        return $this->getMongo()->connectUntil();
+    }
+
+    /** @proxy */
+    public function dropDB($db)
+    {
+        return $this->getMongo()->dropDB($db);
+    }
+
+    /** @proxy */
     public function __get($key)
     {
         return $this->getMongo()->$key;
     }
 
     /** @proxy */
-    public function __call($method, $arguments)
+    public function listDBs()
     {
-        $mongo = $this->getMongo();
-        if (method_exists($mongo, $method)) {
-            return call_user_func_array(array($mongo, $method), $arguments);
-        }
-        throw new \BadMethodCallException(sprintf('Method %s does not exist on %s', $method, get_class($this)));
+        return $this->getMongo()->listDBs();
+    }
+
+    /** @proxy */
+    public function selectCollection($db, $collection)
+    {
+        return $this->getMongo()->selectCollection($db, $collection);
+    }
+
+    /** @proxy */
+    public function selectDB($name)
+    {
+        return $this->getMongo()->selectDB($name);
+    }
+
+    /** @proxy */
+    public function __toString()
+    {
+        return $this->getMongo()->__toString();
     }
 }

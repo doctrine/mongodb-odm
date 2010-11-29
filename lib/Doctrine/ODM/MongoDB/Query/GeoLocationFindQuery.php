@@ -85,6 +85,5 @@ class GeoLocationFindQuery extends AbstractQuery
             $results = $result['results'];
         }
         return new MongoArrayIterator($results);
-
     }
 }

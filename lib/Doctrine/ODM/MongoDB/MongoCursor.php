@@ -130,21 +130,60 @@ class MongoCursor implements MongoIterator
     }
 
     /** @proxy */
-    public function next()
-    {
-        return $this->mongoCursor->next();
-    }
-
-    /** @proxy */
     public function key()
     {
         return $this->mongoCursor->key();
     }
 
     /** @proxy */
-    public function valid()
+    public function dead()
     {
-        return $this->mongoCursor->valid();
+        return $this->mongoCursor->dead();
+    }
+
+    /** @proxy */
+    public function explain()
+    {
+        return $this->mongoCursor->explain();
+    }
+
+    /** @proxy */
+    public function fields(array $f)
+    {
+        $this->mongoCursor->fields($f);
+        return $this;
+    }
+
+    /** @proxy */
+    public function getNext()
+    {
+        return $this->mongoCursor->getNext();
+    }
+
+    /** @proxy */
+    public function hasNext()
+    {
+        return $this->mongoCursor->hasNext();
+    }
+
+    /** @proxy */
+    public function hint(array $keyPattern)
+    {
+        $this->mongoCursor->hint($keyPattern);
+        return $this;
+    }
+
+    /** @proxy */
+    public function immortal($liveForever = true)
+    {
+        $this->mongoCursor->immortal($liveForever);
+        return $this;
+    }
+
+    /** @proxy */
+    public function info()
+    {
+        return $this->mongoCursor->info();
     }
 
     /** @proxy */
@@ -154,39 +193,95 @@ class MongoCursor implements MongoIterator
     }
 
     /** @proxy */
-    public function count()
+    public function next()
     {
-        return $this->mongoCursor->count();
+        return $this->mongoCursor->next();
     }
 
-    /** @override */
-    public function sort($fields)
+    /** @proxy */
+    public function reset()
     {
-        if ($this->loggerCallable) {
-            $this->log(array(
-                'sort' => true,
-                'fields' => $fields,
-            ));
-        }
+        return $this->mongoCursor->reset();
+    }
 
-        $this->mongoCursor->sort($fields);
+    /** @proxy */
+    public function count($foundOnly = false)
+    {
+        return $this->mongoCursor->count($foundOnly);
+    }
 
+    /** @proxy */
+    public function addOption($key, $value)
+    {
+        $this->mongoCursor->addOption($key, $value);
         return $this;
     }
 
-    /**
-     * Returns an array by converting the iterator to an array.
-     *
-     * @return array $results
-     */
-    public function getResults()
+    /** @proxy */
+    public function batchSize($num)
     {
-        return iterator_to_array($this);
+        $htis->mongoCursor->batchSize($num);
+        return $this;
+    }
+
+    /** @proxy */
+    public function limit($num)
+    {
+        $this->mongoCursor->limit($num);
+        return $this;
+    }
+
+    /** @proxy */
+    public function skip($num)
+    {
+        $this->mongoCursor->skip($num);
+        return $this;
+    }
+
+    /** @proxy */
+    public function slaveOkay($okay = true)
+    {
+        $this->mongoCursor->slaveOkay($okay);
+        return $this;
+    }
+
+    /** @proxy */
+    public function snapshot()
+    {
+        $this->mongoCursor->snapshot();
+        return $this;
+    }
+
+    /** @proxy */
+    public function sort($fields)
+    {
+        $this->mongoCursor->sort($fields);
+        return $this;
+    }
+
+    /** @proxy */
+    public function tailable($tail = true)
+    {
+        $this->mongoCursor->tailable($tail);
+        return $this;
+    }
+
+    /** @proxy */
+    public function timeout($ms)
+    {
+        $this->mongoCursor->timeout($ms);
+        return $this;
+    }
+
+    /** @proxy */
+    public function valid()
+    {
+        return $this->mongoCursor->valid();
     }
 
     public function toArray()
     {
-        return $this->getResults();
+        return iterator_to_array($this);
     }
 
     /**
@@ -196,22 +291,12 @@ class MongoCursor implements MongoIterator
      */
     public function getSingleResult()
     {
-        if ($results = $this->getResults()) {
-            return array_shift($results);
+        $result = null;
+        $this->valid() ?: $this->next();
+        if ($this->valid()) {
+            $result = $this->current();
         }
-        return null;
-    }
-
-    /** @proxy */
-    public function __call($method, $arguments)
-    {
-        if (method_exists($this->mongoCursor, $method)) {
-            $return = call_user_func_array(array($this->mongoCursor, $method), $arguments);
-            if ($return === $this->mongoCursor) {
-                return $this;
-            }
-            return $return;
-        }
-        throw new \BadMethodCallException(sprintf('Method %s does not exist on %s', $method, get_class($this)));
+        $this->reset();
+        return $result ? $result : null;
     }
 }

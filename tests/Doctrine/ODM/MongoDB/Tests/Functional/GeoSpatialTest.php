@@ -16,7 +16,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'coordinates' => array(
                 '$within' => array('$box' => array(array(41, 41), array(72, 72)))
             )
-        ), $qb->debug('query'));
+        ), $qb->getQueryArray());
     }
 
     public function testGeoSpatial()

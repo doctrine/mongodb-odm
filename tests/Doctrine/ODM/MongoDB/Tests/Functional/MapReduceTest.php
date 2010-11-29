@@ -176,7 +176,7 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
         $query = $qb->getQuery();
         $cursor = $query->execute();
         $this->assertEquals(10, $cursor->count());
-        $results = $cursor->getResults();
+        $results = $cursor->toArray();
         $this->assertTrue(is_array($results['product_0']));
     }
 
