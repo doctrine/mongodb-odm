@@ -75,7 +75,7 @@ class CollectionPersister
     public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow, $cmd)
     {
         $this->dm = $dm;
-        $this->dp = $pb;
+        $this->pb = $pb;
         $this->uow = $uow;
         $this->cmd = $cmd;
     }
@@ -148,9 +148,9 @@ class CollectionPersister
             $setData = array();
             foreach ($coll as $document) {
                 if (isset($mapping['reference'])) {
-                    $setData[] = $this->dp->prepareReferencedDocValue($mapping, $document);
+                    $setData[] = $this->pb->prepareReferencedDocValue($mapping, $document);
                 } else {
-                    $setData[] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
+                    $setData[] = $this->pb->prepareEmbeddedDocValue($mapping, $document);
                 }
             }
             $query = array($this->cmd.'set' => array($propertyPath => $setData));
@@ -162,9 +162,9 @@ class CollectionPersister
                 $query = array($this->cmd.$strategy => array());
                 foreach ($insertDiff as $key => $document) {
                     if (isset($mapping['reference'])) {
-                        $query[$this->cmd.$strategy][$propertyPath][] = $this->dp->prepareReferencedDocValue($mapping, $document);
+                        $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareReferencedDocValue($mapping, $document);
                     } else {
-                        $query[$this->cmd.$strategy][$propertyPath][] = $this->dp->prepareEmbeddedDocValue($mapping, $document);
+                        $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareEmbeddedDocValue($mapping, $document);
                     }
                 }
                 $this->executeQuery($parent, $query, $options);
