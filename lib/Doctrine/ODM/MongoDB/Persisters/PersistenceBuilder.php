@@ -24,14 +24,16 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\Types\Type;
 
 /**
- * DataPreparer
+ * PersistenceBuilder builds the queries used by the persisters to update and insert
+ * documents when a DocumentManager is flushed. It uses the changeset information in the
+ * UnitOfWork to build queries using atomic operators like $set, $unset, etc.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-class DataPreparer
+class PersistenceBuilder
 {
     /**
      * The DocumentManager instance.
@@ -48,7 +50,7 @@ class DataPreparer
     private $uow;
 
     /**
-     * Initializes a new DataPreparer instance.
+     * Initializes a new PersistenceBuilder instance.
      *
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
      * @param Doctrine\ODM\MongoDB\UnitOfWork $uow

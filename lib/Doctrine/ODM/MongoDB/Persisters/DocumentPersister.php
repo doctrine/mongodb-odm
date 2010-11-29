@@ -47,11 +47,11 @@ use Doctrine\ODM\MongoDB\DocumentManager,
 class DocumentPersister
 {
     /**
-     * The DataPreparer instance.
+     * The PersistenceBuilder instance.
      *
-     * @var Doctrine\ODM\MongoDB\Persisters\DataPreparer
+     * @var Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder
      */
-    private $dp;
+    private $pb;
 
     /**
      * The DocumentManager instance.
@@ -117,13 +117,13 @@ class DocumentPersister
     /**
      * Initializes a new DocumentPersister instance.
      *
-     * @param Doctrine\ODM\MongoDB\Persisters\DataPreparer $dp
+     * @param Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder $pb
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      */
-    public function __construct(DataPreparer $dp, DocumentManager $dm, ClassMetadata $class)
+    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, ClassMetadata $class)
     {
-        $this->dp = $dp;
+        $this->dp = $pb;
         $this->dm = $dm;
         $this->uow = $dm->getUnitOfWork();
         $this->class = $class;

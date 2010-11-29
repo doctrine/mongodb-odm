@@ -7,14 +7,14 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\ConfigurableProduct;
 
-class DataPreparerTest extends BaseTest
+class PersistenceBuilderTest extends BaseTest
 {
-    private $dp;
+    private $pb;
 
     public function setUp()
     {
         parent::setUp();
-        $this->dp = $this->dm->getUnitOfWork()->getDataPreparer();
+        $this->dp = $this->dm->getUnitOfWork()->getPersistenceBuilder();
     }
 
     public function tearDown()
@@ -34,7 +34,7 @@ class DataPreparerTest extends BaseTest
     }
 
     /**
-     * Provides data for @see DataPreparerTest::testPrepareInsertData()
+     * Provides data for @see PersistenceBuilderTest::testPrepareInsertData()
      * Returns arrays of array(document => expected data)
      *
      * @return array

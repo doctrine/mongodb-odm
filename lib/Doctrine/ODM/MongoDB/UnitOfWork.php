@@ -28,7 +28,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Event\LifecycleEventArgs,
     Doctrine\ODM\MongoDB\Event\PreLoadEventArgs,
     Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\ODM\MongoDB\Persisters\DataPreparer,
+    Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\NotifyPropertyChanged,
     Doctrine\Common\PropertyChangedListener,
@@ -251,14 +251,14 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Factory for returning new DataPreparer instances used for preparing data into
+     * Factory for returning new PersistenceBuilder instances used for preparing data into
      * queries for insert persistence.
      *
-     * @return DataPreparer $dp
+     * @return PersistenceBuilder $pb
      */
-    public function getDataPreparer()
+    public function getPersistenceBuilder()
     {
-        return new DataPreparer($this->dm, $this, $this->dm->getConfiguration()->getMongoCmd());
+        return new PersistenceBuilder($this->dm, $this, $this->dm->getConfiguration()->getMongoCmd());
     }
 
     /**
@@ -304,8 +304,8 @@ class UnitOfWork implements PropertyChangedListener
     {
         if ( ! isset($this->persisters[$documentName])) {
             $class = $this->dm->getClassMetadata($documentName);
-            $dp = $this->getDataPreparer();
-            $this->persisters[$documentName] = new Persisters\DocumentPersister($dp, $this->dm, $class);
+            $pb = $this->getPersistenceBuilder();
+            $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $class);
         }
         return $this->persisters[$documentName];
     }
@@ -319,8 +319,8 @@ class UnitOfWork implements PropertyChangedListener
     public function getCollectionPersister(array $mapping)
     {
         if ( ! isset($this->collectionPersister)) {
-            $dp = $this->getDataPreparer();
-            $this->collectionPersister = new Persisters\CollectionPersister($this->dm, $dp, $this, $this->dm->getConfiguration()->getMongoCmd());
+            $pb = $this->getPersistenceBuilder();
+            $this->collectionPersister = new Persisters\CollectionPersister($this->dm, $pb, $this, $this->dm->getConfiguration()->getMongoCmd());
         }
         return $this->collectionPersister;
     }

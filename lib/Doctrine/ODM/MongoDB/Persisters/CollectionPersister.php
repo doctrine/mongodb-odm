@@ -21,7 +21,7 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\Persisters\DataPreparer,
+    Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder,
     Doctrine\ODM\MongoDB\UnitOfWork,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
@@ -46,11 +46,11 @@ class CollectionPersister
     private $dm;
 
     /**
-     * The DataPreparer instance.
+     * The PersistenceBuilder instance.
      *
-     * @var Doctrine\ODM\MongoDB\Persisters\DataPreparer
+     * @var Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder
      */
-    private $dp;
+    private $pb;
 
     /**
      * Mongo command prefix
@@ -63,14 +63,14 @@ class CollectionPersister
      * Contructs a new CollectionPersister instance.
      *
      * @param DocumentManager $dm
-     * @param DataPreparer $dp
+     * @param PersistenceBuilder $pb
      * @param UnitOfWork $uow
      * @param string $cmd
      */
-    public function __construct(DocumentManager $dm, DataPreparer $dp, UnitOfWork $uow, $cmd)
+    public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow, $cmd)
     {
         $this->dm = $dm;
-        $this->dp = $dp;
+        $this->dp = $pb;
         $this->uow = $uow;
         $this->cmd = $cmd;
     }

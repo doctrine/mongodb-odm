@@ -4,7 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
-use Doctrine\ODM\MongoDB\Persisters\DataPreparer;
+use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 
 class CollectionPersisterTest extends BaseTest
 {
@@ -149,8 +149,8 @@ class CollectionPersisterTest extends BaseTest
     private function getCollectionPersister()
     {
         $uow = $this->dm->getUnitOfWork();
-        $dp = new DataPreparer($this->dm, $uow, '$');
-        return new CollectionPersister($this->dm, $dp, $uow, '$');
+        $pb = new PersistenceBuilder($this->dm, $uow, '$');
+        return new CollectionPersister($this->dm, $pb, $uow, '$');
     }
 }
 
