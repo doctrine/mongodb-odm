@@ -93,10 +93,9 @@ class PersistenceBuilder
             // Prepare new document identifier
             if ($class->isIdentifier($mapping['fieldName'])) {
                 if ( ! $class->isIdGeneratorNone() && $new === null) {
-                    $insertData['_id'] = $class->idGenerator->generate($this->dm, $document);
-                } else {
-                    $insertData['_id'] = $this->prepareValue($mapping, $new);
+                    $new = $class->idGenerator->generate($this->dm, $document);
                 }
+                $insertData['_id'] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
                 continue;
             }
             // Skip null values
@@ -208,7 +207,7 @@ class PersistenceBuilder
     }
 
     /**
-     * Prepare a value based on the given array of mapping.
+     * Prepare a value based on the given mapping array.
      *
      * @param array $mapping
      * @param mixed $value
@@ -263,6 +262,8 @@ class PersistenceBuilder
             $this->cmd . 'id' => $id,
             $this->cmd . 'db' => $class->getDB()
         );
+
+        // Store a discriminator value if the referenced document is not mapped explicitely to a targetDocument
         if ( ! isset($referenceMapping['targetDocument'])) {
             $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_name';
             $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search($class->getName(), $referenceMapping['discriminatorMap']) : $class->getName();
@@ -294,11 +295,10 @@ class PersistenceBuilder
             // Generate embedded document identifiers
             if ($class->isIdentifier($mapping['fieldName'])) {
                 if ( ! $class->isIdGeneratorNone() && $rawValue === null) {
-                    $embeddedDocumentValue['_id'] = $class->idGenerator->generate($this->dm, $embeddedDocument);
-                    $class->setIdentifierValue($embeddedDocument, $embeddedDocumentValue['_id']);
-                } else {
-                    $embeddedDocumentValue['_id'] = $this->prepareValue($mapping, $rawValue);
+                    $rawValue = $class->idGenerator->generate($this->dm, $embeddedDocument);
+                    $class->setIdentifierValue($embeddedDocument, $rawValue);
                 }
+                $embeddedDocumentValue['_id'] = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
                 continue;
             }
 
@@ -312,14 +312,6 @@ class PersistenceBuilder
             } elseif (isset($mapping['embedded']) && $mapping['type'] == 'many') {
                 // do nothing for embedded many
                 // CollectionPersister will take care of this
-            } elseif (isset($mapping['reference']) && $mapping['type'] == 'many') {
-                $value = null;
-                if ($rawValue) {
-                    $value = array();
-                    foreach ($rawValue as $referencedDoc) {
-                        $value[] = $this->prepareReferencedDocValue($mapping, $referencedDoc);
-                    }
-                }
             } elseif (isset($mapping['reference']) && $mapping['type'] === 'one') {
                 $value = $this->prepareReferencedDocValue($mapping, $rawValue);
             } else {
@@ -330,11 +322,14 @@ class PersistenceBuilder
             }
             $embeddedDocumentValue[$mapping['name']] = $value;
         }
+
+        // Store a discriminator value if the embedded document is not mapped explicitely to a targetDocument
         if ( ! isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_name';
             $discriminatorValue = isset($embeddedMapping['discriminatorMap']) ? array_search($class->getName(), $embeddedMapping['discriminatorMap']) : $class->getName();
             $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
         }
+
         // Fix so that we can force empty embedded document to store itself as a hash instead of an array
         if (empty($embeddedDocumentValue)) {
             return (object) $embeddedDocumentValue;

@@ -36,8 +36,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\LockMode;
 
 /**
- * The DocumentPersister is responsible for actual persisting the calculated
- * changesets performed by the UnitOfWork.
+ * The DocumentPersister is responsible for persisting documents.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

@@ -26,8 +26,13 @@ use Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
- * The CollectionPersister is responsible for inserting, updating and deleting collections
- * embedded of referenced documents.
+ * The CollectionPersister is responsible for persisting collections of embedded documents
+ * or referenced documents. When a PersistentCollection is scheduledForDeletion in the UnitOfWork
+ * by calling PersistentCollection::clear() or is de-referenced in the domain application
+ * code it results in a CollectionPersister::delete(). When a single document is removed
+ * from a PersitentCollection it is removed in the call to CollectionPersister::deleteRows()
+ * and new documents added to the PersistentCollection are inserted in the call to
+ * CollectionPersister::insertRows().
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
