@@ -25,7 +25,7 @@ class MODM42Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNotNull($dir);
         $this->assertEquals(2, count($dir->getFiles()));
         foreach($dir->getFiles() as $file) {
-            $this->assertInstanceOf('Doctrine\ODM\MongoDB\MongoGridFSFile', $file->getMongoFile());
+            $this->assertInstanceOf('Doctrine\MongoDB\GridFSFile', $file->getMongoFile());
         }
     }
 }

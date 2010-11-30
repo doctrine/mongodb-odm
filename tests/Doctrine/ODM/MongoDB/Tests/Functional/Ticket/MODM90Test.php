@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\ODMEvents;
+use Doctrine\ODM\MongoDB\Events;
 
 class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -11,8 +11,8 @@ class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->listener = new MODM90EventListener();
         $evm = $this->dm->getEventManager();
         $events = array(
-            ODMEvents::preUpdate,
-            ODMEvents::postUpdate,
+            Events::preUpdate,
+            Events::postUpdate,
         );
         $evm->addEventListener($events, $this->listener);
         return $this->dm;

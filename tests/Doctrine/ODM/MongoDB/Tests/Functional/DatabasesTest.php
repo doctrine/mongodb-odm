@@ -8,7 +8,7 @@ use Doctrine\Common\ClassLoader,
     Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mongo,
+    Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
     Documents\Ecommerce\ConfigurableProduct,
     Documents\Ecommerce\StockItem,
@@ -32,12 +32,12 @@ class DatabasesTest extends \PHPUnit_Framework_TestCase
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
         $config->setDefaultDB('testing');
 
-        $this->dm = DocumentManager::create(new Mongo(), $config);
+        $this->dm = DocumentManager::create(new Connection(), $config);
     }
 
     public function testDefaultDatabase()
     {
-        $this->assertEquals('testing', $this->dm->getDocumentDB('Doctrine\ODM\MongoDB\Tests\Functional\DefaultDatabaseTest')->getName());
+        $this->assertEquals('testing', $this->dm->getDocumentDatabase('Doctrine\ODM\MongoDB\Tests\Functional\DefaultDatabaseTest')->getName());
     }
 }
 

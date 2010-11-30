@@ -15,38 +15,62 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
-*/
+ */
 
-namespace Doctrine\ODM\MongoDB\Event;
+namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\EventArgs;
+use \MongoCursor;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
- * Collection event args
+ * Cursor
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class CollectionEventArgs extends EventArgs
+class Cursor extends \Doctrine\MongoDB\Cursor
 {
-    private $invoker;
-    private $data;
+    private $hydrate = true;
 
-    public function __construct($invoker, &$data)
+    /**
+     * The UnitOfWork used to coordinate object-level transactions.
+     *
+     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     */
+    private $unitOfWork;
+
+    /**
+     * The ClassMetadata instance.
+     *
+     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     */
+    private $class;
+
+    /** @override */
+    public function __construct(MongoCursor $mongoCursor, UnitOfWork $uow, ClassMetadata $class)
     {
-        $this->invoker = $invoker;
-        $this->data = $data;
+        $this->mongoCursor = $mongoCursor;
+        $this->unitOfWork = $uow;
+        $this->class = $class;
     }
 
-    public function getInvoker()
+    public function current()
     {
-        return $this->invoker;
+        $current = $this->mongoCursor->current();
+        if ($current && $this->hydrate) {
+            return $this->unitOfWork->getOrCreateDocument($this->class->name, $current);
+        }
+        return $current ? $current : null;
     }
 
-    public function getData()
+    public function hydrate($bool = null)
     {
-        return $this->data;
+        if ($bool !== null) {
+            $this->hydrate = $bool;
+        }
+        return $this->hydrate;
     }
 }

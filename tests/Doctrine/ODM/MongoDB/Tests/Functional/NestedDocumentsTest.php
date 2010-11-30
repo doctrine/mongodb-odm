@@ -68,6 +68,7 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $category = $this->dm->find(__NAMESPACE__.'\Category', $category->getId());
+        $this->assertNotNull($category);
         $category->setName('Root Changed');
         $children = $category->getChildren();
 

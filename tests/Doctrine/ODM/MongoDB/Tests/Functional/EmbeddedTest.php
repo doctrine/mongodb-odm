@@ -348,6 +348,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find('Documents\User', $user->getId());
+        $this->assertNotNull($user);
         $address = $user->getAddress();
         $address->setAddress('changed');
 

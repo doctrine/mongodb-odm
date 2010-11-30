@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\ODMEvents,
+use Doctrine\ODM\MongoDB\Events,
     Doctrine\Common\Collections\ArrayCollection;
 
 class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest

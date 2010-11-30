@@ -32,7 +32,7 @@ namespace Doctrine\ODM\MongoDB;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-final class ODMEvents
+final class Events
 {
     private function __construct() {}
 
@@ -130,7 +130,7 @@ final class ODMEvents
      * @var string
      */
     const loadClassMetadata = 'loadClassMetadata';
-    
+
     /**
      * The onFlush event occurs when the DocumentManager#flush() operation is invoked,
      * after any changes to managed documents have been determined but before any

@@ -2,26 +2,17 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\Common\ClassLoader,
-    Doctrine\Common\Cache\ApcCache,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\Configuration,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mongo,
-    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
-    Documents\Account,
-    Documents\Address,
-    Documents\Group,
-    Documents\Phonenumber,
-    Documents\Profile,
-    Documents\File,
-    Documents\User;
-
+use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\Mocks\MetadataDriverMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
-use Doctrine\ODM\MongoDB\Tests\Mocks\MongoMock;
+use Doctrine\ODM\MongoDB\Tests\Mocks\ConnectionMock;
 use Doctrine\Common\EventManager;
+use Doctrine\MongoDB\Connection;
 
 abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,7 +39,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/Documents');
         $config->setMetadataDriverImpl($this->annotationDriver);
 
-        $this->dm = DocumentManager::create(new Mongo(), $config);
+        $conn = new Connection(null, array(), $config);
+        $this->dm = DocumentManager::create($conn, $config);
         $this->uow = $this->dm->getUnitOfWork();
     }
 
@@ -57,7 +49,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         if ($metadataDriver === null) {
             $metadataDriver = new MetadataDriverMock();
         }
-        $mongoMock = new MongoMock();
+        $mongoMock = new ConnectionMock();
         $config = new \Doctrine\ODM\MongoDB\Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\ODM\MongoDB\Tests\Proxies');
@@ -71,7 +63,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         if ($this->dm) {
-            $mongo = $this->dm->getMongo();
+            $mongo = $this->dm->getConnection();
             $dbs = $mongo->listDBs();
             foreach ($dbs['databases'] as $db) {
                 $collections = $mongo->selectDB($db['name'])->listCollections();
@@ -79,7 +71,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
                     $collection->drop();
                 }
             }
-            $this->dm->getMongo()->close();
+            $this->dm->getConnection()->close();
         }
     }
 

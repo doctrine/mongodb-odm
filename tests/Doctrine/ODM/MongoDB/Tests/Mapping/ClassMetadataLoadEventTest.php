@@ -3,7 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\ODMEvents;
+use Doctrine\ODM\MongoDB\Events;
 
 class ClassMetadataLoadEventTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -11,7 +11,7 @@ class ClassMetadataLoadEventTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $metadataFactory = $this->dm->getMetadataFactory();
         $evm = $this->dm->getEventManager();
-        $evm->addEventListener(ODMEvents::loadClassMetadata, $this);
+        $evm->addEventListener(Events::loadClassMetadata, $this);
         $classMetadata = $metadataFactory->getMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\LoadEventTestDocument');
         $this->assertTrue($classMetadata->hasField('about'));
     }

@@ -114,10 +114,10 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $classMetadata->expects($this->once())
             ->method('getCollectionMax');
 
-        $documentDB = $this->getDocumentDB($className);
-        $documentDB->expects($this->once())
+        $documentDatabase = $this->getDocumentDatabase($className);
+        $documentDatabase->expects($this->once())
             ->method('createCollection');
-        $this->dm->setDocumentDB($className, $documentDB);
+        $this->dm->setDocumentDatabase($className, $documentDatabase);
 
         $this->dm->setClassMetadata($className, $classMetadata);
 
@@ -132,10 +132,10 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $metadatas = array();
         foreach ($classes as $className) {
             $metadatas[] = (object) array('name' => $className, 'isMappedSuperclass' => false, 'isEmbeddedDocument' => false);
-            $documentDB = $this->getDocumentDB($className);
-            $documentDB->expects($this->once())
+            $documentDatabase = $this->getDocumentDatabase($className);
+            $documentDatabase->expects($this->once())
                 ->method('createCollection');
-            $this->dm->setDocumentDB($className, $documentDB);
+            $this->dm->setDocumentDatabase($className, $documentDatabase);
         }
 
         $metadataFactory = $this->getMetadataFactory();
@@ -160,11 +160,11 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $metadata->expects($this->once())
                 ->method('getCollection')
                 ->will($this->returnValue($className));
-            $documentDB = $this->getDocumentDB($className);
-            $documentDB->expects($this->once())
+            $documentDatabase = $this->getDocumentDatabase($className);
+            $documentDatabase->expects($this->once())
                 ->method('dropCollection')
                 ->with($className);
-            $this->dm->setDocumentDB($className, $documentDB);
+            $this->dm->setDocumentDatabase($className, $documentDatabase);
             $this->dm->setClassMetadata($className, $metadata);
             $metadatas[] = $metadata;
         }
@@ -189,11 +189,11 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->method('getCollection')
             ->will($this->returnValue($collectionName));
 
-        $documentDB = $this->getDocumentDB($className);
-        $documentDB->expects($this->once())
+        $documentDatabase = $this->getDocumentDatabase($className);
+        $documentDatabase->expects($this->once())
             ->method('dropCollection')
             ->with($collectionName);
-        $this->dm->setDocumentDB($className, $documentDB);
+        $this->dm->setDocumentDatabase($className, $documentDatabase);
 
         $this->dm->setClassMetadata($className, $classMetadata);
 
@@ -204,10 +204,10 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $className = 'Documents\CmsArticle';
         $dbName = 'test_db';
-        $documentDB = $this->getDocumentDB($className);
-        $documentDB->expects($this->once())
+        $documentDatabase = $this->getDocumentDatabase($className);
+        $documentDatabase->expects($this->once())
             ->method('execute');
-        $this->dm->setDocumentDB($className, $documentDB);
+        $this->dm->setDocumentDatabase($className, $documentDatabase);
 
         $this->dm->getSchemaManager()->createDocumentDatabase($className);
     }
@@ -217,10 +217,10 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $className = 'Documents\CmsArticle';
         $dbName = 'test_db';
 
-        $documentDB = $this->getDocumentDB($className);
-        $documentDB->expects($this->once())
+        $documentDatabase = $this->getDocumentDatabase($className);
+        $documentDatabase->expects($this->once())
             ->method('drop');
-        $this->dm->setDocumentDB($className, $documentDB);
+        $this->dm->setDocumentDatabase($className, $documentDatabase);
 
         $this->dm->getSchemaManager()->dropDocumentDatabase($className);
     }
@@ -232,10 +232,10 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $metadatas = array();
         foreach ($classes as $className) {
-            $documentDB = $this->getDocumentDB($className);
-            $documentDB->expects($this->once())
+            $documentDatabase = $this->getDocumentDatabase($className);
+            $documentDatabase->expects($this->once())
                 ->method('drop');
-            $this->dm->setDocumentDB($className, $documentDB);
+            $this->dm->setDocumentDatabase($className, $documentDatabase);
             $metadatas[] = (object) array('name' => $className, 'isMappedSuperclass' => false, 'isEmbeddedDocument' => false);
         }
 
@@ -261,12 +261,12 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/../../../../Documents'));
-        return DocumentManagerMock::create($this->getMongo(), $config);
+        return DocumentManagerMock::create($this->getConnection(), $config);
     }
 
-    protected function getMongo()
+    protected function getConnection()
     {
-        return $this->getMock('Doctrine\ODM\MongoDB\Mongo', array('selectDB'), array(), '', false, false);
+        return $this->getMock('Doctrine\MongoDB\Connection', array('selectDB'), array(), '', false, false);
     }
 
     protected function getMetadataFactory()
@@ -283,12 +283,12 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     protected function getDocumentCollection()
     {
-        return $this->getMock('Doctrine\ODM\MongoDB\MongoCollection', array('ensureIndex', 'deleteIndex', 'deleteIndexes'), array(), '', false, false);
+        return $this->getMock('Doctrine\MongoDB\Collection', array('ensureIndex', 'deleteIndex', 'deleteIndexes'), array(), '', false, false);
     }
 
-    protected function getDocumentDB($className)
+    protected function getDocumentDatabase($className)
     {
-        $documentDB = $this->getMock('MongoDB', array('authenticate', 'command', 'createCollection', 'createDBRef', 'drop', 'dropCollection', 'execute', 'forceError', 'getDBRef', '__get', 'getGridFS', 'getProfilingLevel', 'getLastError'), array(), '', false, false);
-        return $documentDB;
+        $documentDatabase = $this->getMock('Doctrine\MongoDB\Database', array('authenticate', 'command', 'createCollection', 'createDBRef', 'drop', 'dropCollection', 'execute', 'forceError', 'getDatabaseRef', '__get', 'getGridFS', 'getProfilingLevel', 'getLastError'), array(), '', false, false);
+        return $documentDatabase;
     }
 }

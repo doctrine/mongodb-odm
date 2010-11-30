@@ -94,7 +94,7 @@ class FindAndUpdateQuery extends AbstractQuery
         if ($this->limit) {
             $command['num'] = $this->limit;
         }
-        $result = $this->dm->getDocumentDB($this->class->name)
+        $result = $this->dm->getDocumentDatabase($this->class->name)
             ->command($command);
         if (isset($result['value'])) {
             return $this->dm->getUnitOfWork()->getOrCreateDocument(

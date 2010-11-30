@@ -4,7 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Tests\Mocks\MetadataDriverMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
-use Doctrine\ODM\MongoDB\Tests\Mocks\MongoMock;
+use Doctrine\ODM\MongoDB\Tests\Mocks\ConnectionMock;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Common\EventManager;
 
@@ -68,7 +68,7 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     protected function _createDocumentManager($metadataDriver)
     {
-        $mongoMock = new MongoMock();
+        $connMock = new ConnectionMock();
         $config = new \Doctrine\ODM\MongoDB\Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\ODM\MongoDB\Tests\Proxies');
@@ -76,7 +76,7 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $mockDriver = new MetadataDriverMock();
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return DocumentManagerMock::create($mongoMock, $config, $eventManager);
+        return DocumentManagerMock::create($connMock, $config, $eventManager);
     }
 }
 

@@ -22,7 +22,8 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Hydrator,
     Doctrine\ODM\MongoDB\Query\AbstractQuery,
-    Doctrine\ODM\MongoDB\Query\Expr;
+    Doctrine\ODM\MongoDB\Query\Expr,
+    Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
  * Query object that represents a query using a documents MongoCollection::find()
@@ -46,6 +47,13 @@ class QueryBuilder
      * @var DocumentManager
      */
     private $dm;
+
+    /**
+     * The UnitOfWork used to coordinate object-level transactions.
+     *
+     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     */
+    private $unitOfWork;
 
     /**
      * The Document class name being queried
@@ -111,7 +119,7 @@ class QueryBuilder
     private $group = array();
 
     /**
-     * Pass hints to the MongoCursor
+     * Pass hints to the Cursor
      *
      * @var array
      */
@@ -196,9 +204,10 @@ class QueryBuilder
      * @param DocumentManager $dm
      * @param string $className
      */
-    public function __construct(DocumentManager $dm, Hydrator $h, $cmd, $className = null)
+    public function __construct(DocumentManager $dm, UnitOfWork $uow, Hydrator $h, $cmd, $className = null)
     {
         $this->dm = $dm;
+        $this->unitOfWork = $uow;
         $this->hydrator = $h;
         $this->cmd = $cmd;
         $this->expr = new Query\Expr($dm, $cmd);
@@ -276,7 +285,7 @@ class QueryBuilder
     }
 
     /**
-     * Pass a hint to the MongoCursor
+     * Pass a hint to the Cursor
      *
      * @param string $keyPattern
      * @return Query
@@ -681,7 +690,7 @@ class QueryBuilder
     }
 
     /**
-     * Set the Document limit for the MongoCursor
+     * Set the Document limit for the Cursor
      *
      * @param string $limit
      * @return Query
@@ -693,7 +702,7 @@ class QueryBuilder
     }
 
     /**
-     * Set the number of Documents to skip for the MongoCursor
+     * Set the number of Documents to skip for the Cursor
      *
      * @param string $skip
      * @return Query
@@ -986,19 +995,19 @@ class QueryBuilder
         switch ($this->type) {
             case QueryBuilder::TYPE_FIND;
                 if ($this->distinctField !== null) {
-                    $query = new Query\DistinctFieldQuery($this->dm, $this->class, $this->cmd);
+                    $query = new Query\DistinctFieldQuery($this->dm, $this->unitOfWork, $this->class, $this->cmd);
                     $query->setDistinctField($this->distinctField);
                     $query->setQuery($this->expr->getQuery());
                     return $query;
                 } elseif ($this->near !== null) {
-                    $query = new Query\GeoLocationFindQuery($this->dm, $this->class, $this->cmd);
+                    $query = new Query\GeoLocationFindQuery($this->dm, $this->unitOfWork, $this->class, $this->cmd);
                     $query->setQuery($this->expr->getQuery());
                     $query->setNear($this->near);
                     $query->setLimit($this->limit);
                     $query->setHydrate($this->hydrate);
                     return $query;
                 } else if (isset($this->mapReduce['map']) && $this->mapReduce['reduce']) {
-                    $query = new Query\MapReduceQuery($this->dm, $this->class, $this->cmd);
+                    $query = new Query\MapReduceQuery($this->dm, $this->unitOfWork, $this->class, $this->cmd);
                     $query->setQuery($this->expr->getQuery());
                     $query->setMap(isset($this->mapReduce['map']) ? $this->mapReduce['map'] : null);
                     $query->setReduce(isset($this->mapReduce['reduce']) ? $this->mapReduce['reduce'] : null);
@@ -1015,7 +1024,7 @@ class QueryBuilder
                     $query->setHints($this->hints);
                     return $query;
                 } else {
-                    $query = new Query\FindQuery($this->dm, $this->class, $this->cmd);
+                    $query = new Query\FindQuery($this->dm, $this->unitOfWork, $this->class, $this->cmd);
                     $query->setReduce(isset($this->mapReduce['reduce']) ? $this->mapReduce['reduce'] : null);
                     $query->setSelect($this->select);
                     $query->setQuery($this->expr->getQuery());
@@ -1032,14 +1041,14 @@ class QueryBuilder
                 break;
             case QueryBuilder::TYPE_REMOVE;
                 if ($this->findAndModify !== false) {
-                    $query = new Query\FindAndRemoveQuery($this->dm, $this->class, $this->cmd);
+                    $query = new Query\FindAndRemoveQuery($this->dm, $this->unitOfWork, $this->class, $this->cmd);
                     $query->setSelect($this->select);
                     $query->setQuery($this->expr->getQuery());
                     $query->setSort($this->sort);
                     $query->setLimit($this->limit);
                     return $query;
                 } else {
-                    $query = new Query\RemoveQuery($this->dm, $this->class, $this->cmd);
+                    $query = new Query\RemoveQuery($this->dm, $this->unitOfWork, $this->class, $this->cmd);
                     $query->setQuery($this->expr->getQuery());
                     return $query;
                 }
@@ -1047,7 +1056,7 @@ class QueryBuilder
 
             case QueryBuilder::TYPE_UPDATE;
                 if ($this->findAndModify !== false) {
-                    $query = new Query\FindAndUpdateQuery($this->dm, $this->class, $this->cmd);
+                    $query = new Query\FindAndUpdateQuery($this->dm, $this->unitOfWork, $this->class, $this->cmd);
                     $query->setSelect($this->select);
                     $query->setQuery($this->expr->getQuery());
                     $query->setNewObj($this->expr->getNewObj());
@@ -1057,7 +1066,7 @@ class QueryBuilder
                     $query->setLimit($this->limit);
                     return $query;
                 } else {
-                    $query = new Query\UpdateQuery($this->dm, $this->class, $this->cmd);
+                    $query = new Query\UpdateQuery($this->dm, $this->unitOfWork, $this->class, $this->cmd);
                     $query->setQuery($this->expr->getQuery());
                     $query->setNewObj($this->expr->getNewObj());
                     return $query;
@@ -1065,13 +1074,13 @@ class QueryBuilder
                 break;
 
             case QueryBuilder::TYPE_INSERT;
-                $query = new Query\InsertQuery($this->dm, $this->class, $this->cmd);
+                $query = new Query\InsertQuery($this->dm, $this->unitOfWork, $this->class, $this->cmd);
                 $query->setNewObj($this->expr->getNewObj());
                 return $query;
                 break;
 
             case QueryBuilder::TYPE_GROUP;
-                $query = new Query\GroupQuery($this->dm, $this->class, $this->cmd);
+                $query = new Query\GroupQuery($this->dm, $this->unitOfWork, $this->class, $this->cmd);
                 $query->setKeys($this->group['keys']);
                 $query->setInitial($this->group['initial']);
                 $query->setReduce($this->mapReduce['reduce']);

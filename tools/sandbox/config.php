@@ -6,7 +6,7 @@ use Doctrine\Common\ClassLoader,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
-    Doctrine\ODM\MongoDB\Mongo,
+    Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\DocumentManager;
 
 $classLoader = new ClassLoader('Doctrine\Common', __DIR__ . '/../../lib/vendor/doctrine-common/lib');
@@ -38,4 +38,4 @@ $reader = new AnnotationReader();
 $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
 $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
-$dm = DocumentManager::create(new Mongo(), $config);
+$dm = DocumentManager::create(new Connection(), $config);

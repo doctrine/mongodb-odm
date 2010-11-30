@@ -16,9 +16,9 @@ class DbNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $expectedDbName = 'test_doctrine_odm_tests';
 
-        $this->assertEquals($meta['account']->getDB(),     $expectedDbName);
-        $this->assertEquals($meta['user']->getDB(),        $expectedDbName);
-        $this->assertEquals($meta['specialUser']->getDB(), $expectedDbName);
+        $this->assertEquals($meta['account']->getDatabase(),     $expectedDbName);
+        $this->assertEquals($meta['user']->getDatabase(),        $expectedDbName);
+        $this->assertEquals($meta['specialUser']->getDatabase(), $expectedDbName);
     }
 
     public function testSuffixDbName()
@@ -29,9 +29,9 @@ class DbNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $expectedDbName = 'doctrine_odm_tests_test';
 
-        $this->assertEquals($meta['account']->getDB(),     $expectedDbName);
-        $this->assertEquals($meta['user']->getDB(),        $expectedDbName);
-        $this->assertEquals($meta['specialUser']->getDB(), $expectedDbName);
+        $this->assertEquals($meta['account']->getDatabase(),     $expectedDbName);
+        $this->assertEquals($meta['user']->getDatabase(),        $expectedDbName);
+        $this->assertEquals($meta['specialUser']->getDatabase(), $expectedDbName);
     }
 
     public function testPrefixAndSuffixDbName()
@@ -43,9 +43,9 @@ class DbNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $expectedDbName = 'test_doctrine_odm_tests_test';
 
-        $this->assertEquals($meta['account']->getDB(),     $expectedDbName);
-        $this->assertEquals($meta['user']->getDB(),        $expectedDbName);
-        $this->assertEquals($meta['specialUser']->getDB(), $expectedDbName);
+        $this->assertEquals($meta['account']->getDatabase(),     $expectedDbName);
+        $this->assertEquals($meta['user']->getDatabase(),        $expectedDbName);
+        $this->assertEquals($meta['specialUser']->getDatabase(), $expectedDbName);
     }
 
     public function testPersist()
@@ -60,7 +60,7 @@ class DbNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertTrue(!is_null($account->getId()));
 
-        $mongo = $this->dm->getMongo()->getMongo();
+        $mongo = $this->dm->getConnection()->getConnection();
 
         $testAccount = $mongo->test_doctrine_odm_tests
             ->accounts

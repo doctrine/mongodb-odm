@@ -234,7 +234,7 @@ class Expr
         $reference = array(
             $this->cmd . 'ref' => $class->getCollection(),
             $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($class->getIdentifierValue($document)),
-            $this->cmd . 'db'  => $class->getDB()
+            $this->cmd . 'db'  => $class->getDatabase()
         );
 
         if ($this->currentField) {

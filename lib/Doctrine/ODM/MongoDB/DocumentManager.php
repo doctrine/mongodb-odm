@@ -24,7 +24,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
     Doctrine\ODM\MongoDB\Query,
     Doctrine\ODM\MongoDB\QueryBuilder,
-    Doctrine\ODM\MongoDB\Mongo,
+    Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
     Doctrine\Common\Collections\ArrayCollection,
@@ -37,7 +37,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
  *     <?php
  *
  *     $config = new Configuration();
- *     $dm = DocumentManager::create(new Mongo(), $config);
+ *     $dm = DocumentManager::create(new Connection(), $config);
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
@@ -48,11 +48,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
 class DocumentManager
 {
     /**
-     * The Doctrine Mongo wrapper instance
+     * The Doctrine MongoDB connection instance.
      *
-     * @var Doctrine\ODM\MongoDB\Mongo
+     * @var Doctrine\MongoDB\Connection
      */
-    private $mongo;
+    private $connection;
 
     /**
      * The used Configuration.
@@ -104,13 +104,6 @@ class DocumentManager
     private $schemaManager;
 
     /**
-     * Array of cached MongoDB instances that are lazily loaded.
-     *
-     * @var array
-     */
-    private $documentDBs = array();
-
-    /**
      * Array of cached MongoCollection instances that are lazily loaded.
      *
      * @var array
@@ -126,18 +119,15 @@ class DocumentManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
-     * @param Doctrine\ODM\MongoDB\Mongo $mongo
+     * @param Doctrine\MongoDB\Connection $conn
      * @param Doctrine\ODM\MongoDB\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(Mongo $mongo = null, Configuration $config = null, EventManager $eventManager = null)
+    protected function __construct(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
     {
-        if (is_string($mongo) || $mongo instanceof \Mongo) {
-            $mongo = new Mongo($mongo);
-        }
-        $this->mongo = $mongo ? $mongo : new Mongo();
         $this->config = $config ? $config : new Configuration();
         $this->eventManager = $eventManager ? $eventManager : new EventManager();
+        $this->connection = $conn ? $conn : new Connection(null, array(), $this->config, $this->eventManager);
         $this->hydrator = new Hydrator($this, $this->eventManager, $this->config->getMongoCmd());
         $this->metadataFactory = new ClassMetadataFactory($this);
         if ($cacheDriver = $this->config->getMetadataCacheImpl()) {
@@ -165,13 +155,13 @@ class DocumentManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
-     * @param Doctrine\ODM\MongoDB\Mongo $mongo
+     * @param Doctrine\MongoDB\Connection $conn
      * @param Doctrine\ODM\MongoDB\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
-    public static function create(Mongo $mongo = null, Configuration $config = null, EventManager $eventManager = null)
+    public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
     {
-        return new DocumentManager($mongo, $config, $eventManager);
+        return new DocumentManager($conn, $config, $eventManager);
     }
 
     /**
@@ -187,9 +177,9 @@ class DocumentManager
     /**
      * Gets the PHP Mongo instance that this DocumentManager wraps.
      */
-    public function getMongo()
+    public function getConnection()
     {
-        return $this->mongo;
+        return $this->connection;
     }
 
     /**
@@ -249,50 +239,40 @@ class DocumentManager
      * Returns the MongoDB instance for a class.
      *
      * @param string $className The class name.
-     * @return Doctrine\ODM\MongoDB\MongoDB
+     * @return Doctrine\MongoDB\Database
      */
-    public function getDocumentDB($className)
+    public function getDocumentDatabase($className)
     {
-        $db = $this->metadataFactory->getMetadataFor($className)->getDB();
+        $db = $this->metadataFactory->getMetadataFor($className)->getDatabase();
         $db = $db ? $db : $this->config->getDefaultDB();
         $db = $db ? $db : 'doctrine';
         $db = sprintf('%s%s', $this->config->getEnvironmentPrefix(), $db);
-        if ($db && ! isset($this->documentDBs[$db])) {
-            $database = $this->mongo->selectDB($db);
-            $this->documentDBs[$db] = new MongoDB($database);
-        }
-        if ( ! isset($this->documentDBs[$db])) {
-            throw MongoDBException::documentNotMappedToDB($className);
-        }
-        return $this->documentDBs[$db];
+        return $this->connection->selectDB($db);
     }
 
     /**
      * Returns the MongoCollection instance for a class.
      *
      * @param string $className The class name.
-     * @return Doctrine\ODM\MongoDB\MongoCollection
+     * @return Doctrine\MongoDB\Collection
      */
     public function getDocumentCollection($className)
     {
         $metadata = $this->metadataFactory->getMetadataFor($className);
-        $db = $metadata->getDB();
+        $db = $metadata->getDatabase();
         $collection = $metadata->getCollection();
-        $key = $db . '.' . $collection . '.' . $className;
-        if ($collection && ! isset($this->documentCollections[$key])) {
-            $db = $this->getDocumentDB($className);
-            if ($metadata->isFile()) {
-                $collection = $db->getGridFS($collection);
-            } else {
-                $collection = $db->selectCollection($collection);
-            }
-            $mongoCollection = new MongoCollection($this, $collection, $db, $metadata, $this->eventManager, $this->config);
-            $this->documentCollections[$key] = $mongoCollection;
-        }
-        if ( ! isset($this->documentCollections[$key])) {
+
+        if ( ! $collection) {
             throw MongoDBException::documentNotMappedToCollection($className);
         }
-        return $this->documentCollections[$key];
+
+        $db = $this->getDocumentDatabase($className);
+        if ($metadata->isFile()) {
+            $collection = $db->getGridFS($collection);
+        } else {
+            $collection = $db->selectCollection($collection);
+        }
+        return $collection;
     }
 
     /**
@@ -303,7 +283,7 @@ class DocumentManager
      */
     public function createQueryBuilder($documentName = null)
     {
-        return new QueryBuilder($this, $this->hydrator, $this->config->getMongoCmd(), $documentName);
+        return new QueryBuilder($this, $this->unitOfWork, $this->hydrator, $this->config->getMongoCmd(), $documentName);
     }
 
     /**
@@ -582,9 +562,9 @@ class DocumentManager
     public function formatDBName($dbName)
     {
         return sprintf('%s%s%s',
-            $this->config->getDBPrefix(),
+            $this->config->getDatabasePrefix(),
             $dbName,
-            $this->config->getDBSuffix()
+            $this->config->getDatabaseSuffix()
         );
     }
 
@@ -595,7 +575,7 @@ class DocumentManager
         foreach ($classNames as $className) {
             $class = $this->getClassMetadata($className);
             $discriminatorValues[] = $class->discriminatorValue;
-            $key = $class->getDB() . '.' . $class->getCollection();
+            $key = $class->getDatabase() . '.' . $class->getCollection();
             $collections[$key] = $key;
         }
         if (count($collections) > 1) {

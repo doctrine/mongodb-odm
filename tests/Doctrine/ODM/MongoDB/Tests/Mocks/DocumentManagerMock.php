@@ -3,14 +3,15 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
 use Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
-    Doctrine\ODM\MongoDB\Mongo,
+    Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\Common\EventManager,
     Doctrine\ODM\MongoDB\UnitOfWork,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\SchemaManager,
-    Doctrine\ODM\MongoDB\MongoCollection;
+    Doctrine\MongoDB\Collection,
+    Doctrine\MongoDB\Database;
     
 class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
 {
@@ -19,7 +20,7 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
     private $metadataFactory;
     private $schemaManager;
     private $documentCollections = array();
-    private $documentDBs = array();
+    private $documentDatabases = array();
     private $documentMetadatas = array();
 
     public function getUnitOfWork()
@@ -62,7 +63,7 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
         return isset($this->schemaManager) ? $this->schemaManager : parent::getSchemaManager();
     }
 
-    public function setDocumentCollection($documentName, MongoCollection $collection)
+    public function setDocumentCollection($documentName, Collection $collection)
     {
         $this->documentCollections[$documentName] = $collection;
     }
@@ -72,14 +73,14 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
         return isset($this->documentCollections[$documentName]) ? $this->documentCollections[$documentName] : parent::getDocumentCollection($documentName);
     }
 
-    public function setDocumentDB($documentName, \MongoDB $documentDB)
+    public function setDocumentDatabase($documentName, Database $database)
     {
-        $this->documentDBs[$documentName] = $documentDB;
+        $this->documentDatabases[$documentName] = $database;
     }
 
-    public function getDocumentDB($documentName)
+    public function getDocumentDatabase($documentName)
     {
-        return isset($this->documentDBs[$documentName]) ? $this->documentDBs[$documentName] : parent::getDocumentDB($documentName);
+        return isset($this->documentDatabases[$documentName]) ? $this->documentDatabases[$documentName] : parent::getDocumentDatabase($documentName);
     }
 
 
@@ -93,7 +94,7 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
         return isset($this->documentMetadatas[$documentName]) ? $this->documentMetadatas[$documentName] : parent::getClassMetadata($documentName);
     }
 
-    public static function create(Mongo $mongo = null, Configuration $config = null, EventManager $eventManager = null)
+    public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
     {
         if (is_null($config)) {
             $config = new \Doctrine\ODM\MongoDB\Configuration();
@@ -104,6 +105,6 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
         if (is_null($eventManager)) {
             $eventManager = new \Doctrine\Common\EventManager();
         }
-        return new DocumentManagerMock($mongo, $config, $eventManager);   
+        return new DocumentManagerMock($conn, $config, $eventManager);   
     }
 }

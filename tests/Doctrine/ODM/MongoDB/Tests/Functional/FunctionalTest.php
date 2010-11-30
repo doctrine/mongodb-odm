@@ -334,21 +334,24 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $collection = $this->dm->getDocumentCollection('Documents\Functional\AlsoLoad');
         $collection->drop();
-        $collection->insert(array(
+        $doc = array(
             'bar' => 'w00t'
-        ));
+        );
+        $collection->insert($doc);
         $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
         $this->assertEquals('w00t', $document->foo);
 
-        $collection->insert(array(
+        $doc = array(
             'foo' => 'cool'
-        ));
+        );
+        $collection->insert($doc);
         $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
         $this->assertNotNull($document->foo);
 
-        $collection->insert(array(
+        $doc = array(
             'zip' => 'test'
-        ));
+        );
+        $collection->insert($doc);
         $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
         $this->assertNotNull($document->foo);
     }
@@ -357,27 +360,30 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $collection = $this->dm->getDocumentCollection('Documents\Functional\AlsoLoad');
         $collection->drop();
-        $collection->insert(array(
+        $doc = array(
             'name' => 'Jonathan Wage',
             'test1' => 'test1'
-        ));
+        );
+        $collection->insert($doc);
         $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('name' => 'Jonathan Wage'));
         $this->assertEquals('Jonathan', $document->firstName);
         $this->assertEquals('Wage', $document->lastName);
         $this->assertEquals('test1', $document->test);
 
-        $collection->insert(array(
+        $doc = array(
             'fullName' => 'Jonathan Wage',
             'test2' => 'test2'
-        ));
+        );
+        $collection->insert($doc);
         $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('fullName' => 'Jonathan Wage'));
         $this->assertEquals('Jonathan', $document->firstName);
         $this->assertEquals('Wage', $document->lastName);
         $this->assertEquals('test2', $document->test);
 
-        $collection->insert(array(
+        $doc = array(
             'test' => 'test'
-        ));
+        );
+        $collection->insert($doc);
         $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('test' => 'test'));
         $this->assertEquals('test', $document->test);
     }
@@ -657,6 +663,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find('Documents\User', $user->getId());
+        $this->assertNotNull($user);
 
         // remove two of the groups and pass the groups back into the User
         $groups = $user->getGroups();
@@ -694,6 +701,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find('Documents\User', $user->getId());
+        $this->assertNotNull($user);
 
         // Issue is collection must be initialized
         $groups = $user->getGroups();

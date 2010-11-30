@@ -20,7 +20,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetConnection()
     {
-        $this->assertType('\Doctrine\ODM\MongoDB\Mongo', $this->dm->getMongo());
+        $this->assertType('\Doctrine\MongoDB\Connection', $this->dm->getConnection());
     }
 
     public function testGetMetadataFactory()
@@ -131,11 +131,11 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
-        return DocumentManager::create($this->getMongo(), $config);
+        return DocumentManager::create($this->getConnection(), $config);
     }
 
-    protected function getMongo()
+    protected function getConnection()
     {
-        return $this->getMock('Doctrine\ODM\MongoDB\Mongo');
+        return $this->getMock('Doctrine\MongoDB\Connection');
     }
 }

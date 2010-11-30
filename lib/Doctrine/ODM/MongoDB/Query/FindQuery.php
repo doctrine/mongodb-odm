@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
-use Doctrine\ODM\MongoDB\MongoCursor;
+use Doctrine\MongoDB\Cursor;
 
 /**
  * FindQuery
@@ -102,8 +102,7 @@ class FindQuery extends AbstractQuery
         if ($this->reduce) {
             $this->query[$this->cmd . 'where'] = $this->reduce;
         }
-        $cursor = $this->dm->getDocumentCollection($this->class->name)->find($this->query, $this->select, $options);
-        $cursor = new MongoCursor($this->dm, $this->dm->getUnitOfWork(), $this->dm->getHydrator(), $this->class, $this->dm->getConfiguration(), $cursor);
+        $cursor = $this->unitOfWork->getDocumentPersister($this->class->name)->find($this->query, $this->select, $options);
         $cursor->hydrate($this->hydrate);
         $cursor->limit($this->limit);
         $cursor->skip($this->skip);

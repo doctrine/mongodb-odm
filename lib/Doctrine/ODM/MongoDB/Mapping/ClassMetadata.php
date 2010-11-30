@@ -695,7 +695,7 @@ class ClassMetadata
      *
      * @return string $db The database name.
      */
-    public function getDB()
+    public function getDatabase()
     {
         return $this->db;
     }

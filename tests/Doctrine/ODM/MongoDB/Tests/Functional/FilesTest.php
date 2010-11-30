@@ -34,7 +34,7 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($profile);
         $this->dm->flush();
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\MongoGridFSFile', $image->getFile());
+        $this->assertInstanceOf('Doctrine\MongoDB\GridFSFile', $image->getFile());
         $this->assertFalse($image->getFile()->isDirty());
         $this->assertEquals(__DIR__ . '/file.txt', $image->getFile()->getFilename());
         $this->assertTrue(file_exists($image->getFile()->getFilename()));
@@ -45,14 +45,14 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $image = $this->dm->find('Documents\File', $image->getId());
-
+        $this->assertNotNull($image);
         $this->assertEquals('testing', $image->getName());
         $this->assertEquals('These are the bytes...', $image->getFile()->getBytes());
     }
 
     public function testCreateFileWithMongoGridFSFileObject()
     {
-        $file = new \Doctrine\ODM\MongoDB\MongoGridFSFile(__DIR__ . '/file.txt');
+        $file = new \Doctrine\MongoDB\GridFSFile(__DIR__ . '/file.txt');
 
         $image = new File();
         $image->setName('Test');
@@ -77,7 +77,7 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->getSingleResult();
         $image = $profile->getImage();
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\MongoGridFSFile', $image->getFile());
+        $this->assertInstanceOf('Doctrine\MongoDB\GridFSFile', $image->getFile());
         $this->assertEquals('These are the bytes...', $image->getFile()->getBytes());
         $image->getFile()->setFilename(__DIR__ . '/FilesTest.php');
         $this->dm->flush();

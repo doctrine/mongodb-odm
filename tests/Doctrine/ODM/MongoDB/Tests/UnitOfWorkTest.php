@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
-use Doctrine\ODM\MongoDB\Tests\Mocks\MongoMock;
+use Doctrine\ODM\MongoDB\Tests\Mocks\ConnectionMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
 use Documents\ForumUser;
@@ -18,7 +18,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_dmMock = DocumentManagerMock::create(new MongoMock());
+        $this->_dmMock = DocumentManagerMock::create(new ConnectionMock());
         $this->_unitOfWork = $this->_dmMock->getUnitOfWork();
     }
 

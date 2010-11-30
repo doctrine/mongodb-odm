@@ -10,7 +10,7 @@ class MODM50Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($image);
         $this->dm->flush();
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\MongoGridFSFile', $image->file);
+        $this->assertInstanceOf('Doctrine\MongoDB\GridFSFile', $image->file);
     }
 }
 

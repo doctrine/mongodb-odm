@@ -35,7 +35,7 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $users = $this->repository->findAll();
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\MongoArrayIterator', $users);
+        $this->assertInstanceOf('Doctrine\MongoDB\ArrayIterator', $users);
         $this->assertEquals(1, count($users));
     }
 

@@ -22,7 +22,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\MongoDBException,
-    Doctrine\ODM\MongoDB\ODMEvents,
+    Doctrine\ODM\MongoDB\Events,
     Doctrine\Common\Cache\Cache;
 
 /**
@@ -243,18 +243,18 @@ class ClassMetadataFactory
             }
 
             if ($parent && $parent->isInheritanceTypeSingleCollection()) {
-                $class->setDB($parent->getDB());
+                $class->setDB($parent->getDatabase());
                 $class->setCollection($parent->getCollection());
             }
 
-            $db = $class->getDB() ?: $this->dm->getConfiguration()->getDefaultDB();
+            $db = $class->getDatabase() ?: $this->dm->getConfiguration()->getDefaultDB();
             $class->setDB($this->dm->formatDBName($db));
 
             $class->setParentClasses($visited);
 
-            if ($this->evm->hasListeners(ODMEvents::loadClassMetadata)) {
+            if ($this->evm->hasListeners(Events::loadClassMetadata)) {
                 $eventArgs = new \Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs($class, $this->dm);
-                $this->evm->dispatchEvent(ODMEvents::loadClassMetadata, $eventArgs);
+                $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
             }
 
             $this->loadedMetadata[$className] = $class;

@@ -86,12 +86,12 @@ class Hydrator
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
 
-        if (isset($metadata->lifecycleCallbacks[ODMEvents::preLoad])) {
+        if (isset($metadata->lifecycleCallbacks[Events::preLoad])) {
             $args = array(&$data);
-            $metadata->invokeLifecycleCallbacks(ODMEvents::preLoad, $document, $args);
+            $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
-        if ($this->evm->hasListeners(ODMEvents::preLoad)) {
-            $this->evm->dispatchEvent(ODMEvents::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
+        if ($this->evm->hasListeners(Events::preLoad)) {
+            $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
         }
 
         if (isset($metadata->alsoLoadMethods)) {
@@ -117,10 +117,7 @@ class Hydrator
             }
             $value = null;
 
-            if (isset($mapping['file'])) {
-                $value = new MongoGridFSFile($rawValue);
-            // Hydrate embedded
-            } elseif (isset($mapping['embedded'])) {
+            if (isset($mapping['embedded'])) {
                 $uow = $this->dm->getUnitOfWork();
                 if ($mapping['type'] === 'one') {
                     if ($rawValue === null) {
@@ -205,11 +202,11 @@ class Hydrator
             unset($data['_id']);
         }
 
-        if (isset($metadata->lifecycleCallbacks[ODMEvents::postLoad])) {
-            $metadata->invokeLifecycleCallbacks(ODMEvents::postLoad, $document);
+        if (isset($metadata->lifecycleCallbacks[Events::postLoad])) {
+            $metadata->invokeLifecycleCallbacks(Events::postLoad, $document);
         }
-        if ($this->evm->hasListeners(ODMEvents::postLoad)) {
-            $this->evm->dispatchEvent(ODMEvents::postLoad, new LifecycleEventArgs($document, $this->dm));
+        if ($this->evm->hasListeners(Events::postLoad)) {
+            $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
         }
 
         return $document;

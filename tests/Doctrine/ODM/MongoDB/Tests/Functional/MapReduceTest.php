@@ -6,7 +6,7 @@ use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mongo,
+    Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
     Documents\Ecommerce\ConfigurableProduct,
     Documents\Ecommerce\StockItem,
@@ -35,7 +35,7 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
-        $this->dm = DocumentManager::create(new Mongo(), $config);
+        $this->dm = DocumentManager::create(new Connection(), $config);
 
         $currencies = array('USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125);
 

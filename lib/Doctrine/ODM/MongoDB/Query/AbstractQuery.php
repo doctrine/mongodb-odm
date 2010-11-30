@@ -19,9 +19,10 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
-use Doctrine\ODM\MongoDB\MongoIterator,
+use Doctrine\MongoDB\Iterator,
     Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+    Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
  * Abstract executable query class for the different types of queries to implement.
@@ -30,7 +31,7 @@ use Doctrine\ODM\MongoDB\MongoIterator,
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
-abstract class AbstractQuery implements QueryInterface, MongoIterator
+abstract class AbstractQuery implements QueryInterface, Iterator
 {
     /**
      * The DocumentManager instance for this query
@@ -38,6 +39,13 @@ abstract class AbstractQuery implements QueryInterface, MongoIterator
      * @var DocumentManager
      */
     protected $dm;
+
+    /**
+     * The UnitOfWork used to coordinate object-level transactions.
+     *
+     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     */
+    protected $unitOfWork;
 
     /**
      * The ClassMetadata instance for the class being queried
@@ -54,13 +62,14 @@ abstract class AbstractQuery implements QueryInterface, MongoIterator
     protected $cmd;
 
     /**
-     * @var MongoIterator
+     * @var Iterator
      */
     protected $iterator;
 
-    public function __construct(DocumentManager $dm, ClassMetadata $class, $cmd)
+    public function __construct(DocumentManager $dm, UnitOfWork $uow, ClassMetadata $class, $cmd)
     {
         $this->dm = $dm;
+        $this->unitOfWork = $uow;
         $this->class = $class;
         $this->cmd = $cmd;
     }
@@ -91,7 +100,7 @@ abstract class AbstractQuery implements QueryInterface, MongoIterator
     {
         if ($this->iterator === null) {
             $iterator = $this->execute($options);
-            if ($iterator !== null && !$iterator instanceof MongoIterator) {
+            if ($iterator !== null && !$iterator instanceof Iterator) {
                 throw new \BadMethodCallException('Query execution did not return an iterator. This query may not support returning iterators. ');
             }
             $this->iterator = $iterator;
@@ -121,9 +130,9 @@ abstract class AbstractQuery implements QueryInterface, MongoIterator
     }
 
     /**
-     * Iterator over the query using the MongoCursor.
+     * Iterator over the query using the Cursor.
      *
-     * @return MongoCursor $cursor
+     * @return Cursor $cursor
      */
     public function iterate()
     {

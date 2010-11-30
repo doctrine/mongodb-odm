@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\ODMEvents;
+use Doctrine\ODM\MongoDB\Events;
 
 class MODM83Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -11,8 +11,8 @@ class MODM83Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->listener = new MODM83EventListener();
         $evm = $this->dm->getEventManager();
         $events = array(
-            ODMEvents::preUpdate,
-            ODMEvents::postUpdate,
+            Events::preUpdate,
+            Events::postUpdate,
         );
         $evm->addEventListener($events, $this->listener);
         return $this->dm;
@@ -40,8 +40,8 @@ class MODM83Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->clear();
 
         $called = array(
-            ODMEvents::preUpdate  => array(__NAMESPACE__.'\MODM83OtherDocument'),
-            ODMEvents::postUpdate => array(__NAMESPACE__.'\MODM83OtherDocument')
+            Events::preUpdate  => array(__NAMESPACE__.'\MODM83OtherDocument'),
+            Events::postUpdate => array(__NAMESPACE__.'\MODM83OtherDocument')
         );
         $this->assertEquals($called, $this->listener->called);
     }

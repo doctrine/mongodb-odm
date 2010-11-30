@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
-use Doctrine\ODM\MongoDB\MongoArrayIterator;
+use Doctrine\MongoDB\ArrayIterator;
 
 /**
  * GeoLocationFindQuery
@@ -65,10 +65,10 @@ class GeoLocationFindQuery extends AbstractQuery
         if ($this->limit) {
             $command['num'] = $this->limit;
         }
-        $result = $this->dm->getDocumentDB($this->class->name)
+        $result = $this->dm->getDocumentDatabase($this->class->name)
             ->command($command);
         if ( ! isset($result['results'])) {
-            return new MongoArrayIterator(array());
+            return new ArrayIterator(array());
         }
         if ($this->hydrate) {
             $uow = $this->dm->getUnitOfWork();
@@ -84,6 +84,6 @@ class GeoLocationFindQuery extends AbstractQuery
         } else {
             $results = $result['results'];
         }
-        return new MongoArrayIterator($results);
+        return new ArrayIterator($results);
     }
 }

@@ -89,14 +89,14 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')->equals('distinct_test');
         $q = $qb->getQuery();
         $results = $q->execute();
-        $this->assertEquals(new \Doctrine\ODM\MongoDB\MongoArrayIterator(array(1, 2, 3)), $results);
+        $this->assertEquals(new \Doctrine\MongoDB\ArrayIterator(array(1, 2, 3)), $results);
 
         $results = $this->dm->createQueryBuilder('Documents\User')
             ->distinct('count')
             ->field('username')->equals('distinct_test')
             ->getQuery()
             ->execute();
-        $this->assertEquals(new \Doctrine\ODM\MongoDB\MongoArrayIterator(array(1, 2, 3)), $results);
+        $this->assertEquals(new \Doctrine\MongoDB\ArrayIterator(array(1, 2, 3)), $results);
     }
 
     public function testFindQuery()
@@ -250,7 +250,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $query = $qb->getQuery();
-        $this->assertTrue($query instanceof \Doctrine\ODM\MongoDB\MongoIterator);
+        $this->assertTrue($query instanceof \Doctrine\MongoDB\Iterator);
         foreach ($query as $article) {
             $this->assertEquals('Documents\Article', get_class($article));
         }

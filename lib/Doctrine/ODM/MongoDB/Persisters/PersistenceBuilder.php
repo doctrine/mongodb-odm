@@ -260,7 +260,7 @@ class PersistenceBuilder
         $ref = array(
             $this->cmd . 'ref' => $class->getCollection(),
             $this->cmd . 'id' => $id,
-            $this->cmd . 'db' => $class->getDB()
+            $this->cmd . 'db' => $class->getDatabase()
         );
 
         // Store a discriminator value if the referenced document is not mapped explicitely to a targetDocument

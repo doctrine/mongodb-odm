@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
-use Doctrine\ODM\MongoDB\MongoCursor;
+use Doctrine\ODM\MongoDB\Cursor;
 
 /**
  * InsertQuery
@@ -111,7 +111,7 @@ class MapReduceQuery extends AbstractQuery
 
     public function execute(array $options = array())
     {
-        $db = $this->dm->getDocumentDB($this->class->name);
+        $db = $this->dm->getDocumentDatabase($this->class->name);
         if (is_string($this->map)) {
             $this->map = new \MongoCode($this->map);
         }
@@ -130,7 +130,8 @@ class MapReduceQuery extends AbstractQuery
             throw new \RuntimeException($result['errmsg']);
         }
         $cursor = $db->selectCollection($result['result'])->find();
-        $cursor = new MongoCursor($this->dm, $this->dm->getUnitOfWork(), $this->dm->getHydrator(), $this->class, $this->dm->getConfiguration(), $cursor);
+        $cursor = $cursor->getMongoCursor();
+        $cursor = new Cursor($cursor, $this->unitOfWork, $this->class);
         $cursor->hydrate(false);
         $cursor->limit($this->limit);
         $cursor->skip($this->skip);

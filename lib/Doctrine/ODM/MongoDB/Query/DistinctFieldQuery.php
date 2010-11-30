@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
-use Doctrine\ODM\MongoDB\MongoArrayIterator;
+use Doctrine\MongoDB\ArrayIterator;
 
 /**
  * DistinctFieldQuery
@@ -45,12 +45,12 @@ class DistinctFieldQuery extends AbstractQuery
 
     public function execute(array $options = array())
     {
-        $result = $this->dm->getDocumentDB($this->class->name)
+        $result = $this->dm->getDocumentDatabase($this->class->name)
             ->command(array(
                 'distinct' => $this->dm->getDocumentCollection($this->class->name)->getName(),
                 'key' => $this->distinctField,
                 'query' => $this->query
             ));
-        return new MongoArrayIterator($result['values']);
+        return new ArrayIterator($result['values']);
     }
 }

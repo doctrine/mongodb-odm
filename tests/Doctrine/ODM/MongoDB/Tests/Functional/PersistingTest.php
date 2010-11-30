@@ -45,24 +45,26 @@ class PersistingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testUpdate()
     {
-      $user = new User();
-      $user->setInheritedProperty('cool');
-      $user->setUsername('jon');
-      $user->setPassword('changeme');
+        $user = new User();
+        $user->setInheritedProperty('cool');
+        $user->setUsername('jon');
+        $user->setPassword('changeme');
 
-      $this->dm->persist($user);
-      $this->dm->flush();
-      $this->dm->clear();
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
 
-      $user = $this->dm->find('Documents\User', $user->getId());
-      $user->setUsername('w00t');
-      $this->dm->flush();
-      $this->dm->clear();
+        $user = $this->dm->find('Documents\User', $user->getId());
+        
+        $this->assertNotNull($user);
+        $user->setUsername('w00t');
+        $this->dm->flush();
+        $this->dm->clear();
 
-      $user = $this->dm->find('Documents\User', $user->getId());
-
-      $this->assertEquals('w00t', $user->getUsername());
-      $this->assertEquals('cool', $user->getInheritedProperty());
+        $user = $this->dm->find('Documents\User', $user->getId());
+        $this->assertNotNull($user);
+        $this->assertEquals('w00t', $user->getUsername());
+        $this->assertEquals('cool', $user->getInheritedProperty());
     }
 
     public function testDetach()
@@ -79,6 +81,7 @@ class PersistingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user2 = $this->dm->find('Documents\User', $user->getId());
+        $this->assertNotNull($user2);
         $this->assertEquals('jon', $user2->getUsername());
     }
 }

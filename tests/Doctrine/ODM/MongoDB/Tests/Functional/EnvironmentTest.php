@@ -8,7 +8,7 @@ use Doctrine\Common\ClassLoader,
     Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mongo,
+    Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 class EnvironmentTest extends \PHPUnit_Framework_TestCase
@@ -34,7 +34,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
-        $this->dm = DocumentManager::create(new Mongo(), $config);
+        $this->dm = DocumentManager::create(new Connection(), $config);
     }
 
     public function testDefaultDb()
@@ -45,13 +45,13 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
 
     public function testSetEnvironmentForDocumentUnspecifiedDb()
     {
-        $dbname = $this->dm->getDocumentDB('Doctrine\ODM\MongoDB\Tests\Functional\TestEmptyDatabase')->getName();
+        $dbname = $this->dm->getDocumentDatabase('Doctrine\ODM\MongoDB\Tests\Functional\TestEmptyDatabase')->getName();
         $this->assertEquals($this->dbNames['unspecified'], $dbname);
     }
 
     public function testSetEnvironment()
     {
-        $dbname  = $this->dm->getDocumentDB('Doctrine\ODM\MongoDB\Tests\Functional\TestDocument')->getName();
+        $dbname  = $this->dm->getDocumentDatabase('Doctrine\ODM\MongoDB\Tests\Functional\TestDocument')->getName();
 
         $this->assertEquals($this->dbNames['specified'], $dbname);
     }
@@ -68,7 +68,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
 
         $this->dm->flush();
 
-        $mongo = $this->dm->getMongo()->getMongo();
+        $mongo = $this->dm->getConnection()->getConnection();
         $coll = $mongo->selectDB($this->dbNames['specified'])
             ->selectCollection('documents');
         $coll2 = $mongo->selectDB($this->dbNames['unspecified'])
@@ -88,23 +88,23 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
 
     public function testFind()
     {
-        $mongo = $this->dm->getMongo()->getMongo();
-        $collection = $mongo->selectDB($this->dbNames['specified'])
+        $conn = $this->dm->getConnection();
+        $collection = $conn->selectDB($this->dbNames['specified'])
             ->selectCollection('documents');
         $testDoc = array('name' => 'test doc');
         $collection->insert($testDoc);
 
         $this->assertTrue($testDoc['_id'] instanceof \MongoId);
 
-        $doc = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\TestDocument', (string)$testDoc['_id']);
-
-        $this->assertEquals($doc->getId(), (string)$testDoc['_id']);
+        $doc = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\TestDocument', (string) $testDoc['_id']);
+        $this->assertNotNull($doc);
+        $this->assertEquals($doc->getId(), (string) $testDoc['_id']);
     }
 
     public function testFindForDocWithUnspecifiedDb()
     {
-        $mongo = $this->dm->getMongo()->getMongo();
-        $collection = $mongo->selectDB($this->dbNames['unspecified'])
+        $conn = $this->dm->getConnection();
+        $collection = $conn->selectDB($this->dbNames['unspecified'])
             ->selectCollection('documents');
         $testDoc = array('name' => 'test doc with unspecified db name.');
         $collection->insert($testDoc);
@@ -112,14 +112,14 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($testDoc['_id'] instanceof \MongoId);
 
         $doc = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\TestEmptyDatabase', (string)$testDoc['_id']);
-
+        $this->assertNotNull($doc);
         $this->assertEquals($doc->getId(), (string)$testDoc['_id']);
     }
 
     public function testCustomQuery()
     {
-        $mongo = $this->dm->getMongo()->getMongo();
-        $coll = $mongo->selectDB($this->dbNames['specified'])
+        $conn = $this->dm->getConnection();
+        $coll = $conn->selectDB($this->dbNames['specified'])
             ->selectCollection('documents');
         $doc = array('name' => 'test doc');
         $coll->insert($doc);
@@ -128,7 +128,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
             ->field('name')->equals('test doc')
             ->getQuery()
             ->getSingleResult();
-
+        $this->assertNotNull($docName);
         $this->assertEquals((string)$doc['_id'], $docName->getId());
     }
 
