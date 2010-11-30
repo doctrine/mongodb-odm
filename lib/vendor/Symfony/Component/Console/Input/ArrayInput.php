@@ -18,7 +18,7 @@ namespace Symfony\Component\Console\Input;
  *
  *     $input = new ArrayInput(array('name' => 'foo', '--bar' => 'foobar'));
  *
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class ArrayInput extends Input
 {
@@ -133,11 +133,11 @@ class ArrayInput extends Input
         $option = $this->definition->getOption($name);
 
         if (null === $value) {
-            if ($option->isParameterRequired()) {
+            if ($option->isValueRequired()) {
                 throw new \InvalidArgumentException(sprintf('The "--%s" option requires a value.', $name));
             }
 
-            $value = $option->isParameterOptional() ? $option->getDefault() : true;
+            $value = $option->isValueOptional() ? $option->getDefault() : true;
         }
 
         $this->options[$name] = $value;

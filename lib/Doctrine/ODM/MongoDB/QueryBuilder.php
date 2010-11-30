@@ -511,7 +511,7 @@ class QueryBuilder
      */
     public function notEqual($value)
     {
-        $this->expr->notEquals($value);
+        $this->expr->notEqual($value);
         return $this;
     }
 
