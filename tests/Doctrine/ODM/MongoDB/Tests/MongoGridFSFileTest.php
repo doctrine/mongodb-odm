@@ -51,7 +51,7 @@ class MongoGridFSFileTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $file = $this->getTestMongoGridFSFile();
         $file->setBytes('bytes');
-        $path = '/tmp/doctrine'.__CLASS__.'_write_test';
+        $path = tempnam(sys_get_temp_dir(), 'doctrine_write_test');
         $file->write($path);
         $this->assertTrue(file_exists($path));
         $this->assertEquals('bytes', file_get_contents($path));
@@ -63,7 +63,7 @@ class MongoGridFSFileTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $origPath = __DIR__.'/MongoGridFSFileTest.php';
         $file = $this->getTestMongoGridFSFile();
         $file->setFilename($origPath);
-        $path = '/tmp/doctrine'.__CLASS__.'_write_test';
+        $path = tempnam(sys_get_temp_dir(), 'doctrine_write_test');
         $file->write($path);
         $this->assertTrue(file_exists($path));
         $this->assertEquals(file_get_contents($origPath), file_get_contents($path));
@@ -97,7 +97,7 @@ class MongoGridFSFileTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(file_get_contents($path), $file->getBytes());
         $this->assertEquals(22, $file->getSize());
 
-        $tmpPath = '/tmp/doctrine'.__CLASS__.'_write_test';
+        $tmpPath = tempnam(sys_get_temp_dir(), 'doctrine_write_test');
         $file->write($tmpPath);
         $this->assertTrue(file_exists($path));
         $this->assertEquals(file_get_contents($path), file_get_contents($tmpPath));
