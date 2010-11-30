@@ -247,7 +247,7 @@ class DocumentManager
         $db = $db ? $db : $this->config->getDefaultDB();
         $db = $db ? $db : 'doctrine';
         $db = sprintf('%s%s', $this->config->getEnvironmentPrefix(), $db);
-        return $this->connection->selectDB($db);
+        return $this->connection->selectDatabase($db);
     }
 
     /**

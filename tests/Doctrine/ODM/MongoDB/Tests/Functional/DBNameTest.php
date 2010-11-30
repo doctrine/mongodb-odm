@@ -60,10 +60,10 @@ class DbNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertTrue(!is_null($account->getId()));
 
-        $mongo = $this->dm->getConnection()->getConnection();
+        $conn = $this->dm->getConnection();
 
-        $testAccount = $mongo->test_doctrine_odm_tests
-            ->accounts
+        $testAccount = $conn->selectDatabase('test_doctrine_odm_tests')
+            ->selectCollection('accounts')
             ->findOne(array('_id' => new \MongoId($account->getId())));
 
         $this->assertTrue(is_array($testAccount));

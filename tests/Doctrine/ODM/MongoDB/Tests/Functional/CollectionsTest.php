@@ -73,7 +73,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $sm->dropDocumentCollection(__NAMESPACE__.'\CollectionTest');
         $sm->createDocumentCollection(__NAMESPACE__.'\CollectionTest');
 
-        $coll = $this->dm->getConnection()->selectDB('colltest')->selectCollection('testing2');
+        $coll = $this->dm->getConnection()->selectDatabase('colltest')->selectCollection('testing2');
         $insert = array(array(1), array(2), array(3));
         $coll->batchInsert($insert, array('safe' => true, 'fsync' => true));
 

@@ -68,10 +68,10 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
 
         $this->dm->flush();
 
-        $mongo = $this->dm->getConnection()->getConnection();
-        $coll = $mongo->selectDB($this->dbNames['specified'])
+        $conn = $this->dm->getConnection();
+        $coll = $conn->selectDatabase($this->dbNames['specified'])
             ->selectCollection('documents');
-        $coll2 = $mongo->selectDB($this->dbNames['unspecified'])
+        $coll2 = $conn->selectDatabase($this->dbNames['unspecified'])
             ->selectCollection('documents');
 
         $vDoc = $coll->findOne(array(
@@ -89,7 +89,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
     public function testFind()
     {
         $conn = $this->dm->getConnection();
-        $collection = $conn->selectDB($this->dbNames['specified'])
+        $collection = $conn->selectDatabase($this->dbNames['specified'])
             ->selectCollection('documents');
         $testDoc = array('name' => 'test doc');
         $collection->insert($testDoc);
@@ -104,7 +104,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
     public function testFindForDocWithUnspecifiedDb()
     {
         $conn = $this->dm->getConnection();
-        $collection = $conn->selectDB($this->dbNames['unspecified'])
+        $collection = $conn->selectDatabase($this->dbNames['unspecified'])
             ->selectCollection('documents');
         $testDoc = array('name' => 'test doc with unspecified db name.');
         $collection->insert($testDoc);
@@ -119,7 +119,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
     public function testCustomQuery()
     {
         $conn = $this->dm->getConnection();
-        $coll = $conn->selectDB($this->dbNames['specified'])
+        $coll = $conn->selectDatabase($this->dbNames['specified'])
             ->selectCollection('documents');
         $doc = array('name' => 'test doc');
         $coll->insert($doc);

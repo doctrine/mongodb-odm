@@ -64,9 +64,9 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     {
         if ($this->dm) {
             $mongo = $this->dm->getConnection();
-            $dbs = $mongo->listDBs();
+            $dbs = $mongo->listDatabases();
             foreach ($dbs['databases'] as $db) {
-                $collections = $mongo->selectDB($db['name'])->listCollections();
+                $collections = $mongo->selectDatabase($db['name'])->listCollections();
                 foreach ($collections as $collection) {
                     $collection->drop();
                 }
