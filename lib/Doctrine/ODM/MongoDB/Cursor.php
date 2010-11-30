@@ -23,7 +23,9 @@ use \MongoCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
- * Cursor
+ * Cursor extends the default Doctrine\MongoDB\Cursor implementation and changes the default
+ * data returned to be mapped Doctrine document class instances. To disable the hydration
+ * use hydrate(false) and the Cursor will give you normal document arrays instance of objects.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
@@ -33,6 +35,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 class Cursor extends \Doctrine\MongoDB\Cursor
 {
+    /**
+     * Whether or not to hydrate the data to documents.
+     *
+     * @var boolean
+     */
     private $hydrate = true;
 
     /**
@@ -57,6 +64,7 @@ class Cursor extends \Doctrine\MongoDB\Cursor
         $this->class = $class;
     }
 
+    /** @override */
     public function current()
     {
         $current = $this->mongoCursor->current();
