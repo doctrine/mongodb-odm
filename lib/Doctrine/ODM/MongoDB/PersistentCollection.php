@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\Collections\Collection,
+use Doctrine\Common\Collections\Collection as BaseCollection,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\ODM\MongoDB\DocumentManager,
@@ -33,7 +33,7 @@ use Doctrine\Common\Collections\Collection,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class PersistentCollection implements Collection
+class PersistentCollection implements BaseCollection
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -89,7 +89,7 @@ class PersistentCollection implements Collection
      */
     private $references = array();
 
-    public function __construct(Collection $coll, DocumentManager $dm, Configuration $c)
+    public function __construct(BaseCollection $coll, DocumentManager $dm, Configuration $c)
     {
         $this->coll = $coll;
         $this->dm = $dm;

@@ -63,9 +63,9 @@ class DocumentRepository
     }
 
     /**
-     * Create a new QueryBuilder instance that is prepopulated for this document name
+     * Create a new Query\Builder instance that is prepopulated for this document name
      *
-     * @return QueryBuilder $qb
+     * @return Query\Builder $qb
      */
     public function createQueryBuilder()
     {

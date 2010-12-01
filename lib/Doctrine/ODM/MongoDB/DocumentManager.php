@@ -22,8 +22,6 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory,
     Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
-    Doctrine\ODM\MongoDB\Query,
-    Doctrine\ODM\MongoDB\QueryBuilder,
     Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
@@ -115,6 +113,8 @@ class DocumentManager
      */
     private $closed = false;
 
+    private $cmd;
+
     /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
@@ -139,6 +139,7 @@ class DocumentManager
                 $this->config->getProxyDir(),
                 $this->config->getProxyNamespace(),
                 $this->config->getAutoGenerateProxyClasses());
+        $this->cmd = $this->config->getMongoCmd();
     }
 
     /**
@@ -243,11 +244,13 @@ class DocumentManager
      */
     public function getDocumentDatabase($className)
     {
-        $db = $this->metadataFactory->getMetadataFor($className)->getDatabase();
+        $metadata = $this->metadataFactory->getMetadataFor($className);
+        $db = $metadata->getDatabase();
         $db = $db ? $db : $this->config->getDefaultDB();
         $db = $db ? $db : 'doctrine';
         $db = sprintf('%s%s', $this->config->getEnvironmentPrefix(), $db);
-        return $this->connection->selectDatabase($db);
+        $database = $this->connection->selectDatabase($db);
+        return $database;
     }
 
     /**
@@ -283,7 +286,7 @@ class DocumentManager
      */
     public function createQueryBuilder($documentName = null)
     {
-        return new QueryBuilder($this, $this->unitOfWork, $this->hydrator, $this->config->getMongoCmd(), $documentName);
+        return new Query\Builder($this, $this->config->getMongoCmd(), $documentName);
     }
 
     /**

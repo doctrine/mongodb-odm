@@ -14,8 +14,8 @@ class FindAndModifyTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // test update findAndModify
         $q = $this->dm->createQueryBuilder()
-            ->update('Documents\User')
-            ->findAndModify(array('new' => true))
+            ->findAndUpdate('Documents\User')
+            ->returnNew(true)
             ->field('count')->inc(5)
             ->field('username')->set('jwage')
             ->getQuery();
@@ -27,8 +27,7 @@ class FindAndModifyTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Test remove findAndModify
         $q = $this->dm->createQueryBuilder()
-            ->remove('Documents\User')
-            ->findAndModify()
+            ->findAndRemove('Documents\User')
             ->field('username')->equals('jwage')
             ->getQuery();
         $result = $q->execute();

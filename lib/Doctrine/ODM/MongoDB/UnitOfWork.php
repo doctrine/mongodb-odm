@@ -33,7 +33,8 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\Common\NotifyPropertyChanged,
     Doctrine\Common\PropertyChangedListener,
     Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\MongoDB\GridFSFile;
+    Doctrine\MongoDB\GridFSFile,
+    Doctrine\ODM\MongoDB\Query\Builder;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -2244,6 +2245,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getOrCreateDocument($className, $data, &$hints = array())
     {
+        if (is_object($data)) {
+            $e = new \Exception();
+            echo $e->getTraceAsString();
+            exit;
+        }
         $class = $this->dm->getClassMetadata($className);
 
         if ($class->discriminatorField) {
@@ -2270,7 +2276,7 @@ class UnitOfWork implements PropertyChangedListener
                     $document->addPropertyChangedListener($this);
                 }
             } else {
-                $overrideLocalValues = isset($hints[QueryBuilder::HINT_REFRESH]);
+                $overrideLocalValues = isset($hints[Builder::HINT_REFRESH]);
             }
             if ($overrideLocalValues) {
                 $this->hydrator->hydrate($document, $data);

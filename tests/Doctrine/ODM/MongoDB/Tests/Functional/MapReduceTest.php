@@ -219,6 +219,7 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
             }");
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
+
         $this->assertEquals($user->getId(), (string) $user2['_id']);
         $this->assertEquals(3, $user2['value']);
     }

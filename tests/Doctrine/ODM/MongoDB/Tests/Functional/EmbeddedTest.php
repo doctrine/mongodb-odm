@@ -112,6 +112,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('id')->equals($user->getId())
             ->getQuery()
             ->getSingleResult();
+        $this->assertNotNull($user);
         $this->assertNull($user->getAddress());
     }
 
@@ -129,7 +130,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('id')->equals($user->getId())
             ->getQuery()
             ->getSingleResult();
-
+        $this->assertNotNull($user2);
         $this->assertEquals($user->getPhonenumbers()->unwrap(), $user2->getPhonenumbers()->unwrap());
     }
 

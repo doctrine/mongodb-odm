@@ -3,4 +3,4 @@
 	url = git://github.com/doctrine/common.git
 [submodule "lib/vendor/doctrine-mongodb"]
 	path = lib/vendor/doctrine-mongodb
-	url = git://github.com/doctrine/mongodb.git
+	url = git://github.com:doctrine/mongodb.git

@@ -55,7 +55,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testCreateQueryBuilder()
     {
-        $this->assertType('\Doctrine\ODM\MongoDB\QueryBuilder', $this->dm->createQueryBuilder());
+        $this->assertType('\Doctrine\ODM\MongoDB\Query\Builder', $this->dm->createQueryBuilder());
     }
 
     public function testGetPartialReference()

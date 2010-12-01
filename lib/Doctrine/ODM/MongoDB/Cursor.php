@@ -74,11 +74,9 @@ class Cursor extends \Doctrine\MongoDB\Cursor
         return $current ? $current : null;
     }
 
-    public function hydrate($bool = null)
+    public function hydrate($bool)
     {
-        if ($bool !== null) {
-            $this->hydrate = $bool;
-        }
+        $this->hydrate = $bool;
         return $this->hydrate;
     }
 }

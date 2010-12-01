@@ -29,7 +29,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\MongoDBException,
     Doctrine\ODM\MongoDB\LockException,
     Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\ODM\MongoDB\QueryBuilder,
+    Doctrine\ODM\MongoDB\Query\Builder,
     Doctrine\MongoDB\ArrayIterator,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\ODM\MongoDB\LockMode,
@@ -297,7 +297,9 @@ class DocumentPersister
      */
     public function refresh($id, $document)
     {
-        $data = $this->collection->findOne(array('_id' => $id));
+        $query = array('_id' => $id);
+        $query = $this->prepareQuery($query);
+        $data = $this->collection->findOne($query);
         $this->dm->getHydrator()->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
@@ -315,6 +317,9 @@ class DocumentPersister
      */
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0)
     {
+        if (is_scalar($criteria)) {
+            $criteria = array('_id' => $criteria);
+        }
         $criteria = $this->prepareQuery($criteria);
         $result = $this->collection->findOne($criteria);
 
@@ -336,8 +341,8 @@ class DocumentPersister
      */
     public function loadAll(array $criteria = array())
     {
-        $documents = array();
         $criteria = $this->prepareQuery($criteria);
+        $documents = array();
         $cursor = $this->collection->find($criteria);
         foreach ($cursor as $document) {
             $documents[] = $this->createDocument($document);
@@ -399,7 +404,7 @@ class DocumentPersister
         }
 
         if ($document !== null) {
-            $hints[QueryBuilder::HINT_REFRESH] = true;
+            $hints[Builder::HINT_REFRESH] = true;
             $id = $result['_id'];
             $this->uow->registerManaged($document, $id, $result);
         }
@@ -428,7 +433,7 @@ class DocumentPersister
         foreach ($groupedIds as $className => $ids) {
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $data = $mongoCollection->find(array('_id' => array($cmd . 'in' => $ids)));
-            $hints = array(QueryBuilder::HINT_REFRESH => QueryBuilder::HINT_REFRESH);
+            $hints = array(Builder::HINT_REFRESH => Builder::HINT_REFRESH);
             foreach ($data as $id => $documentData) {
                 $document = $this->uow->getOrCreateDocument($className, $documentData, $hints);
             }
@@ -438,24 +443,17 @@ class DocumentPersister
     public function find(array $query = array(), array $fields = array())
     {
         $query = $this->prepareQuery($query);
-        $cursor = $this->collection->find($query, $fields);
-        $mongoCursor = $cursor->getMongoCursor();
-        $cursor = new Cursor($mongoCursor, $this->uow, $this->class);
-        return $cursor;
+        return $this->collection->find($query, $fields);
     }
 
     public function findOne(array $query = array(), array $fields = array())
     {
-        if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
-            $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
-            $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
-        }
         $query = $this->prepareQuery($query);
-        $document = $this->collection->findOne($query, $fields);
-        return $this->createDocument($document);
+        return $this->collection->findOne($query, $fields);
     }
 
-    private function getClassDiscriminatorValues(ClassMetadata $metadata)
+
+    public function getClassDiscriminatorValues(ClassMetadata $metadata)
     {
         $discriminatorValues = array($metadata->discriminatorValue);
         foreach ($metadata->subClasses as $className) {
@@ -474,7 +472,7 @@ class DocumentPersister
      * @param string $value
      * @return string $value
      */
-    private function prepareWhereValue(&$fieldName, $value)
+    public function prepareWhereValue(&$fieldName, $value)
     {
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
@@ -523,7 +521,7 @@ class DocumentPersister
         return $value;
     }
 
-    private function prepareQuery($query)
+    public function prepareQuery($query)
     {
         if (is_scalar($query)) {
             $query = array('_id' => $query);
