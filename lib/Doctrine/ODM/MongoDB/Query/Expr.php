@@ -22,7 +22,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
- * Expression builder class.
+ * Query expression builder for ODM.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

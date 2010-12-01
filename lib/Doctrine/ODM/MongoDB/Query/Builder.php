@@ -25,7 +25,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
- * Builder
+ * Query builder for ODM.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0

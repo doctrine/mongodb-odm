@@ -20,7 +20,6 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-
 use InvalidArgumentException;
 
 class SchemaManager

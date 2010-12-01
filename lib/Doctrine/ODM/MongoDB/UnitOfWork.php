@@ -19,8 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\Common\EventManager,
+use Doctrine\Common\EventManager,
     Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
@@ -522,7 +521,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param ClassMetadata $class The class descriptor of the document.
      * @param object $document The document for which to compute the changes.
      */
-    public function computeChangeSet(Mapping\ClassMetadata $class, $document)
+    public function computeChangeSet(ClassMetadata $class, $document)
     {
         if ( ! $class->isInheritanceTypeNone()) {
             $class = $this->dm->getClassMetadata(get_class($document));
@@ -881,7 +880,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      * @param array $options Array of options to be used with update()
      */
-    private function executeUpdates($class, array $options = array())
+    private function executeUpdates(ClassMetadata $class, array $options = array())
     {
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
@@ -1015,7 +1014,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      * @param array $options Array of options to be used with remove()
      */
-    private function executeDeletions($class, array $options = array())
+    private function executeDeletions(ClassMetadata $class, array $options = array())
     {
         $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postRemove]);
         $hasListeners = $this->evm->hasListeners(Events::postRemove);
@@ -1110,7 +1109,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param ClassMetadata $class
      * @param CommitOrderCalculator $calc
      */
-    private function addDependencies($class, $calc)
+    private function addDependencies(ClassMetadata $class, $calc)
     {
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['reference']) && isset($mapping['targetDocument'])) {
@@ -2171,7 +2170,7 @@ class UnitOfWork implements PropertyChangedListener
     public function getCommitOrderCalculator()
     {
         if ($this->commitOrderCalculator === null) {
-            $this->commitOrderCalculator = new Internal\CommitOrderCalculator;
+            $this->commitOrderCalculator = new CommitOrderCalculator;
         }
         return $this->commitOrderCalculator;
     }
