@@ -102,8 +102,38 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('test', $image->getFile()->getBytes());
     }
 
+    public function testFileWithOtherNameThanFile()
+    {
+        $path = __DIR__.'/FilesTest.php';
+
+        $test = new TestFile();
+        $test->name = 'Test';
+        $test->theFile = new \Doctrine\MongoDB\GridFSFIle($path);
+
+        $this->dm->persist($test);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->getRepository(__NAMESPACE__.'\TestFile')->find($test->id);
+        $this->assertNotNull($test);
+        $this->assertEquals(file_get_contents($path), $test->theFile->getBytes());
+    }
+
     public function testFilesEmptyQueryReturnsNull()
     {
         $this->assertNull($this->dm->find('Documents\File', 'definitelynotanid'));
     }
+}
+
+/** @Document */
+class TestFile
+{
+    /** @Id */
+    public $id;
+
+    /** @String */
+    public $name;
+
+    /** @File */
+    public $theFile;
 }

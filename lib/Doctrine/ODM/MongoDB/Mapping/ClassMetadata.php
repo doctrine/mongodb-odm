@@ -923,6 +923,7 @@ class ClassMetadata
         unset($mapping['cascade']);
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
+            $mapping['name'] = 'file';
         }
         if (isset($mapping['distance']) && $mapping['distance'] === true) {
             $this->distance = $mapping['fieldName'];
