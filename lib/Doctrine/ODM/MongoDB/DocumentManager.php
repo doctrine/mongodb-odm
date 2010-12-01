@@ -571,22 +571,6 @@ class DocumentManager
         );
     }
 
-    public function getDiscriminatorValues($classNames)
-    {
-        $discriminatorValues = array();
-        $collections = array();
-        foreach ($classNames as $className) {
-            $class = $this->getClassMetadata($className);
-            $discriminatorValues[] = $class->discriminatorValue;
-            $key = $class->getDatabase() . '.' . $class->getCollection();
-            $collections[$key] = $key;
-        }
-        if (count($collections) > 1) {
-            throw new \InvalidArgumentException('Documents involved are not all mapped to the same database collection.');
-        }
-        return $discriminatorValues;
-    }
-
     public function getClassNameFromDiscriminatorValue(array $mapping, $value)
     {
         $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';

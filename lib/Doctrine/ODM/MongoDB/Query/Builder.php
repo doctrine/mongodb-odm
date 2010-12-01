@@ -128,7 +128,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $documentName = $documentNames[0];
 
             $discriminatorField = $this->dm->getClassMetadata($documentName)->discriminatorField['name'];
-            $discriminatorValues = $this->dm->getDiscriminatorValues($documentNames);
+            $discriminatorValues = $this->getDiscriminatorValues($documentNames);
             $this->field($discriminatorField)->in($discriminatorValues);
         }
 
@@ -137,5 +137,21 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->database = $this->collection->getDatabase();
             $this->class = $this->dm->getClassMetadata($documentName);
         }
+    }
+
+    private function getDiscriminatorValues($classNames)
+    {
+        $discriminatorValues = array();
+        $collections = array();
+        foreach ($classNames as $className) {
+            $class = $this->dm->getClassMetadata($className);
+            $discriminatorValues[] = $class->discriminatorValue;
+            $key = $class->getDatabase() . '.' . $class->getCollection();
+            $collections[$key] = $key;
+        }
+        if (count($collections) > 1) {
+            throw new \InvalidArgumentException('Documents involved are not all mapped to the same database collection.');
+        }
+        return $discriminatorValues;
     }
 }
