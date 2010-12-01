@@ -272,10 +272,7 @@ class DocumentPersister
     public function delete($document, array $options = array())
     {
         $id = $this->uow->getDocumentIdentifier($document);
-
-        $query = array(
-            '_id' => $this->class->getDatabaseIdentifierValue($id)
-        );
+        $query = array('_id' => $this->class->getDatabaseIdentifierValue($id));
 
         if ($this->class->isVersioned) {
             $query['locked'] = array($this->cmd . 'exists' => false);
@@ -297,9 +294,7 @@ class DocumentPersister
      */
     public function refresh($id, $document)
     {
-        $query = array('_id' => $id);
-        $query = $this->prepareQuery($query);
-        $data = $this->collection->findOne($query);
+        $data = $this->collection->findOne(array('_id' => $id));
         $this->dm->getHydrator()->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
@@ -317,9 +312,6 @@ class DocumentPersister
      */
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0)
     {
-        if (is_scalar($criteria)) {
-            $criteria = array('_id' => $criteria);
-        }
         $criteria = $this->prepareQuery($criteria);
         $result = $this->collection->findOne($criteria);
 
@@ -342,12 +334,9 @@ class DocumentPersister
     public function loadAll(array $criteria = array())
     {
         $criteria = $this->prepareQuery($criteria);
-        $documents = array();
         $cursor = $this->collection->find($criteria);
-        foreach ($cursor as $document) {
-            $documents[] = $this->createDocument($document);
-        }
-        return new ArrayIterator($documents);
+        $mongoCursor = $cursor->getMongoCursor();
+        return new Cursor($mongoCursor, $this->uow, $this->class);
     }
 
     /**
@@ -433,35 +422,34 @@ class DocumentPersister
         foreach ($groupedIds as $className => $ids) {
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $data = $mongoCollection->find(array('_id' => array($cmd . 'in' => $ids)));
-            $hints = array(Builder::HINT_REFRESH => Builder::HINT_REFRESH);
+            $hints = array(Builder::HINT_REFRESH => true);
             foreach ($data as $id => $documentData) {
                 $document = $this->uow->getOrCreateDocument($className, $documentData, $hints);
             }
         }
     }
 
-    public function find(array $query = array(), array $fields = array())
+    /**
+     * Prepares a query and converts values to the types mongodb expects.
+     *
+     * @param string|array $query
+     * @return array $query
+     */
+    public function prepareQuery($query)
     {
-        $query = $this->prepareQuery($query);
-        return $this->collection->find($query, $fields);
-    }
-
-    public function findOne(array $query = array(), array $fields = array())
-    {
-        $query = $this->prepareQuery($query);
-        return $this->collection->findOne($query, $fields);
-    }
-
-
-    public function getClassDiscriminatorValues(ClassMetadata $metadata)
-    {
-        $discriminatorValues = array($metadata->discriminatorValue);
-        foreach ($metadata->subClasses as $className) {
-            if ($key = array_search($className, $metadata->discriminatorMap)) {
-                $discriminatorValues[] = $key;
-            }
+        if (is_scalar($query)) {
+            $query = array('_id' => $query);
         }
-        return $discriminatorValues;
+        if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
+            $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
+            $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
+        }
+        $newQuery = array();
+        foreach ($query as $key => $value) {
+            $value = $this->prepareWhereValue($key, $value);
+            $newQuery[$key] = $value;
+        }
+        return $newQuery;
     }
 
     /**
@@ -472,7 +460,7 @@ class DocumentPersister
      * @param string $value
      * @return string $value
      */
-    public function prepareWhereValue(&$fieldName, $value)
+    private function prepareWhereValue(&$fieldName, $value)
     {
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
@@ -521,20 +509,20 @@ class DocumentPersister
         return $value;
     }
 
-    public function prepareQuery($query)
+    /**
+     * Gets the array of discriminator values for the given ClassMetadata
+     *
+     * @param ClassMetadata $metadata
+     * @return array
+     */
+    private function getClassDiscriminatorValues(ClassMetadata $metadata)
     {
-        if (is_scalar($query)) {
-            $query = array('_id' => $query);
+        $discriminatorValues = array($metadata->discriminatorValue);
+        foreach ($metadata->subClasses as $className) {
+            if ($key = array_search($className, $metadata->discriminatorMap)) {
+                $discriminatorValues[] = $key;
+            }
         }
-        if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
-            $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
-            $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
-        }
-        $newQuery = array();
-        foreach ($query as $key => $value) {
-            $value = $this->prepareWhereValue($key, $value);
-            $newQuery[$key] = $value;
-        }
-        return $newQuery;
+        return $discriminatorValues;
     }
 }

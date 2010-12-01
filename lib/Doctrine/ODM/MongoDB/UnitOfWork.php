@@ -2245,11 +2245,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getOrCreateDocument($className, $data, &$hints = array())
     {
-        if (is_object($data)) {
-            $e = new \Exception();
-            echo $e->getTraceAsString();
-            exit;
-        }
         $class = $this->dm->getClassMetadata($className);
 
         if ($class->discriminatorField) {
