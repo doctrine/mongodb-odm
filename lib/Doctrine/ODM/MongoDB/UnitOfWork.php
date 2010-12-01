@@ -849,7 +849,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
-                $value = $class->getFieldValue($document, $mapping['fieldName']);
+                $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($value === null) {
                     continue;
                 }
@@ -931,7 +931,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
-                $value = $class->getFieldValue($document, $mapping['fieldName']);
+                $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($value === null) {
                     continue;
                 }
@@ -971,7 +971,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
-                $value = $class->getFieldValue($document, $mapping['fieldName']);
+                $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($value === null) {
                     continue;
                 }
@@ -1361,7 +1361,7 @@ class UnitOfWork implements PropertyChangedListener
                 } else {
                     // Check for a version field, if available, to avoid a db lookup.
                     if ($class->isVersioned) {
-                        if ($class->getFieldValue($document, $class->versionField)) {
+                        if ($class->reflFields[$class->versionField]->getValue($document)) {
                             return self::STATE_DETACHED;
                         } else {
                             return self::STATE_NEW;
@@ -1632,7 +1632,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
-                $value = $class->getFieldValue($document, $mapping['fieldName']);
+                $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($value === null) {
                     continue;
                 }
@@ -1663,7 +1663,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
-                $value = $class->getFieldValue($document, $mapping['fieldName']);
+                $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($value === null) {
                     continue;
                 }
@@ -2297,7 +2297,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
-                $value = $class->getFieldValue($document, $mapping['fieldName']);
+                $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($value === null) {
                     continue;
                 }

@@ -33,7 +33,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(
             'fieldName' => 'id',
             'id' => true,
-            'name' => 'id',
+            'name' => '_id',
             'type' => 'id',
             'isCascadeCallbacks' => false,
             'isCascadeDetach' => false,

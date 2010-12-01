@@ -148,9 +148,9 @@ class CollectionPersister
             $setData = array();
             foreach ($coll as $document) {
                 if (isset($mapping['reference'])) {
-                    $setData[] = $this->pb->prepareReferencedDocValue($mapping, $document);
+                    $setData[] = $this->pb->prepareReferencedDocumentValue($mapping, $document);
                 } else {
-                    $setData[] = $this->pb->prepareEmbeddedDocValue($mapping, $document);
+                    $setData[] = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
                 }
             }
             $query = array($this->cmd.'set' => array($propertyPath => $setData));
@@ -162,9 +162,9 @@ class CollectionPersister
                 $query = array($this->cmd.$strategy => array());
                 foreach ($insertDiff as $key => $document) {
                     if (isset($mapping['reference'])) {
-                        $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareReferencedDocValue($mapping, $document);
+                        $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareReferencedDocumentValue($mapping, $document);
                     } else {
-                        $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareEmbeddedDocValue($mapping, $document);
+                        $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
                     }
                 }
                 $this->executeQuery($parent, $query, $options);

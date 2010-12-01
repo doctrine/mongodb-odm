@@ -179,13 +179,13 @@ class DocumentPersister
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 if ($versionMapping['type'] === 'int') {
-                    $currentVersion = $this->class->getFieldValue($document, $this->class->versionField);
+                    $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
                     $data[$versionMapping['name']] = $currentVersion;
-                    $this->class->setFieldValue($document, $this->class->versionField, $currentVersion);
+                    $this->class->reflFields[$this->class->versionField]->setValue($document, $currentVersion);
                 } elseif ($versionMapping['type'] === 'date') {
                     $nextVersion = new \DateTime();
                     $data[$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
-                    $this->class->setFieldValue($document, $this->class->versionField, $nextVersion);
+                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 }
             }
 
@@ -224,23 +224,23 @@ class DocumentPersister
             // Include versioning updates
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
-                $currentVersion = $this->class->getFieldValue($document, $this->class->versionField);
+                $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
                 if ($versionMapping['type'] === 'int') {
                     $nextVersion = $currentVersion + 1;
                     $update[$this->cmd . 'inc'][$versionMapping['name']] = 1;
                     $query[$versionMapping['name']] = $currentVersion;
-                    $this->class->setFieldValue($document, $this->class->versionField, $nextVersion);
+                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 } elseif ($versionMapping['type'] === 'date') {
                     $nextVersion = new \DateTime();
                     $update[$this->cmd . 'set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
                     $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
-                    $this->class->setFieldValue($document, $this->class->versionField, $nextVersion);
+                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 }
                 $options['safe'] = true;
             }
 
             if ($this->class->isLockable) {
-                $isLocked = $this->class->getFieldValue($document, $this->class->lockField);
+                $isLocked = $this->class->reflFields[$this->class->lockField]->getValue($document);
                 $lockMapping = $this->class->fieldMappings[$this->class->lockField];
                 if ($isLocked) {
                     $update[$this->cmd . 'unset'] = array($lockMapping['name'] => true);

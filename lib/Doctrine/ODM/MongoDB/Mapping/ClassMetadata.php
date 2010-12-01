@@ -71,6 +71,8 @@ class ClassMetadata
     const REFERENCE_MANY = 2;
     const EMBED_ONE      = 3;
     const EMBED_MANY     = 4;
+    const MANY           = 'many';
+    const ONE            = 'one';
 
     /* The inheritance mapping types */
     /**
@@ -929,6 +931,7 @@ class ClassMetadata
             $this->distance = $mapping['fieldName'];
         }
         if (isset($mapping['id']) && $mapping['id'] === true) {
+            $mapping['name'] = '_id';
             $mapping['type'] = isset($mapping['type']) ? $mapping['type'] : 'id';
             $this->identifier = $mapping['fieldName'];
             if (isset($mapping['strategy'])) {
@@ -954,6 +957,11 @@ class ClassMetadata
         if (isset($mapping['embedded']) && $mapping['type'] === 'many') {
             $mapping['association'] = self::EMBED_MANY;
         }
+        /*
+        if (isset($mapping['type']) && ($mapping['type'] === 'one' || $mapping['type'] === 'many')) {
+            $mapping['type'] = $mapping['type'] === 'one' ? self::ONE : self::MANY;
+        }
+        */
         if (isset($mapping['version'])) {
             $this->setVersionMapping($mapping);
         }
