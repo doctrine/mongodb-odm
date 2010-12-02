@@ -89,11 +89,11 @@ class PersistentCollection implements BaseCollection
      */
     private $mongoData = array();
 
-    public function __construct(BaseCollection $coll, DocumentManager $dm, Configuration $c)
+    public function __construct(BaseCollection $coll, DocumentManager $dm, $cmd)
     {
         $this->coll = $coll;
         $this->dm = $dm;
-        $this->cmd = $c->getMongoCmd();
+        $this->cmd = $cmd;
     }
 
     /**

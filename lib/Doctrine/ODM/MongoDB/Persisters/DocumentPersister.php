@@ -436,7 +436,7 @@ class DocumentPersister
         $groupedIds = array();
         foreach ($collection->getMongoData() as $reference) {
             $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
-            $id = $reference[$cmd . 'id'];
+            $id = $reference[$this->cmd . 'id'];
             $reference = $this->dm->getReference($className, (string) $id);
             $collection->add($reference);
             if ($reference instanceof Proxy && ! $reference->__isInitialized__) {
@@ -449,7 +449,7 @@ class DocumentPersister
 
         foreach ($groupedIds as $className => $ids) {
             $mongoCollection = $this->dm->getDocumentCollection($className);
-            $data = $mongoCollection->find(array('_id' => array($cmd . 'in' => $ids)));
+            $data = $mongoCollection->find(array('_id' => array($this->cmd . 'in' => $ids)));
             $hints = array(Builder::HINT_REFRESH => true);
             foreach ($data as $id => $documentData) {
                 $document = $this->uow->getOrCreateDocument($className, $documentData, $hints);

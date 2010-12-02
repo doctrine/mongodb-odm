@@ -17,13 +17,8 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
             ->method('slice')
             ->with($start, $limit)
             ->will($this->returnValue(true));
-
-        $configuration = $this->getConfigurationMock();
-        $configuration->expects($this->once())
-            ->method('getMongoCmd')
-            ->will($this->returnValue('$'));
         $dm = $this->getDocumentManagerMock();
-        $pCollection = new PersistentCollection($collection, $dm, $configuration);
+        $pCollection = new PersistentCollection($collection, $dm, '$');
         $pCollection->slice($start, $limit);
     }
 
@@ -34,14 +29,6 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
     protected function getDocumentManagerMock()
     {
         return $this->getMock('Doctrine\ODM\MongoDB\DocumentManager', array(), array(), '', false, false);
-    }
-
-    /**
-     * @return Doctrine\ODM\MongoDB\Configuration
-     */
-    protected function getConfigurationMock()
-    {
-        return $this->getMock('Doctrine\ODM\MongoDB\Configuration', array(), array(), '', false, false);
     }
 
     /**
