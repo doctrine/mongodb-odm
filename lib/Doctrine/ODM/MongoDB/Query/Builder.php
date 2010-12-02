@@ -111,14 +111,27 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     public function getQuery()
     {
-        if ($this->type === self::TYPE_MAP_REDUCE) {
+        if ($this->query['type'] === Query::TYPE_MAP_REDUCE) {
             $this->hydrate = false;
         }
-        $query = $this->expr->getQuery();
-        $query = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name)->prepareQuery($query);
-        $this->expr->setQuery($query);
-        $query = parent::getQuery();
-        return new Query($query, $this->dm, $this->class, $this->hydrate);
+
+        $query = $this->query;
+
+        $query['query'] = $this->dm->getUnitOfWork()
+            ->getDocumentPersister($this->class->name)
+            ->prepareQuery($this->expr->getQuery());
+
+        $query['newObj'] = $this->expr->getNewObj();
+
+        return new Query(
+            $this->dm,
+            $this->class,
+            $this->database,
+            $this->collection,
+            $query,
+            $this->cmd,
+            $this->hydrate
+        );
     }
 
     private function setDocumentName($documentName)
