@@ -110,9 +110,16 @@ class DocumentManager
 
     /**
      * Whether the DocumentManager is closed or not.
+     *
+     * @var bool
      */
     private $closed = false;
 
+    /**
+     * Mongo command character
+     *
+     * @var string
+     */
     private $cmd;
 
     /**
@@ -134,7 +141,7 @@ class DocumentManager
         if ($cacheDriver = $this->config->getMetadataCacheImpl()) {
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }
-        $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydrator);
+        $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydrator, $this->cmd);
         $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory = new ProxyFactory($this,
                 $this->config->getProxyDir(),

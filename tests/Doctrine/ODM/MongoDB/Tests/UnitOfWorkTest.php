@@ -15,23 +15,27 @@ use Documents\ForumAvatar;
 
 class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 {
+    private $dm;
+    private $uow;
+
     protected function setUp()
     {
         parent::setUp();
-        $this->_dmMock = DocumentManagerMock::create(new ConnectionMock());
-        $this->_unitOfWork = $this->_dmMock->getUnitOfWork();
+        $this->dm = DocumentManagerMock::create(new ConnectionMock());
+        $this->uow = $this->dm->getUnitOfWork();
     }
 
     protected function tearDown() {
+        unset($this->dm, $this->uow);
     }
 
     public function testRegisterRemovedOnNewEntityIsIgnored()
     {
         $user = new ForumUser();
         $user->username = 'romanb';
-        $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));
-        $this->_unitOfWork->scheduleForDelete($user);
-        $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));
+        $this->assertFalse($this->uow->isScheduledForDelete($user));
+        $this->uow->scheduleForDelete($user);
+        $this->assertFalse($this->uow->isScheduledForDelete($user));
     }
 
 
@@ -41,28 +45,28 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
     {
         // Setup fake persister and id generator for identity generation
         $pb = $this->getMockPersistenceBuilder();
-        $class = $this->_dmMock->getClassMetadata('Documents\ForumUser');
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
         $userPersister = $this->getMockDocumentPersister($pb, $class);
-        $this->_unitOfWork->setDocumentPersister('Documents\ForumUser', $userPersister);
+        $this->uow->setDocumentPersister('Documents\ForumUser', $userPersister);
 
         // Test
         $user = new ForumUser();
         $user->username = 'romanb';
-        $this->_unitOfWork->persist($user);
+        $this->uow->persist($user);
 
         // Check
         $this->assertEquals(0, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
         $this->assertEquals(0, count($userPersister->getDeletes()));
-        $this->assertFalse($this->_unitOfWork->isInIdentityMap($user));
+        $this->assertFalse($this->uow->isInIdentityMap($user));
         // should no longer be scheduled for insert
-        $this->assertTrue($this->_unitOfWork->isScheduledForInsert($user));
+        $this->assertTrue($this->uow->isScheduledForInsert($user));
 
         // Now lets check whether a subsequent commit() does anything
         $userPersister->reset();
 
         // Test
-        $this->_unitOfWork->commit();
+        $this->uow->commit();
 
         // Check.
         $this->assertEquals(1, count($userPersister->getInserts()));
@@ -82,24 +86,24 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         // Setup fake persister and id generator for identity generation
         //ForumUser
         $pb = $this->getMockPersistenceBuilder();
-        $class = $this->_dmMock->getClassMetadata('Documents\ForumUser');
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
         $userPersister = $this->getMockDocumentPersister($pb, $class);
-        $this->_unitOfWork->setDocumentPersister('Documents\ForumUser', $userPersister);
+        $this->uow->setDocumentPersister('Documents\ForumUser', $userPersister);
 
         // ForumAvatar
         $pb = $this->getMockPersistenceBuilder();
-        $class = $this->_dmMock->getClassMetadata('Documents\ForumAvatar');
+        $class = $this->dm->getClassMetadata('Documents\ForumAvatar');
         $avatarPersister = $this->getMockDocumentPersister($pb, $class);
-        $this->_unitOfWork->setDocumentPersister('Documents\ForumAvatar', $avatarPersister);
+        $this->uow->setDocumentPersister('Documents\ForumAvatar', $avatarPersister);
 
         // Test
         $user = new ForumUser();
         $user->username = 'romanb';
         $avatar = new ForumAvatar();
         $user->avatar = $avatar;
-        $this->_unitOfWork->persist($user); // save cascaded to avatar
+        $this->uow->persist($user); // save cascaded to avatar
 
-        $this->_unitOfWork->commit();
+        $this->uow->commit();
 
         $this->assertTrue(is_numeric($user->id));
         $this->assertTrue(is_numeric($avatar->id));
@@ -116,38 +120,38 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
     public function testChangeTrackingNotify()
     {
         $pb = $this->getMockPersistenceBuilder();
-        $class = $this->_dmMock->getClassMetadata("Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument");
+        $class = $this->dm->getClassMetadata("Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument");
         $persister = $this->getMockDocumentPersister($pb, $class);
-        $this->_unitOfWork->setDocumentPersister('Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument', $persister);
+        $this->uow->setDocumentPersister('Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument', $persister);
 
         $pb = $this->getMockPersistenceBuilder();
-        $class = $this->_dmMock->getClassMetadata("Doctrine\ODM\MongoDB\Tests\NotifyChangedRelatedItem");
+        $class = $this->dm->getClassMetadata("Doctrine\ODM\MongoDB\Tests\NotifyChangedRelatedItem");
         $itemPersister = $this->getMockDocumentPersister($pb, $class);
-        $this->_unitOfWork->setDocumentPersister('Doctrine\ODM\MongoDB\Tests\NotifyChangedRelatedItem', $itemPersister);
+        $this->uow->setDocumentPersister('Doctrine\ODM\MongoDB\Tests\NotifyChangedRelatedItem', $itemPersister);
 
         $entity = new NotifyChangedDocument;
         $entity->setData('thedata');
-        $this->_unitOfWork->persist($entity);
+        $this->uow->persist($entity);
 
-        $this->_unitOfWork->commit();
+        $this->uow->commit();
         $this->assertEquals(1, count($persister->getInserts()));
         $persister->reset();
 
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+        $this->assertTrue($this->uow->isInIdentityMap($entity));
 
         $entity->setData('newdata');
         $entity->setTransient('newtransientvalue');
 
-        $this->assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity));
+        $this->assertTrue($this->uow->isScheduledForDirtyCheck($entity));
 
-        $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->_unitOfWork->getDocumentChangeSet($entity));
+        $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->uow->getDocumentChangeSet($entity));
 
         $item = new NotifyChangedRelatedItem();
         $entity->getItems()->add($item);
         $item->setOwner($entity);
-        $this->_unitOfWork->persist($item);
+        $this->uow->persist($item);
 
-        $this->_unitOfWork->commit();
+        $this->uow->commit();
         $this->assertEquals(1, count($itemPersister->getInserts()));
         $persister->reset();
         $itemPersister->reset();
@@ -155,7 +159,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $entity->getItems()->removeElement($item);
         $item->setOwner(null);
         $this->assertTrue($entity->getItems()->isDirty());
-        $this->_unitOfWork->commit();
+        $this->uow->commit();
         $updates = $itemPersister->getUpdates();
         $this->assertEquals(1, count($updates));
         $this->assertTrue($updates[0] === $item);
@@ -164,25 +168,25 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
     public function testGetDocumentStateWithAssignedIdentity()
     {
         $pb = $this->getMockPersistenceBuilder();
-        $class = $this->_dmMock->getClassMetadata("Documents\CmsPhonenumber");
+        $class = $this->dm->getClassMetadata("Documents\CmsPhonenumber");
         $persister = $this->getMockDocumentPersister($pb, $class);
-        $this->_unitOfWork->setDocumentPersister('Documents\CmsPhonenumber', $persister);
+        $this->uow->setDocumentPersister('Documents\CmsPhonenumber', $persister);
 
         $ph = new \Documents\CmsPhonenumber();
         $ph->phonenumber = '12345';
 
-        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getDocumentState($ph));
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($ph));
         $this->assertTrue($persister->isExistsCalled());
 
         $persister->reset();
 
         // if the document is already managed the exists() check should be skipped
-        $this->_unitOfWork->registerManaged($ph, '12345', array());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getDocumentState($ph));
+        $this->uow->registerManaged($ph, '12345', array());
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($ph));
         $this->assertFalse($persister->isExistsCalled());
         $ph2 = new \Documents\CmsPhonenumber();
         $ph2->phonenumber = '12345';
-        $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->_unitOfWork->getDocumentState($ph2));
+        $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->uow->getDocumentState($ph2));
         $this->assertFalse($persister->isExistsCalled());
     }
 
@@ -220,7 +224,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     protected function getUnitOfWork(DocumentManager $dm)
     {
-        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydrator());
+        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydrator(), '$');
     }
 
     /**
@@ -256,7 +260,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     private function getMockDocumentPersister(PersistenceBuilder $pb, ClassMetadata $class)
     {
-        return new DocumentPersisterMock($pb, $this->_dmMock, $class);
+        return new DocumentPersisterMock($pb, $this->dm, $this->uow, $class, '$');
     }
 
     protected function getClassMetadata($class, $flag)

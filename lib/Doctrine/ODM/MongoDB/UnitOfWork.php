@@ -238,17 +238,26 @@ class UnitOfWork implements PropertyChangedListener
     private $parentAssociations = array();
 
     /**
+     * Mongo command character
+     *
+     * @var string
+     */
+    private $cmd;
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
      *
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
      * @param Doctrine\Common\EventManager $evm
      * @param Doctrine\ODM\MongoDB\Hydrator $h
+     * @param string $cmd
      */
-    public function __construct(DocumentManager $dm, EventManager $evm, Hydrator $h)
+    public function __construct(DocumentManager $dm, EventManager $evm, Hydrator $h, $cmd)
     {
         $this->dm = $dm;
         $this->evm = $evm;
         $this->hydrator = $h;
+        $this->cmd = $cmd;
     }
 
     /**
@@ -306,7 +315,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! isset($this->persisters[$documentName])) {
             $class = $this->dm->getClassMetadata($documentName);
             $pb = $this->getPersistenceBuilder();
-            $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $class);
+            $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this, $class, $this->cmd);
         }
         return $this->persisters[$documentName];
     }
@@ -2128,7 +2137,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->getDocumentState($document) != self::STATE_MANAGED) {
             throw new \InvalidArgumentException("Document is not MANAGED.");
         }
-        
+
         $documentName = get_class($document);
         $class = $this->dm->getClassMetadata($documentName);
 

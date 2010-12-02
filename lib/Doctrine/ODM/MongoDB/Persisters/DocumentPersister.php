@@ -81,13 +81,6 @@ class DocumentPersister
     private $collection;
 
     /**
-     * The string document name being persisted.
-     *
-     * @var string
-     */
-    private $documentName;
-
-    /**
      * Array of quered inserts for the persister to insert.
      *
      * @var array
@@ -118,17 +111,18 @@ class DocumentPersister
      *
      * @param Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder $pb
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param Doctrine\ODM\MongoDB\UnitOfWork $uow
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
+     * @param string $cmd
      */
-    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, ClassMetadata $class)
+    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, UnitOfWork $uow, ClassMetadata $class, $cmd)
     {
-        $this->dp = $pb;
+        $this->pb = $pb;
         $this->dm = $dm;
-        $this->uow = $dm->getUnitOfWork();
+        $this->cmd = $cmd;
+        $this->uow = $uow;
         $this->class = $class;
-        $this->documentName = $class->getName();
         $this->collection = $dm->getDocumentCollection($class->name);
-        $this->cmd = $this->dm->getConfiguration()->getMongoCmd();
     }
 
     /**
@@ -171,7 +165,7 @@ class DocumentPersister
         $postInsertIds = array();
         $inserts = array();
         foreach ($this->queuedInserts as $oid => $document) {
-            $data = $this->dp->prepareInsertData($document);
+            $data = $this->pb->prepareInsertData($document);
             if ( ! $data) {
                 continue;
             }
@@ -214,7 +208,7 @@ class DocumentPersister
     public function update($document, array $options = array())
     {
         $id = $this->uow->getDocumentIdentifier($document);
-        $update = $this->dp->prepareUpdateData($document);
+        $update = $this->pb->prepareUpdateData($document);
 
         if ( ! empty($update)) {
 
@@ -288,7 +282,7 @@ class DocumentPersister
 
     /**
      * Refreshes a managed document.
-     * 
+     *
      * @param array $id The identifier of the document.
      * @param object $document The document to refresh.
      */
@@ -327,7 +321,7 @@ class DocumentPersister
 
     /**
      * Loads a list of documents by a list of field criteria.
-     * 
+     *
      * @param array $criteria
      * @return array
      */
@@ -380,7 +374,7 @@ class DocumentPersister
 
     /**
      * Creates or fills a single document object from an query result.
-     * 
+     *
      * @param $result The query result.
      * @param object $document The document object to fill, if any.
      * @param array $hints Hints for document creation.
