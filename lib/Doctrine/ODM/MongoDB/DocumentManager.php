@@ -129,7 +129,10 @@ class DocumentManager
         $this->eventManager = $eventManager ? $eventManager : new EventManager();
         $this->connection = $conn ? $conn : new Connection(null, array(), $this->config, $this->eventManager);
         $this->hydrator = new Hydrator($this, $this->eventManager, $this->config->getMongoCmd());
-        $this->metadataFactory = new ClassMetadataFactory($this);
+
+        $metadataFactoryClassName = $config->getClassMetadataFactoryName();
+        $this->metadataFactory = new $metadataFactoryClassName();
+        $this->metadataFactory->setDocumentManager($this);
         if ($cacheDriver = $this->config->getMetadataCacheImpl()) {
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }

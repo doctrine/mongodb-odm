@@ -297,4 +297,27 @@ class Configuration extends \Doctrine\MongoDB\Configuration
         return isset($this->attributes['dbSuffix']) ?
             $this->attributes['dbSuffix'] : null;
     }
+
+    /**
+     * Set the class metadata factory class name.
+     *
+     * @param string $cmf
+     */
+    public function setClassMetadataFactoryName($cmfName)
+    {
+        $this->_attributes['classMetadataFactoryName'] = $cmfName;
+    }
+
+    /**
+     * Gets the class metadata factory class name.
+     *
+     * @return string
+     */
+    public function getClassMetadataFactoryName()
+    {
+        if ( ! isset($this->_attributes['classMetadataFactoryName'])) {
+            $this->_attributes['classMetadataFactoryName'] = 'Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory';
+        }
+        return $this->_attributes['classMetadataFactoryName'];
+    }
 }

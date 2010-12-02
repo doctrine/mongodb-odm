@@ -57,11 +57,11 @@ class ClassMetadataFactory
     private $initialized = false;
 
     /**
-     * Creates a new factory instance that uses the given DocumentManager instance.
+     * Sets the DocumentManager instance for this class.
      *
-     * @param $dm  The DocumentManager instance
+     * @param EntityManager $dm The DocumentManager instance
      */
-    public function __construct(DocumentManager $dm)
+    public function setDocumentManager(DocumentManager $dm)
     {
         $this->dm = $dm;
     }

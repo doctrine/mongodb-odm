@@ -11,7 +11,8 @@ class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function setUp()
     {
         parent::setUp();
-        $this->factory = new ClassMetadataFactory($this->dm);
+        $this->factory = new ClassMetadataFactory();
+        $this->factory->setDocumentManager($this->dm);
     }
     
     /**

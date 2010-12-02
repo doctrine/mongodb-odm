@@ -27,7 +27,8 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm1->mapOneEmbedded(array('fieldName' => 'association', 'targetDocument' => 'Other'));
 
         // SUT
-        $cmf = new ClassMetadataFactoryTestSubject($documentManager);
+        $cmf = new ClassMetadataFactoryTestSubject();
+        $cmf->setDocumentManager($documentManager);
         $cmf->setMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1', $cm1);
 
         // Prechecks
