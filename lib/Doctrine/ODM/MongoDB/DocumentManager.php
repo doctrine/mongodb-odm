@@ -125,14 +125,12 @@ class DocumentManager
      */
     protected function __construct(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
     {
-        $this->config = $config ? $config : new Configuration();
-        $this->eventManager = $eventManager ? $eventManager : new EventManager();
-        $this->connection = $conn ? $conn : new Connection(null, array(), $this->config, $this->eventManager);
-        $this->hydrator = new Hydrator($this, $this->eventManager, $this->config->getMongoCmd());
-
-        $metadataFactoryClassName = $config->getClassMetadataFactoryName();
-        $this->metadataFactory = new $metadataFactoryClassName();
-        $this->metadataFactory->setDocumentManager($this);
+        $this->config = $config ?: new Configuration();
+        $this->eventManager = $eventManager ?: new EventManager();
+        $this->cmd = $this->config->getMongoCmd();
+        $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
+        $this->hydrator = new Hydrator($this, $this->eventManager, $this->cmd);
+        $this->metadataFactory = new ClassMetadataFactory($this);
         if ($cacheDriver = $this->config->getMetadataCacheImpl()) {
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }
@@ -141,8 +139,8 @@ class DocumentManager
         $this->proxyFactory = new ProxyFactory($this,
                 $this->config->getProxyDir(),
                 $this->config->getProxyNamespace(),
-                $this->config->getAutoGenerateProxyClasses());
-        $this->cmd = $this->config->getMongoCmd();
+                $this->config->getAutoGenerateProxyClasses()
+        );
     }
 
     /**
