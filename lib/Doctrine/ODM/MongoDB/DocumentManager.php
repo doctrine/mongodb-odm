@@ -287,7 +287,7 @@ class DocumentManager
      */
     public function createQueryBuilder($documentName = null)
     {
-        return new Query\Builder($this, $this->config->getMongoCmd(), $documentName);
+        return new Query\Builder($this, $this->cmd, $documentName);
     }
 
     /**
