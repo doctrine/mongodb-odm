@@ -141,6 +141,7 @@ class DocumentManager
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
         $this->metadataFactory->setDocumentManager($this);
+        $this->metadataFactory->setConfiguration($this->config);
         if ($cacheDriver = $this->config->getMetadataCacheImpl()) {
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }
