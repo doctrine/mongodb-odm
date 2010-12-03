@@ -83,11 +83,11 @@ class PersistentCollection implements BaseCollection
     private $cmd;
 
     /**
-     * Array of references to load on initialization.
+     * The raw mongo data that will be used to initialize this collection.
      *
      * @var array
      */
-    private $references = array();
+    private $mongoData = array();
 
     public function __construct(BaseCollection $coll, DocumentManager $dm, Configuration $c)
     {
@@ -97,13 +97,23 @@ class PersistentCollection implements BaseCollection
     }
 
     /**
-     * Set the array of mongo database references to be used to initialize this collection.
+     * Sets the array of raw mongo data that will be used to initialize this collection.
      *
-     * @param array $references
+     * @param array $mongoData
      */
-    public function setReferences(array $references)
+    public function setMongoData(array $mongoData)
     {
-        $this->references = $references;
+        $this->mongoData = $mongoData;
+    }
+
+    /**
+     * Gets the array of raw mongo data that will be used to initialize this collection.
+     *
+     * @return array $mongoData
+     */
+    public function getMongoData()
+    {
+        return $this->mongoData;
     }
 
     /**
@@ -127,14 +137,9 @@ class PersistentCollection implements BaseCollection
                 }
                 $this->isDirty = true;
             }
-            $this->references = array();
+            $this->mongoData = array();
             $this->initialized = true;
         }
-    }
-
-    public function getReferences()
-    {
-        return $this->references;
     }
 
     /**
@@ -396,7 +401,7 @@ class PersistentCollection implements BaseCollection
      */
     public function count()
     {
-        return count($this->references) + $this->coll->count();
+        return count($this->mongoData) + $this->coll->count();
     }
 
     /**
@@ -424,7 +429,7 @@ class PersistentCollection implements BaseCollection
      */
     public function isEmpty()
     {
-        return $this->coll->count() === 0 ? true : false;
+        return $this->count() === 0 ? true : false;
     }
 
     /**
@@ -494,6 +499,7 @@ class PersistentCollection implements BaseCollection
                 $this->dm->getUnitOfWork()->scheduleOrphanRemoval($element);
             }
         }
+        $this->mongoData = array();
         $this->coll->clear();
         $this->changed();
         $this->dm->getUnitOfWork()->scheduleCollectionDeletion($this);

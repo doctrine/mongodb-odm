@@ -55,9 +55,10 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->listener->called = array();
 
         $document = $dm->find(__NAMESPACE__.'\TestDocument', $test->id);
+        $document->embedded->initialize();
         $called = array(
             Events::preLoad => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'),
-            Events::postLoad => array('Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument')
+            Events::postLoad => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument')
         );
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = array();

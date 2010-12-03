@@ -57,7 +57,6 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $locations = $bar->getLocations();
         $this->assertEquals(3, count($locations));
         $locations = $bar->getLocations();
-        //unset($locations[0], $locations[1], $locations[2]);
         $locations->clear();
         $this->assertEquals(0, count($locations));
         $this->dm->flush(array('safe' => true));

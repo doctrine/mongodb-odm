@@ -404,9 +404,43 @@ class DocumentPersister
     public function loadCollection(PersistentCollection $collection)
     {
         $mapping = $collection->getMapping();
+        switch ($mapping['association']) {
+            case ClassMetadata::EMBED_MANY:
+                $this->loadEmbedManyCollection($collection);
+                break;
+
+            case ClassMetadata::REFERENCE_MANY:
+                $this->loadReferenceManyCollection($collection);
+                break;
+        }
+    }
+
+    private function loadEmbedManyCollection(PersistentCollection $collection)
+    {
+        $embeddedDocuments = $collection->getMongoData();
+        $mapping = $collection->getMapping();
+        $owner = $collection->getOwner();
+        $hydrator = $this->dm->getHydrator();
+        if ($embeddedDocuments) {
+            foreach ($embeddedDocuments as $key => $embeddedDocument) {
+                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                $embeddedMetadata = $this->dm->getClassMetadata($className);
+                $embeddedDocumentObject = $embeddedMetadata->newInstance();
+
+                $hydrator->hydrate($embeddedDocumentObject, $embeddedDocument);
+                $this->uow->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
+                $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'].'.'.$key);
+                $collection->add($embeddedDocumentObject);
+            }
+        }
+    }
+
+    private function loadReferenceManyCollection(PersistentCollection $collection)
+    {
+        $mapping = $collection->getMapping();
         $cmd = $this->dm->getConfiguration()->getMongoCmd();
         $groupedIds = array();
-        foreach ($collection->getReferences() as $reference) {
+        foreach ($collection->getMongoData() as $reference) {
             $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
             $id = $reference[$cmd . 'id'];
             $reference = $this->dm->getReference($className, (string) $id);
@@ -428,6 +462,7 @@ class DocumentPersister
             }
         }
     }
+
 
     /**
      * Prepares a query and converts values to the types mongodb expects.

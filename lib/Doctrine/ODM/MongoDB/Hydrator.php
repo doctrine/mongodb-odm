@@ -146,14 +146,12 @@ class Hydrator
                 if ( ! (is_array($rawValue) || $rawValue instanceof Collection)) {
                     continue;
                 }
-                $references = $rawValue;
                 $value = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getConfiguration());
-                $value->setInitialized(false);
                 $value->setOwner($document, $mapping);
-
-                // Delay any hydration of reference objects until the collection is
-                // accessed and initialized for the first time
-                $value->setReferences($references);
+                $value->setInitialized(false);
+                if ($rawValue) {
+                    $value->setMongoData($rawValue);
+                }
 
             // @EmbedOne
             } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
@@ -171,23 +169,12 @@ class Hydrator
 
             // @EmbedMany
             } elseif ($mapping['association'] === ClassMetadata::EMBED_MANY) {
-                $embeddedDocuments = $rawValue;
-                $coll = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getConfiguration());
-                if ($embeddedDocuments) {
-                    foreach ($embeddedDocuments as $key => $embeddedDocument) {
-                        $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
-                        $embeddedMetadata = $this->dm->getClassMetadata($className);
-                        $embeddedDocumentObject = $embeddedMetadata->newInstance();
-
-                        $this->hydrate($embeddedDocumentObject, $embeddedDocument);
-                        $uow->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
-                        $uow->setParentAssociation($embeddedDocumentObject, $mapping, $document, $mapping['name'].'.'.$key);
-                        $coll->add($embeddedDocumentObject);
-                    }
+                $value = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getConfiguration());
+                $value->setOwner($document, $mapping);
+                $value->setInitialized(false);
+                if ($rawValue) {
+                    $value->setMongoData($rawValue);
                 }
-                $coll->setOwner($document, $mapping);
-                $coll->takeSnapshot();
-                $value = $coll;
             }
 
             unset($data[$mapping['name']]);
