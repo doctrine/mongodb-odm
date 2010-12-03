@@ -260,7 +260,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     private function getMockDocumentPersister(PersistenceBuilder $pb, ClassMetadata $class)
     {
-        return new DocumentPersisterMock($pb, $this->dm, $this->dm->getEventManager(), $this->uow, $class, '$');
+        return new DocumentPersisterMock($pb, $this->dm, $this->dm->getEventManager(), $this->uow, $this->dm->getHydrator(), $class, '$');
     }
 
     protected function getClassMetadata($class, $flag)

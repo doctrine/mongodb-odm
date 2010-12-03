@@ -20,9 +20,11 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 
+
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\Common\EventManager,
     Doctrine\ODM\MongoDB\UnitOfWork,
+    Doctrine\ODM\MongoDB\Hydrator,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\Common\Collections\Collection,
@@ -76,6 +78,13 @@ class DocumentPersister
     private $uow;
 
     /**
+     * The Hydrator instance
+     *
+     * @var Doctrine\ODM\MongoDB\Hydrator
+     */
+    private $hydrator;
+
+    /**
      * The ClassMetadata instance for the document type being persisted.
      *
      * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
@@ -125,13 +134,14 @@ class DocumentPersister
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      * @param string $cmd
      */
-    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, ClassMetadata $class, $cmd)
+    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, Hydrator $hydrator, ClassMetadata $class, $cmd)
     {
         $this->pb         = $pb;
         $this->dm         = $dm;
         $this->evm        = $evm;
         $this->cmd        = $cmd;
         $this->uow        = $uow;
+        $this->hydrator   = $hydrator;
         $this->class      = $class;
         $this->collection = $dm->getDocumentCollection($class->name);
     }
@@ -300,7 +310,7 @@ class DocumentPersister
     public function refresh($id, $document)
     {
         $data = $this->collection->findOne(array('_id' => $id));
-        $this->dm->getHydrator()->hydrate($document, $data);
+        $this->hydrator->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
 
@@ -430,14 +440,13 @@ class DocumentPersister
         $embeddedDocuments = $collection->getMongoData();
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
-        $hydrator = $this->dm->getHydrator();
         if ($embeddedDocuments) {
             foreach ($embeddedDocuments as $key => $embeddedDocument) {
                 $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
-                $hydrator->hydrate($embeddedDocumentObject, $embeddedDocument);
+                $this->hydrator->hydrate($embeddedDocumentObject, $embeddedDocument);
                 $this->uow->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'].'.'.$key);
                 $collection->add($embeddedDocumentObject);
@@ -448,7 +457,7 @@ class DocumentPersister
     private function loadReferenceManyCollection(PersistentCollection $collection)
     {
         $mapping = $collection->getMapping();
-        $cmd = $this->dm->getConfiguration()->getMongoCmd();
+        $cmd = $this->cmd;
         $groupedIds = array();
         foreach ($collection->getMongoData() as $reference) {
             $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
@@ -463,13 +472,12 @@ class DocumentPersister
                 $groupedIds[$className][] = $mongoId;
             }
         }
-        $hydrator = $this->dm->getHydrator();
         foreach ($groupedIds as $className => $ids) {
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $data = $mongoCollection->find(array('_id' => array($cmd . 'in' => $ids)));
             foreach ($data as $documentData) {
                 $document = $this->uow->getById((string) $documentData['_id'], $className);
-                $hydrator->hydrate($document, $documentData);
+                $this->hydrator->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $documentData);
             }
         }
