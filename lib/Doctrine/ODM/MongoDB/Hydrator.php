@@ -124,7 +124,7 @@ class Hydrator
             $value = null;
 
             // Prepare the different types of mapped values converting them from the MongoDB
-            // type to the portable Doctrine type.
+            // types to the portable Doctrine types.
 
             // @Field
             if ( ! isset($mapping['association'])) {
@@ -141,11 +141,10 @@ class Hydrator
                 $id = $targetMetadata->getPHPIdentifierValue($reference[$this->cmd . 'id']);
                 $value = $this->dm->getReference($className, $id);
 
-            // @ReferenceMany
-            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY) {
-                if ( ! (is_array($rawValue) || $rawValue instanceof Collection)) {
-                    continue;
-                }
+            // @ReferenceMany and @EmbedMany
+            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY ||
+                      $mapping['association'] === ClassMetadata::EMBED_MANY) {
+
                 $value = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getConfiguration());
                 $value->setOwner($document, $mapping);
                 $value->setInitialized(false);
@@ -166,15 +165,6 @@ class Hydrator
                 $this->hydrate($value, $embeddedDocument);
                 $uow->registerManaged($value, null, $embeddedDocument);
                 $uow->setParentAssociation($value, $mapping, $document, $mapping['name']);
-
-            // @EmbedMany
-            } elseif ($mapping['association'] === ClassMetadata::EMBED_MANY) {
-                $value = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getConfiguration());
-                $value->setOwner($document, $mapping);
-                $value->setInitialized(false);
-                if ($rawValue) {
-                    $value->setMongoData($rawValue);
-                }
             }
 
             unset($data[$mapping['name']]);
