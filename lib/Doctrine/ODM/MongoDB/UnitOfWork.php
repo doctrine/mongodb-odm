@@ -268,7 +268,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getPersistenceBuilder()
     {
-        return new PersistenceBuilder($this->dm, $this, $this->dm->getConfiguration()->getMongoCmd());
+        return new PersistenceBuilder($this->dm, $this, $this->cmd);
     }
 
     /**
@@ -330,7 +330,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         if ( ! isset($this->collectionPersister)) {
             $pb = $this->getPersistenceBuilder();
-            $this->collectionPersister = new Persisters\CollectionPersister($this->dm, $pb, $this, $this->dm->getConfiguration()->getMongoCmd());
+            $this->collectionPersister = new Persisters\CollectionPersister($this->dm, $pb, $this, $this->cmd);
         }
         return $this->collectionPersister;
     }
