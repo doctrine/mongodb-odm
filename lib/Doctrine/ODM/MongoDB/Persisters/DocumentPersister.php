@@ -19,7 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
+
 use Doctrine\ODM\MongoDB\DocumentManager,
+    Doctrine\Common\EventManager,
     Doctrine\ODM\MongoDB\UnitOfWork,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
@@ -58,6 +60,13 @@ class DocumentPersister
      * @var Doctrine\ODM\MongoDB\DocumentManager
      */
     private $dm;
+
+    /**
+     * The EventManager instance
+     *
+     * @var Doctrine\Common\EventManager
+     */
+    private $evm;
 
     /**
      * The UnitOfWork instance.
@@ -111,17 +120,19 @@ class DocumentPersister
      *
      * @param Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder $pb
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param Doctrine\Common\EventManager $evm
      * @param Doctrine\ODM\MongoDB\UnitOfWork $uow
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      * @param string $cmd
      */
-    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, UnitOfWork $uow, ClassMetadata $class, $cmd)
+    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, ClassMetadata $class, $cmd)
     {
-        $this->pb = $pb;
-        $this->dm = $dm;
-        $this->cmd = $cmd;
-        $this->uow = $uow;
-        $this->class = $class;
+        $this->pb         = $pb;
+        $this->dm         = $dm;
+        $this->evm        = $evm;
+        $this->cmd        = $cmd;
+        $this->uow        = $uow;
+        $this->class      = $class;
         $this->collection = $dm->getDocumentCollection($class->name);
     }
 
@@ -243,8 +254,8 @@ class DocumentPersister
                 }
             }
 
-            if ($this->dm->getEventManager()->hasListeners(Events::onUpdatePrepared)) {
-                $this->dm->getEventManager()->dispatchEvent(
+            if ($this->evm->hasListeners(Events::onUpdatePrepared)) {
+                $this->evm->dispatchEvent(
                     Events::onUpdatePrepared, new OnUpdatePreparedArgs($this->dm, $document, $update)
                 );
             }
