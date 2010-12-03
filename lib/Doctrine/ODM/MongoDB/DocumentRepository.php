@@ -17,6 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
+
 namespace Doctrine\ODM\MongoDB;
 
 /**
@@ -45,6 +46,11 @@ class DocumentRepository
     protected $dm;
 
     /**
+     * @var UnitOfWork
+     */
+    protected $uow;
+
+    /**
      * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     protected $class;
@@ -53,13 +59,15 @@ class DocumentRepository
      * Initializes a new <tt>DocumentRepository</tt>.
      *
      * @param DocumentManager $dm The DocumentManager to use.
+     * @param UnitOfWork $uow The UnitOfWork to use.
      * @param ClassMetadata $classMetadata The class descriptor.
      */
-    public function __construct($dm, Mapping\ClassMetadata $class)
+    public function __construct(DocumentManager $dm, UnitOfWork $uow, Mapping\ClassMetadata $class)
     {
         $this->documentName = $class->name;
-        $this->dm = $dm;
-        $this->class = $class;
+        $this->dm           = $dm;
+        $this->uow          = $uow;
+        $this->class        = $class;
     }
 
     /**
@@ -91,7 +99,7 @@ class DocumentRepository
     public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
         // Check identity map first
-        if ($document = $this->dm->getUnitOfWork()->tryGetById($id, $this->class->rootDocumentName)) {
+        if ($document = $this->uow->tryGetById($id, $this->class->rootDocumentName)) {
             if ($lockMode != LockMode::NONE) {
                 $this->dm->lock($document, $lockMode, $lockVersion);
             }
@@ -102,18 +110,18 @@ class DocumentRepository
         $id = array('_id' => $id);
 
         if ($lockMode == LockMode::NONE) {
-            return $this->dm->getUnitOfWork()->getDocumentPersister($this->documentName)->load($id);
+            return $this->uow->getDocumentPersister($this->documentName)->load($id);
         } else if ($lockMode == LockMode::OPTIMISTIC) {
             if (!$this->class->isVersioned) {
                 throw LockException::notVersioned($this->documentName);
             }
-            $document = $this->dm->getUnitOfWork()->getDocumentPersister($this->documentName)->load($id);
+            $document = $this->uow->getDocumentPersister($this->documentName)->load($id);
 
-            $this->dm->getUnitOfWork()->lock($document, $lockMode, $lockVersion);
+            $this->uow->lock($document, $lockMode, $lockVersion);
 
             return $document;
         } else {
-            return $this->dm->getUnitOfWork()->getDocumentPersister($this->documentName)->load($id, null, array(), $lockMode);
+            return $this->uow->getDocumentPersister($this->documentName)->load($id, null, array(), $lockMode);
         }
     }
 
@@ -135,7 +143,7 @@ class DocumentRepository
      */
     public function findBy(array $criteria)
     {
-        return $this->dm->getUnitOfWork()->getDocumentPersister($this->documentName)->loadAll($criteria);
+        return $this->uow->getDocumentPersister($this->documentName)->loadAll($criteria);
     }
 
     /**
@@ -146,7 +154,7 @@ class DocumentRepository
      */
     public function findOneBy(array $criteria)
     {
-        return $this->dm->getUnitOfWork()->getDocumentPersister($this->documentName)->load($criteria);
+        return $this->uow->getDocumentPersister($this->documentName)->load($criteria);
     }
 
     /**

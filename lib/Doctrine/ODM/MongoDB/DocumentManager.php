@@ -428,9 +428,9 @@ class DocumentManager
         $customRepositoryClassName = $metadata->customRepositoryClassName;
 
         if ($customRepositoryClassName !== null) {
-            $repository = new $customRepositoryClassName($this, $metadata);
+            $repository = new $customRepositoryClassName($this, $this->unitOfWork, $metadata);
         } else {
-            $repository = new DocumentRepository($this, $metadata);
+            $repository = new DocumentRepository($this, $this->unitOfWork, $metadata);
         }
 
         $this->repositories[$documentName] = $repository;
