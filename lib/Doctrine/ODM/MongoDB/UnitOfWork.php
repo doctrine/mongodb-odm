@@ -2255,6 +2255,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata($className);
 
+        // @TODO figure out how to remove this
         if ($class->discriminatorField) {
             if (isset($data[$class->discriminatorField['name']])) {
                 $type = $data[$class->discriminatorField['name']];
@@ -2266,11 +2267,6 @@ class UnitOfWork implements PropertyChangedListener
         $id = $class->getPHPIdentifierValue($data['_id']);
         if (isset($this->identityMap[$class->rootDocumentName][$id])) {
             $document = $this->identityMap[$class->rootDocumentName][$id];
-        } else {
-            $document = $class->newInstance();
-        }
-
-        if (isset($this->identityMap[$class->rootDocumentName][$id])) {
             $oid = spl_object_hash($document);
             if ($document instanceof Proxy && ! $document->__isInitialized__) {
                 $document->__isInitialized__ = true;
@@ -2286,6 +2282,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->originalDocumentData[$oid] = $data;
             }
         } else {
+            $document = $class->newInstance();
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
             $this->identityMap[$class->rootDocumentName][$id] = $document;

@@ -395,6 +395,11 @@ class DocumentPersister
         return $this->uow->getOrCreateDocument($this->class->name, $result, $hints);
     }
 
+    /**
+     * Loads a PersistentCollection data. Used in the initialize() method.
+     *
+     * @param PersistentCollection $collection
+     */
     public function loadCollection(PersistentCollection $collection)
     {
         $mapping = $collection->getMapping();
@@ -436,27 +441,28 @@ class DocumentPersister
         $groupedIds = array();
         foreach ($collection->getMongoData() as $reference) {
             $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
-            $id = $reference[$this->cmd . 'id'];
-            $reference = $this->dm->getReference($className, (string) $id);
+            $mongoId = $reference[$cmd . 'id'];
+            $id = (string) $mongoId;
+            $reference = $this->dm->getReference($className, $id);
             $collection->add($reference);
             if ($reference instanceof Proxy && ! $reference->__isInitialized__) {
                 if ( ! isset($groupedIds[$className])) {
                     $groupedIds[$className] = array();
                 }
-                $groupedIds[$className][] = $id;
+                $groupedIds[$className][] = $mongoId;
             }
         }
-
+        $hydrator = $this->dm->getHydrator();
         foreach ($groupedIds as $className => $ids) {
             $mongoCollection = $this->dm->getDocumentCollection($className);
-            $data = $mongoCollection->find(array('_id' => array($this->cmd . 'in' => $ids)));
-            $hints = array(Builder::HINT_REFRESH => true);
-            foreach ($data as $id => $documentData) {
-                $document = $this->uow->getOrCreateDocument($className, $documentData, $hints);
+            $data = $mongoCollection->find(array('_id' => array($cmd . 'in' => $ids)));
+            foreach ($data as $documentData) {
+                $document = $this->uow->getById((string) $documentData['_id'], $className);
+                $hydrator->hydrate($document, $documentData);
+                $this->uow->setOriginalDocumentData($document, $documentData);
             }
         }
     }
-
 
     /**
      * Prepares a query and converts values to the types mongodb expects.
