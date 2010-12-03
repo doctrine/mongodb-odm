@@ -137,7 +137,8 @@ class DocumentManager
         $this->cmd = $this->config->getMongoCmd();
         $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
         $this->hydrator = new Hydrator($this, $this->eventManager, $this->cmd);
-        $this->metadataFactory = new ClassMetadataFactory($this);
+        $this->metadataFactory = new ClassMetadataFactory();
+        $this->metadataFactory->setDocumentManager($this);
         if ($cacheDriver = $this->config->getMetadataCacheImpl()) {
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }
