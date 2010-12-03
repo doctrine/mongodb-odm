@@ -40,22 +40,23 @@ class Query extends \Doctrine\MongoDB\Query\Query
     private $class;
     private $hydrate = true;
 
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query, $cmd, $hydrate)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query, array $options, $cmd, $hydrate)
     {
-        $this->dm = $dm;
-        $this->class = $class;
-        $this->database = $database;
+        $this->dm         = $dm;
+        $this->class      = $class;
+        $this->database   = $database;
         $this->collection = $collection;
-        $this->query = $query;
-        $this->cmd = $cmd;
-        $this->hydrate = $hydrate;
+        $this->query      = $query;
+        $this->options    = $options;
+        $this->cmd        = $cmd;
+        $this->hydrate    = $hydrate;
     }
 
-    public function execute(array $options = array())
+    public function execute()
     {
         $uow = $this->dm->getUnitOfWork();
 
-        $results = parent::execute($options);
+        $results = parent::execute();
 
         // Convert the regular mongodb cursor to the odm cursor
         if ($results instanceof BaseCursor) {

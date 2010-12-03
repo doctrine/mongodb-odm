@@ -109,7 +109,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         return $this;
     }
 
-    public function getQuery()
+    public function getQuery(array $options = array())
     {
         if ($this->query['type'] === Query::TYPE_MAP_REDUCE) {
             $this->hydrate = false;
@@ -129,6 +129,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->database,
             $this->collection,
             $query,
+            $options,
             $this->cmd,
             $this->hydrate
         );
