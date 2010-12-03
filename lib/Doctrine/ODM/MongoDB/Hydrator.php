@@ -145,7 +145,7 @@ class Hydrator
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY ||
                       $mapping['association'] === ClassMetadata::EMBED_MANY) {
 
-                $value = new PersistentCollection(new ArrayCollection(), $this->dm, $this->cmd);
+                $value = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getUnitOfWork(), $this->cmd);
                 $value->setOwner($document, $mapping);
                 $value->setInitialized(false);
                 if ($rawValue) {

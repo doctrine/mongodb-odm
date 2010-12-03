@@ -22,7 +22,6 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\Common\Collections\Collection as BaseCollection,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
-    Doctrine\ODM\MongoDB\DocumentManager,
     Closure;
 
 /**
@@ -77,6 +76,13 @@ class PersistentCollection implements BaseCollection
     private $dm;
 
     /**
+     * The UnitOfWork that manages the persistence of the collection.
+     *
+     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     */
+    private $uow;
+
+    /**
      * Mongo command prefix
      * @var string
      */
@@ -89,11 +95,12 @@ class PersistentCollection implements BaseCollection
      */
     private $mongoData = array();
 
-    public function __construct(BaseCollection $coll, DocumentManager $dm, $cmd)
+    public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow, $cmd)
     {
         $this->coll = $coll;
-        $this->dm = $dm;
-        $this->cmd = $cmd;
+        $this->dm   = $dm;
+        $this->uow  = $uow;
+        $this->cmd  = $cmd;
     }
 
     /**
@@ -128,7 +135,7 @@ class PersistentCollection implements BaseCollection
                 $newObjects = $this->coll->toArray();
             }
             $this->coll->clear();
-            $this->dm->getUnitOfWork()->loadCollection($this);
+            $this->uow->loadCollection($this);
             $this->takeSnapshot();
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {
@@ -150,7 +157,7 @@ class PersistentCollection implements BaseCollection
         if ( ! $this->isDirty) {
             $this->isDirty = true;
             if ($this->dm && $this->mapping !== null && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
-                $this->dm->getUnitOfWork()->scheduleForDirtyCheck($this->owner);
+                $this->uow->scheduleForDirtyCheck($this->owner);
             }
         }
     }
@@ -311,7 +318,7 @@ class PersistentCollection implements BaseCollection
         if ($removed) {
             $this->changed();
             if ($this->mapping !== null && isset($this->mapping['embedded'])) {
-                $this->dm->getUnitOfWork()->scheduleOrphanRemoval($removed);
+                $this->uow->scheduleOrphanRemoval($removed);
             }
         }
 
@@ -328,7 +335,7 @@ class PersistentCollection implements BaseCollection
         if ($removed) {
             $this->changed();
             if ($this->mapping !== null && isset($this->mapping['embedded'])) {
-                $this->dm->getUnitOfWork()->scheduleOrphanRemoval($element);
+                $this->uow->scheduleOrphanRemoval($element);
             }
         }
         return $removed;
@@ -496,13 +503,13 @@ class PersistentCollection implements BaseCollection
         }
         if ($this->mapping !== null && isset($this->mapping['embedded'])) {
             foreach ($this->coll as $element) {
-                $this->dm->getUnitOfWork()->scheduleOrphanRemoval($element);
+                $this->uow->scheduleOrphanRemoval($element);
             }
         }
         $this->mongoData = array();
         $this->coll->clear();
         $this->changed();
-        $this->dm->getUnitOfWork()->scheduleCollectionDeletion($this);
+        $this->uow->scheduleCollectionDeletion($this);
         $this->takeSnapshot();
     }
 
