@@ -566,12 +566,10 @@ class UnitOfWork implements PropertyChangedListener
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if ($isChangeTrackingNotify) {
                     continue;
-                } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
-                    if ($orgValue !== $actualValue) {
-                        $changeSet[$propName] = array($orgValue, $actualValue);
-                        if ($orgValue instanceof PersistentCollection) {
-                            $this->collectionDeletions[] = $orgValue;
-                        }
+                } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many' && $orgValue !== $actualValue) {
+                    $changeSet[$propName] = array($orgValue, $actualValue);
+                    if ($orgValue instanceof PersistentCollection) {
+                        $this->collectionDeletions[] = $orgValue;
                     }
                 } else if (isset($class->fieldMappings[$propName]['file'])) {
                     if ($orgValue !== $actualValue || $actualValue->isDirty()) {
