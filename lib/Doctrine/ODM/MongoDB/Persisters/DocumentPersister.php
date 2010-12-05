@@ -191,6 +191,7 @@ class DocumentPersister
                 continue;
             }
 
+            // Set the initial version for each insert
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 if ($versionMapping['type'] === 'int') {
@@ -236,7 +237,9 @@ class DocumentPersister
             $id = $this->class->getDatabaseIdentifierValue($id);
             $query = array('_id' => $id);
 
-            // Include versioning updates
+            // Include versioning logic to set the new version value in the database
+            // and to ensure the version has not changed since this document object instance
+            // was fetched from the database
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
@@ -254,6 +257,8 @@ class DocumentPersister
                 $options['safe'] = true;
             }
 
+            // Include locking logic so that if the document object in memory is currently
+            // locked then it will remove it, otherwise it ensures the document is not locked.
             if ($this->class->isLockable) {
                 $isLocked = $this->class->reflFields[$this->class->lockField]->getValue($document);
                 $lockMapping = $this->class->fieldMappings[$this->class->lockField];
@@ -262,12 +267,6 @@ class DocumentPersister
                 } else {
                     $query[$lockMapping['name']] = array($this->cmd . 'exists' => false);
                 }
-            }
-
-            if ($this->evm->hasListeners(Events::onUpdatePrepared)) {
-                $this->evm->dispatchEvent(
-                    Events::onUpdatePrepared, new OnUpdatePreparedArgs($this->dm, $document, $update)
-                );
             }
 
             $result = $this->collection->update($query, $update, $options);
