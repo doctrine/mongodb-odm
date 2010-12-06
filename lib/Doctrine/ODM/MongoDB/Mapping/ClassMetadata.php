@@ -1301,6 +1301,14 @@ class ClassMetadata
     }
 
     /**
+     * Sets the Id generator options.
+     */
+    public function setIdGeneratorOptions($generatorOptions)
+    {
+        $this->generatorOptions = $generatorOptions;
+    }
+
+    /**
      * @return boolean
      */
     public function isInheritanceTypeNone()
@@ -1508,6 +1516,8 @@ class ClassMetadata
             'db',
             'collection',
             'rootDocumentName',
+            'generatorType',
+            'generatorOptions',
             'idGenerator'
         );
 

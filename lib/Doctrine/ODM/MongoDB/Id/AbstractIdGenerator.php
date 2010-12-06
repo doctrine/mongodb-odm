@@ -33,23 +33,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 abstract class AbstractIdGenerator
 {
     /**
-     * The ClassMetadataInstance for this id generator instance.
-     *
-     * @var ClassMetadata
-     */
-    protected $class;
-
-    /**
-     * Constructs a new id generator instance.
-     *
-     * @param ClassMetadata $class
-     */
-    public function __construct(ClassMetadata $class)
-    {
-        $this->class = $class;
-    }
-
-    /**
      * Generates an identifier for a document.
      *
      * @param Doctrine\ORM\Document $document

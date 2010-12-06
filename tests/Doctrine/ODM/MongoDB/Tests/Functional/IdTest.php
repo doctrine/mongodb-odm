@@ -80,12 +80,29 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($user2->embedded[0]->id, 3);
         $this->assertEquals($user2->embedded[1]->id, 4);
     }
+
+    public function testIdGeneratorInstance()
+    {
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\UuidUser');
+        $this->assertEquals(\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
+        $this->assertEquals(array('salt' => 'test'), $class->generatorOptions);
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Id\UuidGenerator', $class->idGenerator);
+        $this->assertEquals('test', $class->idGenerator->getSalt());
+
+        $serialized = serialize($class);
+        $class = unserialize($serialized);
+
+        $this->assertEquals(\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
+        $this->assertEquals(array('salt' => 'test'), $class->generatorOptions);
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Id\UuidGenerator', $class->idGenerator);
+        $this->assertEquals('test', $class->idGenerator->getSalt());
+    }
 }
 
 /** @Document */
 class UuidUser
 {
-    /** @Id(strategy="uuid") */
+    /** @Id(strategy="uuid", options={"salt"="test"}) */
     public $id;
 
     /** @String(name="t") */

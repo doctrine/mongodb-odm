@@ -250,6 +250,9 @@ class ClassMetadataFactory
                 if ($parent->generatorType) {
                     $class->setIdGeneratorType($parent->generatorType);
                 }
+                if ($parent->generatorOptions) {
+                    $class->setIdGeneratorOptions($parent->generatorOptions);
+                }
                 if ($parent->idGenerator) {
                     $class->setIdGenerator($parent->idGenerator);
                 }
