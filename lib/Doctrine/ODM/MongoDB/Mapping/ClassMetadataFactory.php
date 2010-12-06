@@ -355,7 +355,7 @@ class ClassMetadataFactory
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:
                 $uuidGenerator = new \Doctrine\ODM\MongoDB\Id\UuidGenerator($class);
-                $uuidGenerator->setSalt(isset($idGenOptions['salt']) ? $idGenOptions['salt'] : $class->name);
+                $uuidGenerator->setSalt(isset($idGenOptions['salt']) ? $idGenOptions['salt'] : php_uname('n'));
                 $class->setIdGenerator($uuidGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_NONE;
