@@ -53,9 +53,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     public function __construct(DocumentManager $dm, $cmd, $documentName = null)
     {
-        $this->dm = $dm;
+        $this->dm   = $dm;
         $this->expr = new Expr($dm, $cmd);
-        $this->cmd = $cmd;
+        $this->cmd  = $cmd;
         if ($documentName !== null) {
             $this->setDocumentName($documentName);
         }
@@ -108,9 +108,14 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         $this->expr->references($document);
         return $this;
     }
-
-    public function getQuery()
-    {
+    /**
+     * Gets the Query executable.
+     *
+     * @param array $options
+     * @return QueryInterface $query
+     */
+    public function getQuery(array $options = array())
+        {
         if ($this->query['type'] === Query::TYPE_MAP_REDUCE) {
             $this->hydrate = false;
         }
@@ -129,6 +134,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->database,
             $this->collection,
             $query,
+            $options,
             $this->cmd,
             $this->hydrate
         );
