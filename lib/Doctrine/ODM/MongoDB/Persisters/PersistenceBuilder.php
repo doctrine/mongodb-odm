@@ -168,11 +168,6 @@ class PersistenceBuilder
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
-            // many references are persisted with CollectionPersister later
-            if (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
-                continue;
-            }
-
             // skip not saved fields
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
                 continue;
@@ -241,6 +236,10 @@ class PersistenceBuilder
                 } else {
                     $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
                 }
+
+            // @ReferenceMany
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
+                // Do nothing right now
             }
         }
         return $updateData;

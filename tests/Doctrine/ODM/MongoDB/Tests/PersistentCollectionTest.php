@@ -12,13 +12,14 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
     public function testSlice()
     {
         list ($start, $limit) = array(0, 25);
-        $collection = $this->getCollectionMock();
+        $collection = $this->getMockCollection();
         $collection->expects($this->once())
             ->method('slice')
             ->with($start, $limit)
             ->will($this->returnValue(true));
-        $dm = $this->getDocumentManagerMock();
-        $pCollection = new PersistentCollection($collection, $dm, '$');
+        $dm = $this->getMockDocumentManager();
+        $uow = $this->getMockUnitOfWork();
+        $pCollection = new PersistentCollection($collection, $dm, $uow, '$');
         $pCollection->slice($start, $limit);
     }
 
@@ -26,15 +27,23 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Doctrine\ODM\MongoDB\DocumentManager
      */
-    protected function getDocumentManagerMock()
+    private function getMockDocumentManager()
     {
         return $this->getMock('Doctrine\ODM\MongoDB\DocumentManager', array(), array(), '', false, false);
     }
 
     /**
+     * @return Doctrine\ODM\MongoDB\UnitOfWork
+     */
+    private function getMockUnitOfWork()
+    {
+        return $this->getMock('Doctrine\ODM\MongoDB\UnitOfWork', array(), array(), '', false, false);
+    }
+
+    /**
      * @return Doctrine\Common\Collections\Collection
      */
-    protected function getCollectionMock()
+    private function getMockCollection()
     {
         return $this->getMock('Doctrine\Common\Collections\Collection', get_class_methods('Doctrine\Common\Collections\Collection'), array(), '', false, false);
     }

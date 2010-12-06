@@ -19,7 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
+
 use Doctrine\ODM\MongoDB\DocumentManager,
+    Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\MongoDBException,
     Doctrine\ODM\MongoDB\Events,
@@ -40,6 +42,9 @@ class ClassMetadataFactory
 {
     /** The DocumentManager instance */
     private $dm;
+
+    /** The Configuration instance */
+    private $config;
 
     /** The array of loaded ClassMetadata instances */
     private $loadedMetadata;
@@ -67,12 +72,22 @@ class ClassMetadataFactory
     }
 
     /**
+     * Sets the Configuration instance
+     *
+     * @param Configuration $config
+     */
+    public function setConfiguration(Configuration $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * Lazy initialization of this stuff, especially the metadata driver,
      * since these are not needed at all when a metadata cache is active.
      */
     private function initialize()
     {
-        $this->driver = $this->dm->getConfiguration()->getMetadataDriverImpl();
+        $this->driver = $this->config->getMetadataDriverImpl();
         $this->evm = $this->dm->getEventManager();
         $this->initialized = true;
     }
@@ -141,7 +156,7 @@ class ClassMetadataFactory
             // Check for namespace alias
             if (strpos($className, ':') !== false) {
                 list($namespaceAlias, $simpleClassName) = explode(':', $className);
-                $realClassName = $this->dm->getConfiguration()->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
+                $realClassName = $this->config->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
 
                 if (isset($this->loadedMetadata[$realClassName])) {
                     // We do not have the alias name in the map, include it
@@ -247,7 +262,7 @@ class ClassMetadataFactory
                 $class->setCollection($parent->getCollection());
             }
 
-            $db = $class->getDatabase() ?: $this->dm->getConfiguration()->getDefaultDB();
+            $db = $class->getDatabase() ?: $this->config->getDefaultDB();
             $class->setDB($this->dm->formatDBName($db));
 
             $class->setParentClasses($visited);

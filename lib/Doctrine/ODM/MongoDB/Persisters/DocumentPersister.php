@@ -19,8 +19,12 @@
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
+
+
 use Doctrine\ODM\MongoDB\DocumentManager,
+    Doctrine\Common\EventManager,
     Doctrine\ODM\MongoDB\UnitOfWork,
+    Doctrine\ODM\MongoDB\Hydrator,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\Common\Collections\Collection,
@@ -60,11 +64,25 @@ class DocumentPersister
     private $dm;
 
     /**
+     * The EventManager instance
+     *
+     * @var Doctrine\Common\EventManager
+     */
+    private $evm;
+
+    /**
      * The UnitOfWork instance.
      *
      * @var Doctrine\ODM\MongoDB\UnitOfWork
      */
     private $uow;
+
+    /**
+     * The Hydrator instance
+     *
+     * @var Doctrine\ODM\MongoDB\Hydrator
+     */
+    private $hydrator;
 
     /**
      * The ClassMetadata instance for the document type being persisted.
@@ -111,17 +129,20 @@ class DocumentPersister
      *
      * @param Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder $pb
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param Doctrine\Common\EventManager $evm
      * @param Doctrine\ODM\MongoDB\UnitOfWork $uow
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      * @param string $cmd
      */
-    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, UnitOfWork $uow, ClassMetadata $class, $cmd)
+    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, Hydrator $hydrator, ClassMetadata $class, $cmd)
     {
-        $this->pb = $pb;
-        $this->dm = $dm;
-        $this->cmd = $cmd;
-        $this->uow = $uow;
-        $this->class = $class;
+        $this->pb         = $pb;
+        $this->dm         = $dm;
+        $this->evm        = $evm;
+        $this->cmd        = $cmd;
+        $this->uow        = $uow;
+        $this->hydrator   = $hydrator;
+        $this->class      = $class;
         $this->collection = $dm->getDocumentCollection($class->name);
     }
 
@@ -170,6 +191,7 @@ class DocumentPersister
                 continue;
             }
 
+            // Set the initial version for each insert
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 if ($versionMapping['type'] === 'int') {
@@ -215,7 +237,9 @@ class DocumentPersister
             $id = $this->class->getDatabaseIdentifierValue($id);
             $query = array('_id' => $id);
 
-            // Include versioning updates
+            // Include versioning logic to set the new version value in the database
+            // and to ensure the version has not changed since this document object instance
+            // was fetched from the database
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
@@ -233,6 +257,8 @@ class DocumentPersister
                 $options['safe'] = true;
             }
 
+            // Include locking logic so that if the document object in memory is currently
+            // locked then it will remove it, otherwise it ensures the document is not locked.
             if ($this->class->isLockable) {
                 $isLocked = $this->class->reflFields[$this->class->lockField]->getValue($document);
                 $lockMapping = $this->class->fieldMappings[$this->class->lockField];
@@ -241,12 +267,6 @@ class DocumentPersister
                 } else {
                     $query[$lockMapping['name']] = array($this->cmd . 'exists' => false);
                 }
-            }
-
-            if ($this->dm->getEventManager()->hasListeners(Events::onUpdatePrepared)) {
-                $this->dm->getEventManager()->dispatchEvent(
-                    Events::onUpdatePrepared, new OnUpdatePreparedArgs($this->dm, $document, $update)
-                );
             }
 
             $result = $this->collection->update($query, $update, $options);
@@ -289,7 +309,7 @@ class DocumentPersister
     public function refresh($id, $document)
     {
         $data = $this->collection->findOne(array('_id' => $id));
-        $this->dm->getHydrator()->hydrate($document, $data);
+        $this->hydrator->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
 
@@ -419,14 +439,13 @@ class DocumentPersister
         $embeddedDocuments = $collection->getMongoData();
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
-        $hydrator = $this->dm->getHydrator();
         if ($embeddedDocuments) {
             foreach ($embeddedDocuments as $key => $embeddedDocument) {
                 $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
-                $hydrator->hydrate($embeddedDocumentObject, $embeddedDocument);
+                $this->hydrator->hydrate($embeddedDocumentObject, $embeddedDocument);
                 $this->uow->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'].'.'.$key);
                 $collection->add($embeddedDocumentObject);
@@ -437,7 +456,7 @@ class DocumentPersister
     private function loadReferenceManyCollection(PersistentCollection $collection)
     {
         $mapping = $collection->getMapping();
-        $cmd = $this->dm->getConfiguration()->getMongoCmd();
+        $cmd = $this->cmd;
         $groupedIds = array();
         foreach ($collection->getMongoData() as $reference) {
             $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
@@ -452,13 +471,12 @@ class DocumentPersister
                 $groupedIds[$className][] = $mongoId;
             }
         }
-        $hydrator = $this->dm->getHydrator();
         foreach ($groupedIds as $className => $ids) {
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $data = $mongoCollection->find(array('_id' => array($cmd . 'in' => $ids)));
             foreach ($data as $documentData) {
                 $document = $this->uow->getById((string) $documentData['_id'], $className);
-                $hydrator->hydrate($document, $documentData);
+                $this->hydrator->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $documentData);
             }
         }

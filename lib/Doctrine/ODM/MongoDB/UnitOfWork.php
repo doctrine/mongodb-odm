@@ -315,7 +315,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! isset($this->persisters[$documentName])) {
             $class = $this->dm->getClassMetadata($documentName);
             $pb = $this->getPersistenceBuilder();
-            $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this, $class, $this->cmd);
+            $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this->evm, $this, $this->hydrator, $class, $this->cmd);
         }
         return $this->persisters[$documentName];
     }
@@ -494,7 +494,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // Inject PersistentCollection
-                $coll = new PersistentCollection($value, $this->dm, $this->cmd);
+                $coll = new PersistentCollection($value, $this->dm, $this, $this->cmd);
                 $coll->setOwner($document, $mapping);
                 $coll->setDirty( ! $value->isEmpty());
                 $class->reflFields[$name]->setValue($document, $coll);
@@ -566,12 +566,10 @@ class UnitOfWork implements PropertyChangedListener
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if ($isChangeTrackingNotify) {
                     continue;
-                } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
-                    if ($orgValue !== $actualValue) {
-                        $changeSet[$propName] = array($orgValue, $actualValue);
-                        if ($orgValue instanceof PersistentCollection) {
-                            $this->collectionDeletions[] = $orgValue;
-                        }
+                } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many' && $orgValue !== $actualValue) {
+                    $changeSet[$propName] = array($orgValue, $actualValue);
+                    if ($orgValue instanceof PersistentCollection) {
+                        $this->collectionDeletions[] = $orgValue;
                     }
                 } else if (isset($class->fieldMappings[$propName]['file'])) {
                     if ($orgValue !== $actualValue || $actualValue->isDirty()) {
@@ -1814,7 +1812,7 @@ class UnitOfWork implements PropertyChangedListener
                         }
 
                         if ( ! $mergeCol instanceof PersistentCollection) {
-                            $mergeCol = new PersistentCollection($mergeCol, $this->dm, $this->cmd);
+                            $mergeCol = new PersistentCollection($mergeCol, $this->dm, $this, $this->cmd);
                             $mergeCol->setInitialized(true);
                         }
                         $mergeCol->setOwner($managedCopy, $assoc2);
