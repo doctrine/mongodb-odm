@@ -342,6 +342,7 @@ class ClassMetadataFactory
     private function completeIdGeneratorMapping(ClassMetadata $class)
     {
         $idGenType = $class->generatorType;
+        $idGenOptions = $class->generatorOptions;
         switch ($class->generatorType) {
             case ClassMetadata::GENERATOR_TYPE_AUTO:
                 $class->setIdGenerator(new \Doctrine\ODM\MongoDB\Id\AutoGenerator($class));
@@ -351,7 +352,7 @@ class ClassMetadataFactory
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:
                 $uuidGenerator = new \Doctrine\ODM\MongoDB\Id\UuidGenerator($class);
-                $uuidGenerator->setSalt($class->name);
+                $uuidGenerator->setSalt(isset($idGenOptions['salt']) ? $idGenOptions['salt'] : $class->name);
                 $class->setIdGenerator($uuidGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_NONE;

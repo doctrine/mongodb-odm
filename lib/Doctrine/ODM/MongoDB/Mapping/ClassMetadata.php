@@ -236,6 +236,20 @@ class ClassMetadata
     public $generatorType = self::GENERATOR_TYPE_AUTO;
 
     /**
+     * READ-ONLY: The Id generator options.
+     *
+     * @var array
+     */
+    public $generatorOptions = array();
+
+    /**
+     * READ-ONLY: The ID generator used for generating IDs for this class.
+     *
+     * @var AbstractIdGenerator
+     */
+    public $idGenerator;
+
+    /**
      * READ-ONLY: The field mappings of the class.
      * Keys are field names and values are mapping definitions.
      *
@@ -251,13 +265,6 @@ class ClassMetadata
      * @var array
      */
     public $fieldMappings = array();
-
-    /**
-     * READ-ONLY: The ID generator used for generating IDs for this class.
-     *
-     * @var AbstractIdGenerator
-     */
-    public $idGenerator;
 
     /**
      * READ-ONLY: Array of fields to also load with a given method.
@@ -940,6 +947,7 @@ class ClassMetadata
                     $mapping['type'] = 'custom_id';
                 }
                 $this->generatorType = $generatorType;
+                $this->generatorOptions = $mapping['options'];
             }
         }
         if ( ! isset($mapping['nullable'])) {
