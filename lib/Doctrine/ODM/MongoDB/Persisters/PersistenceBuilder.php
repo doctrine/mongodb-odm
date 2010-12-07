@@ -260,7 +260,7 @@ class PersistenceBuilder
 
         $referenceDocumentValue = array(
             $this->cmd . 'ref' => $class->getCollection(),
-            $this->cmd . 'id' => $id,
+            $this->cmd . 'id' => $class->getDatabaseIdentifierValue($id),
             $this->cmd . 'db' => $class->getDatabase()
         );
 
