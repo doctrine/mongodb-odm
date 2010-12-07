@@ -14,12 +14,12 @@ class PersistenceBuilderTest extends BaseTest
     public function setUp()
     {
         parent::setUp();
-        $this->dp = $this->dm->getUnitOfWork()->getPersistenceBuilder();
+        $this->pb = $this->dm->getUnitOfWork()->getPersistenceBuilder();
     }
 
     public function tearDown()
     {
-        unset($this->dp);
+        unset($this->pb);
         parent::tearDown();
     }
 
@@ -30,7 +30,7 @@ class PersistenceBuilderTest extends BaseTest
     {
         $this->dm->persist($document);
         $this->uow->computeChangeSets();
-        $this->assertDocumentInsertData($expectedData, $this->dp->prepareInsertData($document));
+        $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($document));
     }
 
     /**
