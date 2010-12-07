@@ -828,7 +828,7 @@ class UnitOfWork implements PropertyChangedListener
                 list($id, $document) = $pair;
                 $oid = spl_object_hash($document);
                 $class->setIdentifierValue($document, $id);
-                $this->documentIdentifiers[$oid] = $id;
+                $this->documentIdentifiers[$oid] = $class->getPHPIdentifierValue($id);
                 $this->documentStates[$oid] = self::STATE_MANAGED;
                 $this->originalDocumentData[$oid][$class->identifier] = $id;
                 $this->addToIdentityMap($document);
