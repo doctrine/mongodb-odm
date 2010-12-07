@@ -39,4 +39,14 @@ class BinDataFuncType extends Type
     {
         return $value !== null ? $value->bin : null;
     }
+
+    public function closureToMongo()
+    {
+        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::FUNC) : null;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = $value !== null ? $value->bin : null;';
+    }
 }

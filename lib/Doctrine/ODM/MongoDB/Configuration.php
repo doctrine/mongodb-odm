@@ -203,6 +203,72 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     }
 
     /**
+     * Sets the directory where Doctrine generates hydrator class files.
+     *
+     * @param string $dir
+     */
+    public function setHydratorDir($dir)
+    {
+        $this->attributes['hydratorDir'] = $dir;
+    }
+
+    /**
+     * Gets the directory where Doctrine generates hydrator class files.
+     *
+     * @return string
+     */
+    public function getHydratorDir()
+    {
+        return isset($this->attributes['hydratorDir']) ?
+                $this->attributes['hydratorDir'] : null;
+    }
+
+    /**
+     * Gets a boolean flag that indicates whether hydrator classes should always be regenerated
+     * during each script execution.
+     *
+     * @return boolean
+     */
+    public function getAutoGenerateHydratorClasses()
+    {
+        return isset($this->attributes['autoGenerateHydratorClasses']) ?
+                $this->attributes['autoGenerateHydratorClasses'] : true;
+    }
+
+    /**
+     * Sets a boolean flag that indicates whether hydrator classes should always be regenerated
+     * during each script execution.
+     *
+     * @param boolean $bool
+     */
+    public function setAutoGenerateHydratorClasses($bool)
+    {
+        $this->attributes['autoGenerateHydratorClasses'] = $bool;
+    }
+
+    /**
+     * Gets the namespace where hydrator classes reside.
+     * 
+     * @return string
+     */
+    public function getHydratorNamespace()
+    {
+        return isset($this->attributes['hydratorNamespace']) ?
+                $this->attributes['hydratorNamespace'] : null;
+    }
+
+    /**
+     * Sets the namespace where hydrator classes reside.
+     * 
+     * @param string $ns
+     */
+    public function setHydratorNamespace($ns)
+    {
+        $this->attributes['hydratorNamespace'] = $ns;
+    }
+
+
+    /**
      * Sets the default DB to use for all Documents that do not specify
      * a database.
      *

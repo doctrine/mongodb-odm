@@ -29,6 +29,10 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
 
         $config->setProxyDir(__DIR__ . '/../../../../../Proxies');
         $config->setProxyNamespace('Proxies');
+
+        $config->setHydratorDir(__DIR__ . '/../../../../../Hydrators');
+        $config->setHydratorNamespace('Hydrators');
+
         $config->setDefaultDB('doctrine_odm_tests');
 
         $reader = new AnnotationReader();

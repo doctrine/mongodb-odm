@@ -27,6 +27,10 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
 
         $config->setProxyDir(__DIR__ . '/../../../../../Proxies');
         $config->setProxyNamespace('Proxies');
+
+        $config->setHydratorDir(__DIR__ . '/../../../../../Hydrators');
+        $config->setHydratorNamespace('Hydrators');
+
         $config->setEnvironment('test');
         $config->setDefaultDB($this->defaultDB);
 

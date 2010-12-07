@@ -71,8 +71,13 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $connMock = new ConnectionMock();
         $config = new \Doctrine\ODM\MongoDB\Configuration();
+
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\ODM\MongoDB\Tests\Proxies');
+
+        $config->setHydratorDir(__DIR__ . '/../../Hydrators');
+        $config->setHydratorNamespace('Doctrine\ODM\MongoDB\Tests\Hydrators');
+
         $eventManager = new EventManager();
         $mockDriver = new MetadataDriverMock();
         $config->setMetadataDriverImpl($metadataDriver);

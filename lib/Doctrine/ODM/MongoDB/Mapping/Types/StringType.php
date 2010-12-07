@@ -39,4 +39,14 @@ class StringType  extends Type
     {
         return $value !== null ? (string) $value : null;
     }
+
+    public function closureToMongo()
+    {
+        return '$return = (string) $value;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = (string) $value;';
+    }
 }

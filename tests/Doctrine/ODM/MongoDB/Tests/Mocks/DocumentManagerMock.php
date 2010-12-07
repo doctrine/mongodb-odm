@@ -100,6 +100,10 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
             $config = new \Doctrine\ODM\MongoDB\Configuration();
             $config->setProxyDir(__DIR__ . '/../Proxies');
             $config->setProxyNamespace('Doctrine\Tests\Proxies');
+
+            $config->setHydratorDir(__DIR__ . '/../Hydrators');
+            $config->setHydratorNamespace('Doctrine\Tests\Hydrators');
+
             $config->setMetadataDriverImpl(\Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver::create());
         }
         if (is_null($eventManager)) {

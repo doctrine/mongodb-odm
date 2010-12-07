@@ -85,6 +85,16 @@ abstract class Type
         return $value;
     }
 
+    public function closureToMongo()
+    {
+        return '$return = $value;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = $value;';
+    }
+
     /**
      * Register a new type in the type map.
      *

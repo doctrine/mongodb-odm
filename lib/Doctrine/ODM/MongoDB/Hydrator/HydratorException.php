@@ -1,5 +1,7 @@
 <?php
 /*
+ *  $Id$
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -15,38 +17,34 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
- */
+*/
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Hydrator;
+
+use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
- * The Boolean type.
+ * MongoDB ODM Hydrator Exception
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
+ * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
-class BooleanType extends Type
+class HydratorException extends MongoDBException
 {
-    public function convertToDatabaseValue($value)
+    public static function hydratorDirectoryRequired()
     {
-        return $value !== null ? (boolean) $value : null;
+        return new self("You must configure a hydrator directory. See docs for details");
     }
 
-    public function convertToPHPValue($value)
+    public static function hydratorNamespaceRequired()
     {
-        return $value !== null ? (boolean) $value : null;
+        return new self("You must configure a hydrator namespace. See docs for details");
     }
 
-    public function closureToMongo()
+    public static function hydratorDirectoryMustExist()
     {
-        return '$return = (bool) $value;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = (bool) $value;';
+        return new self("You must create a hydrator directory specified");
     }
 }

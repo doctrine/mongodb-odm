@@ -26,7 +26,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
     Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\EventManager;
+    Doctrine\Common\EventManager,
+    Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 
 /**
  * The DocumentManager class is the central access point for managing the
@@ -136,7 +137,14 @@ class DocumentManager
         $this->eventManager = $eventManager ?: new EventManager();
         $this->cmd = $this->config->getMongoCmd();
         $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
-        $this->hydrator = new Hydrator($this, $this->eventManager, $this->cmd);
+
+        $this->hydratorFactory = new HydratorFactory(
+            $this,
+            $this->config->getHydratorDir(),
+            $this->config->getHydratorNamespace(),
+            $this->config->getAutoGenerateHydratorClasses()
+        );
+        $this->hydrator = new Hydrator($this, $this->hydratorFactory, $this->eventManager, $this->cmd);
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
@@ -225,6 +233,17 @@ class DocumentManager
     public function getHydrator()
     {
         return $this->hydrator;
+    }
+
+    /**
+     * Gets the Hydrator factory used by the DocumentManager to generate and get hydrators
+     * for each type of document.
+     *
+     * @return Doctrine\ODM\MongoDB\Hydrator\HydratorInterface
+     */
+    public function getHydratorFactory()
+    {
+        return $this->hydratorFactory;
     }
 
     /**

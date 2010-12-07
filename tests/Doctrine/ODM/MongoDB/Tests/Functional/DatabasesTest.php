@@ -27,6 +27,9 @@ class DatabasesTest extends \PHPUnit_Framework_TestCase
         $config->setProxyDir(__DIR__ . '/../../../../../Proxies');
         $config->setProxyNamespace('Proxies');
 
+        $config->setHydratorDir(__DIR__ . '/../../../../../Hydrators');
+        $config->setHydratorNamespace('Hydrators');
+
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));

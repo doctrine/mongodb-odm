@@ -308,8 +308,9 @@ class DocumentPersister
      */
     public function refresh($id, $document)
     {
+        $class = $this->dm->getClassMetadata(get_class($document));
         $data = $this->collection->findOne(array('_id' => $id));
-        $this->hydrator->hydrate($document, $data);
+        $data = $this->hydrator->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
 
@@ -445,8 +446,8 @@ class DocumentPersister
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
-                $this->hydrator->hydrate($embeddedDocumentObject, $embeddedDocument);
-                $this->uow->registerManaged($embeddedDocumentObject, null, $embeddedDocument);
+                $data = $this->hydrator->hydrate($embeddedDocumentObject, $embeddedDocument);
+                $this->uow->registerManaged($embeddedDocumentObject, null, $data);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'].'.'.$key);
                 $collection->add($embeddedDocumentObject);
             }
@@ -472,12 +473,13 @@ class DocumentPersister
             }
         }
         foreach ($groupedIds as $className => $ids) {
+            $class = $this->dm->getClassMetadata($className);
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $data = $mongoCollection->find(array('_id' => array($cmd . 'in' => $ids)));
             foreach ($data as $documentData) {
                 $document = $this->uow->getById((string) $documentData['_id'], $className);
-                $this->hydrator->hydrate($document, $documentData);
-                $this->uow->setOriginalDocumentData($document, $documentData);
+                $data = $this->hydrator->hydrate($document, $documentData);
+                $this->uow->setOriginalDocumentData($document, $data);
             }
         }
     }

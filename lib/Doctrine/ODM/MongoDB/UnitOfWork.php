@@ -2276,7 +2276,7 @@ class UnitOfWork implements PropertyChangedListener
                 $overrideLocalValues = isset($hints[Builder::HINT_REFRESH]);
             }
             if ($overrideLocalValues) {
-                $this->hydrator->hydrate($document, $data);
+                $data = $this->hydrator->hydrate($document, $data);
                 $this->originalDocumentData[$oid] = $data;
             }
         } else {
@@ -2284,7 +2284,7 @@ class UnitOfWork implements PropertyChangedListener
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
             $this->identityMap[$class->rootDocumentName][$id] = $document;
-            $this->hydrator->hydrate($document, $data);
+            $data = $this->hydrator->hydrate($document, $data);
             $this->registerManaged($document, $id, $data);
         }
         return $document;

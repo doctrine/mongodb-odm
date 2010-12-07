@@ -1,4 +1,7 @@
+tools/Proxies/*
+tools/Hydrators/*
 tests/Proxies/*
+tests/Hydrators/*
 build.properties
 build/
 logs/

@@ -119,6 +119,10 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $config->setProxyDir(__DIR__ . '/../../../../Proxies');
         $config->setProxyNamespace('Proxies');
+
+        $config->setHydratorDir(__DIR__ . '/../../../../Hydrators');
+        $config->setHydratorNamespace('Hydrators');
+
         $config->setDefaultDB('doctrine_odm_tests');
 
         /*

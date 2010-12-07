@@ -45,4 +45,14 @@ class IdType extends Type
     {
         return $value !== null ? (string) $value : null;
     }
+
+    public function closureToMongo()
+    {
+        return '$return = new MongoId($value);';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = (string) $value;';
+    }
 }

@@ -40,4 +40,14 @@ class CustomIdType extends Type
     {
         return $value !== null ? $value : null;
     }
+
+    public function closureToMongo()
+    {
+        return '$return = (string) $value;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = (string) $value;';
+    }
 }

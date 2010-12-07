@@ -39,4 +39,14 @@ class FloatType extends Type
     {
         return $value !== null ? (float) $value : null;
     }
+
+    public function closureToMongo()
+    {
+        return '$return = (float) $value;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = (float) $value;';
+    }
 }

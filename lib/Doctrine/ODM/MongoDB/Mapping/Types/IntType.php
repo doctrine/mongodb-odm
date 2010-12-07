@@ -39,4 +39,14 @@ class IntType extends Type
     {
         return $value !== null ? (integer) $value : null;
     }
+
+    public function closureToMongo()
+    {
+        return '$return = (int) $value;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = (int) $value;';
+    }
 }
