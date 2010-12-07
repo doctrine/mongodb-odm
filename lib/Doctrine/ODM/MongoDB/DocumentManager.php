@@ -96,6 +96,13 @@ class DocumentManager
     private $hydrator;
 
     /**
+     * The Hydrator factory instance.
+     *
+     * @var HydratorFactory
+     */
+    private $hydratorFactory;
+
+    /**
      * SchemaManager instance
      *
      * @var Doctrine\ODM\MongoDB\SchemaManager
