@@ -76,12 +76,21 @@ class Hydrator
      * @param Doctrine\Common\EventManager $evm
      * @param string $cmd
      */
-    public function __construct(DocumentManager $dm, HydratorFactory $hydratorFactory, EventManager $evm, $cmd)
+    public function __construct(DocumentManager $dm, EventManager $evm, $cmd)
     {
         $this->dm = $dm;
-        $this->hydratorFactory = $hydratorFactory;
         $this->evm = $evm;
         $this->cmd = $cmd;
+    }
+
+    /**
+     * Sets the hydrator factory instance.
+     *
+     * @param HydratorFactory $hydratorFactory
+     */
+    public function setHydratorFactory(HydratorFactory $hydratorFactory)
+    {
+        $this->hydratorFactory = $hydratorFactory;
     }
 
     /**
@@ -112,7 +121,11 @@ class Hydrator
             }
         }
 
-        $data = $this->hydratorFactory->getHydratorFor($metadata->name)->hydrate($document, $data);
+        if ($this->hydratorFactory !== null) {
+            $data = $this->hydratorFactory->getHydratorFor($metadata->name)->hydrate($document, $data);
+        } else {
+            $data = $this->doGenericHydration($metadata, $document, $data);
+        }
 
         // Invoke the postLoad lifecycle callbacks and listeners
         if (isset($metadata->lifecycleCallbacks[Events::postLoad])) {
@@ -122,6 +135,81 @@ class Hydrator
             $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
         }
 
+        return $data;
+    }
+
+    private function doGenericHydration(ClassMetadata $metadata, $document, $data)
+    {
+        foreach ($metadata->fieldMappings as $mapping) {
+            // Find the raw value. It may be in one of the mapped alsoLoadFields.
+            $found = false;
+            if (isset($mapping['alsoLoadFields']) && $mapping['alsoLoadFields']) {
+                foreach ($mapping['alsoLoadFields'] as $name) {
+                    if (isset($data[$name])) {
+                        $rawValue = $data[$name];
+                        $found = true;
+                        break;
+                    }
+                }
+            }
+            // If nothing then lets get it from the default mapping field name
+            if ($found === false) {
+                $rawValue = isset($data[$mapping['name']]) ? $data[$mapping['name']] : null;
+            }
+            $value = null;
+
+            // Prepare the different types of mapped values converting them from the MongoDB
+            // types to the portable Doctrine types.
+
+            // @Field
+            if ( ! isset($mapping['association'])) {
+                $value = Type::getType($mapping['type'])->convertToPHPValue($rawValue);
+
+            // @ReferenceOne
+            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+                $reference = $rawValue;
+                if ($reference === null || ! isset($reference[$this->cmd . 'id'])) {
+                    continue;
+                }
+                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
+                $targetMetadata = $this->dm->getClassMetadata($className);
+                $id = $targetMetadata->getPHPIdentifierValue($reference[$this->cmd . 'id']);
+                $value = $this->dm->getReference($className, $id);
+
+            // @ReferenceMany and @EmbedMany
+            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY ||
+                      $mapping['association'] === ClassMetadata::EMBED_MANY) {
+
+                $value = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getUnitOfWork(), $this->cmd);
+                $value->setOwner($document, $mapping);
+                $value->setInitialized(false);
+                if ($rawValue) {
+                    $value->setMongoData($rawValue);
+                }
+
+            // @EmbedOne
+            } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
+                if ($rawValue === null) {
+                    continue;
+                }
+                $embeddedDocument = $rawValue;
+                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                $embeddedMetadata = $this->dm->getClassMetadata($className);
+                $value = $embeddedMetadata->newInstance();
+
+                $this->hydrate($value, $embeddedDocument);
+                $uow->registerManaged($value, null, $embeddedDocument);
+                $uow->setParentAssociation($value, $mapping, $document, $mapping['name']);
+            }
+
+            unset($data[$mapping['name']]);
+
+            // Hydrate the prepared value to the document
+            if ($value !== null) {
+                $metadata->reflFields[$mapping['fieldName']]->setValue($document, $value);
+                $data[$mapping['fieldName']] = $value;
+            }
+        }
         return $data;
     }
 }

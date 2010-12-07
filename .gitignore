@@ -1,5 +1,5 @@
-tools/Proxies/*
-tools/Hydrators/*
+tools/sandbox/Proxies/*
+tools/sandbox/Hydrators/*
 tests/Proxies/*
 tests/Hydrators/*
 build.properties

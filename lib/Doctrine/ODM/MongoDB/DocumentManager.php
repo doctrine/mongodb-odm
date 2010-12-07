@@ -138,14 +138,6 @@ class DocumentManager
         $this->cmd = $this->config->getMongoCmd();
         $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
 
-        $this->hydratorFactory = new HydratorFactory(
-            $this,
-            $this->config->getHydratorDir(),
-            $this->config->getHydratorNamespace(),
-            $this->config->getAutoGenerateHydratorClasses()
-        );
-        $this->hydrator = new Hydrator($this, $this->hydratorFactory, $this->eventManager, $this->cmd);
-
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
         $this->metadataFactory->setDocumentManager($this);
@@ -154,7 +146,18 @@ class DocumentManager
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }
 
+        $this->hydrator = new Hydrator($this, $this->eventManager, $this->cmd);
+        $hydratorDir = $this->config->getHydratorDir();
+        $hydratorNs = $this->config->getHydratorNamespace();
+        if ($hydratorDir && $hydratorNs) {
+            $this->hydratorFactory = new HydratorFactory($this, $hydratorDir, $hydratorNs, $this->config->getAutoGenerateHydratorClasses());
+            $this->hydrator->setHydratorFactory($this->hydratorFactory);
+        }
+
         $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydrator, $this->cmd);
+        if ($this->hydratorFactory) {
+            $this->hydratorFactory->setUnitOfWork($this->unitOfWork);
+        }
         $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory = new ProxyFactory($this,
                 $this->config->getProxyDir(),

@@ -15,6 +15,9 @@ $classLoader->register();
 $classLoader = new ClassLoader('Doctrine\ODM\MongoDB', __DIR__ . '/../../lib');
 $classLoader->register();
 
+$classLoader = new ClassLoader('Doctrine\MongoDB', __DIR__ . '/../../lib/vendor/doctrine-mongodb/lib');
+$classLoader->register();
+
 $classLoader = new ClassLoader('Symfony', __DIR__ . '/../../lib/vendor');
 $classLoader->register();
 
@@ -25,6 +28,10 @@ $config = new Configuration();
 
 $config->setProxyDir(__DIR__ . '/Proxies');
 $config->setProxyNamespace('Proxies');
+
+$config->setHydratorDir(__DIR__ . '/Hydrators');
+$config->setHydratorNamespace('Hydrators');
+
 $config->setDefaultDB('doctrine_odm_sandbox');
 
 /*
