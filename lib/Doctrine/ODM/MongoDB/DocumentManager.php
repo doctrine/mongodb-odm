@@ -165,6 +165,7 @@ class DocumentManager
         if ($this->hydratorFactory) {
             $this->hydratorFactory->setUnitOfWork($this->unitOfWork);
         }
+        $this->hydrator->setUnitOfWork($this->unitOfWork);
         $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory = new ProxyFactory($this,
                 $this->config->getProxyDir(),

@@ -50,6 +50,13 @@ class Hydrator
     private $dm;
 
     /**
+     * The UnitOfWork used to coordinate object-level transactions.
+     *
+     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     */
+    private $unitOfWork;
+
+    /**
      * The HydratorFactory instance used for generating hydrators.
      *
      * @var Doctrine\ODM\MongoDB\Hydrator\Hydrator
@@ -91,6 +98,16 @@ class Hydrator
     public function setHydratorFactory(HydratorFactory $hydratorFactory)
     {
         $this->hydratorFactory = $hydratorFactory;
+    }
+
+    /**
+     * Sets the UnitOfWork instance.
+     *
+     * @param UnitOfWork $uow
+     */
+    public function setUnitOfWork(UnitOfWork $uow)
+    {
+        $this->unitOfWork = $uow;
     }
 
     /**
@@ -180,7 +197,7 @@ class Hydrator
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY ||
                       $mapping['association'] === ClassMetadata::EMBED_MANY) {
 
-                $value = new PersistentCollection(new ArrayCollection(), $this->dm, $this->dm->getUnitOfWork(), $this->cmd);
+                $value = new PersistentCollection(new ArrayCollection(), $this->dm, $this->unitOfWork, $this->cmd);
                 $value->setOwner($document, $mapping);
                 $value->setInitialized(false);
                 if ($rawValue) {
@@ -197,9 +214,9 @@ class Hydrator
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $value = $embeddedMetadata->newInstance();
 
-                $this->hydrate($value, $embeddedDocument);
-                $uow->registerManaged($value, null, $embeddedDocument);
-                $uow->setParentAssociation($value, $mapping, $document, $mapping['name']);
+                $embeddedHydratedData = $this->hydrate($value, $embeddedDocument);
+                $this->unitOfWork->registerManaged($value, null, $embeddedHydratedData);
+                $this->unitOfWork->setParentAssociation($value, $mapping, $document, $mapping['name']);
             }
 
             unset($data[$mapping['name']]);

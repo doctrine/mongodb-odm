@@ -43,11 +43,11 @@ class CustomIdType extends Type
 
     public function closureToMongo()
     {
-        return '$return = (string) $value;';
+        return '$return = $value;';
     }
 
     public function closureToPHP()
     {
-        return '$return = (string) $value;';
+        return '$return = $value;';
     }
 }

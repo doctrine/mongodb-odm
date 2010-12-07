@@ -214,7 +214,7 @@ class DocumentPersister
 
         foreach ($inserts as $oid => $data) {
             $document = $this->queuedInserts[$oid];
-            $postInsertIds[] = array($data['_id'], $document);
+            $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
         }
         $this->queuedInserts = array();
 
@@ -374,7 +374,8 @@ class DocumentPersister
      */
     public function lock($document, $lockMode)
     {
-        $criteria = array('_id' => $this->uow->getDocumentIdentifier($document));
+        $id = $this->uow->getDocumentIdentifier($document);
+        $criteria = array('_id' => $this->class->getDatabaseIdentifierValue($id));
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
         $this->collection->update($criteria, array($this->cmd.'set' => array($lockMapping['name'] => $lockMode)));
         $this->class->reflFields[$this->class->lockField]->setValue($document, $lockMode);
@@ -387,7 +388,8 @@ class DocumentPersister
      */
     public function unlock($document)
     {
-        $criteria = array('_id' => $this->uow->getDocumentIdentifier($document));
+        $id = $this->uow->getDocumentIdentifier($document);
+        $criteria = array('_id' => $this->class->getDatabaseIdentifierValue($id));
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
         $this->collection->update($criteria, array($this->cmd.'unset' => array($lockMapping['name'] => true)));
         $this->class->reflFields[$this->class->lockField]->setValue($document, null);
