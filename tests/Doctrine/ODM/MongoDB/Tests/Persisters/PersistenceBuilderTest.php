@@ -6,6 +6,8 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\ConfigurableProduct;
+use Documents\CmsArticle;
+use Documents\CmsComment;
 
 class PersistenceBuilderTest extends BaseTest
 {
@@ -21,6 +23,53 @@ class PersistenceBuilderTest extends BaseTest
     {
         unset($this->pb);
         parent::tearDown();
+    }
+
+    public function testPrepareInsertDataWithCreatedReferenceOne()
+    {
+        $article = new CmsArticle();
+        $article->title = 'persistence builder test';
+        $this->dm->persist($article);
+        $this->dm->flush();
+        $comment = new CmsComment();
+        $comment->article = $article;
+
+        $this->dm->persist($comment);
+        $this->uow->computeChangeSets();
+
+        $expectedData = array(
+            'article' => array(
+                '$db' => 'doctrine_odm_tests',
+                '$id' => new \MongoId($article->id),
+                '$ref' => 'CmsArticle'
+            )
+        );
+        $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
+    }
+
+    public function testPrepareInsertDataWithFetchedReferenceOne()
+    {
+        $article = new CmsArticle();
+        $article->title = 'persistence builder test';
+        $this->dm->persist($article);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $article = $this->dm->find(get_class($article), $article->id);
+        $comment = new CmsComment();
+        $comment->article = $article;
+
+        $this->dm->persist($comment);
+        $this->uow->computeChangeSets();
+
+        $expectedData = array(
+            'article' => array(
+                '$db' => 'doctrine_odm_tests',
+                '$id' => new \MongoId($article->id),
+                '$ref' => 'CmsArticle'
+            )
+        );
+        $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
 
     /**
