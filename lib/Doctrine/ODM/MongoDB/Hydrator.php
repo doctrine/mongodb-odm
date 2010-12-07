@@ -198,8 +198,8 @@ class Hydrator
                 $value = $embeddedMetadata->newInstance();
 
                 $this->hydrate($value, $embeddedDocument);
-                $uow->registerManaged($value, null, $embeddedDocument);
-                $uow->setParentAssociation($value, $mapping, $document, $mapping['name']);
+                $this->dm->getUnitOfWork()->registerManaged($value, null, $embeddedDocument);
+                $this->dm->getUnitOfWork()->setParentAssociation($value, $mapping, $document, $mapping['name']);
             }
 
             unset($data[$mapping['name']]);
