@@ -947,7 +947,7 @@ class ClassMetadata
                     $mapping['type'] = 'custom_id';
                 }
                 $this->generatorType = $generatorType;
-                $this->generatorOptions = $mapping['options'];
+                $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : array();
             }
         }
         if ( ! isset($mapping['nullable'])) {
