@@ -36,18 +36,90 @@ use Doctrine\MongoDB\Collection;
  */
 class Query extends \Doctrine\MongoDB\Query\Query
 {
+    const HINT_REFRESH = 1;
+
+    /**
+     * The DocumentManager instance.
+     *
+     * @var DocumentManager
+     */
     private $dm;
+
+    /**
+     * The ClassMetadata instance.
+     *
+     * @var ClassMetadata
+     */
     private $class;
+
+    /**
+     * Whether or not to hydrate the results in to document objects.
+     *
+     * @var boolean
+     */
     private $hydrate = true;
 
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query, array $options, $cmd, $hydrate)
+    /**
+     * Whether or not to refresh the data for documents that are already in the identity map.
+     *
+     * @var boolean
+     */
+    private $refresh = false;
+
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query, array $options, $cmd, $hydrate, $refresh)
     {
         parent::__construct($database, $collection, $query, $options, $cmd);
         $this->dm      = $dm;
         $this->class   = $class;
         $this->hydrate = $hydrate;
+        $this->refresh = $refresh;
     }
 
+    /**
+     * Gets the DocumentManager instance.
+     *
+     * @return DocumentManager $dm
+     */
+    public function getDocumentManager()
+    {
+        return $this->dm;
+    }
+
+    /**
+     * Gets the ClassMetadata instance.
+     *
+     * @return ClassMetadata $class
+     */
+    public function getClass()
+    {
+        return $this->class;
+    }
+
+    /**
+     * Sets whether or not to hydrate the documents to objects.
+     *
+     * @param boolean $bool
+     */
+    public function setHydrate($bool)
+    {
+        $this->hydrate = $bool;
+    }
+
+    /**
+     * Sets whether or not to refresh the documents data if it already exists in the identity map.
+     *
+     * @param boolean $bool
+     */
+    public function setRefresh($bool)
+    {
+        $this->refresh = $bool;
+    }
+
+    /**
+     * Execute the query and returns the results.
+     *
+     * @return mixed
+     */
     public function execute()
     {
         $uow = $this->dm->getUnitOfWork();
@@ -59,6 +131,12 @@ class Query extends \Doctrine\MongoDB\Query\Query
             $cursor = $results->getMongoCursor();
             $results = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
             $results->hydrate($this->hydrate);
+            $results->refresh($this->refresh);
+        }
+
+        $hints = array();
+        if ($this->refresh) {
+            $hints[self::HINT_REFRESH] = true;
         }
 
         // GeoLocationFindQuery just returns an instance of ArrayIterator so we have to
@@ -69,14 +147,14 @@ class Query extends \Doctrine\MongoDB\Query\Query
                 if ($this->class->distance) {
                     $document[$this->class->distance] = $result['dis'];
                 }
-                $results[$key] = $uow->getOrCreateDocument($this->class->name, $document);
+                $results[$key] = $uow->getOrCreateDocument($this->class->name, $document, $hints);
             }
             $results->reset();
         }
 
         if ($this->hydrate && is_array($results) && isset($results['_id'])) {
             // Convert a single document array to a document object
-            $results = $uow->getOrCreateDocument($this->class->name, $results);
+            $results = $uow->getOrCreateDocument($this->class->name, $results, $hints);
         }
 
         return $results;

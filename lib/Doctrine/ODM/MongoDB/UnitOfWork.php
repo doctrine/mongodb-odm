@@ -33,7 +33,7 @@ use Doctrine\Common\EventManager,
     Doctrine\Common\PropertyChangedListener,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\MongoDB\GridFSFile,
-    Doctrine\ODM\MongoDB\Query\Builder;
+    Doctrine\ODM\MongoDB\Query\Query;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -2274,7 +2274,7 @@ class UnitOfWork implements PropertyChangedListener
                     $document->addPropertyChangedListener($this);
                 }
             } else {
-                $overrideLocalValues = isset($hints[Builder::HINT_REFRESH]);
+                $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
             }
             if ($overrideLocalValues) {
                 $data = $this->hydrator->hydrate($document, $data);

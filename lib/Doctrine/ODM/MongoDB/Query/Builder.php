@@ -47,9 +47,19 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     private $class;
 
+    /**
+     * Whether or not to hydrate the data to documents.
+     *
+     * @var boolean
+     */
     private $hydrate = true;
 
-    const HINT_REFRESH = 1;
+    /**
+     * Whether or not to refresh the data for documents that are already in the identity map.
+     *
+     * @var boolean
+     */
+    private $refresh = false;
 
     public function __construct(DocumentManager $dm, $cmd, $documentName = null)
     {
@@ -61,9 +71,15 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         }
     }
 
-    public function hydrate($bool)
+    public function hydrate($bool = true)
     {
         $this->hydrate = $bool;
+        return $this;
+    }
+
+    public function refresh($bool = true)
+    {
+        $this->refresh = $bool;
         return $this;
     }
 
@@ -136,7 +152,8 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $query,
             $options,
             $this->cmd,
-            $this->hydrate
+            $this->hydrate,
+            $this->refresh
         );
     }
 

@@ -33,7 +33,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\MongoDBException,
     Doctrine\ODM\MongoDB\LockException,
     Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\ODM\MongoDB\Query\Builder,
+    Doctrine\ODM\MongoDB\Query\Query,
     Doctrine\MongoDB\ArrayIterator,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\ODM\MongoDB\LockMode,
@@ -410,7 +410,7 @@ class DocumentPersister
         }
 
         if ($document !== null) {
-            $hints[Builder::HINT_REFRESH] = true;
+            $hints[Query::HINT_REFRESH] = true;
             $id = $result['_id'];
             $this->uow->registerManaged($document, $id, $result);
         }

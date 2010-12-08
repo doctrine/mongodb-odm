@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use \MongoCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Query\Query;
 
 /**
  * Cursor extends the default Doctrine\MongoDB\Cursor implementation and changes the default
@@ -43,6 +44,13 @@ class Cursor extends \Doctrine\MongoDB\Cursor
     private $hydrate = true;
 
     /**
+     * Whether or not to refresh the data for documents that are already in the identity map.
+     *
+     * @var boolean
+     */
+    private $refresh = false;
+
+    /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
      * @var Doctrine\ODM\MongoDB\UnitOfWork
@@ -55,6 +63,13 @@ class Cursor extends \Doctrine\MongoDB\Cursor
      * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     private $class;
+
+    /**
+     * The array of hints for the UnitOfWork.
+     *
+     * @var array
+     */
+    private $hints = array();
 
     /** @override */
     public function __construct(MongoCursor $mongoCursor, UnitOfWork $uow, ClassMetadata $class)
@@ -69,14 +84,35 @@ class Cursor extends \Doctrine\MongoDB\Cursor
     {
         $current = $this->mongoCursor->current();
         if ($current && $this->hydrate) {
-            return $this->unitOfWork->getOrCreateDocument($this->class->name, $current);
+            return $this->unitOfWork->getOrCreateDocument($this->class->name, $current, $this->hints);
         }
         return $current ? $current : null;
     }
 
-    public function hydrate($bool)
+    /**
+     * Set whether to hydrate the documents to objects or not.
+     *
+     * @param boolean $bool
+     */
+    public function hydrate($bool = true)
     {
         $this->hydrate = $bool;
-        return $this->hydrate;
+        return $this;
+    }
+
+    /**
+     * Sets whether to refresh the documents data if it already exists in the identity map.
+     *
+     * @param boeolan $bool
+     */
+    public function refresh($bool = true)
+    {
+        $this->refresh = $bool;
+        if ($this->refresh) {
+            $this->hints[Query::HINT_REFRESH] = true;
+        } else {
+            unset($this->hints[Query::HINT_REFRESH]);
+        }
+        return $this;
     }
 }
