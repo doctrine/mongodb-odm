@@ -262,12 +262,12 @@ class ClassMetadataFactory
             }
 
             if ($parent && $parent->isInheritanceTypeSingleCollection()) {
-                $class->setDB($parent->getDatabase());
+                $class->setDatabase($parent->getDatabase());
                 $class->setCollection($parent->getCollection());
             }
 
             $db = $class->getDatabase() ?: $this->config->getDefaultDB();
-            $class->setDB($this->dm->formatDBName($db));
+            $class->setDatabase($this->dm->formatDBName($db));
 
             $class->setParentClasses($visited);
 

@@ -10,7 +10,7 @@ class DbNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testPrefixDbName()
     {
-        $this->dm->getConfiguration()->setDBPrefix('test_');
+        $this->dm->getConfiguration()->setDatabasePrefix('test_');
 
         $meta = $this->getMetaData();
 
@@ -23,7 +23,7 @@ class DbNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testSuffixDbName()
     {
-        $this->dm->getConfiguration()->setDBSuffix('_test');
+        $this->dm->getConfiguration()->setDatabaseSuffix('_test');
 
         $meta = $this->getMetaData();
 
@@ -36,8 +36,8 @@ class DbNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPrefixAndSuffixDbName()
     {
-        $this->dm->getConfiguration()->setDBPrefix('test_');
-        $this->dm->getConfiguration()->setDBSuffix('_test');
+        $this->dm->getConfiguration()->setDatabasePrefix('test_');
+        $this->dm->getConfiguration()->setDatabaseSuffix('_test');
 
         $meta = $this->getMetaData();
 
@@ -50,7 +50,7 @@ class DbNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPersist()
     {
-        $this->dm->getConfiguration()->setDBPrefix('test_');
+        $this->dm->getConfiguration()->setDatabasePrefix('test_');
 
         $account = new Account();
         $account->setName('test');

@@ -327,7 +327,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      *
      * @param string $prefix The prefix for names of databases
      */
-    public function setDBPrefix($prefix = null)
+    public function setDatabasePrefix($prefix = null)
     {
         $this->attributes['dbPrefix'] = $prefix;
     }
@@ -348,7 +348,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      *
      * @param string $suffix The suffix for names of tables
      */
-    public function setDBSuffix($suffix = null)
+    public function setDatabaseSuffix($suffix = null)
     {
         $this->attributes['dbSuffix'] = $suffix;
     }

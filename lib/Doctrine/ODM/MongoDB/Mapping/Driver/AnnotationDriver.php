@@ -118,7 +118,7 @@ class AnnotationDriver implements Driver
         }
 
         if (isset($documentAnnot->db)) {
-            $class->setDB($documentAnnot->db);
+            $class->setDatabase($documentAnnot->db);
         }
         if (isset($documentAnnot->collection)) {
             $class->setCollection($documentAnnot->collection);

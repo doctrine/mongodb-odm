@@ -51,7 +51,7 @@ class YamlDriver extends AbstractFileDriver
         $element['type'] = isset($element['type']) ? $element['type'] : 'document';
 
         if (isset($element['db'])) {
-            $class->setDB($element['db']);
+            $class->setDatabase($element['db']);
         }
         if (isset($element['collection'])) {
             $class->setCollection($element['collection']);

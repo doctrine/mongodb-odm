@@ -714,7 +714,7 @@ class ClassMetadata
      *
      * @param string $db The database name
      */
-    public function setDB($db)
+    public function setDatabase($db)
     {
         $this->db = $db;
     }
