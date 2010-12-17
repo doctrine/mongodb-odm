@@ -98,6 +98,12 @@ class HydratorFactory
 
     public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate, $cmd)
     {
+        if ( ! $hydratorDir) {
+            throw HydratorException::hydratorDirectoryRequired();
+        }
+        if ( ! $hydratorNs) {
+            throw HydratorException::hydratorNamespaceRequired();
+        }
         $this->dm                = $dm;
         $this->evm               = $evm;
         $this->hydratorDir       = $hydratorDir;
