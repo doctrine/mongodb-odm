@@ -224,17 +224,17 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     protected function getUnitOfWork(DocumentManager $dm)
     {
-        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydrator(), '$');
+        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory(), '$');
     }
 
     /**
-     * Gets mock Hydrator instance
+     * Gets mock HydratorFactory instance
      *
-     * @return Doctrine\ODM\MongoDB\Hydrator
+     * @return Doctrine\ODM\MongoDB\Hydrator\HydratorFactory
      */
-    private function getMockHydrator()
+    private function getMockHydratorFactory()
     {
-        return $this->getMockBuilder('Doctrine\ODM\MongoDB\Hydrator')
+        return $this->getMockBuilder('Doctrine\ODM\MongoDB\Hydrator\HydratorFactory')
             ->disableOriginalClone()
             ->disableOriginalConstructor()
             ->getMock();
@@ -260,7 +260,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     private function getMockDocumentPersister(PersistenceBuilder $pb, ClassMetadata $class)
     {
-        return new DocumentPersisterMock($pb, $this->dm, $this->dm->getEventManager(), $this->uow, $this->dm->getHydrator(), $class, '$');
+        return new DocumentPersisterMock($pb, $this->dm, $this->dm->getEventManager(), $this->uow, $this->dm->getHydratorFactory(), $class, '$');
     }
 
     protected function getClassMetadata($class, $flag)

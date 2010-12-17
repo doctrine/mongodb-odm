@@ -89,13 +89,6 @@ class DocumentManager
     private $eventManager;
 
     /**
-     * The Document hydrator instance.
-     *
-     * @var Doctrine\ODM\MongoDB\Hydrator
-     */
-    private $hydrator;
-
-    /**
      * The Hydrator factory instance.
      *
      * @var HydratorFactory
@@ -153,19 +146,19 @@ class DocumentManager
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }
 
-        $this->hydrator = new Hydrator($this, $this->eventManager, $this->cmd);
         $hydratorDir = $this->config->getHydratorDir();
         $hydratorNs = $this->config->getHydratorNamespace();
-        if ($hydratorDir && $hydratorNs) {
-            $this->hydratorFactory = new HydratorFactory($this, $hydratorDir, $hydratorNs, $this->config->getAutoGenerateHydratorClasses());
-            $this->hydrator->setHydratorFactory($this->hydratorFactory);
-        }
+        $this->hydratorFactory = new HydratorFactory(
+          $this,
+          $this->eventManager,
+          $hydratorDir,
+          $hydratorNs,
+          $this->config->getAutoGenerateHydratorClasses(),
+          $this->config->getMongoCmd()
+        );
 
-        $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydrator, $this->cmd);
-        if ($this->hydratorFactory) {
-            $this->hydratorFactory->setUnitOfWork($this->unitOfWork);
-        }
-        $this->hydrator->setUnitOfWork($this->unitOfWork);
+        $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory, $this->cmd);
+        $this->hydratorFactory->setUnitOfWork($this->unitOfWork);
         $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory = new ProxyFactory($this,
                 $this->config->getProxyDir(),
@@ -233,17 +226,6 @@ class DocumentManager
     public function getUnitOfWork()
     {
         return $this->unitOfWork;
-    }
-
-    /**
-     * Gets the Hydrator used by the DocumentManager to hydrate document arrays
-     * to document objects.
-     *
-     * @return Doctrine\ODM\MongoDB\Hydrator
-     */
-    public function getHydrator()
-    {
-        return $this->hydrator;
     }
 
     /**

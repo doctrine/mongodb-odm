@@ -9,7 +9,7 @@ class HydratorTest extends BaseTest
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\HydrationClosureUser');
 
         $user = new HydrationClosureUser();
-        $this->dm->getHydrator()->hydrate($user, array(
+        $this->dm->getHydratorFactory()->hydrate($user, array(
             '_id' => 1,
             'name' => 'jon',
             'referenceOne' => array('$id' => '1'),

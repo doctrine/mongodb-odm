@@ -23,6 +23,12 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Events;
+use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
@@ -48,6 +54,13 @@ class HydratorFactory
      * @var Doctrine\ODM\MongoDB\UnitOfWork
      */
     private $unitOfWork;
+
+    /**
+     * The EventManager associated with this Hydrator
+     *
+     * @var Doctrine\Common\EventManager
+     */
+    private $evm;
 
     /**
      * Whether to automatically (re)generate hydrator classes.
@@ -77,12 +90,20 @@ class HydratorFactory
      */
     private $hydrators = array();
 
-    public function __construct(DocumentManager $dm, $hydratorDir, $hydratorNs, $autoGenerate = false)
+    /**
+     * Mongo command prefix
+     * @var string
+     */
+    private $cmd;
+
+    public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate, $cmd)
     {
         $this->dm                = $dm;
+        $this->evm               = $evm;
         $this->hydratorDir       = $hydratorDir;
-        $this->autoGenerate      = $autoGenerate;
         $this->hydratorNamespace = $hydratorNs;
+        $this->autoGenerate      = $autoGenerate;
+        $this->cmd               = $cmd;
     }
 
     /**
@@ -205,7 +226,7 @@ EOF
             \$embeddedMetadata = \$this->dm->getClassMetadata(\$className);
             \$return = \$embeddedMetadata->newInstance();
 
-            \$embeddedData = \$this->dm->getHydrator()->hydrate(\$return, \$embeddedDocument);
+            \$embeddedData = \$this->dm->getHydratorFactory()->hydrate(\$return, \$embeddedDocument);
             \$this->unitOfWork->registerManaged(\$return, null, \$embeddedData);
             \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
 
@@ -261,5 +282,46 @@ EOF
         );
 
         file_put_contents($fileName, $code);
+    }
+
+    /**
+     * Hydrate array of MongoDB document data into the given document object.
+     *
+     * @param object $document  The document object to hydrate the data into.
+     * @param array $data The array of document data.
+     * @return array $values The array of hydrated values.
+     */
+    public function hydrate($document, $data)
+    {
+        $metadata = $this->dm->getClassMetadata(get_class($document));
+        // Invoke preLoad lifecycle events and listeners
+        if (isset($metadata->lifecycleCallbacks[Events::preLoad])) {
+            $args = array(&$data);
+            $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
+        }
+        if ($this->evm->hasListeners(Events::preLoad)) {
+            $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
+        }
+
+        // Use the alsoLoadMethods on the document object to transform the data before hydration
+        if (isset($metadata->alsoLoadMethods)) {
+            foreach ($metadata->alsoLoadMethods as $fieldName => $method) {
+                if (isset($data[$fieldName])) {
+                    $document->$method($data[$fieldName]);
+                }
+            }
+        }
+
+        $data = $this->getHydratorFor($metadata->name)->hydrate($document, $data);
+
+        // Invoke the postLoad lifecycle callbacks and listeners
+        if (isset($metadata->lifecycleCallbacks[Events::postLoad])) {
+            $metadata->invokeLifecycleCallbacks(Events::postLoad, $document);
+        }
+        if ($this->evm->hasListeners(Events::postLoad)) {
+            $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
+        }
+
+        return $data;
     }
 }

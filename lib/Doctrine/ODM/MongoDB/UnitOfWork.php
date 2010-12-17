@@ -33,7 +33,8 @@ use Doctrine\Common\EventManager,
     Doctrine\Common\PropertyChangedListener,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\MongoDB\GridFSFile,
-    Doctrine\ODM\MongoDB\Query\Query;
+    Doctrine\ODM\MongoDB\Query\Query,
+    Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -208,11 +209,11 @@ class UnitOfWork implements PropertyChangedListener
     private $orphanRemovals = array();
 
     /**
-     * The Hydrator used for hydrating array Mongo documents to Doctrine object documents.
+     * The HydratorFactory used for hydrating array Mongo documents to Doctrine object documents.
      *
-     * @var string
+     * @var HydratorFactory
      */
-    private $hydrator;
+    private $hydratorFactory;
 
     /**
      * The document persister instances used to persist document instances.
@@ -249,14 +250,14 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
      * @param Doctrine\Common\EventManager $evm
-     * @param Doctrine\ODM\MongoDB\Hydrator $h
+     * @param Doctrine\ODM\MongoDB\Hydrator\HydratorFactory $hydratorFactory
      * @param string $cmd
      */
-    public function __construct(DocumentManager $dm, EventManager $evm, Hydrator $h, $cmd)
+    public function __construct(DocumentManager $dm, EventManager $evm, HydratorFactory $hydratorFactory, $cmd)
     {
         $this->dm = $dm;
         $this->evm = $evm;
-        $this->hydrator = $h;
+        $this->hydratorFactory = $hydratorFactory;
         $this->cmd = $cmd;
     }
 
@@ -315,7 +316,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! isset($this->persisters[$documentName])) {
             $class = $this->dm->getClassMetadata($documentName);
             $pb = $this->getPersistenceBuilder();
-            $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this->evm, $this, $this->hydrator, $class, $this->cmd);
+            $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this->evm, $this, $this->hydratorFactory, $class, $this->cmd);
         }
         return $this->persisters[$documentName];
     }
@@ -2277,7 +2278,7 @@ class UnitOfWork implements PropertyChangedListener
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
             }
             if ($overrideLocalValues) {
-                $data = $this->hydrator->hydrate($document, $data);
+                $data = $this->hydratorFactory->hydrate($document, $data);
                 $this->originalDocumentData[$oid] = $data;
             }
         } else {
@@ -2285,7 +2286,7 @@ class UnitOfWork implements PropertyChangedListener
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
             $this->identityMap[$class->rootDocumentName][$id] = $document;
-            $data = $this->hydrator->hydrate($document, $data);
+            $data = $this->hydratorFactory->hydrate($document, $data);
             $this->registerManaged($document, $id, $data);
         }
         return $document;

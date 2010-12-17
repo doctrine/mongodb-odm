@@ -19,12 +19,10 @@
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
-
-
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\Common\EventManager,
     Doctrine\ODM\MongoDB\UnitOfWork,
-    Doctrine\ODM\MongoDB\Hydrator,
+    Doctrine\ODM\MongoDB\Hydrator\HydratorFactory,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\Types\Type,
     Doctrine\Common\Collections\Collection,
@@ -131,18 +129,19 @@ class DocumentPersister
      * @param Doctrine\ODM\MongoDB\DocumentManager $dm
      * @param Doctrine\Common\EventManager $evm
      * @param Doctrine\ODM\MongoDB\UnitOfWork $uow
+     * @param Doctrine\ODM\MongoDB\Hydrator\HydratorFactory $hydratorFactory
      * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      * @param string $cmd
      */
-    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, Hydrator $hydrator, ClassMetadata $class, $cmd)
+    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, HydratorFactory $hydratorFactory, ClassMetadata $class, $cmd)
     {
-        $this->pb         = $pb;
-        $this->dm         = $dm;
-        $this->evm        = $evm;
-        $this->cmd        = $cmd;
-        $this->uow        = $uow;
-        $this->hydrator   = $hydrator;
-        $this->class      = $class;
+        $this->pb = $pb;
+        $this->dm = $dm;
+        $this->evm = $evm;
+        $this->cmd = $cmd;
+        $this->uow = $uow;
+        $this->hydratorFactory = $hydratorFactory;
+        $this->class = $class;
         $this->collection = $dm->getDocumentCollection($class->name);
     }
 
@@ -310,7 +309,7 @@ class DocumentPersister
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         $data = $this->collection->findOne(array('_id' => $id));
-        $data = $this->hydrator->hydrate($document, $data);
+        $data = $this->hydratorFactory->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
 
@@ -448,7 +447,7 @@ class DocumentPersister
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
-                $data = $this->hydrator->hydrate($embeddedDocumentObject, $embeddedDocument);
+                $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument);
                 $this->uow->registerManaged($embeddedDocumentObject, null, $data);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'].'.'.$key);
                 $collection->add($embeddedDocumentObject);
@@ -480,7 +479,7 @@ class DocumentPersister
             $data = $mongoCollection->find(array('_id' => array($cmd . 'in' => $ids)));
             foreach ($data as $documentData) {
                 $document = $this->uow->getById((string) $documentData['_id'], $className);
-                $data = $this->hydrator->hydrate($document, $documentData);
+                $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
             }
         }
