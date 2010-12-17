@@ -34,14 +34,12 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush(array('safe' => true));
         $this->dm->clear();
 
-        /*
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('latitude')->near(1000000)
             ->field('longitude')->near(11111);
         $query = $qb->getQuery();
         $city = $query->getSingleResult();
         $this->assertNull($city);
-*/
 
         $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('latitude')->near(50)
@@ -49,8 +47,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->getSingleResult();
         $this->assertNotNull($city);
-        //print_r($city);
-        return;
+
         $this->assertEquals('19.999998807907', $city->test);
 
         $query = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
