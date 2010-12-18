@@ -131,7 +131,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * @return QueryInterface $query
      */
     public function getQuery(array $options = array())
-        {
+    {
         if ($this->query['type'] === Query::TYPE_MAP_REDUCE) {
             $this->hydrate = false;
         }
