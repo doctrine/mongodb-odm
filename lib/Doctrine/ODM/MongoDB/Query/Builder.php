@@ -124,6 +124,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         $this->expr->references($document);
         return $this;
     }
+
+    public function includesReferenceTo($document)
+    {
+        $this->expr->includesReferenceTo($document);
+        return $this;
+    }
+
     /**
      * Gets the Query executable.
      *
@@ -172,6 +179,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->collection = $this->dm->getDocumentCollection($documentName);
             $this->database = $this->collection->getDatabase();
             $this->class = $this->dm->getClassMetadata($documentName);
+
+            // Expr also needs to know
+            $this->expr->setClassMetadata($this->class);
         }
     }
 
