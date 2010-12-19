@@ -35,7 +35,10 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\MongoDB\ArrayIterator,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     Doctrine\ODM\MongoDB\LockMode,
-    Doctrine\ODM\MongoDB\Cursor;
+    Doctrine\ODM\MongoDB\Cursor,
+    Doctrine\ODM\MongoDB\LoggableCursor,
+    Doctrine\MongoDB\Cursor as BaseCursor,
+    Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -349,8 +352,31 @@ class DocumentPersister
     {
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria);
+        return $this->wrapCursor($cursor);
+    }
+
+    /**
+     * Wraps the supplied base cursor as an ODM one.
+     *
+     * @param Doctrine\MongoDB\Cursor $cursor The base cursor
+     *
+     * @return Cursor An ODM cursor
+     */
+    private function wrapCursor(BaseCursor $cursor)
+    {
         $mongoCursor = $cursor->getMongoCursor();
-        return new Cursor($mongoCursor, $this->uow, $this->class);
+        if ($cursor instanceof BaseLoggableCursor) {
+            return new LoggableCursor(
+                $mongoCursor,
+                $this->uow,
+                $this->class,
+                $cursor->getLoggerCallable(),
+                $cursor->getQuery(),
+                $cursor->getFields()
+            );
+        } else {
+            return new Cursor($mongoCursor, $this->uow, $this->class);
+        }
     }
 
     /**
