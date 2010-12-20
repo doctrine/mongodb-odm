@@ -161,7 +161,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     private function wrapCursor(BaseCursor $baseCursor)
     {
         $mongoCursor = $baseCursor->getMongoCursor();
-        if ($cursor instanceof BaseLoggableCursor) {
+        if ($mongoCursor instanceof BaseLoggableCursor) {
             $cursor = new LoggableCursor(
                 $mongoCursor,
                 $this->dm->getUnitOfWork(),
