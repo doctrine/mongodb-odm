@@ -249,28 +249,12 @@ class PersistenceBuilder
      * Returns the reference representation to be stored in mongodb or null if not applicable.
      *
      * @param array $referenceMapping
-     * @param Document $document
+     * @param object $document
      * @return array $referenceDocumentValue
      */
     public function prepareReferencedDocumentValue(array $referenceMapping, $document)
     {
-        $className = get_class($document);
-        $class = $this->dm->getClassMetadata($className);
-        $id = $this->uow->getDocumentIdentifier($document);
-
-        $referenceDocumentValue = array(
-            $this->cmd . 'ref' => $class->getCollection(),
-            $this->cmd . 'id' => $class->getDatabaseIdentifierValue($id),
-            $this->cmd . 'db' => $class->getDatabase()
-        );
-
-        // Store a discriminator value if the referenced document is not mapped explicitely to a targetDocument
-        if ( ! isset($referenceMapping['targetDocument'])) {
-            $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_name';
-            $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search($class->getName(), $referenceMapping['discriminatorMap']) : $class->getName();
-            $referenceDocumentValue[$discriminatorField] = $discriminatorValue;
-        }
-        return $referenceDocumentValue;
+        return $this->dm->createDBRef($document, $referenceMapping);
     }
 
     /**

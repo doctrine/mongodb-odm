@@ -609,6 +609,35 @@ if (!$this->metadataFactory) throw new \Exception('No MetadataFactory.');
     }
 
     /**
+     * Returns a DBRef array for the supplied document.
+     *
+     * @param mixed $document A document object
+     * @param array $referenceMapping Mapping for the field the references the document
+     *
+     * @return array A DBRef array
+     */
+    public function createDBRef($document, array $referenceMapping = null)
+    {
+        $class = $this->getClassMetadata(get_class($document));
+        $id = $this->unitOfWork->getDocumentIdentifier($document);
+
+        $dbRef = array(
+            $this->cmd . 'ref' => $class->getCollection(),
+            $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($id),
+            $this->cmd . 'db'  => $class->getDatabase()
+        );
+
+        // add a discriminator value if the referenced document is not mapped explicitely to a targetDocument
+        if ($referenceMapping && ! isset($referenceMapping['targetDocument'])) {
+            $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_name';
+            $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search($class->getName(), $referenceMapping['discriminatorMap']) : $class->getName();
+            $dbRef[$discriminatorField] = $discriminatorValue;
+        }
+
+        return $dbRef;
+    }
+
+    /**
      * Throws an exception if the DocumentManager is closed or currently not active.
      *
      * @throws MongoDBException If the DocumentManager is closed.

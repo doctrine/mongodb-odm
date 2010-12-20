@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * Query expression builder for ODM.
@@ -37,26 +38,54 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
      */
     private $dm;
 
+    /**
+     * The ClassMetadata instance for the document being queried
+     *
+     * @var ClassMetadata
+     */
+    private $class;
+
     public function __construct(DocumentManager $dm, $cmd)
     {
         $this->dm = $dm;
         $this->cmd = $cmd;
     }
 
+    public function setClassMetadata(ClassMetadata $class)
+    {
+        $this->class = $class;
+    }
+
+    /**
+     * Checks that the value of the current field is a reference to the supplied document.
+     */
     public function references($document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
-
-        $reference = array(
-            $this->cmd . 'ref' => $class->getCollection(),
-            $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($class->getIdentifierValue($document)),
-            $this->cmd . 'db'  => $class->getDatabase()
-        );
-
         if ($this->currentField) {
-            $this->query[$this->currentField][$this->cmd . 'elemMatch'] = $reference;
+            $reference = $this->class
+                ? $this->dm->createDBRef($document, $this->class->getFieldMapping($this->currentField))
+                : $this->dm->createDBRef($document);
+            foreach ($reference as $key => $value) {
+                $this->query[$this->currentField . '.' . $key] = $value;
+            }
         } else {
-            $this->query[$this->cmd . 'elemMatch'] = $reference;
+            $this->query = $this->dm->createDBRef($document);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Checks that the current field includes a reference to the supplied document.
+     */
+    public function includesReferenceTo($document)
+    {
+        if ($this->currentField) {
+            $this->query[$this->currentField][$this->cmd . 'elemMatch'] = $this->class
+                ? $this->dm->createDBRef($document, $this->class->getFieldMapping($this->currentField))
+                : $this->dm->createDBRef($document);
+        } else {
+            $this->query[$this->cmd . 'elemMatch'] = $this->dm->createDBRef($document);
         }
 
         return $this;
