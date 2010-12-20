@@ -185,6 +185,16 @@ class XmlDriver extends AbstractFileDriver
             'name'           => (string) $attributes['field'],
             'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
         );
+        if (isset($embed->{'discriminator-field'})) {
+            $attr = $embed->{'discriminator-field'};
+            $mapping['discriminatorField'] = (string) $attr['name'];
+        }
+        if (isset($embed->{'discriminator-map'})) {
+            foreach ($embed->{'discriminator-map'}->{'discriminator-mapping'} as $discriminatorMapping) {
+                $attr = $discriminatorMapping->attributes();
+                $mapping['discriminatorMap'][(string) $attr['value']] = (string) $attr['class'];
+            }
+        }
         $this->addFieldMapping($class, $mapping);
     }
 
@@ -203,6 +213,16 @@ class XmlDriver extends AbstractFileDriver
             'name'           => (string) $attributes['field'],
             'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
         );
+        if (isset($reference->{'discriminator-field'})) {
+            $attr = $reference->{'discriminator-field'};
+            $mapping['discriminatorField'] = (string) $attr['name'];
+        }
+        if (isset($reference->{'discriminator-map'})) {
+            foreach ($reference->{'discriminator-map'}->{'discriminator-mapping'} as $discriminatorMapping) {
+                $attr = $discriminatorMapping->attributes();
+                $mapping['discriminatorMap'][(string) $attr['value']] = (string) $attr['class'];
+            }
+        }
         $this->addFieldMapping($class, $mapping);
     }
 

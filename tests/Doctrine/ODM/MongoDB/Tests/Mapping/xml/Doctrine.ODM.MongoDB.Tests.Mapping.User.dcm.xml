@@ -25,12 +25,24 @@
             <cascade>
                 <persist />
             </cascade>
+            <discriminator-field name="discr" />
+            <discriminator-map>
+                <discriminator-mapping value="home" class="HomePhonenumber" />
+                <discriminator-mapping value="work" class="WorkPhonenumber" />
+            </discriminator-map>
         </reference-many>
         <reference-many target-document="Group" field="groups">
             <cascade>
                 <all />
             </cascade>
         </reference-many>
+        <embed-many target-document="Phonenumber" field="otherPhonenumbers">
+            <discriminator-field name="discr" />
+            <discriminator-map>
+                <discriminator-mapping value="home" class="HomePhonenumber" />
+                <discriminator-mapping value="work" class="WorkPhonenumber" />
+            </discriminator-map>
+        </embed-many>
         <lifecycle-callbacks>
             <lifecycle-callback method="doStuffOnPrePersist" type="prePersist" />
             <lifecycle-callback method="doOtherStuffOnPrePersistToo" type="prePersist" />

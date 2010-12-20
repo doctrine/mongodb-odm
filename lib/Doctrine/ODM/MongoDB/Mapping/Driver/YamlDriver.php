@@ -168,6 +168,12 @@ class YamlDriver extends AbstractFileDriver
             'fieldName'      => $fieldName,
             'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : 'pushAll',
         );
+        if (isset($embed['discriminatorField'])) {
+            $mapping['discriminatorField'] = $embed['discriminatorField'];
+        }
+        if (isset($embed['discriminatorMap'])) {
+            $mapping['discriminatorMap'] = $embed['discriminatorMap'];
+        }
         $this->addFieldMapping($class, $mapping);
     }
 
@@ -181,6 +187,12 @@ class YamlDriver extends AbstractFileDriver
             'fieldName'      => $fieldName,
             'strategy'       => isset($reference['strategy']) ? (string) $reference['strategy'] : 'pushAll',
         );
+        if (isset($reference['discriminatorField'])) {
+            $mapping['discriminatorField'] = $reference['discriminatorField'];
+        }
+        if (isset($reference['discriminatorMap'])) {
+            $mapping['discriminatorMap'] = $reference['discriminatorMap'];
+        }
         $this->addFieldMapping($class, $mapping);
     }
 

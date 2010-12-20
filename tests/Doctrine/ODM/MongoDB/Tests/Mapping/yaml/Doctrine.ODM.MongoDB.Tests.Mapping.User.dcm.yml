@@ -35,9 +35,21 @@ Doctrine\ODM\MongoDB\Tests\Mapping\User:
     phonenumbers:
       targetDocument: Phonenumber
       cascade: [ persist ]
+      discriminatorField: discr
+      discriminatorMap:
+        home: HomePhonenumber
+        work: WorkPhonenumber
     groups:
       targetDocument: Group
       cascade: [ all ]
+  embedMany:
+    otherPhonenumbers:
+      targetDocument: Phonenumber
+      discriminatorField: discr
+      discriminatorMap:
+        home: HomePhonenumber
+        work: WorkPhonenumber
+        
   lifecycleCallbacks:
     prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ] 
     postPersist: [ doStuffOnPostPersist ]
