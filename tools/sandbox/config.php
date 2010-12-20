@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
+require_once __DIR__ . '/../../../doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Annotations\AnnotationReader,
@@ -9,13 +9,13 @@ use Doctrine\Common\ClassLoader,
     Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\DocumentManager;
 
-$classLoader = new ClassLoader('Doctrine\Common', __DIR__ . '/../../lib/vendor/doctrine-common/lib');
+$classLoader = new ClassLoader('Doctrine\Common', __DIR__ . '/../../../doctrine-common/lib');
 $classLoader->register();
 
 $classLoader = new ClassLoader('Doctrine\ODM\MongoDB', __DIR__ . '/../../lib');
 $classLoader->register();
 
-$classLoader = new ClassLoader('Doctrine\MongoDB', __DIR__ . '/../../lib/vendor/doctrine-mongodb/lib');
+$classLoader = new ClassLoader('Doctrine\MongoDB', __DIR__ . '/../../../doctrine-mongodb/lib');
 $classLoader->register();
 
 $classLoader = new ClassLoader('Symfony', __DIR__ . '/../../lib/vendor');
