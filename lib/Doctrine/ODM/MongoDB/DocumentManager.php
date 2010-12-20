@@ -103,7 +103,14 @@ class DocumentManager
     private $schemaManager;
 
     /**
-     * Array of cached MongoCollection instances that are lazily loaded.
+     * Array of cached document database instances that are lazily loaded.
+     *
+     * @var array
+     */
+    private $documentDatabases = array();
+
+    /**
+     * Array of cached document collection instances that are lazily loaded.
      *
      * @var array
      */
@@ -275,8 +282,20 @@ if (!$this->metadataFactory) throw new \Exception('No MetadataFactory.');
         $db = $db ? $db : $this->config->getDefaultDB();
         $db = $db ? $db : 'doctrine';
         $db = sprintf('%s%s', $this->config->getEnvironmentPrefix(), $db);
-        $database = $this->connection->selectDatabase($db);
-        return $database;
+        if ( ! isset($this->documentDatabases[$className])) {
+            $this->documentDatabases[$className] = $this->connection->selectDatabase($db);
+        }
+        return $this->documentDatabases[$className];
+    }
+
+    /**
+     * Gets the array of instantiated document database instances.
+     *
+     * @return array
+     */
+    public function getDocumentDatabases()
+    {
+        return $this->documentDatabases;
     }
 
     /**
@@ -296,12 +315,24 @@ if (!$this->metadataFactory) throw new \Exception('No MetadataFactory.');
         }
 
         $db = $this->getDocumentDatabase($className);
-        if ($metadata->isFile()) {
-            $collection = $db->getGridFS($collection);
-        } else {
-            $collection = $db->selectCollection($collection);
+        if ( ! isset($this->documentCollections[$className])) {
+            if ($metadata->isFile()) {
+                $this->documentCollections[$className] = $db->getGridFS($collection);
+            } else {
+                $this->documentCollections[$className] = $db->selectCollection($collection);
+            }
         }
-        return $collection;
+        return $this->documentCollections[$className];
+    }
+
+    /**
+     * Gets the array of instantiated document collection instances.
+     *
+     * @return array
+     */
+    public function getDocumentCollections()
+    {
+        return $this->documentCollections;
     }
 
     /**

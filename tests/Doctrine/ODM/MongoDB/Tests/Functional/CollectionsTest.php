@@ -69,10 +69,10 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testCreateCollections()
     {
         $sm = $this->dm->getSchemaManager();
-        $sm->dropDocumentCollection(__NAMESPACE__.'\CollectionTest');
-        $sm->createDocumentCollection(__NAMESPACE__.'\CollectionTest');
+        $sm->dropDocumentCollection(__NAMESPACE__.'\CreateCollectionTest');
+        $sm->createDocumentCollection(__NAMESPACE__.'\CreateCollectionTest');
 
-        $coll = $this->dm->getConnection()->selectDatabase('colltest')->selectCollection('testing2');
+        $coll = $this->dm->getDocumentCollection(__NAMESPACE__.'\CreateCollectionTest');
         $insert = array(array(1), array(2), array(3));
         $coll->batchInsert($insert, array('safe' => true, 'fsync' => true));
 
@@ -82,7 +82,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
- * @Document(db="colltest", collection={
+ * @Document(collection={
  *   "name"="testing",
  *   "capped"="true",
  *   "size"="1000",
@@ -96,4 +96,14 @@ class CollectionTest
 
     /** @String */
     public $username;
+}
+
+/**
+ * @Document
+ */
+class CreateCollectionTest
+{
+    /** @Id */
+    public $id;
+
 }

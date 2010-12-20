@@ -67,11 +67,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         if ($this->dm) {
-            $mongo = $this->dm->getConnection();
-            $dbs = $mongo->listDatabases();
-            foreach ($dbs['databases'] as $db) {
-                $collections = $mongo->selectDatabase($db['name'])->listCollections();
-                foreach ($collections as $collection) {
+            foreach ($this->dm->getDocumentDatabases() as $db) {
+                foreach ($db->listCollections() as $collection) {
                     $collection->drop();
                 }
             }
