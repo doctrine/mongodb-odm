@@ -30,7 +30,7 @@ abstract class AbstractCommand extends Command
     {
         $this
             ->setName('odm:schema:' . $this->_commandName)
-            ->setDescription('Allows to create databases and/or collections for your documents')
+            ->setDescription("Allows to $this->_commandName databases and/or collections for your documents")
             ->setDefinition(array(
                 new Input\InputOption('class', 'c', Input\InputOption::VALUE_OPTIONAL, 'the class name to create "db" or "collection" for, all classes will be used if none specified', null),
                 new Input\InputOption(self::DBS, null, Input\InputOption::VALUE_NONE, ''),
