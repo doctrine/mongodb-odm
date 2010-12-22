@@ -273,4 +273,32 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user2 = $query->getSingleResult();
         $this->assertSame($user, $user2);
     }
+
+    public function testQueryWhereIn()
+    {
+        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $choices = array('a', 'b');
+        $qb->field('username')->in($choices);
+        $expected = array(
+            'username' => array(
+                '$in' => $choices
+            )
+        );
+        $this->assertSame($expected, $qb->getQueryArray());
+    }
+
+    public function testQueryWhereInReferenceId()
+    {
+        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $choices = array(new \MongoId(), new \MongoId());
+        $qb->field('account.$id')->in($choices);
+        $expected = array(
+            'account.$id' => array(
+                '$in' => $choices
+            )
+        );
+        $this->assertSame($expected, $qb->getQueryArray());
+
+        $this->assertSame($expected, $qb->getQuery()->debug());
+    }
 }
