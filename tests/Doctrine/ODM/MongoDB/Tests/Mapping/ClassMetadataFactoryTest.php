@@ -45,6 +45,16 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($cm1->hasField('name'));
     }
 
+    public function testGetMetadataFor_ExtendsCustomRepository()
+    {
+        $cm1 = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1');
+        $cm2 = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument2');
+
+        $this->assertEquals(array('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1'), $cm2->parentClasses);
+        $this->assertEquals('TestDocument1Repository', $cm1->customRepositoryClassName);
+        $this->assertEquals('TestDocument1Repository', $cm2->customRepositoryClassName);
+    }
+
     public function testHasGetMetadata_NamespaceSeperatorIsNotNormalized()
     {
         require_once __DIR__."/Documents/GlobalNamespaceDocument.php";
@@ -113,10 +123,15 @@ class ClassMetadataFactoryTestSubject extends \Doctrine\ODM\MongoDB\Mapping\Clas
     }
 }
 
+/** @Document(repositoryClass="TestDocument1Repository") */
 class TestDocument1
 {
+    /** @Id */
     private $id;
     private $name;
     private $other;
     private $association;
 }
+
+/** @Document */
+class TestDocument2 extends TestDocument1 {}

@@ -224,6 +224,7 @@ class ClassMetadataFactory
 
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
+                $class->setCustomRepositoryClass($parent->customRepositoryClassName);
                 $class->setDiscriminatorField($parent->discriminatorField);
                 $class->setIdGeneratorType($parent->generatorType);
                 $this->addInheritedFields($class, $parent);
