@@ -504,7 +504,7 @@ class DocumentPersister
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $data = $mongoCollection->find(array('_id' => array($cmd . 'in' => $ids)));
             foreach ($data as $documentData) {
-                $document = $this->uow->getById((string) $documentData['_id'], $className);
+                $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
             }
