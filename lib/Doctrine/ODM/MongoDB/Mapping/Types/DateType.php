@@ -35,6 +35,9 @@ class DateType extends Type
         if ($value === null) {
             return null;
         }
+        if ($value instanceof \MongoDate) {
+            return $value;
+        }
         $timestamp = false;
         if ($value instanceof \DateTime) {
             $timestamp = $value->getTimestamp();

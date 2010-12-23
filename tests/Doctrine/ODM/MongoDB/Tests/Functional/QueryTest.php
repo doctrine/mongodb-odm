@@ -298,7 +298,6 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             )
         );
         $this->assertSame($expected, $qb->getQueryArray());
-
         $this->assertSame($expected, $qb->getQuery()->debug());
     }
 }

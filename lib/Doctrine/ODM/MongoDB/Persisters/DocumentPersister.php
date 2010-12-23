@@ -528,22 +528,22 @@ class DocumentPersister
         }
         $newQuery = array();
         foreach ($query as $key => $value) {
-            $value = $this->prepareWhereValue($key, $value);
+            $value = $this->prepareQueryValue($key, $value);
             $newQuery[$key] = $value;
         }
         return $newQuery;
     }
 
     /**
-     * Prepare where values converting document object field names to the document collection
-     * field name.
+     * Prepares a query value and converts any php portable types to the mongodb type.
      *
      * @param string $fieldName
      * @param string $value
-     * @return string $value
+     * @return mixed $value
      */
-    private function prepareWhereValue(&$fieldName, $value)
+    private function prepareQueryValue(&$fieldName, $value)
     {
+        // Process "association.fieldName"
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
 
@@ -558,35 +558,55 @@ class DocumentPersister
 
             if (isset($mapping['targetDocument'])) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-                if ($targetClass->hasField($e[1]) && $targetClass->identifier === $e[1]) {
-                    $fieldName = $e[0] . '.$id';
-                    $value = $targetClass->getDatabaseIdentifierValue($value);
-                } elseif ($e[1] === '$id') {
-                    $value = $targetClass->getDatabaseIdentifierValue($value);
+                if ($targetClass->hasField($e[1])) {
+                    if ($targetClass->identifier === $e[1] || $e[1] === '$id') {
+                        $fieldName = $e[0] . '.$id';
+                        $value = $this->prepareTypeValue($targetClass->fieldMappings[$targetClass->identifier]['type'], $value);
+                    } else {
+                        $value = $this->prepareTypeValue($targetClass->fieldMappings[$e[1]]['type'], $value);
+                    }
                 }
             }
+
+        // Process all non identifier fields
         } elseif ($this->class->hasField($fieldName) && ! $this->class->isIdentifier($fieldName)) {
             $name = $this->class->fieldMappings[$fieldName]['name'];
+            $mapping = $this->class->fieldMappings[$fieldName];
             if ($name !== $fieldName) {
                 $fieldName = $name;
             }
+            if ( ! isset($mapping['association'])) {
+                $value = $this->prepareTypeValue($mapping['type'], $value);
+            }
+
+        // Process identifier
         } else {
             if ($fieldName === $this->class->identifier || $fieldName === '_id') {
                 $fieldName = '_id';
-                if (is_array($value)) {
-                    if (isset($value[$this->cmd.'in'])) {
-                        foreach ($value[$this->cmd.'in'] as $k => $v) {
-                            $value[$this->cmd.'in'][$k] = $this->class->getDatabaseIdentifierValue($v);
-                        }
-                    } else {
-                        foreach ($value as $k => $v) {
-                            $value[$k] = $this->class->getDatabaseIdentifierValue($v);
-                        }
-                    }
-                } else {
-                    $value = $this->class->getDatabaseIdentifierValue($value);
+                $value = $this->prepareTypeValue($this->class->fieldMappings[$this->class->identifier]['type'], $value);
+            }
+        }
+        return $value;
+    }
+
+    private function prepareTypeValue($type, $value)
+    {
+        if (is_array($value)) {
+            if (isset($value[$this->cmd.'type'])) {
+                // do nothing
+            } elseif (isset($value[$this->cmd.'not'])) {
+                $value[$this->cmd.'not'] = $this->prepareTypeValue($type, $value[$this->cmd.'not']);
+            } elseif (isset($value[$this->cmd.'in'])) {
+                foreach ($value[$this->cmd.'in'] as $k => $v) {
+                    $value[$this->cmd.'in'][$k] = Type::getType($type)->convertToDatabaseValue($v);
+                }
+            } else {
+                foreach ($value as $k => $v) {
+                    $value[$k] = Type::getType($type)->convertToDatabaseValue($v);
                 }
             }
+        } else {
+            $value = Type::getType($type)->convertToDatabaseValue($value);
         }
         return $value;
     }
