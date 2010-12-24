@@ -591,6 +591,9 @@ class DocumentPersister
 
     private function prepareTypeValue($type, $value)
     {
+        if('collection' === $type || 'hash' === $type) {
+            return $value;
+        }
         if (is_array($value)) {
             if (isset($value[$this->cmd.'type'])) {
                 // do nothing
