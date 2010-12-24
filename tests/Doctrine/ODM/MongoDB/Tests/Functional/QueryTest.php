@@ -300,4 +300,28 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame($expected, $qb->getQueryArray());
         $this->assertSame($expected, $qb->getQuery()->debug());
     }
+
+    // search for articles that have the "pet" tag in their tags collection
+    public function testQueryWhereOneValueOfCollection()
+    {
+        $qb = $this->dm->createQueryBuilder('Documents\Article');
+        $qb->field('tags')->equals('pet');
+        $expected = array(
+            'tags' => 'pet'
+        );
+        $this->assertSame($expected, $qb->getQueryArray());
+        $this->assertSame($expected, $qb->getQuery()->debug());
+    }
+
+    // search for articles where tags exactly equal [pet, blue]
+    public function testQueryWhereAllValuesOfCollection()
+    {
+        $qb = $this->dm->createQueryBuilder('Documents\Article');
+        $qb->field('tags')->equals(array('pet', 'blue'));
+        $expected = array(
+            'tags' => array('pet', 'blue')
+        );
+        $this->assertSame($expected, $qb->getQueryArray());
+        $this->assertSame($expected, $qb->getQuery()->debug());
+    }
 }
