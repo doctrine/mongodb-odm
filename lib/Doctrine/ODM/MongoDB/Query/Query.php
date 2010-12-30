@@ -26,6 +26,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\MongoDB\Database;
 use Doctrine\MongoDB\Collection;
+use Doctrine\ODM\MongoDB\LoggableCursor;
 
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
