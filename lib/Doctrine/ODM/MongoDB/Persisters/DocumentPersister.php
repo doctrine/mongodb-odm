@@ -594,6 +594,8 @@ class DocumentPersister
         if (is_array($value)) {
             if (isset($value[$this->cmd.'type'])) {
                 // do nothing
+            } elseif (isset($value[$this->cmd.'exists'])) {
+                $value[$this->cmd.'exists'] = (bool) $value[$this->cmd.'exists'];
             } elseif (isset($value[$this->cmd.'not'])) {
                 $value[$this->cmd.'not'] = $this->prepareTypeValue($type, $value[$this->cmd.'not']);
             } elseif (isset($value[$this->cmd.'in'])) {
