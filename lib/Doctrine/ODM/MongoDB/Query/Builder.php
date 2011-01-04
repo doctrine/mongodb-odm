@@ -174,7 +174,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         return new Expr($this->dm, $this->cmd);
     }
 
-	private function setDocumentName($documentName)
+    private function setDocumentName($documentName)
     {
         if (is_array($documentName)) {
             $documentNames = $documentName;
