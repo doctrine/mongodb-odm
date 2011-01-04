@@ -164,7 +164,17 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         );
     }
 
-    private function setDocumentName($documentName)
+    /**
+     * Create a new Query\Expr instance that can be used as an expression with the QueryBuilder
+     *
+     * @return Query\Expr $expr
+     */
+    public function expr()
+    {
+        return new Expr($this->dm, $this->cmd);
+    }
+
+	private function setDocumentName($documentName)
     {
         if (is_array($documentName)) {
             $documentNames = $documentName;
