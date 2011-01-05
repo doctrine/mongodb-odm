@@ -512,7 +512,7 @@ class DocumentPersister
     }
 
     /**
-     * Prepares a query and converts values to the types mongodb expects.
+     * Prepares a query array by converting the portable Doctrine types to the types mongodb expects.
      *
      * @param string|array $query
      * @return array $query
@@ -531,11 +531,31 @@ class DocumentPersister
             $value = $this->prepareQueryValue($key, $value);
             $newQuery[$key] = $value;
         }
+        $newQuery = $this->convertTypes($newQuery);
         return $newQuery;
     }
 
     /**
-     * Prepares a query value and converts any php portable types to the mongodb type.
+     * Converts any local PHP variable types to their related MongoDB type.
+     *
+     * @param array $query
+     * @return array $query
+     */
+    private function convertTypes(array $query)
+    {
+        foreach ($query as $key => $value) {
+            if (is_array($value)) {
+                $query[$key] = $this->convertTypes($value);
+            } else {
+                $query[$key] = Type::convertPHPToDatabaseValue($value);
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * Prepares a query value and converts the php value to the database value if it is an identifier.
+     * It also handles converting $fieldName to the database name if they are different.
      *
      * @param string $fieldName
      * @param string $value
@@ -561,9 +581,7 @@ class DocumentPersister
                 if ($targetClass->hasField($e[1])) {
                     if ($targetClass->identifier === $e[1] || $e[1] === '$id') {
                         $fieldName = $e[0] . '.$id';
-                        $value = $this->prepareTypeValue($targetClass->fieldMappings[$targetClass->identifier]['type'], $value);
-                    } else {
-                        $value = $this->prepareTypeValue($targetClass->fieldMappings[$e[1]]['type'], $value);
+                        $value = $targetClass->getDatabaseIdentifierValue($value);
                     }
                 }
             }
@@ -575,38 +593,11 @@ class DocumentPersister
             if ($name !== $fieldName) {
                 $fieldName = $name;
             }
-            if ( ! isset($mapping['association'])) {
-                $value = $this->prepareTypeValue($mapping['type'], $value);
-            }
 
         // Process identifier
-        } else {
-            if ($fieldName === $this->class->identifier || $fieldName === '_id') {
-                $fieldName = '_id';
-                $value = $this->prepareTypeValue($this->class->fieldMappings[$this->class->identifier]['type'], $value);
-            }
-        }
-        return $value;
-    }
-
-    private function prepareTypeValue($type, $value)
-    {
-        if (is_array($value)) {
-            if (isset($value[$this->cmd.'type'])) {
-                // do nothing
-            } elseif (isset($value[$this->cmd.'not'])) {
-                $value[$this->cmd.'not'] = $this->prepareTypeValue($type, $value[$this->cmd.'not']);
-            } elseif (isset($value[$this->cmd.'in'])) {
-                foreach ($value[$this->cmd.'in'] as $k => $v) {
-                    $value[$this->cmd.'in'][$k] = Type::getType($type)->convertToDatabaseValue($v);
-                }
-            } else {
-                foreach ($value as $k => $v) {
-                    $value[$k] = Type::getType($type)->convertToDatabaseValue($v);
-                }
-            }
-        } else {
-            $value = Type::getType($type)->convertToDatabaseValue($value);
+        } elseif ($fieldName === $this->class->identifier || $fieldName === '_id') {
+            $fieldName = '_id';
+            $value = $this->class->getDatabaseIdentifierValue($value);
         }
         return $value;
     }
