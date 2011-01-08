@@ -265,7 +265,6 @@ class DocumentManager
      */
     public function getClassMetadata($className)
     {
-if (!$this->metadataFactory) throw new \Exception('No MetadataFactory.');
         return $this->metadataFactory->getMetadataFor($className);
     }
 
