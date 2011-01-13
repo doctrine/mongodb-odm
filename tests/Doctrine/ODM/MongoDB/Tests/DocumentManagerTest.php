@@ -20,42 +20,42 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetConnection()
     {
-        $this->assertType('\Doctrine\MongoDB\Connection', $this->dm->getConnection());
+        $this->assertInstanceOf('\Doctrine\MongoDB\Connection', $this->dm->getConnection());
     }
 
     public function testGetMetadataFactory()
     {
-        $this->assertType('\Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory', $this->dm->getMetadataFactory());
+        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory', $this->dm->getMetadataFactory());
     }
 
     public function testGetConfiguration()
     {
-        $this->assertType('\Doctrine\ODM\MongoDB\Configuration', $this->dm->getConfiguration());
+        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Configuration', $this->dm->getConfiguration());
     }
 
     public function testGetUnitOfWork()
     {
-        $this->assertType('\Doctrine\ODM\MongoDB\UnitOfWork', $this->dm->getUnitOfWork());
+        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\UnitOfWork', $this->dm->getUnitOfWork());
     }
 
     public function testGetProxyFactory()
     {
-        $this->assertType('\Doctrine\ODM\MongoDB\Proxy\ProxyFactory', $this->dm->getProxyFactory());
+        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Proxy\ProxyFactory', $this->dm->getProxyFactory());
     }
 
     public function testGetEventManager()
     {
-        $this->assertType('\Doctrine\ODM\MongoDB\SchemaManager', $this->dm->getSchemaManager());
+        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\SchemaManager', $this->dm->getSchemaManager());
     }
 
     public function testGetSchemaManager()
     {
-        $this->assertType('\Doctrine\Common\EventManager', $this->dm->getEventManager());
+        $this->assertInstanceOf('\Doctrine\Common\EventManager', $this->dm->getEventManager());
     }
 
     public function testCreateQueryBuilder()
     {
-        $this->assertType('\Doctrine\ODM\MongoDB\Query\Builder', $this->dm->createQueryBuilder());
+        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Query\Builder', $this->dm->createQueryBuilder());
     }
 
     public function testGetPartialReference()
