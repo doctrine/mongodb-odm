@@ -597,7 +597,12 @@ class DocumentPersister
         // Process identifier
         } elseif ($fieldName === $this->class->identifier || $fieldName === '_id') {
             $fieldName = '_id';
-            $value = $this->class->getDatabaseIdentifierValue($value);
+            if(is_array($value)) {
+                $key = key($value);
+                $value[$key] = $this->class->getDatabaseIdentifierValue($value);
+            } else {
+                $value = $this->class->getDatabaseIdentifierValue($value);
+            }
         }
         return $value;
     }
