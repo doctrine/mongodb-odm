@@ -46,7 +46,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->dm->persist($test);
             $this->dm->flush();
 
-            $this->assertType('int', $test->getVersion());
+            $this->assertInternalType('int', $test->getVersion());
             $this->assertEquals($i + 1, $test->getVersion());
         }
     }
@@ -63,7 +63,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $date1 = $test->version;
 
-        $this->assertType('DateTime', $date1);
+        $this->assertInstanceOf('DateTime', $date1);
 
         $test->title = 'changed';
         $this->dm->flush();
