@@ -145,7 +145,7 @@ class DocumentManager
         $this->cmd = $this->config->getMongoCmd();
         $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
 
-        $metadataFactoryClassName = $config->getClassMetadataFactoryName();
+        $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
         $this->metadataFactory->setDocumentManager($this);
         $this->metadataFactory->setConfiguration($this->config);
