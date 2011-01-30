@@ -295,6 +295,10 @@ Next we need to setup the `ClassLoader` instances for all of the classes we need
     $classLoader = new ClassLoader('Doctrine\Common', 'mongodb_odm/lib/vendor/doctrine-common/lib');
     $classLoader->register();
 
+    // MongoDB Classes
+    $classLoader = new ClassLoader('Doctrine\MongoDB', 'mongodb_odm/lib/vendor/doctrine-mongodb/lib');
+    $classLoader->register();
+
     // Document classes
     $classLoader = new ClassLoader('Documents', __DIR__);
     $classLoader->register();
