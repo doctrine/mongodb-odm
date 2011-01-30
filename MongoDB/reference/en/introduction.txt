@@ -278,7 +278,7 @@ At the top of your bootstrap file you need to tell PHP which namespaces you want
     use Doctrine\Common\ClassLoader,
         Doctrine\Common\Annotations\AnnotationReader,
         Doctrine\ODM\MongoDB\DocumentManager,
-        Doctrine\ODM\MongoDB\Mongo,
+        Doctrine\MongoDB\Connection,
         Doctrine\ODM\MongoDB\Configuration,
         Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
@@ -311,6 +311,9 @@ Now we can configure the ODM and create our `DocumentManager` instance:
     $config = new Configuration();
     $config->setProxyDir('/path/to/generate/proxies');
     $config->setProxyNamespace('Proxies');
+    
+    $config->setHydratorDir(__DIR__ . '/path/to/generate/hydrators');
+    $config->setHydratorNamespace('Hydrators');
 
     $reader = new AnnotationReader();
     $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
@@ -328,7 +331,7 @@ Your final bootstrap code should look like the following:
     use Doctrine\Common\ClassLoader,
         Doctrine\Common\Annotations\AnnotationReader,
         Doctrine\ODM\MongoDB\DocumentManager,
-        Doctrine\ODM\MongoDB\Mongo,
+        Doctrine\MongoDB\Connection,
         Doctrine\ODM\MongoDB\Configuration,
         Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
@@ -347,6 +350,9 @@ Your final bootstrap code should look like the following:
     $config = new Configuration();
     $config->setProxyDir('/path/to/generate/proxies');
     $config->setProxyNamespace('Proxies');
+    
+    $config->setHydratorDir(__DIR__ . '/path/to/generate/hydrators');
+    $config->setHydratorNamespace('Hydrators');
 
     $reader = new AnnotationReader();
     $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
