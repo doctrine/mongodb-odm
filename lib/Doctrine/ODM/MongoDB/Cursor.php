@@ -74,7 +74,7 @@ class Cursor extends \Doctrine\MongoDB\Cursor
     /** @override */
     public function __construct(MongoCursor $mongoCursor, UnitOfWork $uow, ClassMetadata $class)
     {
-        $this->mongoCursor = $mongoCursor;
+        parent::__construct($mongoCursor);
         $this->unitOfWork = $uow;
         $this->class = $class;
     }
@@ -82,7 +82,7 @@ class Cursor extends \Doctrine\MongoDB\Cursor
     /** @override */
     public function current()
     {
-        $current = $this->mongoCursor->current();
+        $current = parent::current();
         if ($current && $this->hydrate) {
             return $this->unitOfWork->getOrCreateDocument($this->class->name, $current, $this->hints);
         }
