@@ -70,6 +70,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         return array(
             array('persist'),
+            array('persistAndFlush'),
             array('remove'),
             array('merge'),
             array('refresh'),
@@ -91,6 +92,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         return array(
             array('flush'),
             array('persist'),
+            array('persistAndFlush'),
             array('remove'),
             array('merge'),
             array('refresh'),

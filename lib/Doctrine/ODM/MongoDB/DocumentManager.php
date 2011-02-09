@@ -366,6 +366,22 @@ class DocumentManager
     }
 
     /**
+     * Tells the DocumentManager to manage and persist a document directly to the storage.
+     *
+     * NOTE: this method is just a shortcut for the two operations but it's useful as 
+     * developers generally persist only one document at a time and it avoids to write two 
+     * lines of code everytime.
+     *
+     * @param object $document The document to make managed and persisted immediatly
+     * @param array $options Array of options to be used with batchInsert(), update() and remove()
+     */
+    public function persistAndFlush($document, array $options = array())
+    {
+        $this->persist($document);
+        $this->flush($options);
+    }
+
+    /**
      * Removes a document instance.
      *
      * A removed document will be removed from the database at or before transaction commit
