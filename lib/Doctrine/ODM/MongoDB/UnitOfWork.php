@@ -2091,10 +2091,7 @@ class UnitOfWork implements PropertyChangedListener
             if (isset($mapping['embedded'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
-                        // Unwrap so that foreach() does not initialize
-                        $relatedDocuments = $relatedDocuments->unwrap();
-                    }
+                    // If its a PersistentCollection initialization is intended! No unwrap!
                     foreach ($relatedDocuments as $relatedDocument) {
                         $this->cascadeRemove($relatedDocument, $visited);
                     }
@@ -2104,10 +2101,7 @@ class UnitOfWork implements PropertyChangedListener
             } elseif (isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
-                        // Unwrap so that foreach() does not initialize
-                        $relatedDocuments = $relatedDocuments->unwrap();
-                    }
+                    // If its a PersistentCollection initialization is intended! No unwrap!
                     foreach ($relatedDocuments as $relatedDocument) {
                         $this->doRemove($relatedDocument, $visited);
                     }
