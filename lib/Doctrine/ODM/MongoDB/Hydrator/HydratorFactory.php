@@ -148,6 +148,25 @@ class HydratorFactory
         return $this->hydrators[$className];
     }
 
+    /**
+     * Generates hydrator classes for all given classes.
+     *
+     * @param array $classes The classes (ClassMetadata instances) for which to generate hydrators.
+     * @param string $toDir The target directory of the hydrator classes. If not specified, the
+     *                      directory configured on the Configuration of the DocumentManager used
+     *                      by this factory is used.
+     */
+    public function generateHydratorClasses(array $classes, $toDir = null)
+    {
+        $hydratorDir = $toDir ?: $this->hydratorDir;
+        $hydratorDir = rtrim($hydratorDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        foreach ($classes as $class) {
+            $hydratorClassName = str_replace('\\', '', $class->name) . 'Proxy';
+            $hydratorFileName = $hydratorDir . $hydratorClassName . '.php';
+            $this->generateHydratorClass($class, $hydratorClassName, $hydratorFileName);
+        }
+    }
+
     private function generateHydratorClass(ClassMetadata $class, $hydratorClassName, $fileName)
     {
         $code = '';
