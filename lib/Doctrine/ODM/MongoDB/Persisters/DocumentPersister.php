@@ -579,14 +579,21 @@ class DocumentPersister
             if (isset($mapping['targetDocument'])) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
                 if ($targetClass->hasField($e[1])) {
-                    if ($targetClass->identifier === $e[1] || $e[1] === '$id') {
+                    if ($targetClass->identifier === $e[1]) {
                         $fieldName = $e[0] . '.$id';
-                        $value = $targetClass->getDatabaseIdentifierValue($value);
+                        if (is_array($value)) {
+                            foreach ($value as $k => $v) {
+                                $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
+                            }
+                        } else {
+                            $value = $targetClass->getDatabaseIdentifierValue($value);
+                        }
                     }
                 }
             }
 
         // Process all non identifier fields
+        // We only change the field names here to the mongodb field name used for persistence
         } elseif ($this->class->hasField($fieldName) && ! $this->class->isIdentifier($fieldName)) {
             $name = $this->class->fieldMappings[$fieldName]['name'];
             $mapping = $this->class->fieldMappings[$fieldName];
@@ -595,9 +602,15 @@ class DocumentPersister
             }
 
         // Process identifier
-        } elseif ($fieldName === $this->class->identifier || $fieldName === '_id') {
+        } elseif (($this->class->hasField($fieldName) && $this->class->isIdentifier($fieldName)) || $fieldName === '_id') {
             $fieldName = '_id';
-            $value = $this->class->getDatabaseIdentifierValue($value);
+            if (is_array($value)) {
+                foreach ($value as $k => $v) {
+                    $value[$k] = $this->class->getDatabaseIdentifierValue($v);
+                }
+            } else {
+                $value = $this->class->getDatabaseIdentifierValue($value);
+            }
         }
         return $value;
     }
