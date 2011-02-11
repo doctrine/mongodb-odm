@@ -74,6 +74,7 @@ class Field extends Annotation
     public $type = 'string';
     public $nullable = false;
     public $options = array();
+    public $strategy;
 }
 final class Id extends Field
 {
