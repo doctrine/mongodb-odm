@@ -399,6 +399,9 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($this->documentUpdates) {
             foreach ($commitOrder as $class) {
+                if ($class->isEmbeddedDocument) {
+                    continue;
+                }
                 $this->executeUpdates($class, $options);
             }
         }
@@ -899,9 +902,6 @@ class UnitOfWork implements PropertyChangedListener
         $hasPostUpdateListeners = $this->evm->hasListeners(Events::postUpdate);
 
         foreach ($this->documentUpdates as $oid => $document) {
-            if ($class->isEmbeddedDocument) {
-                continue;
-            }
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
                 if ($hasPreUpdateLifecycleCallbacks) {
                     $class->invokeLifecycleCallbacks(Events::preUpdate, $document);
@@ -1101,13 +1101,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->addDependencies($class, $calc);
         }
         return $calc->getCommitOrder();
-        $classes = $calc->getCommitOrder();
-        foreach ($classes as $key => $class) {
-            if ($class->isEmbeddedDocument) {
-                unset($classes[$key]);
-            }
-        }
-        return array_values($classes);
     }
 
     /**
