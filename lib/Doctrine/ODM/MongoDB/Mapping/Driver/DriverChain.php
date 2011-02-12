@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
@@ -64,7 +65,7 @@ class DriverChain implements Driver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $class)
+    public function loadMetadataForClass($className, ClassMetadataInfo $class)
     {
         foreach ($this->drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {

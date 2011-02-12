@@ -9,8 +9,7 @@ use Doctrine\ODM\MongoDB\SchemaManager;
  */
 class DropCommand extends AbstractCommand
 {
-
-    protected $_commandName = 'drop';
+    protected $commandName = 'drop';
 
     protected function processDocumentCollection(SchemaManager $sm, $document)
     {
@@ -41,14 +40,4 @@ class DropCommand extends AbstractCommand
     {
         $sm->deleteIndexes();
     }
-    protected function processDocumentProxy(SchemaManager $sm, $document)
-    {
-        throw new \Exception("Cannot delete proxy files");
-    }
-
-    protected function processProxy(SchemaManager $sm)
-    {
-        throw new \Exception("Cannot delete proxy files");
-    }
-
 }

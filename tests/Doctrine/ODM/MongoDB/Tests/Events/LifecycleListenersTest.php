@@ -118,14 +118,14 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $dm->find(__NAMESPACE__.'\TestProfile', $test->id);
         $this->listener->called = array();
 
-        $test->image->thumbnails[] = new Image('Thumbnail #1');
+        $test->image->thumbnails[] = new Thumbnail('Thumbnail #1');
 
         $dm->flush();
         $called = array(
-            Events::prePersist => array('Doctrine\ODM\MongoDB\Tests\Events\Image'),
+            Events::prePersist => array('Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'),
             Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image'),
             Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image'),
-            Events::postPersist => array('Doctrine\ODM\MongoDB\Tests\Events\Image')
+            Events::postPersist => array('Doctrine\ODM\MongoDB\Tests\Events\Thumbnail')
         );
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = array();
@@ -133,8 +133,8 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test->image->thumbnails[0]->name = 'ok';
         $dm->flush();
         $called = array(
-            Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image', 'Doctrine\ODM\MongoDB\Tests\Events\Image'),
-            Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image', 'Doctrine\ODM\MongoDB\Tests\Events\Image'),
+            Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image', 'Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'),
+            Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image', 'Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'),
         );
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = array();
@@ -198,8 +198,22 @@ class Image
     /** @String */
     public $name;
 
-    /** @EmbedMany(targetDocument="Image") */
+    /** @EmbedMany(targetDocument="Thumbnail") */
     public $thumbnails = array();
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+}
+
+/**
+ * @EmbeddedDocument
+ */
+class Thumbnail
+{
+    /** @String */
+    public $name;
 
     public function __construct($name)
     {

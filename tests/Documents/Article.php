@@ -21,7 +21,7 @@ class Article
     /** @Date */
     private $createdAt;
 
-    /** @Collection */
+    /** @Field(type="collection", strategy="set") */
     private $tags = array();
 
     public function getId()

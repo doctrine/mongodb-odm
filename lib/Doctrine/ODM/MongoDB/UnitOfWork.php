@@ -899,32 +899,35 @@ class UnitOfWork implements PropertyChangedListener
         $hasPostUpdateListeners = $this->evm->hasListeners(Events::postUpdate);
 
         foreach ($this->documentUpdates as $oid => $document) {
-            if ($class->isEmbeddedDocument) {
-                continue;
-            }
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
-                if ($hasPreUpdateLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::preUpdate, $document);
-                    $this->recomputeSingleDocumentChangeSet($class, $document);
+                if ( ! $class->isEmbeddedDocument) {
+                    if ($hasPreUpdateLifecycleCallbacks) {
+                        $class->invokeLifecycleCallbacks(Events::preUpdate, $document);
+                        $this->recomputeSingleDocumentChangeSet($class, $document);
+                    }
+
+                    if ($hasPreUpdateListeners) {
+                        $this->evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
+                            $document, $this->dm, $this->documentChangeSets[$oid])
+                        );
+                    }
+                    $this->cascadePreUpdate($class, $document);
                 }
 
-                if ($hasPreUpdateListeners) {
-                    $this->evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
-                        $document, $this->dm, $this->documentChangeSets[$oid])
-                    );
+                if ( ! $class->isEmbeddedDocument) {
+                    $persister->update($document, $options);
                 }
-                $this->cascadePreUpdate($class, $document);
-
-                $persister->update($document, $options);
                 unset($this->documentUpdates[$oid]);
 
-                if ($hasPostUpdateLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::postUpdate, $document);
+                if ( ! $class->isEmbeddedDocument) {
+                    if ($hasPostUpdateLifecycleCallbacks) {
+                        $class->invokeLifecycleCallbacks(Events::postUpdate, $document);
+                    }
+                    if ($hasPostUpdateListeners) {
+                        $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
+                    }
+                    $this->cascadePostUpdateAndPostPersist($class, $document);
                 }
-                if ($hasPostUpdateListeners) {
-                    $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
-                }
-                $this->cascadePostUpdateAndPostPersist($class, $document);
             }
         }
     }
@@ -1101,13 +1104,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->addDependencies($class, $calc);
         }
         return $calc->getCommitOrder();
-        $classes = $calc->getCommitOrder();
-        foreach ($classes as $key => $class) {
-            if ($class->isEmbeddedDocument) {
-                unset($classes[$key]);
-            }
-        }
-        return array_values($classes);
     }
 
     /**
@@ -2098,10 +2094,7 @@ class UnitOfWork implements PropertyChangedListener
             if (isset($mapping['embedded'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
-                        // Unwrap so that foreach() does not initialize
-                        $relatedDocuments = $relatedDocuments->unwrap();
-                    }
+                    // If its a PersistentCollection initialization is intended! No unwrap!
                     foreach ($relatedDocuments as $relatedDocument) {
                         $this->cascadeRemove($relatedDocument, $visited);
                     }
@@ -2111,10 +2104,7 @@ class UnitOfWork implements PropertyChangedListener
             } elseif (isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
-                        // Unwrap so that foreach() does not initialize
-                        $relatedDocuments = $relatedDocuments->unwrap();
-                    }
+                    // If its a PersistentCollection initialization is intended! No unwrap!
                     foreach ($relatedDocuments as $relatedDocument) {
                         $this->doRemove($relatedDocument, $visited);
                     }

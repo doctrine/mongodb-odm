@@ -201,7 +201,7 @@ class ProxyFactory
 
                 $methods .= $parameterString . ')';
                 $methods .= PHP_EOL . '    {' . PHP_EOL;
-                $methods .= '        $this->load();' . PHP_EOL;
+                $methods .= '        $this->__load();' . PHP_EOL;
                 $methods .= '        return parent::' . $method->getName() . '(' . $argumentString . ');';
                 $methods .= PHP_EOL . '    }' . PHP_EOL;
             }
@@ -263,7 +263,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
         $this->documentPersister = $documentPersister;
         $this->identifier = $identifier;
     }
-    private function load()
+    private function __load()
     {
         if (!$this->__isInitialized__ && $this->documentPersister) {
             $this->__isInitialized__ = true;
