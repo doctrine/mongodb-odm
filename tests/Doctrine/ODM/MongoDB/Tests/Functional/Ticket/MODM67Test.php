@@ -13,6 +13,9 @@ class MODM67Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->listener = new MODM67TestEventListener($this->dm);
         $evm = $this->dm->getEventManager();
         $events = array(
+            Events::prePersist,
+            Events::postPersist,
+            Events::preUpdate,
             Events::postUpdate,
         );
         $evm->addEventListener($events, $this->listener);
@@ -27,17 +30,23 @@ class MODM67Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $testDoc = new MODM67DerivedClass();
         $testDoc->embedOne = new MODM67EmbeddedObject();
 
-        $this->assertFalse($testDoc->embedOne->isUpdated);
-
         $dm->persist($testDoc);
         $dm->flush(array('safe' => true));
+
+        $this->assertTrue($testDoc->embedOne->prePersist);
+        $this->assertTrue($testDoc->embedOne->postPersist);
+
+        $this->assertFalse($testDoc->embedOne->preUpdate);
+        $this->assertFalse($testDoc->embedOne->postUpdate);
+
         $dm->clear();
 
         $testDoc = $dm->find(__NAMESPACE__ . '\MODM67DerivedClass', $testDoc->id);
         $testDoc->embedOne->numAccesses = 1;
         $dm->flush(array('safe' => true));
 
-        $this->assertTrue($testDoc->embedOne->isUpdated);
+        $this->assertTrue($testDoc->embedOne->preUpdate);
+        $this->assertTrue($testDoc->embedOne->postUpdate);
     }
 }
 
@@ -50,47 +59,49 @@ class MODM67TestEventListener
         $this->documentManager = $documentManager;
     }
 
+    public function prePersist(LifecycleEventArgs $eventArgs)
+    {
+        $document = $eventArgs->getDocument();
+        if ($document instanceof MODM67EmbeddedObject) {
+            $document->prePersist = true;
+        }
+    }
+
+    public function postPersist(LifecycleEventArgs $eventArgs)
+    {
+        $document = $eventArgs->getDocument();
+        if ($document instanceof MODM67EmbeddedObject) {
+            $document->postPersist = true;
+        }
+    }
+
+    public function preUpdate(LifecycleEventArgs $eventArgs)
+    {
+        $document = $eventArgs->getDocument();
+        if ($document instanceof MODM67EmbeddedObject) {
+            $document->preUpdate = true;
+        }
+    }
+
     public function postUpdate(LifecycleEventArgs $eventArgs)
     {
         $document = $eventArgs->getDocument();
-
         if ($document instanceof MODM67EmbeddedObject) {
-            $document->isUpdated = true;
+            $document->postUpdate = true;
         }
     }
 }
 
 /**
- * @MappedSuperclass
- * @HasLifecycleCallbacks
  * @Document
  */
-class MODM67BaseClass
+class MODM67DerivedClass
 {
     /** @Id */
     public $id;
 
     /** @EmbedOne(targetDocument="MODM67EmbeddedObject") */
-    public $embedOneBase;
-
-    public function __construct()
-    {
-    }
-}
-
-/**
- * @Document
- * @HasLifecycleCallbacks
- */
-class MODM67DerivedClass extends MODM67BaseClass
-{
-    /** @EmbedOne(targetDocument="MODM67EmbeddedObject") */
     public $embedOne;
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
 }
 
 /**
@@ -99,14 +110,17 @@ class MODM67DerivedClass extends MODM67BaseClass
 class MODM67EmbeddedObject
 {
     /** @Int */
-    public $numAccesses;
+    public $numAccesses = 0;
 
     /** @Boolean */
-    public $isUpdated;
+    public $prePersist = false;
 
-    public function __construct()
-    {
-        $this->numAccesses = 0;
-        $this->isUpdated = false;
-    }
+    /** @Boolean */
+    public $postPersist = false;
+
+    /** @Boolean */
+    public $preUpdate = false;
+
+    /** @Boolean */
+    public $postUpdate = false;
 }

@@ -399,9 +399,6 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($this->documentUpdates) {
             foreach ($commitOrder as $class) {
-                if ($class->isEmbeddedDocument) {
-                    continue;
-                }
                 $this->executeUpdates($class, $options);
             }
         }
@@ -903,28 +900,34 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($this->documentUpdates as $oid => $document) {
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
-                if ($hasPreUpdateLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::preUpdate, $document);
-                    $this->recomputeSingleDocumentChangeSet($class, $document);
+                if ( ! $class->isEmbeddedDocument) {
+                    if ($hasPreUpdateLifecycleCallbacks) {
+                        $class->invokeLifecycleCallbacks(Events::preUpdate, $document);
+                        $this->recomputeSingleDocumentChangeSet($class, $document);
+                    }
+
+                    if ($hasPreUpdateListeners) {
+                        $this->evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
+                            $document, $this->dm, $this->documentChangeSets[$oid])
+                        );
+                    }
+                    $this->cascadePreUpdate($class, $document);
                 }
 
-                if ($hasPreUpdateListeners) {
-                    $this->evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
-                        $document, $this->dm, $this->documentChangeSets[$oid])
-                    );
+                if ( ! $class->isEmbeddedDocument) {
+                    $persister->update($document, $options);
                 }
-                $this->cascadePreUpdate($class, $document);
-
-                $persister->update($document, $options);
                 unset($this->documentUpdates[$oid]);
 
-                if ($hasPostUpdateLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::postUpdate, $document);
+                if ( ! $class->isEmbeddedDocument) {
+                    if ($hasPostUpdateLifecycleCallbacks) {
+                        $class->invokeLifecycleCallbacks(Events::postUpdate, $document);
+                    }
+                    if ($hasPostUpdateListeners) {
+                        $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
+                    }
+                    $this->cascadePostUpdateAndPostPersist($class, $document);
                 }
-                if ($hasPostUpdateListeners) {
-                    $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
-                }
-                $this->cascadePostUpdateAndPostPersist($class, $document);
             }
         }
     }
