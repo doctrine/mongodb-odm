@@ -69,7 +69,6 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     protected function _createDocumentManager($metadataDriver)
     {
-        $connMock = new ConnectionMock();
         $config = new \Doctrine\ODM\MongoDB\Configuration();
 
         $config->setProxyDir(__DIR__ . '/../../Proxies');
@@ -82,7 +81,21 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $mockDriver = new MetadataDriverMock();
         $config->setMetadataDriverImpl($metadataDriver);
 
-        return DocumentManagerMock::create($connMock, $config, $eventManager);
+        return DocumentManagerMock::create($this->getConnection(), $this->getDatabase(), $config, $eventManager);
+    }
+    
+    protected function getConnection()
+    {
+        return $this->getMockBuilder('Doctrine\MongoDB\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+    
+    protected function getDatabase()
+    {
+        return $this->getMockBuilder('Doctrine\MongoDB\Database')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }
 

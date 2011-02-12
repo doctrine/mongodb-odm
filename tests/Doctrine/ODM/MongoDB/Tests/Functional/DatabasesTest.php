@@ -35,12 +35,12 @@ class DatabasesTest extends \PHPUnit_Framework_TestCase
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
         $config->setDefaultDB('testing');
 
-        $this->dm = DocumentManager::create(new Connection(), $config);
+        $this->dm = DocumentManager::create(new Connection(), null, $config);
     }
 
     public function testDefaultDatabase()
     {
-        $this->assertEquals('testing', $this->dm->getDocumentDatabase('Doctrine\ODM\MongoDB\Tests\Functional\DefaultDatabaseTest')->getName());
+        $this->assertEquals('testing', $this->dm->getDatabase()->getName());
     }
 }
 

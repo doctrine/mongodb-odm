@@ -38,7 +38,7 @@ class IncrementGenerator extends AbstractIdGenerator
     public function generate(DocumentManager $dm, $document)
     {
         $className = get_class($document);
-        $db = $dm->getDocumentDatabase($className);
+        $db = $dm->getDatabase();
         $coll = $dm->getDocumentCollection($className);
 
         $query = array('_id' => $coll->getName());
