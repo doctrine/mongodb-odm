@@ -15,38 +15,43 @@ abstract class AbstractCommand extends Command
     const DBS = 'db';
     const COLLECTIONS = 'collection';
     const INDEXES = 'index';
-    const PROXIES = 'proxy';
 
     /**
      * Dropping and Replacement of schema happens in reverse order (indexes <- collections <- dbs)
      *
      * @var array
      */
-    protected $availableOptions = array(self::INDEXES, self::COLLECTIONS, self::DBS, self::PROXIES);
+    protected $availableOptions = array(self::INDEXES, self::COLLECTIONS, self::DBS);
 
-    protected $_commandName;
+    protected $commandName;
 
     protected function configure()
     {
         $this
-            ->setName('odm:schema:' . $this->_commandName)
-            ->setDescription("Allows to $this->_commandName databases and/or collections for your documents")
+            ->setName('odm:schema:' . $this->commandName)
+            ->setDescription("Allows you to $this->commandName databases, collections and indexes for your documents")
             ->setDefinition(array(
-                new Input\InputOption('class', 'c', Input\InputOption::VALUE_OPTIONAL, 'the class name to create "db" or "collection" for, all classes will be used if none specified', null),
-                new Input\InputOption(self::DBS, null, Input\InputOption::VALUE_NONE, ''),
-                new Input\InputOption(self::COLLECTIONS, null, Input\InputOption::VALUE_NONE, ''),
-                new Input\InputOption(self::INDEXES, null, Input\InputOption::VALUE_NONE, ''),
-                new Input\InputOption(self::PROXIES, null, Input\InputOption::VALUE_NONE, ''),
+                new Input\InputOption('class', 'c', Input\InputOption::VALUE_OPTIONAL, 'the class name to create database, collection and indexes for, all classes will be used if none specified', null),
+                new Input\InputOption(self::DBS, null, Input\InputOption::VALUE_NONE, true),
+                new Input\InputOption(self::COLLECTIONS, null, Input\InputOption::VALUE_NONE, true),
+                new Input\InputOption(self::INDEXES, null, Input\InputOption::VALUE_NONE, true)
             ))
         ;
     }
 
     protected function execute(Input\InputInterface $input, Output\OutputInterface $output)
     {
+        $none = true;
+        foreach ($this->availableOptions as $option) {
+            if (false !== $input->getOption($option)) {
+                $none = false;
+            }
+        }
+
         $class = $input->getOption('class');
         $sm = $this->getSchemaManager();
         foreach ($this->availableOptions as $option) {
-            if (false !== $input->getOption($option)) {
+            if (false !== $input->getOption($option) || $none === true) {
                 try {
                     if (isset($class)) {
                         $this->{'processDocument' . ucfirst($option)}($sm, $class);
@@ -67,8 +72,6 @@ abstract class AbstractCommand extends Command
     abstract protected function processDb(SchemaManager $sm);
     abstract protected function processDocumentIndex(SchemaManager $sm, $document);
     abstract protected function processIndex(SchemaManager $sm);
-    abstract protected function processDocumentProxy(SchemaManager $sm, $document);
-    abstract protected function processProxy(SchemaManager $sm);
 
     /**
      * @return Doctrine\ODM\MongoDB\SchemaManager
@@ -93,5 +96,4 @@ abstract class AbstractCommand extends Command
     {
         return $this->getDocumentManager()->getMetadataFactory();
     }
-
 }

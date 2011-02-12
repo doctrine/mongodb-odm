@@ -11,8 +11,7 @@ use Symfony\Component\Console\Output;
  */
 class CreateCommand extends AbstractCommand
 {
-
-    protected $_commandName = 'create';
+    protected $commandName = 'create';
 
     protected function processDocumentCollection(SchemaManager $sm, $document)
     {

@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**
  * Contract for metadata drivers.
@@ -36,9 +36,9 @@ interface Driver
      * Loads the metadata for the specified class into the provided container.
      * 
      * @param string $className
-     * @param ClassMetadataInfo $metadata
+     * @param ClassMetadataInfoInfo $metadata
      */
-    function loadMetadataForClass($className, ClassMetadata $metadata);
+    function loadMetadataForClass($className, ClassMetadataInfo $metadata);
     
     /**
      * Gets the names of all mapped classes known to this driver.

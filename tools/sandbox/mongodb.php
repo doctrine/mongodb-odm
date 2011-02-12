@@ -11,6 +11,9 @@ $cli = new \Symfony\Component\Console\Application('Doctrine ODM MongoDB Command 
 $cli->setCatchExceptions(true);
 $cli->setHelperSet($helperSet);
 $cli->addCommands(array(
+    new \Doctrine\ODM\MongoDB\Tools\Console\Command\QueryCommand(),
+    new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateDocumentsCommand(),
+    new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateRepositoriesCommand(),
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateProxiesCommand(),
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateHydratorsCommand(),
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\CreateCommand(),
