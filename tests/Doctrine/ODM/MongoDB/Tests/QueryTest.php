@@ -95,6 +95,23 @@ class QueryTest extends BaseTest
         $this->assertEquals(1, $query->count());
         $this->assertSame($jon, $query->getSingleResult());
     }
+
+    public function testQueryIdIn()
+    {
+        $user = new \Documents\User();
+        $user->setUsername('jwage');
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $mongoId = new \MongoId($user->getId());
+        $ids = array($mongoId);
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('_id')->in($ids);
+        $query = $qb->getQuery();
+        $results = $query->toArray();
+        $this->assertEquals(1, count($results));
+    }
 }
 
 /** @Document(collection="people") */
