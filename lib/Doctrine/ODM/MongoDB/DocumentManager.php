@@ -142,16 +142,22 @@ class DocumentManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
-     * @param Doctrine\MongoDB\Connection $conn
-     * @param Doctrine\ODM\MongoDB\Configuration $config
+     * @param string|Doctrine\MongoDB\Connection $conn
+     * @param string|Doctrine\ODM\MongoDB\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(Connection $conn = null, Database $db = null, Configuration $config = null, EventManager $eventManager = null)
+    protected function __construct($conn = null, $db = null, Configuration $config = null, EventManager $eventManager = null)
     {
         $this->config = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
         $this->cmd = $this->config->getMongoCmd();
+        if (is_string($conn)) {
+            $conn = new Connection(null, array(), $this->config, $this->eventManager);
+        }
         $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
+        if (is_string($db)) {
+            $db = $this->connection->selectDatabase($db);
+        }
         $this->db = $db ?: $this->connection->selectDatabase(null !== $config->getDefaultDB() ? $config->getDefaultDB() : 'doctrine');
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
@@ -197,12 +203,12 @@ class DocumentManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
-     * @param Doctrine\MongoDB\Connection $conn
-     * @param Doctrine\MongoDB\Database   $db
+     * @param string|Doctrine\MongoDB\Connection $conn
+     * @param string|Doctrine\MongoDB\Database   $db
      * @param Doctrine\ODM\MongoDB\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
-    public static function create(Connection $conn = null, Database $db = null, Configuration $config = null, EventManager $eventManager = null)
+    public static function create($conn = null, $db = null, Configuration $config = null, EventManager $eventManager = null)
     {
         return new DocumentManager($conn, $db, $config, $eventManager);
     }
