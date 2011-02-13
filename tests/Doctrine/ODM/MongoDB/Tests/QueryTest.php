@@ -112,6 +112,16 @@ class QueryTest extends BaseTest
         $results = $query->toArray();
         $this->assertEquals(1, count($results));
     }
+
+    public function testEmbeddedSet()
+    {
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->insert()
+            ->field('testInt')->set('0')
+            ->field('intfields.intone')->set('1')
+            ->field('intfields.inttwo')->set('2');
+        $this->assertEquals(array('testInt' => 0, 'intfields' => array('intone' => 1, 'inttwo' => 2)), $qb->getNewObj());
+    }
 }
 
 /** @Document(collection="people") */
