@@ -297,7 +297,6 @@ class DocumentManager
     public function getDocumentCollection($className)
     {
         $metadata = $this->metadataFactory->getMetadataFor($className);
-        $db = $metadata->getDatabase();
         $collection = $metadata->getCollection();
 
         if ( ! $collection) {
@@ -644,7 +643,7 @@ class DocumentManager
         $dbRef = array(
             $this->cmd . 'ref' => $class->getCollection(),
             $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($id),
-            $this->cmd . 'db'  => $class->getDatabase()
+            $this->cmd . 'db'  => $this->db->getName(),
         );
 
         // add a discriminator value if the referenced document is not mapped explicitely to a targetDocument
