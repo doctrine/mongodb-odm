@@ -31,17 +31,10 @@ Reference Guide
    reference/xml-mapping
    reference/yml-mapping
 
-Coobook
+Cookbook
 ---------
 
 .. toctree::
    :maxdepth: 1
 
    cookbook/getting-started
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
