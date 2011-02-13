@@ -161,7 +161,7 @@ class HydratorFactory
         $hydratorDir = $toDir ?: $this->hydratorDir;
         $hydratorDir = rtrim($hydratorDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         foreach ($classes as $class) {
-            $hydratorClassName = str_replace('\\', '', $class->name) . 'Proxy';
+            $hydratorClassName = str_replace('\\', '', $class->name) . 'Hydrator';
             $hydratorFileName = $hydratorDir . $hydratorClassName . '.php';
             $this->generateHydratorClass($class, $hydratorClassName, $hydratorFileName);
         }

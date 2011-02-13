@@ -31,7 +31,7 @@ abstract class AbstractCommand extends Command
             ->setName('odm:schema:' . $this->commandName)
             ->setDescription("Allows you to $this->commandName databases, collections and indexes for your documents")
             ->setDefinition(array(
-                new Input\InputOption('class', 'c', Input\InputOption::VALUE_OPTIONAL, 'the class name to create database, collection and indexes for, all classes will be used if none specified', null),
+                new Input\InputOption('class', 'c', Input\InputOption::VALUE_OPTIONAL, 'The class name to create database, collection and indexes for, all classes will be used if none specified', null),
                 new Input\InputOption(self::DBS, null, Input\InputOption::VALUE_NONE, true),
                 new Input\InputOption(self::COLLECTIONS, null, Input\InputOption::VALUE_NONE, true),
                 new Input\InputOption(self::INDEXES, null, Input\InputOption::VALUE_NONE, true)
@@ -58,7 +58,8 @@ abstract class AbstractCommand extends Command
                     } else {
                         $this->{'process' . ucfirst($option)}($sm);
                     }
-                    $output->writeln('<info>Successfully processed "' . $option . '" for ' . (isset($class) ? $class : 'all classes') . '</info>');
+                    $commandVerb = $this->commandName === 'drop' ? 'Dropped' : 'Created';
+                    $output->writeln(sprintf('%s <comment>%s</comment> for <info>%s</info>', $commandVerb, $option, (isset($class) ? $class : 'all classes')));
                 } catch (\Exception $e) {
                     $output->writeln('<error>' . $e->getMessage() . '</error>');
                 }
