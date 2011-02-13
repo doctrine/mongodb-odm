@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
     Doctrine\ODM\MongoDB\SchemaManager,
     Doctrine\MongoDB\Collection,
     Doctrine\MongoDB\Database;
-    
+
 class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
 {
     private $uowMock;
@@ -94,7 +94,7 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
         return isset($this->documentMetadatas[$documentName]) ? $this->documentMetadatas[$documentName] : parent::getClassMetadata($documentName);
     }
 
-    public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
+    public static function create($conn = null, $db = null, Configuration $config = null, EventManager $eventManager = null)
     {
         if (is_null($config)) {
             $config = new \Doctrine\ODM\MongoDB\Configuration();
@@ -109,6 +109,6 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
         if (is_null($eventManager)) {
             $eventManager = new \Doctrine\Common\EventManager();
         }
-        return new DocumentManagerMock($conn, $config, $eventManager);   
+        return new DocumentManagerMock($conn, $db, $config, $eventManager);
     }
 }

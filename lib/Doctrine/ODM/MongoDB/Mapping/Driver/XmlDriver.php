@@ -59,9 +59,6 @@ class XmlDriver extends AbstractFileDriver
         } elseif ($xmlRoot->getName() == 'embedded-document') {
             $class->isEmbeddedDocument = true;
         }
-        if (isset($xmlRoot['db'])) {
-            $class->setDatabase((string) $xmlRoot['db']);
-        }
         if (isset($xmlRoot['collection'])) {
             $class->setCollection((string) $xmlRoot['collection']);
         }

@@ -39,7 +39,7 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
-        $this->dm = DocumentManager::create(new Connection(), $config);
+        $this->dm = DocumentManager::create(new Connection(), null, $config);
 
         $currencies = array('USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125);
 
@@ -145,8 +145,10 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
             'Documents\User',
             'Documents\Event'
         );
-        foreach ($documents as $document) {
-            $this->dm->getDocumentCollection($document)->drop();
+        if (isset($this->dm) && $this->dm instanceof DocumentManager) {
+            foreach ($documents as $document) {
+                $this->dm->getDocumentCollection($document)->drop();
+            }
         }
     }
 

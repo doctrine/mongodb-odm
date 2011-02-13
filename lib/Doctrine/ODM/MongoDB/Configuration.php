@@ -55,7 +55,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Resolves a registered namespace alias to the full namespace.
      *
-     * @param string $documentNamespaceAlias 
+     * @param string $documentNamespaceAlias
      * @return string
      * @throws MongoDBException
      */
@@ -93,7 +93,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Add a new default annotation driver with a correctly configured annotation reader.
-     * 
+     *
      * @param array $paths
      * @return Mapping\Driver\AnnotationDriver
      */
@@ -101,7 +101,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
-        
+
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, (array) $paths);
     }
 
@@ -183,7 +183,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Gets the namespace where proxy classes reside.
-     * 
+     *
      * @return string
      */
     public function getProxyNamespace()
@@ -194,7 +194,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Sets the namespace where proxy classes reside.
-     * 
+     *
      * @param string $ns
      */
     public function setProxyNamespace($ns)
@@ -248,7 +248,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Gets the namespace where hydrator classes reside.
-     * 
+     *
      * @return string
      */
     public function getHydratorNamespace()
@@ -259,7 +259,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Sets the namespace where hydrator classes reside.
-     * 
+     *
      * @param string $ns
      */
     public function setHydratorNamespace($ns)
@@ -288,80 +288,6 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         return isset($this->attributes['defaultDB']) ?
             $this->attributes['defaultDB'] : null;
-    }
-
-    /**
-     * Sets the environment
-     *
-     * @param string $environment
-     */
-    public function setEnvironment($environment)
-    {
-        $this->attributes['environment'] = $environment;
-    }
-
-    /**
-     * Gets the environment
-     *
-     * @return string $environment
-     */
-    public function getEnvironment()
-    {
-        return isset($this->attributes['environment']) ?
-            $this->attributes['environment'] : null;
-    }
-
-    /**
-     * Gets prefix for environment
-     *
-     * @return string $envPrefix
-     */
-    public function getEnvironmentPrefix()
-    {
-        return isset($this->attributes['environment']) ?
-            sprintf('%s_', $this->attributes['environment']) : null;
-    }
-
-    /**
-     * Set prefix for db name
-     *
-     * @param string $prefix The prefix for names of databases
-     */
-    public function setDatabasePrefix($prefix = null)
-    {
-        $this->attributes['dbPrefix'] = $prefix;
-    }
-
-    /**
-     * Get prefix for db name
-     *
-     * @return string 
-     */
-    public function getDatabasePrefix()
-    {
-        return isset($this->attributes['dbPrefix']) ?
-            $this->attributes['dbPrefix'] : null;
-    }
-
-    /**
-     * Set suffix for db name
-     *
-     * @param string $suffix The suffix for names of tables
-     */
-    public function setDatabaseSuffix($suffix = null)
-    {
-        $this->attributes['dbSuffix'] = $suffix;
-    }
-
-    /**
-     * Get suffix for db name
-     *
-     * @return string
-     */
-    public function getDatabaseSuffix()
-    {
-        return isset($this->attributes['dbSuffix']) ?
-            $this->attributes['dbSuffix'] : null;
     }
 
     /**

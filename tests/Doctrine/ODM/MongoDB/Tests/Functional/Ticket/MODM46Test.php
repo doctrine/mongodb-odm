@@ -9,7 +9,7 @@ class MODM46Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $a = array(
             'c' => array('value' => 'value')
         );
-        $this->dm->getConnection()->modm46_test->a->insert($a);
+        $this->dm->getDatabase()->a->insert($a);
 
         $a = $this->dm->find(__NAMESPACE__.'\MODM46A', $a['_id']);
 

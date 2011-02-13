@@ -163,7 +163,7 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
             throw new InvalidArgumentException('Cannot create document collection for mapped super classes or embedded documents.');
         }
-        $this->dm->getDocumentDatabase($documentName)->createCollection(
+        $this->dm->getDatabase()->createCollection(
             $class->getCollection(),
             $class->getCollectionCapped(),
             $class->getCollectionSize(),
@@ -195,7 +195,7 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
             throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
         }
-        $this->dm->getDocumentDatabase($documentName)->dropCollection(
+        $this->dm->getDatabase()->dropCollection(
             $class->getCollection()
         );
     }

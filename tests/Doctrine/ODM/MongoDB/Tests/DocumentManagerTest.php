@@ -113,6 +113,16 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         }
     }
 
+    public function testDocumentManagerConnection()
+    {
+        $server = '127.0.0.1/test';
+
+        $dm = DocumentManager::create($server, null, $this->getConfiguration());
+        $conn = $dm->getConnection();
+
+        $this->assertEquals($server, $conn->getServer());
+    }
+
     protected function getDocumentManager()
     {
         $config = new Configuration();
@@ -135,11 +145,22 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
-        return DocumentManager::create($this->getConnection(), $config);
+        return DocumentManager::create($this->getConnection(), $this->getDatabase(), $config);
     }
 
     protected function getConnection()
     {
-        return $this->getMock('Doctrine\MongoDB\Connection');
+        return $this->getMockBuilder('Doctrine\MongoDB\Connection')
+            ->disableOriginalConstructor()
+            ->disableOriginalClone()
+            ->getMock();
+    }
+
+    protected function getDatabase()
+    {
+        return $this->getMockBuilder('Doctrine\MongoDB\Database')
+            ->disableOriginalConstructor()
+            ->disableOriginalClone()
+            ->getMock();
     }
 }

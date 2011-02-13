@@ -21,6 +21,25 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $config = $this->getConfiguration();
+
+
+        $reader = new AnnotationReader();
+        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+        $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/Documents');
+        $config->setMetadataDriverImpl($this->annotationDriver);
+
+        $conn = new Connection(null, array(), $config);
+        $this->dm = DocumentManager::create($conn, null, $config);
+        $this->uow = $this->dm->getUnitOfWork();
+    }
+
+    /**
+     * Get test Configuration
+     *
+     * @return Doctrine\MongoDB\Configuration
+     */
+    protected function getConfiguration() {
         $config = new Configuration();
 
         $config->setProxyDir(__DIR__ . '/../../../../Proxies');
@@ -37,16 +56,9 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         });
         $config->setMetadataCacheImpl(new ApcCache());
         */
-
-        $reader = new AnnotationReader();
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
-        $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/Documents');
-        $config->setMetadataDriverImpl($this->annotationDriver);
-
-        $conn = new Connection(null, array(), $config);
-        $this->dm = DocumentManager::create($conn, $config);
-        $this->uow = $this->dm->getUnitOfWork();
+        return $config;
     }
+
 
     protected function getTestDocumentManager($metadataDriver = null)
     {
@@ -67,10 +79,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         if ($this->dm) {
-            foreach ($this->dm->getDocumentDatabases() as $db) {
-                foreach ($db->listCollections() as $collection) {
-                    $collection->drop();
-                }
+            foreach ($this->dm->getDatabase()->listCollections() as $collection) {
+                $collection->drop();
             }
             $this->dm->getConnection()->close();
         }

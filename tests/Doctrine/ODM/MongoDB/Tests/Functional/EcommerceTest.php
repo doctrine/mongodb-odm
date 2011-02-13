@@ -33,8 +33,10 @@ class EcommerceTest extends \PHPUnit_Framework_TestCase
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+        
+        $conn = new Connection();
 
-        $this->dm = DocumentManager::create(new Connection(), $config);
+        $this->dm = DocumentManager::create($conn, $conn->selectDatabase('doctrine_odm_tests'), $config);
 
         $currencies = array('USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125);
 
@@ -65,8 +67,10 @@ class EcommerceTest extends \PHPUnit_Framework_TestCase
             'Documents\Ecommerce\StockItem',
             'Documents\Ecommerce\Currency',
         );
-        foreach ($documents as $document) {
-            $this->dm->getDocumentCollection($document)->drop();
+        if (isset($this->dm) && $this->dm instanceof DocumentManager) {
+            foreach ($documents as $document) {
+                $this->dm->getDocumentCollection($document)->drop();
+            }
         }
     }
 
