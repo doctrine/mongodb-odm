@@ -113,6 +113,16 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         }
     }
 
+    public function testDocumentManagerConnection()
+    {
+        $server = '127.0.0.1/test';
+
+        $dm = DocumentManager::create($server, null, $this->getConfiguration());
+        $conn = $dm->getConnection();
+
+        $this->assertEquals($server, $conn->getServer());
+    }
+
     protected function getDocumentManager()
     {
         $config = new Configuration();
