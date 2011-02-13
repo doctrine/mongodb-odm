@@ -1,18 +1,18 @@
 Doctrine features a lightweight event system that is part of the Common package.
 
-++ The Event System
+## The Event System
 
 The event system is controlled by the `EventManager`. It is the central point 
 of Doctrine's event listener system. Listeners are registered on the manager 
 and events are dispatched through the manager.
 
-    [php]
+    <?php
     $evm = new EventManager();
 
 Now we can add some event listeners to the `$evm`. Let's create a `EventTest` class
 to play around with.
 
-    [php]
+    <?php
     class EventTest
     {
         const preFoo = 'preFoo';
@@ -44,13 +44,13 @@ to play around with.
 
 Events can be dispatched by using the `dispatchEvent()` method.
 
-    [php]
+    <?php
     $evm->dispatchEvent(EventTest::preFoo);
     $evm->dispatchEvent(EventTest::postFoo);
 
 You can easily remove a listener with the `removeEventListener()` method.
 
-    [php]
+    <?php
     $evm->removeEventListener(array(self::preFoo, self::postFoo), $this);
 
 The Doctrine event system also has a simple concept of event subscribers. We
@@ -58,7 +58,7 @@ can define a simple `TestEventSubscriber` class which implements the
 `\Doctrine\Common\EventSubscriber` interface and implements a `getSubscribedEvents()`
 method which returns an array of events it should be subscribed to.
 
-    [php]
+    <?php
     class TestEventSubscriber implements \Doctrine\Common\EventSubscriber
     {
         const preFoo = 'preFoo';
@@ -81,17 +81,17 @@ method which returns an array of events it should be subscribed to.
 
 Now when you dispatch an event any event subscribers will be notified for that event.
 
-    [php]
+    <?php
     $evm->dispatchEvent(TestEventSubscriber::preFoo);
 
 Now the test the `$eventSubscriber` instance to see if the `preFoo()` method was invoked.
 
-    [php]
+    <?php
     if ($eventSubscriber->preFooInvoked) {
         echo 'pre foo invoked!';
     }
 
-++ Lifecycle Events
+## Lifecycle Events
 
 The DocumentManager and UnitOfWork trigger several events during the life-time of their registered documents.
 
@@ -107,7 +107,7 @@ The DocumentManager and UnitOfWork trigger several events during the life-time o
 
 You can access the Event constants from the `Events` class in the ORM package.
 
-    [php]
+    <?php
     use Doctrine\ODM\MongoDB\Events;
     echo Events::preUpdate;
 
@@ -121,13 +121,13 @@ These can be hooked into by two different types of event listeners:
 > operations that can be executed. Please read the *Implementing Event Listeners* section very carefully to understand
 > which operations are allowed in which lifecycle event.
 
-++ Lifecycle Callbacks
+## Lifecycle Callbacks
 
 A lifecycle event is a regular event with the additional feature of providing 
 a mechanism to register direct callbacks inside the corresponding document classes
 that are executed when the lifecycle event occurs.
 
-    [php]
+    <?php
     
     /** @Document @HasLifecycleCallbacks */
     class User
@@ -175,7 +175,7 @@ that are executed when the lifecycle event occurs.
 
 Note that when using annotations you have to apply the @HasLifecycleCallbacks marker annotation on the document class.
 
-++ Listening to Lifecycle Events
+## Listening to Lifecycle Events
 
 Lifecycle event listeners are much more powerful than the simple lifecycle callbacks that are defined on the document
 classes. They allow to implement re-usable behaviours between different document classes, yet require much more detailed
@@ -184,7 +184,7 @@ section carefully if you are trying to write your own listener.
 
 To register an event listener you have to hook it into the EventManager that is passed to the DocumentManager factory:
 
-    [php]
+    <?php
     $eventManager = new EventManager();
     $eventManager->addEventListener(array(Events::preUpdate), MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
@@ -193,34 +193,34 @@ To register an event listener you have to hook it into the EventManager that is 
 
 You can also retrieve the event manager instance after the DocumentManager was created:
 
-    [php]
+    <?php
     $documentManager->getEventManager()->addEventListener(array(Events::preUpdate), MyEventListener());
     $documentManager->getEventManager()->addEventSubscriber(new MyEventSubscriber());
 
-++ Implementing Event Listeners
+## Implementing Event Listeners
 
 This section explains what is and what is not allowed during specific lifecycle events of the UnitOfWork.
 Although you get passed the DocumentManager in all of these events, you have to follow this restrictions very
 carefully since operations in the wrong event may produce lots of different errors, such as inconsistent data and
 lost updates/persists/removes.
 
-+++ prePersist
+### prePersist
 
-+++ preRemove
+### preRemove
 
-+++ onFlush
+### onFlush
 
-+++ preUpdate
+### preUpdate
 
-+++ postUpdate, postRemove, postPersist
+### postUpdate, postRemove, postPersist
 
-++ Load ClassMetadata Event
+## Load ClassMetadata Event
 
 When the mapping information for an document is read, it is populated in to a 
 `ClassMetadata` instance. You can hook in to this process and manipulate
 the instance.
 
-    [php]
+    <?php
     $test = new EventTest();
     $metadataFactory = $dm->getMetadataFactory();
     $evm = $dm->getEventManager();

@@ -4,7 +4,7 @@ order. In this chapter we'll show you examples of indexes using annotations.
 
 First here is an example where we put an index on a single property:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -15,7 +15,7 @@ First here is an example where we put an index on a single property:
         public $username;
     }
 
-++ Index Options
+## Index Options
 
 You can customize the index with some additional options:
 
@@ -26,9 +26,9 @@ You can customize the index with some additional options:
  * **order** - The order of the index (asc or desc).
  * **unique** - Create a unique index.
 
-++ Unique Index
+## Unique Index
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -41,7 +41,7 @@ You can customize the index with some additional options:
 
 For your convenience you can quickly specify a unique index with `@UniqueIndex`:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -55,7 +55,7 @@ For your convenience you can quickly specify a unique index with `@UniqueIndex`:
 If you want to specify an index that consists of multiple fields you can specify them on
 the class doc block:
 
-    [php]
+    <?php
     /**
      * @Document
      * @UniqueIndex(keys={"accountId"="asc", "username"="asc"})
@@ -74,7 +74,7 @@ the class doc block:
 
 To specify multiple indexes you must use the `@Indexes` annotation:
 
-    [php]
+    <?php
     /**
      * @Document
      * @Indexes({
@@ -94,12 +94,12 @@ To specify multiple indexes you must use the `@Indexes` annotation:
         public $username;
     }
 
-++ Geospatial Indexing
+## Geospatial Indexing
 
 You can specify a geospatial index by just specifying the keys and options structures
 manually:
 
-    [php]
+    <?php
     /**
      * @Document
      * @Index(keys={"coordinates"="2d"})

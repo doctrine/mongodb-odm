@@ -1,0 +1,333 @@
+Doctrine features a lightweight event system that is part of the
+Common package.
+
+The Event System
+----------------
+
+The event system is controlled by the ``EventManager``. It is the
+central point of Doctrine's event listener system. Listeners are
+registered on the manager and events are dispatched through the
+manager.
+
+::
+
+    <?php
+    $evm = new EventManager();
+
+Now we can add some event listeners to the ``$evm``. Let's create a
+``EventTest`` class to play around with.
+
+::
+
+    <?php
+    class EventTest
+    {
+        const preFoo = 'preFoo';
+        const postFoo = 'postFoo';
+    
+        private $_evm;
+    
+        public $preFooInvoked = false;
+        public $postFooInvoked = false;
+    
+        public function __construct($evm)
+        {
+            $evm->addEventListener(array(self::preFoo, self::postFoo), $this);
+        }
+    
+        public function preFoo(EventArgs $e)
+        {
+            $this->preFooInvoked = true;
+        }
+    
+        public function postFoo(EventArgs $e)
+        {
+            $this->postFooInvoked = true;
+        }
+    }
+    
+    // Create a new instance
+    $test = new EventTest($evm);
+
+Events can be dispatched by using the ``dispatchEvent()`` method.
+
+::
+
+    <?php
+    $evm->dispatchEvent(EventTest::preFoo);
+    $evm->dispatchEvent(EventTest::postFoo);
+
+You can easily remove a listener with the ``removeEventListener()``
+method.
+
+::
+
+    <?php
+    $evm->removeEventListener(array(self::preFoo, self::postFoo), $this);
+
+The Doctrine event system also has a simple concept of event
+subscribers. We can define a simple ``TestEventSubscriber`` class
+which implements the ``\Doctrine\Common\EventSubscriber`` interface
+and implements a ``getSubscribedEvents()`` method which returns an
+array of events it should be subscribed to.
+
+::
+
+    <?php
+    class TestEventSubscriber implements \Doctrine\Common\EventSubscriber
+    {
+        const preFoo = 'preFoo';
+    
+        public $preFooInvoked = false;
+    
+        public function preFoo()
+        {
+            $this->preFooInvoked = true;
+        }
+    
+        public function getSubscribedEvents()
+        {
+            return array(self::preFoo);
+        }
+    }
+    
+    $eventSubscriber = new TestEventSubscriber();
+    $evm->addEventSubscriber($eventSubscriber);
+
+Now when you dispatch an event any event subscribers will be
+notified for that event.
+
+::
+
+    <?php
+    $evm->dispatchEvent(TestEventSubscriber::preFoo);
+
+Now the test the ``$eventSubscriber`` instance to see if the
+``preFoo()`` method was invoked.
+
+::
+
+    <?php
+    if ($eventSubscriber->preFooInvoked) {
+        echo 'pre foo invoked!';
+    }
+
+Lifecycle Events
+----------------
+
+The DocumentManager and UnitOfWork trigger several events during
+the life-time of their registered documents.
+
+
+- 
+   preRemove - The preRemove event occurs for a given document before
+   the respective DocumentManager remove operation for that document
+   is executed.
+- 
+   postRemove - The postRemove event occurs for an document after the
+   document has been removed. It will be invoked after the database
+   delete operations.
+- 
+   prePersist - The prePersist event occurs for a given document
+   before the respective DocumentManager persist operation for that
+   document is executed.
+- 
+   postPersist - The postPersist event occurs for an document after
+   the document has been made persistent. It will be invoked after the
+   database insert operations. Generated primary key values are
+   available in the postPersist event.
+- 
+   preUpdate - The preUpdate event occurs before the database update
+   operations to document data.
+- 
+   postUpdate - The postUpdate event occurs after the database update
+   operations to document data.
+- 
+   postLoad - The postLoad event occurs for an document after the
+   document has been loaded into the current DocumentManager from the
+   database or after the refresh operation has been applied to it.
+- 
+   loadClassMetadata - The loadClassMetadata event occurs after the
+   mapping metadata for a class has been loaded from a mapping source
+   (annotations/xml/yaml).
+- 
+   onFlush - The onFlush event occours after the change-sets of all
+   managed documents are computed. This event is not a lifecycle
+   callback.
+
+You can access the Event constants from the ``Events`` class in the
+ORM package.
+
+::
+
+    <?php
+    use Doctrine\ODM\MongoDB\Events;
+    echo Events::preUpdate;
+
+These can be hooked into by two different types of event
+listeners:
+
+
+- 
+   Lifecycle Callbacks are methods on the document classes that are
+   called when the event is triggered. They receive absolutely no
+   arguments and are specifically designed to allow changes inside the
+   document classes state.
+- 
+   Lifecycle Event Listeners are classes with specific callback
+   methods that receives some kind of ``EventArgs`` instance which
+   give access to the document, DocumentManager or other relevant
+   data.
+
+    **NOTE** All Lifecycle events that happen during the ``flush()`` of
+    an DocumentManager have very specific constraints on the allowed
+    operations that can be executed. Please read the
+    *Implementing Event Listeners* section very carefully to understand
+    which operations are allowed in which lifecycle event.
+
+
+Lifecycle Callbacks
+-------------------
+
+A lifecycle event is a regular event with the additional feature of
+providing a mechanism to register direct callbacks inside the
+corresponding document classes that are executed when the lifecycle
+event occurs.
+
+::
+
+    <?php
+    
+    /** @Document @HasLifecycleCallbacks */
+    class User
+    {
+        // ...
+    
+        /**
+         * @Field
+         */
+        public $value;
+    
+        /** @Field */
+        private $createdAt;
+    
+        /** @PrePersist */
+        public function doStuffOnPrePersist()
+        {
+            $this->createdAt = date('Y-m-d H:m:s');
+        }
+    
+        /** @PrePersist */
+        public function doOtherStuffOnPrePersist()
+        {
+            $this->value = 'changed from prePersist callback!';
+        }
+    
+        /** @PostPersist */
+        public function doStuffOnPostPersist()
+        {
+            $this->value = 'changed from postPersist callback!';
+        }
+    
+        /** @PostLoad */
+        public function doStuffOnPostLoad()
+        {
+            $this->value = 'changed from postLoad callback!';
+        }
+    
+        /** @PreUpdate */
+        public function doStuffOnPreUpdate()
+        {
+            $this->value = 'changed from preUpdate callback!';
+        }
+    }
+
+Note that when using annotations you have to apply the
+@HasLifecycleCallbacks marker annotation on the document class.
+
+Listening to Lifecycle Events
+-----------------------------
+
+Lifecycle event listeners are much more powerful than the simple
+lifecycle callbacks that are defined on the document classes. They
+allow to implement re-usable behaviours between different document
+classes, yet require much more detailed knowledge about the inner
+workings of the DocumentManager and UnitOfWork. Please read the
+*Implementing Event Listeners* section carefully if you are trying
+to write your own listener.
+
+To register an event listener you have to hook it into the
+EventManager that is passed to the DocumentManager factory:
+
+::
+
+    <?php
+    $eventManager = new EventManager();
+    $eventManager->addEventListener(array(Events::preUpdate), MyEventListener());
+    $eventManager->addEventSubscriber(new MyEventSubscriber());
+    
+    $documentManager = DocumentManager::create($mongo, $config, $eventManager);
+
+You can also retrieve the event manager instance after the
+DocumentManager was created:
+
+::
+
+    <?php
+    $documentManager->getEventManager()->addEventListener(array(Events::preUpdate), MyEventListener());
+    $documentManager->getEventManager()->addEventSubscriber(new MyEventSubscriber());
+
+Implementing Event Listeners
+----------------------------
+
+This section explains what is and what is not allowed during
+specific lifecycle events of the UnitOfWork. Although you get
+passed the DocumentManager in all of these events, you have to
+follow this restrictions very carefully since operations in the
+wrong event may produce lots of different errors, such as
+inconsistent data and lost updates/persists/removes.
+
+prePersist
+~~~~~~~~~~
+
+preRemove
+~~~~~~~~~
+
+onFlush
+~~~~~~~
+
+preUpdate
+~~~~~~~~~
+
+postUpdate, postRemove, postPersist
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Load ClassMetadata Event
+------------------------
+
+When the mapping information for an document is read, it is
+populated in to a ``ClassMetadata`` instance. You can hook in to
+this process and manipulate the instance.
+
+::
+
+    <?php
+    $test = new EventTest();
+    $metadataFactory = $dm->getMetadataFactory();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::loadClassMetadata, $test);
+    
+    class EventTest
+    {
+        public function loadClassMetadata(\Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs $eventArgs)
+        {
+            $classMetadata = $eventArgs->getClassMetadata();
+            $fieldMapping = array(
+                'fieldName' => 'about',
+                'type' => 'string'
+            );
+            $classMetadata->mapField($fieldMapping);
+        }
+    }
+
+

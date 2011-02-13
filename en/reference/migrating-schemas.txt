@@ -11,11 +11,11 @@ a few different methods for dealing with this problem!
 > is an object mapper for the AppEngine datastore. You can read more about
 > the project on the [Objectify Wiki](http://code.google.com/p/objectify-appengine/wiki/Concepts?tm=6).
 
-++ Renaming a Field
+## Renaming a Field
 
 Lets say you have a document that starts off looking like this:
 
-    [php]
+    <?php
     class Person
     {
         public $id;
@@ -24,7 +24,7 @@ Lets say you have a document that starts off looking like this:
 
 Then you want to rename `name` to `fullName` like this:
 
-    [php]
+    <?php
     class Person
     {
         public $id;
@@ -42,13 +42,13 @@ ones will have `fullName`.
 > you query for `fullName` only the new documents will be returned. You can still
 > query using the `name` field to find the old documents.
 
-++ Transforming Data
+## Transforming Data
 
 Now you may have a situation where you want to store the persons name in separate
 first and last name fields. This is also possible. You can specify the `@AlsoLoad`
 annotation on a method and use it to do some more complex logic:
 
-    [php]
+    <?php
     class Person
     {
         public $id;
@@ -64,7 +64,7 @@ annotation on a method and use it to do some more complex logic:
         }
     }
 
-++ Moving Fields
+## Moving Fields
 
 Migrating your schema can be a difficult task and Doctrine gives you a few different
 methods for dealing with this:
@@ -76,7 +76,7 @@ methods for dealing with this:
 
 Imagine you have some address fields on a Person document:
 
-    [php]
+    <?php
     class Person
     {
         public $id;
@@ -88,7 +88,7 @@ Imagine you have some address fields on a Person document:
 Then later you want to store a persons address in another object as an embedded
 document:
 
-    [php]
+    <?php
     /** @EmbeddedDocument */
     class Address
     {
@@ -128,7 +128,7 @@ document:
 
 You can also change the data on save if that works better for you:
 
-    [php]
+    <?php
     class Person
     {
         // ...

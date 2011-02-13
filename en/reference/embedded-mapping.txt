@@ -1,10 +1,10 @@
 This chapter explains how embedded documents are mapped in Doctrine.
 
-++ Embed One
+## Embed One
 
 Embed a single document:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -22,11 +22,11 @@ Embed a single document:
         // ...
     }
 
-++ Embed Many
+## Embed Many
 
 Embed many documents:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -44,12 +44,12 @@ Embed many documents:
         // ...
     }
 
-++ Mixing Document Types
+## Mixing Document Types
 
 If you want to store different types of documents in an embedded document you can simply
 omit the `targetDocument` option:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -67,7 +67,7 @@ automatically added for you in a field named `_doctrine_class_name`.
 You can also specify a discriminator map to avoid storing the fully qualified class name 
 with each embedded document:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -88,7 +88,7 @@ with each embedded document:
 
 You can have different task classes that can be embedded:
 
-    [php]
+    <?php
     /** @EmbeddedDocument */
     class DownloadTask
     {
@@ -104,7 +104,7 @@ You can have different task classes that can be embedded:
 If you want to store the discriminator value in a field other than `_doctrine_class_name`
 you can use the `discriminatorField` option:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -118,7 +118,7 @@ you can use the `discriminatorField` option:
         // ...
     }
 
-++ Cascading Operations
+## Cascading Operations
 
 All operations on embedded documents are automatically cascaded. This is because embedded documents
 are part of their parent document and cannot exist without those by nature.

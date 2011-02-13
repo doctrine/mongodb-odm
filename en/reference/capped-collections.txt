@@ -5,12 +5,12 @@ In addition, capped collections automatically, with high performance, maintain i
 order for the objects in the collection; this is very powerful for certain use cases such
 as logging.
 
-++ Mapping
+## Mapping
 
 You can configure the collection in the `collection` attribute of the `@Document`
 annotation:
 
-    [php]
+    <?php
     /**
      * @Document(collection={
      *   "name"="collname",
@@ -28,17 +28,17 @@ annotation:
         public $name;
     }
 
-++ Creating
+## Creating
 
 Remember that you must manually create the collections. If you let MongoDB create the
 collection lazily the first time it is selected, it will not be created with the capped
 configuration. You can create the collection for a document with your `DocumentManager`
 instance:
 
-    [php]
+    <?php
     $dm->createDocumentCollection('Category');
 
 You can drop the collection too if it already exists:
 
-    [php]
+    <?php
     $dm->dropDocumentCollection('Category');

@@ -1,4 +1,4 @@
-++ Understanding
+## Understanding
 
 In this chapter we will help you understand the `DocumentManager` and the `UnitOfWork`. 
 A Unit of Work is similar to an object-level transaction. A new Unit of Work is 
@@ -10,17 +10,17 @@ A Unit of Work can be manually closed by calling `DocumentManager#close()`. Any
 changes to objects within this Unit of Work that have not yet been persisted 
 are lost. 
 
-+++ The size of a Unit of Work
+### The size of a Unit of Work
 
 The size of a Unit of Work mainly refers to the number of managed documents at 
 a particular point in time.
 
-+++ The cost of flush()
+### The cost of flush()
 
 How costly a flush operation is in terms of performance mainly depends on the size.
 You can get the size of your Unit of Work as follows:
 
-    [php]
+    <?php
     $uowSize = $dm->getUnitOfWork()->size();
 
 The size represents the number of managed documents in the Unit of Work. This 
@@ -35,12 +35,12 @@ during development.
 > and call `flush` when you are done. While serving a single HTTP request there should
 > be usually no need for invoking `flush` more than 0-2 times.
 
-+++ Direct access to a Unit of Work
+### Direct access to a Unit of Work
 
 You can get direct access to the Unit of Work by calling `DocumentManager#getUnitOfWork()`. 
 This will return the UnitOfWork instance the DocumentManager is currently using.
 
-    [php]
+    <?php
     $uow = $dm->getUnitOfWork();
 
 > **NOTE**
@@ -48,7 +48,7 @@ This will return the UnitOfWork instance the DocumentManager is currently using.
 > UnitOfWork API, respect methods marked as INTERNAL by not using them and carefully read
 > the API documentation.
 
-++ Persisting documents
+## Persisting documents
 
 A document can be made persistent by passing it to the `DocumentManager#persist($document)` 
 method. By applying the persist operation on some document, that document becomes MANAGED, 
@@ -65,7 +65,7 @@ synchronized with the database when `DocumentManager#flush()` is invoked.
 
 Example:
 
-    [php]
+    <?php
     $user = new User();
     $user->setUsername('jwage');
     $user->setPassword('changeme');
@@ -87,7 +87,7 @@ The semantics of the persist operation, applied on a document X, are as follows:
 > **CAUTION**
 > Do not pass detached documents to the persist operation.
 
-++ Removing documents
+## Removing documents
 
 A document can be removed from persistent storage by passing it to the `DocumentManager#remove($document)` method. By applying the `remove` operation on some document, that document becomes REMOVED, which means that its persistent state will be deleted once `DocumentManager#flush()` is invoked. The in-memory state of a document is unaffected by the `remove` operation.
 
@@ -98,7 +98,7 @@ A document can be removed from persistent storage by passing it to the `Document
 
 Example:
 
-    [php]
+    <?php
     $dm->remove($user);
     $dm->flush();
     
@@ -110,7 +110,7 @@ The semantics of the remove operation, applied to a document X are as follows:
 * If X is a removed document, it is ignored by the remove operation. 
 * A removed document X will be removed from the database as a result of the flush operation. 
 
-++ Detaching documents
+## Detaching documents
 
 A document is detached from an DocumentManager and thus no longer managed by 
 invoking the `DocumentManager#detach($document)` method on it or by cascading 
@@ -122,7 +122,7 @@ Doctrine will not hold on to any references to a detached document.
 
 Example:
 
-    [php]
+    <?php
     $dm->detach($document);
     
 The semantics of the detach operation, applied to a document X are as follows:
@@ -138,7 +138,7 @@ There are several situations in which a document is detached automatically witho
 
 The `detach` operation is usually not as frequently needed and used as `persist` and `remove`.
 
-++ Merging documents
+## Merging documents
 
 Merging documents refers to the merging of (usually detached) documents into the 
 context of an DocumentManager so that they become managed again. To merge the 
@@ -148,7 +148,7 @@ this document and this copy will subsequently be returned.
 
 Example:
 
-    [php]
+    <?php
     $detachedDocument = unserialize($serializedDocument); // some detached document
     $document = $dm->merge($detachedDocument);
     // $document now refers to the fully managed copy returned by the merge operation.
@@ -180,19 +180,19 @@ and you want to modify and persist such a document.
 > there is no need to use `merge`. I.e. you can simply pass detached objects from a cache
 > directly to the view.
 
-++ References
+## References
 
 References between documents and embedded documents are represented just like
 in regular object-oriented PHP, with references to other objects or collections
 of objects.
 
-++ Establishing References
+## Establishing References
 
 Establishing a reference to another document is straight forward:
 
 Here is an example where we add a new comment to an article:
 
-    [php]
+    <?php
     $comment = new Comment();
     // ...
 
@@ -200,31 +200,31 @@ Here is an example where we add a new comment to an article:
 
 Or you can set a single reference:
 
-    [php]
+    <?php
     $address = new Address();
     // ...
 
     $user->setAddress($address);
 
-++ Removing References
+## Removing References
 
 Removing an association between two documents is similarly straight-forward. There are two strategies
 to do so, by key and by element. Here are some examples:
 
-    [php]
+    <?php
     $article->getComments()->removeElement($comment);
     $article->getComments()->remove($ithComment);
 
 Or you can remove a single reference:
 
-    [php]
+    <?php
     $user->setAddress(null);
 
 When working with collections, keep in mind that a Collection is essentially an ordered map (just like a PHP array).
 That is why the `remove` operation accepts an index/key. `removeElement` is a separate method
 that has O(n) complexity, where n is the size of the map. 
 
-++ Transitive persistence
+## Transitive persistence
 
 Persisting, removing, detaching and merging individual documents can become pretty 
 cumbersome, especially when a larger object graph with collections is involved. 
@@ -245,7 +245,7 @@ The following example shows an association to a number of addresses. If persist(
 or remove() is invoked on any User document, it will be cascaded to all associated 
 Address documents in the $addresses collection.
 
-    [php]
+    <?php
     class User 
     {
         //...
@@ -260,18 +260,18 @@ Even though automatic cascading is convenient it should be used with care.
 Do not blindly apply cascade=all to all associations as it will unnecessarily 
 degrade the performance of your application.
 
-++ Querying
+## Querying
 
 Doctrine provides the following ways, in increasing level of power and flexibility,
 to query for persistent objects. You should always start with the simplest one
 that suits your needs.
 
-+++ By Primary Key
+### By Primary Key
 
 The most basic way to query for a persistent object is by its identifier / primary
 key using the `DocumentManager#find($documentName, $id)` method. Here is an example:
 
-    [php]
+    <?php
     $user = $dm->find('User', $id);
 
 The return value is either the found document instance or null if no instance
@@ -279,7 +279,7 @@ could be found with the given identifier.
 
 Essentially, `DocumentManager#find()` is just a shortcut for the following:
 
-    [php]
+    <?php
     $user = $dm->getRepository('User')->find($id);
 
 `DocumentManager#getRepository($documentName)` returns a repository object which
@@ -287,12 +287,12 @@ provides many ways to retrieve documents of the specified type. By default, the
 repository instance is of type `Doctrine\ODM\MongoDB\DocumentRepository`. You
 can also use custom repository classes.
 
-+++ By Simple Conditions
+### By Simple Conditions
 
 To query for one or more documents based on several conditions that form a
 logical conjunction, use the `findBy` and `findOneBy` methods on a repository as follows:
 
-    [php]
+    <?php
     // All users that are 20 years old
     $users = $dm->getRepository('User')->findBy(array('age' => 20));
 
@@ -305,21 +305,21 @@ logical conjunction, use the `findBy` and `findOneBy` methods on a repository as
 An DocumentRepository also provides a mechanism for more concise calls through
 its use of `__call`. Thus, the following two examples are equivalent:
 
-    [php]
+    <?php
     // A single user by its nickname
     $user = $dm->getRepository('User')->findOneBy(array('nickname' => 'romanb'));
     
     // A single user by its nickname (__call magic)
     $user = $dm->getRepository('User')->findOneByNickname('romanb');
 
-+++ By Lazy Loading
+### By Lazy Loading
 
 Whenever you have a managed document instance at hand, you can traverse and use
 any associations of that document as if they were in-memory already. Doctrine
 will automatically load the associated objects on demand through the concept of
 lazy-loading.
 
-+++ By Query Objects
+### By Query Objects
 
 The most powerful and flexible method to query for persistent objects is the
 Query object. The Query object enables you to query for persistent objects with
@@ -328,13 +328,13 @@ a fluent object oriented interface.
 You can create a query using `DocumentManager#createQuery($documentName = null)`.
 Here is a simple example:
 
-    [php]
+    <?php
     // All users with an age between 20 and 30 (inclusive).
     $q = $dm->createQuery('User')
         ->field('age')->range(20, 30);
     $users = $q->getResult();
 
-+++ Custom Repositories
+### Custom Repositories
 
 By default the DocumentManager returns a default implementation of `Doctrine\ODM\MongoDB\DocumentRepository` when
 you call `DocumentManager#getRepository($documentClass)`. You can override this behavior by specifying
@@ -342,7 +342,7 @@ the class name of your own Document Repository in the Annotation, XML or YAML me
 In large applications that require lots of specialized DQL queries using a custom repository is
 one recommended way of grouping these queries in a central location.
 
-    [php]
+    <?php
 
     use Doctrine\ODM\MongoDB\DocumentRepository;
 
@@ -366,5 +366,5 @@ one recommended way of grouping these queries in a central location.
 
 You can access your repository now by calling:
 
-    [php]
+    <?php
     $admins = $dm->getRepository('User')->getAllAdminUsers();

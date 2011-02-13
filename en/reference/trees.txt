@@ -1,9 +1,9 @@
 MongoDB lends itself quite well to storing hierarchical data. This chapter will demonstrate
 some examples!
 
-++ Full Tree in Single Document
+## Full Tree in Single Document
 
-    [php]
+    <?php
     /** @Document */
     class BlogPost
     {
@@ -39,16 +39,16 @@ some examples!
 
 Retrieve a blog post and only select the first 10 comments:
 
-    [php]
+    <?php
     $post = $dm->createQuery('BlogPost')
         ->selectSlice('replies', 0, 10);
     $replies = $post->getReplies();
 
 You can read more about this pattern on the [MongoDB](http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-FullTreeinSingleDocument) website!
 
-++ Parent Reference
+## Parent Reference
 
-    [php]
+    <?php
     /** @Document */
     class Category
     {
@@ -69,16 +69,16 @@ You can read more about this pattern on the [MongoDB](http://www.mongodb.org/dis
 
 Query for children by a specific parent id:
 
-    [php]
+    <?php
     $children = $dm->createQuery('Category')
         ->field('parent.$id')->equals(new \MongoId('theid'))
         ->execute();
 
 You can read more about this pattern on the [MongoDB](http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-ParentLinks) website!
 
-++ Child Reference
+## Child Reference
 
-    [php]
+    <?php
     /** @Document */
     class Category
     {
@@ -100,7 +100,7 @@ You can read more about this pattern on the [MongoDB](http://www.mongodb.org/dis
 
 Query for immediate children of a category:
 
-    [php]
+    <?php
     $category = $dm->createQuery('Category')
         ->field('id')->equals(new \MongoId('theid'))
         ->execute();
@@ -108,16 +108,16 @@ Query for immediate children of a category:
 
 Query for immediate parent of a category:
 
-    [php]
+    <?php
     $parent = $dm->createQuery('Category')
         ->field('children.$id')->equals(new \MongoId('theid'))
         ->getSingleResult();
 
 You can read more about this pattern on the [MongoDB](http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-ChildLinks) website!
 
-++ Array of Ancestors
+## Array of Ancestors
 
-    [php]
+    <?php
     /** @MappedSuperclass */
     class BaseCategory
     {
@@ -155,14 +155,14 @@ You can read more about this pattern on the [MongoDB](http://www.mongodb.org/dis
 
 Query for all descendants of a category:
 
-    [php]
+    <?php
     $categories = $dm->createQuery('Category')
         ->field('ancestors.$id')->equals(new \MongoId('theid'))
         ->execute();
 
 Query for all ancestors of a category:
 
-    [php]
+    <?php
     $category = $dm->createQuery('Category')
         ->field('id')->equals('theid')
         ->getSingleResult();
@@ -170,9 +170,9 @@ Query for all ancestors of a category:
 
 You can read more about this pattern on the [MongoDB](http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-ArrayofAncestors) website!
 
-++ Materialized Paths
+## Materialized Paths
 
-    [php]
+    <?php
     /** @Document */
     class Category
     {
@@ -190,14 +190,14 @@ You can read more about this pattern on the [MongoDB](http://www.mongodb.org/dis
 
 Query for the entire tree:
 
-    [php]
+    <?php
     $categories = $dm->createQuery('Category')
         ->sort('path', 'asc')
         ->execute();
 
 Query for the node 'b' and all its descendants:
 
-    [php]
+    <?php
     $categories = $dm->createQuery('Category')
         ->field('path')->equals('/^a,b,/')
         ->execute();

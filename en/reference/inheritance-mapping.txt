@@ -1,7 +1,7 @@
 Doctrine currently offers two supported methods of inheritance which are 
 Single Collection Inheritance and Collection Per Class Inheritance.
 
-++ Mapped Superclasses
+## Mapped Superclasses
 
 An mapped superclass is an abstract or concrete class that provides persistent document state and mapping information
 for its subclasses, but which is not itself a document. Typically, the purpose of such a mapped superclass is to define
@@ -18,7 +18,7 @@ mapped inheritance hierarchy (through Single Collection Inheritance or Collectio
 
 Example:
 
-    [php]
+    <?php
     /** @MappedSuperclass */
     class MappedSuperclassBase
     {
@@ -45,14 +45,14 @@ Example:
         // ... more fields and methods
     }
 
-++ Single Collection Inheritance
+## Single Collection Inheritance
 
 In Single Collection Inheritance each document is stored in a single collection
 where a discriminator field is used to distinguish one document type from another.
 
 Simple example:
 
-    [php]
+    <?php
     namespace Documents;
 
     /**
@@ -78,7 +78,7 @@ The discriminator field value allows Doctrine to know what type of class to retu
 looking it up in the discriminator map. Now if we ask for a certain Person and it
 has a discriminator field value of employee, we would get an Employee instance back:
 
-    [php]
+    <?php
     $employee = new Empoyee();
     // ...
     $dm->persist($employee);
@@ -89,12 +89,12 @@ has a discriminator field value of employee, we would get an Employee instance b
 Even though we queried Person, Doctrine will know to return an Employee instance because
 of the discriminator map!
 
-++ Collection Per Class Inheritance
+## Collection Per Class Inheritance
 
 With Collection Per Class Inheritance each document is stored in its own collection
 and contains all inherited fields:
 
-    [php]
+    <?php
     namespace Documents;
     
     /**

@@ -1,7 +1,7 @@
 This chapter explains the basic mapping of objects and properties. Mapping of
 references and embedded documents will be covered in the next chapter "Reference Mapping".
 
-++ Mapping Drivers
+## Mapping Drivers
 
 Doctrine provides several different ways for specifying object document mapping metadata:
 
@@ -21,7 +21,7 @@ throughout all chapters. There are dedicated chapters for XML and YAML mapping, 
 > recommended!) then the XML driver might have a slight edge in performance due to the
 > powerful native XML support in PHP.
 
-++ Introduction to Docblock Annotations
+## Introduction to Docblock Annotations
 
 You've probably used docblock annotations in some form already, most likely to
 provide documentation metadata for a tool like `PHPDocumentor` (@author, @link, ...).
@@ -44,12 +44,12 @@ supplying object document mapping metadata.
 > mentioned earlier Doctrine 2 provides XML and YAML alternatives and you could easily
 > implement your own favorite mechanism for defining ORM metadata.
 
-++ Persistent classes
+## Persistent classes
 
 In order to mark a class for object-relational persistence it needs to be
 designated as an document. This can be done through the `@Document` marker annotation.
 
-    [php]
+    <?php
     /** @Document */
     class MyPersistentClass
     {
@@ -60,7 +60,7 @@ By default, the document will be persisted to a database named doctrine and a
 collection with the same name as the class name. In order to change that, you
 can use the `db` and `collection` option as follows:
 
-    [php]
+    <?php
     /**
      * @Document(db="my_db", collection="my_persistent_class")
      */
@@ -71,7 +71,7 @@ can use the `db` and `collection` option as follows:
     
 Now instances of MyPersistentClass will be persisted into a collection named `my_persistent_class`.
 
-++ Doctrine Mapping Types
+## Doctrine Mapping Types
 
 A Doctrine Mapping Type defines the mapping between a PHP type and an MongoDB type.
 You can even write your own custom mapping types.
@@ -102,7 +102,7 @@ You can read more about the available MongoDB types on
 > Doctrine Mapping Types are NOT MONGO types and NOT PHP types! They are mapping types
 > between 2 types.
 
-++ Property Mapping
+## Property Mapping
 
 After a class has been marked as an document it can specify mappings for its
 instance fields. Here we will only look at simple fields that hold scalar values
@@ -117,7 +117,7 @@ it is the most flexible.
 
 Example:
     
-    [php]
+    <?php
     /** @Document */
     class MyPersistentClass
     {
@@ -135,11 +135,11 @@ mapping type `string`. As you can see, by default the mongo field names are
 assumed to be the same as the property names. To specify a different name for
 the field, you can use the `name` attribute of the Field annotation as follows:
 
-    [php]
+    <?php
     /** @Field(name="db_name") */
     private $name;
 
-++ Custom Mapping Types
+## Custom Mapping Types
 
 Doctrine allows you to create new mapping types. This can come in handy when
 you're missing a specific mapping type or when you want to replace the existing
@@ -148,7 +148,7 @@ implementation of a mapping type.
 In order to create a new mapping type you need to subclass `Doctrine\ODM\MongoDB\Mapping\Types\Type` and implement/override
 the methods. Here is an example skeleton of such a custom type class:
 
-    [php]
+    <?php
     namespace My\Project\Types;
 
     use Doctrine\DBAL\Types\Type;
@@ -180,7 +180,7 @@ through the `Doctrine\ODM\MongoDB\Mapping\Types#registerType($name, $class)` met
 
 Here is an example:
 
-    [php]
+    <?php
     // in bootstrapping code
 
     // ...
@@ -196,19 +196,19 @@ As can be seen above, when registering the custom types in the configuration
 you specify a unique name for the mapping type and map that to the corresponding
 fully qualified class name. Now you can use your new type in your mapping like this:
 
-    [php]
+    <?php
     class MyPersistentClass
     {
         /** @Field(type="mytype") */
         private $field;
     }
 
-++ Identifiers
+## Identifiers
 
 Every document class needs an identifier. You designate the field that serves
 as the identifier with the `@Id` marker annotation. Here is an example:
 
-    [php]
+    <?php
     /** @Document */
     class MyPersistentClass
     {
@@ -221,7 +221,7 @@ The default identifier in MongoDB is a MongoId object. In some cases you might n
 identifiers. MongoDB allows any unique scalar to serve as an identifier. Therefore Doctrine
 MongoDB ODM allows you to use 'CustomId' field type:
 
-    [php]
+    <?php
     /** Document */
     class MyPersistentClass
     {
@@ -257,7 +257,7 @@ MongoDB ODM allows you to use 'CustomId' field type:
 
 And to use it, you will have to explicitly set an id before persisting the document:
 
-    [php]
+    <?php
     //...
     $document = new MyPersistentClass();
     $document->setId('my_unique_identifier');
@@ -266,13 +266,13 @@ And to use it, you will have to explicitly set an id before persisting the docum
     //...
     $document = $dm->find('MyPersistentClass', 'my_unique_identifier');
 
-++ Multiple Document Types in a Collection
+## Multiple Document Types in a Collection
 
 You can easily store multiple types of documents in a single collection. It only requires
 that you specify a `discriminatorMap` for each document in the collection. Here is an
 example:
 
-    [php]
+    <?php
     /**
      * @Document(collection="my_documents")
      * @DiscriminatorField(fieldName="type")
@@ -300,7 +300,7 @@ results will automatically be limited for you based on the discriminator map.
 If you wish to query for multiple types of documents from the collection you can simply
 pass an array of document class names:
 
-    [php]
+    <?php
     $documents = $dm->find(array('Article', 'Album'));
 
 The above will return a `MongoCursor` that will allow you to iterate over all `Article`
@@ -308,6 +308,6 @@ and `Album` instances!
 
 You can also create queries in the same way:
 
-    [php]
+    <?php
     $query = $dm->createQuery(array('Article', 'Album'));
     $documents = $query->execute();

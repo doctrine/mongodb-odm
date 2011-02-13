@@ -8,11 +8,11 @@
 Doctrine fully integrates the find and modify functionality to the query object so you can
 easily run these types of queries!
 
-++ Update
+## Update
 
 For example you can update a job and return it:
 
-    [php]
+    <?php
     $job = $dm->createQuery('Job')
         // Find the job
         ->findAndModify()
@@ -35,7 +35,7 @@ If you want to update a job and return the new document you can pass some option
 
 Here is an example where we return the new updated job document:
 
-    [php]
+    <?php
     $job = $dm->createQuery('Job')
         // Find the job
         ->findAndModify(array('new' => true))
@@ -51,11 +51,11 @@ Here is an example where we return the new updated job document:
 The returned `$job` will be a managed `Job` instance with the `started` and `in_progress`
 fields updated.
 
-++ Remove
+## Remove
 
 You can also remove a document and return it:
 
-    [php]
+    <?php
     $job = $dm->createQuery('Job')
         // Find the job
         ->findAndModify()

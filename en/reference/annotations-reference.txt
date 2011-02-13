@@ -1,6 +1,6 @@
 ﻿In this chapter a reference of every Doctrine 2 ODM Annotation is given with short explanations on their context and usage.
 
-++ Index
+## Index
 
 * [@Bin](#ann_bin)
 * [@BinCustom](#ann_bin_custom)
@@ -45,90 +45,90 @@
 * [@Timestamp](#ann_timestamp)
 * [@UniqueIndex](#ann_unique_index)
 
-++ Reference
+## Reference
 
 <a name="ann_bin"></a>
-+++ @Bin
+### @Bin
 
 Alias of [@Field](#ann_field), with "type" attribute set to "bin".
 Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::BYTE_ARRAY type.
 
-    [php]
+    <?php
     /** @Bin */
     private $data;
 
 <a name="ann_bin_custom"></a>
-+++ @BinCustom
+### @BinCustom
 
 Alias of [@Field](#ann_field), with "type" attribute set to "bin_custom".
 Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::CUSTOM type.
 
-    [php]
+    <?php
     /** @BinCustom */
     private $data;
 
 <a name="ann_bin_func"></a>
-+++ @BinFunc
+### @BinFunc
 
 Alias of [@Field](#ann_field), with "type" attribute set to "bin_func".
 Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::FUNC type.
 
-    [php]
+    <?php
     /** @BinFunc */
     private $data;
 
 <a name="ann_bin_md5"></a>
-+++ @BinMD5
+### @BinMD5
 
 Alias of [@Field](#ann_field), with "type" attribute set to "bin_md5".
 Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::MD5 type.
 
-    [php]
+    <?php
     /** @BinMD5 */
     private $password;
 
 
 <a name="ann_bin_uuid"></a>
-+++ @BinUUID
+### @BinUUID
 
 Alias of [@Field](#ann_field), with "type" attribute set to "bin_uuid".
 Converts value to [MongoBinData](http://www.php.net/manual/en/class.mongobindata.php), using MongoBinData::UUID type.
 
-    [php]
+    <?php
     /** @BinUUID */
     private $uuid;
 
 <a name="ann_boolean"></a>
-+++ @Boolean
+### @Boolean
 
 Alias of [@Field](#ann_field), with "type" attribute set to "boolean"
 
-    [php]
+    <?php
     /** @Boolean */
     private $active;
 
 <a name="ann_collection"></a>
-+++ @Collection
+### @Collection
 
 Alias of [@Field](#ann_field), with "type" attribute set to "collection".
 Stores and retrieves the value as numeric indexed array.
 
-    [php]
+    <?php
     /** @Collection */
     private $tags = array();
 
 <a name="ann_date"></a>
-+++ @Date
+### @Date
 
 Alias of [@Field](#ann_field), with "type" attribute set to "date"
 Converts value to [MongoDate](http://www.php.net/manual/en/class.mongodate.php).
 
-    [php]
+    <?php
     /** @Date */
     private $createdAt;
 
 <a name="ann_discriminator_field"></a>
-+++ @DiscriminatorField
+### @DiscriminatorField
 
 This annotation is a required annotation for the topmost/super class of an inheritance hierachy. It specifies
 the details of the field which saves the name of the class, which the document is actually instantiated as.
@@ -139,7 +139,7 @@ Required attributes:
 
 -
 
-    [php]
+    <?php
     /**
      * @Document
      * @DiscriminatorField(fieldName="type")
@@ -151,14 +151,14 @@ Required attributes:
     
 
 <a name="ann_discriminator_map"></a>
-+++ @DiscriminatorMap
+### @DiscriminatorMap
 
 The discrimnator map is a required annotation on the top-most/super class in an inheritance hierachy. It takes
 an array as only argument which defines which class should be saved under which name in the database. Keys
 are the database value and values are the classes, either as fully- or as unqualified class names depending
 if the classes are in the namespace or not.
 
-    [php]
+    <?php
     /**
      * @Document
      * @InheritanceType("SINGLE_COLLECTION")
@@ -175,12 +175,12 @@ if the classes are in the namespace or not.
     }
 
 <a name="ann_distance"></a>
-+++ @Distance
+### @Distance
 
 Use the `@Distance` annotation in combination with geospatial indexes and when running `$near`
 queries the property will be populated with a distance value.
 
-    [php]
+    <?php
     /**
      * @Document
      * @Index(keys={"coordinates"="2d"})
@@ -210,7 +210,7 @@ queries the property will be populated with a distance value.
 Now you can run a `near()` query and access the distance. Get the closest city to a set of
 coordinates:
 
-    [php]
+    <?php
     $city = $this->dm->createQuery('City')
         ->field('coordinates')->near(50, 60)
         ->limit(1)
@@ -218,7 +218,7 @@ coordinates:
     echo $city->distance;
 
 <a name="ann_document"></a>
-+++ @Document
+### @Document
 
 Required annotation to mark a PHP class as Document. Doctrine ODM manages the persistence of all classes marked as document.
 
@@ -230,7 +230,7 @@ Optional attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Document(db="documents", collection="users", repositoryClass="MyProject\UserRepository")
      */
@@ -240,7 +240,7 @@ Example:
     }
 
 <a name="ann_embed_many"></a>
-+++ @EmbedMany
+### @EmbedMany
 
 This annotation is simmilar to [@EmbedOne](#ann_embed_one), but instead of embedding one document, it informs MongoDB to embed a collection of documents
 
@@ -249,7 +249,7 @@ Required attributes:
 * targetDocument - A full class name of the target document.
 
 <a name="ann_embed_one"></a>
-+++ @EmbedOne
+### @EmbedOne
 
 The @EmbedOne annotation works almost exactly as the [@ReferenceOne](#ann_reference_one), except that internally,
 the document is embedded in the parent document in MongoDB. From MongoDB docs:
@@ -261,11 +261,11 @@ Required attributes:
 * targetDocument - A full class name of the target document.
 
 <a name="ann_embedded_document"></a>
-+++ @EmbeddedDocument
+### @EmbeddedDocument
 
 Marks the document as embeddable. Without this annotation, you cannot embed non-document objects.
 
-    [php]
+    <?php
     class Money
     {
         /**
@@ -305,7 +305,7 @@ Marks the document as embeddable. Without this annotation, you cannot embed non-
 The code above wouldn't store the money object.
 In order for the above code to work, you should have:
 
-    [php]
+    <?php
     <?php
     /**
      * @Document
@@ -317,7 +317,7 @@ In order for the above code to work, you should have:
 
 or
 
-    [php]
+    <?php
     /**
      * @EmbeddedDocument
      */
@@ -329,7 +329,7 @@ or
 The difference is that @EmbeddedDocument cannot be stored without a parent @Document and cannot specify its own db or collection attributes.
 
 <a name="ann_field"></a>
-+++ @Field
+### @Field
 
 Marks an annotated instance variable as "persistent". It has to be inside the instance variables PHP DocBlock comment.
 Any value hold inside this variable will be saved to and loaded from the document store as part of the lifecycle of the instance variables document-class.
@@ -344,7 +344,7 @@ Optional attributes:
 
 Examples:
 
-    [php]
+    <?php
     /**
      * @Field(type="string")
      */
@@ -361,18 +361,18 @@ Examples:
     protected $height;
 
 <a name="ann_file"></a>
-+++ @File
+### @File
 
 Tells ODM that the property is a file, must be set to a existing file path before saving to MongoDB
 Will be instantiated as instance of [MongoGridFSFile](http://www.php.net/manual/en/class.mongogridfsfile.php) class upon retreival
 
 <a name="ann_float"></a>
-+++ @Float
+### @Float
 
 Alias of [@Field](#ann_field), with "type" attribute set to "float"
 
 <a name="ann_has_lifecycle_callbacks"></a>
-+++ @HasLifecycleCallbacks
+### @HasLifecycleCallbacks
 
 Annotation which has to be set on the document-class PHP DocBlock to notify Doctrine that this document has document life-cycle
 callback annotations set on at least one of its methods. Using @PostLoad, @PrePersist, @PostPersist, @PreRemove, @PostRemove,
@@ -380,7 +380,7 @@ callback annotations set on at least one of its methods. Using @PostLoad, @PrePe
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Document
      * @HasLifecycleCallbacks
@@ -394,20 +394,20 @@ Example:
     }
 
 <a name="ann_hash"></a>
-+++ @Hash
+### @Hash
 
 Alias of [@Field](#ann_field), with "type" attribute set to "hash".
 Stores and retrieves the value as associative array.
 
 <a name="ann_id"></a>
-+++ @Id
+### @Id
 
 The annotated instance variable will be marked as document identifier.
 This annotation is a marker only and has no required or optional attributes.
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Document
      */
@@ -420,12 +420,12 @@ Example:
     }
 
 <a name="ann_increment"></a>
-+++ @Increment
+### @Increment
 
 The increment type is just like a normal field except that when you update, it will
 use the `$inc` operator instead of `$set`:
 
-    [php]
+    <?php
     class Package
     {
         // ...
@@ -443,7 +443,7 @@ use the `$inc` operator instead of `$set`:
 
 Now update a Package instance like the following:
 
-    [php]
+    <?php
     $package->incrementDownloads();
     $dm->flush();
 
@@ -459,7 +459,7 @@ It will increment the value by the difference between the new value and the old
 value.
 
 <a name="ann_index"></a>
-+++ @Index
+### @Index
 
 Annotation is used inside the [@Document](#ann_document) annotation on the class level. It allows to hint the
 MongoDB to generate a database index on the specified document fields.
@@ -471,7 +471,7 @@ Required attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Document(
      *   db="my_database",
@@ -488,17 +488,17 @@ Example:
 
 You can also simply specify an `@Index` or `@UniqueIndex` on a property:
 
-    [php]
+    <?php
     /** @String @UniqueIndex(safe="true") */
     private $username;
 
 <a name="ann_int"></a>
-+++ @Int
+### @Int
 
 Alias of [@Field](#ann_field), with "type" attribute set to "int"
 
 <a name="ann_inheritance_type"></a>
-+++ @InheritanceType
+### @InheritanceType
 
 In an inheritance hierachy you have to use this annotation on the topmost/super class to define which
 strategy should be used for inheritance. Currently SINGLE_COLLECTION and COLLECTION_PER_CLASS are supported.
@@ -508,7 +508,7 @@ This annotation has always been used in conjunction with the [@DiscriminatorMap]
 
 Examples:
 
-    [php]
+    <?php
     /**
      * @Document
      * @InheritanceType("COLLECTION_PER_CLASS")
@@ -530,18 +530,18 @@ Examples:
     }
 
 <a name="ann_key"></a>
-+++ @Key
+### @Key
 
 Alias of [@Field](#ann_field), with "type" attribute set to "key"
 It is then converted to [MongoMaxKey](http://www.php.net/manual/en/class.mongomaxkey.php) or
 [MongoMinKey](http://www.php.net/manual/en/class.mongominkey.php), if the value evaluates to true or false respectively.
 
 <a name="ann_mapped_superclass"></a>
-+++ @MappedSuperclass
+### @MappedSuperclass
 
 The annotation is used to specify classes that are parents of document classes and should not be managed [read more at](http://www.doctrine-project.org/projects/mongodb_odm/1.0/docs/reference/inheritance/en)
 
-    [php]
+    <?php
     /** @MappedSuperclass */
     class BaseDocument
     {
@@ -549,20 +549,20 @@ The annotation is used to specify classes that are parents of document classes a
     }
 
 <a name="ann_not_saved"></a>
-+++ @NotSaved
+### @NotSaved
 
 The annotation is used to specify properties that are loaded if they exist but never saved.
 
-    [php]
+    <?php
     /** @NotSaved */
     public $field;
 
 <a name="ann_pre_load"></a>
-+++ @PreLoad
+### @PreLoad
 
 Marks a method on the document to be called as a @PreLoad event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-    [php]
+    <?php
     /** @Document @HasLifecycleCallbacks */
     class Article
     {
@@ -576,11 +576,11 @@ Marks a method on the document to be called as a @PreLoad event. Only works with
     }
 
 <a name="ann_post_load"></a>
-+++ @PostLoad
+### @PostLoad
 
 Marks a method on the document to be called as a @PostLoad event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-    [php]
+    <?php
     /** @Document @HasLifecycleCallbacks */
     class Article
     {
@@ -594,11 +594,11 @@ Marks a method on the document to be called as a @PostLoad event. Only works wit
     }
 
 <a name="ann_post_persist"></a>
-+++ @PostPersist
+### @PostPersist
 
 Marks a method on the document to be called as a @PostPersist event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-    [php]
+    <?php
     /** @Document @HasLifecycleCallbacks */
     class Article
     {
@@ -612,11 +612,11 @@ Marks a method on the document to be called as a @PostPersist event. Only works 
     }
 
 <a name="ann_post_remove"></a>
-+++ @PostRemove
+### @PostRemove
 
 Marks a method on the document to be called as a @PostRemove event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-    [php]
+    <?php
     /** @Document @HasLifecycleCallbacks */
     class Article
     {
@@ -630,11 +630,11 @@ Marks a method on the document to be called as a @PostRemove event. Only works w
     }
 
 <a name="ann_post_update"></a>
-+++ @PostUpdate
+### @PostUpdate
 
 Marks a method on the document to be called as a @PostUpdate event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-    [php]
+    <?php
     /** @Document @HasLifecycleCallbacks */
     class Article
     {
@@ -648,11 +648,11 @@ Marks a method on the document to be called as a @PostUpdate event. Only works w
     }
 
 <a name="ann_pre_persist"></a>
-+++ @PrePersist
+### @PrePersist
 
 Marks a method on the document to be called as a @PrePersist event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-    [php]
+    <?php
     /** @Document @HasLifecycleCallbacks */
     class Article
     {
@@ -666,11 +666,11 @@ Marks a method on the document to be called as a @PrePersist event. Only works w
     }
 
 <a name="ann_preremove"></a>
-+++ @PreRemove
+### @PreRemove
 
 Marks a method on the document to be called as a @PreRemove event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-    [php]
+    <?php
     /** @Document @HasLifecycleCallbacks */
     class Article
     {
@@ -684,11 +684,11 @@ Marks a method on the document to be called as a @PreRemove event. Only works wi
     }
 
 <a name="ann_preupdate"></a>
-+++ @PreUpdate
+### @PreUpdate
 
 Marks a method on the document to be called as a @PreUpdate event. Only works with @HasLifecycleCallbacks in the document class PHP DocBlock.
 
-    [php]
+    <?php
     /** @Document @HasLifecycleCallbacks */
     class Article
     {
@@ -702,7 +702,7 @@ Marks a method on the document to be called as a @PreUpdate event. Only works wi
     }
 
 <a name="ann_reference_many"></a>
-+++ @ReferenceMany
+### @ReferenceMany
 
 Defines that the annotated instance variable holds a collection of referenced documents.
 
@@ -716,41 +716,41 @@ Optional attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @ReferenceMany(targetDocument="Documents\PhoneNumber", cascade="all")
      */
     private $phones = array();
 
 <a name="ann_string"></a>
-+++ @String
+### @String
 
 Defines that the annotated instance variable holds a string.
 
-    [php]
+    <?php
     /** @String */
     private $username;
 
 <a name="ann_timestamp"></a>
-+++ @Timestamp
+### @Timestamp
 
 Defines that the annotated instance variable holds a timestamp.
 
-    [php]
+    <?php
     /** @Timestamp */
     private $created;
 
 <a name="ann_unique_index"></a>
-+++ @UniqueIndex
+### @UniqueIndex
 
 Defines a unique index on the given document.
 
-    [php]
+    <?php
     /** @String @UniqueIndex */
     private $email;
 
 <a name="ann_reference_one"></a>
-+++ @ReferenceOne
+### @ReferenceOne
 
 Defines an instance variable holds a related document instance.
 
@@ -764,7 +764,7 @@ Optional attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @ReferenceOne(targetDocument="Documents\ShoppingCart", cascade="all")
      */

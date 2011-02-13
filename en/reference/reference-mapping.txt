@@ -1,6 +1,6 @@
 This chapter explains how references between documents are mapped with Doctrine.
 
-++ Collections
+## Collections
 
 In all the examples of many-valued references in this manual we will make use
 of a `Collection` interface and a corresponding default implementation
@@ -29,11 +29,11 @@ all the useful PHP array functions, which makes it very hard to work with.
 > over to your project if you want to remove Doctrine from your project and all your
 > domain classes will work the same as before.
 
-++ Reference One
+## Reference One
 
 Reference one document:
 
-    [php]
+    <?php
     /** @Document */
     class Product
     {
@@ -53,11 +53,11 @@ Reference one document:
         // ...
     }
     
-++ Reference Many
+## Reference Many
 
 Reference many documents:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -77,12 +77,12 @@ Reference many documents:
         // ...
     }
 
-++ Mixing Document Types
+## Mixing Document Types
 
 If you want to store different types of documents in references you can simply
 omit the `targetDocument` option:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -100,7 +100,7 @@ name will be automatically added for you in a field named `_doctrine_class_name`
 You can also specify a discriminator map to avoid storing the fully qualified class name 
 with each reference:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -121,7 +121,7 @@ with each reference:
 
 You can have different classes that can be referenced:
 
-    [php]
+    <?php
     /** @Document */
     class Album
     {
@@ -137,7 +137,7 @@ You can have different classes that can be referenced:
 If you want to store the discriminator value in a field other than `_doctrine_class_name`
 you can use the `discriminatorField` option:
 
-    [php]
+    <?php
     /** @Document */
     class User
     {
@@ -151,12 +151,12 @@ you can use the `discriminatorField` option:
         // ...
     }
 
-++ Cascading Operations
+## Cascading Operations
 
 By default Doctrine will not cascade any `UnitOfWork` operations to referenced documents so if
 wish to have this functionality you must explicitly enable it:
 
-    [php]
+    <?php
     /**
      * @ReferenceMany(discriminatorField="type", cascade={"all"})
      */

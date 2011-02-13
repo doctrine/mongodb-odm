@@ -17,7 +17,7 @@ transparent persistence for PHP objects.
 Here is a quick example of some PHP object documents that demonstrates a few
 of the features:
 
-    [php]
+    <?php
     /** @MappedSuperclass */
     abstract class BaseEmployee
     {
@@ -104,7 +104,7 @@ of the features:
 Now those objects can be used just like you weren't using any persistence layer
 at all and can be persisted transparently by Doctrine:
 
-    [php]
+    <?php
     $employee = new Employee();
     $employee->setName('Employee');
     $employee->setSalary(50000.00);
@@ -203,7 +203,7 @@ The above would batch insert the following:
 If we update a property and call `->flush()` again we'll get an efficient update
 query using the atomic operators:
 
-    [php]
+    <?php
     $newProject = new Project('Another Project');
     $manager->setSalary(200000.00);
     $manager->addNote('Gave user 100k a year raise');
@@ -267,12 +267,12 @@ The easiest way is to just clone it using git:
 Now that we have the code, we can begin our setup. First in your bootstrap file you need to require the
 `ClassLoader` from the `Doctrine\Common` namespace which is included in the vendor libraries:
 
-    [php]
+    <?php
     require 'mongodb_odm/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
 At the top of your bootstrap file you need to tell PHP which namespaces you want to use:
 
-    [php]
+    <?php
     // ...
 
     use Doctrine\Common\ClassLoader,
@@ -284,7 +284,7 @@ At the top of your bootstrap file you need to tell PHP which namespaces you want
 
 Next we need to setup the `ClassLoader` instances for all of the classes we need to autoload:
 
-    [php]
+    <?php
     // ...
 
     // ODM Classes
@@ -305,7 +305,7 @@ Next we need to setup the `ClassLoader` instances for all of the classes we need
 
 Now we can configure the ODM and create our `DocumentManager` instance:
 
-    [php]
+    <?php
     // ...
 
     $config = new Configuration();
@@ -323,7 +323,7 @@ Now we can configure the ODM and create our `DocumentManager` instance:
 
 Your final bootstrap code should look like the following:
 
-    [php]
+    <?php
     // bootstrap.php
 
     require 'mongodb_odm/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
