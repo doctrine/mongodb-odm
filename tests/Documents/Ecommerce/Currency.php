@@ -3,7 +3,7 @@
 namespace Documents\Ecommerce;
 
 /**
- * @Document(db="doctrine_odm_tests", collection="currencies")
+ * @Document(collection="currencies")
  */
 class Currency
 {

@@ -16,7 +16,7 @@ class MODM47Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document(db="modm47_test", collection="a") */
+/** @Document(collection="a") */
 class MODM47A
 {
     /** @Id */

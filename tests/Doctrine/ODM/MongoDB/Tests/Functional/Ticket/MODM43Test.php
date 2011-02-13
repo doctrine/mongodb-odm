@@ -16,7 +16,7 @@ class MODM43Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document(db="modm43_test", collection="people") @HasLifecycleCallbacks */
+/** @Document(collection="people") @HasLifecycleCallbacks */
 class Person
 {
     /** @Id */

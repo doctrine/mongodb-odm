@@ -55,7 +55,7 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 }
 
-/** @Document(db="tests", collection="tests") */
+/** @Document(collection="tests") */
 class A
 {
     /** @Id */
@@ -75,7 +75,7 @@ class A
     }
 }
 
-/** @Document(db="tests", collection="tests2") */
+/** @Document(collection="tests2") */
 class B
 {
 

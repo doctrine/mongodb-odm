@@ -3,7 +3,7 @@
 namespace Documents\Ecommerce;
 
 /**
- * @Document(db="doctrine_odm_tests", collection="products")
+ * @Document(collection="products")
  */
 class ConfigurableProduct
 {

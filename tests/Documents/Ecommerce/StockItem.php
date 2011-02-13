@@ -3,7 +3,7 @@
 namespace Documents\Ecommerce;
 
 /**
- * @Document(db="doctrine_odm_tests", collection="stock_items")
+ * @Document(collection="stock_items")
  */
 class StockItem
 {

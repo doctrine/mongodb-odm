@@ -43,7 +43,7 @@ class MODM29Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document(collection="tests", db="tests") */
+/** @Document(collection="tests") */
 class MODM29Doc
 {
     /** @Id */

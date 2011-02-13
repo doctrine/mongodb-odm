@@ -2,7 +2,7 @@
 
 namespace Documents;
 
-/** @Document(db="my_db", collection="employees") */
+/** @Document(collection="employees") */
 class Employee extends BaseEmployee
 {
     /** @ReferenceOne(targetDocument="Documents\Manager") */
