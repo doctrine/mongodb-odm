@@ -650,7 +650,8 @@ public function <methodName>()
         $lines = array();
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
-            if ($this->hasProperty($fieldMapping['fieldName'], $metadata)) {
+            if ($this->hasProperty($fieldMapping['fieldName'], $metadata) ||
+                $metadata->isInheritedField($fieldMapping['fieldName'])) {
                 continue;
             }
             if ( ! isset($fieldMapping['association'])) {
@@ -670,7 +671,8 @@ public function <methodName>()
         $lines = array();
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
-            if ($this->hasProperty($fieldMapping['fieldName'], $metadata)) {
+            if ($this->hasProperty($fieldMapping['fieldName'], $metadata) ||
+                $metadata->isInheritedField($fieldMapping['fieldName'])) {
                 continue;
             }
             if (isset($fieldMapping['association']) && $fieldMapping['association']) {
