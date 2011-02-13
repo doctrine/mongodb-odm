@@ -1,3 +1,6 @@
+Storing Files with MongoGridFS
+==============================
+
 The PHP Mongo extension provides a nice and convenient way to store
 files in chunks of data with the
 `MongoGridFS <http://us.php.net/manual/en/class.mongogridfs.php>`_.

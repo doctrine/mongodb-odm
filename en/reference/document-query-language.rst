@@ -1,3 +1,6 @@
+Document Query Language
+=======================
+
 The Document Query Language (DQL) is a simple SQL like language for
 querying Doctrine Document Objects.
 

@@ -1,3 +1,6 @@
+Indexes
+=======
+
 Working with indexes in the MongoDB ODM is pretty straight forward.
 You can have multiple indexes, they can consist of multiple fields,
 they can be unique and you can give them an order. In this chapter

@@ -1,3 +1,6 @@
+Capped Collections
+==================
+
 Capped collections are fixed sized collections that have a very
 high performance auto-LRU age-out feature (age out is based on
 insertion order).

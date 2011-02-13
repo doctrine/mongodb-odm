@@ -1,3 +1,6 @@
+Events
+============
+
 Doctrine features a lightweight event system that is part of the
 Common package.
 

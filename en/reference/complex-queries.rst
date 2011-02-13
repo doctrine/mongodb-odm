@@ -1,3 +1,6 @@
+Complex Queries
+===============
+
 Now that we've gone over the Doctrine MongoDB Query API thoroughly,
 this section will show you some more examples that combine some of
 the features together to make more complex queries.

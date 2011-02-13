@@ -1,3 +1,6 @@
+Annotations Reference
+=====================
+
 In this chapter a reference of every Doctrine 2 ODM Annotation is
 given with short explanations on their context and usage.
 

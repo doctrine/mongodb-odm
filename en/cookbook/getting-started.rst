@@ -1,4 +1,7 @@
-﻿Doctrine 2 is a project that aims to handle the persistence of the
+﻿Getting Started
+===============
+
+Doctrine 2 is a project that aims to handle the persistence of the
 domain model in a non-interfering way. Non-relational or no-sql
 databases like MongoDB give you flexibility of building data store
 around your object model and not vise versa. You can read more on the

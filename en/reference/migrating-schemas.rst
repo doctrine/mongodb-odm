@@ -1,3 +1,6 @@
+Migrating Schemas
+=================
+
 Even though MongoDB is schemaless, introducing some kind of object
 mapper means that the definition of your objects become your
 schema. You may have a situation where you rename a property in

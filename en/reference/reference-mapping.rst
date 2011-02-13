@@ -1,3 +1,6 @@
+Reference Mapping
+=================
+
 This chapter explains how references between documents are mapped
 with Doctrine.
 

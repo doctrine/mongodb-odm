@@ -1,3 +1,6 @@
+Map Reduce
+==========
+
 The Doctrine MongoDB Object Document Mapper fully supports the map
 reduce functionality and improves the user friendliness of it as
 well.

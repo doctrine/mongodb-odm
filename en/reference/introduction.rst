@@ -1,3 +1,6 @@
+Introduction
+============
+
 Doctrine MongoDB Object Document Mapper is built for PHP 5.3.0+ and
 provides transparent persistence for PHP objects.
 

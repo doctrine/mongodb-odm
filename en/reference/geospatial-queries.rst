@@ -1,3 +1,6 @@
+Geospatial Queries
+==================
+
 You can execute some special queries when using geospatial indexes
 like checking for documents within a rectangle or circle.
 

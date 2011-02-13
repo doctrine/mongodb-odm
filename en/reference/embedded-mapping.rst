@@ -1,3 +1,6 @@
+Embedded Mapping
+================
+
 This chapter explains how embedded documents are mapped in
 Doctrine.
 

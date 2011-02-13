@@ -1,3 +1,6 @@
+Inheritance Mapping
+===================
+
 Doctrine currently offers two supported methods of inheritance
 which are Single Collection Inheritance and Collection Per Class
 Inheritance.

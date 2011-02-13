@@ -1,3 +1,6 @@
+Logging
+=======
+
 If you want to turn on logging and receive information about
 queries made to the database you can do so on your
 ``Doctrine\ODM\MongoDB\Configuration`` instance:

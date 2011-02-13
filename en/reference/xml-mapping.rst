@@ -1,3 +1,6 @@
+XML Mapping
+===========
+
 The XML mapping driver enables you to provide the ODM metadata in
 form of XML documents.
 

@@ -1,3 +1,6 @@
+Trees
+=====
+
 MongoDB lends itself quite well to storing hierarchical data. This
 chapter will demonstrate some examples!
 

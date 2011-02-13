@@ -1,3 +1,6 @@
+Query Builder API
+=================
+
 .. role:: math(raw)
    :format: html latex
 

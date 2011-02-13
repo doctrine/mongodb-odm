@@ -1,3 +1,6 @@
+Basic Mapping
+=============
+
 This chapter explains the basic mapping of objects and properties.
 Mapping of references and embedded documents will be covered in the
 next chapter "Reference Mapping".
