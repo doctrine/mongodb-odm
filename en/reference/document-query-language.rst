@@ -12,7 +12,7 @@ Find Queries
 Use find queries to find and return your Doctrine document
 objects:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User');
@@ -26,7 +26,7 @@ Selecting Fields
 
 You can select only certain fields:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find username, password Documents\User');
@@ -38,7 +38,7 @@ If you want to select just the distinct values of a field you can
 use the ``distinct`` keyword. For example if you want to get all
 the distinct ages of the ``Documents\User`` document:
 
-::
+.. code-block:: php
 
     <?php
     $ages = $dm->query('find distinct age Documents\User')
@@ -47,7 +47,7 @@ the distinct ages of the ``Documents\User`` document:
 The above distinct example would be the same as manually running
 the following code with mongo:
 
-::
+.. code-block:: php
 
     <?php
     $results = $mongo->dbname->command(array(
@@ -62,7 +62,7 @@ Selecting a Slice
 If you want to use the ``$slice`` operator for only selecting a
 subset of elements in an array:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find comments skip 20 limit 10 Documents\User');
@@ -90,7 +90,7 @@ Sorting
 
 You can specify the fields to ``sort`` by too:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User sort username asc, email desc');
@@ -110,7 +110,7 @@ Limiting
 
 You can specify a ``limit`` to the number of records to return:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User sort username asc limit 10');
@@ -120,7 +120,7 @@ Skipping
 
 Combine ``limit`` with ``skip`` for paging:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User sort username asc skip 30 limit 10');
@@ -130,14 +130,14 @@ Insert Queries
 
 Insert documents with DQL as well:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query("insert Documents\User set username = 'jwage', password = 'changeme'");
 
 The above would result in the following:
 
-::
+.. code-block:: php
 
     <?php
     $mongo->dbname->users->insert(array(
@@ -153,7 +153,7 @@ Set
 
 Set a fields value:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query("update Documents\User set password = 'changeme' where username = 'jwage'");
@@ -176,7 +176,7 @@ Unset
 
 You can ``unset`` fields easily too:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('update Documents\User unset somefield, unset anotherfield');
@@ -200,7 +200,7 @@ Push
 
 Push new elements on collections:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('update Documents\User push groups = ?', array(1)); 
@@ -223,7 +223,7 @@ Push All
 
 You can push multiple with ``pushAll``:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('update Documents\User pushAll groups = ?', array(array(1, 2, 3)));
@@ -252,7 +252,7 @@ Pull
 
 Pull an element from a collection:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('update Documents\User pull groups = ?', 2);
@@ -276,7 +276,7 @@ Pull All
 
 Pull multiple elements from a collection:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('update Documents\User pullAll groups = ?', array(1, 2, 3));
@@ -305,7 +305,7 @@ Pop First
 
 Pop the first element off of a collection:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('update Documents\User popFirst groups, popFirst comments');
@@ -330,7 +330,7 @@ Pop Last
 Pop the last element off a collection and combine it with
 popFirst:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('update Documents\User popFirst groups, popLast comments');
@@ -354,7 +354,7 @@ Add to Set
 
 Add an item to a set:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('update Documents\User addToSet groups = ?', array(1));
@@ -377,7 +377,7 @@ Add Many to Set
 
 Add many items to a set:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('update Documents\User addManyToSet groups = ?', array(array(1, 2, 3)));
@@ -408,7 +408,7 @@ The above would result in the following:
 Multiple Operations
 ~~~~~~~~~~~~~~~~~~~
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query("update Documents\User inc count = 1, inc views = 2, set username = 'jwage'");
@@ -437,14 +437,14 @@ Remove Queries
 
 You can remove documents with DQL too:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query("remove Documents\User where username = 'jwage'");
 
 The above would result in the following:
 
-::
+.. code-block:: php
 
     <?php
     $mongo->dbname->users->remove(array('username' => 'jwage'));
@@ -455,7 +455,7 @@ Map and Reduce Queries
 Use ``reduce`` to specify a javascript function used to reduce your
 results:
 
-::
+.. code-block:: php
 
     <?php
     $reduce = 'function () { return this.a == 3 || this.b == 4; }';
@@ -464,7 +464,7 @@ results:
 Specify a ``map`` in addition to ``reduce`` for more complex map
 and reduce queries:
 
-::
+.. code-block:: php
 
     <?php
     $map = 'function () { return 1; }';
@@ -479,7 +479,7 @@ Equals
 
 Use the equals operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query("find all Documents\User where username = 'jwage'");
@@ -498,7 +498,7 @@ Not Equals
 
 Use not equals operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query("find all Documents\User where username != 'jwage'");
@@ -522,7 +522,7 @@ Greater Than
 
 Use the greater than operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find username Documents\User where count > 1');
@@ -545,7 +545,7 @@ Greater Than or Equal To
 
 Use the greater than or equal to operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find username Documents\User where count >= 1');
@@ -568,7 +568,7 @@ Less Than
 
 Use the less than operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find username Documents\User where count < 1');
@@ -591,7 +591,7 @@ Less Than or Equal To
 
 Use the less than or equal to operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find username Documents\User where count <= 1');
@@ -614,7 +614,7 @@ Mod
 
 Use the mod operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query("find all Documents\User where a mod '[10, 1]'");
@@ -642,7 +642,7 @@ In
 
 Use the in operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User where groups in ?', array(array(1, 2, 3)));
@@ -671,7 +671,7 @@ Not In
 
 Use the notIn operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User where groups notIn ?', array(array(1, 2, 3)));
@@ -700,7 +700,7 @@ Not
 
 Negate any operation by using the not operator before it:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query("find all Documents\User where not a mod '[10, 1]'");
@@ -732,7 +732,7 @@ All
 
 Use the all operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User where groups all ?', array(array(1, 2, 3));
@@ -761,7 +761,7 @@ Size
 
 Use the size operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User where groups size 3');
@@ -784,7 +784,7 @@ Exists
 
 Use the exists operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User where groups exists true and comments exists false');
@@ -812,7 +812,7 @@ Type
 
 Use the type operator:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User where username type string');
@@ -837,7 +837,7 @@ If you want to generate ``$elemMatch`` queries when searching
 embedded document collections you can use the ``all`` keyword in
 your query:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query("
@@ -869,14 +869,14 @@ Placeholders
 
 You can use placeholders instead of literal values:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User where username = ?', array('jwage'));
 
 You can also use named placeholders:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query('find all Documents\User where username = :username', array(':username' => 'jwage'));
@@ -886,7 +886,7 @@ JSON Values
 
 You can include strings of json as the values in your DQL:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->query("update Documents\User set groups = '[1, 2, 3]'");
@@ -916,7 +916,7 @@ Embedded Documents
 You can use the dot notation for working with fields from embedded
 documents:
 
-::
+.. code-block:: php
 
     <?php
     $dm->query('update Documents\User set address.city = ? where username = ?', array('Atlanta', 'jwage'))
@@ -937,7 +937,7 @@ with a username of ``jwage``:
 
 You can insert a document as well:
 
-::
+.. code-block:: php
 
     <?php
     $dm->query('insert Documents\User set username = ?, address.city = ?', array('jwage', 'Nashville'))
@@ -959,7 +959,7 @@ It would insert a document like the following:
 You can do the same thing in a where condition when executing find,
 update, or remove queries:
 
-::
+.. code-block:: php
 
     <?php
     $users = $dm->query('find Documents\User where username = ? and address.city = ?', array('jwage', 'Nashville'))
@@ -967,7 +967,7 @@ update, or remove queries:
 
 It also works for searching in embedded document collections:
 
-::
+.. code-block:: php
 
     <?php
     $users = $dm->query('find Documents\User where phonenumbers.phonenumber = ?', '6155139185')

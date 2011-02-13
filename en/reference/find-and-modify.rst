@@ -14,7 +14,7 @@ Update
 
 For example you can update a job and return it:
 
-::
+.. code-block:: php
 
     <?php
     $job = $dm->createQuery('Job')
@@ -43,7 +43,7 @@ array of options and the allowed keys are:
 
 Here is an example where we return the new updated job document:
 
-::
+.. code-block:: php
 
     <?php
     $job = $dm->createQuery('Job')
@@ -66,7 +66,7 @@ Remove
 
 You can also remove a document and return it:
 
-::
+.. code-block:: php
 
     <?php
     $job = $dm->createQuery('Job')

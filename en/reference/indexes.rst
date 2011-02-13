@@ -6,7 +6,7 @@ we'll show you examples of indexes using annotations.
 First here is an example where we put an index on a single
 property:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -47,7 +47,7 @@ You can customize the index with some additional options:
 Unique Index
 ------------
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -63,7 +63,7 @@ Unique Index
 For your convenience you can quickly specify a unique index with
 ``@UniqueIndex``:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -79,7 +79,7 @@ For your convenience you can quickly specify a unique index with
 If you want to specify an index that consists of multiple fields
 you can specify them on the class doc block:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -101,7 +101,7 @@ you can specify them on the class doc block:
 To specify multiple indexes you must use the ``@Indexes``
 annotation:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -129,7 +129,7 @@ Geospatial Indexing
 You can specify a geospatial index by just specifying the keys and
 options structures manually:
 
-::
+.. code-block:: php
 
     <?php
     /**

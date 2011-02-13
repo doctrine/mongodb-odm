@@ -2,7 +2,7 @@ If you want to turn on logging and receive information about
 queries made to the database you can do so on your
 ``Doctrine\ODM\MongoDB\Configuration`` instance:
 
-::
+.. code-block:: php
 
     <?php
     // ...
@@ -18,7 +18,7 @@ being sent to the database.
 Just like the anonymous function above, you could pass an array
 with a object instance and a method to call:
 
-::
+.. code-block:: php
 
     <?php
     // ...

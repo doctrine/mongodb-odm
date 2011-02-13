@@ -21,7 +21,7 @@ In order to work, this requires certain conventions:
 
 -
 
-::
+.. code-block:: php
 
     <?php
     $driver->setFileExtension('.yml');
@@ -32,7 +32,7 @@ want to. In order to tell the YamlDriver where to look for your
 mapping documents, supply an array of paths as the first argument
 of the constructor, like this:
 
-::
+.. code-block:: php
 
     <?php
     // $config instanceof Doctrine\ORM\Configuration

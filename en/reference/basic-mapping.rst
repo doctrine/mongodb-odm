@@ -64,7 +64,7 @@ In order to mark a class for object-relational persistence it needs
 to be designated as an document. This can be done through the
 ``@Document`` marker annotation.
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -78,7 +78,7 @@ doctrine and a collection with the same name as the class name. In
 order to change that, you can use the ``db`` and ``collection``
 option as follows:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -143,7 +143,7 @@ the most flexible.
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -165,7 +165,7 @@ same as the property names. To specify a different name for the
 field, you can use the ``name`` attribute of the Field annotation
 as follows:
 
-::
+.. code-block:: php
 
     <?php
     /** @Field(name="db_name") */
@@ -183,7 +183,7 @@ In order to create a new mapping type you need to subclass
 the methods. Here is an example skeleton of such a custom type
 class:
 
-::
+.. code-block:: php
 
     <?php
     namespace My\Project\Types;
@@ -224,7 +224,7 @@ method.
 
 Here is an example:
 
-::
+.. code-block:: php
 
     <?php
     // in bootstrapping code
@@ -243,7 +243,7 @@ configuration you specify a unique name for the mapping type and
 map that to the corresponding fully qualified class name. Now you
 can use your new type in your mapping like this:
 
-::
+.. code-block:: php
 
     <?php
     class MyPersistentClass
@@ -259,7 +259,7 @@ Every document class needs an identifier. You designate the field
 that serves as the identifier with the ``@Id`` marker annotation.
 Here is an example:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -275,7 +275,7 @@ cases you might need custom identifiers. MongoDB allows any unique
 scalar to serve as an identifier. Therefore Doctrine MongoDB ODM
 allows you to use 'CustomId' field type:
 
-::
+.. code-block:: php
 
     <?php
     /** Document */
@@ -313,7 +313,7 @@ allows you to use 'CustomId' field type:
 And to use it, you will have to explicitly set an id before
 persisting the document:
 
-::
+.. code-block:: php
 
     <?php
     //...
@@ -332,7 +332,7 @@ collection. It only requires that you specify a
 ``discriminatorMap`` for each document in the collection. Here is
 an example:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -363,7 +363,7 @@ automatically be limited for you based on the discriminator map.
 If you wish to query for multiple types of documents from the
 collection you can simply pass an array of document class names:
 
-::
+.. code-block:: php
 
     <?php
     $documents = $dm->find(array('Article', 'Album'));
@@ -373,7 +373,7 @@ iterate over all ``Article`` and ``Album`` instances!
 
 You can also create queries in the same way:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->createQuery(array('Article', 'Album'));

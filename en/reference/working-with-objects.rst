@@ -26,7 +26,7 @@ How costly a flush operation is in terms of performance mainly
 depends on the size. You can get the size of your Unit of Work as
 follows:
 
-::
+.. code-block:: php
 
     <?php
     $uowSize = $dm->getUnitOfWork()->size();
@@ -52,7 +52,7 @@ You can get direct access to the Unit of Work by calling
 ``DocumentManager#getUnitOfWork()``. This will return the
 UnitOfWork instance the DocumentManager is currently using.
 
-::
+.. code-block:: php
 
     <?php
     $uow = $dm->getUnitOfWork();
@@ -85,7 +85,7 @@ database when ``DocumentManager#flush()`` is invoked.
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     $user = new User();
@@ -137,7 +137,7 @@ document is unaffected by the ``remove`` operation.
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     $dm->remove($user);
@@ -181,7 +181,7 @@ document.
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     $dm->detach($document);
@@ -234,7 +234,7 @@ returned.
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     $detachedDocument = unserialize($serializedDocument); // some detached document
@@ -306,7 +306,7 @@ Establishing a reference to another document is straight forward:
 
 Here is an example where we add a new comment to an article:
 
-::
+.. code-block:: php
 
     <?php
     $comment = new Comment();
@@ -316,7 +316,7 @@ Here is an example where we add a new comment to an article:
 
 Or you can set a single reference:
 
-::
+.. code-block:: php
 
     <?php
     $address = new Address();
@@ -331,7 +331,7 @@ Removing an association between two documents is similarly
 straight-forward. There are two strategies to do so, by key and by
 element. Here are some examples:
 
-::
+.. code-block:: php
 
     <?php
     $article->getComments()->removeElement($comment);
@@ -339,7 +339,7 @@ element. Here are some examples:
 
 Or you can remove a single reference:
 
-::
+.. code-block:: php
 
     <?php
     $user->setAddress(null);
@@ -378,7 +378,7 @@ addresses. If persist() or remove() is invoked on any User
 document, it will be cascaded to all associated Address documents
 in the $addresses collection.
 
-::
+.. code-block:: php
 
     <?php
     class User 
@@ -410,7 +410,7 @@ identifier / primary key using the
 ``DocumentManager#find($documentName, $id)`` method. Here is an
 example:
 
-::
+.. code-block:: php
 
     <?php
     $user = $dm->find('User', $id);
@@ -421,7 +421,7 @@ no instance could be found with the given identifier.
 Essentially, ``DocumentManager#find()`` is just a shortcut for the
 following:
 
-::
+.. code-block:: php
 
     <?php
     $user = $dm->getRepository('User')->find($id);
@@ -439,7 +439,7 @@ To query for one or more documents based on several conditions that
 form a logical conjunction, use the ``findBy`` and ``findOneBy``
 methods on a repository as follows:
 
-::
+.. code-block:: php
 
     <?php
     // All users that are 20 years old
@@ -455,7 +455,7 @@ An DocumentRepository also provides a mechanism for more concise
 calls through its use of ``__call``. Thus, the following two
 examples are equivalent:
 
-::
+.. code-block:: php
 
     <?php
     // A single user by its nickname
@@ -483,7 +483,7 @@ You can create a query using
 ``DocumentManager#createQuery($documentName = null)``. Here is a
 simple example:
 
-::
+.. code-block:: php
 
     <?php
     // All users with an age between 20 and 30 (inclusive).
@@ -503,7 +503,7 @@ applications that require lots of specialized DQL queries using a
 custom repository is one recommended way of grouping these queries
 in a central location.
 
-::
+.. code-block:: php
 
     <?php
     
@@ -529,7 +529,7 @@ in a central location.
 
 You can access your repository now by calling:
 
-::
+.. code-block:: php
 
     <?php
     $admins = $dm->getRepository('User')->getAllAdminUsers();

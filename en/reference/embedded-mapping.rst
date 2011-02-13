@@ -6,7 +6,7 @@ Embed One
 
 Embed a single document:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -31,7 +31,7 @@ Embed Many
 
 Embed many documents:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -57,7 +57,7 @@ Mixing Document Types
 If you want to store different types of documents in an embedded
 document you can simply omit the ``targetDocument`` option:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -78,7 +78,7 @@ class name will be automatically added for you in a field named
 You can also specify a discriminator map to avoid storing the fully
 qualified class name with each embedded document:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -101,7 +101,7 @@ qualified class name with each embedded document:
 
 You can have different task classes that can be embedded:
 
-::
+.. code-block:: php
 
     <?php
     /** @EmbeddedDocument */
@@ -120,7 +120,7 @@ If you want to store the discriminator value in a field other than
 ``_doctrine_class_name`` you can use the ``discriminatorField``
 option:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */

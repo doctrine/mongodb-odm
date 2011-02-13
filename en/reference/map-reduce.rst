@@ -14,7 +14,7 @@ well.
 Imagine a situation where you had an application with a document
 named ``Event`` and it was related to a ``User`` document:
 
-::
+.. code-block:: php
 
     <?php
     namespace Documents;
@@ -51,7 +51,7 @@ how many sales events each user has had. We can easily use the map
 reduce functionality of MongoDB which is tightly integrated with
 the ``Query`` API. Here is a simple map reduce example:
 
-::
+.. code-block:: php
 
     <?php
     $query = $dm->createQuery('Documents\User')
@@ -78,7 +78,7 @@ MongoDB.
 Here is the exact same example we provided above except done with
 raw PHP code without the use of Doctrine:
 
-::
+.. code-block:: php
 
     <?php
     $db = $mongo->selectDB('my_db');
@@ -107,7 +107,7 @@ raw PHP code without the use of Doctrine:
 Your reduce function could return any type of variables, if you
 rewrite reduce as follows:
 
-::
+.. code-block:: php
 
     <?php
     //...

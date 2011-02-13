@@ -4,7 +4,7 @@ chapter will demonstrate some examples!
 Full Tree in Single Document
 ----------------------------
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -42,7 +42,7 @@ Full Tree in Single Document
 
 Retrieve a blog post and only select the first 10 comments:
 
-::
+.. code-block:: php
 
     <?php
     $post = $dm->createQuery('BlogPost')
@@ -56,7 +56,7 @@ website!
 Parent Reference
 ----------------
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -79,7 +79,7 @@ Parent Reference
 
 Query for children by a specific parent id:
 
-::
+.. code-block:: php
 
     <?php
     $children = $dm->createQuery('Category')
@@ -93,7 +93,7 @@ website!
 Child Reference
 ---------------
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -116,7 +116,7 @@ Child Reference
 
 Query for immediate children of a category:
 
-::
+.. code-block:: php
 
     <?php
     $category = $dm->createQuery('Category')
@@ -126,7 +126,7 @@ Query for immediate children of a category:
 
 Query for immediate parent of a category:
 
-::
+.. code-block:: php
 
     <?php
     $parent = $dm->createQuery('Category')
@@ -140,7 +140,7 @@ website!
 Array of Ancestors
 ------------------
 
-::
+.. code-block:: php
 
     <?php
     /** @MappedSuperclass */
@@ -180,7 +180,7 @@ Array of Ancestors
 
 Query for all descendants of a category:
 
-::
+.. code-block:: php
 
     <?php
     $categories = $dm->createQuery('Category')
@@ -189,7 +189,7 @@ Query for all descendants of a category:
 
 Query for all ancestors of a category:
 
-::
+.. code-block:: php
 
     <?php
     $category = $dm->createQuery('Category')
@@ -204,7 +204,7 @@ website!
 Materialized Paths
 ------------------
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -224,7 +224,7 @@ Materialized Paths
 
 Query for the entire tree:
 
-::
+.. code-block:: php
 
     <?php
     $categories = $dm->createQuery('Category')
@@ -233,7 +233,7 @@ Query for the entire tree:
 
 Query for the node 'b' and all its descendants:
 
-::
+.. code-block:: php
 
     <?php
     $categories = $dm->createQuery('Category')

@@ -58,7 +58,7 @@ Alias of `@Field <#ann_field>`_, with "type" attribute set to
 `MongoBinData <http://www.php.net/manual/en/class.mongobindata.php>`_,
 using MongoBinData::BYTE\_ARRAY type.
 
-::
+.. code-block:: php
 
     <?php
     /** @Bin */
@@ -71,7 +71,7 @@ Alias of `@Field <#ann_field>`_, with "type" attribute set to
 `MongoBinData <http://www.php.net/manual/en/class.mongobindata.php>`_,
 using MongoBinData::CUSTOM type.
 
-::
+.. code-block:: php
 
     <?php
     /** @BinCustom */
@@ -84,7 +84,7 @@ Alias of `@Field <#ann_field>`_, with "type" attribute set to
 `MongoBinData <http://www.php.net/manual/en/class.mongobindata.php>`_,
 using MongoBinData::FUNC type.
 
-::
+.. code-block:: php
 
     <?php
     /** @BinFunc */
@@ -97,7 +97,7 @@ Alias of `@Field <#ann_field>`_, with "type" attribute set to
 `MongoBinData <http://www.php.net/manual/en/class.mongobindata.php>`_,
 using MongoBinData::MD5 type.
 
-::
+.. code-block:: php
 
     <?php
     /** @BinMD5 */
@@ -110,7 +110,7 @@ Alias of `@Field <#ann_field>`_, with "type" attribute set to
 `MongoBinData <http://www.php.net/manual/en/class.mongobindata.php>`_,
 using MongoBinData::UUID type.
 
-::
+.. code-block:: php
 
     <?php
     /** @BinUUID */
@@ -121,7 +121,7 @@ using MongoBinData::UUID type.
 Alias of `@Field <#ann_field>`_, with "type" attribute set to
 "boolean"
 
-::
+.. code-block:: php
 
     <?php
     /** @Boolean */
@@ -133,7 +133,7 @@ Alias of `@Field <#ann_field>`_, with "type" attribute set to
 "collection". Stores and retrieves the value as numeric indexed
 array.
 
-::
+.. code-block:: php
 
     <?php
     /** @Collection */
@@ -145,7 +145,7 @@ Alias of `@Field <#ann_field>`_, with "type" attribute set to
 "date" Converts value to
 `MongoDate <http://www.php.net/manual/en/class.mongodate.php>`_.
 
-::
+.. code-block:: php
 
     <?php
     /** @Date */
@@ -167,7 +167,7 @@ Required attributes:
 
 -
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -188,7 +188,7 @@ in the database. Keys are the database value and values are the
 classes, either as fully- or as unqualified class names depending
 if the classes are in the namespace or not.
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -212,7 +212,7 @@ Use the ``@Distance`` annotation in combination with geospatial
 indexes and when running ``$near`` queries the property will be
 populated with a distance value.
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -244,7 +244,7 @@ populated with a distance value.
 Now you can run a ``near()`` query and access the distance. Get the
 closest city to a set of coordinates:
 
-::
+.. code-block:: php
 
     <?php
     $city = $this->dm->createQuery('City')
@@ -273,7 +273,7 @@ Optional attributes:
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -323,7 +323,7 @@ Required attributes:
 Marks the document as embeddable. Without this annotation, you
 cannot embed non-document objects.
 
-::
+.. code-block:: php
 
     <?php
     class Money
@@ -365,7 +365,7 @@ cannot embed non-document objects.
 The code above wouldn't store the money object. In order for the
 above code to work, you should have:
 
-::
+.. code-block:: php
 
     <?php
     <?php
@@ -379,7 +379,7 @@ above code to work, you should have:
 
 or
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -421,7 +421,7 @@ Optional attributes:
 
 Examples:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -463,7 +463,7 @@ Doctrine ignore the callbacks.
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -491,7 +491,7 @@ optional attributes.
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -510,7 +510,7 @@ Example:
 The increment type is just like a normal field except that when you
 update, it will use the ``$inc`` operator instead of ``$set``:
 
-::
+.. code-block:: php
 
     <?php
     class Package
@@ -530,7 +530,7 @@ update, it will use the ``$inc`` operator instead of ``$set``:
 
 Now update a Package instance like the following:
 
-::
+.. code-block:: php
 
     <?php
     $package->incrementDownloads();
@@ -563,7 +563,7 @@ Required attributes:
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -583,7 +583,7 @@ Example:
 You can also simply specify an ``@Index`` or ``@UniqueIndex`` on a
 property:
 
-::
+.. code-block:: php
 
     <?php
     /** @String @UniqueIndex(safe="true") */
@@ -607,7 +607,7 @@ This annotation has always been used in conjunction with the
 
 Examples:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -645,7 +645,7 @@ The annotation is used to specify classes that are parents of
 document classes and should not be managed
 `read more at <http://www.doctrine-project.org/projects/mongodb_odm/1.0/docs/reference/inheritance/en>`_
 
-::
+.. code-block:: php
 
     <?php
     /** @MappedSuperclass */
@@ -659,7 +659,7 @@ document classes and should not be managed
 The annotation is used to specify properties that are loaded if
 they exist but never saved.
 
-::
+.. code-block:: php
 
     <?php
     /** @NotSaved */
@@ -671,7 +671,7 @@ Marks a method on the document to be called as a @PreLoad event.
 Only works with @HasLifecycleCallbacks in the document class PHP
 DocBlock.
 
-::
+.. code-block:: php
 
     <?php
     /** @Document @HasLifecycleCallbacks */
@@ -692,7 +692,7 @@ Marks a method on the document to be called as a @PostLoad event.
 Only works with @HasLifecycleCallbacks in the document class PHP
 DocBlock.
 
-::
+.. code-block:: php
 
     <?php
     /** @Document @HasLifecycleCallbacks */
@@ -713,7 +713,7 @@ Marks a method on the document to be called as a @PostPersist
 event. Only works with @HasLifecycleCallbacks in the document class
 PHP DocBlock.
 
-::
+.. code-block:: php
 
     <?php
     /** @Document @HasLifecycleCallbacks */
@@ -734,7 +734,7 @@ Marks a method on the document to be called as a @PostRemove event.
 Only works with @HasLifecycleCallbacks in the document class PHP
 DocBlock.
 
-::
+.. code-block:: php
 
     <?php
     /** @Document @HasLifecycleCallbacks */
@@ -755,7 +755,7 @@ Marks a method on the document to be called as a @PostUpdate event.
 Only works with @HasLifecycleCallbacks in the document class PHP
 DocBlock.
 
-::
+.. code-block:: php
 
     <?php
     /** @Document @HasLifecycleCallbacks */
@@ -776,7 +776,7 @@ Marks a method on the document to be called as a @PrePersist event.
 Only works with @HasLifecycleCallbacks in the document class PHP
 DocBlock.
 
-::
+.. code-block:: php
 
     <?php
     /** @Document @HasLifecycleCallbacks */
@@ -797,7 +797,7 @@ Marks a method on the document to be called as a @PreRemove event.
 Only works with @HasLifecycleCallbacks in the document class PHP
 DocBlock.
 
-::
+.. code-block:: php
 
     <?php
     /** @Document @HasLifecycleCallbacks */
@@ -818,7 +818,7 @@ Marks a method on the document to be called as a @PreUpdate event.
 Only works with @HasLifecycleCallbacks in the document class PHP
 DocBlock.
 
-::
+.. code-block:: php
 
     <?php
     /** @Document @HasLifecycleCallbacks */
@@ -850,7 +850,7 @@ Optional attributes:
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -862,7 +862,7 @@ Example:
 
 Defines that the annotated instance variable holds a string.
 
-::
+.. code-block:: php
 
     <?php
     /** @String */
@@ -872,7 +872,7 @@ Defines that the annotated instance variable holds a string.
 
 Defines that the annotated instance variable holds a timestamp.
 
-::
+.. code-block:: php
 
     <?php
     /** @Timestamp */
@@ -882,7 +882,7 @@ Defines that the annotated instance variable holds a timestamp.
 
 Defines a unique index on the given document.
 
-::
+.. code-block:: php
 
     <?php
     /** @String @UniqueIndex */
@@ -904,7 +904,7 @@ Optional attributes:
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     /**

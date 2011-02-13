@@ -13,7 +13,7 @@ Mapping
 You can configure the collection in the ``collection`` attribute of
 the ``@Document`` annotation:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -42,14 +42,14 @@ it will not be created with the capped configuration. You can
 create the collection for a document with your ``DocumentManager``
 instance:
 
-::
+.. code-block:: php
 
     <?php
     $dm->createDocumentCollection('Category');
 
 You can drop the collection too if it already exists:
 
-::
+.. code-block:: php
 
     <?php
     $dm->dropDocumentCollection('Category');

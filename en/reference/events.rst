@@ -9,7 +9,7 @@ central point of Doctrine's event listener system. Listeners are
 registered on the manager and events are dispatched through the
 manager.
 
-::
+.. code-block:: php
 
     <?php
     $evm = new EventManager();
@@ -17,7 +17,7 @@ manager.
 Now we can add some event listeners to the ``$evm``. Let's create a
 ``EventTest`` class to play around with.
 
-::
+.. code-block:: php
 
     <?php
     class EventTest
@@ -51,7 +51,7 @@ Now we can add some event listeners to the ``$evm``. Let's create a
 
 Events can be dispatched by using the ``dispatchEvent()`` method.
 
-::
+.. code-block:: php
 
     <?php
     $evm->dispatchEvent(EventTest::preFoo);
@@ -60,7 +60,7 @@ Events can be dispatched by using the ``dispatchEvent()`` method.
 You can easily remove a listener with the ``removeEventListener()``
 method.
 
-::
+.. code-block:: php
 
     <?php
     $evm->removeEventListener(array(self::preFoo, self::postFoo), $this);
@@ -71,7 +71,7 @@ which implements the ``\Doctrine\Common\EventSubscriber`` interface
 and implements a ``getSubscribedEvents()`` method which returns an
 array of events it should be subscribed to.
 
-::
+.. code-block:: php
 
     <?php
     class TestEventSubscriber implements \Doctrine\Common\EventSubscriber
@@ -97,7 +97,7 @@ array of events it should be subscribed to.
 Now when you dispatch an event any event subscribers will be
 notified for that event.
 
-::
+.. code-block:: php
 
     <?php
     $evm->dispatchEvent(TestEventSubscriber::preFoo);
@@ -105,7 +105,7 @@ notified for that event.
 Now the test the ``$eventSubscriber`` instance to see if the
 ``preFoo()`` method was invoked.
 
-::
+.. code-block:: php
 
     <?php
     if ($eventSubscriber->preFooInvoked) {
@@ -158,7 +158,7 @@ the life-time of their registered documents.
 You can access the Event constants from the ``Events`` class in the
 ORM package.
 
-::
+.. code-block:: php
 
     <?php
     use Doctrine\ODM\MongoDB\Events;
@@ -194,7 +194,7 @@ providing a mechanism to register direct callbacks inside the
 corresponding document classes that are executed when the lifecycle
 event occurs.
 
-::
+.. code-block:: php
 
     <?php
     
@@ -259,7 +259,7 @@ to write your own listener.
 To register an event listener you have to hook it into the
 EventManager that is passed to the DocumentManager factory:
 
-::
+.. code-block:: php
 
     <?php
     $eventManager = new EventManager();
@@ -271,7 +271,7 @@ EventManager that is passed to the DocumentManager factory:
 You can also retrieve the event manager instance after the
 DocumentManager was created:
 
-::
+.. code-block:: php
 
     <?php
     $documentManager->getEventManager()->addEventListener(array(Events::preUpdate), MyEventListener());
@@ -309,7 +309,7 @@ When the mapping information for an document is read, it is
 populated in to a ``ClassMetadata`` instance. You can hook in to
 this process and manipulate the instance.
 
-::
+.. code-block:: php
 
     <?php
     $test = new EventTest();

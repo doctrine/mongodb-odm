@@ -7,7 +7,7 @@ Find Queries
 
 Find articles with a date range:
 
-::
+.. code-block:: php
 
     <?php
     $dm->createQuery('Article')
@@ -22,7 +22,7 @@ Update Queries
 
 Remove a field from a document if it is null:
 
-::
+.. code-block:: php
 
     <?php
     $dm->createQuery()

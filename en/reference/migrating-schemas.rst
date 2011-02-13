@@ -18,7 +18,7 @@ Renaming a Field
 
 Lets say you have a document that starts off looking like this:
 
-::
+.. code-block:: php
 
     <?php
     class Person
@@ -29,7 +29,7 @@ Lets say you have a document that starts off looking like this:
 
 Then you want to rename ``name`` to ``fullName`` like this:
 
-::
+.. code-block:: php
 
     <?php
     class Person
@@ -59,7 +59,7 @@ name in separate first and last name fields. This is also possible.
 You can specify the ``@AlsoLoad`` annotation on a method and use it
 to do some more complex logic:
 
-::
+.. code-block:: php
 
     <?php
     class Person
@@ -94,7 +94,7 @@ you a few different methods for dealing with this:
 
 Imagine you have some address fields on a Person document:
 
-::
+.. code-block:: php
 
     <?php
     class Person
@@ -108,7 +108,7 @@ Imagine you have some address fields on a Person document:
 Then later you want to store a persons address in another object as
 an embedded document:
 
-::
+.. code-block:: php
 
     <?php
     /** @EmbeddedDocument */
@@ -150,7 +150,7 @@ an embedded document:
 
 You can also change the data on save if that works better for you:
 
-::
+.. code-block:: php
 
     <?php
     class Person

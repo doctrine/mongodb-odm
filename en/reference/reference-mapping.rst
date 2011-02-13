@@ -43,7 +43,7 @@ Reference One
 
 Reference one document:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -70,7 +70,7 @@ Reference Many
 
 Reference many documents:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -98,7 +98,7 @@ Mixing Document Types
 If you want to store different types of documents in references you
 can simply omit the ``targetDocument`` option:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -119,7 +119,7 @@ a field named ``_doctrine_class_name``.
 You can also specify a discriminator map to avoid storing the fully
 qualified class name with each reference:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -142,7 +142,7 @@ qualified class name with each reference:
 
 You can have different classes that can be referenced:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -161,7 +161,7 @@ If you want to store the discriminator value in a field other than
 ``_doctrine_class_name`` you can use the ``discriminatorField``
 option:
 
-::
+.. code-block:: php
 
     <?php
     /** @Document */
@@ -184,7 +184,7 @@ By default Doctrine will not cascade any ``UnitOfWork`` operations
 to referenced documents so if wish to have this functionality you
 must explicitly enable it:
 
-::
+.. code-block:: php
 
     <?php
     /**

@@ -10,7 +10,7 @@ of a MongoDB document.
 You can easily setup a Document that is stored using the
 MongoGridFS:
 
-::
+.. code-block:: php
 
     <?php
     
@@ -73,7 +73,7 @@ for you to access the actual file itself.
 
 First you need to create a new Image:
 
-::
+.. code-block:: php
 
     <?php
     $image = new Image();
@@ -85,7 +85,7 @@ First you need to create a new Image:
 
 Now you can later query for the Image and render it:
 
-::
+.. code-block:: php
 
     <?php
     $image = $dm->createQuery('Documents\Image')
@@ -100,7 +100,7 @@ You can of course make references to this Image document from
 another document. Imagine you had a Profile document and you wanted
 every Profile to have a profile image:
 
-::
+.. code-block:: php
 
     <?php
     
@@ -146,7 +146,7 @@ every Profile to have a profile image:
 
 Now you can create a new Profile and give it an Image:
 
-::
+.. code-block:: php
 
     <?php
     $image = new Image();
@@ -163,7 +163,7 @@ Now you can create a new Profile and give it an Image:
 If you want to query for the Profile and load the Image reference
 in a query you can use:
 
-::
+.. code-block:: php
 
     <?php
     $profile = $dm->createQuery('Profile')

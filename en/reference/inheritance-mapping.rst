@@ -26,7 +26,7 @@ Inheritance).
 
 Example:
 
-::
+.. code-block:: php
 
     <?php
     /** @MappedSuperclass */
@@ -64,7 +64,7 @@ distinguish one document type from another.
 
 Simple example:
 
-::
+.. code-block:: php
 
     <?php
     namespace Documents;
@@ -93,7 +93,7 @@ class to return by looking it up in the discriminator map. Now if
 we ask for a certain Person and it has a discriminator field value
 of employee, we would get an Employee instance back:
 
-::
+.. code-block:: php
 
     <?php
     $employee = new Empoyee();
@@ -112,7 +112,7 @@ Collection Per Class Inheritance
 With Collection Per Class Inheritance each document is stored in
 its own collection and contains all inherited fields:
 
-::
+.. code-block:: php
 
     <?php
     namespace Documents;

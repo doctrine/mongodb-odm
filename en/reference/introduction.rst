@@ -27,7 +27,7 @@ Features Overview
 Here is a quick example of some PHP object documents that
 demonstrates a few of the features:
 
-::
+.. code-block:: php
 
     <?php
     /** @MappedSuperclass */
@@ -117,7 +117,7 @@ Now those objects can be used just like you weren't using any
 persistence layer at all and can be persisted transparently by
 Doctrine:
 
-::
+.. code-block:: php
 
     <?php
     $employee = new Employee();
@@ -220,7 +220,7 @@ The above would batch insert the following:
 If we update a property and call ``->flush()`` again we'll get an
 efficient update query using the atomic operators:
 
-::
+.. code-block:: php
 
     <?php
     $newProject = new Project('Another Project');
@@ -297,7 +297,7 @@ bootstrap file you need to require the ``ClassLoader`` from the
 ``Doctrine\Common`` namespace which is included in the vendor
 libraries:
 
-::
+.. code-block:: php
 
     <?php
     require 'mongodb_odm/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
@@ -305,7 +305,7 @@ libraries:
 At the top of your bootstrap file you need to tell PHP which
 namespaces you want to use:
 
-::
+.. code-block:: php
 
     <?php
     // ...
@@ -320,7 +320,7 @@ namespaces you want to use:
 Next we need to setup the ``ClassLoader`` instances for all of the
 classes we need to autoload:
 
-::
+.. code-block:: php
 
     <?php
     // ...
@@ -344,7 +344,7 @@ classes we need to autoload:
 Now we can configure the ODM and create our ``DocumentManager``
 instance:
 
-::
+.. code-block:: php
 
     <?php
     // ...
@@ -364,7 +364,7 @@ instance:
 
 Your final bootstrap code should look like the following:
 
-::
+.. code-block:: php
 
     <?php
     // bootstrap.php

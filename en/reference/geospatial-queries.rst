@@ -6,7 +6,7 @@ Mapping
 
 First, setup some documents like the following:
 
-::
+.. code-block:: php
 
     <?php
     /**
@@ -45,7 +45,7 @@ Now you can execute queries against these documents like the
 following. Check for the 10 nearest cities to a given latitude and
 longitude with the ``near($latitude, $longitude)`` method:
 
-::
+.. code-block:: php
 
     <?php
     $cities = $this->dm->createQuery('City')
@@ -59,7 +59,7 @@ When you use the ``near()`` functionality a distance will be
 calculated and placed in the property annotated with
 ``@Distance``:
 
-::
+.. code-block:: php
 
     <?php
     foreach ($cities as $city) {
@@ -72,7 +72,7 @@ Within Box
 You can also query for cities within a given rectangle using the
 ``withinBox($x1, $y1, $x2, $y2)`` method:
 
-::
+.. code-block:: php
 
     <?php
     $cities = $this->dm->createQuery('City')
@@ -85,7 +85,7 @@ Within Center
 In addition to boxes you can check for cities within a circle using
 the ``withinCenter($x, $y, $radius)`` method:
 
-::
+.. code-block:: php
 
     <?php
     $cities = $this->dm->createQuery('City')
