@@ -201,11 +201,43 @@ class SchemaManager
     }
 
     /**
-     * Drop the document database for a mapped class.
+     * Drop all the mapped document databases in the metadata factory.
      */
-    public function dropDatabase()
+    public function dropDatabases()
     {
-        $this->dm->getDatabase()->drop();
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+                continue;
+            }
+            $this->dropDocumentDatabase($class->name);
+        }
+    }
+
+    /**
+     * Drop the document database for a mapped class.
+     *
+     * @param string $documentName
+     */
+    public function dropDocumentDatabase($documentName)
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            throw new InvalidArgumentException('Cannot drop document database for mapped super classes or embedded documents.');
+        }
+        $this->dm->getDocumentDatabase($documentName)->drop();
+    }
+
+    /**
+     * Create all the mapped document databases in the metadata factory.
+     */
+    public function createDatabases()
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+                continue;
+            }
+            $this->createDocumentDatabase($class->name);
+        }
     }
 
     /**
@@ -213,8 +245,12 @@ class SchemaManager
      *
      * @param string $documentName
      */
-    public function createDatabase()
+    public function createDocumentDatabase($documentName)
     {
-        $this->dm->getDatabase()->execute("function() { return true; }");
+        $class = $this->dm->getClassMetadata($documentName);
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
+        }
+        $this->dm->getDocumentDatabase($documentName)->execute("function() { return true; }");
     }
 }
