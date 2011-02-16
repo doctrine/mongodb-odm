@@ -25,12 +25,12 @@ class CreateCommand extends AbstractCommand
 
     protected function processDocumentDb(SchemaManager $sm, $document)
     {
-        $sm->createDatabase();
+        $sm->createDocumentDatabase($document);
     }
 
     protected function processDb(SchemaManager $sm)
     {
-        $sm->createDatabase();
+        $sm->createDatabases();
     }
 
     protected function processDocumentIndex(SchemaManager $sm, $document)

@@ -23,12 +23,12 @@ class DropCommand extends AbstractCommand
 
     protected function processDocumentDb(SchemaManager $sm, $document)
     {
-        $sm->dropDatabase();
+        $sm->dropDocumentDatabase($document);
     }
 
     protected function processDb(SchemaManager $sm)
     {
-        $sm->dropDatabase();
+        $sm->dropDatabases();
     }
 
     protected function processDocumentIndex(SchemaManager $sm, $document)
