@@ -23,7 +23,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory,
     Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
     Doctrine\MongoDB\Connection,
-    Doctrine\MongoDB\Database,
     Doctrine\ODM\MongoDB\PersistentCollection,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
     Doctrine\Common\Collections\ArrayCollection,
@@ -133,13 +132,6 @@ class DocumentManager implements ObjectManager
     private $cmd;
 
     /**
-     * Database instance
-     *
-     * @var Doctrine\MongoDB\Database
-     */
-    private $db;
-
-    /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
@@ -147,13 +139,12 @@ class DocumentManager implements ObjectManager
      * @param Doctrine\ODM\MongoDB\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(Connection $conn = null, Database $db = null, Configuration $config = null, EventManager $eventManager = null)
+    protected function __construct(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
     {
         $this->config = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
         $this->cmd = $this->config->getMongoCmd();
         $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
-        $this->db = $db ?: $this->connection->selectDatabase(null !== $config->getDefaultDB() ? $config->getDefaultDB() : 'doctrine');
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
@@ -199,13 +190,12 @@ class DocumentManager implements ObjectManager
      * and uses the given Configuration.
      *
      * @param Doctrine\MongoDB\Connection $conn
-     * @param Doctrine\MongoDB\Database   $db
      * @param Doctrine\ODM\MongoDB\Configuration $config
      * @param Doctrine\Common\EventManager $eventManager
      */
-    public static function create(Connection $conn = null, Database $db = null, Configuration $config = null, EventManager $eventManager = null)
+    public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
     {
-        return new DocumentManager($conn, $db, $config, $eventManager);
+        return new DocumentManager($conn, $config, $eventManager);
     }
 
     /**
@@ -280,13 +270,32 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Gets current Database instance.
+     * Returns the MongoDB instance for a class.
      *
+     * @param string $className The class name.
      * @return Doctrine\MongoDB\Database
      */
-    public function getDatabase()
+    public function getDocumentDatabase($className)
     {
-        return $this->db;
+        $metadata = $this->metadataFactory->getMetadataFor($className);
+        $db = $metadata->getDatabase();
+        $db = $db ? $db : $this->config->getDefaultDB();
+        $db = $db ? $db : 'doctrine';
+        $db = sprintf('%s%s', $this->config->getEnvironmentPrefix(), $db);
+        if ( ! isset($this->documentDatabases[$className])) {
+            $this->documentDatabases[$className] = $this->connection->selectDatabase($db);
+        }
+        return $this->documentDatabases[$className];
+    }
+
+    /**
+     * Gets the array of instantiated document database instances.
+     *
+     * @return array
+     */
+    public function getDocumentDatabases()
+    {
+        return $this->documentDatabases;
     }
 
     /**
@@ -305,11 +314,12 @@ class DocumentManager implements ObjectManager
             throw MongoDBException::documentNotMappedToCollection($className);
         }
 
+        $db = $this->getDocumentDatabase($className);
         if ( ! isset($this->documentCollections[$className])) {
             if ($metadata->isFile()) {
-                $this->documentCollections[$className] = $this->db->getGridFS($collection);
+                $this->documentCollections[$className] = $db->getGridFS($collection);
             } else {
-                $this->documentCollections[$className] = $this->db->selectCollection($collection);
+                $this->documentCollections[$className] = $db->selectCollection($collection);
             }
         }
         return $this->documentCollections[$className];

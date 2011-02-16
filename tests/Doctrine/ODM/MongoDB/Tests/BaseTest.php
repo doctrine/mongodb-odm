@@ -44,7 +44,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config->setMetadataDriverImpl($this->annotationDriver);
 
         $conn = new Connection(null, array(), $config);
-        $this->dm = DocumentManager::create($conn, null, $config);
+        $this->dm = DocumentManager::create($conn, $config);
         $this->uow = $this->dm->getUnitOfWork();
     }
 
@@ -67,8 +67,10 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         if ($this->dm) {
-            foreach ($this->dm->getDatabase()->listCollections() as $collection) {
-                $collection->drop();
+            foreach ($this->dm->getDocumentDatabases() as $db) {
+                foreach ($db->listCollections() as $collection) {
+                    $collection->drop();
+                }
             }
             $this->dm->getConnection()->close();
         }

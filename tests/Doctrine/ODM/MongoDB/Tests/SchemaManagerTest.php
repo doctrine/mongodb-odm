@@ -114,9 +114,10 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $classMetadata->expects($this->once())
             ->method('getCollectionMax');
 
-        $documentDatabase = $this->dm->getDatabase();
+        $documentDatabase = $this->getDocumentDatabase($className);
         $documentDatabase->expects($this->once())
             ->method('createCollection');
+        $this->dm->setDocumentDatabase($className, $documentDatabase);
 
         $this->dm->setClassMetadata($className, $classMetadata);
 
@@ -131,11 +132,11 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $metadatas = array();
         foreach ($classes as $className) {
             $metadatas[] = (object) array('name' => $className, 'isMappedSuperclass' => false, 'isEmbeddedDocument' => false);
+            $documentDatabase = $this->getDocumentDatabase($className);
+            $documentDatabase->expects($this->once())
+                ->method('createCollection');
+            $this->dm->setDocumentDatabase($className, $documentDatabase);
         }
-
-        $documentDatabase = $this->dm->getDatabase();
-        $documentDatabase->expects($this->exactly(count($classes)))
-            ->method('createCollection');
 
         $metadataFactory = $this->getMetadataFactory();
         $metadataFactory->expects($this->once())
@@ -159,12 +160,14 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $metadata->expects($this->once())
                 ->method('getCollection')
                 ->will($this->returnValue($className));
+            $documentDatabase = $this->getDocumentDatabase($className);
+            $documentDatabase->expects($this->once())
+                ->method('dropCollection')
+                ->with($className);
+            $this->dm->setDocumentDatabase($className, $documentDatabase);
             $this->dm->setClassMetadata($className, $metadata);
             $metadatas[] = $metadata;
         }
-        $documentDatabase = $this->dm->getDatabase();
-        $documentDatabase->expects($this->exactly(count($classes)))
-            ->method('dropCollection');
 
         $metadataFactory = $this->getMetadataFactory();
         $metadataFactory->expects($this->once())
@@ -186,10 +189,11 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->method('getCollection')
             ->will($this->returnValue($collectionName));
 
-        $documentDatabase = $this->dm->getDatabase();
+        $documentDatabase = $this->getDocumentDatabase($className);
         $documentDatabase->expects($this->once())
             ->method('dropCollection')
             ->with($collectionName);
+        $this->dm->setDocumentDatabase($className, $documentDatabase);
 
         $this->dm->setClassMetadata($className, $classMetadata);
 
@@ -261,7 +265,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/../../../../Documents'));
-        return DocumentManagerMock::create($this->getConnection(), $this->getDocumentDatabase(), $config);
+        return DocumentManagerMock::create($this->getConnection(), $config);
     }
 
     protected function getConnection()
@@ -286,7 +290,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         return $this->getMock('Doctrine\MongoDB\Collection', array('ensureIndex', 'deleteIndex', 'deleteIndexes'), array(), '', false, false);
     }
 
-    protected function getDocumentDatabase()
+    protected function getDocumentDatabase($className)
     {
         $documentDatabase = $this->getMock('Doctrine\MongoDB\Database', array('authenticate', 'command', 'createCollection', 'createDBRef', 'drop', 'dropCollection', 'execute', 'forceError', 'getDatabaseRef', '__get', 'getGridFS', 'getProfilingLevel', 'getLastError'), array(), '', false, false);
         return $documentDatabase;
