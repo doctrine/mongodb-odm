@@ -21,25 +21,6 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $config = $this->getConfiguration();
-
-
-        $reader = new AnnotationReader();
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
-        $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/Documents');
-        $config->setMetadataDriverImpl($this->annotationDriver);
-
-        $conn = new Connection(null, array(), $config);
-        $this->dm = DocumentManager::create($conn, null, $config);
-        $this->uow = $this->dm->getUnitOfWork();
-    }
-
-    /**
-     * Get test Configuration
-     *
-     * @return Doctrine\MongoDB\Configuration
-     */
-    protected function getConfiguration() {
         $config = new Configuration();
 
         $config->setProxyDir(__DIR__ . '/../../../../Proxies');
@@ -56,9 +37,16 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         });
         $config->setMetadataCacheImpl(new ApcCache());
         */
-        return $config;
-    }
 
+        $reader = new AnnotationReader();
+        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+        $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/Documents');
+        $config->setMetadataDriverImpl($this->annotationDriver);
+
+        $conn = new Connection(null, array(), $config);
+        $this->dm = DocumentManager::create($conn, null, $config);
+        $this->uow = $this->dm->getUnitOfWork();
+    }
 
     protected function getTestDocumentManager($metadataDriver = null)
     {

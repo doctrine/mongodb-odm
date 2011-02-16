@@ -153,13 +153,13 @@ class DocumentManager implements ObjectManager
         $this->eventManager = $eventManager ?: new EventManager();
         $this->cmd = $this->config->getMongoCmd();
         if (is_string($conn)) {
-            $conn = new Connection($conn, array(), $this->config, $this->eventManager);
+            $conn = new Connection(null, array(), $this->config, $this->eventManager);
         }
         $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
         if (is_string($db)) {
             $db = $this->connection->selectDatabase($db);
         }
-        $this->db = $db ?: $this->connection->selectDatabase(null !== $this->config->getDefaultDB() ? $this->config->getDefaultDB() : 'doctrine');
+        $this->db = $db ?: $this->connection->selectDatabase(null !== $config->getDefaultDB() ? $config->getDefaultDB() : 'doctrine');
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
