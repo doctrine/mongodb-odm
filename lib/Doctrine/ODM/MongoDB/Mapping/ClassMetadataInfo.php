@@ -118,6 +118,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     const CHANGETRACKING_NOTIFY = 3;
 
     /**
+     * READ-ONLY: The name of the mongo database the document is mapped to.
+     */
+    public $db;
+
+    /**
      * READ-ONLY: The name of the monge collection the document is mapped to.
      */
     public $collection;
@@ -696,6 +701,26 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function getNamespace()
     {
         return $this->namespace;
+    }
+
+    /**
+     * Returns the database this Document is mapped to.
+     *
+     * @return string $db The database name.
+     */
+    public function getDatabase()
+    {
+        return $this->db;
+    }
+
+    /**
+     * Set the database this Document is mapped to.
+     *
+     * @param string $db The database name
+     */
+    public function setDatabase($db)
+    {
+        $this->db = $db;
     }
 
     /**

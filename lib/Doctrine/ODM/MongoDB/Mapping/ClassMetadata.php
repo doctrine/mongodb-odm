@@ -109,6 +109,7 @@ class ClassMetadata extends ClassMetadataInfo
             'identifier',
             'name',
             'namespace', // TODO: REMOVE
+            'db',
             'collection',
             'rootDocumentName',
             'generatorType',

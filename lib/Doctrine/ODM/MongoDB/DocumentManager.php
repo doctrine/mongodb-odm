@@ -298,6 +298,7 @@ class DocumentManager implements ObjectManager
     public function getDocumentCollection($className)
     {
         $metadata = $this->metadataFactory->getMetadataFor($className);
+        $db = $metadata->getDatabase();
         $collection = $metadata->getCollection();
 
         if ( ! $collection) {
@@ -644,7 +645,7 @@ class DocumentManager implements ObjectManager
         $dbRef = array(
             $this->cmd . 'ref' => $class->getCollection(),
             $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($id),
-            $this->cmd . 'db'  => $this->db->getName(),
+            $this->cmd . 'db'  => $class->getDatabase()
         );
 
         // add a discriminator value if the referenced document is not mapped explicitely to a targetDocument
