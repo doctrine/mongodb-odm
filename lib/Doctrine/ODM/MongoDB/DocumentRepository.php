@@ -20,6 +20,8 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\Common\Persistence\ObjectRepository;
+
 /**
  * An DocumentRepository serves as a repository for documents with generic as well as
  * business specific methods for retrieving documents.
@@ -33,7 +35,7 @@ namespace Doctrine\ODM\MongoDB;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class DocumentRepository
+class DocumentRepository implements ObjectRepository
 {
     /**
      * @var string

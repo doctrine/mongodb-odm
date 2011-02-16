@@ -28,7 +28,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\EventManager,
-    Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+    Doctrine\ODM\MongoDB\Hydrator\HydratorFactory,
+    Doctrine\Common\Persistence\ObjectManager;
 
 /**
  * The DocumentManager class is the central access point for managing the
@@ -45,7 +46,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class DocumentManager
+class DocumentManager implements ObjectManager
 {
     /**
      * The Doctrine MongoDB connection instance.

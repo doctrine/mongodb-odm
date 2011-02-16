@@ -52,6 +52,13 @@ class ClassMetadata extends ClassMetadataInfo
     public $reflFields = array();
 
     /**
+     * The prototype from which new instances of the mapped class are created.
+     *
+     * @var object
+     */
+    private $prototype;
+
+    /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
      *
@@ -177,5 +184,18 @@ class ClassMetadata extends ClassMetadataInfo
             $reflField->setAccessible(true);
             $this->reflFields[$field] = $reflField;
         }
+    }
+
+    /**
+     * Creates a new instance of the mapped class, without invoking the constructor.
+     *
+     * @return object
+     */
+    public function newInstance()
+    {
+        if ($this->prototype === null) {
+            $this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+        }
+        return clone $this->prototype;
     }
 }

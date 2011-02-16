@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\ODM\MongoDB\MongoDBException,
     Doctrine\ODM\MongoDB\LockException,
+    Doctrine\Common\Persistence\Mapping\ClassMetadata,
     ReflectionClass;
 
 /**
@@ -43,7 +44,7 @@ use Doctrine\ODM\MongoDB\MongoDBException,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class ClassMetadataInfo
+class ClassMetadataInfo implements ClassMetadata
 {
     /* The Id generator types. */
     /**
@@ -209,13 +210,6 @@ class ClassMetadataInfo
      * @var array
      */
     public $reflFields = array();
-
-    /**
-     * The prototype from which new instances of the mapped class are created.
-     *
-     * @var object
-     */
-    private $prototype;
 
     /**
      * READ-ONLY: The inheritance mapping type used by the class.
@@ -405,11 +399,21 @@ class ClassMetadataInfo
      * INTERNAL:
      * Sets the mapped identifier field of this class.
      *
-     * @param array $identifier
+     * @param string $identifier
      */
     public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
+    }
+
+    /**
+     * Gets the mapped identifier field of this class.
+     *
+     * @return string $identifier
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
     }
 
     /**
@@ -1448,18 +1452,5 @@ class ClassMetadataInfo
     public function setLockField($lockField)
     {
         $this->lockField = $lockField;
-    }
-
-    /**
-     * Creates a new instance of the mapped class, without invoking the constructor.
-     *
-     * @return object
-     */
-    public function newInstance()
-    {
-        if ($this->prototype === null) {
-            $this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
-        }
-        return clone $this->prototype;
     }
 }
