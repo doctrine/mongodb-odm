@@ -21,7 +21,6 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\ODM\MongoDB\MongoDBException,
     Doctrine\ODM\MongoDB\LockException,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
     ReflectionClass;
 
 /**
@@ -44,7 +43,7 @@ use Doctrine\ODM\MongoDB\MongoDBException,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class ClassMetadataInfo implements ClassMetadata
+class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMetadata
 {
     /* The Id generator types. */
     /**
