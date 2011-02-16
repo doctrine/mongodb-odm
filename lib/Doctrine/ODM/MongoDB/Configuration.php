@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\Driver,
+use Doctrine\Common\Persistence\Mapping\Driver,
     Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
     Doctrine\Common\Cache\Cache;
 

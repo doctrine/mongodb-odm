@@ -21,6 +21,8 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Common\Persistence\Mapping\Driver;
 
 /**
  * The PHPDriver invokes a static PHP function on the document class itself passing
@@ -49,7 +51,7 @@ class PHPDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, ClassMetadataInterface $metadata)
     {
         call_user_func_array(array($className, 'loadMetadata'), array($metadata));
     }

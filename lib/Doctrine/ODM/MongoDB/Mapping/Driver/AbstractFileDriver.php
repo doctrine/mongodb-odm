@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Common\Persistence\Mapping\Driver;
 
 /**
  * Base driver for file-based metadata drivers.
