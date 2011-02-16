@@ -23,8 +23,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ODM\MongoDB\MongoDBException,
-    Doctrine\Common\Persistence\Mapping\Driver,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+    Doctrine\Common\Persistence\Mapping\Driver;
 
 require __DIR__ . '/DoctrineAnnotations.php';
 
@@ -103,7 +102,7 @@ class AnnotationDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInterface $class)
+    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
     {
         $reflClass = $class->getReflectionClass();
 

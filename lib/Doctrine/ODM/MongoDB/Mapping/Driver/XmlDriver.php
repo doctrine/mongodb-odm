@@ -21,7 +21,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface,
     Doctrine\Common\Persistence\Mapping\Driver,
     SimpleXmlElement;
 
@@ -46,7 +45,7 @@ class XmlDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInterface $class)
+    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
     {
         $xmlRoot = $this->getElement($className);
         if ( ! $xmlRoot) {
