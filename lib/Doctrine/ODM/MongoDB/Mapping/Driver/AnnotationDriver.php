@@ -22,8 +22,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
     Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\ODM\MongoDB\MongoDBException,
-    Doctrine\Common\Persistence\Mapping\Driver;
+    Doctrine\ODM\MongoDB\MongoDBException;
 
 require __DIR__ . '/DoctrineAnnotations.php';
 
@@ -102,7 +101,7 @@ class AnnotationDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
+    public function loadMetadataForClass($className, ClassMetadataInfo $class)
     {
         $reflClass = $class->getReflectionClass();
 

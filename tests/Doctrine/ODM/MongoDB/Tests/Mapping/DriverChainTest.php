@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\Driver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\Driver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\DriverChain;
 
 class DriverChainTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -14,13 +14,13 @@ class DriverChainTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $chain = new DriverChain();
 
-        $driver1 = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver');
+        $driver1 = $this->getMock('Doctrine\ODM\MongoDB\Mapping\Driver\Driver');
         $driver1->expects($this->never())
                 ->method('loadMetadataForClass');
         $driver1->expectS($this->never())
                 ->method('isTransient');
 
-        $driver2 = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver');
+        $driver2 = $this->getMock('Doctrine\ODM\MongoDB\Mapping\Driver\Driver');
         $driver2->expects($this->at(0))
                 ->method('loadMetadataForClass')
                 ->with($this->equalTo($className), $this->equalTo($classMetadata));
@@ -55,12 +55,12 @@ class DriverChainTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $chain = new DriverChain();
 
-        $driver1 = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver');
+        $driver1 = $this->getMock('Doctrine\ODM\MongoDB\Mapping\Driver\Driver');
         $driver1->expects($this->once())
                 ->method('getAllClassNames')
                 ->will($this->returnValue(array('Foo')));
 
-        $driver2 = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver');
+        $driver2 = $this->getMock('Doctrine\ODM\MongoDB\Mapping\Driver\Driver');
         $driver2->expects($this->once())
                 ->method('getAllClassNames')
                 ->will($this->returnValue(array('Bar', 'Baz')));

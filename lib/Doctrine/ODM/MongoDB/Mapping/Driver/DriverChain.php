@@ -22,7 +22,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\Common\Persistence\Mapping\Driver;
 
 /**
  * The DriverChain allows you to add multiple other mapping drivers for
@@ -66,7 +65,7 @@ class DriverChain implements Driver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
+    public function loadMetadataForClass($className, ClassMetadataInfo $class)
     {
         foreach ($this->drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {
