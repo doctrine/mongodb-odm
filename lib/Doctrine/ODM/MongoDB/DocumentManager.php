@@ -156,8 +156,10 @@ class DocumentManager implements ObjectManager
             $conn = new Connection($conn, array(), $this->config, $this->eventManager);
         }
         $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
-
-        $this->db = $db;
+        if (is_string($db)) {
+            $db = $this->connection->selectDatabase($db);
+        }
+        $this->db = $db ?: $this->connection->selectDatabase(null !== $this->config->getDefaultDB() ? $this->config->getDefaultDB() : 'doctrine');
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
@@ -290,12 +292,6 @@ class DocumentManager implements ObjectManager
      */
     public function getDatabase()
     {
-        if (is_string($this->db)) {
-            $this->db = $this->connection->selectDatabase($this->db);
-        }
-        if (! $this->db instanceof Database) {
-            $this->db = $this->connection->selectDatabase(null !== $this->config->getDefaultDB() ? $this->config->getDefaultDB() : 'doctrine');
-        }
         return $this->db;
     }
 
@@ -316,9 +312,9 @@ class DocumentManager implements ObjectManager
 
         if ( ! isset($this->documentCollections[$className])) {
             if ($metadata->isFile()) {
-                $this->documentCollections[$className] = $this->getDatabase()->getGridFS($collection);
+                $this->documentCollections[$className] = $this->db->getGridFS($collection);
             } else {
-                $this->documentCollections[$className] = $this->getDatabase()->selectCollection($collection);
+                $this->documentCollections[$className] = $this->db->selectCollection($collection);
             }
         }
         return $this->documentCollections[$className];
@@ -654,7 +650,7 @@ class DocumentManager implements ObjectManager
         $dbRef = array(
             $this->cmd . 'ref' => $class->getCollection(),
             $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($id),
-            $this->cmd . 'db'  => $this->getDatabase()->getName(),
+            $this->cmd . 'db'  => $this->db->getName(),
         );
 
         // add a discriminator value if the referenced document is not mapped explicitely to a targetDocument
