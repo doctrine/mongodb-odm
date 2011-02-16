@@ -19,13 +19,13 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\MongoDBException,
     Doctrine\ODM\MongoDB\Events,
     Doctrine\Common\Cache\Cache,
+    Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as ClassMetadataFactoryInterface,
     Doctrine\ODM\MongoDB\Mapping\Types\Type;
 
 /**
@@ -39,7 +39,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class ClassMetadataFactory
+class ClassMetadataFactory implements ClassMetadataFactoryInterface
 {
     /** The DocumentManager instance */
     private $dm;
