@@ -4,7 +4,7 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-/** @Document(collection="accounts") */
+/** @Document(db="doctrine_odm_tests", collection="accounts") */
 class Account
 {
     /** @Id */

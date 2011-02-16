@@ -5,7 +5,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <document name="TestDocuments\User" collection="users">
+    <document name="TestDocuments\User" db="documents" collection="users">
         <field name="id" id="true" />
         <field name="username" type="string" />
         <field name="createdAt" type="date" />

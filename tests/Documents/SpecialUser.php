@@ -2,7 +2,7 @@
 
 namespace Documents;
 
-/** * @Document(collection="special_users") */
+/** * @Document(db="doctrine_odm_tests", collection="special_users") */
 class SpecialUser extends User
 {
     /** @Field */

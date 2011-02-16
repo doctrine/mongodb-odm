@@ -4,7 +4,7 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-/** @Document(collection="groups") */
+/** @Document(db="doctrine_odm_tests", collection="groups") */
 class Group
 {
     /** @Id */

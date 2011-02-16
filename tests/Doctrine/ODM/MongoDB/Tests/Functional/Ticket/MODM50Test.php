@@ -15,7 +15,7 @@ class MODM50Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
- * @Document(collection="files")
+ * @Document(collection="files", db="modm50_tests")
  * @InheritanceType("SINGLE_COLLECTION")
  * @DiscriminatorField(fieldName="type")
  * @DiscriminatorMap({
@@ -34,7 +34,7 @@ class MODM50File
     function __construct($file) {$this->file = $file;}
 }
 
-/** @Document(collection="files") */
+/** @Document(collection="files", db="modm50_tests") */
 class MODM50Image extends MODM50File
 {
 }

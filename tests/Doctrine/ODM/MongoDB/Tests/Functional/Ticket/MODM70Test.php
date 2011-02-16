@@ -26,7 +26,7 @@ class MODM70Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
- * @Document(collection="avatars")
+ * @Document(db="tests", collection="avatars")
  */
 class Avatar
 {

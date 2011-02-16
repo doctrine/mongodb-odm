@@ -3,7 +3,7 @@
 namespace Documents\Ecommerce;
 
 /**
- * @Document(collection="options")
+ * @Document(db="doctrine_odm_tests", collection="options")
  */
 class Option
 {

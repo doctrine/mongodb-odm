@@ -25,6 +25,7 @@ use Doctrine\Common\Annotations\Annotation;
 
 final class Document extends Annotation
 {
+    public $db;
     public $collection;
     public $repositoryClass;
     public $indexes = array();

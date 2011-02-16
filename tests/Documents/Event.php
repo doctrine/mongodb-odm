@@ -2,7 +2,7 @@
 
 namespace Documents;
 
-/** @Document(collection="events") */
+/** @Document(db="doctrine_odm_tests", collection="events") */
 class Event
 {
     /** @Id */
