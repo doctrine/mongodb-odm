@@ -70,14 +70,15 @@ You can also remove a document and return it:
     <?php
 
     $job = $dm->createrQueryBuilder('Job')
-        // Find the job
-        ->findAndModify()
+        ->findAndRemove()
         ->sort('priority', 'desc')
-    
-        // Remove found job
-        ->remove()
         ->getQuery()
         ->execute();
 
 You can read more about the find and modify functionality on the
 `MongoDB website <http://www.mongodb.org/display/DOCS/findandmodify+Command>`_.
+
+.. note::
+
+    If you don't need to return the document, you can use just run a normal update which can
+    affect multiple documents, as well.
