@@ -66,13 +66,13 @@ Creating a Query Builder
 ------------------------
 
 You can easily create a new ``Query\Builder`` object with the
-``DocumentManager::createQueryBuilderBuilder()`` method:
+``DocumentManager::createQueryBuilder()`` method:
 
 .. code-block:: php
 
     <?php
 
-    $qb = $dm->createQueryBuilderBuilder('User');
+    $qb = $dm->createQueryBuilder('User');
 
 The first and only argument is optional, you can specify it later
 with the ``find()``, ``update()`` or ``remove()`` method:
@@ -81,7 +81,7 @@ with the ``find()``, ``update()`` or ``remove()`` method:
 
     <?php
 
-    $qb = $dm->createQueryBuilderBuilder();
+    $qb = $dm->createQueryBuilder();
     
     // ...
     
@@ -96,7 +96,7 @@ You can execute a query by getting a ``Query`` through the ``getQuery()`` method
 
     <?php
 
-    $qb = $dm->createQueryBuilderBuilder('User');
+    $qb = $dm->createQueryBuilder('User');
     $query = $qb->getQuery();
 
 Now you can ``execute()`` that query and it will return a cursor for you to iterator over the results:
@@ -116,7 +116,7 @@ If you want to just get a single result you can use the ``Query#getSingleResult(
 
     <?php
 
-    $user = $dm->createQueryBuilderBuilder('User')
+    $user = $dm->createQueryBuilder('User')
         ->field('username')->equals('jwage')
         ->getQuery()
         ->getSingleResult();
