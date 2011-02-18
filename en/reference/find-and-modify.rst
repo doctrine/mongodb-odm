@@ -1,16 +1,15 @@
 Find and Modify
 ===============
 
-    **SIDEBAR** From MongoDB.org:
+**NOTE** From MongoDB.org:
 
-    MongoDB supports a "find, modify, and return" command. This command
-    can be used to atomically modify a document (at most one) and
-    return it. Note that, by default, the document returned will not
-    include the modifications made on the update.
-
+MongoDB supports a "find, modify, and return" command. This command
+can be used to atomically modify a document (at most one) and
+return it. Note that, by default, the document returned will not
+include the modifications made on the update.
 
 Doctrine fully integrates the find and modify functionality to the
-query object so you can easily run these types of queries!
+query builder object so you can easily run these types of queries!
 
 Update
 ------
@@ -20,7 +19,8 @@ For example you can update a job and return it:
 .. code-block:: php
 
     <?php
-    $job = $dm->createQuery('Job')
+
+    $job = $dm->createrQueryBuilder('Job')
         // Find the job
         ->findAndModify()
         ->field('in_progress')->set(true)
@@ -30,28 +30,21 @@ For example you can update a job and return it:
         // Update found job
         ->update()
         ->field('started')->set(new \MongoDate())
+        ->getQuery()
         ->execute();
 
 If you want to update a job and return the new document you can
-pass some options to the ``findAndModify()`` method. It accepts an
-array of options and the allowed keys are:
-
-
-- 
-   **new** - Set to true if you want to return the modified object
-   rather than the original. Ignored for remove.
--  **upsert** - Create object if it doesn't exist.
-
--
+call the ``returnNew()`` method.
 
 Here is an example where we return the new updated job document:
 
 .. code-block:: php
 
     <?php
-    $job = $dm->createQuery('Job')
+    $job = $dm->createrQueryBuilder('Job')
         // Find the job
-        ->findAndModify(array('new' => true))
+        ->findAndModify()
+        ->returnNew()
         ->field('in_progress')->equals(false)
         ->sort('priority', 'desc')
     
@@ -59,6 +52,7 @@ Here is an example where we return the new updated job document:
         ->update()
         ->field('started')->set(new \MongoDate())
         ->field('in_progress')->set(true)
+        ->getQuery()
         ->execute();
 
 The returned ``$job`` will be a managed ``Job`` instance with the
@@ -72,16 +66,16 @@ You can also remove a document and return it:
 .. code-block:: php
 
     <?php
-    $job = $dm->createQuery('Job')
+
+    $job = $dm->createrQueryBuilder('Job')
         // Find the job
         ->findAndModify()
         ->sort('priority', 'desc')
     
         // Remove found job
         ->remove()
+        ->getQuery()
         ->execute();
 
 You can read more about the find and modify functionality on the
 `MongoDB website <http://www.mongodb.org/display/DOCS/findandmodify+Command>`_.
-
-

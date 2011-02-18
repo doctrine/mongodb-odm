@@ -29,17 +29,16 @@ and more importantly because you can not pass this collection to
 all the useful PHP array functions, which makes it very hard to
 work with.
 
-    **CAUTION** The Collection interface and ArrayCollection class,
-    like everything else in the Doctrine namespace, are neither part of
-    the ODM, it is a plain PHP class that has no outside dependencies
-    apart from dependencies on PHP itself (and the SPL). Therefore
-    using this class in your domain classes and elsewhere does not
-    introduce a coupling to the persistence layer. The Collection
-    class, like everything else in the Common namespace, is not part of
-    the persistence layer. You could even copy that class over to your
-    project if you want to remove Doctrine from your project and all
-    your domain classes will work the same as before.
-
+**CAUTION** The Collection interface and ArrayCollection class,
+like everything else in the Doctrine namespace, are neither part of
+the ODM, it is a plain PHP class that has no outside dependencies
+apart from dependencies on PHP itself (and the SPL). Therefore
+using this class in your domain classes and elsewhere does not
+introduce a coupling to the persistence layer. The Collection
+class, like everything else in the Common namespace, is not part of
+the persistence layer. You could even copy that class over to your
+project if you want to remove Doctrine from your project and all
+your domain classes will work the same as before.
 
 Reference One
 -------------
@@ -49,6 +48,7 @@ Reference one document:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class Product
     {
@@ -76,6 +76,7 @@ Reference many documents:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -104,6 +105,7 @@ can simply omit the ``targetDocument`` option:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -125,6 +127,7 @@ qualified class name with each reference:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -148,6 +151,7 @@ You can have different classes that can be referenced:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class Album
     {
@@ -167,6 +171,7 @@ option:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -190,6 +195,7 @@ must explicitly enable it:
 .. code-block:: php
 
     <?php
+
     /**
      * @ReferenceMany(discriminatorField="type", cascade={"all"})
      */
@@ -197,13 +203,9 @@ must explicitly enable it:
 
 The valid values are:
 
-
 -  **all** - cascade on all operations by default.
 -  **detach** - cascade detach operation to referenced documents.
 -  **merge** - cascade merge operation to referenced documents.
 -  **refresh** - cascade refresh operation to referenced documents.
 -  **remove** - cascade remove operation to referenced documents.
-- 
-   **persist** - cascade persist operation to referenced documents.
-
-
+-  **persist** - cascade persist operation to referenced documents.

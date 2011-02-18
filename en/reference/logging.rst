@@ -8,6 +8,7 @@ queries made to the database you can do so on your
 .. code-block:: php
 
     <?php
+
     // ...
     
     $config->setLoggerCallable(function(array $log) {
@@ -24,8 +25,7 @@ with a object instance and a method to call:
 .. code-block:: php
 
     <?php
+
     // ...
     
     $config->setLoggerCallable(array($obj, 'method'));
-
-

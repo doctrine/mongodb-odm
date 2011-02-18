@@ -8,7 +8,6 @@ The YAML mapping document of a class is loaded on-demand the first
 time it is requested and subsequently stored in the metadata cache.
 In order to work, this requires certain conventions:
 
-
 - 
    Each document/mapped superclass must get its own dedicated YAML
    mapping document.
@@ -27,6 +26,7 @@ In order to work, this requires certain conventions:
 .. code-block:: php
 
     <?php
+
     $driver->setFileExtension('.yml');
 
 It is recommended to put all YAML mapping documents in a single
@@ -38,6 +38,7 @@ of the constructor, like this:
 .. code-block:: php
 
     <?php
+
     // $config instanceof Doctrine\ORM\Configuration
     $driver = new YamlDriver(array('/path/to/files'));
     $config->setMetadataDriverImpl($driver);
@@ -48,10 +49,10 @@ Example
 As a quick start, here is a small example document that makes use
 of several common elements:
 
-::
+.. code-block:: yaml
 
-    [yml]
     # Documents.User.dcm.yml
+
     Documents\User:
       db: documents
       collection: user
@@ -94,5 +95,3 @@ of several common elements:
 
 Be aware that class-names specified in the YAML files should be
 fully qualified.
-
-

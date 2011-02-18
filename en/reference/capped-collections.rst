@@ -19,6 +19,7 @@ the ``@Document`` annotation:
 .. code-block:: php
 
     <?php
+
     /**
      * @Document(collection={
      *   "name"="collname",
@@ -48,6 +49,7 @@ instance:
 .. code-block:: php
 
     <?php
+
     $dm->createDocumentCollection('Category');
 
 You can drop the collection too if it already exists:
@@ -55,6 +57,5 @@ You can drop the collection too if it already exists:
 .. code-block:: php
 
     <?php
+
     $dm->dropDocumentCollection('Category');
-
-

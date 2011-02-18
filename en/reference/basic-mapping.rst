@@ -11,7 +11,6 @@ Mapping Drivers
 Doctrine provides several different ways for specifying object
 document mapping metadata:
 
-
 -  Docblock Annotations
 -  XML
 -  YAML
@@ -20,17 +19,16 @@ This manual usually uses docblock annotations in all the examples
 that are spread throughout all chapters. There are dedicated
 chapters for XML and YAML mapping, respectively.
 
-    **NOTE** If you're wondering which mapping driver gives the best
-    performance, the answer is: None. Once the metadata of a class has
-    been read from the source (annotations, xml or yaml) it is stored
-    in an instance of the
-    ``Doctrine\ODM\MongoDB\Mapping\ClassMetadata`` class and these
-    instances are stored in the metadata cache. Therefore at the end of
-    the day all drivers perform equally well. If you're not using a
-    metadata cache (not recommended!) then the XML driver might have a
-    slight edge in performance due to the powerful native XML support
-    in PHP.
-
+**NOTE** If you're wondering which mapping driver gives the best
+performance, the answer is: None. Once the metadata of a class has
+been read from the source (annotations, xml or yaml) it is stored
+in an instance of the
+``Doctrine\ODM\MongoDB\Mapping\ClassMetadata`` class and these
+instances are stored in the metadata cache. Therefore at the end of
+the day all drivers perform equally well. If you're not using a
+metadata cache (not recommended!) then the XML driver might have a
+slight edge in performance due to the powerful native XML support
+in PHP.
 
 Introduction to Docblock Annotations
 ------------------------------------
@@ -54,11 +52,10 @@ support namespaces and nested annotations among other things. The
 Doctrine MongoDB ODM defines its own set of docblock annotations
 for supplying object document mapping metadata.
 
-    **NOTE** If you're not comfortable with the concept of docblock
-    annotations, don't worry, as mentioned earlier Doctrine 2 provides
-    XML and YAML alternatives and you could easily implement your own
-    favorite mechanism for defining ORM metadata.
-
+**NOTE** If you're not comfortable with the concept of docblock
+annotations, don't worry, as mentioned earlier Doctrine 2 provides
+XML and YAML alternatives and you could easily implement your own
+favorite mechanism for defining ORM metadata.
 
 Persistent classes
 ------------------
@@ -70,6 +67,7 @@ to be designated as an document. This can be done through the
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class MyPersistentClass
     {
@@ -84,6 +82,7 @@ option as follows:
 .. code-block:: php
 
     <?php
+
     /**
      * @Document(db="my_db", collection="my_persistent_class")
      */
@@ -93,7 +92,16 @@ option as follows:
     }
 
 Now instances of MyPersistentClass will be persisted into a
-collection named ``my_persistent_class``.
+collection named ``my_persistent_class`` in the database ``my_db``.
+
+If you want to omit the db attribute you can configure the default db
+to use with the ``setDefaultDB`` method:
+
+.. code-block:: php
+
+    <?php
+
+    $config->setDefaultDB('my_db');
 
 Doctrine Mapping Types
 ----------------------
@@ -102,7 +110,6 @@ A Doctrine Mapping Type defines the mapping between a PHP type and
 an MongoDB type. You can even write your own custom mapping types.
 
 Here is a quick overview of the built-in mapping types:
-
 
 -  ``bin_data_custom``
 -  ``bin_data_func``
@@ -121,12 +128,10 @@ Here is a quick overview of the built-in mapping types:
 -  ``timestamp``
 -  ``increment``
 
-You can read more about the available MongoDB types on
-`php.net <http://us.php.net/manual/en/mongo.types.php>`_.
+You can read more about the available MongoDB types on `php.net <http://us.php.net/manual/en/mongo.types.php>`_.
 
-    **NOTE** Doctrine Mapping Types are NOT MONGO types and NOT PHP
-    types! They are mapping types between 2 types.
-
+**NOTE** Doctrine Mapping Types are NOT MONGO types and NOT PHP
+types! They are mapping types between 2 types.
 
 Property Mapping
 ----------------
@@ -149,6 +154,7 @@ Example:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class MyPersistentClass
     {
@@ -171,6 +177,7 @@ as follows:
 .. code-block:: php
 
     <?php
+
     /** @Field(name="db_name") */
     private $name;
 
@@ -189,6 +196,7 @@ class:
 .. code-block:: php
 
     <?php
+
     namespace My\Project\Types;
     
     use Doctrine\DBAL\Types\Type;
@@ -212,7 +220,6 @@ class:
 
 Restrictions to keep in mind:
 
-
 - 
    If the value of the field is *NULL* the method
    ``convertToDatabaseValue()`` is not called.
@@ -230,6 +237,7 @@ Here is an example:
 .. code-block:: php
 
     <?php
+
     // in bootstrapping code
     
     // ...
@@ -249,6 +257,7 @@ can use your new type in your mapping like this:
 .. code-block:: php
 
     <?php
+
     class MyPersistentClass
     {
         /** @Field(type="mytype") */
@@ -265,6 +274,7 @@ Here is an example:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class MyPersistentClass
     {
@@ -273,71 +283,92 @@ Here is an example:
         //...
     }
 
-The default identifier in MongoDB is a MongoId object. In some
-cases you might need custom identifiers. MongoDB allows any unique
-scalar to serve as an identifier. Therefore Doctrine MongoDB ODM
-allows you to use 'CustomId' field type:
+You can configure custom ID strategies if you don't want to use the default MongoId.
+The available strategies are:
 
-.. code-block:: php
+- ``AUTO`` - Uses the native generated MongoId.
+- ``INCREMENT`` - Used another collection to auto increment an identifier.
+- ``UUID`` - Generates a uuid identifier.
+- ``NONE`` - Do not generate any identifier. ID must be manually set.
 
-    <?php
-    /** Document */
-    class MyPersistentClass
-    {
-        /** @Id(custom=true) */
-        private $id;
-    
-        public function setId($id)
+Here is how you can configure the strategy for the different configuration formats:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        /** Document */
+        class MyPersistentClass
         {
-            $this->id = $id;
-        }
-        //...
-    }
+            /** @Id(strategy="NONE") */
+            private $id;
     
-    [xml]
-    <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                            xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                                                http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-    
-        <document name="MyPersistentClass" customId="true">
-            <field name="id" id="true" type="custom_id" />
-        </document>
-    </doctrine-mongo-mapping>
-    
-    [yaml]
-    MyPersistentClass:
-      customId: true
-      fields:
-        id:
-          type: custom_id
-          id: true
+            public function setId($id)
+            {
+                $this->id = $id;
+            }
 
-And to use it, you will have to explicitly set an id before
-persisting the document:
+            //...
+        }
+
+    .. code-block:: xml
+    
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                                                    http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+    
+            <document name="MyPersistentClass" customId="true">
+                <field name="id" id="true" strategy="NONE" />
+            </document>
+        </doctrine-mongo-mapping>
+    
+    .. code-block:: yaml
+
+        MyPersistentClass:
+          customId: true
+          fields:
+            id:
+              id: true
+              strategy: NONE
+
+When using the ``NONE`` strategy you will have to explicitly set an id before persisting the document:
 
 .. code-block:: php
 
     <?php
+
     //...
+
     $document = new MyPersistentClass();
     $document->setId('my_unique_identifier');
     $dm->persist($document);
     $dm->flush();
+
+Now you can retrieve the document later:
+
+.. code-block:: php
+
+    <?php
+
     //...
+
     $document = $dm->find('MyPersistentClass', 'my_unique_identifier');
 
 Multiple Document Types in a Collection
 ---------------------------------------
 
 You can easily store multiple types of documents in a single
-collection. It only requires that you specify a
-``discriminatorMap`` for each document in the collection. Here is
-an example:
+collection. It only requires that you specify the same collection name on
+multiple documents and specify the ``discriminatorMap`` for each document in
+the collection. Here is an example:
 
 .. code-block:: php
 
     <?php
+
     /**
      * @Document(collection="my_documents")
      * @DiscriminatorField(fieldName="type")
@@ -369,6 +400,7 @@ collection you can simply pass an array of document class names:
 .. code-block:: php
 
     <?php
+
     $documents = $dm->find(array('Article', 'Album'));
 
 The above will return a ``MongoCursor`` that will allow you to
@@ -379,7 +411,6 @@ You can also create queries in the same way:
 .. code-block:: php
 
     <?php
+
     $query = $dm->createQuery(array('Article', 'Album'));
     $documents = $query->execute();
-
-

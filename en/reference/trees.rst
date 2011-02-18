@@ -10,6 +10,7 @@ Full Tree in Single Document
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class BlogPost
     {
@@ -48,8 +49,12 @@ Retrieve a blog post and only select the first 10 comments:
 .. code-block:: php
 
     <?php
-    $post = $dm->createQuery('BlogPost')
-        ->selectSlice('replies', 0, 10);
+
+    $post = $dm->createrQueryBuilder('BlogPost')
+        ->selectSlice('replies', 0, 10)
+        ->getQuery()
+        ->getSingleResult();
+
     $replies = $post->getReplies();
 
 You can read more about this pattern on the
@@ -62,6 +67,7 @@ Parent Reference
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class Category
     {
@@ -85,8 +91,10 @@ Query for children by a specific parent id:
 .. code-block:: php
 
     <?php
-    $children = $dm->createQuery('Category')
-        ->field('parent.$id')->equals(new \MongoId('theid'))
+
+    $children = $dm->createQueryBuilder('Category')
+        ->field('parent.id')->equals('theid')
+        ->getQuery()
         ->execute();
 
 You can read more about this pattern on the
@@ -99,6 +107,7 @@ Child Reference
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class Category
     {
@@ -122,9 +131,12 @@ Query for immediate children of a category:
 .. code-block:: php
 
     <?php
-    $category = $dm->createQuery('Category')
-        ->field('id')->equals(new \MongoId('theid'))
-        ->execute();
+
+    $category = $dm->createQueryBuilder('Category')
+        ->field('id')->equals('theid')
+        ->getQuery()
+        ->getSingleResult();
+
     $children = $category->getChildren();
 
 Query for immediate parent of a category:
@@ -132,8 +144,10 @@ Query for immediate parent of a category:
 .. code-block:: php
 
     <?php
-    $parent = $dm->createQuery('Category')
-        ->field('children.$id')->equals(new \MongoId('theid'))
+
+    $parent = $dm->createQueryBuilder('Category')
+        ->field('children.id')->equals('theid')
+        ->getQuery()
         ->getSingleResult();
 
 You can read more about this pattern on the
@@ -146,6 +160,7 @@ Array of Ancestors
 .. code-block:: php
 
     <?php
+
     /** @MappedSuperclass */
     class BaseCategory
     {
@@ -162,13 +177,13 @@ Array of Ancestors
         private $id;
     
         /**
-         * @ReferenceMany
+         * @ReferenceMany(targetDocument="Category")
          * @Index
          */
         private $ancestors = array();
     
         /**
-         * @ReferenceOne
+         * @ReferenceOne(targetDocument="Category")
          * @Index
          */
         private $parent;
@@ -186,8 +201,10 @@ Query for all descendants of a category:
 .. code-block:: php
 
     <?php
-    $categories = $dm->createQuery('Category')
-        ->field('ancestors.$id')->equals(new \MongoId('theid'))
+
+    $categories = $dm->createQueryBuilder('Category')
+        ->field('ancestors.id')->equals('theid')
+        ->getQuery()
         ->execute();
 
 Query for all ancestors of a category:
@@ -195,9 +212,12 @@ Query for all ancestors of a category:
 .. code-block:: php
 
     <?php
+
     $category = $dm->createQuery('Category')
         ->field('id')->equals('theid')
+        ->getQuery()
         ->getSingleResult();
+
     $ancestors = $category->getAncestors();
 
 You can read more about this pattern on the
@@ -210,6 +230,7 @@ Materialized Paths
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class Category
     {
@@ -230,8 +251,10 @@ Query for the entire tree:
 .. code-block:: php
 
     <?php
+
     $categories = $dm->createQuery('Category')
         ->sort('path', 'asc')
+        ->getQuery()
         ->execute();
 
 Query for the node 'b' and all its descendants:
@@ -241,10 +264,9 @@ Query for the node 'b' and all its descendants:
     <?php
     $categories = $dm->createQuery('Category')
         ->field('path')->equals('/^a,b,/')
+        ->getQuery()
         ->execute();
 
 You can read more about this pattern on the
 `MongoDB <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-MaterializedPaths%28FullPathinEachNode%29>`_
 website!
-
-

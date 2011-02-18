@@ -19,26 +19,27 @@ appear in the middle of an otherwise mapped inheritance hierarchy
 (through Single Collection Inheritance or Collection Per Class
 Inheritance).
 
-    **NOTE**
-
-    A mapped superclass cannot be a document, it is not queryable and
-    persistent relationships defined by a mapped superclass must be
-    unidirectional. For further support of inheritance, the single or
-    joined table inheritance features have to be used.
-
+**NOTE**
+A mapped superclass cannot be a document, it is not queryable and
+persistent relationships defined by a mapped superclass must be
+unidirectional. For further support of inheritance, the single or
+joined table inheritance features have to be used.
 
 Example:
 
 .. code-block:: php
 
     <?php
+
     /** @MappedSuperclass */
     class MappedSuperclassBase
     {
         /** @Int */
         private $mapped1;
+
         /** @String */
         private $mapped2;
+
         /**
          * @ReferenceOne(targetDocument="MappedSuperclassRelated1")
          */
@@ -70,6 +71,7 @@ Simple example:
 .. code-block:: php
 
     <?php
+
     namespace Documents;
     
     /**
@@ -99,6 +101,7 @@ of employee, we would get an Employee instance back:
 .. code-block:: php
 
     <?php
+
     $employee = new Empoyee();
     // ...
     $dm->persist($employee);
@@ -118,6 +121,7 @@ its own collection and contains all inherited fields:
 .. code-block:: php
 
     <?php
+
     namespace Documents;
     
     /**
@@ -139,5 +143,3 @@ its own collection and contains all inherited fields:
 
 In this type of inheritance a discriminator is not needed since the
 data is separated in different collections!
-
-

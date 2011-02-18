@@ -12,6 +12,7 @@ property:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -26,7 +27,6 @@ Index Options
 -------------
 
 You can customize the index with some additional options:
-
 
 - 
    **name** - The name of the index. This can be useful if you are
@@ -44,8 +44,10 @@ You can customize the index with some additional options:
    **safe** - You can specify a boolean value for checking if the
    index creation succeeded. The driver will throw a
    MongoCursorException if index creation failed.
--  **order** - The order of the index (asc or desc).
--  **unique** - Create a unique index.
+-
+   **order** - The order of the index (asc or desc).
+-
+   **unique** - Create a unique index.
 
 Unique Index
 ------------
@@ -53,6 +55,7 @@ Unique Index
 .. code-block:: php
 
     <?php
+    
     /** @Document */
     class User
     {
@@ -69,6 +72,7 @@ For your convenience you can quickly specify a unique index with
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -85,6 +89,7 @@ you can specify them on the class doc block:
 .. code-block:: php
 
     <?php
+
     /**
      * @Document
      * @UniqueIndex(keys={"accountId"="asc", "username"="asc"})
@@ -107,6 +112,7 @@ annotation:
 .. code-block:: php
 
     <?php
+
     /**
      * @Document
      * @Indexes({
@@ -135,6 +141,7 @@ options structures manually:
 .. code-block:: php
 
     <?php
+
     /**
      * @Document
      * @Index(keys={"coordinates"="2d"})
@@ -157,5 +164,3 @@ options structures manually:
         /** @Float */
         public $longitude;
     }
-
-

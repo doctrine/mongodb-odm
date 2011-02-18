@@ -1,5 +1,5 @@
 Events
-============
+======
 
 Doctrine features a lightweight event system that is part of the
 Common package.
@@ -15,6 +15,7 @@ manager.
 .. code-block:: php
 
     <?php
+
     $evm = new EventManager();
 
 Now we can add some event listeners to the ``$evm``. Let's create a
@@ -23,6 +24,7 @@ Now we can add some event listeners to the ``$evm``. Let's create a
 .. code-block:: php
 
     <?php
+
     class EventTest
     {
         const preFoo = 'preFoo';
@@ -57,6 +59,7 @@ Events can be dispatched by using the ``dispatchEvent()`` method.
 .. code-block:: php
 
     <?php
+
     $evm->dispatchEvent(EventTest::preFoo);
     $evm->dispatchEvent(EventTest::postFoo);
 
@@ -66,6 +69,7 @@ method.
 .. code-block:: php
 
     <?php
+
     $evm->removeEventListener(array(self::preFoo, self::postFoo), $this);
 
 The Doctrine event system also has a simple concept of event
@@ -77,6 +81,7 @@ array of events it should be subscribed to.
 .. code-block:: php
 
     <?php
+
     class TestEventSubscriber implements \Doctrine\Common\EventSubscriber
     {
         const preFoo = 'preFoo';
@@ -103,6 +108,7 @@ notified for that event.
 .. code-block:: php
 
     <?php
+
     $evm->dispatchEvent(TestEventSubscriber::preFoo);
 
 Now the test the ``$eventSubscriber`` instance to see if the
@@ -111,6 +117,7 @@ Now the test the ``$eventSubscriber`` instance to see if the
 .. code-block:: php
 
     <?php
+
     if ($eventSubscriber->preFooInvoked) {
         echo 'pre foo invoked!';
     }
@@ -164,12 +171,13 @@ ORM package.
 .. code-block:: php
 
     <?php
+
     use Doctrine\ODM\MongoDB\Events;
+
     echo Events::preUpdate;
 
 These can be hooked into by two different types of event
 listeners:
-
 
 - 
    Lifecycle Callbacks are methods on the document classes that are
@@ -182,12 +190,11 @@ listeners:
    give access to the document, DocumentManager or other relevant
    data.
 
-    **NOTE** All Lifecycle events that happen during the ``flush()`` of
-    an DocumentManager have very specific constraints on the allowed
-    operations that can be executed. Please read the
-    *Implementing Event Listeners* section very carefully to understand
-    which operations are allowed in which lifecycle event.
-
+**NOTE** All Lifecycle events that happen during the ``flush()`` of
+an DocumentManager have very specific constraints on the allowed
+operations that can be executed. Please read the
+*Implementing Event Listeners* section very carefully to understand
+which operations are allowed in which lifecycle event.
 
 Lifecycle Callbacks
 -------------------
@@ -200,7 +207,7 @@ event occurs.
 .. code-block:: php
 
     <?php
-    
+
     /** @Document @HasLifecycleCallbacks */
     class User
     {
@@ -265,6 +272,7 @@ EventManager that is passed to the DocumentManager factory:
 .. code-block:: php
 
     <?php
+
     $eventManager = new EventManager();
     $eventManager->addEventListener(array(Events::preUpdate), MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
@@ -277,6 +285,7 @@ DocumentManager was created:
 .. code-block:: php
 
     <?php
+
     $documentManager->getEventManager()->addEventListener(array(Events::preUpdate), MyEventListener());
     $documentManager->getEventManager()->addEventSubscriber(new MyEventSubscriber());
 
@@ -293,28 +302,161 @@ inconsistent data and lost updates/persists/removes.
 prePersist
 ~~~~~~~~~~
 
+Listen to the ``prePersist`` event:
+
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::prePersist, $test);
+
+Define the ``EventTest`` class:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function prePersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
+        {
+            $document = $eventArgs->getDocument();
+            $document->setSomething();
+        }
+    }
+
 preRemove
 ~~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::preRemove, $test);
+
+Define the ``EventTest`` class with a ``preRemove()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function preRemove(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
+        {
+            $document = $eventArgs->getDocument();
+            // do something
+        }
+    }
 
 onFlush
 ~~~~~~~
 
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::onFlush, $test);
+
+Define the ``EventTest`` class with a ``onFlush()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function onFlush(\Doctrine\ODM\MongoDB\Event\OnFlushEventArgs $eventArgs)
+        {
+            $dm = $eventArgs->getDocumentManager();
+            $uow = $dm->getUnitOfWork();
+            // do something
+        }
+    }
+
 preUpdate
 ~~~~~~~~~
 
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::preUpdate, $test);
+
+Define the ``EventTest`` class with a ``preUpdate()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function preUpdate(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
+        {
+            $document = $eventArgs->getDocument();
+            $document->setSomething();
+            $dm = $eventArgs->getDocumentManager();
+            $class = $dm->getClassMetadata();
+            $uow->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $document);
+        }
+    }
+
+**NOTE** If you modify a document in the preUpdate event you must call ``recomputeSingleDocumentChangeSet``
+for the modified document in order for the changes to be persisted.
+
 postUpdate, postRemove, postPersist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::postUpdate, $test);
+    $evm->addEventListener(Events::postRemove, $test);
+    $evm->addEventListener(Events::postPersist, $test);
+
+Define the ``EventTest`` class with a ``postUpdate()``, ``postRemove()`` and ``postPersist()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function postUpdate(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
+        {
+        }
+
+        public function postRemove(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
+        {
+        }
+
+        public function postPersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
+        {
+        }
+    }
 
 Load ClassMetadata Event
 ------------------------
 
 When the mapping information for an document is read, it is
 populated in to a ``ClassMetadata`` instance. You can hook in to
-this process and manipulate the instance.
+this process and manipulate the instance with the ``loadClassMetadata`` event:
 
 .. code-block:: php
 
     <?php
+
     $test = new EventTest();
     $metadataFactory = $dm->getMetadataFactory();
     $evm = $dm->getEventManager();
@@ -332,5 +474,3 @@ this process and manipulate the instance.
             $classMetadata->mapField($fieldMapping);
         }
     }
-
-

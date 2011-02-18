@@ -12,6 +12,7 @@ First, setup some documents like the following:
 .. code-block:: php
 
     <?php
+
     /**
      * @Document
      * @Index(keys={"coordinates"="2d"})
@@ -51,6 +52,7 @@ longitude with the ``near($latitude, $longitude)`` method:
 .. code-block:: php
 
     <?php
+
     $cities = $this->dm->createQuery('City')
         ->field('coordinates')->near(50, 60)
         ->execute();
@@ -65,6 +67,7 @@ calculated and placed in the property annotated with
 .. code-block:: php
 
     <?php
+
     foreach ($cities as $city) {
         echo $city->name.': '.$city->distance."\n";
     }
@@ -78,6 +81,7 @@ You can also query for cities within a given rectangle using the
 .. code-block:: php
 
     <?php
+
     $cities = $this->dm->createQuery('City')
         ->field('coordinates')->withinBox(41, 41, 72, 72)
         ->execute();
@@ -91,8 +95,7 @@ the ``withinCenter($x, $y, $radius)`` method:
 .. code-block:: php
 
     <?php
+
     $cities = $this->dm->createQuery('City')
         ->field('coordinates')->withinCenter(50, 50, 20)
         ->execute();
-
-

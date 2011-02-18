@@ -1,7 +1,7 @@
 ﻿Getting Started
 ===============
 
-Doctrine 2 is a project that aims to handle the persistence of the
+Doctrine is a project that aims to handle the persistence of your
 domain model in a non-interfering way. Non-relational or no-sql
 databases like MongoDB give you flexibility of building data store
 around your object model and not vise versa. You can read more on the
@@ -23,15 +23,15 @@ A first prototype
 For the above mentioned example, something as simple as this could be
 modeled:
 
-::
+.. code-block:: php
 
-    [php]
+    <?php
+
     class User
     {
         public $name;
         public $email;
         public $posts = array();
-
     }
 
     class BlogPost
@@ -41,10 +41,10 @@ modeled:
         public $createdAt;
     }
 
-    **CAUTION** This is only a prototype, you should not use public
-    properties with Doctrine 2 at all. You should always use private or
-    protected properties and access them using public getters and
-    setters.
+**CAUTION** This is only a prototype, you should not use public
+properties with Doctrine 2 at all. You should always use private or
+protected properties and access them using public getters and
+setters.
 
 Persistent Models
 -----------------
@@ -52,11 +52,12 @@ Persistent Models
 To make the above classes persistent, all we need to do is to add some
 annotations and identifiers around them:
 
-::
+.. code-block:: php
 
-    [php]
+    <?php
+
     /**
-     * @Document(db="test_database", collection="users")
+     * @Document
      */
     class User
     {
@@ -64,19 +65,21 @@ annotations and identifiers around them:
          * @Id
          */
         public $id;
+
         /**
          * @String
          */
         public $name;
+
         /**
          * @String
          */
         public $email;
+
         /**
          * @ReferenceMany(targetDocument="BlogPost", cascade="all")
          */
         public $posts = array();
-
     }
 
     /**
@@ -88,14 +91,17 @@ annotations and identifiers around them:
          * @Id
          */
         public $id;
+
         /**
          * @String
          */
         public $title;
+
         /**
          * @String
          */
         public $body;
+
         /**
          * @Date
          */
@@ -106,9 +112,10 @@ That’s it, we have our models, and we can save and retreive them. Now
 all we need to do is to properly instantiate the DocumentManager
 instance(`Introduction to MongoDB Object Document Mapper`_):
 
-::
+.. code-block:: php
 
-    [php]
+    <?php
+
     $config = new Configuration();
     $config->setProxyDir('/path/to/generate/proxies');
     $config->setProxyNamespace('Proxies');
@@ -124,10 +131,12 @@ Usage
 
 Here is how you would use your models now:
 
-::
+.. code-block:: php
 
-    [php]
+    <?php
+
     // ...
+
     // create user
     $user = new User();
     $user->name = 'Bulat S.';
@@ -189,26 +198,24 @@ And you ‘users’ collection would consist of the following:
 
 To retreive the user, you will need its ID:
 
-::
+.. code-block:: php
 
-    [php]
+    <?php
+
     // ...
     $userId = $user->id;
 
 Loading the model, when you know id is easy:
 
-::
+.. code-block:: php
 
-    [php]
+    <?php
+
     // ...
     $loadedUser = $dm->find('User', $userId);
 
     foreach ($loadedUser->posts as $post) {
-        echo $
+    }
 
-TRUNCATED! Please download pandoc if you want to convert large files.
-
-.. _Introduction to MongoDB Object Document
-Mapper: /projects/mongodb_odm/1.0/docs/reference/introduction/en#introduction
-.. _php-mongodb-admin project, hosted on
-github: http://github.com/jwage/php-mongodb-admin
+.. _Introduction to MongoDB Object Document Mapper: /projects/mongodb_odm/1.0/docs/reference/introduction/en#introduction
+.. _php-mongodb-admin project, hosted on github: http://github.com/jwage/php-mongodb-admin

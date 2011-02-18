@@ -5,7 +5,7 @@ The Doctrine MongoDB Object Document Mapper fully supports the map
 reduce functionality and improves the user friendliness of it as
 well.
 
-    **SIDEBAR** From MongoDB.org:
+    **NOTE** From MongoDB.org:
 
     Map/reduce in MongoDB is useful for batch manipulation of data and
     aggregation operations. It is similar in spirit to using something
@@ -13,16 +13,16 @@ well.
     going to a collection. Often, in a situation where you would have
     used GROUP BY in SQL, map/reduce is the right tool in MongoDB.
 
-
 Imagine a situation where you had an application with a document
 named ``Event`` and it was related to a ``User`` document:
 
 .. code-block:: php
 
     <?php
+
     namespace Documents;
     
-    /** @Document(db="my_db", collection="events") */
+    /** @Document */
     class Event
     {
         /** @Id */
@@ -57,7 +57,8 @@ the ``Query`` API. Here is a simple map reduce example:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('Documents\User')
+
+    $qb = $dm->createQueryBuilder('Documents\User')
         ->field('type')
         ->equals('sale')
         ->map('function() { emit(this.user.$id, 1); }')
@@ -68,7 +69,7 @@ the ``Query`` API. Here is a simple map reduce example:
             }
             return sum;
         }');
-    
+    $query = $qb->getQuery();
     $users = $query->execute();
     foreach ($users as $user) {
         echo "{$user['_id']} had {$user['value']} sale(s).\n";
@@ -84,6 +85,7 @@ raw PHP code without the use of Doctrine:
 .. code-block:: php
 
     <?php
+
     $db = $mongo->selectDB('my_db');
     
     $map = new MongoCode('function() { emit(this.user.$id, 1); }');
@@ -113,7 +115,9 @@ rewrite reduce as follows:
 .. code-block:: php
 
     <?php
+
     //...
+
     $reduce = new MongoCode('function(k, vals) {
         var sum = 0;
         for (var i in vals) {
@@ -125,5 +129,3 @@ rewrite reduce as follows:
     foreach ($users as $user) {
         echo "{$user['value']['user_id']} had {$user['value']['sum']} sale(s).\n";
     }
-
-

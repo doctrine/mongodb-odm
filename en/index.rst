@@ -19,9 +19,7 @@ Reference Guide
    reference/events
    reference/migrating-schemas
    reference/query-builder-api
-   reference/complex-queries
    reference/find-and-modify
-   reference/document-query-language
    reference/trees
    reference/storing-files-with-mongogridfs
    reference/map-reduce
@@ -30,6 +28,7 @@ Reference Guide
    reference/annotations-reference
    reference/xml-mapping
    reference/yml-mapping
+   reference/console-commands
 
 Cookbook
 ---------
@@ -38,3 +37,4 @@ Cookbook
    :maxdepth: 1
 
    cookbook/getting-started
+   cookbook/blending-orm-and-mongodb-odm

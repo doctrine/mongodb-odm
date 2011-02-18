@@ -6,7 +6,7 @@ Understanding
 
 In this chapter we will help you understand the ``DocumentManager``
 and the ``UnitOfWork``. A Unit of Work is similar to an
-object-level transaction. A new Unit of Work is implicity started
+object-level transaction. A new Unit of Work is implicitly started
 when an DocumentManager is initially created or after
 ``DocumentManager#flush()`` has been invoked. A Unit of Work is
 committed (and a new one started) by invoking
@@ -32,6 +32,7 @@ follows:
 .. code-block:: php
 
     <?php
+
     $uowSize = $dm->getUnitOfWork()->size();
 
 The size represents the number of managed documents in the Unit of
@@ -47,7 +48,6 @@ want to check it from time to time during development.
     single HTTP request there should be usually no need for invoking
     ``flush`` more than 0-2 times.
 
-
 Direct access to a Unit of Work
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -58,13 +58,13 @@ UnitOfWork instance the DocumentManager is currently using.
 .. code-block:: php
 
     <?php
+
     $uow = $dm->getUnitOfWork();
 
-    **NOTE** Directly manipulating a UnitOfWork is not recommended.
-    When working directly with the UnitOfWork API, respect methods
-    marked as INTERNAL by not using them and carefully read the API
-    documentation.
-
+**NOTE** Directly manipulating a UnitOfWork is not recommended.
+When working directly with the UnitOfWork API, respect methods
+marked as INTERNAL by not using them and carefully read the API
+documentation.
 
 Persisting documents
 --------------------
@@ -85,12 +85,12 @@ database when ``DocumentManager#flush()`` is invoked.
     necessary queries to synchronize your objects with the database in
     the most efficient way.
 
-
 Example:
 
 .. code-block:: php
 
     <?php
+
     $user = new User();
     $user->setUsername('jwage');
     $user->setPassword('changeme');
@@ -102,10 +102,8 @@ Example:
     document in question. You can not rely on a generated identifier to
     be available directly after invoking ``persist``.
 
-
 The semantics of the persist operation, applied on a document X,
 are as follows:
-
 
 - 
    If X is a new document, it becomes managed. The document X will be
@@ -118,9 +116,8 @@ are as follows:
 -  If X is a removed document, it becomes managed.
 -  If X is a detached document, the behavior is undefined.
 
-    **CAUTION** Do not pass detached documents to the persist
-    operation.
-
+**CAUTION** Do not pass detached documents to the persist
+operation.
 
 Removing documents
 ------------------
@@ -137,12 +134,12 @@ document is unaffected by the ``remove`` operation.
     database. The document will be removed on the next invocation of
     ``DocumentManager#flush()`` that involves that document.
 
-
 Example:
 
 .. code-block:: php
 
     <?php
+
     $dm->remove($user);
     $dm->flush();
 
@@ -187,6 +184,7 @@ Example:
 .. code-block:: php
 
     <?php
+
     $dm->detach($document);
 
 The semantics of the detach operation, applied to a document X are
@@ -240,17 +238,17 @@ Example:
 .. code-block:: php
 
     <?php
+
     $detachedDocument = unserialize($serializedDocument); // some detached document
     $document = $dm->merge($detachedDocument);
     // $document now refers to the fully managed copy returned by the merge operation.
     // The DocumentManager $dm now manages the persistence of $document as usual.
 
-    **CAUTION** When you want to serialize/unserialize documents you
-    have to make all document properties protected, never private. The
-    reason for this is, if you serialize a class that was a proxy
-    instance before, the private variables won't be serialized and a
-    PHP Notice is thrown.
-
+**CAUTION** When you want to serialize/unserialize documents you
+have to make all document properties protected, never private. The
+reason for this is, if you serialize a class that was a proxy
+instance before, the private variables won't be serialized and a
+PHP Notice is thrown.
 
 The semantics of the merge operation, applied to a document X, are
 as follows:
@@ -312,6 +310,7 @@ Here is an example where we add a new comment to an article:
 .. code-block:: php
 
     <?php
+
     $comment = new Comment();
     // ...
     
@@ -322,6 +321,7 @@ Or you can set a single reference:
 .. code-block:: php
 
     <?php
+
     $address = new Address();
     // ...
     
@@ -337,6 +337,7 @@ element. Here are some examples:
 .. code-block:: php
 
     <?php
+
     $article->getComments()->removeElement($comment);
     $article->getComments()->remove($ithComment);
 
@@ -345,6 +346,7 @@ Or you can remove a single reference:
 .. code-block:: php
 
     <?php
+
     $user->setAddress(null);
 
 When working with collections, keep in mind that a Collection is
@@ -384,6 +386,7 @@ in the $addresses collection.
 .. code-block:: php
 
     <?php
+
     class User 
     {
         //...
@@ -416,6 +419,7 @@ example:
 .. code-block:: php
 
     <?php
+
     $user = $dm->find('User', $id);
 
 The return value is either the found document instance or null if
@@ -427,6 +431,7 @@ following:
 .. code-block:: php
 
     <?php
+
     $user = $dm->getRepository('User')->find($id);
 
 ``DocumentManager#getRepository($documentName)`` returns a
@@ -445,6 +450,7 @@ methods on a repository as follows:
 .. code-block:: php
 
     <?php
+
     // All users that are 20 years old
     $users = $dm->getRepository('User')->findBy(array('age' => 20));
     
@@ -461,6 +467,7 @@ examples are equivalent:
 .. code-block:: php
 
     <?php
+
     // A single user by its nickname
     $user = $dm->getRepository('User')->findOneBy(array('nickname' => 'romanb'));
     
@@ -489,6 +496,7 @@ simple example:
 .. code-block:: php
 
     <?php
+
     // All users with an age between 20 and 30 (inclusive).
     $q = $dm->createQuery('User')
         ->field('age')->range(20, 30);
@@ -509,7 +517,7 @@ in a central location.
 .. code-block:: php
 
     <?php
-    
+
     use Doctrine\ODM\MongoDB\DocumentRepository;
     
     /**
@@ -535,6 +543,5 @@ You can access your repository now by calling:
 .. code-block:: php
 
     <?php
+
     $admins = $dm->getRepository('User')->getAllAdminUsers();
-
-

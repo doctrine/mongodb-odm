@@ -8,13 +8,11 @@ your object and you need to also load the values from older
 documents where the field is still using the old name. Doctrine
 offers a few different methods for dealing with this problem!
 
-    **SIDEBAR** Features in this chapter inspired by Objectify
-
-    All of the features documented in this chapter were inspired by
-    Objectify which is an object mapper for the AppEngine datastore.
-    You can read more about the project on the
-    `Objectify Wiki <http://code.google.com/p/objectify-appengine/wiki/Concepts?tm=6>`_.
-
+**NOTE** Features in this chapter inspired by Objectify
+All of the features documented in this chapter were inspired by
+Objectify which is an object mapper for the AppEngine datastore.
+You can read more about the project on the
+`Objectify Wiki <http://code.google.com/p/objectify-appengine/wiki/Concepts?tm=6>`_.
 
 Renaming a Field
 ----------------
@@ -24,6 +22,7 @@ Lets say you have a document that starts off looking like this:
 .. code-block:: php
 
     <?php
+
     class Person
     {
         public $id;
@@ -35,6 +34,7 @@ Then you want to rename ``name`` to ``fullName`` like this:
 .. code-block:: php
 
     <?php
+
     class Person
     {
         public $id;
@@ -53,7 +53,6 @@ documents will have the ``name`` field and new ones will have
     documents will be returned. You can still query using the ``name``
     field to find the old documents.
 
-
 Transforming Data
 -----------------
 
@@ -65,6 +64,7 @@ to do some more complex logic:
 .. code-block:: php
 
     <?php
+
     class Person
     {
         public $id;
@@ -86,7 +86,6 @@ Moving Fields
 Migrating your schema can be a difficult task and Doctrine gives
 you a few different methods for dealing with this:
 
-
 - 
    **@AlsoLoad** - load values from old fields names or transform some
    data using methods.
@@ -100,11 +99,20 @@ Imagine you have some address fields on a Person document:
 .. code-block:: php
 
     <?php
+
+    /** @Document */
     class Person
     {
+        /** @Id */
         public $id;
+
+        /** @String */
         public $name;
+
+        /** @String */
         public $street;
+
+        /** @String */
         public $city;
     }
 
@@ -114,10 +122,14 @@ an embedded document:
 .. code-block:: php
 
     <?php
+
     /** @EmbeddedDocument */
     class Address
     {
+        /** @String */
         public $street;
+
+        /** @String */
         public $city;
     
         public function __construct($street, $city)
@@ -126,10 +138,14 @@ an embedded document:
             $this->city = $city;
         }
     }
-    
+
+    /** @Document */
     class Person
     {
+        /** @Id */
         public $id;
+
+        /** @String */
         public $name;
     
         /** @NotSaved */
@@ -156,6 +172,8 @@ You can also change the data on save if that works better for you:
 .. code-block:: php
 
     <?php
+
+    /** @Document */
     class Person
     {
         // ...
@@ -169,5 +187,3 @@ You can also change the data on save if that works better for you:
             }
         }
     }
-
-

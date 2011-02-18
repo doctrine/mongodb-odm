@@ -14,9 +14,8 @@ Schema document. The following is an outline of a XML mapping
 document with the proper xmlns/xsi setup for the latest code in
 trunk.
 
-::
+.. code-block:: xml
 
-    [xml]
     <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
@@ -44,11 +43,10 @@ In order to work, this requires certain conventions:
    convention and you are not forced to do this. You can change the
    file extension easily enough.
 
--
-
 .. code-block:: php
 
     <?php
+
     $driver->setFileExtension('.xml');
 
 It is recommended to put all XML mapping documents in a single
@@ -60,7 +58,8 @@ of the constructor, like this:
 .. code-block:: php
 
     <?php
-    // $config instanceof Doctrine\ORM\Configuration
+
+    // $config instanceof Doctrine\ODM\MongoDB\Configuration
     $driver = new XmlDriver(array('/path/to/files'));
     $config->setMetadataDriverImpl($driver);
 
@@ -70,10 +69,10 @@ Example
 As a quick start, here is a small example document that makes use
 of several common elements:
 
-::
+.. code-block:: xml
 
-    [xml]
     // Documents.User.dcm.xml
+
     <?xml version="1.0" encoding="UTF-8"?>
     
     <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping"
@@ -112,7 +111,4 @@ of several common elements:
         </document>
     </doctrine-mongo-mapping>
 
-Be aware that class-names specified in the XML files should be
-fully qualified.
-
-
+Be aware that class-names specified in the XML files should be fully qualified.

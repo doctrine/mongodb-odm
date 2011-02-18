@@ -10,112 +10,114 @@ traditional ``find()`` and ``findOne()`` methods but you also have
 a ``Query`` object with a fluent API for defining the query that
 should be executed.
 
-The ``Query`` object supports four types of queries:
+The ``Query`` object supports several types of queries
 
+- FIND
+- FIND_AND_UPDATE
+- FIND_AND_REMOVE
+- INSERT
+- UPDATE
+- REMOVE
+- GROUP
+- MAP_REDUCE
+- DISTINCT_FIELD
+- GEO_LOCATION
 
--  `find <#find>`_
--  `update <#update>`_
--  `remove <#remove>`_
--  `group <#group>`_
-
-This section will show examples for the different types of
-queries.
+This section will show examples for the different types of queries.
 
 Finding Documents
 -----------------
 
-You can use the traditional ``find()`` and ``findOne()`` methods to
-find documents just like you would if you weren't using Doctrine.
-The only difference is that the methods return objects instead of
-arrays:
+You have a few different ways to find documents. You can use the ``find()`` method
+to find a document by its identifier:
 
 .. code-block:: php
 
     <?php
-    $users = $dm->find('User', array('type' => 'admin'));
 
-And you can use the ``findOne()`` method to find a single user:
+    $users = $dm->find('User', $id);
 
-.. code-block:: php
-
-    <?php
-    $user = $dm->findOne('User', array('username' => 'jwage'));
-
-Creating Query Objects
-----------------------
-
-You can easily create a new ``Query`` object with the
-``DocumentManager::createQuery()`` method:
+The ``find()`` method is just a convenience shortcut method to:
 
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('User');
+
+    $user = $dm->getRepository('User')->find($id);
+
+**NOTE** The ``find()`` method checks the local in memory identity map for the document
+before querying the database for the document.
+
+On the ``DocumentRepository`` you have a few other methods for finding documents:
+
+- ``findBy`` - find documents by an array of criteria
+- ``findOneBy`` - find one document by an array of criteria
+
+.. code-block:: php
+
+    <?php
+
+    $users = $dm->getRepository('User')->findBy(array('type' => 'employee'));
+    $user = $dm->getRepository('User')->findOneBy(array('username' => 'jwage'));
+
+Creating a Query Builder
+------------------------
+
+You can easily create a new ``Query\Builder`` object with the
+``DocumentManager::createQueryBuilderBuilder()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    $qb = $dm->createQueryBuilderBuilder('User');
 
 The first and only argument is optional, you can specify it later
-with the ``from()`` method:
+with the ``find()``, ``update()`` or ``remove()`` method:
 
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery();
+
+    $qb = $dm->createQueryBuilderBuilder();
     
     // ...
     
-    $query->from('User');
-
-Find Queries
-------------
-
-Find queries are the default type of query and are how you retrieve
-data from Mongo either as PHP objects or the raw arrays the PHP
-Mongo extension returns.
+    $qb->find('User');
 
 Executing Queries
 ~~~~~~~~~~~~~~~~~
 
-You can execute a query with the ``execute()`` method which
-executes the query, iterators the cursor and returns an array of
-results:
+You can execute a query by getting a ``Query`` through the ``getQuery()`` method:
 
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('User');
+
+    $qb = $dm->createQueryBuilderBuilder('User');
+    $query = $qb->getQuery();
+
+Now you can ``execute()`` that query and it will return a cursor for you to iterator over the results:
+
+.. code-block:: php
+
+    <?php
+
     $users = $query->execute();
 
 Getting Single Result
 ~~~~~~~~~~~~~~~~~~~~~
 
-If you want to just get a single result you can use the
-``Query#getSingleResult()`` method:
+If you want to just get a single result you can use the ``Query#getSingleResult()`` method:
 
 .. code-block:: php
 
     <?php
-    $user = $dm->createQuery('User')
+
+    $user = $dm->createQueryBuilderBuilder('User')
         ->field('username')->equals('jwage')
+        ->getQuery()
         ->getSingleResult();
-
-Getting Query Cursor
-~~~~~~~~~~~~~~~~~~~~
-
-If you wish to get the cursor to iterate over the results instead
-of returning everything as an array you can use the ``getCursor()``
-method:
-
-.. code-block:: php
-
-    <?php
-    $cursor = $query->execute();
-    
-    foreach ($cursor as $document) {
-        // ...
-    }
-
-The advantage of iterating over the cursor is that all results are
-not hydrated into memory and stored in an array so the overall
-memory footprint is lower.
 
 Selecting Fields
 ~~~~~~~~~~~~~~~~
@@ -126,8 +128,10 @@ the ``select()`` method:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('User')
+
+    $qb = $dm->createQueryBuilder('User')
         ->select('username', 'password');
+    $query = $qb->getQuery();
     $users = $query->execute();
 
 In the results only the data from the username and password will be
@@ -143,11 +147,13 @@ method:
 .. code-block:: php
 
     <?php
-    $ages = $dm->createQuery('User')
+
+    $ages = $dm->createQueryBuilder('User')
         ->distinct('age')
+        ->getQuery()
         ->execute();
 
-The above would give you an array of all the distinct user ages!
+The above would give you an ``ArrayCollection`` of all the distinct user ages!
 
 Disabling Hydration
 ~~~~~~~~~~~~~~~~~~~
@@ -160,16 +166,20 @@ get the raw results directly back from mongo by using the
 .. code-block:: php
 
     <?php
-    $users = $dm->createQuery('User')
+
+    $users = $dm->createQueryBuilder('User')
         ->hydrate(false)
+        ->getQuery()
         ->execute();
+
     print_r($users);
 
 Limiting Results
 ~~~~~~~~~~~~~~~~
 
-You can limit results similar to how you would in MySQL with a
-limit and offset by using the ``limit()`` and ``skip()`` method.
+You can limit results similar to how you would in a relational
+database with a limit and offset by using the ``limit()`` and
+``skip()`` method.
 
 Here is an example where we get the third page of blog posts when
 we show twenty at a time:
@@ -177,28 +187,32 @@ we show twenty at a time:
 .. code-block:: php
 
     <?php
-    $blogPosts = $dm->createQuery('BlogPost')
+
+    $blogPosts = $dm->createQueryBuilder('BlogPost')
         ->limit(20)
         ->skip(40)
+        ->getQuery()
         ->execute();
 
 Sorting Results
 ~~~~~~~~~~~~~~~
 
-You can sort the results similar to how you would in MySQL with an
-ORDER BY command by using the ``sort()`` method:
+You can sort the results by using the ``sort()`` method:
 
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('Article')
+
+    $qb = $dm->createQueryBuilder('Article')
         ->sort('createdAt', 'desc');
 
-If you want to an additional sort you can call ``sort()`` again:
+If you want to an additional sort you can call ``sort()`` again. The calls are stacked and ordered
+in the order you call the method:
 
 .. code-block:: php
 
     <?php
+
     $query->sort('featured', 'desc');
 
 Map Reduce
@@ -210,7 +224,8 @@ object:
 .. code-block:: php
 
     <?php
-    $query = $this->dm->createQuery('Event')
+
+    $qb = $this->dm->createQueryBuilder('Event')
         ->field('type')->equals('sale')
         ->map('function() { emit(this.userId, 1); }')
         ->reduce("function(k, vals) {
@@ -220,12 +235,12 @@ object:
             }
             return sum;
         }");
+    $query = $qb->getQuery();
     $results = $query->execute();
 
-    **NOTE** When you specify a ``map()`` and ``reduce()`` operation
-    the results will not be hydrated and the raw results from the map
-    reduce operation will be returned.
-
+**NOTE** When you specify a ``map()`` and ``reduce()`` operation
+the results will not be hydrated and the raw results from the map
+reduce operation will be returned.
 
 If you just want to reduce the results using a javascript function
 you can just call the ``where()`` method:
@@ -233,35 +248,49 @@ you can just call the ``where()`` method:
 .. code-block:: php
 
     <?php
-    $query = $this->dm->createQuery('User')
+
+    $qb = $dm->createQueryBuilder('User')
         ->where("function() { return this.type == 'admin'; }");
 
-You can read more about the
-`:math:`$where operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-JavascriptExpressionsand%7B%7B%24where%7D%7D) in the Mongo docs. ## Conditional Operators The conditional operators in Mongo are available to limit the returned results through a easy to use API. Doctrine abstracts this to a fluent object oriented interface with a fluent API. Here is a list of all the conditional operation methods you can use on the `Query` object. Click the method to see a practical example: * [where($`javascript) <#where>`_
-\* `in(:math:`$values)](#in) * [notIn($`values) <#notIn>`_ \*
-`notEqual(:math:`$value)](#notEqual) * [greaterThan($`value) <#greaterThan>`_
-\*
-`greaterThanOrEq(:math:`$value)](#greaterThanOrEq) * [lessThan($`value) <#lessThan>`_
-\*
-`lessThanOrEq(:math:`$value)](#lessThanOrEq) * [range($`start, :math:`$end)](#range) * [size($`size) <#size>`_
-\* `exists(:math:`$bool)](#exists) * [type($`type) <#type>`_ \*
-`all(:math:`$values)](#all) * [mod($`mod) <#mod>`_
+You can read more about the $where operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-JavascriptExpressionsand%7B%7B%24where%7D%7D) in the Mongo docs.
+
+Conditional Operators
+~~~~~~~~~~~~~~~~~~~~~
+
+The conditional operators in Mongo are available to limit the returned results through a easy to use API. Doctrine abstracts this to a fluent object oriented interface with a fluent API. Here is a list of all the conditional operation methods you can use on the `Query\Builder` object.
+
+* ``where($javascript)``
+* ``in($values)``
+* ``notIn($values)``
+* ``notEqual($value)``
+* ``greaterThan($value)``
+* ``greaterThanOrEq($value)``
+* ``lessThan($value)``
+* ``lessThanOrEq($value)``
+* ``range($start, $end)``
+* ``size($size)``
+* ``exists($bool)``
+* ``type($type)``
+* ``all($values)``
+* ``mod($mod)``
 
 Query for active administrator users:
 
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('User')
+
+    $qb = $dm->createQueryBuilder('User')
         ->field('type')->equals('admin')
-        ->field('active')->equals(1);
+        ->field('active')->equals(true);
 
 Query for articles that have some tags:
 
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('Article')
+
+    $qb = $dm->createQueryBuilder('Article')
         ->field('tags.name')->in(array('tag1', 'tag2'));
 
 Read more about the
@@ -273,19 +302,19 @@ Query for articles that do not have some tags:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('Article')
+
+    $qb = $dm->createQueryBuilder('Article')
         ->field('tags.name')->notIn(array('tag3'));
 
 Read more about the
 `$nin operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24nin>`_
 in the Mongo docs.
 
-::
+.. code-block:: php
 
-    
-    
     <?php
-    $query = $dm->createQuery('User')
+
+    $qb = $dm->createQueryBuilder('User')
         ->field('type')->notEqual('admin');
 
 Read more about the
@@ -297,7 +326,8 @@ Query for accounts with an amount due greater than 30:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('Account')
+
+    $qb = $dm->createQueryBuilder('Account')
         ->field('amount_due')->greaterThan(30);
 
 Query for accounts with an amount due greater than or equal to 30:
@@ -305,7 +335,8 @@ Query for accounts with an amount due greater than or equal to 30:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('Account')
+
+    $qb = $dm->createQueryBuilder('Account')
         ->field('amount_due')->greaterThanOrEq(30);
 
 Query for accounts with an amount due less than 30:
@@ -313,7 +344,8 @@ Query for accounts with an amount due less than 30:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('Account')
+
+    $qb = $dm->createQueryBuilder('Account')
         ->field('amount_due')->lessThan(30);
 
 Query for accounts with an amount due less than or equal to 30:
@@ -321,7 +353,8 @@ Query for accounts with an amount due less than or equal to 30:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('Account')
+
+    $qb = $dm->createQueryBuilder('Account')
         ->field('amount_due')->lessThanOrEq(30);
 
 Query for accounts with an amount due between 10 and 20:
@@ -329,7 +362,8 @@ Query for accounts with an amount due between 10 and 20:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('Account')
+
+    $qb = $dm->createQueryBuilder('Account')
         ->field('amount_due')->range(10, 20);
 
 Read more about
@@ -341,7 +375,8 @@ Query for articles with no comments:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('Article')
+
+    $qb = $dm->createQueryBuilder('Article')
         ->field('comments')->size(0);
 
 Read more about the
@@ -354,7 +389,8 @@ username:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('User')
+
+    $qb = $dm->createQueryBuilder('User')
         ->field('login')->exists(true);
 
 Read more about the
@@ -367,7 +403,8 @@ type:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('User')
+
+    $qb = $dm->createQueryBuilder('User')
         ->field('type')->type('integer');
 
 Read more about the
@@ -379,29 +416,41 @@ Query for users that are in all the specified Groups:
 .. code-block:: php
 
     <?php
-    $query = $dm->createQuery('User')
+
+    $qb = $dm->createQueryBuilder('User')
         ->field('groups')->all(array('Group 1', 'Group 2'));
 
 Read more about the
 `$all operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24all>`_
 in the Mongo docs.
 
-::
-
-    
+.. code-block:: php
     
     <?php
-    $query = $dm->createQuery('Transaction')
+
+    $qb = $dm->createQueryBuilder('Transaction')
         ->field('field')->mod('field', array(10, 1));
 
 Read more about the
-`:math:`$mod operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod) in the Mongo docs. ## Update Queries <a name="update"></a> Doctrine also supports executing atomic update queries using the `Query` object. You can use the conditional operations in combination with the ability to change document field values atomically. You have several modifier operations available to you that make it easy to update documents in Mongo: * [set($`name, $value, :math:`$atomic = true)](#set) * [setNewObj($`newObj) <#setNewObj>`_
-\*
-`inc($name, :math:`$value)](#inc) * [unsetField($`field) <#unsetField>`_
-\*
-`push($field, :math:`$value)](#push) * [pushAll($`field, array :math:`$valueArray)](#pushAll) * [addToSet($`field, :math:`$value)](#addToSet) * [addManyToSet($`field, array :math:`$values)](#addManyToSet) * [popFirst($`field) <#popFirst>`_
-\*
-`popLast(:math:`$field)](#popLast) * [pull($`field, :math:`$value)](#pull) * [pullAll($`field, array $valueArray) <#pullAll>`_
+`$mod operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod) in the Mongo docs.
+
+Update Queries
+~~~~~~~~~~~~~~
+
+Doctrine also supports executing atomic update queries using the `Query\Builder` object. You can use the conditional operations in combination with the ability to change document field values atomically. You have several modifier operations available to you that make it easy to update documents in Mongo:
+
+* ``set($name, $value, $atomic = true)``
+* ``setNewObj($newObj)``
+* ``inc($name, $value)``
+* ``unsetField($`field)``
+* ``push($field, $value)``
+* ``pushAll($field, array $valueArray)``
+* ``addToSet($field, $value)``
+* ``addManyToSet($field, array $values)``
+* ``popFirst($field)``
+* ``popLast($field)``
+* ``pull($field, $value)``
+* ``pullAll($field, array $valueArray)``
 
 Modifier Operations
 -------------------
@@ -411,9 +460,11 @@ Change a users password:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('User')
+
+    $dm->createQueryBuilder('User')
         ->field('password')->set('newpassword')
         ->field('username')->equals('jwage')
+        ->getQuery()
         ->execute();
 
 If you want to just set the values of an entirely new object you
@@ -423,11 +474,13 @@ tell it the update is not an atomic one:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('User')
+
+    $dm->createQueryBuilder('User')
         ->field('username')->set('jwage', false)
         ->field('password')->set('password', false)
         // ... set other remaining fields
         ->field('username')->equals('jwage')
+        ->getQuery()
         ->execute();
 
 Read more about the
@@ -439,13 +492,15 @@ You can set an entirely new object to update as well:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('User')
+
+    $dm->createQueryBuilder('User')
         ->setNewObj(array(
             'username' => 'jwage',
             'password' => 'password',
             // ... other fields
         ))
         ->field('username')->equals('jwage')
+        ->getQuery()
         ->execute();
 
 Increment the value of a document:
@@ -453,9 +508,11 @@ Increment the value of a document:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('Package')
+
+    $dm->createQueryBuilder('Package')
         ->field('id')->equals('theid')
         ->field('downloads')->inc(1)
+        ->getQuery()
         ->execute();
 
 Read more about the
@@ -468,8 +525,10 @@ exists:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('User')
+
+    $dm->createQueryBuilder('User')
         ->field('login')->unsetField()->exists(true)
+        ->getQuery()
         ->execute();
 
 Read more about the
@@ -481,9 +540,11 @@ Append new tag to the tags array:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('Article')
+
+    $dm->createQueryBuilder('Article')
         ->field('tags')->push('tag5')
         ->field('id')->equals('theid')
+        ->getQuery()
         ->execute();
 
 Read more about the
@@ -495,9 +556,11 @@ Append new tags to the tags array:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('Article')
+
+    $dm->createQueryBuilder('Article')
         ->field('tags')->pushAll(array('tag6', 'tag7'))
         ->field('id')->equals('theid')
+        ->getQuery()
         ->execute();
 
 Read more about the
@@ -509,9 +572,11 @@ Add value to array only if its not in the array already:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('Article')
+
+    $dm->createQueryBuilder('Article')
         ->field('tags')->addToSet('tag1')
         ->field('id')->equals('theid')
+        ->getQuery()
         ->execute();
 
 Read more about the
@@ -524,9 +589,11 @@ already:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('Article')
+
+    $dm->createQueryBuilder('Article')
         ->field('tags')->addManyToSet(array('tag6', 'tag7'))
         ->field('id')->equals('theid')
+        ->getQuery()
         ->execute();
 
 Read more about the
@@ -538,9 +605,11 @@ Remove first element in an array:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('Article')
+
+    $dm->createQueryBuilder('Article')
         ->field('tags')->popFirst()
         ->field('id')->equals('theid')
+        ->getQuery()
         ->execute();
 
 Remove last element in an array:
@@ -548,9 +617,11 @@ Remove last element in an array:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('Article')
+
+    $dm->createQueryBuilder('Article')
         ->field('tags')->popLast()
         ->field('id')->equals('theid')
+        ->getQuery()
         ->execute();
 
 Read more about the
@@ -562,21 +633,23 @@ Remove all occurrences of value from array:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('Article')
+
+    $dm->createQueryBuilder('Article')
         ->field('tags')->pull('tag1')
+        ->getQuery()
         ->execute();
 
 Read more about the
 `$pull modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24pull>`_
 in the Mongo docs.
 
-::
+.. code-block:: php
 
-    
-    
     <?php
-    $dm->createQuery('Article')
+
+    $dm->createQueryBuilder('Article')
         ->field('tags')->pullAll(array('tag1', 'tag2'))
+        ->getQuery()
         ->execute();
 
 Read more about the
@@ -596,9 +669,11 @@ Here is an example where we remove users who have never logged in:
 .. code-block:: php
 
     <?php
-    $dm->createQuery('User')
+
+    $dm->createQueryBuilder('User')
         ->remove()
         ->field('num_logins')->equals(0)
+        ->getQuery()
         ->execute();
 
 Group Queries
@@ -610,10 +685,12 @@ operation similar to SQL's GROUP BY command.
 .. code-block:: php
 
     <?php
-    $result = $this->dm->createQuery('Documents\User')
+
+    $result = $this->dm->createQueryBuilder('Documents\User')
         ->group(array(), array('count' => 0))
         ->reduce('function (obj, prev) { prev.count++; }')
         ->field('a')->greaterThan(1)
+        ->getQuery()
         ->execute();
 
 This is the same as if we were to do the group with the raw PHP
@@ -622,8 +699,7 @@ code:
 .. code-block:: php
 
     <?php
+
     $reduce = 'function (obj, prev) { prev.count++; }';
     $condition = array('a' => array( '$gt' => 1));
     $result = $collection->group(array(), array('count' => 0), $reduce, $condition);
-
-

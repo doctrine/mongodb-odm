@@ -12,6 +12,7 @@ Embed a single document:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -37,6 +38,7 @@ Embed many documents:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -63,6 +65,7 @@ document you can simply omit the ``targetDocument`` option:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -84,6 +87,7 @@ qualified class name with each embedded document:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -107,6 +111,7 @@ You can have different task classes that can be embedded:
 .. code-block:: php
 
     <?php
+
     /** @EmbeddedDocument */
     class DownloadTask
     {
@@ -126,6 +131,7 @@ option:
 .. code-block:: php
 
     <?php
+
     /** @Document */
     class User
     {
@@ -145,5 +151,3 @@ Cascading Operations
 All operations on embedded documents are automatically cascaded.
 This is because embedded documents are part of their parent
 document and cannot exist without those by nature.
-
-

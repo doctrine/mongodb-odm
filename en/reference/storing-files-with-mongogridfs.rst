@@ -79,6 +79,7 @@ First you need to create a new Image:
 .. code-block:: php
 
     <?php
+
     $image = new Image();
     $image->setName('Test image');
     $image->setFile('/path/to/image.png');
@@ -91,9 +92,10 @@ Now you can later query for the Image and render it:
 .. code-block:: php
 
     <?php
-    $image = $dm->createQuery('Documents\Image')
-        ->field('name')
-        ->equals('Test image')
+
+    $image = $dm->createQueryBuilder('Documents\Image')
+        ->field('name')->equals('Test image')
+        ->getQuery()
         ->getSingleResult();
     
     header('Content-type: image/png;');
@@ -152,6 +154,7 @@ Now you can create a new Profile and give it an Image:
 .. code-block:: php
 
     <?php
+
     $image = new Image();
     $image->setName('Test image');
     $image->setFile('/path/to/image.png');
@@ -169,13 +172,13 @@ in a query you can use:
 .. code-block:: php
 
     <?php
-    $profile = $dm->createQuery('Profile')
+
+    $profile = $dm->createQueryBuilder('Profile')
         ->field('name')->equals('Jonathan H. Wage')
+        ->getQuery()
         ->getSingleResult();
     
     $image = $profile->getImage();
     
     header('Content-type: image/png;');
     echo $image->getFile()->getBytes();
-
-
