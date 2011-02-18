@@ -1,0 +1,297 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Blending the ORM and MongoDB ODM &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="Implementing ArrayAccess for Domain Objects" href="implementing-array-access-for-domain-objects.html" />
+    <link rel="prev" title="Getting Started" href="getting-started.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="implementing-array-access-for-domain-objects.html" title="Implementing ArrayAccess for Domain Objects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="getting-started.html" title="Getting Started"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="blending-the-orm-and-mongodb-odm">
+<h1>Blending the ORM and MongoDB ODM<a class="headerlink" href="#blending-the-orm-and-mongodb-odm" title="Permalink to this headline">¶</a></h1>
+<p>Since the start of the <a class="reference external" href="http://www.doctrine-project.org/projects/mongodb_odm">Doctrine MongoDB Object Document Mapper</a> project people have asked how it can be integrated with the <a class="reference external" href="http://www.doctrine-project.org/projects/orm">ORM</a>. This article will demonstrates how you can integrate the two transparently, maintaining a clean domain model.</p>
+<p>This example will have a <cite>Product</cite> that is stored in MongoDB and the <cite>Order</cite> stored in a MySQL database.</p>
+<div class="section" id="define-product">
+<h2>Define Product<a class="headerlink" href="#define-product" title="Permalink to this headline">¶</a></h2>
+<p>First lets define our <cite>Product</cite> document:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">Documents</span><span class="p">;</span>
+
+<span class="sd">/** @Document */</span>
+<span class="k">class</span> <span class="nc">Product</span>
+<span class="p">{</span>
+    <span class="sd">/** @Id */</span>
+    <span class="k">private</span> <span class="nv">$id</span><span class="p">;</span>
+
+    <span class="sd">/** @String */</span>
+    <span class="k">private</span> <span class="nv">$title</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getId</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getTitle</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">title</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setTitle</span><span class="p">(</span><span class="nv">$title</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">title</span> <span class="o">=</span> <span class="nv">$title</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="define-entity">
+<h2>Define Entity<a class="headerlink" href="#define-entity" title="Permalink to this headline">¶</a></h2>
+<p>Next create the <cite>Order</cite> entity that has a <cite>$product</cite> and <cite>$productId</cite> property linking it to the <cite>Product</cite> that is stored with MongoDB:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">Entities</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Documents\Product</span><span class="p">;</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Entity</span>
+<span class="sd"> * @Table(name=&quot;orders&quot;)</span>
+<span class="sd"> * @HasLifecycleCallbacks</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Order</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @Id @Column(type=&quot;integer&quot;)</span>
+<span class="sd">     * @GeneratedValue(strategy=&quot;AUTO&quot;)</span>
+<span class="sd">     */</span>
+    <span class="k">private</span> <span class="nv">$id</span><span class="p">;</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * @Column(type=&quot;string&quot;)</span>
+<span class="sd">     */</span>
+    <span class="k">private</span> <span class="nv">$productId</span><span class="p">;</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * @var Documents\Product</span>
+<span class="sd">     */</span>
+    <span class="k">private</span> <span class="nv">$product</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getId</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getProductId</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">productId</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setProduct</span><span class="p">(</span><span class="nx">Product</span> <span class="nv">$product</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">productId</span> <span class="o">=</span> <span class="nv">$product</span><span class="o">-&gt;</span><span class="na">getId</span><span class="p">();</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">product</span> <span class="o">=</span> <span class="nv">$product</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getProduct</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">product</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="event-subscriber">
+<h2>Event Subscriber<a class="headerlink" href="#event-subscriber" title="Permalink to this headline">¶</a></h2>
+<p>Now we need to setup an event subscriber that will set the <cite>$product</cite> property of all <cite>Order</cite> instances to a reference to the document product so it can be lazily loaded when it is accessed the first time. So first register a new event subscriber:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$eventManager</span> <span class="o">=</span> <span class="nv">$em</span><span class="o">-&gt;</span><span class="na">getEventManager</span><span class="p">();</span>
+<span class="nv">$eventManager</span><span class="o">-&gt;</span><span class="na">addEventListener</span><span class="p">(</span>
+    <span class="k">array</span><span class="p">(</span><span class="nx">\Doctrine\ORM\Events</span><span class="o">::</span><span class="na">postLoad</span><span class="p">),</span> <span class="k">new</span> <span class="nx">MyEventSubscriber</span><span class="p">(</span><span class="nv">$dm</span><span class="p">)</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>So now we need to define a class named <cite>MyEventSubscriber</cite> and pass a dependency to the <cite>DocumentManager</cite>. It will have a <cite>postLoad()</cite> method that sets the product document reference:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">use</span> <span class="nx">Doctrine\ODM\MongoDB\DocumentManager</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Doctrine\ORM\Event\LifecycleEventArgs</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">MyEventSubscriber</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nx">DocumentManager</span> <span class="nv">$dm</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">dm</span> <span class="o">=</span> <span class="nv">$dm</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">postLoad</span><span class="p">(</span><span class="nx">LifecycleEventArgs</span> <span class="nv">$eventArgs</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$order</span> <span class="o">=</span> <span class="nv">$eventArgs</span><span class="o">-&gt;</span><span class="na">getEntity</span><span class="p">();</span>
+        <span class="nv">$em</span> <span class="o">=</span> <span class="nv">$eventArgs</span><span class="o">-&gt;</span><span class="na">getEntityManager</span><span class="p">();</span>
+        <span class="nv">$productReflProp</span> <span class="o">=</span> <span class="nv">$em</span><span class="o">-&gt;</span><span class="na">getClassMetadata</span><span class="p">(</span><span class="s1">&#39;Entities\Order&#39;</span><span class="p">)</span>
+            <span class="o">-&gt;</span><span class="na">reflClass</span><span class="o">-&gt;</span><span class="na">getProperty</span><span class="p">(</span><span class="s1">&#39;product&#39;</span><span class="p">);</span>
+        <span class="nv">$productReflProp</span><span class="o">-&gt;</span><span class="na">setAccessible</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+        <span class="nv">$productReflProp</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span>
+            <span class="nv">$order</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">dm</span><span class="o">-&gt;</span><span class="na">getReference</span><span class="p">(</span><span class="s1">&#39;Documents\Product&#39;</span><span class="p">,</span> <span class="nv">$order</span><span class="o">-&gt;</span><span class="na">getProductId</span><span class="p">())</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <cite>postLoad</cite> method will be invoked after an ORM entity is loaded from the database. This allows us to use the <cite>DocumentManager</cite> to set the <cite>$product</cite> property with a reference to the <cite>Product</cite> document with the product id we previously stored.</p>
+</div>
+<div class="section" id="working-with-products-and-orders">
+<h2>Working with Products and Orders<a class="headerlink" href="#working-with-products-and-orders" title="Permalink to this headline">¶</a></h2>
+<p>First create a new <cite>Product</cite>:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$product</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Documents\Product</span><span class="p">();</span>
+<span class="nv">$product</span><span class="o">-&gt;</span><span class="na">setTitle</span><span class="p">(</span><span class="s1">&#39;Test Product&#39;</span><span class="p">);</span>
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">persist</span><span class="p">(</span><span class="nv">$product</span><span class="p">);</span>
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Now create a new <cite>Order</cite> and link it to a <cite>Product</cite> in MySQL:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$order</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Entities\Order</span><span class="p">();</span>
+<span class="nv">$order</span><span class="o">-&gt;</span><span class="na">setProduct</span><span class="p">(</span><span class="nv">$product</span><span class="p">);</span>
+<span class="nv">$em</span><span class="o">-&gt;</span><span class="na">persist</span><span class="p">(</span><span class="nv">$order</span><span class="p">);</span>
+<span class="nv">$em</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Later we can retrieve the entity and lazily load the reference to the document in MongoDB:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$order</span> <span class="o">=</span> <span class="nv">$em</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="s1">&#39;Order&#39;</span><span class="p">,</span> <span class="nv">$order</span><span class="o">-&gt;</span><span class="na">getId</span><span class="p">());</span>
+
+<span class="c1">// Instance of an uninitialized product proxy</span>
+<span class="nv">$product</span> <span class="o">=</span> <span class="nv">$order</span><span class="o">-&gt;</span><span class="na">getProduct</span><span class="p">();</span>
+
+<span class="c1">// Initializes proxy and queries the database</span>
+<span class="k">echo</span> <span class="s2">&quot;Order Title: &quot;</span> <span class="o">.</span> <span class="nv">$product</span><span class="o">-&gt;</span><span class="na">getTitle</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>If you were to print the <cite>$order</cite> you would see that we got back regular PHP objects:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nb">print_r</span><span class="p">(</span><span class="nv">$order</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The above would output the following:</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">Blending the ORM and MongoDB ODM</a><ul>
+<li><a class="reference internal" href="#define-product">Define Product</a></li>
+<li><a class="reference internal" href="#define-entity">Define Entity</a></li>
+<li><a class="reference internal" href="#event-subscriber">Event Subscriber</a></li>
+<li><a class="reference internal" href="#working-with-products-and-orders">Working with Products and Orders</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="getting-started.html"
+                                  title="previous chapter">Getting Started</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="implementing-array-access-for-domain-objects.html"
+                                  title="next chapter">Implementing ArrayAccess for Domain Objects</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/cookbook/blending-orm-and-mongodb-odm.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="implementing-array-access-for-domain-objects.html" title="Implementing ArrayAccess for Domain Objects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="getting-started.html" title="Getting Started"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

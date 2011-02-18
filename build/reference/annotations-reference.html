@@ -1,0 +1,987 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>18. Annotations Reference &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="19. XML Mapping" href="xml-mapping.html" />
+    <link rel="prev" title="17. Capped Collections" href="capped-collections.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="xml-mapping.html" title="19. XML Mapping"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="capped-collections.html" title="17. Capped Collections"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="annotations-reference">
+<h1>18. Annotations Reference<a class="headerlink" href="#annotations-reference" title="Permalink to this headline">¶</a></h1>
+<p>In this chapter a reference of every Doctrine 2 ODM Annotation is
+given with short explanations on their context and usage.</p>
+<div class="section" id="bin">
+<h2>18.1. &#64;Bin<a class="headerlink" href="#bin" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;bin&#8221;. Converts value to
+MongoBinData <a class="reference external" href="http://www.php.net/manual/en/class.mongobindata.php">http://www.php.net/manual/en/class.mongobindata.php</a>,
+using MongoBinData::BYTE_ARRAY type.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Bin */</span>
+<span class="k">private</span> <span class="nv">$data</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="bincustom">
+<h2>18.2. &#64;BinCustom<a class="headerlink" href="#bincustom" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;bin_custom&#8221;. Converts value to
+MongoBinData <a class="reference external" href="http://www.php.net/manual/en/class.mongobindata.php">http://www.php.net/manual/en/class.mongobindata.php</a>,
+using MongoBinData::CUSTOM type.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @BinCustom */</span>
+<span class="k">private</span> <span class="nv">$data</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="binfunc">
+<h2>18.3. &#64;BinFunc<a class="headerlink" href="#binfunc" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;bin_func&#8221;. Converts value to
+MongoBinData <a class="reference external" href="http://www.php.net/manual/en/class.mongobindata.php">http://www.php.net/manual/en/class.mongobindata.php</a>,
+using MongoBinData::FUNC type.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @BinFunc */</span>
+<span class="k">private</span> <span class="nv">$data</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="binmd5">
+<h2>18.4. &#64;BinMD5<a class="headerlink" href="#binmd5" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;bin_md5&#8221;. Converts value to
+MongoBinData <a class="reference external" href="http://www.php.net/manual/en/class.mongobindata.php">http://www.php.net/manual/en/class.mongobindata.php</a>,
+using MongoBinData::MD5 type.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @BinMD5 */</span>
+<span class="k">private</span> <span class="nv">$password</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="binuuid">
+<h2>18.5. &#64;BinUUID<a class="headerlink" href="#binuuid" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;bin_uuid&#8221;. Converts value to
+MongoBinData <a class="reference external" href="http://www.php.net/manual/en/class.mongobindata.php">http://www.php.net/manual/en/class.mongobindata.php</a>,
+using MongoBinData::UUID type.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @BinUUID */</span>
+<span class="k">private</span> <span class="nv">$uuid</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="boolean">
+<h2>18.6. &#64;Boolean<a class="headerlink" href="#boolean" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;boolean&#8221;</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Boolean */</span>
+<span class="k">private</span> <span class="nv">$active</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="collection">
+<h2>18.7. &#64;Collection<a class="headerlink" href="#collection" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;collection&#8221;. Stores and retrieves the value as numeric indexed
+array.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Collection */</span>
+<span class="k">private</span> <span class="nv">$tags</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="date">
+<h2>18.8. &#64;Date<a class="headerlink" href="#date" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;date&#8221; Converts value to
+MongoDate <a class="reference external" href="http://www.php.net/manual/en/class.mongodate.php">http://www.php.net/manual/en/class.mongodate.php</a>.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Date */</span>
+<span class="k">private</span> <span class="nv">$createdAt</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="discriminatorfield">
+<h2>18.9. &#64;DiscriminatorField<a class="headerlink" href="#discriminatorfield" title="Permalink to this headline">¶</a></h2>
+<p>This annotation is a required annotation for the topmost/super
+class of an inheritance hierachy. It specifies the details of the
+field which saves the name of the class, which the document is
+actually instantiated as.</p>
+<p>Required attributes:</p>
+<ul class="simple">
+<li>fieldName - The field name of the discriminator. This name is also
+used during Array hydration as key to specify the class-name.</li>
+<li></li>
+</ul>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document</span>
+<span class="sd"> * @DiscriminatorField(fieldName=&quot;type&quot;)</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">SuperUser</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="discriminatormap">
+<h2>18.10. &#64;DiscriminatorMap<a class="headerlink" href="#discriminatormap" title="Permalink to this headline">¶</a></h2>
+<p>The discrimnator map is a required annotation on the top-most/super
+class in an inheritance hierachy. It takes an array as only
+argument which defines which class should be saved under which name
+in the database. Keys are the database value and values are the
+classes, either as fully- or as unqualified class names depending
+if the classes are in the namespace or not.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document</span>
+<span class="sd"> * @InheritanceType(&quot;SINGLE_COLLECTION&quot;)</span>
+<span class="sd"> * @DiscriminatorField(fieldName=&quot;discr&quot;)</span>
+<span class="sd"> * @DiscriminatorMap({&quot;person&quot; = &quot;Person&quot;, &quot;employee&quot; = &quot;Employee&quot;})</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Person</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @Field(type=&quot;string&quot;)</span>
+<span class="sd">     */</span>
+    <span class="k">private</span> <span class="nv">$discr</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="distance">
+<h2>18.11. &#64;Distance<a class="headerlink" href="#distance" title="Permalink to this headline">¶</a></h2>
+<p>Use the &#64;Distance annotation in combination with geospatial
+indexes and when running $near queries the property will be
+populated with a distance value.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document</span>
+<span class="sd"> * @Index(keys={&quot;coordinates&quot;=&quot;2d&quot;})</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Place</span>
+<span class="p">{</span>
+    <span class="sd">/** @Id */</span>
+    <span class="k">public</span> <span class="nv">$id</span><span class="p">;</span>
+
+    <span class="sd">/** @EmbedOne(targetDocument=&quot;Coordinates&quot;) */</span>
+    <span class="k">public</span> <span class="nv">$coordinates</span><span class="p">;</span>
+
+    <span class="sd">/** @Distance */</span>
+    <span class="k">public</span> <span class="nv">$distance</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="sd">/** @EmbeddedDocument */</span>
+<span class="k">class</span> <span class="nc">Coordinates</span>
+<span class="p">{</span>
+    <span class="sd">/** @Float */</span>
+    <span class="k">public</span> <span class="nv">$latitude</span><span class="p">;</span>
+
+    <span class="sd">/** @Float */</span>
+    <span class="k">public</span> <span class="nv">$longitude</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now you can run a near() query and access the distance. Get the
+closest city to a set of coordinates:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$city</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">dm</span><span class="o">-&gt;</span><span class="na">createQuery</span><span class="p">(</span><span class="s1">&#39;City&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;coordinates&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">near</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">limit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">getSingleResult</span><span class="p">();</span>
+<span class="k">echo</span> <span class="nv">$city</span><span class="o">-&gt;</span><span class="na">distance</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="document">
+<h2>18.12. &#64;Document<a class="headerlink" href="#document" title="Permalink to this headline">¶</a></h2>
+<p>Required annotation to mark a PHP class as Document. Doctrine ODM
+manages the persistence of all classes marked as document.</p>
+<p>Optional attributes:</p>
+<ul class="simple">
+<li>db - Document Manager uses the default mongo db database, unless it
+has database name to use set, this value can be specified to
+override database to use on per document basis.</li>
+<li>collection - By default collection name is extracted from the
+document&#8217;s class name, but this attribute can be used to override.</li>
+<li>repositoryClass - Specifies custom repository class to use when .</li>
+</ul>
+<p>Example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document(db=&quot;documents&quot;, collection=&quot;users&quot;, repositoryClass=&quot;MyProject\UserRepository&quot;)</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">User</span>
+<span class="p">{</span>
+    <span class="c1">//...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="embedmany">
+<h2>18.13. &#64;EmbedMany<a class="headerlink" href="#embedmany" title="Permalink to this headline">¶</a></h2>
+<p>This annotation is simmilar to &#64;EmbedOne, but
+instead of embedding one document, it informs MongoDB to embed a
+collection of documents</p>
+<p>Required attributes:</p>
+<ul class="simple">
+<li>targetDocument - A full class name of the target document.</li>
+</ul>
+</div>
+<div class="section" id="embedone">
+<h2>18.14. &#64;EmbedOne<a class="headerlink" href="#embedone" title="Permalink to this headline">¶</a></h2>
+<p>The &#64;EmbedOne annotation works almost exactly as the
+&#64;ReferenceOne, except that internally, the
+document is embedded in the parent document in MongoDB. From
+MongoDB docs:</p>
+<blockquote>
+<div>The key question in Mongo schema design is &#8220;does this object merit
+its own collection, or rather should it embed in objects in other
+collections?&#8221; In relational databases, each sub-item of interest
+typically becomes a separate table (unless denormalizing for
+performance). In Mongo, this is not recommended - embedding objects
+is much more efficient. Data is then colocated on disk;
+client-server turnarounds to the database are eliminated. So in
+general the question to ask is, &#8220;why would I not want to embed this
+object?&#8221;</div></blockquote>
+<p>Required attributes:</p>
+<ul class="simple">
+<li>targetDocument - A full class name of the target document.</li>
+</ul>
+</div>
+<div class="section" id="embeddeddocument">
+<h2>18.15. &#64;EmbeddedDocument<a class="headerlink" href="#embeddeddocument" title="Permalink to this headline">¶</a></h2>
+<p>Marks the document as embeddable. Without this annotation, you
+cannot embed non-document objects.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">Money</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @Float</span>
+<span class="sd">     */</span>
+    <span class="k">protected</span> <span class="nv">$amount</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$amount</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">amount</span> <span class="o">=</span> <span class="p">(</span><span class="nx">float</span><span class="p">)</span> <span class="nv">$amount</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">//...</span>
+<span class="p">}</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document(db=&quot;finance&quot;, collection=&quot;wallets&quot;)</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Wallet</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @EmbedOne(targetDocument=&quot;Money&quot;)</span>
+<span class="sd">     */</span>
+    <span class="k">protected</span> <span class="nv">$money</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setMoney</span><span class="p">(</span><span class="nx">Money</span> <span class="nv">$money</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">money</span> <span class="o">=</span> <span class="nv">$money</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">//...</span>
+<span class="p">}</span>
+<span class="c1">//...</span>
+<span class="nv">$wallet</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Wallet</span><span class="p">();</span>
+<span class="nv">$wallet</span><span class="o">-&gt;</span><span class="na">setMoney</span><span class="p">(</span><span class="k">new</span> <span class="nx">Money</span><span class="p">(</span><span class="mf">34.39</span><span class="p">));</span>
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">persist</span><span class="p">(</span><span class="nv">$wallet</span><span class="p">);</span>
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The code above wouldn&#8217;t store the money object. In order for the
+above code to work, you should have:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Money</span>
+<span class="p">{</span>
+<span class="c1">//...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @EmbeddedDocument</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Money</span>
+<span class="p">{</span>
+<span class="c1">//...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The difference is that &#64;EmbeddedDocument cannot be stored without a
+parent &#64;Document and cannot specify its own db or collection
+attributes.</p>
+</div>
+<div class="section" id="field">
+<h2>18.16. &#64;Field<a class="headerlink" href="#field" title="Permalink to this headline">¶</a></h2>
+<p>Marks an annotated instance variable as &#8220;persistent&#8221;. It has to be
+inside the instance variables PHP DocBlock comment. Any value hold
+inside this variable will be saved to and loaded from the document
+store as part of the lifecycle of the instance variables
+document-class.</p>
+<p>Required attributes:</p>
+<ul class="simple">
+<li>type - Name of the Doctrine ODM Type which is converted between PHP
+and Database representation. Can be one of: string, boolean, int,
+float, hash, date, key, timestamp, bin, bin_func, bin_uuid,
+bin_md5, bin_custom</li>
+</ul>
+<p>Optional attributes:</p>
+<ul class="simple">
+<li>name - By default the property name is used for the mongodb field
+name also, however the &#8216;name&#8217; attribute allows you to specify the
+field name.</li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Field(type=&quot;string&quot;)</span>
+<span class="sd"> */</span>
+<span class="k">protected</span> <span class="nv">$username</span><span class="p">;</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Field(type=&quot;string&quot; name=&quot;origin&quot;)</span>
+<span class="sd"> */</span>
+<span class="k">protected</span> <span class="nv">$country</span><span class="p">;</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Column(type=&quot;float&quot;)</span>
+<span class="sd"> */</span>
+<span class="k">protected</span> <span class="nv">$height</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="file">
+<h2>18.17. &#64;File<a class="headerlink" href="#file" title="Permalink to this headline">¶</a></h2>
+<p>Tells ODM that the property is a file, must be set to a existing
+file path before saving to MongoDB Will be instantiated as instance
+of
+MongoGridFSFile <a class="reference external" href="http://www.php.net/manual/en/class.mongogridfsfile.php">http://www.php.net/manual/en/class.mongogridfsfile.php</a>
+class upon retreival</p>
+</div>
+<div class="section" id="float">
+<h2>18.18. &#64;Float<a class="headerlink" href="#float" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;float&#8221;</p>
+</div>
+<div class="section" id="haslifecyclecallbacks">
+<h2>18.19. &#64;HasLifecycleCallbacks<a class="headerlink" href="#haslifecyclecallbacks" title="Permalink to this headline">¶</a></h2>
+<p>Annotation which has to be set on the document-class PHP DocBlock
+to notify Doctrine that this document has document life-cycle
+callback annotations set on at least one of its methods. Using
+&#64;PostLoad, &#64;PrePersist, &#64;PostPersist, &#64;PreRemove, &#64;PostRemove,
+&#64;PreUpdate or &#64;PostUpdate without this marker annotation will make
+Doctrine ignore the callbacks.</p>
+<p>Example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document</span>
+<span class="sd"> * @HasLifecycleCallbacks</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">User</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @PostPersist</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">sendOptinMail</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hash">
+<h2>18.20. &#64;Hash<a class="headerlink" href="#hash" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;hash&#8221;. Stores and retrieves the value as associative array.</p>
+</div>
+<div class="section" id="id">
+<h2>18.21. &#64;Id<a class="headerlink" href="#id" title="Permalink to this headline">¶</a></h2>
+<p>The annotated instance variable will be marked as document
+identifier. This annotation is a marker only and has no required or
+optional attributes.</p>
+<p>Example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">User</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @Id</span>
+<span class="sd">     */</span>
+    <span class="k">protected</span> <span class="nv">$id</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="increment">
+<h2>18.22. &#64;Increment<a class="headerlink" href="#increment" title="Permalink to this headline">¶</a></h2>
+<p>The increment type is just like a normal field except that when you
+update, it will use the $inc operator instead of $set:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">Package</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="sd">/** @Increment */</span>
+    <span class="k">protected</span> <span class="nv">$downloads</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">incrementDownloads</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">downloads</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now update a Package instance like the following:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$package</span><span class="o">-&gt;</span><span class="na">incrementDownloads</span><span class="p">();</span>
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The query sent to Mongo would be something like the following:</p>
+<div class="highlight-python"><pre>array(
+    '$inc' =&gt; array(
+        'downloads' =&gt; 1
+    )
+)</pre>
+</div>
+<p>It will increment the value by the difference between the new value
+and the old value.</p>
+</div>
+<div class="section" id="index">
+<h2>18.23. &#64;Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h2>
+<p>Annotation is used inside the &#64;Document
+annotation on the class level. It allows to hint the MongoDB to
+generate a database index on the specified document fields.</p>
+<p>Required attributes:</p>
+<ul class="simple">
+<li>keys - Fields to index</li>
+<li>options - Array of MongoCollection options.</li>
+</ul>
+<p>Example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document(</span>
+<span class="sd"> *   db=&quot;my_database&quot;,</span>
+<span class="sd"> *   collection=&quot;users&quot;,</span>
+<span class="sd"> *   indexes={</span>
+<span class="sd"> *     @Index(keys={&quot;username&quot;=&quot;desc&quot;}, options={&quot;unique&quot;=true})</span>
+<span class="sd"> *   }</span>
+<span class="sd"> * )</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">User</span>
+<span class="p">{</span>
+    <span class="c1">//...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can also simply specify an &#64;Index or &#64;UniqueIndex on a
+property:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @String @UniqueIndex(safe=&quot;true&quot;) */</span>
+<span class="k">private</span> <span class="nv">$username</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="int">
+<h2>18.24. &#64;Int<a class="headerlink" href="#int" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to
+&#8220;int&#8221;</p>
+</div>
+<div class="section" id="inheritancetype">
+<h2>18.25. &#64;InheritanceType<a class="headerlink" href="#inheritancetype" title="Permalink to this headline">¶</a></h2>
+<p>In an inheritance hierachy you have to use this annotation on the
+topmost/super class to define which strategy should be used for
+inheritance. Currently SINGLE_COLLECTION and
+COLLECTION_PER_CLASS are supported.</p>
+<p>This annotation has always been used in conjunction with the
+&#64;DiscriminatorMap and
+&#64;DiscriminatorField annotations.</p>
+<p>Examples:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document</span>
+<span class="sd"> * @InheritanceType(&quot;COLLECTION_PER_CLASS&quot;)</span>
+<span class="sd"> * @DiscriminatorMap({&quot;person&quot;=&quot;Person&quot;, &quot;employee&quot;=&quot;Employee&quot;})</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Person</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document</span>
+<span class="sd"> * @InheritanceType(&quot;SINGLE_COLLECTION&quot;)</span>
+<span class="sd"> * @DiscriminatorMap({&quot;person&quot;=&quot;Person&quot;, &quot;employee&quot;=&quot;Employee&quot;})</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Person</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="key">
+<h2>18.26. &#64;Key<a class="headerlink" href="#key" title="Permalink to this headline">¶</a></h2>
+<p>Alias of &#64;Field, with &#8220;type&#8221; attribute set to &#8220;key&#8221;
+It is then converted to
+MongoMaxKey <a class="reference external" href="http://www.php.net/manual/en/class.mongomaxkey.php">http://www.php.net/manual/en/class.mongomaxkey.php</a>
+or
+MongoMinKey <a class="reference external" href="http://www.php.net/manual/en/class.mongominkey.php">http://www.php.net/manual/en/class.mongominkey.php</a>,
+if the value evaluates to true or false respectively.</p>
+</div>
+<div class="section" id="mappedsuperclass">
+<h2>18.27. &#64;MappedSuperclass<a class="headerlink" href="#mappedsuperclass" title="Permalink to this headline">¶</a></h2>
+<p>The annotation is used to specify classes that are parents of
+document classes and should not be managed
+read more at <a class="reference external" href="http://www.doctrine-project.org/projects/mongodb_odm/1.0/docs/reference/inheritance/en">http://www.doctrine-project.org/projects/mongodb_odm/1.0/docs/reference/inheritance/en</a>&gt;</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @MappedSuperclass */</span>
+<span class="k">class</span> <span class="nc">BaseDocument</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="notsaved">
+<h2>18.28. &#64;NotSaved<a class="headerlink" href="#notsaved" title="Permalink to this headline">¶</a></h2>
+<p>The annotation is used to specify properties that are loaded if
+they exist but never saved.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @NotSaved */</span>
+<span class="k">public</span> <span class="nv">$field</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="preload">
+<h2>18.29. &#64;PreLoad<a class="headerlink" href="#preload" title="Permalink to this headline">¶</a></h2>
+<p>Marks a method on the document to be called as a &#64;PreLoad event.
+Only works with &#64;HasLifecycleCallbacks in the document class PHP
+DocBlock.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Document @HasLifecycleCallbacks */</span>
+<span class="k">class</span> <span class="nc">Article</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="sd">/** @PreLoad */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">preLoad</span><span class="p">(</span><span class="k">array</span> <span class="o">&amp;</span><span class="nv">$data</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="postload">
+<h2>18.30. &#64;PostLoad<a class="headerlink" href="#postload" title="Permalink to this headline">¶</a></h2>
+<p>Marks a method on the document to be called as a &#64;PostLoad event.
+Only works with &#64;HasLifecycleCallbacks in the document class PHP
+DocBlock.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Document @HasLifecycleCallbacks */</span>
+<span class="k">class</span> <span class="nc">Article</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="sd">/** @PostLoad */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">postLoad</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="postpersist">
+<h2>18.31. &#64;PostPersist<a class="headerlink" href="#postpersist" title="Permalink to this headline">¶</a></h2>
+<p>Marks a method on the document to be called as a &#64;PostPersist
+event. Only works with &#64;HasLifecycleCallbacks in the document class
+PHP DocBlock.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Document @HasLifecycleCallbacks */</span>
+<span class="k">class</span> <span class="nc">Article</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="sd">/** @PostPersist */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">postPersist</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="postremove">
+<h2>18.32. &#64;PostRemove<a class="headerlink" href="#postremove" title="Permalink to this headline">¶</a></h2>
+<p>Marks a method on the document to be called as a &#64;PostRemove event.
+Only works with &#64;HasLifecycleCallbacks in the document class PHP
+DocBlock.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Document @HasLifecycleCallbacks */</span>
+<span class="k">class</span> <span class="nc">Article</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="sd">/** @PostRemove */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">postRemove</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="postupdate">
+<h2>18.33. &#64;PostUpdate<a class="headerlink" href="#postupdate" title="Permalink to this headline">¶</a></h2>
+<p>Marks a method on the document to be called as a &#64;PostUpdate event.
+Only works with &#64;HasLifecycleCallbacks in the document class PHP
+DocBlock.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Document @HasLifecycleCallbacks */</span>
+<span class="k">class</span> <span class="nc">Article</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="sd">/** @PostUpdate */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">postUpdate</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="prepersist">
+<h2>18.34. &#64;PrePersist<a class="headerlink" href="#prepersist" title="Permalink to this headline">¶</a></h2>
+<p>Marks a method on the document to be called as a &#64;PrePersist event.
+Only works with &#64;HasLifecycleCallbacks in the document class PHP
+DocBlock.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Document @HasLifecycleCallbacks */</span>
+<span class="k">class</span> <span class="nc">Article</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="sd">/** @PrePersist */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">prePersist</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="preremove">
+<h2>18.35. &#64;PreRemove<a class="headerlink" href="#preremove" title="Permalink to this headline">¶</a></h2>
+<p>Marks a method on the document to be called as a &#64;PreRemove event.
+Only works with &#64;HasLifecycleCallbacks in the document class PHP
+DocBlock.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Document @HasLifecycleCallbacks */</span>
+<span class="k">class</span> <span class="nc">Article</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="sd">/** @PreRemove */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">preRemove</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="preupdate">
+<h2>18.36. &#64;PreUpdate<a class="headerlink" href="#preupdate" title="Permalink to this headline">¶</a></h2>
+<p>Marks a method on the document to be called as a &#64;PreUpdate event.
+Only works with &#64;HasLifecycleCallbacks in the document class PHP
+DocBlock.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Document @HasLifecycleCallbacks */</span>
+<span class="k">class</span> <span class="nc">Article</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="sd">/** @PreUpdated */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">preUpdated</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="referencemany">
+<h2>18.37. &#64;ReferenceMany<a class="headerlink" href="#referencemany" title="Permalink to this headline">¶</a></h2>
+<p>Defines that the annotated instance variable holds a collection of
+referenced documents.</p>
+<p>Required attributes:</p>
+<ul class="simple">
+<li>targetDocument - A full class name of the target document.</li>
+</ul>
+<p>Optional attributes:</p>
+<ul class="simple">
+<li>cascade - Cascade Option</li>
+</ul>
+<p>Example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @ReferenceMany(targetDocument=&quot;Documents\PhoneNumber&quot;, cascade=&quot;all&quot;)</span>
+<span class="sd"> */</span>
+<span class="k">private</span> <span class="nv">$phones</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="string">
+<h2>18.38. &#64;String<a class="headerlink" href="#string" title="Permalink to this headline">¶</a></h2>
+<p>Defines that the annotated instance variable holds a string.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @String */</span>
+<span class="k">private</span> <span class="nv">$username</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="timestamp">
+<h2>18.39. &#64;Timestamp<a class="headerlink" href="#timestamp" title="Permalink to this headline">¶</a></h2>
+<p>Defines that the annotated instance variable holds a timestamp.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Timestamp */</span>
+<span class="k">private</span> <span class="nv">$created</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="uniqueindex">
+<h2>18.40. &#64;UniqueIndex<a class="headerlink" href="#uniqueindex" title="Permalink to this headline">¶</a></h2>
+<p>Defines a unique index on the given document.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @String @UniqueIndex */</span>
+<span class="k">private</span> <span class="nv">$email</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="referenceone">
+<h2>18.41. &#64;ReferenceOne<a class="headerlink" href="#referenceone" title="Permalink to this headline">¶</a></h2>
+<p>Defines an instance variable holds a related document instance.</p>
+<p>Required attributes:</p>
+<ul class="simple">
+<li>targetDocument - A full class name of the target document.</li>
+</ul>
+<p>Optional attributes:</p>
+<ul class="simple">
+<li>cascade - Cascade Option</li>
+</ul>
+<p>Example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @ReferenceOne(targetDocument=&quot;Documents\ShoppingCart&quot;, cascade=&quot;all&quot;)</span>
+<span class="sd"> */</span>
+<span class="k">private</span> <span class="nv">$cart</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">18. Annotations Reference</a><ul>
+<li><a class="reference internal" href="#bin">18.1. &#64;Bin</a></li>
+<li><a class="reference internal" href="#bincustom">18.2. &#64;BinCustom</a></li>
+<li><a class="reference internal" href="#binfunc">18.3. &#64;BinFunc</a></li>
+<li><a class="reference internal" href="#binmd5">18.4. &#64;BinMD5</a></li>
+<li><a class="reference internal" href="#binuuid">18.5. &#64;BinUUID</a></li>
+<li><a class="reference internal" href="#boolean">18.6. &#64;Boolean</a></li>
+<li><a class="reference internal" href="#collection">18.7. &#64;Collection</a></li>
+<li><a class="reference internal" href="#date">18.8. &#64;Date</a></li>
+<li><a class="reference internal" href="#discriminatorfield">18.9. &#64;DiscriminatorField</a></li>
+<li><a class="reference internal" href="#discriminatormap">18.10. &#64;DiscriminatorMap</a></li>
+<li><a class="reference internal" href="#distance">18.11. &#64;Distance</a></li>
+<li><a class="reference internal" href="#document">18.12. &#64;Document</a></li>
+<li><a class="reference internal" href="#embedmany">18.13. &#64;EmbedMany</a></li>
+<li><a class="reference internal" href="#embedone">18.14. &#64;EmbedOne</a></li>
+<li><a class="reference internal" href="#embeddeddocument">18.15. &#64;EmbeddedDocument</a></li>
+<li><a class="reference internal" href="#field">18.16. &#64;Field</a></li>
+<li><a class="reference internal" href="#file">18.17. &#64;File</a></li>
+<li><a class="reference internal" href="#float">18.18. &#64;Float</a></li>
+<li><a class="reference internal" href="#haslifecyclecallbacks">18.19. &#64;HasLifecycleCallbacks</a></li>
+<li><a class="reference internal" href="#hash">18.20. &#64;Hash</a></li>
+<li><a class="reference internal" href="#id">18.21. &#64;Id</a></li>
+<li><a class="reference internal" href="#increment">18.22. &#64;Increment</a></li>
+<li><a class="reference internal" href="#index">18.23. &#64;Index</a></li>
+<li><a class="reference internal" href="#int">18.24. &#64;Int</a></li>
+<li><a class="reference internal" href="#inheritancetype">18.25. &#64;InheritanceType</a></li>
+<li><a class="reference internal" href="#key">18.26. &#64;Key</a></li>
+<li><a class="reference internal" href="#mappedsuperclass">18.27. &#64;MappedSuperclass</a></li>
+<li><a class="reference internal" href="#notsaved">18.28. &#64;NotSaved</a></li>
+<li><a class="reference internal" href="#preload">18.29. &#64;PreLoad</a></li>
+<li><a class="reference internal" href="#postload">18.30. &#64;PostLoad</a></li>
+<li><a class="reference internal" href="#postpersist">18.31. &#64;PostPersist</a></li>
+<li><a class="reference internal" href="#postremove">18.32. &#64;PostRemove</a></li>
+<li><a class="reference internal" href="#postupdate">18.33. &#64;PostUpdate</a></li>
+<li><a class="reference internal" href="#prepersist">18.34. &#64;PrePersist</a></li>
+<li><a class="reference internal" href="#preremove">18.35. &#64;PreRemove</a></li>
+<li><a class="reference internal" href="#preupdate">18.36. &#64;PreUpdate</a></li>
+<li><a class="reference internal" href="#referencemany">18.37. &#64;ReferenceMany</a></li>
+<li><a class="reference internal" href="#string">18.38. &#64;String</a></li>
+<li><a class="reference internal" href="#timestamp">18.39. &#64;Timestamp</a></li>
+<li><a class="reference internal" href="#uniqueindex">18.40. &#64;UniqueIndex</a></li>
+<li><a class="reference internal" href="#referenceone">18.41. &#64;ReferenceOne</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="capped-collections.html"
+                                  title="previous chapter">17. Capped Collections</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="xml-mapping.html"
+                                  title="next chapter">19. XML Mapping</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/reference/annotations-reference.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="xml-mapping.html" title="19. XML Mapping"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="capped-collections.html" title="17. Capped Collections"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

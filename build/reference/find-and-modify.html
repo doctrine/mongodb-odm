@@ -1,0 +1,193 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>12. Find and Modify &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="13. Trees" href="trees.html" />
+    <link rel="prev" title="11. Query Builder API" href="query-builder-api.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="trees.html" title="13. Trees"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="query-builder-api.html" title="11. Query Builder API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="find-and-modify">
+<h1>12. Find and Modify<a class="headerlink" href="#find-and-modify" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>From MongoDB.org:</p>
+<p class="last">MongoDB supports a &#8220;find, modify, and return&#8221; command. This command
+can be used to atomically modify a document (at most one) and
+return it. Note that, by default, the document returned will not
+include the modifications made on the update.</p>
+</div>
+<p>Doctrine fully integrates the find and modify functionality to the
+query builder object so you can easily run these types of queries!</p>
+<div class="section" id="update">
+<h2>12.1. Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
+<p>For example you can update a job and return it:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$job</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createrQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Job&#39;</span><span class="p">)</span>
+    <span class="c1">// Find the job</span>
+    <span class="o">-&gt;</span><span class="na">findAndModify</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;in_progress&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="k">true</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;in_progress&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="k">false</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">sort</span><span class="p">(</span><span class="s1">&#39;priority&#39;</span><span class="p">,</span> <span class="s1">&#39;desc&#39;</span><span class="p">)</span>
+
+    <span class="c1">// Update found job</span>
+    <span class="o">-&gt;</span><span class="na">update</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;started&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="k">new</span> <span class="nx">\MongoDate</span><span class="p">())</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>If you want to update a job and return the new document you can
+call the <tt class="docutils literal"><span class="pre">returnNew()</span></tt> method.</p>
+<p>Here is an example where we return the new updated job document:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+<span class="nv">$job</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createrQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Job&#39;</span><span class="p">)</span>
+    <span class="c1">// Find the job</span>
+    <span class="o">-&gt;</span><span class="na">findAndModify</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">returnNew</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;in_progress&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="k">false</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">sort</span><span class="p">(</span><span class="s1">&#39;priority&#39;</span><span class="p">,</span> <span class="s1">&#39;desc&#39;</span><span class="p">)</span>
+
+    <span class="c1">// Update found job</span>
+    <span class="o">-&gt;</span><span class="na">update</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;started&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="k">new</span> <span class="nx">\MongoDate</span><span class="p">())</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;in_progress&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="k">true</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The returned <tt class="docutils literal"><span class="pre">$job</span></tt> will be a managed <tt class="docutils literal"><span class="pre">Job</span></tt> instance with the
+<tt class="docutils literal"><span class="pre">started</span></tt> and <tt class="docutils literal"><span class="pre">in_progress</span></tt> fields updated.</p>
+</div>
+<div class="section" id="remove">
+<h2>12.2. Remove<a class="headerlink" href="#remove" title="Permalink to this headline">¶</a></h2>
+<p>You can also remove a document and return it:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$job</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createrQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Job&#39;</span><span class="p">)</span>
+    <span class="c1">// Find the job</span>
+    <span class="o">-&gt;</span><span class="na">findAndModify</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">sort</span><span class="p">(</span><span class="s1">&#39;priority&#39;</span><span class="p">,</span> <span class="s1">&#39;desc&#39;</span><span class="p">)</span>
+
+    <span class="c1">// Remove found job</span>
+    <span class="o">-&gt;</span><span class="na">remove</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>You can read more about the find and modify functionality on the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/findandmodify+Command">MongoDB website</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">12. Find and Modify</a><ul>
+<li><a class="reference internal" href="#update">12.1. Update</a></li>
+<li><a class="reference internal" href="#remove">12.2. Remove</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="query-builder-api.html"
+                                  title="previous chapter">11. Query Builder API</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="trees.html"
+                                  title="next chapter">13. Trees</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/reference/find-and-modify.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="trees.html" title="13. Trees"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="query-builder-api.html" title="11. Query Builder API"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

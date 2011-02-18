@@ -1,0 +1,629 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. Basic Mapping &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="3. Reference Mapping" href="reference-mapping.html" />
+    <link rel="prev" title="1. Introduction" href="introduction.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="reference-mapping.html" title="3. Reference Mapping"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="1. Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="basic-mapping">
+<h1>2. Basic Mapping<a class="headerlink" href="#basic-mapping" title="Permalink to this headline">¶</a></h1>
+<p>This chapter explains the basic mapping of objects and properties.
+Mapping of references and embedded documents will be covered in the
+next chapter &#8220;Reference Mapping&#8221;.</p>
+<div class="section" id="mapping-drivers">
+<h2>2.1. Mapping Drivers<a class="headerlink" href="#mapping-drivers" title="Permalink to this headline">¶</a></h2>
+<p>Doctrine provides several different ways for specifying object
+document mapping metadata:</p>
+<ul class="simple">
+<li>Docblock Annotations</li>
+<li>XML</li>
+<li>YAML</li>
+<li>Raw PHP Code</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you&#8217;re wondering which mapping driver gives the best
+performance, the answer is: None. Once the metadata of a class has
+been read from the source (annotations, xml or yaml) it is stored
+in an instance of the
+<tt class="docutils literal"><span class="pre">Doctrine\ODM\MongoDB\Mapping\ClassMetadata</span></tt> class and these
+instances are stored in the metadata cache. Therefore at the end of
+the day all drivers perform equally well. If you&#8217;re not using a
+metadata cache (not recommended!) then the XML driver might have a
+slight edge in performance due to the powerful native XML support
+in PHP.</p>
+</div>
+</div>
+<div class="section" id="introduction-to-docblock-annotations">
+<h2>2.2. Introduction to Docblock Annotations<a class="headerlink" href="#introduction-to-docblock-annotations" title="Permalink to this headline">¶</a></h2>
+<p>You&#8217;ve probably used docblock annotations in some form already,
+most likely to provide documentation metadata for a tool like
+<tt class="docutils literal"><span class="pre">PHPDocumentor</span></tt> (&#64;author, &#64;link, ...). Docblock annotations are a
+tool to embed metadata inside the documentation section which can
+then be processed by some tool. Doctrine generalizes the concept of
+docblock annotations so that they can be used for any kind of
+metadata and so that it is easy to define new docblock annotations.
+In order to allow more involved annotation values and to reduce the
+chances of clashes with other docblock annotations, the Doctrine
+docblock annotations feature an alternative syntax that is heavily
+inspired by the Annotation syntax introduced in Java 5.</p>
+<p>The implementation of these enhanced docblock annotations is
+located in the <tt class="docutils literal"><span class="pre">Doctrine\Common\Annotations</span></tt> namespace and
+therefore part of the Common package. Doctrine docblock annotations
+support namespaces and nested annotations among other things. The
+Doctrine MongoDB ODM defines its own set of docblock annotations
+for supplying object document mapping metadata.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you&#8217;re not comfortable with the concept of docblock
+annotations, don&#8217;t worry, as mentioned earlier Doctrine 2 provides
+XML and YAML alternatives and you could easily implement your own
+favorite mechanism for defining ORM metadata.</p>
+</div>
+</div>
+<div class="section" id="persistent-classes">
+<h2>2.3. Persistent classes<a class="headerlink" href="#persistent-classes" title="Permalink to this headline">¶</a></h2>
+<p>In order to mark a class for object-relational persistence it needs
+to be designated as an document. This can be done through the
+<tt class="docutils literal"><span class="pre">&#64;Document</span></tt> marker annotation.</p>
+<div class="configuration-block">
+<ul class="simple">
+<li><em>Annotations</em><div class="highlight-php-annotations"><pre>&lt;?php
+
+namespace Documents;
+
+/** @Document */
+class User
+{
+}</pre>
+</div>
+</li>
+<li><em>XML</em><div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;doctrine-mongo-mapping</span> <span class="na">xmlns=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping&quot;</span>
+                  <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+                  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping</span>
+<span class="s">                  http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;document</span> <span class="na">name=</span><span class="s">&quot;Documents\User&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/document&gt;</span>
+<span class="nt">&lt;/doctrine-mongo-mapping&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><em>YAML</em><div class="highlight-yaml"><div class="highlight"><pre><span class="l-Scalar-Plain">Doctrine\ODM\MongoDB\Tests\Mapping\User</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">document</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<p>By default, the document will be persisted to a database named
+doctrine and a collection with the same name as the class name. In
+order to change that, you can use the <tt class="docutils literal"><span class="pre">db</span></tt> and <tt class="docutils literal"><span class="pre">collection</span></tt>
+option as follows:</p>
+<div class="configuration-block">
+<ul class="simple">
+<li><em>Annotations</em><div class="highlight-php-annotations"><pre>&lt;?php
+
+namespace Documents;
+
+/** @Document(db="my_db", collection="users") */
+class User
+{
+}</pre>
+</div>
+</li>
+<li><em>XML</em><div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;doctrine-mongo-mapping</span> <span class="na">xmlns=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping&quot;</span>
+                  <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+                  <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping</span>
+<span class="s">                  http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;document</span> <span class="na">name=</span><span class="s">&quot;Documents\User&quot;</span> <span class="na">db=</span><span class="s">&quot;my_db&quot;</span> <span class="na">collection=</span><span class="s">&quot;users&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/document&gt;</span>
+<span class="nt">&lt;/doctrine-mongo-mapping&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><em>YAML</em><div class="highlight-yaml"><div class="highlight"><pre><span class="l-Scalar-Plain">Documents\User</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">document</span>
+  <span class="l-Scalar-Plain">db</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">my_db</span>
+  <span class="l-Scalar-Plain">collection</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">users</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<p>Now instances of DocumentsUser will be persisted into a
+collection named <tt class="docutils literal"><span class="pre">User</span></tt> in the database <tt class="docutils literal"><span class="pre">my_db</span></tt>.</p>
+<p>If you want to omit the db attribute you can configure the default db
+to use with the <tt class="docutils literal"><span class="pre">setDefaultDB</span></tt> method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$config</span><span class="o">-&gt;</span><span class="na">setDefaultDB</span><span class="p">(</span><span class="s1">&#39;my_db&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="doctrine-mapping-types">
+<h2>2.4. Doctrine Mapping Types<a class="headerlink" href="#doctrine-mapping-types" title="Permalink to this headline">¶</a></h2>
+<p>A Doctrine Mapping Type defines the mapping between a PHP type and
+an MongoDB type. You can even write your own custom mapping types.</p>
+<p>Here is a quick overview of the built-in mapping types:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">bin_data_custom</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">bin_data_func</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">bin_data_md5</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">bin_data</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">bin_data_uuid</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">boolean</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">date</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">file</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">float</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">hash</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">id</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">int</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">key</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">string</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">timestamp</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">increment</span></tt></li>
+</ul>
+<p>You can read more about the available MongoDB types on <a class="reference external" href="http://us.php.net/manual/en/mongo.types.php">php.net</a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The Doctrine mapping types are used to convert the local PHP types to the MongoDB types
+when persisting so that your domain is not bound to MongoDB specific types. For example a
+DateTime instance is converted to MongoDate when you persist your documents.</p>
+</div>
+</div>
+<div class="section" id="property-mapping">
+<h2>2.5. Property Mapping<a class="headerlink" href="#property-mapping" title="Permalink to this headline">¶</a></h2>
+<p>After a class has been marked as an document it can specify
+mappings for its instance fields. Here we will only look at simple
+fields that hold scalar values like strings, numbers, etc.
+References to other objects and embedded objects are covered in the
+chapter &#8220;Reference Mapping&#8221;.</p>
+<div class="section" id="identifiers">
+<h3>2.5.1. Identifiers<a class="headerlink" href="#identifiers" title="Permalink to this headline">¶</a></h3>
+<p>Every document class needs an identifier. You designate the field
+that serves as the identifier with the <tt class="docutils literal"><span class="pre">&#64;Id</span></tt> marker annotation.
+Here is an example:</p>
+<div class="configuration-block">
+<ul class="simple">
+<li><em>Annotations</em><div class="highlight-php-annotations"><pre>&lt;?php
+
+namespace Documents;
+
+/** @Document */
+class User
+{
+    /** @Id */
+    private $id;
+}</pre>
+</div>
+</li>
+<li><em>XML</em><div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;doctrine-mongo-mapping</span> <span class="na">xmlns=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping&quot;</span>
+                <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+                <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping</span>
+<span class="s">                http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;document</span> <span class="na">name=</span><span class="s">&quot;Documents\User&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;field</span> <span class="na">fieldName=</span><span class="s">&quot;id&quot;</span> <span class="na">id=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/document&gt;</span>
+<span class="nt">&lt;/doctrine-mongo-mapping&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><em>YAML</em><div class="highlight-yaml"><div class="highlight"><pre><span class="l-Scalar-Plain">Documents\User</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">fields</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">id</span>
+      <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<p>You can configure custom ID strategies if you don&#8217;t want to use the default MongoId.
+The available strategies are:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">AUTO</span></tt> - Uses the native generated MongoId.</li>
+<li><tt class="docutils literal"><span class="pre">INCREMENT</span></tt> - Used another collection to auto increment an identifier.</li>
+<li><tt class="docutils literal"><span class="pre">UUID</span></tt> - Generates a uuid identifier.</li>
+<li><tt class="docutils literal"><span class="pre">NONE</span></tt> - Do not generate any identifier. ID must be manually set.</li>
+</ul>
+<p>Here is how you can configure the strategy for the different configuration formats:</p>
+<div class="configuration-block">
+<ul class="simple">
+<li><em>PHP</em><div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** Document */</span>
+<span class="k">class</span> <span class="nc">MyPersistentClass</span>
+<span class="p">{</span>
+    <span class="sd">/** @Id(strategy=&quot;NONE&quot;) */</span>
+    <span class="k">private</span> <span class="nv">$id</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setId</span><span class="p">(</span><span class="nv">$id</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">id</span> <span class="o">=</span> <span class="nv">$id</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">//...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><em>XML</em><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;doctrine-mongo-mapping</span> <span class="na">xmlns=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping&quot;</span>
+                        <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+                        <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping</span>
+<span class="s">                                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd&quot;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;document</span> <span class="na">name=</span><span class="s">&quot;MyPersistentClass&quot;</span> <span class="na">customId=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;id&quot;</span> <span class="na">id=</span><span class="s">&quot;true&quot;</span> <span class="na">strategy=</span><span class="s">&quot;NONE&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/document&gt;</span>
+<span class="nt">&lt;/doctrine-mongo-mapping&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><em>YAML</em><div class="highlight-yaml"><div class="highlight"><pre><span class="l-Scalar-Plain">MyPersistentClass</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">customId</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+  <span class="l-Scalar-Plain">fields</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+      <span class="l-Scalar-Plain">strategy</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">NONE</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<p>When using the <tt class="docutils literal"><span class="pre">NONE</span></tt> strategy you will have to explicitly set an id before persisting the document:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">//...</span>
+
+<span class="nv">$document</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MyPersistentClass</span><span class="p">();</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">setId</span><span class="p">(</span><span class="s1">&#39;my_unique_identifier&#39;</span><span class="p">);</span>
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">persist</span><span class="p">(</span><span class="nv">$document</span><span class="p">);</span>
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Now you can retrieve the document later:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">//...</span>
+
+<span class="nv">$document</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="s1">&#39;MyPersistentClass&#39;</span><span class="p">,</span> <span class="s1">&#39;my_unique_identifier&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fields">
+<h3>2.5.2. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h3>
+<p>To mark a property for document persistence the <tt class="docutils literal"><span class="pre">&#64;Field</span></tt> docblock
+annotation can be used. This annotation usually requires at least 1
+attribute to be set, the <tt class="docutils literal"><span class="pre">type</span></tt>. The <tt class="docutils literal"><span class="pre">type</span></tt> attribute specifies
+the Doctrine Mapping Type to use for the field. If the type is not
+specified, &#8216;string&#8217; is used as the default mapping type since it is
+the most flexible.</p>
+<p>Example:</p>
+<div class="configuration-block">
+<ul class="simple">
+<li><em>Annotations</em><div class="highlight-php-annotations"><pre>&lt;?php
+
+namespace Documents;
+
+/** @Document */
+class User
+{
+    // ...
+
+    /** @Field(type="string") */
+    private $username;
+}</pre>
+</div>
+</li>
+<li><em>XML</em><div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;doctrine-mongo-mapping</span> <span class="na">xmlns=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping&quot;</span>
+                <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+                <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping</span>
+<span class="s">                http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;document</span> <span class="na">name=</span><span class="s">&quot;Documents\User&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;field</span> <span class="na">fieldName=</span><span class="s">&quot;id&quot;</span> <span class="na">id=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;field</span> <span class="na">fieldName=</span><span class="s">&quot;username&quot;</span> <span class="na">type=</span><span class="s">&quot;string&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/document&gt;</span>
+<span class="nt">&lt;/doctrine-mongo-mapping&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><em>YAML</em><div class="highlight-yaml"><div class="highlight"><pre><span class="l-Scalar-Plain">Documents\User</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">fields</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">id</span>
+      <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+    <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">string</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<p>In that example we mapped the property <tt class="docutils literal"><span class="pre">id</span></tt> to the field <tt class="docutils literal"><span class="pre">id</span></tt>
+using the mapping type <tt class="docutils literal"><span class="pre">id</span></tt> and the property <tt class="docutils literal"><span class="pre">name</span></tt> is mapped
+to the field <tt class="docutils literal"><span class="pre">name</span></tt> with the default mapping type <tt class="docutils literal"><span class="pre">string</span></tt>. As
+you can see, by default the mongo field names are assumed to be the
+same as the property names. To specify a different name for the
+field, you can use the <tt class="docutils literal"><span class="pre">name</span></tt> attribute of the Field annotation
+as follows:</p>
+<div class="configuration-block">
+<ul class="simple">
+<li><em>PHP</em><div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Field(name=&quot;db_name&quot;) */</span>
+<span class="k">private</span> <span class="nv">$name</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><em>XML</em><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;field</span> <span class="na">fieldName=</span><span class="s">&quot;name&quot;</span> <span class="na">name=</span><span class="s">&quot;db_name&quot;</span> <span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="custom-mapping-types">
+<h2>2.6. Custom Mapping Types<a class="headerlink" href="#custom-mapping-types" title="Permalink to this headline">¶</a></h2>
+<p>Doctrine allows you to create new mapping types. This can come in
+handy when you&#8217;re missing a specific mapping type or when you want
+to replace the existing implementation of a mapping type.</p>
+<p>In order to create a new mapping type you need to subclass
+<tt class="docutils literal"><span class="pre">Doctrine\ODM\MongoDB\Mapping\Types\Type</span></tt> and implement/override
+the methods. Here is an example skeleton of such a custom type
+class:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">My\Project\Types</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Doctrine\DBAL\Types\Type</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Doctrine\DBAL\Platforms\AbstractPlatform</span><span class="p">;</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * My custom datatype.</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">MyType</span> <span class="k">extends</span> <span class="nx">Type</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">convertToPHPValue</span><span class="p">(</span><span class="nv">$value</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// This is executed when the value is read from the database. Make your conversions here.</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">convertToDatabaseValue</span><span class="p">(</span><span class="nv">$value</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// This is executed when the value is written to the database. Make your conversions here.</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Restrictions to keep in mind:</p>
+<ul class="simple">
+<li>If the value of the field is <em>NULL</em> the method
+<tt class="docutils literal"><span class="pre">convertToDatabaseValue()</span></tt> is not called.</li>
+<li>The <tt class="docutils literal"><span class="pre">UnitOfWork</span></tt> never passes values to the database convert
+method that did not change in the request.</li>
+</ul>
+<p>When you have implemented the type you still need to let Doctrine
+know about it. This can be achieved through the
+<tt class="docutils literal"><span class="pre">Doctrine\ODM\MongoDB\Mapping\Types#registerType($name,</span> <span class="pre">$class)</span></tt>
+method.</p>
+<p>Here is an example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">// in bootstrapping code</span>
+
+<span class="c1">// ...</span>
+
+<span class="k">use</span> <span class="nx">Doctrine\ODM\MongoDB\Types\Type</span><span class="p">;</span>
+
+<span class="c1">// ...</span>
+
+<span class="c1">// Register my type</span>
+<span class="nx">Type</span><span class="o">::</span><span class="na">addType</span><span class="p">(</span><span class="s1">&#39;mytype&#39;</span><span class="p">,</span> <span class="s1">&#39;My\Project\Types\MyType&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>As can be seen above, when registering the custom types in the
+configuration you specify a unique name for the mapping type and
+map that to the corresponding fully qualified class name. Now you
+can use your new type in your mapping like this:</p>
+<div class="configuration-block">
+<ul class="simple">
+<li><em>PHP</em><div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">MyPersistentClass</span>
+<span class="p">{</span>
+    <span class="sd">/** @Field(type=&quot;mytype&quot;) */</span>
+    <span class="k">private</span> <span class="nv">$field</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><em>XML</em><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;field</span> <span class="na">fieldName=</span><span class="s">&quot;field&quot;</span> <span class="na">type=</span><span class="s">&quot;mytype&quot;</span> <span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><em>YAML</em><div class="highlight-yaml"><div class="highlight"><pre><span class="l-Scalar-Plain">field</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mytype</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="multiple-document-types-in-a-collection">
+<h2>2.7. Multiple Document Types in a Collection<a class="headerlink" href="#multiple-document-types-in-a-collection" title="Permalink to this headline">¶</a></h2>
+<p>You can easily store multiple types of documents in a single
+collection. It only requires that you specify the same collection name on
+multiple documents and specify the <tt class="docutils literal"><span class="pre">discriminatorMap</span></tt> for each document in
+the collection. Here is an example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document(collection=&quot;my_documents&quot;)</span>
+<span class="sd"> * @DiscriminatorField(fieldName=&quot;type&quot;)</span>
+<span class="sd"> * @DiscriminatorMap({&quot;article&quot;=&quot;Article&quot;, &quot;album&quot;=&quot;Album&quot;})</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Article</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document(collection=&quot;my_documents&quot;)</span>
+<span class="sd"> * @DiscriminatorField(fieldName=&quot;type&quot;)</span>
+<span class="sd"> * @DiscriminatorMap({&quot;article&quot;=&quot;Article&quot;, &quot;album&quot;=&quot;Album&quot;})</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Album</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>All instances of <tt class="docutils literal"><span class="pre">Article</span></tt> and <tt class="docutils literal"><span class="pre">Album</span></tt> will be stored in the
+<tt class="docutils literal"><span class="pre">my_documents</span></tt> collection. You can query for the documents just
+like you normally would and if you want to and the results will
+automatically be limited for you based on the discriminator map.</p>
+<p>If you wish to query for multiple types of documents from the
+collection you can simply pass an array of document class names:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$documents</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">,</span> <span class="s1">&#39;Album&#39;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>The above will return a <tt class="docutils literal"><span class="pre">MongoCursor</span></tt> that will allow you to
+iterate over all <tt class="docutils literal"><span class="pre">Article</span></tt> and <tt class="docutils literal"><span class="pre">Album</span></tt> instances!</p>
+<p>You can also create queries in the same way:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$query</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQuery</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">,</span> <span class="s1">&#39;Album&#39;</span><span class="p">));</span>
+<span class="nv">$documents</span> <span class="o">=</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">2. Basic Mapping</a><ul>
+<li><a class="reference internal" href="#mapping-drivers">2.1. Mapping Drivers</a></li>
+<li><a class="reference internal" href="#introduction-to-docblock-annotations">2.2. Introduction to Docblock Annotations</a></li>
+<li><a class="reference internal" href="#persistent-classes">2.3. Persistent classes</a></li>
+<li><a class="reference internal" href="#doctrine-mapping-types">2.4. Doctrine Mapping Types</a></li>
+<li><a class="reference internal" href="#property-mapping">2.5. Property Mapping</a><ul>
+<li><a class="reference internal" href="#identifiers">2.5.1. Identifiers</a></li>
+<li><a class="reference internal" href="#fields">2.5.2. Fields</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-mapping-types">2.6. Custom Mapping Types</a></li>
+<li><a class="reference internal" href="#multiple-document-types-in-a-collection">2.7. Multiple Document Types in a Collection</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="introduction.html"
+                                  title="previous chapter">1. Introduction</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="reference-mapping.html"
+                                  title="next chapter">3. Reference Mapping</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/reference/basic-mapping.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="reference-mapping.html" title="3. Reference Mapping"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="1. Introduction"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

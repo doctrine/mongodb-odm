@@ -1,0 +1,206 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20. YAML Mapping &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="21. Console Commands" href="console-commands.html" />
+    <link rel="prev" title="19. XML Mapping" href="xml-mapping.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="console-commands.html" title="21. Console Commands"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="xml-mapping.html" title="19. XML Mapping"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="yaml-mapping">
+<h1>20. YAML Mapping<a class="headerlink" href="#yaml-mapping" title="Permalink to this headline">¶</a></h1>
+<p>The YAML mapping driver enables you to provide the ODM metadata in
+form of YAML documents.</p>
+<p>The YAML mapping document of a class is loaded on-demand the first
+time it is requested and subsequently stored in the metadata cache.
+In order to work, this requires certain conventions:</p>
+<ul class="simple">
+<li>Each document/mapped superclass must get its own dedicated YAML
+mapping document.</li>
+<li>The name of the mapping document must consist of the fully
+qualified name of the class, where namespace separators are
+replaced by dots (.).</li>
+<li>All mapping documents should get the extension &#8221;.dcm.yml&#8221; to
+identify it as a Doctrine mapping file. This is more of a
+convention and you are not forced to do this. You can change the
+file extension easily enough.</li>
+<li></li>
+</ul>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$driver</span><span class="o">-&gt;</span><span class="na">setFileExtension</span><span class="p">(</span><span class="s1">&#39;.yml&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>It is recommended to put all YAML mapping documents in a single
+folder but you can spread the documents over several folders if you
+want to. In order to tell the YamlDriver where to look for your
+mapping documents, supply an array of paths as the first argument
+of the constructor, like this:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">// $config instanceof Doctrine\ORM\Configuration</span>
+<span class="nv">$driver</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YamlDriver</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;/path/to/files&#39;</span><span class="p">));</span>
+<span class="nv">$config</span><span class="o">-&gt;</span><span class="na">setMetadataDriverImpl</span><span class="p">(</span><span class="nv">$driver</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="section" id="example">
+<h2>20.1. Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>As a quick start, here is a small example document that makes use
+of several common elements:</p>
+<div class="highlight-yaml"><div class="highlight"><pre><span class="c1"># Documents.User.dcm.yml</span>
+
+<span class="l-Scalar-Plain">Documents\User</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">db</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">documents</span>
+  <span class="l-Scalar-Plain">collection</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">user</span>
+  <span class="l-Scalar-Plain">fields</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+    <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">login</span>
+      <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">string</span>
+    <span class="l-Scalar-Plain">email</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">unique</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">order</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">desc</span>
+    <span class="l-Scalar-Plain">createdAt</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">date</span>
+  <span class="l-Scalar-Plain">indexes</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">index1</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">keys</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">desc</span>
+      <span class="l-Scalar-Plain">options</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">unique</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+        <span class="l-Scalar-Plain">dropDups</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+        <span class="l-Scalar-Plain">safe</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+  <span class="l-Scalar-Plain">embedOne</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">address</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">targetDocument</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Documents\Address</span>
+  <span class="l-Scalar-Plain">embedMany</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">phonenumbers</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">targetDocument</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Documents\Phonenumber</span>
+  <span class="l-Scalar-Plain">referenceOne</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">profile</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">targetDocument</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Documents\Profile</span>
+      <span class="l-Scalar-Plain">cascade</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">all</span>
+    <span class="l-Scalar-Plain">account</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">targetDocument</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Documents\Account</span>
+      <span class="l-Scalar-Plain">cascade</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">all</span>
+  <span class="l-Scalar-Plain">referenceMany</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">groups</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">targetDocument</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Documents\Group</span>
+      <span class="l-Scalar-Plain">cascade</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">all</span>
+</pre></div>
+</div>
+<p>Be aware that class-names specified in the YAML files should be
+fully qualified.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">20. YAML Mapping</a><ul>
+<li><a class="reference internal" href="#example">20.1. Example</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="xml-mapping.html"
+                                  title="previous chapter">19. XML Mapping</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="console-commands.html"
+                                  title="next chapter">21. Console Commands</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/reference/yml-mapping.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="console-commands.html" title="21. Console Commands"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="xml-mapping.html" title="19. XML Mapping"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

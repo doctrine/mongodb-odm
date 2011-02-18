@@ -1,0 +1,620 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>7. Working with Objects &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="8. Geospatial Queries" href="geospatial-queries.html" />
+    <link rel="prev" title="6. Indexes" href="indexes.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="geospatial-queries.html" title="8. Geospatial Queries"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="indexes.html" title="6. Indexes"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="working-with-objects">
+<h1>7. Working with Objects<a class="headerlink" href="#working-with-objects" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="understanding">
+<h2>7.1. Understanding<a class="headerlink" href="#understanding" title="Permalink to this headline">¶</a></h2>
+<p>In this chapter we will help you understand the <tt class="docutils literal"><span class="pre">DocumentManager</span></tt>
+and the <tt class="docutils literal"><span class="pre">UnitOfWork</span></tt>. A Unit of Work is similar to an
+object-level transaction. A new Unit of Work is implicitly started
+when an DocumentManager is initially created or after
+<tt class="docutils literal"><span class="pre">DocumentManager#flush()</span></tt> has been invoked. A Unit of Work is
+committed (and a new one started) by invoking
+<tt class="docutils literal"><span class="pre">DocumentManager#flush()</span></tt>.</p>
+<p>A Unit of Work can be manually closed by calling
+<tt class="docutils literal"><span class="pre">DocumentManager#close()</span></tt>. Any changes to objects within this
+Unit of Work that have not yet been persisted are lost.</p>
+<div class="section" id="the-size-of-a-unit-of-work">
+<h3>7.1.1. The size of a Unit of Work<a class="headerlink" href="#the-size-of-a-unit-of-work" title="Permalink to this headline">¶</a></h3>
+<p>The size of a Unit of Work mainly refers to the number of managed
+documents at a particular point in time.</p>
+</div>
+<div class="section" id="the-cost-of-flush">
+<h3>7.1.2. The cost of flush()<a class="headerlink" href="#the-cost-of-flush" title="Permalink to this headline">¶</a></h3>
+<p>How costly a flush operation is in terms of performance mainly
+depends on the size. You can get the size of your Unit of Work as
+follows:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$uowSize</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getUnitOfWork</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">size</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The size represents the number of managed documents in the Unit of
+Work. This size affects the performance of flush() operations due
+to change tracking and, of course, memory consumption, so you may
+want to check it from time to time during development.</p>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">Do not invoke <tt class="docutils literal"><span class="pre">flush</span></tt> after every change to a
+document or every single invocation of persist/remove/merge/...
+This is an anti-pattern and unnecessarily reduces the performance
+of your application. Instead, form units of work that operate on
+your objects and call <tt class="docutils literal"><span class="pre">flush</span></tt> when you are done. While serving a
+single HTTP request there should be usually no need for invoking
+<tt class="docutils literal"><span class="pre">flush</span></tt> more than 0-2 times.</p>
+</div>
+</div>
+<div class="section" id="direct-access-to-a-unit-of-work">
+<h3>7.1.3. Direct access to a Unit of Work<a class="headerlink" href="#direct-access-to-a-unit-of-work" title="Permalink to this headline">¶</a></h3>
+<p>You can get direct access to the Unit of Work by calling
+<tt class="docutils literal"><span class="pre">DocumentManager#getUnitOfWork()</span></tt>. This will return the
+UnitOfWork instance the DocumentManager is currently using.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$uow</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getUnitOfWork</span><span class="p">();</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Directly manipulating a UnitOfWork is not recommended.
+When working directly with the UnitOfWork API, respect methods
+marked as INTERNAL by not using them and carefully read the API
+documentation.</p>
+</div>
+</div>
+</div>
+<div class="section" id="persisting-documents">
+<h2>7.2. Persisting documents<a class="headerlink" href="#persisting-documents" title="Permalink to this headline">¶</a></h2>
+<p>A document can be made persistent by passing it to the
+<tt class="docutils literal"><span class="pre">DocumentManager#persist($document)</span></tt> method. By applying the
+persist operation on some document, that document becomes MANAGED,
+which means that its persistence is from now on managed by an
+DocumentManager. As a result the persistent state of such a
+document will subsequently be properly synchronized with the
+database when <tt class="docutils literal"><span class="pre">DocumentManager#flush()</span></tt> is invoked.</p>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">Invoking the <tt class="docutils literal"><span class="pre">persist</span></tt> method on a document does NOT
+cause an immediate insert to be issued on the database. Doctrine
+applies a strategy called &#8220;transactional write-behind&#8221;, which means
+that it will delay most operations until
+<tt class="docutils literal"><span class="pre">DocumentManager#flush()</span></tt> is invoked which will then issue all
+necessary queries to synchronize your objects with the database in
+the most efficient way.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">();</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="s1">&#39;jwage&#39;</span><span class="p">);</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="s1">&#39;changeme&#39;</span><span class="p">);</span>
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">persist</span><span class="p">(</span><span class="nv">$user</span><span class="p">);</span>
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span>
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">The _id of a document is guaranteed to be available
+after the next successful flush operation that involves the
+document in question. You can not rely on a generated identifier to
+be available directly after invoking <tt class="docutils literal"><span class="pre">persist</span></tt>.</p>
+</div>
+<p>The semantics of the persist operation, applied on a document X,
+are as follows:</p>
+<ul class="simple">
+<li>If X is a new document, it becomes managed. The document X will be
+entered into the database as a result of the flush operation.</li>
+<li>If X is a preexisting managed document, it is ignored by the
+persist operation. However, the persist operation is cascaded to
+documents referenced by X, if the relationships from X to these
+other documents are mapped with cascade=PERSIST or cascade=ALL.</li>
+<li>If X is a removed document, it becomes managed.</li>
+<li>If X is a detached document, the behavior is undefined.</li>
+</ul>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">Do not pass detached documents to the persist operation.</p>
+</div>
+</div>
+<div class="section" id="removing-documents">
+<h2>7.3. Removing documents<a class="headerlink" href="#removing-documents" title="Permalink to this headline">¶</a></h2>
+<p>A document can be removed from persistent storage by passing it to
+the <tt class="docutils literal"><span class="pre">DocumentManager#remove($document)</span></tt> method. By applying the
+<tt class="docutils literal"><span class="pre">remove</span></tt> operation on some document, that document becomes
+REMOVED, which means that its persistent state will be deleted once
+<tt class="docutils literal"><span class="pre">DocumentManager#flush()</span></tt> is invoked. The in-memory state of a
+document is unaffected by the <tt class="docutils literal"><span class="pre">remove</span></tt> operation.</p>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">Just like <tt class="docutils literal"><span class="pre">persist</span></tt>, invoking <tt class="docutils literal"><span class="pre">remove</span></tt> on a
+document does NOT cause an immediate query to be issued on the
+database. The document will be removed on the next invocation of
+<tt class="docutils literal"><span class="pre">DocumentManager#flush()</span></tt> that involves that document.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">remove</span><span class="p">(</span><span class="nv">$user</span><span class="p">);</span>
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The semantics of the remove operation, applied to a document X are
+as follows:</p>
+<ul class="simple">
+<li>If X is a new document, it is ignored by the remove operation.
+However, the remove operation is cascaded to documents referenced
+by X, if the relationship from X to these other documents is mapped
+with cascade=REMOVE or cascade=ALL.</li>
+<li>If X is a managed document, the remove operation causes it to
+become removed. The remove operation is cascaded to documents
+referenced by X, if the relationships from X to these other
+documents is mapped with cascade=REMOVE or cascade=ALL.</li>
+<li>If X is a detached document, an InvalidArgumentException will be
+thrown.</li>
+<li>If X is a removed document, it is ignored by the remove operation.</li>
+<li>A removed document X will be removed from the database as a result
+of the flush operation.</li>
+</ul>
+</div>
+<div class="section" id="detaching-documents">
+<h2>7.4. Detaching documents<a class="headerlink" href="#detaching-documents" title="Permalink to this headline">¶</a></h2>
+<p>A document is detached from an DocumentManager and thus no longer
+managed by invoking the <tt class="docutils literal"><span class="pre">DocumentManager#detach($document)</span></tt>
+method on it or by cascading the detach operation to it. Changes
+made to the detached document, if any (including removal of the
+document), will not be synchronized to the database after the
+document has been detached.</p>
+<p>Doctrine will not hold on to any references to a detached
+document.</p>
+<p>Example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">detach</span><span class="p">(</span><span class="nv">$document</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The semantics of the detach operation, applied to a document X are
+as follows:</p>
+<ul class="simple">
+<li>If X is a managed document, the detach operation causes it to
+become detached. The detach operation is cascaded to documents
+referenced by X, if the relationships from X to these other
+documents is mapped with cascade=DETACH or cascade=ALL. Documents
+which previously referenced X will continue to reference X.</li>
+<li>If X is a new or detached document, it is ignored by the detach
+operation.</li>
+<li>If X is a removed document, the detach operation is cascaded to
+documents referenced by X, if the relationships from X to these
+other documents is mapped with cascade=DETACH or
+cascade=ALL/Documents which previously referenced X will continue
+to reference X.</li>
+</ul>
+<p>There are several situations in which a document is detached
+automatically without invoking the <tt class="docutils literal"><span class="pre">detach</span></tt> method:</p>
+<ul class="simple">
+<li>When <tt class="docutils literal"><span class="pre">DocumentManager#clear()</span></tt> is invoked, all documents that are
+currently managed by the DocumentManager instance become detached.</li>
+<li>When serializing a document. The document retrieved upon subsequent
+unserialization will be detached (This is the case for all
+documents that are serialized and stored in some cache).</li>
+</ul>
+<p>The <tt class="docutils literal"><span class="pre">detach</span></tt> operation is usually not as frequently needed and
+used as <tt class="docutils literal"><span class="pre">persist</span></tt> and <tt class="docutils literal"><span class="pre">remove</span></tt>.</p>
+</div>
+<div class="section" id="merging-documents">
+<h2>7.5. Merging documents<a class="headerlink" href="#merging-documents" title="Permalink to this headline">¶</a></h2>
+<p>Merging documents refers to the merging of (usually detached)
+documents into the context of an DocumentManager so that they
+become managed again. To merge the state of a document into an
+DocumentManager use the <tt class="docutils literal"><span class="pre">DocumentManager#merge($document)</span></tt>
+method. The state of the passed document will be merged into a
+managed copy of this document and this copy will subsequently be
+returned.</p>
+<p>Example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$detachedDocument</span> <span class="o">=</span> <span class="nb">unserialize</span><span class="p">(</span><span class="nv">$serializedDocument</span><span class="p">);</span> <span class="c1">// some detached document</span>
+<span class="nv">$document</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">merge</span><span class="p">(</span><span class="nv">$detachedDocument</span><span class="p">);</span>
+<span class="c1">// $document now refers to the fully managed copy returned by the merge operation.</span>
+<span class="c1">// The DocumentManager $dm now manages the persistence of $document as usual.</span>
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p>When you want to serialize/unserialize documents you
+have to make all document properties protected, never private. The
+reason for this is, if you serialize a class that was a proxy
+instance before, the private variables won&#8217;t be serialized and a
+PHP Notice is thrown.</p>
+<p class="last">The semantics of the merge operation, applied to a document X, are
+as follows:</p>
+</div>
+<ul class="simple">
+<li>If X is a detached document, the state of X is copied onto a
+pre-existing managed document instance X&#8217; of the same iddocument or
+a new managed copy X&#8217; of X is created.</li>
+<li>If X is a new document instance, an InvalidArgumentException will
+be thrown.</li>
+<li>If X is a removed document instance, an InvalidArgumentException
+will be thrown.</li>
+<li>If X is a managed document, it is ignored by the merge operation,
+however, the merge operation is cascaded to documents referenced by
+relationships from X if these relationships have been mapped with
+the cascade element value MERGE or ALL.</li>
+<li>For all documents Y referenced by relationships from X having the
+cascade element value MERGE or ALL, Y is merged recursively as Y&#8217;.
+For all such Y referenced by X, X&#8217; is set to reference Y&#8217;. (Note
+that if X is managed then X is the same object as X&#8217;.)</li>
+<li>If X is a document merged to X&#8217;, with a reference to another
+document Y, where cascade=MERGE or cascade=ALL is not specified,
+then navigation of the same association from X&#8217; yields a reference
+to a managed object Y&#8217; with the same persistent iddocument as Y.</li>
+</ul>
+<p>The <tt class="docutils literal"><span class="pre">merge</span></tt> operation is usually not as frequently needed and
+used as <tt class="docutils literal"><span class="pre">persist</span></tt> and <tt class="docutils literal"><span class="pre">remove</span></tt>. The most common scenario for
+the <tt class="docutils literal"><span class="pre">merge</span></tt> operation is to reattach documents to an
+DocumentManager that come from some cache (and are therefore
+detached) and you want to modify and persist such a document.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you load some detached documents from a cache and you
+do not need to persist or delete them or otherwise make use of them
+without the need for persistence services there is no need to use
+<tt class="docutils literal"><span class="pre">merge</span></tt>. I.e. you can simply pass detached objects from a cache
+directly to the view.</p>
+</div>
+</div>
+<div class="section" id="references">
+<h2>7.6. References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>References between documents and embedded documents are represented
+just like in regular object-oriented PHP, with references to other
+objects or collections of objects.</p>
+</div>
+<div class="section" id="establishing-references">
+<h2>7.7. Establishing References<a class="headerlink" href="#establishing-references" title="Permalink to this headline">¶</a></h2>
+<p>Establishing a reference to another document is straight forward:</p>
+<p>Here is an example where we add a new comment to an article:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$comment</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Comment</span><span class="p">();</span>
+<span class="c1">// ...</span>
+
+<span class="nv">$article</span><span class="o">-&gt;</span><span class="na">getComments</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="nv">$comment</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Or you can set a single reference:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$address</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Address</span><span class="p">();</span>
+<span class="c1">// ...</span>
+
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">setAddress</span><span class="p">(</span><span class="nv">$address</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="removing-references">
+<h2>7.8. Removing References<a class="headerlink" href="#removing-references" title="Permalink to this headline">¶</a></h2>
+<p>Removing an association between two documents is similarly
+straight-forward. There are two strategies to do so, by key and by
+element. Here are some examples:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$article</span><span class="o">-&gt;</span><span class="na">getComments</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">removeElement</span><span class="p">(</span><span class="nv">$comment</span><span class="p">);</span>
+<span class="nv">$article</span><span class="o">-&gt;</span><span class="na">getComments</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">remove</span><span class="p">(</span><span class="nv">$ithComment</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Or you can remove a single reference:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">setAddress</span><span class="p">(</span><span class="k">null</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>When working with collections, keep in mind that a Collection is
+essentially an ordered map (just like a PHP array). That is why the
+<tt class="docutils literal"><span class="pre">remove</span></tt> operation accepts an index/key. <tt class="docutils literal"><span class="pre">removeElement</span></tt> is a
+separate method that has O(n) complexity, where n is the size of
+the map.</p>
+</div>
+<div class="section" id="transitive-persistence">
+<h2>7.9. Transitive persistence<a class="headerlink" href="#transitive-persistence" title="Permalink to this headline">¶</a></h2>
+<p>Persisting, removing, detaching and merging individual documents
+can become pretty cumbersome, especially when a larger object graph
+with collections is involved. Therefore Doctrine provides a
+mechanism for transitive persistence through cascading of these
+operations. Each reference to another document or a collection of
+documents can be configured to automatically cascade certain
+operations. By default, no operations are cascaded.</p>
+<p>The following cascade options exist:</p>
+<ul class="simple">
+<li>persist : Cascades persist operations to the associated documents.</li>
+<li>remove : Cascades remove operations to the associated documents.</li>
+<li>merge : Cascades merge operations to the associated documents.</li>
+<li>detach : Cascades detach operations to the associated documents.</li>
+<li>all : Cascades persist, remove, merge and detach operations to
+associated documents.</li>
+</ul>
+<p>The following example shows an association to a number of
+addresses. If persist() or remove() is invoked on any User
+document, it will be cascaded to all associated Address documents
+in the $addresses collection.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">User</span>
+<span class="p">{</span>
+    <span class="c1">//...</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @ReferenceMany(targetDocument=&quot;Address&quot;, cascade={&quot;persist&quot;, &quot;remove&quot;})</span>
+<span class="sd">     */</span>
+    <span class="k">private</span> <span class="nv">$addresses</span><span class="p">;</span>
+    <span class="c1">//...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Even though automatic cascading is convenient it should be used
+with care. Do not blindly apply cascade=all to all associations as
+it will unnecessarily degrade the performance of your application.</p>
+</div>
+<div class="section" id="querying">
+<h2>7.10. Querying<a class="headerlink" href="#querying" title="Permalink to this headline">¶</a></h2>
+<p>Doctrine provides the following ways, in increasing level of power
+and flexibility, to query for persistent objects. You should always
+start with the simplest one that suits your needs.</p>
+<div class="section" id="by-primary-key">
+<h3>7.10.1. By Primary Key<a class="headerlink" href="#by-primary-key" title="Permalink to this headline">¶</a></h3>
+<p>The most basic way to query for a persistent object is by its
+identifier / primary key using the
+<tt class="docutils literal"><span class="pre">DocumentManager#find($documentName,</span> <span class="pre">$id)</span></tt> method. Here is an
+example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$user</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">,</span> <span class="nv">$id</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The return value is either the found document instance or null if
+no instance could be found with the given identifier.</p>
+<p>Essentially, <tt class="docutils literal"><span class="pre">DocumentManager#find()</span></tt> is just a shortcut for the
+following:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$user</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">DocumentManager#getRepository($documentName)</span></tt> returns a
+repository object which provides many ways to retrieve documents of
+the specified type. By default, the repository instance is of type
+<tt class="docutils literal"><span class="pre">Doctrine\ODM\MongoDB\DocumentRepository</span></tt>. You can also use
+custom repository classes.</p>
+</div>
+<div class="section" id="by-simple-conditions">
+<h3>7.10.2. By Simple Conditions<a class="headerlink" href="#by-simple-conditions" title="Permalink to this headline">¶</a></h3>
+<p>To query for one or more documents based on several conditions that
+form a logical conjunction, use the <tt class="docutils literal"><span class="pre">findBy</span></tt> and <tt class="docutils literal"><span class="pre">findOneBy</span></tt>
+methods on a repository as follows:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">// All users that are 20 years old</span>
+<span class="nv">$users</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">findBy</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">20</span><span class="p">));</span>
+
+<span class="c1">// All users that are 20 years old and have a surname of &#39;Miller&#39;</span>
+<span class="nv">$users</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">findBy</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;age&#39;</span> <span class="o">=&gt;</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;surname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Miller&#39;</span><span class="p">));</span>
+
+<span class="c1">// A single user by its nickname</span>
+<span class="nv">$user</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">findOneBy</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;nickname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;romanb&#39;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>An DocumentRepository also provides a mechanism for more concise
+calls through its use of <tt class="docutils literal"><span class="pre">__call</span></tt>. Thus, the following two
+examples are equivalent:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">// A single user by its nickname</span>
+<span class="nv">$user</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">findOneBy</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;nickname&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;romanb&#39;</span><span class="p">));</span>
+
+<span class="c1">// A single user by its nickname (__call magic)</span>
+<span class="nv">$user</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">findOneByNickname</span><span class="p">(</span><span class="s1">&#39;romanb&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="by-lazy-loading">
+<h3>7.10.3. By Lazy Loading<a class="headerlink" href="#by-lazy-loading" title="Permalink to this headline">¶</a></h3>
+<p>Whenever you have a managed document instance at hand, you can
+traverse and use any associations of that document as if they were
+in-memory already. Doctrine will automatically load the associated
+objects on demand through the concept of lazy-loading.</p>
+</div>
+<div class="section" id="by-query-objects">
+<h3>7.10.4. By Query Objects<a class="headerlink" href="#by-query-objects" title="Permalink to this headline">¶</a></h3>
+<p>The most powerful and flexible method to query for persistent
+objects is the Query object. The Query object enables you to query
+for persistent objects with a fluent object oriented interface.</p>
+<p>You can create a query using
+<tt class="docutils literal"><span class="pre">DocumentManager#createQuery($documentName</span> <span class="pre">=</span> <span class="pre">null)</span></tt>. Here is a
+simple example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">// All users with an age between 20 and 30 (inclusive).</span>
+<span class="nv">$q</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQuery</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">range</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">);</span>
+<span class="nv">$users</span> <span class="o">=</span> <span class="nv">$q</span><span class="o">-&gt;</span><span class="na">getResult</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="custom-repositories">
+<h3>7.10.5. Custom Repositories<a class="headerlink" href="#custom-repositories" title="Permalink to this headline">¶</a></h3>
+<p>By default the DocumentManager returns a default implementation of
+<tt class="docutils literal"><span class="pre">Doctrine\ODM\MongoDB\DocumentRepository</span></tt> when you call
+<tt class="docutils literal"><span class="pre">DocumentManager#getRepository($documentClass)</span></tt>. You can override
+this behavior by specifying the class name of your own Document
+Repository in the Annotation, XML or YAML metadata. In large
+applications that require lots of specialized DQL queries using a
+custom repository is one recommended way of grouping these queries
+in a central location.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">use</span> <span class="nx">Doctrine\ODM\MongoDB\DocumentRepository</span><span class="p">;</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document(repositoryClass=&quot;UserRepository&quot;)</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">User</span>
+<span class="p">{</span>
+
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">UserRepository</span> <span class="k">extends</span> <span class="nx">DocumentRepository</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">getAllAdminUsers</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">createQuery</span><span class="p">()</span>
+            <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;admin&#39;</span><span class="p">)</span>
+            <span class="o">-&gt;</span><span class="na">getResult</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can access your repository now by calling:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$admins</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">getAllAdminUsers</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">7. Working with Objects</a><ul>
+<li><a class="reference internal" href="#understanding">7.1. Understanding</a><ul>
+<li><a class="reference internal" href="#the-size-of-a-unit-of-work">7.1.1. The size of a Unit of Work</a></li>
+<li><a class="reference internal" href="#the-cost-of-flush">7.1.2. The cost of flush()</a></li>
+<li><a class="reference internal" href="#direct-access-to-a-unit-of-work">7.1.3. Direct access to a Unit of Work</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#persisting-documents">7.2. Persisting documents</a></li>
+<li><a class="reference internal" href="#removing-documents">7.3. Removing documents</a></li>
+<li><a class="reference internal" href="#detaching-documents">7.4. Detaching documents</a></li>
+<li><a class="reference internal" href="#merging-documents">7.5. Merging documents</a></li>
+<li><a class="reference internal" href="#references">7.6. References</a></li>
+<li><a class="reference internal" href="#establishing-references">7.7. Establishing References</a></li>
+<li><a class="reference internal" href="#removing-references">7.8. Removing References</a></li>
+<li><a class="reference internal" href="#transitive-persistence">7.9. Transitive persistence</a></li>
+<li><a class="reference internal" href="#querying">7.10. Querying</a><ul>
+<li><a class="reference internal" href="#by-primary-key">7.10.1. By Primary Key</a></li>
+<li><a class="reference internal" href="#by-simple-conditions">7.10.2. By Simple Conditions</a></li>
+<li><a class="reference internal" href="#by-lazy-loading">7.10.3. By Lazy Loading</a></li>
+<li><a class="reference internal" href="#by-query-objects">7.10.4. By Query Objects</a></li>
+<li><a class="reference internal" href="#custom-repositories">7.10.5. Custom Repositories</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="indexes.html"
+                                  title="previous chapter">6. Indexes</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="geospatial-queries.html"
+                                  title="next chapter">8. Geospatial Queries</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/reference/working-with-objects.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="geospatial-queries.html" title="8. Geospatial Queries"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="indexes.html" title="6. Indexes"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

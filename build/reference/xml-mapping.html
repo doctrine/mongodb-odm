@@ -1,0 +1,221 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>19. XML Mapping &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="20. YAML Mapping" href="yml-mapping.html" />
+    <link rel="prev" title="18. Annotations Reference" href="annotations-reference.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="yml-mapping.html" title="20. YAML Mapping"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="annotations-reference.html" title="18. Annotations Reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="xml-mapping">
+<h1>19. XML Mapping<a class="headerlink" href="#xml-mapping" title="Permalink to this headline">¶</a></h1>
+<p>The XML mapping driver enables you to provide the ODM metadata in
+form of XML documents.</p>
+<p>The XML driver is backed by an XML Schema document that describes
+the structure of a mapping document. The most recent version of the
+XML Schema document is available online at
+<a class="reference external" href="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping">http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd</a>.
+The most convenient way to work with XML mapping files is to use an
+IDE/editor that can provide code-completion based on such an XML
+Schema document. The following is an outline of a XML mapping
+document with the proper xmlns/xsi setup for the latest code in
+trunk.</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;doctrine-mongo-mapping</span> <span class="na">xmlns=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping&quot;</span>
+      <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+      <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping</span>
+<span class="s">                    http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd&quot;</span><span class="nt">&gt;</span>
+
+    ...
+
+<span class="nt">&lt;/doctrine-mongo-mapping&gt;</span>
+</pre></div>
+</div>
+<p>The XML mapping document of a class is loaded on-demand the first
+time it is requested and subsequently stored in the metadata cache.
+In order to work, this requires certain conventions:</p>
+<ul class="simple">
+<li>Each document/mapped superclass must get its own dedicated XML
+mapping document.</li>
+<li>The name of the mapping document must consist of the fully
+qualified name of the class, where namespace separators are
+replaced by dots (.).</li>
+<li>All mapping documents should get the extension &#8221;.dcm.xml&#8221; to
+identify it as a Doctrine mapping file. This is more of a
+convention and you are not forced to do this. You can change the
+file extension easily enough.</li>
+</ul>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$driver</span><span class="o">-&gt;</span><span class="na">setFileExtension</span><span class="p">(</span><span class="s1">&#39;.xml&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>It is recommended to put all XML mapping documents in a single
+folder but you can spread the documents over several folders if you
+want to. In order to tell the XmlDriver where to look for your
+mapping documents, supply an array of paths as the first argument
+of the constructor, like this:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">// $config instanceof Doctrine\ODM\MongoDB\Configuration</span>
+<span class="nv">$driver</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XmlDriver</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;/path/to/files&#39;</span><span class="p">));</span>
+<span class="nv">$config</span><span class="o">-&gt;</span><span class="na">setMetadataDriverImpl</span><span class="p">(</span><span class="nv">$driver</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="section" id="example">
+<h2>19.1. Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>As a quick start, here is a small example document that makes use
+of several common elements:</p>
+<div class="highlight-xml"><div class="highlight"><pre>// Documents.User.dcm.xml
+
+<span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+
+<span class="nt">&lt;doctrine-mongo-mapping</span> <span class="na">xmlns=</span><span class="s">&quot;http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping&quot;</span>
+      <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+      <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping</span>
+<span class="s">                    http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd&quot;</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;document</span> <span class="na">name=</span><span class="s">&quot;Documents\User&quot;</span> <span class="na">db=</span><span class="s">&quot;documents&quot;</span> <span class="na">collection=</span><span class="s">&quot;users&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;field</span> <span class="na">fieldName=</span><span class="s">&quot;id&quot;</span> <span class="na">id=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;field</span> <span class="na">fieldName=</span><span class="s">&quot;username&quot;</span> <span class="na">name=</span><span class="s">&quot;login&quot;</span> <span class="na">type=</span><span class="s">&quot;string&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;field</span> <span class="na">fieldName=</span><span class="s">&quot;email&quot;</span> <span class="na">type=</span><span class="s">&quot;string&quot;</span> <span class="na">unique=</span><span class="s">&quot;true&quot;</span> <span class="na">order=</span><span class="s">&quot;desc&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;field</span> <span class="na">fieldName=</span><span class="s">&quot;createdAt&quot;</span> <span class="na">type=</span><span class="s">&quot;date&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;indexes&gt;</span>
+            <span class="nt">&lt;index</span> <span class="na">unique=</span><span class="s">&quot;true&quot;</span> <span class="na">dropDups=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;key</span> <span class="na">name=</span><span class="s">&quot;username&quot;</span> <span class="na">order=</span><span class="s">&quot;desc&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;option</span> <span class="na">name=</span><span class="s">&quot;safe&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/index&gt;</span>
+        <span class="nt">&lt;/indexes&gt;</span>
+        <span class="nt">&lt;embed-one</span> <span class="na">target-document=</span><span class="s">&quot;Documents\Address&quot;</span> <span class="na">field=</span><span class="s">&quot;address&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;reference-one</span> <span class="na">target-document=</span><span class="s">&quot;Documents\Profile&quot;</span> <span class="na">field=</span><span class="s">&quot;profile&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;cascade&gt;</span>
+                <span class="nt">&lt;all</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/cascade&gt;</span>
+        <span class="nt">&lt;/reference-one&gt;</span>
+        <span class="nt">&lt;embed-many</span> <span class="na">target-document=</span><span class="s">&quot;Documents\Phonenumber&quot;</span> <span class="na">field=</span><span class="s">&quot;phonenumbers&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;reference-many</span> <span class="na">target-document=</span><span class="s">&quot;Documents\Group&quot;</span> <span class="na">field=</span><span class="s">&quot;groups&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;cascade&gt;</span>
+                <span class="nt">&lt;all</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/cascade&gt;</span>
+        <span class="nt">&lt;/reference-many&gt;</span>
+        <span class="nt">&lt;reference-one</span> <span class="na">target-document=</span><span class="s">&quot;Documents\Account&quot;</span> <span class="na">field=</span><span class="s">&quot;account&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;cascade&gt;</span>
+                <span class="nt">&lt;all</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/cascade&gt;</span>
+        <span class="nt">&lt;/reference-one&gt;</span>
+    <span class="nt">&lt;/document&gt;</span>
+<span class="nt">&lt;/doctrine-mongo-mapping&gt;</span>
+</pre></div>
+</div>
+<p>Be aware that class-names specified in the XML files should be fully qualified.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">19. XML Mapping</a><ul>
+<li><a class="reference internal" href="#example">19.1. Example</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="annotations-reference.html"
+                                  title="previous chapter">18. Annotations Reference</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="yml-mapping.html"
+                                  title="next chapter">20. YAML Mapping</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/reference/xml-mapping.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="yml-mapping.html" title="20. YAML Mapping"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="annotations-reference.html" title="18. Annotations Reference"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

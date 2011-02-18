@@ -1,2 +1,2 @@
 #!/bin/bash
-sphinx-build en /var/www/html
+sphinx-build en build

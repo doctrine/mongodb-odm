@@ -1,0 +1,226 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Validation of Documents &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="prev" title="Implementing the Notify ChangeTracking Policy" href="implementing-the-notify-changetracking-policy.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="implementing-the-notify-changetracking-policy.html" title="Implementing the Notify ChangeTracking Policy"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="validation-of-documents">
+<h1>Validation of Documents<a class="headerlink" href="#validation-of-documents" title="Permalink to this headline">¶</a></h1>
+<p><em>Section author: Benjamin Eberlei &lt;<a class="reference external" href="mailto:kontakt&#37;&#52;&#48;beberlei&#46;de">kontakt<span>&#64;</span>beberlei<span>&#46;</span>de</a>&gt;</em></p>
+<p>Doctrine does not ship with any internal validators, the reason
+being that we think all the frameworks out there already ship with
+quite decent ones that can be integrated into your Domain easily.
+What we offer are hooks to execute any kind of validation.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You don&#8217;t need to validate your documents in the lifecycle
+events. Its only one of many options. Of course you can also
+perform validations in value setters or any other method of your
+documents that are used in your code.</p>
+</div>
+<p>Documents can register lifecycle event methods with Doctrine that
+are called on different occasions. For validation we would need to
+hook into the events called before persisting and updating. Even
+though we don&#8217;t support validation out of the box, the
+implementation is even simpler than in Doctrine 1 and you will get
+the additional benefit of being able to re-use your validation in
+any other part of your domain.</p>
+<p>Say we have an <tt class="docutils literal"><span class="pre">Order</span></tt> with several <tt class="docutils literal"><span class="pre">OrderLine</span></tt> instances. We
+never want to allow any customer to order for a larger sum than he
+is allowed to:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">Order</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">assertCustomerAllowedBuying</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$orderLimit</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">customer</span><span class="o">-&gt;</span><span class="na">getOrderLimit</span><span class="p">();</span>
+
+        <span class="nv">$amount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">orderLines</span> <span class="k">AS</span> <span class="nv">$line</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$amount</span> <span class="o">+=</span> <span class="nv">$line</span><span class="o">-&gt;</span><span class="na">getAmount</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$amount</span> <span class="o">&gt;</span> <span class="nv">$orderLimit</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">CustomerOrderLimitExceededException</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now this is some pretty important piece of business logic in your
+code, enforcing it at any time is important so that customers with
+a unknown reputation don&#8217;t owe your business too much money.</p>
+<p>We can enforce this constraint in any of the metadata drivers.
+First Annotations:</p>
+<div class="configuration-block">
+<ul class="simple">
+<li><em>PHP</em><div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * @Document</span>
+<span class="sd"> * @HasLifecycleCallbacks</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">Order</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @PrePersist @PreUpdate</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">assertCustomerAllowedBuying</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><em>XML</em><div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;doctrine-mapping&gt;</span>
+    <span class="nt">&lt;document</span> <span class="na">name=</span><span class="s">&quot;Order&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;lifecycle-callbacks&gt;</span>
+            <span class="nt">&lt;lifecycle-callback</span> <span class="na">type=</span><span class="s">&quot;prePersist&quot;</span> <span class="na">method=</span><span class="s">&quot;assertCustomerallowedBuying&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;lifecycle-callback</span> <span class="na">type=</span><span class="s">&quot;preUpdate&quot;</span> <span class="na">method=</span><span class="s">&quot;assertCustomerallowedBuying&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/lifecycle-callbacks&gt;</span>
+    <span class="nt">&lt;/document&gt;</span>
+<span class="nt">&lt;/doctrine-mapping&gt;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<p>Now validation is performed whenever you call
+<tt class="docutils literal"><span class="pre">DocumentManager#persist($order)</span></tt> or when you call
+<tt class="docutils literal"><span class="pre">DocumentManager#flush()</span></tt> and an order is about to be updated. Any
+Exception that happens in the lifecycle callbacks will be cached by
+the DocumentManager and the current transaction is rolled back.</p>
+<p>Of course you can do any type of primitive checks, not null,
+email-validation, string size, integer and date ranges in your
+validation callbacks.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+<span class="k">class</span> <span class="nc">Order</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @PrePersist @PreUpdate</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">validate</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">plannedShipDate</span> <span class="nx">instanceof</span> <span class="nx">DateTime</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">ValidateException</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">plannedShipDate</span><span class="o">-&gt;</span><span class="na">format</span><span class="p">(</span><span class="s1">&#39;U&#39;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">time</span><span class="p">())</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">ValidateException</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">customer</span> <span class="o">==</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">OrderRequiresCustomerException</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>What is nice about lifecycle events is, you can also re-use the
+methods at other places in your domain, for example in combination
+with your form library. Additionally there is no limitation in the
+number of methods you register on one particular event, i.e. you
+can register multiple methods for validation in &#8220;PrePersist&#8221; or
+&#8220;PreUpdate&#8221; or mix and share them in any combinations between those
+two events.</p>
+<p>There is no limit to what you can and can&#8217;t validate in
+&#8220;PrePersist&#8221; and &#8220;PreUpdate&#8221; as long as you don&#8217;t create new document
+instances. This was already discussed in the previous blog post on
+the Versionable extension, which requires another type of event
+called &#8220;onFlush&#8221;.</p>
+<p>Further readings: <a class="reference internal" href="../reference/events.html"><em>Lifecycle Events</em></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="implementing-the-notify-changetracking-policy.html"
+                                  title="previous chapter">Implementing the Notify ChangeTracking Policy</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/cookbook/validation-of-documents.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="implementing-the-notify-changetracking-policy.html" title="Implementing the Notify ChangeTracking Policy"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

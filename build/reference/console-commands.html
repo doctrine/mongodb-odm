@@ -1,0 +1,160 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>21. Console Commands &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="Getting Started" href="../cookbook/getting-started.html" />
+    <link rel="prev" title="20. YAML Mapping" href="yml-mapping.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../cookbook/getting-started.html" title="Getting Started"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="yml-mapping.html" title="20. YAML Mapping"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="console-commands">
+<h1>21. Console Commands<a class="headerlink" href="#console-commands" title="Permalink to this headline">¶</a></h1>
+<p>Doctrine MongoDB ODM offers some console commands to ease your development process:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">mongodb:query</span></tt> - Query mongodb and inspect the outputted results from your document classes.</li>
+<li><tt class="docutils literal"><span class="pre">mongodb:generate:documents</span></tt> - Generate document classes and method stubs from your mapping information.</li>
+<li><tt class="docutils literal"><span class="pre">mongodb:generate:hydrators</span></tt> - Generates hydrator classes for document classes.</li>
+<li><tt class="docutils literal"><span class="pre">mongodb:generate:proxies</span></tt> - Generates proxy classes for document classes.</li>
+<li><tt class="docutils literal"><span class="pre">mongodb:generate:repositories</span></tt> -  Generate repository classes from your mapping information.</li>
+<li><tt class="docutils literal"><span class="pre">mongodb:schema:create</span></tt> - Allows you to create databases, collections and indexes for your documents</li>
+<li><tt class="docutils literal"><span class="pre">mongodb:schema:drop</span></tt> - Allows you to drop databases, collections and indexes for your documents</li>
+</ul>
+<p>You can setup a console command easily with the following code. You just need an existing
+<tt class="docutils literal"><span class="pre">DocumentManager</span></tt> instance:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">// mongodb.php</span>
+
+<span class="c1">// ...</span>
+
+<span class="nv">$helpers</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+    <span class="s1">&#39;dm&#39;</span> <span class="o">=&gt;</span> <span class="k">new</span> <span class="nx">Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper</span><span class="p">(</span><span class="nv">$dm</span><span class="p">),</span>
+<span class="p">);</span>
+
+<span class="nv">$helperSet</span> <span class="o">=</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$helperSet</span><span class="p">)</span> <span class="o">?</span> <span class="nv">$helperSet</span> <span class="o">:</span> <span class="k">new</span> <span class="nx">\Symfony\Component\Console\Helper\HelperSet</span><span class="p">();</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$helpers</span> <span class="k">as</span> <span class="nv">$name</span> <span class="o">=&gt;</span> <span class="nv">$helper</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$helperSet</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="nv">$helper</span><span class="p">,</span> <span class="nv">$name</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nv">$cli</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Symfony\Component\Console\Application</span><span class="p">(</span><span class="s1">&#39;Doctrine ODM MongoDB Command Line Interface&#39;</span><span class="p">,</span> <span class="nx">Doctrine\ODM\MongoDB\Version</span><span class="o">::</span><span class="na">VERSION</span><span class="p">);</span>
+<span class="nv">$cli</span><span class="o">-&gt;</span><span class="na">setCatchExceptions</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+<span class="nv">$cli</span><span class="o">-&gt;</span><span class="na">setHelperSet</span><span class="p">(</span><span class="nv">$helperSet</span><span class="p">);</span>
+<span class="nv">$cli</span><span class="o">-&gt;</span><span class="na">addCommands</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+    <span class="k">new</span> <span class="nx">\Doctrine\ODM\MongoDB\Tools\Console\Command\QueryCommand</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nx">\Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateDocumentsCommand</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nx">\Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateRepositoriesCommand</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nx">\Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateProxiesCommand</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nx">\Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateHydratorsCommand</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nx">\Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\CreateCommand</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nx">\Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\DropCommand</span><span class="p">(),</span>
+<span class="p">));</span>
+<span class="nv">$cli</span><span class="o">-&gt;</span><span class="na">run</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Now you can run commands like the following:</p>
+<blockquote>
+<div>$ php mongodb.php mongodb:query User &#8220;{ username : &#8216;jwage&#8217; }&#8221;</div></blockquote>
+<p>The above would output the results from the query.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="yml-mapping.html"
+                                  title="previous chapter">20. YAML Mapping</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../cookbook/getting-started.html"
+                                  title="next chapter">Getting Started</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/reference/console-commands.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../cookbook/getting-started.html" title="Getting Started"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="yml-mapping.html" title="20. YAML Mapping"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

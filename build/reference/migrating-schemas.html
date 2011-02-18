@@ -1,0 +1,297 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10. Migrating Schemas &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="11. Query Builder API" href="query-builder-api.html" />
+    <link rel="prev" title="9. Events" href="events.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="query-builder-api.html" title="11. Query Builder API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="events.html" title="9. Events"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="migrating-schemas">
+<h1>10. Migrating Schemas<a class="headerlink" href="#migrating-schemas" title="Permalink to this headline">¶</a></h1>
+<p>Even though MongoDB is schemaless, introducing some kind of object
+mapper means that the definition of your objects become your
+schema. You may have a situation where you rename a property in
+your object and you need to also load the values from older
+documents where the field is still using the old name. Doctrine
+offers a few different methods for dealing with this problem!</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Features in this chapter inspired by Objectify
+All of the features documented in this chapter were inspired by
+Objectify which is an object mapper for the AppEngine datastore.
+You can read more about the project on the
+<a class="reference external" href="http://code.google.com/p/objectify-appengine/wiki/Concepts?tm=6">Objectify Wiki</a>.</p>
+</div>
+<div class="section" id="renaming-a-field">
+<h2>10.1. Renaming a Field<a class="headerlink" href="#renaming-a-field" title="Permalink to this headline">¶</a></h2>
+<p>Lets say you have a document that starts off looking like this:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">Person</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nv">$id</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nv">$name</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then you want to rename <tt class="docutils literal"><span class="pre">name</span></tt> to <tt class="docutils literal"><span class="pre">fullName</span></tt> like this:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">Person</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nv">$id</span><span class="p">;</span>
+
+    <span class="sd">/** @AlsoLoad(&quot;name&quot;) */</span>
+    <span class="k">public</span> <span class="nv">$fullName</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When a person is loaded the <tt class="docutils literal"><span class="pre">fullName</span></tt> field will be populated
+with the value of either <tt class="docutils literal"><span class="pre">name</span></tt> or <tt class="docutils literal"><span class="pre">fullName</span></tt> since old
+documents will have the <tt class="docutils literal"><span class="pre">name</span></tt> field and new ones will have
+<tt class="docutils literal"><span class="pre">fullName</span></tt>.</p>
+<blockquote>
+<div><strong>CAUTION</strong> The only caveat of this feature is queries do not know
+about the rename. If you query for <tt class="docutils literal"><span class="pre">fullName</span></tt> only the new
+documents will be returned. You can still query using the <tt class="docutils literal"><span class="pre">name</span></tt>
+field to find the old documents.</div></blockquote>
+</div>
+<div class="section" id="transforming-data">
+<h2>10.2. Transforming Data<a class="headerlink" href="#transforming-data" title="Permalink to this headline">¶</a></h2>
+<p>Now you may have a situation where you want to store the persons
+name in separate first and last name fields. This is also possible.
+You can specify the <tt class="docutils literal"><span class="pre">&#64;AlsoLoad</span></tt> annotation on a method and use it
+to do some more complex logic:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">Person</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nv">$id</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nv">$firstName</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nv">$lastName</span><span class="p">;</span>
+
+    <span class="sd">/** @AlsoLoad({&quot;name&quot;, &quot;fullName&quot;}) */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">populateFirstAndLastName</span><span class="p">(</span><span class="nv">$fullName</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$e</span> <span class="o">=</span> <span class="nb">explode</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nv">$fullName</span><span class="p">);</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">firstName</span> <span class="o">=</span> <span class="nv">$e</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">lastName</span> <span class="o">=</span> <span class="nv">$e</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="moving-fields">
+<h2>10.3. Moving Fields<a class="headerlink" href="#moving-fields" title="Permalink to this headline">¶</a></h2>
+<p>Migrating your schema can be a difficult task and Doctrine gives
+you a few different methods for dealing with this:</p>
+<ul class="simple">
+<li><strong>&#64;AlsoLoad</strong> - load values from old fields names or transform some
+data using methods.</li>
+<li><strong>&#64;NotSaved</strong> - load values into fields without saving them again.</li>
+<li><strong>&#64;PostLoad</strong> - execute code after all fields have been loaded.</li>
+<li><strong>&#64;PrePersist</strong> - execute code before your document gets saved.</li>
+</ul>
+<p>Imagine you have some address fields on a Person document:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Document */</span>
+<span class="k">class</span> <span class="nc">Person</span>
+<span class="p">{</span>
+    <span class="sd">/** @Id */</span>
+    <span class="k">public</span> <span class="nv">$id</span><span class="p">;</span>
+
+    <span class="sd">/** @String */</span>
+    <span class="k">public</span> <span class="nv">$name</span><span class="p">;</span>
+
+    <span class="sd">/** @String */</span>
+    <span class="k">public</span> <span class="nv">$street</span><span class="p">;</span>
+
+    <span class="sd">/** @String */</span>
+    <span class="k">public</span> <span class="nv">$city</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then later you want to store a persons address in another object as
+an embedded document:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @EmbeddedDocument */</span>
+<span class="k">class</span> <span class="nc">Address</span>
+<span class="p">{</span>
+    <span class="sd">/** @String */</span>
+    <span class="k">public</span> <span class="nv">$street</span><span class="p">;</span>
+
+    <span class="sd">/** @String */</span>
+    <span class="k">public</span> <span class="nv">$city</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$street</span><span class="p">,</span> <span class="nv">$city</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">street</span> <span class="o">=</span> <span class="nv">$street</span><span class="p">;</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">city</span> <span class="o">=</span> <span class="nv">$city</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="sd">/** @Document */</span>
+<span class="k">class</span> <span class="nc">Person</span>
+<span class="p">{</span>
+    <span class="sd">/** @Id */</span>
+    <span class="k">public</span> <span class="nv">$id</span><span class="p">;</span>
+
+    <span class="sd">/** @String */</span>
+    <span class="k">public</span> <span class="nv">$name</span><span class="p">;</span>
+
+    <span class="sd">/** @NotSaved */</span>
+    <span class="k">public</span> <span class="nv">$street</span><span class="p">;</span>
+
+    <span class="sd">/** @NotSaved */</span>
+    <span class="k">public</span> <span class="nv">$city</span><span class="p">;</span>
+
+    <span class="sd">/** @EmbedOne(targetDocument=&quot;Address&quot;) */</span>
+    <span class="k">public</span> <span class="nv">$address</span><span class="p">;</span>
+
+    <span class="sd">/** @PostLoad */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">postLoad</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">street</span> <span class="o">!==</span> <span class="k">null</span> <span class="o">||</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">city</span> <span class="o">!==</span> <span class="k">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">address</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Address</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">street</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">city</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can also change the data on save if that works better for you:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="sd">/** @Document */</span>
+<span class="k">class</span> <span class="nc">Person</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="sd">/** @PrePersist */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">prePersist</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">street</span> <span class="o">!==</span> <span class="k">null</span> <span class="o">||</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">city</span> <span class="o">!==</span> <span class="k">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">address</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Address</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">street</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">city</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">10. Migrating Schemas</a><ul>
+<li><a class="reference internal" href="#renaming-a-field">10.1. Renaming a Field</a></li>
+<li><a class="reference internal" href="#transforming-data">10.2. Transforming Data</a></li>
+<li><a class="reference internal" href="#moving-fields">10.3. Moving Fields</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="events.html"
+                                  title="previous chapter">9. Events</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="query-builder-api.html"
+                                  title="next chapter">11. Query Builder API</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/reference/migrating-schemas.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="query-builder-api.html" title="11. Query Builder API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="events.html" title="9. Events"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,234 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>15. Map Reduce &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="16. Logging" href="logging.html" />
+    <link rel="prev" title="14. Storing Files with MongoGridFS" href="storing-files-with-mongogridfs.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="logging.html" title="16. Logging"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="storing-files-with-mongogridfs.html" title="14. Storing Files with MongoGridFS"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="map-reduce">
+<h1>15. Map Reduce<a class="headerlink" href="#map-reduce" title="Permalink to this headline">¶</a></h1>
+<p>The Doctrine MongoDB Object Document Mapper fully supports the map
+reduce functionality and improves the user friendliness of it as
+well.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>From MongoDB.org:</p>
+<p class="last">Map/reduce in MongoDB is useful for batch manipulation of data and
+aggregation operations. It is similar in spirit to using something
+like Hadoop with all input coming from a collection and output
+going to a collection. Often, in a situation where you would have
+used GROUP BY in SQL, map/reduce is the right tool in MongoDB.</p>
+</div>
+<p>Imagine a situation where you had an application with a document
+named <tt class="docutils literal"><span class="pre">Event</span></tt> and it was related to a <tt class="docutils literal"><span class="pre">User</span></tt> document:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">Documents</span><span class="p">;</span>
+
+<span class="sd">/** @Document */</span>
+<span class="k">class</span> <span class="nc">Event</span>
+<span class="p">{</span>
+    <span class="sd">/** @Id */</span>
+    <span class="k">private</span> <span class="nv">$id</span><span class="p">;</span>
+
+    <span class="sd">/** @ReferenceOne(targetDocument=&quot;Documents\User&quot;) */</span>
+    <span class="k">private</span> <span class="nv">$user</span><span class="p">;</span>
+
+    <span class="sd">/** @String */</span>
+    <span class="k">private</span> <span class="nv">$type</span><span class="p">;</span>
+
+    <span class="sd">/** @Date */</span>
+    <span class="k">private</span> <span class="nv">$date</span><span class="p">;</span>
+
+    <span class="sd">/** @String */</span>
+    <span class="k">private</span> <span class="nv">$description</span><span class="p">;</span>
+
+    <span class="c1">// getters and setters</span>
+<span class="p">}</span>
+
+<span class="sd">/** @Document */</span>
+<span class="k">class</span> <span class="nc">User</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We may have a situation where we want to run a query that tells us
+how many sales events each user has had. We can easily use the map
+reduce functionality of MongoDB which is tightly integrated with
+the <tt class="docutils literal"><span class="pre">Query</span></tt> API. Here is a simple map reduce example:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Documents\User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;sale&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">map</span><span class="p">(</span><span class="s1">&#39;function() { emit(this.user.$id, 1); }&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">reduce</span><span class="p">(</span><span class="s1">&#39;function(k, vals) {</span>
+<span class="s1">        var sum = 0;</span>
+<span class="s1">        for (var i in vals) {</span>
+<span class="s1">            sum += vals[i];</span>
+<span class="s1">        }</span>
+<span class="s1">        return sum;</span>
+<span class="s1">    }&#39;</span><span class="p">);</span>
+<span class="nv">$query</span> <span class="o">=</span> <span class="nv">$qb</span><span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">();</span>
+<span class="nv">$users</span> <span class="o">=</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$users</span> <span class="k">as</span> <span class="nv">$user</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> had </span><span class="si">{</span><span class="nv">$user</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> sale(s).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When using map reduce with Doctrine, the results are not hydrated
+into objects and the raw results are returned directly from
+MongoDB.</p>
+<p>Here is the exact same example we provided above except done with
+raw PHP code without the use of Doctrine:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$db</span> <span class="o">=</span> <span class="nv">$mongo</span><span class="o">-&gt;</span><span class="na">selectDB</span><span class="p">(</span><span class="s1">&#39;my_db&#39;</span><span class="p">);</span>
+
+<span class="nv">$map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MongoCode</span><span class="p">(</span><span class="s1">&#39;function() { emit(this.user.$id, 1); }&#39;</span><span class="p">);</span>
+<span class="nv">$reduce</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MongoCode</span><span class="p">(</span><span class="s1">&#39;function(k, vals) {</span>
+<span class="s1">    var sum = 0;</span>
+<span class="s1">    for (var i in vals) {</span>
+<span class="s1">        sum += vals[i];</span>
+<span class="s1">    }</span>
+<span class="s1">    return sum;</span>
+<span class="s1">}&#39;</span><span class="p">);</span>
+
+<span class="nv">$sales</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">command</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+    <span class="s1">&#39;mapreduce&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;events&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;map&#39;</span> <span class="o">=&gt;</span> <span class="nv">$map</span><span class="p">,</span>
+    <span class="s1">&#39;reduce&#39;</span> <span class="o">=&gt;</span> <span class="nv">$reduce</span><span class="p">,</span>
+    <span class="s1">&#39;query&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;sale&#39;</span><span class="p">)));</span>
+
+<span class="nv">$users</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">selectCollection</span><span class="p">(</span><span class="nv">$sales</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">])</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">();</span>
+
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$users</span> <span class="k">as</span> <span class="nv">$user</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> had </span><span class="si">{</span><span class="nv">$user</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> sale(s).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Your reduce function could return any type of variables, if you
+rewrite reduce as follows:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="c1">//...</span>
+
+<span class="nv">$reduce</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MongoCode</span><span class="p">(</span><span class="s1">&#39;function(k, vals) {</span>
+<span class="s1">    var sum = 0;</span>
+<span class="s1">    for (var i in vals) {</span>
+<span class="s1">        sum += vals[i];</span>
+<span class="s1">    }</span>
+<span class="s1">    return { user_id: k, sum: sum };</span>
+<span class="s1">}&#39;</span><span class="p">);</span>
+<span class="c1">//...</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$users</span> <span class="k">as</span> <span class="nv">$user</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$user</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">][</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> had </span><span class="si">{</span><span class="nv">$user</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">][</span><span class="s1">&#39;sum&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> sale(s).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="storing-files-with-mongogridfs.html"
+                                  title="previous chapter">14. Storing Files with MongoGridFS</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="logging.html"
+                                  title="next chapter">16. Logging</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/reference/map-reduce.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="logging.html" title="16. Logging"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="storing-files-with-mongogridfs.html" title="14. Storing Files with MongoGridFS"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

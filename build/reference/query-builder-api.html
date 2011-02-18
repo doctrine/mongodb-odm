@@ -1,0 +1,728 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>11. Query Builder API &mdash; Doctrine MongoDB ODM v1.0.0-BETA2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/configurationblock.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0-BETA2',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <link rel="top" title="Doctrine MongoDB ODM v1.0.0-BETA2 documentation" href="../index.html" />
+    <link rel="next" title="12. Find and Modify" href="find-and-modify.html" />
+    <link rel="prev" title="10. Migrating Schemas" href="migrating-schemas.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="find-and-modify.html" title="12. Find and Modify"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="migrating-schemas.html" title="10. Migrating Schemas"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="query-builder-api">
+<h1>11. Query Builder API<a class="headerlink" href="#query-builder-api" title="Permalink to this headline">¶</a></h1>
+<p>Querying for documents with Doctrine is just as simple as if you
+weren&#8217;t using Doctrine at all. Of course you always have your
+traditional <tt class="docutils literal"><span class="pre">find()</span></tt> and <tt class="docutils literal"><span class="pre">findOne()</span></tt> methods but you also have
+a <tt class="docutils literal"><span class="pre">Query</span></tt> object with a fluent API for defining the query that
+should be executed.</p>
+<p>The <tt class="docutils literal"><span class="pre">Query</span></tt> object supports several types of queries</p>
+<ul class="simple">
+<li>FIND</li>
+<li>FIND_AND_UPDATE</li>
+<li>FIND_AND_REMOVE</li>
+<li>INSERT</li>
+<li>UPDATE</li>
+<li>REMOVE</li>
+<li>GROUP</li>
+<li>MAP_REDUCE</li>
+<li>DISTINCT_FIELD</li>
+<li>GEO_LOCATION</li>
+</ul>
+<p>This section will show examples for the different types of queries.</p>
+<div class="section" id="finding-documents">
+<h2>11.1. Finding Documents<a class="headerlink" href="#finding-documents" title="Permalink to this headline">¶</a></h2>
+<p>You have a few different ways to find documents. You can use the <tt class="docutils literal"><span class="pre">find()</span></tt> method
+to find a document by its identifier:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$users</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">,</span> <span class="nv">$id</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">find()</span></tt> method is just a convenience shortcut method to:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$user</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <tt class="docutils literal"><span class="pre">find()</span></tt> method checks the local in memory identity map for the document
+before querying the database for the document.</p>
+</div>
+<p>On the <tt class="docutils literal"><span class="pre">DocumentRepository</span></tt> you have a few other methods for finding documents:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">findBy</span></tt> - find documents by an array of criteria</li>
+<li><tt class="docutils literal"><span class="pre">findOneBy</span></tt> - find one document by an array of criteria</li>
+</ul>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$users</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">findBy</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;employee&#39;</span><span class="p">));</span>
+<span class="nv">$user</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">getRepository</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">findOneBy</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;username&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;jwage&#39;</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-a-query-builder">
+<h2>11.2. Creating a Query Builder<a class="headerlink" href="#creating-a-query-builder" title="Permalink to this headline">¶</a></h2>
+<p>You can easily create a new <tt class="docutils literal"><span class="pre">Query\Builder</span></tt> object with the
+<tt class="docutils literal"><span class="pre">DocumentManager::createQueryBuilderBuilder()</span></tt> method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilderBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The first and only argument is optional, you can specify it later
+with the <tt class="docutils literal"><span class="pre">find()</span></tt>, <tt class="docutils literal"><span class="pre">update()</span></tt> or <tt class="docutils literal"><span class="pre">remove()</span></tt> method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilderBuilder</span><span class="p">();</span>
+
+<span class="c1">// ...</span>
+
+<span class="nv">$qb</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="section" id="executing-queries">
+<h3>11.2.1. Executing Queries<a class="headerlink" href="#executing-queries" title="Permalink to this headline">¶</a></h3>
+<p>You can execute a query by getting a <tt class="docutils literal"><span class="pre">Query</span></tt> through the <tt class="docutils literal"><span class="pre">getQuery()</span></tt> method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilderBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">);</span>
+<span class="nv">$query</span> <span class="o">=</span> <span class="nv">$qb</span><span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Now you can <tt class="docutils literal"><span class="pre">execute()</span></tt> that query and it will return a cursor for you to iterator over the results:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$users</span> <span class="o">=</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getting-single-result">
+<h3>11.2.2. Getting Single Result<a class="headerlink" href="#getting-single-result" title="Permalink to this headline">¶</a></h3>
+<p>If you want to just get a single result you can use the <tt class="docutils literal"><span class="pre">Query#getSingleResult()</span></tt> method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$user</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilderBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;jwage&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">getSingleResult</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="selecting-fields">
+<h3>11.2.3. Selecting Fields<a class="headerlink" href="#selecting-fields" title="Permalink to this headline">¶</a></h3>
+<p>You can limit the fields that are returned in the results by using
+the <tt class="docutils literal"><span class="pre">select()</span></tt> method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">select</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">);</span>
+<span class="nv">$query</span> <span class="o">=</span> <span class="nv">$qb</span><span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">();</span>
+<span class="nv">$users</span> <span class="o">=</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>In the results only the data from the username and password will be
+returned.</p>
+</div>
+<div class="section" id="selecting-distinct-values">
+<h3>11.2.4. Selecting Distinct Values<a class="headerlink" href="#selecting-distinct-values" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes you may want to get an array of distinct values in a
+collection. You can accomplish this using the <tt class="docutils literal"><span class="pre">distinct()</span></tt>
+method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$ages</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">distinct</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The above would give you an <tt class="docutils literal"><span class="pre">ArrayCollection</span></tt> of all the distinct user ages!</p>
+</div>
+<div class="section" id="disabling-hydration">
+<h3>11.2.5. Disabling Hydration<a class="headerlink" href="#disabling-hydration" title="Permalink to this headline">¶</a></h3>
+<p>For find queries the results by default are hydrated and you get
+document objects back instead of arrays. You can disable this and
+get the raw results directly back from mongo by using the
+<tt class="docutils literal"><span class="pre">hydrate(false)</span></tt> method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$users</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">hydrate</span><span class="p">(</span><span class="k">false</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+
+<span class="nb">print_r</span><span class="p">(</span><span class="nv">$users</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="limiting-results">
+<h3>11.2.6. Limiting Results<a class="headerlink" href="#limiting-results" title="Permalink to this headline">¶</a></h3>
+<p>You can limit results similar to how you would in a relational
+database with a limit and offset by using the <tt class="docutils literal"><span class="pre">limit()</span></tt> and
+<tt class="docutils literal"><span class="pre">skip()</span></tt> method.</p>
+<p>Here is an example where we get the third page of blog posts when
+we show twenty at a time:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$blogPosts</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;BlogPost&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">limit</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">skip</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sorting-results">
+<h3>11.2.7. Sorting Results<a class="headerlink" href="#sorting-results" title="Permalink to this headline">¶</a></h3>
+<p>You can sort the results by using the <tt class="docutils literal"><span class="pre">sort()</span></tt> method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">sort</span><span class="p">(</span><span class="s1">&#39;createdAt&#39;</span><span class="p">,</span> <span class="s1">&#39;desc&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>If you want to an additional sort you can call <tt class="docutils literal"><span class="pre">sort()</span></tt> again. The calls are stacked and ordered
+in the order you call the method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$query</span><span class="o">-&gt;</span><span class="na">sort</span><span class="p">(</span><span class="s1">&#39;featured&#39;</span><span class="p">,</span> <span class="s1">&#39;desc&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="map-reduce">
+<h3>11.2.8. Map Reduce<a class="headerlink" href="#map-reduce" title="Permalink to this headline">¶</a></h3>
+<p>You can also run map reduced find queries using the <tt class="docutils literal"><span class="pre">Query</span></tt>
+object:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Event&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;sale&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">map</span><span class="p">(</span><span class="s1">&#39;function() { emit(this.userId, 1); }&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">reduce</span><span class="p">(</span><span class="s2">&quot;function(k, vals) {</span>
+<span class="s2">        var sum = 0;</span>
+<span class="s2">        for (var i in vals) {</span>
+<span class="s2">            sum += vals[i];</span>
+<span class="s2">        }</span>
+<span class="s2">        return sum;</span>
+<span class="s2">    }&quot;</span><span class="p">);</span>
+<span class="nv">$query</span> <span class="o">=</span> <span class="nv">$qb</span><span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">();</span>
+<span class="nv">$results</span> <span class="o">=</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When you specify a <tt class="docutils literal"><span class="pre">map()</span></tt> and <tt class="docutils literal"><span class="pre">reduce()</span></tt> operation
+the results will not be hydrated and the raw results from the map
+reduce operation will be returned.</p>
+</div>
+<p>If you just want to reduce the results using a javascript function
+you can just call the <tt class="docutils literal"><span class="pre">where()</span></tt> method:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="s2">&quot;function() { return this.type == &#39;admin&#39;; }&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>You can read more about the $where operator](<a class="reference external" href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-JavascriptExpressionsand%7B%7B%24where%7D%7D">http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-JavascriptExpressionsand%7B%7B%24where%7D%7D</a>) in the Mongo docs.</p>
+</div>
+<div class="section" id="conditional-operators">
+<h3>11.2.9. Conditional Operators<a class="headerlink" href="#conditional-operators" title="Permalink to this headline">¶</a></h3>
+<p>The conditional operators in Mongo are available to limit the returned results through a easy to use API. Doctrine abstracts this to a fluent object oriented interface with a fluent API. Here is a list of all the conditional operation methods you can use on the <cite>QueryBuilder</cite> object.</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">where($javascript)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">in($values)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">notIn($values)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">notEqual($value)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">greaterThan($value)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">greaterThanOrEq($value)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">lessThan($value)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">lessThanOrEq($value)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">range($start,</span> <span class="pre">$end)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">size($size)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">exists($bool)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">type($type)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">all($values)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">mod($mod)</span></tt></li>
+</ul>
+<p>Query for active administrator users:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;admin&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Query for articles that have some tags:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;tags.name&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">in</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;tag1&#39;</span><span class="p">,</span> <span class="s1">&#39;tag2&#39;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24in">$in operator</a>
+in the Mongo docs</p>
+<p>Query for articles that do not have some tags:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;tags.name&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">notIn</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;tag3&#39;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24nin">$nin operator</a>
+in the Mongo docs.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">notEqual</span><span class="p">(</span><span class="s1">&#39;admin&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24ne">$ne operator</a>
+in the Mongo docs.</p>
+<p>Query for accounts with an amount due greater than 30:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Account&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;amount_due&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">greaterThan</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Query for accounts with an amount due greater than or equal to 30:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Account&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;amount_due&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">greaterThanOrEq</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Query for accounts with an amount due less than 30:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Account&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;amount_due&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">lessThan</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Query for accounts with an amount due less than or equal to 30:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Account&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;amount_due&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">lessThanOrEq</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Query for accounts with an amount due between 10 and 20:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Account&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;amount_due&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Read more about
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperators%3A%3C%2C%3C%3D%2C%3E%2C%3E%3D">conditional operators</a>
+in the Mongo docs.</p>
+<p>Query for articles with no comments:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;comments&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">size</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24size">$size operator</a>
+in the Mongo docs.</p>
+<p>Query for users that have a login field before it was renamed to
+username:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">exists</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24exists">$exists operator</a>
+in the Mongo docs.</p>
+<p>Query for users that have a type field that is of integer bson
+type:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">type</span><span class="p">(</span><span class="s1">&#39;integer&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24type">$type operator</a>
+in the Mongo docs.</p>
+<p>Query for users that are in all the specified Groups:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;groups&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">all</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;Group 1&#39;</span><span class="p">,</span> <span class="s1">&#39;Group 2&#39;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24all">$all operator</a>
+in the Mongo docs.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$qb</span> <span class="o">=</span> <span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Transaction&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;field&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">mod</span><span class="p">(</span><span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a href="#id2"><span class="problematic" id="id3">`</span></a>$mod operator](<a class="reference external" href="http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod">http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod</a>) in the Mongo docs.</p>
+</div>
+<div class="section" id="update-queries">
+<h3>11.2.10. Update Queries<a class="headerlink" href="#update-queries" title="Permalink to this headline">¶</a></h3>
+<p>Doctrine also supports executing atomic update queries using the <cite>QueryBuilder</cite> object. You can use the conditional operations in combination with the ability to change document field values atomically. You have several modifier operations available to you that make it easy to update documents in Mongo:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">set($name,</span> <span class="pre">$value,</span> <span class="pre">$atomic</span> <span class="pre">=</span> <span class="pre">true)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">setNewObj($newObj)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">inc($name,</span> <span class="pre">$value)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">unsetField($`field)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">push($field,</span> <span class="pre">$value)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">pushAll($field,</span> <span class="pre">array</span> <span class="pre">$valueArray)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">addToSet($field,</span> <span class="pre">$value)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">addManyToSet($field,</span> <span class="pre">array</span> <span class="pre">$values)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">popFirst($field)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">popLast($field)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">pull($field,</span> <span class="pre">$value)</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">pullAll($field,</span> <span class="pre">array</span> <span class="pre">$valueArray)</span></tt></li>
+</ul>
+</div>
+</div>
+<div class="section" id="modifier-operations">
+<h2>11.3. Modifier Operations<a class="headerlink" href="#modifier-operations" title="Permalink to this headline">¶</a></h2>
+<p>Change a users password:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;newpassword&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;jwage&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>If you want to just set the values of an entirely new object you
+can do so by passing false as the third argument of <tt class="docutils literal"><span class="pre">set()</span></tt> to
+tell it the update is not an atomic one:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;jwage&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span>
+    <span class="c1">// ... set other remaining fields</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;jwage&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24set">$set modifier</a>
+in the Mongo docs.</p>
+<p>You can set an entirely new object to update as well:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">setNewObj</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+        <span class="s1">&#39;username&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;jwage&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;password&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span>
+        <span class="c1">// ... other fields</span>
+    <span class="p">))</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;jwage&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Increment the value of a document:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Package&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;theid&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;downloads&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">inc</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24inc">$inc modifier</a>
+in the Mongo docs.</p>
+<p>Unset the login field from users where the login field still
+exists:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">unsetField</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">exists</span><span class="p">(</span><span class="k">true</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset">$unset modifier</a>
+in the Mongo docs.</p>
+<p>Append new tag to the tags array:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="s1">&#39;tag5&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;theid&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24push">$push modifier</a>
+in the Mongo docs.</p>
+<p>Append new tags to the tags array:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">pushAll</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;tag6&#39;</span><span class="p">,</span> <span class="s1">&#39;tag7&#39;</span><span class="p">))</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;theid&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24pushAll">$pushAll modifier</a>
+in the Mongo docs.</p>
+<p>Add value to array only if its not in the array already:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">addToSet</span><span class="p">(</span><span class="s1">&#39;tag1&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;theid&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24addToSet">$addToSet modifier</a>
+in the Mongo docs.</p>
+<p>Add many values to the array only if they do not exist in the array
+already:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">addManyToSet</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;tag6&#39;</span><span class="p">,</span> <span class="s1">&#39;tag7&#39;</span><span class="p">))</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;theid&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24addManyToSet">$addManyToSet modifier</a>
+in the Mongo docs.</p>
+<p>Remove first element in an array:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">popFirst</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;theid&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Remove last element in an array:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">popLast</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="s1">&#39;theid&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24pop">$pop modifier</a>
+in the Mongo docs.</p>
+<p>Remove all occurrences of value from array:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">pull</span><span class="p">(</span><span class="s1">&#39;tag1&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24pull">$pull modifier</a>
+in the Mongo docs.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Article&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">pullAll</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;tag1&#39;</span><span class="p">,</span> <span class="s1">&#39;tag2&#39;</span><span class="p">))</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Read more about the
+<a class="reference external" href="http://www.mongodb.org/display/DOCS/Updating#Updating-%24pullAll">$pullAll modifier</a>
+in the Mongo docs.</p>
+</div>
+<div class="section" id="remove-queries">
+<h2>11.4. Remove Queries<a class="headerlink" href="#remove-queries" title="Permalink to this headline">¶</a></h2>
+<p>In addition to updating you can also issue queries to remove
+documents from a collection. It works pretty much the same way as
+everything else and you can use the conditional operations to
+specify which documents you want to remove.</p>
+<p>Here is an example where we remove users who have never logged in:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">remove</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;num_logins&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">equals</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="group-queries">
+<h2>11.5. Group Queries<a class="headerlink" href="#group-queries" title="Permalink to this headline">¶</a></h2>
+<p>The last type of supported query is a group query. It performs an
+operation similar to SQL&#8217;s GROUP BY command.</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">dm</span><span class="o">-&gt;</span><span class="na">createQueryBuilder</span><span class="p">(</span><span class="s1">&#39;Documents\User&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">group</span><span class="p">(</span><span class="k">array</span><span class="p">(),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;count&#39;</span> <span class="o">=&gt;</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="o">-&gt;</span><span class="na">reduce</span><span class="p">(</span><span class="s1">&#39;function (obj, prev) { prev.count++; }&#39;</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">field</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">greaterThan</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">()</span>
+    <span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>This is the same as if we were to do the group with the raw PHP
+code:</p>
+<div class="highlight-php"><div class="highlight"><pre><span class="cp">&lt;?php</span>
+
+<span class="nv">$reduce</span> <span class="o">=</span> <span class="s1">&#39;function (obj, prev) { prev.count++; }&#39;</span><span class="p">;</span>
+<span class="nv">$condition</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;a&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span> <span class="s1">&#39;$gt&#39;</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">));</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$collection</span><span class="o">-&gt;</span><span class="na">group</span><span class="p">(</span><span class="k">array</span><span class="p">(),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;count&#39;</span> <span class="o">=&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="nv">$reduce</span><span class="p">,</span> <span class="nv">$condition</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference internal" href="#">11. Query Builder API</a><ul>
+<li><a class="reference internal" href="#finding-documents">11.1. Finding Documents</a></li>
+<li><a class="reference internal" href="#creating-a-query-builder">11.2. Creating a Query Builder</a><ul>
+<li><a class="reference internal" href="#executing-queries">11.2.1. Executing Queries</a></li>
+<li><a class="reference internal" href="#getting-single-result">11.2.2. Getting Single Result</a></li>
+<li><a class="reference internal" href="#selecting-fields">11.2.3. Selecting Fields</a></li>
+<li><a class="reference internal" href="#selecting-distinct-values">11.2.4. Selecting Distinct Values</a></li>
+<li><a class="reference internal" href="#disabling-hydration">11.2.5. Disabling Hydration</a></li>
+<li><a class="reference internal" href="#limiting-results">11.2.6. Limiting Results</a></li>
+<li><a class="reference internal" href="#sorting-results">11.2.7. Sorting Results</a></li>
+<li><a class="reference internal" href="#map-reduce">11.2.8. Map Reduce</a></li>
+<li><a class="reference internal" href="#conditional-operators">11.2.9. Conditional Operators</a></li>
+<li><a class="reference internal" href="#update-queries">11.2.10. Update Queries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modifier-operations">11.3. Modifier Operations</a></li>
+<li><a class="reference internal" href="#remove-queries">11.4. Remove Queries</a></li>
+<li><a class="reference internal" href="#group-queries">11.5. Group Queries</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="migrating-schemas.html"
+                                  title="previous chapter">10. Migrating Schemas</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="find-and-modify.html"
+                                  title="next chapter">12. Find and Modify</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/reference/query-builder-api.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="find-and-modify.html" title="12. Find and Modify"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="migrating-schemas.html" title="10. Migrating Schemas"
+             >previous</a> |</li>
+        <li><a href="http://www.doctrine-project.org">Doctrine Homepage</a> &raquo;</li>
+        <li><a href="../index.html">Doctrine MongoDB ODM v1.0.0-BETA2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Doctrine Project Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
