@@ -55,3 +55,4 @@ Cookbook
    cookbook/validation-of-documents
    cookbook/soft-delete-extension
    cookbook/mapping-classes-to-orm-and-odm
+   cookbook/simple-search-engine
