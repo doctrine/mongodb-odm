@@ -6,7 +6,6 @@
 
 <project name="DoctrineMongoDBODM" default="build" basedir=".">
 
-    <taskdef classname="NativePhpunitTask" classpath="./tests/" name="nativephpunit" />
     <taskdef classname="phing.tasks.ext.d51PearPkg2Task" name="d51pearpkg2" />
 
     <property file="build.properties" />
@@ -62,13 +61,12 @@
         <echo msg="Creating report directory: ${report.dir}" />
         <mkdir dir="${report.dir}" />
         <mkdir dir="${build.dir}/logs"/>
-        <mkdir dir="${report.dir}/tests"/>
     </target>
 
     <!--
         Builds ORM package, preparing it for distribution.
     -->
-    <target name="build-mongodb-odm" depends="test">
+    <target name="build-mongodb-odm" depends="prepare">
         <copy todir="${build.dir}/mongodb-odm">
             <fileset refid="shared-artifacts"/>
         </copy>
@@ -83,45 +81,10 @@
         <exec command="mv ${build.dir}/mongodb-odm/Doctrine/ODM/MongoDB/Version2.php ${build.dir}/mongodb-odm/Doctrine/ODM/MongoDB/Version.php" passthru="true" />
     </target>
 
-    <target name="build" depends="test, build-mongodb-odm"/>
-
-    <!--
-        Runs the full test suite.
-    -->
-    <target name="test" depends="prepare">
-        <if><equals arg1="${test.phpunit_generate_coverage}" arg2="1" />
-            <then>
-                <property name="test.phpunit_coverage_file" value="${build.dir}/logs/clover.xml" />
-            </then>
-            <else>
-                <property name="test.phpunit_coverage_file" value="false" />
-            </else>
-        </if>
-
-        <nativephpunit
-            testfile="./tests/Doctrine/ODM/MongoDB/Tests/AllTests.php" junitlogfile="${build.dir}/logs/testsuites.xml"
-            testdirectory="./tests"  coverageclover="${test.phpunit_coverage_file}" configuration="${test.phpunit_configuration_file}"
-        />
-        <phpunitreport infile="${build.dir}/logs/testsuites.xml" format="frames" todir="${report.dir}/tests" />
-
-        <tstamp/>
-        <copy file="${build.dir}/logs/testsuites.xml" tofile="${log.archive.dir}/latest/log.xml" overwrite="true"/>
-
-        <if><equals arg1="${test.pmd_reports}" arg2="1" />
-            <then>
-                <exec command="${test.pdepend_exec} --jdepend-xml=${build.dir}/logs/jdepend.xml ./lib/Doctrine" />
-                <exec command="${test.phpmd_exec} ./lib/Doctrine xml codesize --reportfile ${build.dir}/logs/phpmd.xml" />
-
-                <copy file="${build.dir}/logs/jdepend.xml" tofile="${log.archive.dir}/latest/jdepend.xml" overwrite="true"/>
-                <copy file="${build.dir}/logs/phpmd.xml" tofile="${log.archive.dir}/latest/phpmd.xml" overwrite="true"/>
-            </then>
-        </if>
-    </target>
-
     <!--
         Builds distributable PEAR packages.
     -->
-    <target name="build-packages" depends="build-mongodb-odm">
+    <target name="build" depends="build-mongodb-odm">
         <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/mongodb-odm">
            <name>DoctrineMongoDBODM</name>
            <summary>Doctrine MongoDB Object Document Mapper</summary>
