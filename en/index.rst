@@ -1,11 +1,19 @@
-Welcome to Doctrine MongoDB ODM's documentation!
-================================================
+Doctrine MongoDB ODM's documentation!
+=====================================
+
+Tutorials
+---------
+
+.. toctree::
+   :maxdepth: 2
+
+   tutorials/getting-started
 
 Reference Guide
 ---------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :numbered:
 
    reference/introduction
@@ -34,10 +42,10 @@ Cookbook
 ---------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   cookbook/getting-started
    cookbook/blending-orm-and-mongodb-odm
    cookbook/implementing-array-access-for-domain-objects
    cookbook/implementing-the-notify-changetracking-policy
    cookbook/validation-of-documents
+   cookbook/soft-delete-extension
