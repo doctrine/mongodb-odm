@@ -5,9 +5,9 @@ Doctrine is a project that aims to handle the persistence of your
 domain model in a non-interfering way. Non-relational or no-sql
 databases like MongoDB give you flexibility of building data store
 around your object model and not vise versa. You can read more on the
-initial configuration and setup in `Introduction to MongoDB Object
-Document Mapper`_. This section will give you a basic overview of what
-could be accomplished using Doctrine2 ODM.
+initial configuration and setup in :doc:`Introduction to MongoDB Object
+Document Mapper <../reference/introduction>`. This section will give you a basic
+overview of what could be accomplished using Doctrine MongoDB ODM.
 
 Example Model: Simple Blog
 --------------------------
@@ -291,5 +291,4 @@ You will notice that working with objects is nothing magical and you only have a
 getters and setters that you have defined yourself so the semantics are very clear. You can continue
 reading about the MongoDB in the `Introduction to MongoDB Object Document Mapper`_.
 
-.. _Introduction to MongoDB Object Document Mapper: /projects/mongodb_odm/1.0/docs/reference/introduction/en#introduction
 .. _php-mongodb-admin project, hosted on github: http://github.com/jwage/php-mongodb-admin

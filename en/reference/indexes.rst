@@ -247,6 +247,69 @@ annotation:
                 username:
                   order: asc
 
+Embedded Indexes
+----------------
+
+You can specify indexes on embedded documents just like you do on normal documents. When Doctrine
+creates the indexes for a document it will also create all the indexes from its mapped embedded
+documents.
+
+.. code-block:: php
+
+    <?php
+
+    namespace Documents;
+    
+    /** @EmbeddedDocument */
+    class Comment
+    {
+        /** @Date @Index */
+        private $date;
+
+        // ...
+    }
+
+Now if we had a ``BlogPost`` document with the ``Comment`` document embedded many times:
+
+.. code-block:: php
+
+    <?php
+
+    namespace Documents;
+
+    /** @Document */
+    class BlogPost
+    {
+        // ...
+
+        /** @Field(type="string") @Index */
+        private $slug;
+
+        /** @EmbedMany(targetDocument="Comment") */
+        private $comments;
+    }
+
+If we were to create the indexes with the ``SchemaManager``:
+
+.. code-block:: php
+
+    <?php
+
+    $sm->ensureIndexes();
+
+It will create the indexes from the ``BlogPost`` document but will also create the indexes that are
+defined on the ``Comment`` embedded document. The following would be executed on the underlying MongoDB
+database:
+
+..
+
+    db.BlogPost.ensureIndexes({ 'slug' : 1, 'comments.date': 1 })
+
+Also, for your convenience you can create the indexes for your mapped documents from the
+:doc:`console <console-commands>`:
+
+    $ php mongodb.php mongodb:schema:create --index
+
 Geospatial Indexing
 -------------------
 
