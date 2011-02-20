@@ -11,6 +11,67 @@
 
 @import url("basic.css");
 
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td,button { margin:0; padding:0; }
+ul,li { list-style-type:none; }
+select { min-width: 1.5em;}
+select > option { padding: 0 2px 0 3px; }
+form { margin: 0; padding: 0; }
+img { border: 0; }
+hr { clear:both; display: none; }
+label { display: none; }
+fieldset { border: 0; }
+q:before,q:after { content:''; }
+abbr,acronym { border:0; }
+
+.reset div,
+.reset dl,
+.reset dt,
+.reset dd,
+.reset ul,
+.reset ol,
+.reset li,
+.reset h1,
+.reset h2,
+.reset h3,
+.reset h4,
+.reset h5,
+.reset h6,
+.reset pre,
+.reset code,
+.reset form,
+.reset fieldset,
+.reset legend,
+.reset input,
+.reset textarea,
+.reset p,
+.reset blockquote,
+.reset th,
+.reset td{margin:0 !important;padding:0 !important;}
+.reset table{border-collapse:collapse !important;border-spacing:0 !important;}
+.reset fieldset,.reset img{border:0 !important;}
+.reset address,
+.reset caption,
+.reset cite,
+.reset code,
+.reset dfn,
+.reset em,
+.reset strong,
+.reset th,
+.reset var{font-style:normal !important;font-weight:normal !important;}
+.reset li{list-style:none !important;}
+.reset caption,.reset th{text-align:left !important;}
+.reset h1,.reset h2,.reset h3,.reset h4,.reset h5,.reset h6{font-size:100% !important;font-weight:normal !important;}
+.reset q:before,.reset q:after{content:'' !important;}
+.reset abbr,.reset acronym {border:0 !important;font-variant:normal !important;}
+/* to preserve line-height and selector appearance */
+.reset sup {vertical-align:text-top !important;}
+.reset sub {vertical-align:text-bottom !important;}
+.reset input,.reset textarea,.reset select{font-family:inherit !important;font-size:inherit !important;font-weight:inherit !important;}
+/*to enable resizing for IE*/
+.reset input,.reset textarea,.reset select{*font-size:100% !important;}
+/*because legend doesn't inherit in IE */
+.reset legend{color:#000 !important;}
+
 /* -- page layout ----------------------------------------------------------- */
 
 div.document {
