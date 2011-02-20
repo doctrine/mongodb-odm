@@ -41,7 +41,7 @@ First define the mapping for the ORM:
 
 .. configuration-block::
 
-    .. code-block:: php-annotations
+    .. code-block:: php
 
         <?php
 
@@ -117,7 +117,7 @@ Now map the same class to the Doctrine MongoDB ODM:
 
 .. configuration-block::
 
-    .. code-block:: php-annotations
+    .. code-block:: php
 
         <?php
 

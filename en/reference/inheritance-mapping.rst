@@ -27,7 +27,7 @@ Example:
 
 .. configuration-block::
 
-    .. code-block:: php-annotations
+    .. code-block:: php
 
         <?php
 

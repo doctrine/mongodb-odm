@@ -67,7 +67,7 @@ to be designated as an document. This can be done through the
 
 .. configuration-block::
 
-    .. code-block:: php-annotations
+    .. code-block:: php
 
         <?php
 
@@ -101,7 +101,7 @@ option as follows:
 
 .. configuration-block::
 
-    .. code-block:: php-annotations
+    .. code-block:: php
 
         <?php
 
@@ -193,7 +193,7 @@ Here is an example:
 
 .. configuration-block::
 
-    .. code-block:: php-annotations
+    .. code-block:: php
 
         <?php
 
@@ -314,7 +314,7 @@ Example:
 
 .. configuration-block::
 
-    .. code-block:: php-annotations
+    .. code-block:: php
 
         <?php
 
