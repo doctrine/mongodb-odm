@@ -11,6 +11,10 @@
 
 @import url("basic.css");
 
+div.sphinxsidebar {
+    width: 300px;
+}
+
 body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td,button { margin:0; padding:0; }
 ul,li { list-style-type:none; }
 select { min-width: 1.5em;}
@@ -84,7 +88,7 @@ div.documentwrapper {
 }
 
 div.bodywrapper {
-    margin: 0 0 0 230px;
+    margin: 0 0 0 300px;
 }
 
 div.body {
@@ -368,7 +372,7 @@ pre
 {
   padding: 0.7em;
   background-color: #000;
-  line-height: 1.3em;
+  line-height: 1.3em !important;
   font-size: 100%;
   color: #fff;
 }
