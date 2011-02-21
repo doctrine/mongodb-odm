@@ -12,7 +12,7 @@ Installation
 
 First you just need to get the code by cloning the `github`_ repository:
 
-..
+.. code-block:: terminal
 
     $ git clone git://github.com/doctrine/mongodb-odm-softdelete.git
 
@@ -106,7 +106,7 @@ Once you have the ``$sdm`` you can start managing the soft delete state of your 
 The call to ``SoftDeleteManager#flush()`` would persist the deleted state to the database
 for all the documents it knows about and run a query like the following:
 
-..
+.. code-block:: javascript
 
     db.users.update({ _id : { $in : userIds }}, { $set : { deletedAt : new Date() } })
 
@@ -121,7 +121,7 @@ Now if we were to restore the documents:
 
 It would execute a query like the following:
 
-..
+.. code-block:: javascript
 
     db.users.update({ _id : { $in : userIds }}, { $unset : { deletedAt : true } })
 

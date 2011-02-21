@@ -20,6 +20,8 @@ Reference Guide
    reference/architecture
    reference/basic-mapping
    reference/reference-mapping
+   reference/bidirectional-references
+   reference/complex-references
    reference/embedded-mapping
    reference/inheritance-mapping
    reference/indexes
