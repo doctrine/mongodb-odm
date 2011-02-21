@@ -156,7 +156,7 @@ class PersistentCollection implements BaseCollection
     {
         if ( ! $this->isDirty) {
             $this->isDirty = true;
-            if ($this->dm && $this->mapping !== null && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
+            if ($this->dm && $this->mapping !== null && $this->mapping['isOwningSide'] && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
                 $this->uow->scheduleForDirtyCheck($this->owner);
             }
         }
@@ -408,6 +408,9 @@ class PersistentCollection implements BaseCollection
      */
     public function count()
     {
+        if ($this->mapping['isInverseSide']) {
+            $this->initialize();
+        }
         return count($this->mongoData) + $this->coll->count();
     }
 
@@ -508,9 +511,11 @@ class PersistentCollection implements BaseCollection
         }
         $this->mongoData = array();
         $this->coll->clear();
-        $this->changed();
-        $this->uow->scheduleCollectionDeletion($this);
-        $this->takeSnapshot();
+        if ($this->mapping['isOwningSide']) {
+            $this->changed();
+            $this->uow->scheduleCollectionDeletion($this);
+            $this->takeSnapshot();
+        }
     }
 
     /**

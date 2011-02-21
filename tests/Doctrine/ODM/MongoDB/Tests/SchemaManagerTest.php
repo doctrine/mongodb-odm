@@ -43,7 +43,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function getIndexedClasses()
     {
         return array(
-            array(array('Documents\CmsArticle', 'Documents\CmsAddress', 'Documents\CmsComment', 'Documents\CmsProduct'))
+            array(array('Documents\Comment', 'Documents\CmsArticle', 'Documents\CmsAddress', 'Documents\CmsComment', 'Documents\CmsProduct'))
         );
     }
 
@@ -270,7 +270,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     protected function getConnection()
     {
-        return $this->getMock('Doctrine\MongoDB\Connection', array('selectDB'), array(), '', false, false);
+        return $this->getMock('Doctrine\MongoDB\Connection', array('selectDatabase'), array(), '', false, false);
     }
 
     protected function getMetadataFactory()
@@ -287,7 +287,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     protected function getDocumentCollection()
     {
-        return $this->getMock('Doctrine\MongoDB\Collection', array('ensureIndex', 'deleteIndex', 'deleteIndexes'), array(), '', false, false);
+        return $this->getMock('Doctrine\MongoDB\Collection', array('ensureIndex', 'deleteIndex', 'deleteIndexes', 'selectCollection'), array(), '', false, false);
     }
 
     protected function getDocumentDatabase($className)

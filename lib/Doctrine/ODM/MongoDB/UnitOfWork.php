@@ -563,11 +563,14 @@ class UnitOfWork implements PropertyChangedListener
                         $this->scheduleOrphanRemoval($orgValue);
                     }
                     $changeSet[$propName] = array($orgValue, $actualValue);
-                } else if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
+                } else if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $class->fieldMappings[$propName]['isOwningSide'] && $orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if ($isChangeTrackingNotify) {
                     continue;
                 } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many' && $orgValue !== $actualValue) {
+                    if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']) {
+                        continue; // ignore inverse side
+                    }
                     $changeSet[$propName] = array($orgValue, $actualValue);
                     if ($orgValue instanceof PersistentCollection) {
                         $this->collectionDeletions[] = $orgValue;
@@ -661,7 +664,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
-        if ($value instanceof PersistentCollection && $value->isDirty()) {
+        if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide']) {
             $owner = $value->getOwner();
             $className = get_class($owner);
             $class = $this->dm->getClassMetadata($className);
@@ -1106,6 +1109,58 @@ class UnitOfWork implements PropertyChangedListener
         return $calc->getCommitOrder();
     }
 
+/*
+private function getCommitOrder(array $entityChangeSet = null)
+{
+    if ($entityChangeSet === null) {
+        $entityChangeSet = array_merge(
+                $this->entityInsertions,
+                $this->entityUpdates,
+                $this->entityDeletions
+                );
+    }
+    
+    $calc = $this->getCommitOrderCalculator();
+    
+    // See if there are any new classes in the changeset, that are not in the
+    // commit order graph yet (dont have a node).
+    $newNodes = array();
+    foreach ($entityChangeSet as $oid => $entity) {
+        $className = get_class($entity);         
+        if ( ! $calc->hasClass($className)) {
+            $class = $this->em->getClassMetadata($className);
+            $calc->addClass($class);
+            $newNodes[] = $class;
+        }
+    }
+
+    // Calculate dependencies for new nodes
+    foreach ($newNodes as $class) {
+        foreach ($class->associationMappings as $assoc) {
+            if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+                if ( ! $calc->hasClass($targetClass->name)) {
+                    $calc->addClass($targetClass);
+                }
+                $calc->addDependency($targetClass, $class);
+                // If the target class has mapped subclasses,
+                // these share the same dependency.
+                if ($targetClass->subClasses) {
+                    foreach ($targetClass->subClasses as $subClassName) {
+                        $targetSubClass = $this->em->getClassMetadata($subClassName);
+                        if ( ! $calc->hasClass($subClassName)) {
+                            $calc->addClass($targetSubClass);
+                        }
+                        $calc->addDependency($targetSubClass, $class);
+                    }
+                }
+            }
+        }
+    }
+
+    return $calc->getCommitOrder();
+}
+*/
     /**
      * Add dependencies recursively through embedded documents. Embedded documents
      * may have references to other documents so those need to be saved first.
@@ -1116,7 +1171,7 @@ class UnitOfWork implements PropertyChangedListener
     private function addDependencies(ClassMetadata $class, $calc)
     {
         foreach ($class->fieldMappings as $mapping) {
-            if (isset($mapping['reference']) && isset($mapping['targetDocument'])) {
+            if ($mapping['isOwningSide'] && isset($mapping['reference']) && isset($mapping['targetDocument'])) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
                 if ( ! $calc->hasClass($targetClass->name)) {
                     $calc->addClass($targetClass);

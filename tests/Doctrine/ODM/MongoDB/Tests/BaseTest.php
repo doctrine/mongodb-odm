@@ -40,7 +40,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
         $reader = new AnnotationReader();
         $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
-        $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/Documents');
+        $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/../../../../Documents');
         $config->setMetadataDriverImpl($this->annotationDriver);
 
         $conn = new Connection(null, array(), $config);

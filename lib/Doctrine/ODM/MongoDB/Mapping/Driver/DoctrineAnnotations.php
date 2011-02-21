@@ -176,6 +176,13 @@ final class ReferenceOne extends Field
     public $discriminatorField;
     public $discriminatorMap;
     public $cascade;
+    public $inversedBy;
+    public $mappedBy;
+    public $repositoryMethod;
+    public $sort = array();
+    public $criteria = array();
+    public $limit;
+    public $skip;
 }
 final class ReferenceMany extends Field
 {
@@ -185,6 +192,13 @@ final class ReferenceMany extends Field
     public $discriminatorField;
     public $discriminatorMap;
     public $cascade;
+    public $inversedBy;
+    public $mappedBy;
+    public $repositoryMethod;
+    public $sort = array();
+    public $criteria = array();
+    public $limit;
+    public $skip;
     public $strategy = 'pushAll'; // pushAll, set
 }
 class NotSaved extends Field {}

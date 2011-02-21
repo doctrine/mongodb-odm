@@ -974,6 +974,18 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['lock'])) {
             $this->setLockMapping($mapping);
         }
+        $mapping['isOwningSide'] = true;
+        $mapping['isInverseSide'] = false;
+        if (isset($mapping['reference'])) {
+            if (isset($mapping['inversedBy']) && $mapping['inversedBy']) {
+                $mapping['isOwningSide'] = true;
+                $mapping['isInverseSide'] = false;
+            }
+            if (isset($mapping['mappedBy']) && $mapping['mappedBy']) {
+                $mapping['isInverseSide'] = true;
+                $mapping['isOwningSide'] = false;
+            }
+        }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
         return $mapping;
     }

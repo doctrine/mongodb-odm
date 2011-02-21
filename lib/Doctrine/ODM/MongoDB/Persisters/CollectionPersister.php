@@ -88,6 +88,10 @@ class CollectionPersister
      */
     public function delete(PersistentCollection $coll, array $options)
     {
+        $mapping = $coll->getMapping();
+        if ($mapping['isInverseSide']) {
+            return; // ignore inverse side
+        }
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
         $query = array($this->cmd . 'unset' => array($propertyPath => true));
         $this->executeQuery($parent, $query, $options);
@@ -101,6 +105,10 @@ class CollectionPersister
      */
     public function update(PersistentCollection $coll, array $options)
     {
+        $mapping = $coll->getMapping();
+        if ($mapping['isInverseSide']) {
+            return; // ignore inverse side
+        }
         $this->deleteRows($coll, $options);
         $this->insertRows($coll, $options);
     }

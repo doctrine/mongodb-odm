@@ -41,6 +41,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
             'nullable' => false
         ), $classMetadata->fieldMappings['id']);
 
@@ -54,6 +56,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
             'nullable' => false
         ), $classMetadata->fieldMappings['username']);
 
@@ -67,6 +71,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
             'nullable' => false
         ), $classMetadata->fieldMappings['createdAt']);
 
@@ -80,6 +86,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['tags']);
@@ -97,6 +105,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['address']);
@@ -114,6 +124,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['phonenumbers']);
@@ -131,6 +143,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => true,
             'isCascadeRefresh' => true,
             'isCascadeRemove' => true,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['profile']);
@@ -148,6 +162,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => true,
             'isCascadeRefresh' => true,
             'isCascadeRemove' => true,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['account']);
@@ -165,6 +181,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => true,
             'isCascadeRefresh' => true,
             'isCascadeRemove' => true,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['groups']);
@@ -189,6 +207,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadePersist' => false,
             'isCascadeRefresh' => false,
             'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
             'nullable' => false,
         ), $classMetadata->fieldMappings['name']);
     }

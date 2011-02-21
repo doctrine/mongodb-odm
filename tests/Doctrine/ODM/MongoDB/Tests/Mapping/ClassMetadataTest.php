@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Events;
 
 class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -47,6 +48,17 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, count($cm->fieldMappings));
         $mapping = $cm->getFieldMapping('phonenumbers');
         $this->assertEquals('Documents\Bar', $mapping['targetDocument']);
+    }
+
+    public function testOwningSideAndInverseSide()
+    {
+        $cm = new ClassMetadataInfo('Documents\User');
+        $cm->mapManyReference(array('fieldName' => 'articles', 'inversedBy' => 'user'));
+        $this->assertTrue($cm->fieldMappings['articles']['isOwningSide']);
+
+        $cm = new ClassMetadataInfo('Documents\Article');
+        $cm->mapOneReference(array('fieldName' => 'user', 'mappedBy' => 'articles'));
+        $this->assertTrue($cm->fieldMappings['user']['isInverseSide']);
     }
 
     public function testFieldIsNullable()

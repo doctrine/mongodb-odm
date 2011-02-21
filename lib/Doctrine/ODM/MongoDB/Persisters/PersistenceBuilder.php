@@ -109,8 +109,13 @@ class PersistenceBuilder
 
                 // @ReferenceOne
                 } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+                    if ($mapping['isInverseSide']) {
+                        continue;
+                    }
+
                     $oid = spl_object_hash($new);
-                    if (isset($this->queuedInserts[$oid]) || $this->uow->isScheduledForInsert($new)) {
+
+                    if ($this->isScheduledForInsert($new)) {
                         // The associated document $new is not yet persisted, so we must
                         // set $new = null, in order to insert a null value and schedule an
                         // extra update on the UnitOfWork.
@@ -230,7 +235,7 @@ class PersistenceBuilder
                 }
 
             // @ReferenceOne
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 if (isset($new) || $mapping['nullable'] === true) {
                     $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
                 } else {
@@ -322,5 +327,11 @@ class PersistenceBuilder
             return (object) $embeddedDocumentValue;
         }
         return $embeddedDocumentValue;
+    }
+
+    private function isScheduledForInsert($document)
+    {
+        return $this->uow->isScheduledForInsert($document)
+            || $this->uow->getDocumentPersister(get_class($document))->isQueuedForInsert($document);
     }
 }

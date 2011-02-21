@@ -203,7 +203,7 @@ EOF
                     $mapping['fieldName'],
                     Type::getType($mapping['type'])->closureToPHP()
                 );
-            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 $code .= sprintf(<<<EOF
 
         /** @ReferenceOne */
@@ -222,6 +222,40 @@ EOF
                     $mapping['name'],
                     $mapping['fieldName']
                 );
+            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isInverseSide']) {
+                if ($mapping['repositoryMethod']) {
+                    $code .= sprintf(<<<EOF
+
+        \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
+        \$return = \$this->dm->getRepository(\$className)->%3\$s();
+        \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
+        \$hydratedData['%2\$s'] = \$return;
+
+EOF
+                ,
+                    $mapping['name'],
+                    $mapping['fieldName'],
+                    $mapping['repositoryMethod']
+                );
+                } else {
+                    $code .= sprintf(<<<EOF
+
+        \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
+        \$criteria = array_merge(
+            array(\$this->class->fieldMappings['%2\$s']['mappedBy'] . '.\$id' => \$data['_id']),
+            isset(\$this->class->fieldMappings['%2\$s']['criteria']) ? \$this->class->fieldMappings['%2\$s']['criteria'] : array() 
+        );
+        \$sort = isset(\$this->class->fieldMappings['%2\$s']['sort']) ? \$this->class->fieldMappings['%2\$s']['sort'] : array();
+        \$return = \$this->unitOfWork->getDocumentPersister(\$className)->load(\$criteria, null, array(), 0, \$sort);
+        \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
+        \$hydratedData['%2\$s'] = \$return;
+
+EOF
+                    ,
+                        $mapping['name'],
+                        $mapping['fieldName']
+                    );
+                }
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY || $mapping['association'] === ClassMetadata::EMBED_MANY) {
                 $code .= sprintf(<<<EOF
 
