@@ -63,8 +63,24 @@ You can specify a ``mappedBy`` reference for one or many so if you wanted to you
      */
     private $lastComment;
 
+Use an array of criteria to limit a references documents. Here we have a reference in ``$commentsByAdmin``
+to the comments that are by administrators:
+
+.. code-block:: php
+
+    <?php
+    
+    /**
+     * @ReferenceOne(
+     *      targetDocument="Comment",
+     *      mappedBy="blogPost",
+     *      criteria={"isByAdmin" : true}
+     * )
+     */
+    private $commentsByAdmin;
+
 Or you can use the ``repositoryMethod`` to specify a custom method to call on the mapped repository
-class:
+class to get the reference:
 
 .. code-block:: php
 
