@@ -113,7 +113,7 @@ And in the ``CommentRepository`` we can define the ``findSomeComments()`` method
 
     <?php
 
-    class CommentRepository use \Doctrine\ODM\MongoDB\DocumentRepository
+    class CommentRepository extends \Doctrine\ODM\MongoDB\DocumentRepository
     {
         public function findSomeComments()
         {
