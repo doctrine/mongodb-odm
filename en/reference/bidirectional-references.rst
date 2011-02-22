@@ -2,7 +2,7 @@ Bi-Directional References
 =========================
 
 By default when you map a bi-directional reference, the reference is maintained on both sides
-of the relationship and their is not a single "owning side". Both sides are considered owning
+of the relationship and there is not a single "owning side". Both sides are considered owning
 and changes are tracked and persisted separately. Here is an example:
 
 .. code-block:: php
@@ -27,7 +27,7 @@ and changes are tracked and persisted separately. Here is an example:
         private $posts;
     }
 
-When I persist some some instances of the above classes the references would exist on both sides! The
+When I persist some instances of the above classes the references would exist on both sides! The
 ``BlogPost`` collection would have a `MongoDbRef`_ stored on the ``$user`` property and the ``User``
 collection would have a `MongoDbRef`_ stored in the ``$posts`` property.
 
