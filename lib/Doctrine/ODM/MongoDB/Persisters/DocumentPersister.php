@@ -552,10 +552,10 @@ class DocumentPersister
     {
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
-        $class = $this->dm->getClassMetadata($mapping['targetDocument']);
+        $ownerClass = $this->dm->getClassMetadata(get_class($owner));
         $mongoCollection = $this->dm->getDocumentCollection($mapping['targetDocument']);
         $criteria = array_merge(
-            array($mapping['mappedBy'].'.'.$this->cmd.'id' => $class->getIdentifierObject($owner)),
+            array($mapping['mappedBy'].'.'.$this->cmd.'id' => $ownerClass->getIdentifierObject($owner)),
             $mapping['criteria']
         );
         $cursor = $mongoCollection->find($criteria);
@@ -569,7 +569,8 @@ class DocumentPersister
             $cursor->skip($mapping['skip']);
         }
         foreach ($cursor as $documentData) {
-            $document = $this->dm->getReference($class->name, (string) $documentData['_id']);
+            $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $documentData);
+            $document = $this->dm->getReference($className, (string) $documentData['_id']);
             if ($document instanceof Proxy && ! $document->__isInitialized__) {
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
