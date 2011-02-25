@@ -77,6 +77,6 @@ class DateType extends Type
 
     public function closureToPHP()
     {
-        return 'if ($value === null) { return null; } if ($value instanceof \MongoDate) { $date = new \DateTime(); $date->setTimestamp($value->sec); $return = $date; } else { $return = new \DateTime($value); }';
+        return 'if ($value instanceof \MongoDate) { $date = new \DateTime(); $date->setTimestamp($value->sec); $return = $date; } else { $return = new \DateTime($value); }';
     }
 }
