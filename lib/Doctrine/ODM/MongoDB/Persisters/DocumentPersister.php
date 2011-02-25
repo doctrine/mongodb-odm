@@ -553,28 +553,25 @@ class DocumentPersister
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
-        $mongoCollection = $this->dm->getDocumentCollection($mapping['targetDocument']);
         $criteria = array_merge(
             array($mapping['mappedBy'].'.'.$this->cmd.'id' => $ownerClass->getIdentifierObject($owner)),
             $mapping['criteria']
         );
-        $cursor = $mongoCollection->find($criteria);
+        $qb = $this->dm->createQueryBuilder($mapping['targetDocument'])
+            ->setQueryArray($criteria);
+
         if ($mapping['sort']) {
-            $cursor->sort($mapping['sort']);
+            $qb->sort($mapping['sort']);
         }
         if ($mapping['limit']) {
-            $cursor->limit($mapping['limit']);
+            $qb->limit($mapping['limit']);
         }
         if ($mapping['skip']) {
-            $cursor->skip($mapping['skip']);
+            $qb->skip($mapping['skip']);
         }
-        foreach ($cursor as $documentData) {
-            $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $documentData);
-            $document = $this->dm->getReference($className, (string) $documentData['_id']);
-            if ($document instanceof Proxy && ! $document->__isInitialized__) {
-                $data = $this->hydratorFactory->hydrate($document, $documentData);
-                $this->uow->setOriginalDocumentData($document, $data);
-            }
+        $query = $qb->getQuery();
+        $cursor = $query->execute();
+        foreach ($cursor as $document) {
             $collection->add($document);
         }
     }
