@@ -691,7 +691,7 @@ class DocumentPersister
                 foreach ($value as $k => $v) {
                     if ($k[0] === '$' && is_array($v)) {
                         foreach ($v as $k2 => $v2) {
-                            $v[$k2] = $this->class->getDatabaseIdentifierValue($v2);
+                            $value[$k][$k2] = $this->class->getDatabaseIdentifierValue($v2);
                         }
                     } else {
                         $value[$k] = $this->class->getDatabaseIdentifierValue($v);
