@@ -268,7 +268,7 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
             }
 
             $db = $class->getDatabase() ?: $this->config->getDefaultDB();
-            $class->setDatabase($this->dm->formatDBName($db));
+            $class->setDatabase($db);
 
             $class->setParentClasses($visited);
 

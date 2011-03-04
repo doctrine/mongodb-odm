@@ -281,7 +281,6 @@ class DocumentManager implements ObjectManager
         $db = $metadata->getDatabase();
         $db = $db ? $db : $this->config->getDefaultDB();
         $db = $db ? $db : 'doctrine';
-        $db = sprintf('%s%s', $this->config->getEnvironmentPrefix(), $db);
         if ( ! isset($this->documentDatabases[$className])) {
             $this->documentDatabases[$className] = $this->connection->selectDatabase($db);
         }
@@ -617,15 +616,6 @@ class DocumentManager implements ObjectManager
     public function getConfiguration()
     {
         return $this->config;
-    }
-
-    public function formatDBName($dbName)
-    {
-        return sprintf('%s%s%s',
-            $this->config->getDatabasePrefix(),
-            $dbName,
-            $this->config->getDatabaseSuffix()
-        );
     }
 
     public function getClassNameFromDiscriminatorValue(array $mapping, $value)
