@@ -202,7 +202,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         foreach ($classNames as $className) {
             $class = $this->dm->getClassMetadata($className);
             $discriminatorValues[] = $class->discriminatorValue;
-            $key = $class->getDatabase() . '.' . $class->getCollection();
+            $key = $this->dm->getDocumentDatabase($className)->getName() . '.' . $class->getCollection();
             $collections[$key] = $key;
         }
         if (count($collections) > 1) {
