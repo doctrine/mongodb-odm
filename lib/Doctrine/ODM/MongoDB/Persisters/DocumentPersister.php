@@ -544,6 +544,7 @@ class DocumentPersister
                 $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
+                $document->__isInitialized__ = true;
             }
         }
     }
