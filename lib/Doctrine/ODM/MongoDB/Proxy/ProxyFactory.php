@@ -255,22 +255,22 @@ use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
  */
 class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Proxy\Proxy
 {
-    private $documentPersister;
-    private $identifier;
+    private $__documentPersister__;
+    private $__identifier__;
     public $__isInitialized__ = false;
     public function __construct(DocumentPersister $documentPersister, $identifier)
     {
-        $this->documentPersister = $documentPersister;
-        $this->identifier = $identifier;
+        $this->__documentPersister__ = $documentPersister;
+        $this->__identifier__ = $identifier;
     }
     private function __load()
     {
-        if (!$this->__isInitialized__ && $this->documentPersister) {
+        if (!$this->__isInitialized__ && $this->__documentPersister__) {
             $this->__isInitialized__ = true;
-            if ($this->documentPersister->load($this->identifier, $this) === null) {
-                throw \Doctrine\ODM\MongoDB\MongoDBException::documentNotFound(get_class($this), $this->identifier);
+            if ($this->__documentPersister__->load($this->__identifier__, $this) === null) {
+                throw \Doctrine\ODM\MongoDB\MongoDBException::documentNotFound(get_class($this), $this->__identifier__);
             }
-            unset($this->documentPersister, $this->identifier);
+            unset($this->__documentPersister__, $this->__identifier__);
         }
     }
 
