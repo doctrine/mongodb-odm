@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -21,9 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command to clear the metadata cache of the various cache drivers.
@@ -38,10 +36,10 @@ use Symfony\Component\Console\Input\InputArgument,
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Henrik Westphal <henrik.westphal@gmail.com>
  */
-class MetadataCommand extends Console\Command\Command
+class MetadataCommand extends Command
 {
     /**
-     * @see Console\Command\Command
+     * @see \Symfony\Component\Console\Command\Command
      */
     protected function configure()
     {
@@ -56,9 +54,9 @@ EOT
     }
 
     /**
-     * @see Console\Command\Command
+     * @see \Symfony\Component\Console\Command\Command
      */
-    protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getHelper('dm')->getDocumentManager();
         $cacheDriver = $dm->getConfiguration()->getMetadataCacheImpl();
