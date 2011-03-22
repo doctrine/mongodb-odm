@@ -89,7 +89,7 @@ class DriverChain implements Driver
         foreach ($this->drivers AS $driver) {
             $classNames = array_merge($classNames, $driver->getAllClassNames());
         }
-        return $classNames;
+        return array_values(array_unique($classNames));
     }
 
     /**
