@@ -693,7 +693,7 @@ operation similar to SQL's GROUP BY command.
     $result = $this->dm->createQueryBuilder('Documents\User')
         ->group(array(), array('count' => 0))
         ->reduce('function (obj, prev) { prev.count++; }')
-        ->field('a')->greaterThan(1)
+        ->field('a')->gt(1)
         ->getQuery()
         ->execute();
 
