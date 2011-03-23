@@ -332,7 +332,7 @@ Query for accounts with an amount due greater than 30:
     <?php
 
     $qb = $dm->createQueryBuilder('Account')
-        ->field('amount_due')->greaterThan(30);
+        ->field('amount_due')->gt(30);
 
 Query for accounts with an amount due greater than or equal to 30:
 
@@ -341,7 +341,7 @@ Query for accounts with an amount due greater than or equal to 30:
     <?php
 
     $qb = $dm->createQueryBuilder('Account')
-        ->field('amount_due')->greaterThanOrEq(30);
+        ->field('amount_due')->gte(30);
 
 Query for accounts with an amount due less than 30:
 
@@ -350,7 +350,7 @@ Query for accounts with an amount due less than 30:
     <?php
 
     $qb = $dm->createQueryBuilder('Account')
-        ->field('amount_due')->lessThan(30);
+        ->field('amount_due')->lt(30);
 
 Query for accounts with an amount due less than or equal to 30:
 
@@ -359,7 +359,7 @@ Query for accounts with an amount due less than or equal to 30:
     <?php
 
     $qb = $dm->createQueryBuilder('Account')
-        ->field('amount_due')->lessThanOrEq(30);
+        ->field('amount_due')->lte(30);
 
 Query for accounts with an amount due between 10 and 20:
 
