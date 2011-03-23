@@ -267,10 +267,10 @@ The conditional operators in Mongo are available to limit the returned results t
 * ``in($values)``
 * ``notIn($values)``
 * ``notEqual($value)``
-* ``greaterThan($value)``
-* ``greaterThanOrEq($value)``
-* ``lessThan($value)``
-* ``lessThanOrEq($value)``
+* ``gt($value)``
+* ``gte($value)``
+* ``lt($value)``
+* ``lte($value)``
 * ``range($start, $end)``
 * ``size($size)``
 * ``exists($bool)``
