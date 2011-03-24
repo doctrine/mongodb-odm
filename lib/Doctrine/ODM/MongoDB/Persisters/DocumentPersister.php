@@ -473,7 +473,7 @@ class DocumentPersister
 
             case ClassMetadata::REFERENCE_MANY:
                 $mapping = $collection->getMapping();
-                if ($mapping['repositoryMethod']) {
+                if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
                     $this->loadReferenceManyWithRepositoryMethod($collection);
                 } else {
                     if ($mapping['isOwningSide']) {
