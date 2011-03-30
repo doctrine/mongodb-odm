@@ -659,7 +659,7 @@ public function <methodName>()
             }
     
             $lines[] = $this->generateAssociationMappingPropertyDocBlock($fieldMapping, $metadata);
-            $lines[] = $this->spaces . 'private $' . $fieldMapping['fieldName']
+            $lines[] = $this->spaces . 'protected $' . $fieldMapping['fieldName']
                      . ($fieldMapping['type'] === ClassMetadataInfo::MANY ? ' = array()' : null) . ";\n";
         }
 
@@ -680,7 +680,7 @@ public function <methodName>()
             }
 
             $lines[] = $this->generateFieldMappingPropertyDocBlock($fieldMapping, $metadata);
-            $lines[] = $this->spaces . 'private $' . $fieldMapping['fieldName']
+            $lines[] = $this->spaces . 'protected $' . $fieldMapping['fieldName']
                      . (isset($fieldMapping['default']) ? ' = ' . var_export($fieldMapping['default'], true) : null) . ";\n";
         }
 
