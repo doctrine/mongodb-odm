@@ -227,7 +227,7 @@ EOF
                     $code .= sprintf(<<<EOF
 
         \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
-        \$return = \$this->dm->getRepository(\$className)->%3\$s();
+        \$return = \$this->dm->getRepository(\$className)->%3\$s(\$document);
         \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
         \$hydratedData['%2\$s'] = \$return;
 
