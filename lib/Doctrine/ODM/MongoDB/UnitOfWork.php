@@ -2276,11 +2276,12 @@ class UnitOfWork implements PropertyChangedListener
             }
         } else {
             $document = $class->newInstance();
+            $this->registerManaged($document, $id, $data);
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
             $this->identityMap[$class->rootDocumentName][$id] = $document;
             $data = $this->hydratorFactory->hydrate($document, $data);
-            $this->registerManaged($document, $id, $data);
+            $this->originalDocumentData[$oid] = $data;
         }
         return $document;
     }
