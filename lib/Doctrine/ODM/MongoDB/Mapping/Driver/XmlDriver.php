@@ -213,6 +213,8 @@ class XmlDriver extends AbstractFileDriver
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
             'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
+            'inversedBy'     => isset($attributes['inversed-by']) ? (string) $attributes['inversed-by'] : null,
+            'mappedBy'       => isset($attributes['mapped-by']) ? (string) $attributes['mapped-by'] : null,
         );
         if (isset($reference->{'discriminator-field'})) {
             $attr = $reference->{'discriminator-field'};
