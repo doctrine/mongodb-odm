@@ -187,6 +187,8 @@ class YamlDriver extends AbstractFileDriver
             'targetDocument' => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'fieldName'      => $fieldName,
             'strategy'       => isset($reference['strategy']) ? (string) $reference['strategy'] : 'pushAll',
+            'inversedBy'     => isset($reference['inversedBy']) ? (string) $reference['inversedBy'] : null,
+            'mappedBy'       => isset($reference['mappedBy']) ? (string) $reference['mappedBy'] : null,
         );
         if (isset($reference['discriminatorField'])) {
             $mapping['discriminatorField'] = $reference['discriminatorField'];
