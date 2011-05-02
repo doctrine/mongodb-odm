@@ -147,6 +147,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
+            'inversedBy' => null,
+            'mappedBy' => null,
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
@@ -166,6 +168,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
+            'inversedBy' => null,
+            'mappedBy' => null,
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
@@ -185,6 +189,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
+            'inversedBy' => null,
+            'mappedBy' => null,
         ), $classMetadata->fieldMappings['groups']);
 
         $this->assertEquals(array(
