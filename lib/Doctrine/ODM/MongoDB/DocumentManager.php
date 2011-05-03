@@ -625,8 +625,16 @@ class DocumentManager implements ObjectManager
             $discriminatorValue = $value[$discriminatorField];
             return isset($mapping['discriminatorMap'][$discriminatorValue]) ? $mapping['discriminatorMap'][$discriminatorValue] : $discriminatorValue;
         } else {
-            return $mapping['targetDocument'];
+            $class = $this->getClassMetadata($mapping['targetDocument']);
+
+            // @TODO figure out how to remove this
+            if ($class->discriminatorField) {
+                if (isset($value[$class->discriminatorField['name']])) {
+                    return $class->discriminatorMap[$value[$class->discriminatorField['name']]];
+                }
+            }
         }
+        return $mapping['targetDocument'];
     }
 
     /**
@@ -648,6 +656,10 @@ class DocumentManager implements ObjectManager
             $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($id),
             $this->cmd . 'db'  => $this->getDocumentDatabase($className)->getName()
         );
+
+        if ($class->discriminatorField) {
+            $dbRef[$class->discriminatorField['name']] = $class->discriminatorValue;
+        }
 
         // add a discriminator value if the referenced document is not mapped explicitely to a targetDocument
         if ($referenceMapping && ! isset($referenceMapping['targetDocument'])) {
