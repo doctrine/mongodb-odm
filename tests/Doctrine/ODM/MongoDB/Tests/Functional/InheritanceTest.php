@@ -81,4 +81,28 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->assertTrue($user->persisted);
     }
+
+    public function testInheritanceProxy()
+    {
+        $developer = new \Documents\Developer('avalanche123');
+
+        $projects = $developer->getProjects();
+
+        $projects->add(new \Documents\Project('Main Project'));
+        $projects->add(new \Documents\SubProject('Sub Project'));
+        $projects->add(new \Documents\OtherSubProject('Another Sub Project'));
+
+        $this->dm->persist($developer);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $developer = $this->dm->find('Documents\Developer', $developer->getId());
+        $projects  = $developer->getProjects();
+
+        $this->assertEquals(3, $projects->count());
+
+        $this->assertInstanceOf('Documents\Project', $projects[0]);
+        $this->assertInstanceOf('Documents\SubProject', $projects[1]);
+        $this->assertInstanceOf('Documents\OtherSubProject', $projects[2]);
+    }
 }
