@@ -361,12 +361,24 @@ class DocumentPersister
      * Loads a list of documents by a list of field criteria.
      *
      * @param array $criteria
+     * @param array|null $sort
+     * @param int|null $limit
+     * @param int|null $skip
      * @return array
      */
-    public function loadAll(array $criteria = array())
+    public function loadAll(array $criteria = array(), array $sort = null, $limit = null, $skip = null)
     {
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria);
+        if ($sort) {
+            $cursor->sort($sort);
+        }
+        if ($limit) {
+            $cursor->limit($limit);
+        }
+        if ($skip) {
+            $cursor->skip($skip);
+        }
         return $this->wrapCursor($cursor);
     }
 
