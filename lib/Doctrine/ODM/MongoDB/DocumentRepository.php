@@ -170,6 +170,21 @@ class DocumentRepository implements ObjectRepository
     }
 
     /**
+     * Find Many documents of the given repositories type by id.
+     *
+     * @param array $ids of identifiers
+     * @return array of object instances
+     */
+    public function findMany(array $ids)
+    {
+        return $this->createQueryBuilder()
+            ->field('id')->in($ids)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
+
+    /**
      * Finds a single document by a set of criteria.
      *
      * @param array $criteria

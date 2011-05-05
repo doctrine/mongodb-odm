@@ -62,6 +62,10 @@ class DocumentRepositoryTest extends BaseTest
         $queryBuilder->expects($this->never())
             ->method('skip');
 
+        $queryBuilder->expects($this->once())
+            ->method('setQueryArray')
+            ->with($this->criteria);
+
         $query->expects($this->once())
             ->method('execute')
             ->with()
@@ -83,6 +87,10 @@ class DocumentRepositoryTest extends BaseTest
 
         $this->unitOfWork->expects($this->never())
             ->method('getDocumentPersister');
+
+        $queryBuilder->expects($this->once())
+            ->method('setQueryArray')
+            ->with($this->criteria);
 
         $queryBuilder->expects($this->never())
             ->method('sort');
@@ -106,6 +114,46 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertEquals($this->result, $repository->findBy($this->criteria, null, $limit, $offset));
     }
 
+    public function testFindMany()
+    {
+        $ids = array('a', 'b', 'c');
+        $queryBuilder = $this->getQueryBuilderMock();
+        $query = $this->getMockBuilder('stdClass')
+            ->setMethods(array('execute'))
+            ->getMock();
+        $cursor = $this->getMockBuilder('stdClass')
+            ->setMethods(array('toArray'))
+            ->getMock();
+
+        $repository = $this->getRepositoryMockForQueryBuilderCreation($queryBuilder);
+
+        $queryBuilder->expects($this->once())
+            ->method('field')
+            ->with('id')
+            ->will($this->returnValue($queryBuilder));
+        $queryBuilder->expects($this->once())
+            ->method('in')
+            ->with($ids)
+            ->will($this->returnValue($queryBuilder));
+
+        $queryBuilder->expects($this->once())
+            ->method('getQuery')
+            ->with()
+            ->will($this->returnValue($query));
+
+        $query->expects($this->once())
+            ->method('execute')
+            ->with()
+            ->will($this->returnValue($cursor));
+
+        $cursor->expects($this->once())
+            ->method('toArray')
+            ->with()
+            ->will($this->returnValue($this->result));
+
+        $this->assertEquals($this->result, $repository->findMany($ids));
+    }
+
     protected function getRepositoryMockForQueryBuilderCreation($queryBuilder)
     {
         $repository = $this->getMockBuilder('Doctrine\ODM\MongoDB\DocumentRepository')
@@ -117,10 +165,6 @@ class DocumentRepositoryTest extends BaseTest
             ->method('createQueryBuilder')
             ->with()
             ->will($this->returnValue($queryBuilder));
-
-        $queryBuilder->expects($this->once())
-            ->method('setQueryArray')
-            ->with($this->criteria);
 
         return $repository;
     }
