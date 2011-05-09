@@ -2,6 +2,9 @@
 
 namespace Documents;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Document(db="my_db", collection="projects")
  * @InheritanceType("SINGLE_COLLECTION")
@@ -19,9 +22,15 @@ class Project
     /** @EmbedOne(targetDocument="Address") */
     private $address;
 
-    public function __construct($name)
+    /**
+     * @ReferenceMany(targetDocument="SubProject", cascade="all")
+     */
+    private $subProjects;
+
+    public function __construct($name, Collection $subProjects = null)
     {
         $this->name = $name;
+        $this->subProjects = $subProjects ? $subProjects : new ArrayCollection();
     }
 
     public function getId()
@@ -47,5 +56,15 @@ class Project
     public function getAddress()
     {
         return $this->address;
+    }
+
+    public function setSubProjects(Collection $subProjects)
+    {
+        $this->subProjects = $subProjects;
+    }
+
+    public function getSubProjects()
+    {
+        return $this->subProjects;
     }
 }
