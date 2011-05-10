@@ -140,12 +140,48 @@ class DocumentRepository implements ObjectRepository
     /**
      * Finds documents by a set of criteria.
      *
+     * @throws UnexpectedValueException
      * @param array $criteria
-     * @return array
+     * @param array|null $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
+     * @return mixed The objects.
      */
-    public function findBy(array $criteria)
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        return $this->uow->getDocumentPersister($this->documentName)->loadAll($criteria);
+        if (null === $orderBy && null === $limit && null === $offset) {
+            // skip query creation when only criteria is given
+            return $this->uow->getDocumentPersister($this->documentName)->loadAll($criteria);
+        }
+
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder->setQueryArray($criteria);
+        if ($orderBy) {
+            $queryBuilder->sort($orderBy[0], isset($orderBy[1]) ? $orderBy[1] : null);
+        }
+        if (null !== $limit) {
+            $queryBuilder->limit($limit);
+        }
+        if (null !== $offset) {
+            $queryBuilder->skip($offset);
+        }
+
+        return $queryBuilder->getQuery()->execute();
+    }
+
+    /**
+     * Find Many documents of the given repositories type by id.
+     *
+     * @param array $ids of identifiers
+     * @return array of object instances
+     */
+    public function findMany(array $ids)
+    {
+        return $this->createQueryBuilder()
+            ->field('id')->in($ids)
+            ->getQuery()
+            ->execute()
+            ->toArray();
     }
 
     /**
