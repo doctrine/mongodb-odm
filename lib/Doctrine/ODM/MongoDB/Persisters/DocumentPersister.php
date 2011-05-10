@@ -363,10 +363,23 @@ class DocumentPersister
      * @param array $criteria
      * @return array
      */
-    public function loadAll(array $criteria = array())
+    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
     {
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria);
+        
+        if (null !== $orderBy) {
+            $cursor->sort($orderBy);
+        }
+        
+        if (null !== $limit) {
+            $cursor->limit($limit);
+        }
+        
+        if (null !== $offset) {
+            $cursor->skip($offset);
+        }
+        
         return $this->wrapCursor($cursor);
     }
 
