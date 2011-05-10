@@ -138,14 +138,22 @@ class DocumentRepository implements ObjectRepository
     }
 
     /**
-     * Finds documents by a set of criteria.
+     * Finds objects by a set of criteria.
      *
+     * Optionally sorting and limiting details can be passed. An implementation may throw
+     * an UnexpectedValueException if certain values of the sorting or limiting details are
+     * not supported.
+     *
+     * @throws UnexpectedValueException
      * @param array $criteria
-     * @return array
+     * @param array|null $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
+     * @return mixed The objects.
      */
-    public function findBy(array $criteria)
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        return $this->uow->getDocumentPersister($this->documentName)->loadAll($criteria);
+        return $this->uow->getDocumentPersister($this->documentName)->loadAll($criteria, $orderBy, $limit, $offset);
     }
 
     /**
