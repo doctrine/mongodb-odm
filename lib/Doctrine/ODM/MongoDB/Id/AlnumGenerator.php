@@ -40,27 +40,28 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 class AlnumGenerator extends IncrementGenerator
 {
 
-    protected $_pad = null;
+    protected $pad = null;
 
-    protected $_awkward_safe_mode = false;
+    protected $awkwardSafeMode = false;
 
-    protected $_chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    protected $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-    protected $_awkward_safe_chars = '0123456789BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz';
+    protected $awkwardSafeChars = '0123456789BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz';
 
     public function setPad($pad){
-        $this->_pad = intval($pad);
+        $this->pad = intval($pad);
     }
 
-    public function setAwkwardSafeMode($awkward_safe_mode = false){
-        $this->_awkward_safe_mode = $awkward_safe_mode;
+    public function setAwkwardSafeMode($awkwardSafeMode = false)
+    {
+        $this->awkwardSafeMode = $awkwardSafeMode;
     }
 
     /** @inheritDoc */
     public function generate(DocumentManager $dm, $document)
     {
         $id = parent::generate($dm, $document);
-        $index = $this->_awkward_safe_mode ? $this->_awkward_safe_chars : $this->_chars;
+        $index = $this->awkwardSafeMode ? $this->awkwardSafeChars : $this->chars;
         $base  = strlen($index);
 
 		$out = "";
@@ -69,7 +70,9 @@ class AlnumGenerator extends IncrementGenerator
             $out = $out . substr( $index, $a, 1 );
             $id = $id - ( $a * pow( $base, $t ) );
         }
-        if(is_numeric($this->_pad)) $out = str_pad( $out, $this->_pad, "0", STR_PAD_LEFT);
+        if(is_numeric($this->pad)) {
+            $out = str_pad( $out, $this->pad, "0", STR_PAD_LEFT);
+        }
 		return $out;
     }
 }
