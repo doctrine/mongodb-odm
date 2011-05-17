@@ -52,8 +52,8 @@ class AlnumGenerator extends IncrementGenerator
         $this->_pad = intval($pad);
     }
 
-    public function setAwkwardSafeMode($_awkward_safe_mode = false){
-        $this->_awkward_safe_mode = $_awkward_safe_mode;
+    public function setAwkwardSafeMode($awkward_safe_mode = false){
+        $this->_awkward_safe_mode = $awkward_safe_mode;
     }
 
     /** @inheritDoc */
