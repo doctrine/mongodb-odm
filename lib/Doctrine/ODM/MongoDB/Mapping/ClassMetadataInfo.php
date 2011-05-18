@@ -1511,7 +1511,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getAssociationNames()
     {
-        throw new \BadMethodCallException(__METHOD__.' not yet implemented');
+        return array();
     }
 
     /**
@@ -1525,7 +1525,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getTypeOfField($fieldName)
     {
-        throw new \BadMethodCallException(__METHOD__.' not yet implemented');
+        $mapping = $this->getFieldMapping($fieldName);
+        return isset($mapping['type']) ? $mapping['type'] : null;
     }
 
     /**
@@ -1536,16 +1537,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getAssociationTargetClass($assocName)
     {
-        throw new \BadMethodCallException(__METHOD__.' not yet implemented');
-    }
-
-    /**
-     * Get fully-qualified class name of this persistent class.
-     * 
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
+        return null;
     }
 }
