@@ -1488,5 +1488,64 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function setLockField($lockField)
     {
         $this->lockField = $lockField;
+    }    
+
+    /**
+     * A numerically indexed list of field names of this persistent class.
+     *
+     * This array includes identifier fields if present on this class.
+     *
+     * @return array
+     */
+    public function getFieldNames()
+    {
+        return array_keys($this->fieldMappings);
+    }
+
+    /**
+     * A numerically indexed list of association names of this persistent class.
+     *
+     * This array includes identifier associations if present on this class.
+     *
+     * @return array
+     */
+    public function getAssociationNames()
+    {
+        throw new \BadMethodCallException(__METHOD__.' not yet implemented');
+    }
+
+    /**
+     * Returns a type name of this field.
+     *
+     * This type names can be implementation specific but should at least include the php types:
+     * integer, string, boolean, float/double, datetime.
+     *
+     * @param string $fieldName
+     * @return string
+     */
+    public function getTypeOfField($fieldName)
+    {
+        throw new \BadMethodCallException(__METHOD__.' not yet implemented');
+    }
+
+    /**
+     * Returns the target class name of the given association.
+     *
+     * @param string $assocName
+     * @return string
+     */
+    public function getAssociationTargetClass($assocName)
+    {
+        throw new \BadMethodCallException(__METHOD__.' not yet implemented');
+    }
+
+    /**
+     * Get fully-qualified class name of this persistent class.
+     * 
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }
