@@ -1488,7 +1488,21 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function setLockField($lockField)
     {
         $this->lockField = $lockField;
-    }    
+    }
+
+    /**
+     * Returns a type name of this field.
+     *
+     * This type names can be implementation specific but should at least include the php types:
+     * integer, string, boolean, float/double, datetime.
+     *
+     * @param string $fieldName
+     * @return string
+     */
+    public function getTypeOfField($fieldName)
+    {
+        return isset($this->fieldMappings[$fieldName]) ? $this->fieldMappings[$fieldName]['type'] : null;
+    }
 
     /**
      * A numerically indexed list of field names of this persistent class.
@@ -1511,22 +1525,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getAssociationNames()
     {
-        return array();
-    }
-
-    /**
-     * Returns a type name of this field.
-     *
-     * This type names can be implementation specific but should at least include the php types:
-     * integer, string, boolean, float/double, datetime.
-     *
-     * @param string $fieldName
-     * @return string
-     */
-    public function getTypeOfField($fieldName)
-    {
-        $mapping = $this->getFieldMapping($fieldName);
-        return isset($mapping['type']) ? $mapping['type'] : null;
+        $names = array();
+        foreach ($this->fieldMappings as $field => $mapping) {
+            if (isset($mapping['targetDocument'])) {
+                $names[] = $field;
+            }
+        }
+        return $names;
     }
 
     /**
@@ -1537,6 +1542,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getAssociationTargetClass($assocName)
     {
-        return null;
+        if (!isset($this->fieldMappings[$assocName]) || !isset($this->fieldMappings[$assocName]['targetDocument'])) {
+            throw new \InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
+        }
+        return $this->fieldMappings[$assocName]['targetDocument'];
     }
 }
