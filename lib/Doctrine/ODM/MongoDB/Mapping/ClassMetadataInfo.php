@@ -1497,4 +1497,62 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         $this->lockField = $lockField;
     }
+
+    /**
+     * Returns a type name of this field.
+     *
+     * This type names can be implementation specific but should at least include the php types:
+     * integer, string, boolean, float/double, datetime.
+     *
+     * @param string $fieldName
+     * @return string
+     */
+    public function getTypeOfField($fieldName)
+    {
+        return isset($this->fieldMappings[$fieldName]) ? $this->fieldMappings[$fieldName]['type'] : null;
+    }
+
+    /**
+     * A numerically indexed list of field names of this persistent class.
+     *
+     * This array includes identifier fields if present on this class.
+     *
+     * @return array
+     */
+    public function getFieldNames()
+    {
+        return array_keys($this->fieldMappings);
+    }
+
+    /**
+     * A numerically indexed list of association names of this persistent class.
+     *
+     * This array includes identifier associations if present on this class.
+     *
+     * @return array
+     */
+    public function getAssociationNames()
+    {
+        $names = array();
+        foreach ($this->fieldMappings as $field => $mapping) {
+            if (isset($mapping['targetDocument'])) {
+                $names[] = $field;
+            }
+        }
+        return $names;
+    }
+
+    /**
+     * Returns the target class name of the given association.
+     *
+     * @param string $assocName
+     * @return string
+     */
+    public function getAssociationTargetClass($assocName)
+    {
+        if (!isset($this->fieldMappings[$assocName]) || !isset($this->fieldMappings[$assocName]['targetDocument'])) {
+            throw new \InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
+        }
+        return $this->fieldMappings[$assocName]['targetDocument'];
+    }
 }
