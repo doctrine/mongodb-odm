@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM29Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -43,13 +45,13 @@ class MODM29Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document(collection="tests", db="tests") */
+/** @ODM\Document(collection="tests", db="tests") */
 class MODM29Doc
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
-    /** @EmbedMany(targetDocument="MODM29Embedded", strategy="set") */
+    /** @ODM\EmbedMany(targetDocument="MODM29Embedded", strategy="set") */
     protected $collection;
 
     function __construct($c) {$this->set($c);}
@@ -58,10 +60,10 @@ class MODM29Doc
     function get() {return $this->collection;}
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class MODM29Embedded
 {
-    /** @String */
+    /** @ODM\String */
     protected $val;
 
     function __construct($val) {$this->set($val);}

@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\LockMode;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -321,16 +322,16 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @MappedSuperclass */
+/** @ODM\MappedSuperclass */
 abstract class AbstractVersionBase
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $title;
 
-    /** @Lock @Int */
+    /** @ODM\Lock @ODM\Int */
     public $locked;
 
     public function __construct($title = null)
@@ -354,36 +355,36 @@ abstract class AbstractVersionBase
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class LockInt extends AbstractVersionBase
 {
-    /** @Version @Int */
+    /** @ODM\Version @ODM\Int */
     public $version = 1;
 }
 
-/** @Document */
+/** @ODM\Document */
 class LockTimestamp extends AbstractVersionBase
 {
-    /** @Version @Date */
+    /** @ODM\Version @ODM\Date */
     public $version;
 }
 
-/** @Document */
+/** @ODM\Document */
 class InvalidLockDocument
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @Lock @String */
+    /** @ODM\Lock @ODM\String */
     public $lock;
 }
 
-/** @Document */
+/** @ODM\Document */
 class InvalidVersionDocument
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @Version @String */
+    /** @ODM\Version @ODM\String */
     public $version;
 }

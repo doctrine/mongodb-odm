@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testSimple()
@@ -132,16 +134,16 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class Hierarchy
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
-    /** @ReferenceMany(targetDocument="Hierarchy") */
+    /** @ODM\ReferenceMany(targetDocument="Hierarchy") */
     private $children = array();
 
     public function __construct($name)
@@ -192,13 +194,13 @@ class Hierarchy
     }
 }
 
-/** @MappedSuperclass */
+/** @ODM\MappedSuperclass */
 class BaseCategory
 {
-    /** @String */
+    /** @ODM\String */
     protected $name;
 
-    /** @EmbedMany(targetDocument="ChildCategory") */
+    /** @ODM\EmbedMany(targetDocument="ChildCategory") */
     protected $children = array();
 
     public function __construct($name)
@@ -244,10 +246,10 @@ class BaseCategory
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class Category extends BaseCategory
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
     public function getId()
@@ -256,35 +258,35 @@ class Category extends BaseCategory
     }
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class ChildCategory extends BaseCategory
 {
 }
 
-/** @Document */
+/** @ODM\Document */
 class Order
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $title;
 
-    /** @EmbedOne(targetDocument="ProductBackup") */
+    /** @ODM\EmbedOne(targetDocument="ProductBackup") */
     public $product;
 }
 
-/** @Document */
+/** @ODM\Document */
 class Product
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $title;
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class ProductBackup extends Product
 {
 }

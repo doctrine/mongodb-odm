@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class CustomFieldNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testInsertSetsLoginInsteadOfUsername()
@@ -95,12 +97,12 @@ class CustomFieldNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class CustomFieldName
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String(name="login") */
+    /** @ODM\String(name="login") */
     public $username;
 }

@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -21,19 +22,19 @@ class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document(db="tests", collection="tests") */
+/** @ODM\Document(db="tests", collection="tests") */
 class MODM76A
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
-    /** @String */
+    /** @ODM\String */
     protected $test = 'test';
 
-    /** @EmbedMany(targetDocument="MODM76B") */
+    /** @ODM\EmbedMany(targetDocument="MODM76B") */
     protected $b = array();
 
-    /** @ReferenceMany(targetDocument="MODM76C") */
+    /** @ODM\ReferenceMany(targetDocument="MODM76C") */
     protected $c = array();
 
     public function __construct($b, $c)
@@ -58,10 +59,10 @@ class MODM76A
     }
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class MODM76B
 {
-    /** @ReferenceOne(targetDocument="MODM76C") */
+    /** @ODM\ReferenceOne(targetDocument="MODM76C") */
     protected $c;
 
     public function __construct($c)
@@ -75,9 +76,9 @@ class MODM76B
     }
 }
 
-/** @Document(db="tests", collection="tests2") */
+/** @ODM\Document(db="tests", collection="tests2") */
 class MODM76C
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 }

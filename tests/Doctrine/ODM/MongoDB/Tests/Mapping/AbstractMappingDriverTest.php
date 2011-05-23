@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver,
     Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -200,70 +201,70 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 }
 
 /**
- * @Document(collection="cms_users")
- * @HasLifecycleCallbacks
+ * @ODM\Document(collection="cms_users")
+ * @ODM\HasLifecycleCallbacks
  */
 class User
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     public $id;
 
     /**
-     * @String(name="username")
-     * @Index(order="desc")
+     * @ODM\String(name="username")
+     * @ODM\Index(order="desc")
      */
     public $name;
 
     /**
-     * @String
-     * @UniqueIndex(order="desc", dropDups="true")
+     * @ODM\String
+     * @ODM\UniqueIndex(order="desc", dropDups="true")
      */
     public $email;
 
     /**
-     * @Int
-     * @UniqueIndex(order="desc", dropDups="true")
+     * @ODM\Int
+     * @ODM\UniqueIndex(order="desc", dropDups="true")
      */
     public $mysqlProfileId;
 
     /**
-     * @ReferenceOne(targetDocument="Address", cascade={"remove"})
+     * @ODM\ReferenceOne(targetDocument="Address", cascade={"remove"})
      */
     public $address;
 
     /**
-     * @ReferenceMany(targetDocument="Phonenumber", cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"})
+     * @ODM\ReferenceMany(targetDocument="Phonenumber", cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"})
      */
     public $phonenumbers;
 
     /**
-     * @ReferenceMany(targetDocument="Group", cascade={"all"})
+     * @ODM\ReferenceMany(targetDocument="Group", cascade={"all"})
      */
     public $groups;
 
     /**
-     * @EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"})
+     * @ODM\EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"})
      */
     public $otherPhonenumbers;
 
     /**
-     * @PrePersist
+     * @ODM\PrePersist
      */
     public function doStuffOnPrePersist()
     {
     }
 
     /**
-     * @PrePersist
+     * @ODM\PrePersist
      */
     public function doOtherStuffOnPrePersistToo()
     {
     }
 
     /**
-     * @PostPersist
+     * @ODM\PostPersist
      */
     public function doStuffOnPostPersist()
     {

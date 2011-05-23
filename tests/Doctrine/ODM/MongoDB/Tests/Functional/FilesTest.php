@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Documents\File,
     Documents\Profile;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -125,15 +126,15 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class TestFile
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @File */
+    /** @ODM\File */
     public $theFile;
 }

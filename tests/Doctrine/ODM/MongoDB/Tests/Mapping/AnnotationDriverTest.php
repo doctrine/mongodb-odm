@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -110,10 +111,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 }
 
 /**
- * @Document
+ * @ODM\Document
  */
 class ColumnWithoutType
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 }

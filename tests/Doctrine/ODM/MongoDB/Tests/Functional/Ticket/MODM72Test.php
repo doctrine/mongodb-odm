@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM72Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -11,12 +13,12 @@ class MODM72Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class MODM72User
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String(options={"test"="test"}) */
+    /** @ODM\String(options={"test"="test"}) */
     public $name;
 }

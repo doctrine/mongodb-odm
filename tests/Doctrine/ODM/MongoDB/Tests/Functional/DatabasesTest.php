@@ -15,6 +15,7 @@ use Doctrine\Common\ClassLoader,
     Documents\Ecommerce\Currency,
     Documents\Ecommerce\Money,
     Documents\Ecommerce\Option;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class DatabasesTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,13 +44,13 @@ class DatabasesTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-/** @Document(collection="test") */
+/** @ODM\Document(collection="test") */
 class DefaultDatabaseTest
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     public function getId()

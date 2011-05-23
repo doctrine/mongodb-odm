@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM92Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -32,14 +33,14 @@ class MODM92Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class MODM92TestDocument
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
     // Note: Test case fails with default "pushAll" strategy, but "set" works
-    /** @EmbedMany(targetDocument="MODM92TestEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument="MODM92TestEmbeddedDocument") */
     public $embeddedDocuments;
 
     public function __construct() {
@@ -70,10 +71,10 @@ class MODM92TestDocument
     }
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class MODM92TestEmbeddedDocument
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     public function __construct($name) {

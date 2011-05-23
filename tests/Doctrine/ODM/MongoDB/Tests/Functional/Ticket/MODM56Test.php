@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM56Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -27,19 +29,19 @@ class MODM56Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document @HasLifecycleCallbacks */
+/** @ODM\Document @ODM\HasLifecycleCallbacks */
 class MODM56Parent
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @Date */
+    /** @ODM\Date */
     public $updatedAt;
 
-    /** @EmbedMany(targetDocument="MODM56Child") */
+    /** @ODM\EmbedMany(targetDocument="MODM56Child") */
     public $children = array();
 
     public function __construct($name)
@@ -47,20 +49,20 @@ class MODM56Parent
         $this->name = $name;
     }
 
-    /** @PreUpdate */
+    /** @ODM\PreUpdate */
     public function preUpdate()
     {
         $this->updatedAt = new \DateTime();
     }
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class MODM56Child
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     public function __construct($name)

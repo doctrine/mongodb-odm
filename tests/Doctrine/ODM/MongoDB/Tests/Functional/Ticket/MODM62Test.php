@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM62Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -20,13 +22,13 @@ class MODM62Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document(collection="modm62_users") */
+/** @ODM\Document(collection="modm62_users") */
 class MODM62Document
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @Collection */
+    /** @ODM\Collection */
     public $b = array('ok');
 
     public function setB($b) {$this->b = $b;}
