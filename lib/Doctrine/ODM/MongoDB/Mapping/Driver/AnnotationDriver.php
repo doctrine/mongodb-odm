@@ -204,7 +204,7 @@ class AnnotationDriver implements Driver
                 $indexes[] = $index;
             }
             foreach ($this->reader->getPropertyAnnotations($property) as $fieldAnnot) {
-                if ($fieldAnnot instanceof \Doctrine\ODM\MongoDB\Mapping\Annotations\Field) {
+                if ($fieldAnnot instanceof \Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField) {
                     $mapping = array_merge($mapping, (array) $fieldAnnot);
                     $class->mapField($mapping);
                 }
