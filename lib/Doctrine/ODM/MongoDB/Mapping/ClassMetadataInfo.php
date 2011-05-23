@@ -1497,4 +1497,24 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         $this->lockField = $lockField;
     }
+
+    public function getFieldNames()
+    {
+        throw new \BadMethodCallException(__METHOD__.'() is not implemented yet.');
+    }
+
+    public function getAssociationNames()
+    {
+        throw new \BadMethodCallException(__METHOD__.'() is not implemented yet.');
+    }
+
+    public function getTypeOfField($fieldName)
+    {
+        throw new \BadMethodCallException(__METHOD__.'($fieldName) is not implemented yet.');
+    }
+
+    public function getAssociationTargetClass($assocName)
+    {
+        throw new \BadMethodCallException(__METHOD__.'($assocName) is not implemented yet.');
+    }
 }
