@@ -19,7 +19,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping;
+namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
 

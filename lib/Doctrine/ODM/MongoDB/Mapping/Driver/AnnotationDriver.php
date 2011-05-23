@@ -25,7 +25,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\Common\Annotations\Reader,
     Doctrine\ODM\MongoDB\MongoDBException;
 
-require __DIR__ . '/DoctrineAnnotations.php';
+require __DIR__ . '/../Annotations/DoctrineAnnotations.php';
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
