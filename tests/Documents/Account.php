@@ -3,17 +3,18 @@
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @Document(db="doctrine_odm_tests", collection="accounts") */
+/** @ODM\Document(db="doctrine_odm_tests", collection="accounts") */
 class Account
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @Field */
+    /** @ODM\Field */
     private $name;
 
-    /** @ReferenceOne */
+    /** @ODM\ReferenceOne */
     protected $user;
 
     public function getId()

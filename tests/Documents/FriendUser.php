@@ -2,22 +2,24 @@
 
 namespace Documents;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class FriendUser
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     /**
-     * @ReferenceMany(targetDocument="FriendUser", mappedBy="myFriends", cascade={"all"})
+     * @ODM\ReferenceMany(targetDocument="FriendUser", mappedBy="myFriends", cascade={"all"})
      */
     public $friendsWithMe;
 
     /**
-     * @ReferenceMany(targetDocument="FriendUser", inversedBy="friendsWithMe", cascade={"all"})
+     * @ODM\ReferenceMany(targetDocument="FriendUser", inversedBy="friendsWithMe", cascade={"all"})
      */
     public $myFriends;
 

@@ -2,12 +2,14 @@
 
 namespace Documents\Functional;
 
-/** @Document(collection="functional_tests") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="functional_tests") */
 class NullFieldValues
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @Field(nullable=true) */
+    /** @ODM\Field(nullable=true) */
     public $field;
 }

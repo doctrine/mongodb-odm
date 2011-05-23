@@ -2,9 +2,11 @@
 
 namespace Documents;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class Category extends BaseCategory
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 }

@@ -2,37 +2,39 @@
 
 namespace Documents;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class BlogPost
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @ReferenceMany(targetDocument="Tag", inversedBy="blogPosts", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument="Tag", inversedBy="blogPosts", cascade={"all"}) */
     public $tags = array();
 
-    /** @ReferenceMany(targetDocument="Comment", mappedBy="parent", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", cascade={"all"}) */
     public $comments = array();
 
-    /** @ReferenceOne(targetDocument="Comment", mappedBy="parent", sort={"date"="asc"}) */
+    /** @ODM\ReferenceOne(targetDocument="Comment", mappedBy="parent", sort={"date"="asc"}) */
     public $firstComment;
 
-    /** @ReferenceOne(targetDocument="Comment", mappedBy="parent", sort={"date"="desc"}) */
+    /** @ODM\ReferenceOne(targetDocument="Comment", mappedBy="parent", sort={"date"="desc"}) */
     public $latestComment;
 
-    /** @ReferenceMany(targetDocument="Comment", mappedBy="parent", sort={"date"="desc"}, limit=5) */
+    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", sort={"date"="desc"}, limit=5) */
     public $last5Comments = array();
 
-    /** @ReferenceMany(targetDocument="Comment", mappedBy="parent", criteria={"isByAdmin"=true}, sort={"date"="desc"}) */
+    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", criteria={"isByAdmin"=true}, sort={"date"="desc"}) */
     public $adminComments = array();
 
-    /** @ReferenceOne(targetDocument="Comment", mappedBy="parent", repositoryMethod="findOneComment") */    
+    /** @ODM\ReferenceOne(targetDocument="Comment", mappedBy="parent", repositoryMethod="findOneComment") */    
     public $repoComment;
 
-    /** @ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyComments") */    
+    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyComments") */    
     public $repoComments;
 
     public function __construct($name = null)

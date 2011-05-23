@@ -3,53 +3,54 @@
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @Document(collection="users")
- * @InheritanceType("COLLECTION_PER_CLASS")
+ * @ODM\Document(collection="users")
+ * @ODM\InheritanceType("COLLECTION_PER_CLASS")
  */
 class User extends BaseDocument
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
-    /** @Field(type="string") */
+    /** @ODM\Field(type="string") */
     protected $username;
 
-    /** @BinMD5 */
+    /** @ODM\BinMD5 */
     protected $password;
 
-    /** @Date */
+    /** @ODM\Date */
     protected $createdAt;
 
-    /** @EmbedOne(targetDocument="Address", nullable=true) */
+    /** @ODM\EmbedOne(targetDocument="Address", nullable=true) */
     protected $address;
 
-    /** @ReferenceOne(targetDocument="Profile", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument="Profile", cascade={"all"}) */
     protected $profile;
 
-    /** @EmbedMany(targetDocument="Phonenumber") */
+    /** @ODM\EmbedMany(targetDocument="Phonenumber") */
     protected $phonenumbers;
 
-    /** @ReferenceMany(targetDocument="Group", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
     protected $groups;
 
-    /** @ReferenceOne(targetDocument="Account", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
-    /** @ReferenceMany(targetDocument="Account", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument="Account", cascade={"all"}) */
     protected $accounts;
 
-    /** @Int */
+    /** @ODM\Int */
     protected $hits = 0;
 
-    /** @String */
+    /** @ODM\String */
     protected $nullTest;
 
-    /** @Increment */
+    /** @ODM\Increment */
     protected $count = 0;
 
-    /** @Collection */
+    /** @ODM\Collection */
     private $logs = array();
 
     public function __construct()

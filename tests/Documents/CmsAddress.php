@@ -2,36 +2,38 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document
- * @Indexes({
- *   @Index(keys={"country"="asc", "zip"="asc", "city"="asc"})
+ * @ODM\Document
+ * @ODM\Indexes({
+ *   @ODM\Index(keys={"country"="asc", "zip"="asc", "city"="asc"})
  * })
  */
 class CmsAddress
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     public $id;
 
     /**
-     * @String
+     * @ODM\String
      */
     public $country;
 
     /**
-     * @String
+     * @ODM\String
      */
     public $zip;
 
     /**
-     * @String
+     * @ODM\String
      */
     public $city;
 
     /**
-     * @ReferenceOne(targetDocument="CmsUser")
+     * @ODM\ReferenceOne(targetDocument="CmsUser")
      */
     public $user;
 

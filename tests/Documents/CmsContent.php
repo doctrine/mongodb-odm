@@ -2,13 +2,15 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @MappedSuperclass
+ * @ODM\MappedSuperclass
  */
 abstract class CmsContent extends CmsPage
 {
     /**
-     * @String
+     * @ODM\String
      */
     public $title;
 }

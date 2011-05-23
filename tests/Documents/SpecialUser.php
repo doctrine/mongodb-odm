@@ -2,10 +2,12 @@
 
 namespace Documents;
 
-/** * @Document(db="doctrine_odm_tests", collection="special_users") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** * @ODM\Document(db="doctrine_odm_tests", collection="special_users") */
 class SpecialUser extends User
 {
-    /** @Field */
+    /** @ODM\Field */
     private $rules = array();
 
     public function setRules(array $rules)

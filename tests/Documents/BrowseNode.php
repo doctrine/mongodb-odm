@@ -2,22 +2,24 @@
 
 namespace Documents;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class BrowseNode
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     /**
-     * @ReferenceOne(targetDocument="BrowseNode", inversedBy="children", cascade={"all"})
+     * @ODM\ReferenceOne(targetDocument="BrowseNode", inversedBy="children", cascade={"all"})
      */
     public $parent;
 
     /**
-     * @ReferenceMany(targetDocument="BrowseNode", mappedBy="parent", cascade={"all"})
+     * @ODM\ReferenceMany(targetDocument="BrowseNode", mappedBy="parent", cascade={"all"})
      */
     public $children;
 

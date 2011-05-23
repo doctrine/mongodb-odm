@@ -2,9 +2,11 @@
 
 namespace Documents\Functional;
 
-/** @EmbeddedDocument */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\EmbeddedDocument */
 class Embedded
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 }

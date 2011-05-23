@@ -2,16 +2,18 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document
+ * @ODM\Document
  */
 class CmsPhonenumber
 {
-    /** @Id */
+    /** @ODM\Id */
     public $phonenumber;
 
     /**
-     * @ReferenceOne(targetDocument="CmsUser", cascade={"merge"})
+     * @ODM\ReferenceOne(targetDocument="CmsUser", cascade={"merge"})
      */
     public $user;
 

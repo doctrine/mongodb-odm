@@ -2,13 +2,15 @@
 
 namespace Documents;
 
-/** @MappedSuperclass */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\MappedSuperclass */
 abstract class BaseCategory
 {
-    /** @String */
+    /** @ODM\String */
      protected $name;
 
-     /** @EmbedMany(targetDocument="SubCategory") */
+     /** @ODM\EmbedMany(targetDocument="SubCategory") */
      protected $children = array();
 
      public function __construct($name = null)

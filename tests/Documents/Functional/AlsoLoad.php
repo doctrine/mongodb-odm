@@ -2,46 +2,48 @@
 
 namespace Documents\Functional;
 
-/** @Document(collection="functional_tests") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="functional_tests") */
 class AlsoLoad
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
     /**
-     * @String
-     * @AlsoLoad({"bar", "zip"})
+     * @ODM\String
+     * @ODM\AlsoLoad({"bar", "zip"})
      */
     public $foo;
 
-    /** @NotSaved */
+    /** @ODM\NotSaved */
     public $bar;
 
-    /** @NotSaved */
+    /** @ODM\NotSaved */
     public $zip;
 
-    /** @NotSaved */
+    /** @ODM\NotSaved */
     public $name;
 
-    /** @NotSaved */
+    /** @ODM\NotSaved */
     public $fullName;
 
-    /** @String */
+    /** @ODM\String */
     public $firstName;
 
-    /** @String */
+    /** @ODM\String */
     public $lastName;
 
-    /** @String */
+    /** @ODM\String */
     public $test;
 
-    /** @String */
+    /** @ODM\String */
     public $test1;
 
-    /** @String */
+    /** @ODM\String */
     public $test2;
 
-    /** @AlsoLoad({"name", "fullName"}) */
+    /** @ODM\AlsoLoad({"name", "fullName"}) */
     public function populateFirstAndLastName($name)
     {
         $e = explode(' ', $name);
@@ -49,7 +51,7 @@ class AlsoLoad
         $this->lastName = $e[1];
     }
 
-    /** @AlsoLoad({"test1", "test2"}) */
+    /** @ODM\AlsoLoad({"test1", "test2"}) */
     public function populateTest($test)
     {
         $this->test = $test;

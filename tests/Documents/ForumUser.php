@@ -2,16 +2,18 @@
 
 namespace Documents;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class ForumUser
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $username;
 
-    /** @ReferenceOne(targetDocument="ForumAvatar", cascade={"persist"}) */
+    /** @ODM\ReferenceOne(targetDocument="ForumAvatar", cascade={"persist"}) */
     public $avatar;
     
     public function getId()

@@ -2,16 +2,18 @@
 
 namespace Documents;
 
-/** @Document(collection="albums") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="albums") */
 class Album
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
-    /** @EmbedMany(targetDocument="Song") */
+    /** @ODM\EmbedMany(targetDocument="Song") */
     private $songs = array();
 
     public function __construct($name)

@@ -2,24 +2,25 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use DateTime;
 
-/** @Document(repositoryClass="Documents\CommentRepository") */
+/** @ODM\Document(repositoryClass="Documents\CommentRepository") */
 class Comment
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $text;
 
-    /** @ReferenceOne(targetDocument="BlogPost", inversedBy="comments", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument="BlogPost", inversedBy="comments", cascade={"all"}) */
     public $parent;
 
-    /** @Date @Index(order="1") */
+    /** @ODM\Date @ODM\Index(order="1") */
     public $date;
 
-    /** @Boolean */
+    /** @ODM\Boolean */
     public $isByAdmin = false;
 
     public function __construct($text, DateTime $date, $isByAdmin = false)

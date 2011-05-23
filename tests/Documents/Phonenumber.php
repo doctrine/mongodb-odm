@@ -3,11 +3,12 @@
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class Phonenumber
 {
-    /** @String */
+    /** @ODM\String */
     private $phonenumber;
 
     public function __construct($phonenumber = null)

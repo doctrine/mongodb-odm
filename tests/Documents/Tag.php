@@ -2,16 +2,18 @@
 
 namespace Documents;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class Tag
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @ReferenceMany(targetDocument="BlogPost", mappedBy="tags") */
+    /** @ODM\ReferenceMany(targetDocument="BlogPost", mappedBy="tags") */
     public $blogPosts;
 
     public function __construct($name)

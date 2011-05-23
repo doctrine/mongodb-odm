@@ -2,13 +2,15 @@
 
 namespace Documents;
 
-/** @EmbeddedDocument */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\EmbeddedDocument */
 class Message
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     public function __construct($name)
