@@ -14,7 +14,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testLoadMetadataForNonDocumentThrowsException()
     {
         $cm = new ClassMetadata('stdClass');
-        $reader = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
+        $reader = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader();
         $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
 
         $this->setExpectedException('Doctrine\ODM\MongoDB\MongoDBException');
@@ -27,7 +27,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testColumnWithMissingTypeDefaultsToString()
     {
         $cm = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ColumnWithoutType');
-        $reader = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
+        $reader = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader();
         $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
 
         $annotationDriver->loadMetadataForClass('Doctrine\ODM\MongoDB\Tests\Mapping\InvalidColumn', $cm);
@@ -99,8 +99,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     protected function _loadDriver()
     {
-        $cache = new \Doctrine\Common\Cache\ArrayCache();
-        $reader = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader($cache);
+        $reader = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader();
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
     }
 

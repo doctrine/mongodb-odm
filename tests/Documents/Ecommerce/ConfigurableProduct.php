@@ -26,7 +26,6 @@ class ConfigurableProduct
 
     /**
      * @var Documents\Option
-     * @ODM\Transient
      */
     protected $selectedOption;
 

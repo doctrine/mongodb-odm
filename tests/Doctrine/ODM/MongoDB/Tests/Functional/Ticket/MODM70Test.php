@@ -44,7 +44,7 @@ class Avatar
 	protected $name;
 
 	/**
-	 * @int(name="sex")
+	 * @ODM\Int(name="sex")
 	 * @var int
 	 */
 	protected $sex;

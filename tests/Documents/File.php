@@ -17,10 +17,10 @@ class File
     /** @ODM\File */
     private $file;
 
-    /** @ODM\Integer @ODM\NotSaved */
+    /** @ODM\NotSaved */
     private $length;
 
-    /** @ODM\Integer @ODM\NotSaved */
+    /** @ODM\NotSaved */
     private $md5;
 
     public function getId()
