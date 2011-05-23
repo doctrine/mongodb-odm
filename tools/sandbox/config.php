@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
 use Doctrine\Common\ClassLoader,
-    Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
     Doctrine\MongoDB\Connection,

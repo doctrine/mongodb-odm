@@ -21,7 +21,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
-    Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\Reader,
     Doctrine\ODM\MongoDB\MongoDBException;
 

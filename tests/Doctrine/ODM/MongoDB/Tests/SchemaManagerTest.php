@@ -4,7 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 /**

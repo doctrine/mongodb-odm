@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\Common\Annotations\AnnotationReader,
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader,
     Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
