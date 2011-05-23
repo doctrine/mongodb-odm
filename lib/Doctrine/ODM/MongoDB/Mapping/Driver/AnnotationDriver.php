@@ -149,7 +149,7 @@ class AnnotationDriver implements Driver
         }
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\InheritanceType'])) {
             $inheritanceTypeAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\InheritanceType'];
-            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\Annotations\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
+            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
         }
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\DiscriminatorField'])) {
             $discrFieldAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\DiscriminatorField'];
@@ -167,7 +167,7 @@ class AnnotationDriver implements Driver
         }
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ChangeTrackingPolicy'])) {
             $changeTrackingAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ChangeTrackingPolicy'];
-            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\Annotations\ClassMetadata::CHANGETRACKING_' . $changeTrackingAnnot->value));
+            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_' . $changeTrackingAnnot->value));
         }
 
         $methods = $reflClass->getMethods();
