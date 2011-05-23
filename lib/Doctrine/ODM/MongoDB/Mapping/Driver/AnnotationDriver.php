@@ -368,7 +368,6 @@ class AnnotationDriver implements Driver
     {
         if ($reader == null) {
             $reader = new AnnotationReader();
-            $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         }
         return new self($reader, $paths);
     }

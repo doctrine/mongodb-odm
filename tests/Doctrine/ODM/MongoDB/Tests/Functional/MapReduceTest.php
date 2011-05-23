@@ -36,7 +36,6 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
         $config->setDefaultDB('doctrine_odm_tests');
 
         $reader = new AnnotationReader();
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
         $this->dm = DocumentManager::create(new Connection(), $config);

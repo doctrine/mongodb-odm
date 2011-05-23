@@ -133,7 +133,6 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         */
 
         $reader = new AnnotationReader();
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
         return DocumentManager::create($this->getConnection(), $config);
     }

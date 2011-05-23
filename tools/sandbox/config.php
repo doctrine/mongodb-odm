@@ -42,7 +42,6 @@ $config->setMetadataCacheImpl(new ApcCache());
 */
 
 $reader = new AnnotationReader();
-$reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
 $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
 $dm = DocumentManager::create(new Connection(), $config);

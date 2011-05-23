@@ -100,7 +100,6 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function newDefaultAnnotationDriver($paths = array())
     {
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, (array) $paths);
     }

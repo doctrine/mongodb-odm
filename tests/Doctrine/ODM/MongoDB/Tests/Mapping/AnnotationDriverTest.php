@@ -27,7 +27,6 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $cm = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ColumnWithoutType');
         $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
 
         $annotationDriver->loadMetadataForClass('Doctrine\ODM\MongoDB\Tests\Mapping\InvalidColumn', $cm);
@@ -101,7 +100,6 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $cache = new \Doctrine\Common\Cache\ArrayCache();
         $reader = new \Doctrine\Common\Annotations\AnnotationReader($cache);
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
     }
 
