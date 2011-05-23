@@ -107,13 +107,13 @@ class AnnotationDriver implements Driver
         $reflClass = $class->getReflectionClass();
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Document'])) {
-            $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Document'];
-        } elseif (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass'])) {
-            $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass'];
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\Document'])) {
+            $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\Document'];
+        } elseif (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\MappedSuperclass'])) {
+            $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\MappedSuperclass'];
             $class->isMappedSuperclass = true;
-        } elseif (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\EmbeddedDocument'])) {
-            $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\EmbeddedDocument'];
+        } elseif (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument'])) {
+            $documentAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument'];
             $class->isEmbeddedDocument = true;
         } else {
             throw MongoDBException::classIsNotAValidDocument($className);
@@ -128,19 +128,19 @@ class AnnotationDriver implements Driver
         if (isset($documentAnnot->repositoryClass)) {
             $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
         }
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Indexes'])) {
-            $indexes = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Indexes']->value;
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\Indexes'])) {
+            $indexes = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\Indexes']->value;
             $indexes = is_array($indexes) ? $indexes : array($indexes);
             foreach ($indexes as $index) {
                 $this->addIndex($class, $index);
             }
         }
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Index'])) {
-            $index = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Index'];
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\Index'])) {
+            $index = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\Index'];
             $this->addIndex($class, $index);
         }
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\UniqueIndex'])) {
-            $index = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\UniqueIndex'];
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\UniqueIndex'])) {
+            $index = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\UniqueIndex'];
             $this->addIndex($class, $index);
         }
         if (isset($documentAnnot->indexes)) {
@@ -148,27 +148,27 @@ class AnnotationDriver implements Driver
                 $this->addIndex($class, $index);
             }
         }
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'])) {
-            $inheritanceTypeAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\InheritanceType'];
-            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\InheritanceType'])) {
+            $inheritanceTypeAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\InheritanceType'];
+            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\Annotations\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
         }
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorField'])) {
-            $discrFieldAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorField'];
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\DiscriminatorField'])) {
+            $discrFieldAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\DiscriminatorField'];
             $class->setDiscriminatorField(array(
                 'fieldName' => $discrFieldAnnot->fieldName,
             ));
         }
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorMap'])) {
-            $discrMapAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorMap'];
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\DiscriminatorMap'])) {
+            $discrMapAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\DiscriminatorMap'];
             $class->setDiscriminatorMap($discrMapAnnot->value);
         }
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorValue'])) {
-            $discrValueAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\DiscriminatorValue'];
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\DiscriminatorValue'])) {
+            $discrValueAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\DiscriminatorValue'];
             $class->setDiscriminatorValue($discrValueAnnot->value);
         }
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\ChangeTrackingPolicy'])) {
-            $changeTrackingAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\ChangeTrackingPolicy'];
-            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_' . $changeTrackingAnnot->value));
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ChangeTrackingPolicy'])) {
+            $changeTrackingAnnot = $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ChangeTrackingPolicy'];
+            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\Annotations\ClassMetadata::CHANGETRACKING_' . $changeTrackingAnnot->value));
         }
 
         $methods = $reflClass->getMethods();
@@ -181,31 +181,31 @@ class AnnotationDriver implements Driver
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
 
-            if ($alsoLoad = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
+            if ($alsoLoad = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Annotations\AlsoLoad')) {
                 $mapping['alsoLoadFields'] = (array) $alsoLoad->value;
             }
-            if ($notSaved = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\NotSaved')) {
+            if ($notSaved = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Annotations\NotSaved')) {
                 $mapping['notSaved'] = true;
             }
 
-            if ($versionAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Version')) {
+            if ($versionAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Annotations\Version')) {
                 $mapping['version'] = true;
             }
 
-            if ($versionAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Lock')) {
+            if ($versionAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Annotations\Lock')) {
                 $mapping['lock'] = true;
             }
 
-            $indexes = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Indexes');
+            $indexes = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Annotations\Indexes');
             $indexes = $indexes ? $indexes : array();
-            if ($index = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Index')) {
+            if ($index = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Annotations\Index')) {
                 $indexes[] = $index;
             }
-            if ($index = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\UniqueIndex')) {
+            if ($index = $this->reader->getPropertyAnnotation($property, 'Doctrine\ODM\MongoDB\Mapping\Annotations\UniqueIndex')) {
                 $indexes[] = $index;
             }
             foreach ($this->reader->getPropertyAnnotations($property) as $fieldAnnot) {
-                if ($fieldAnnot instanceof \Doctrine\ODM\MongoDB\Mapping\Field) {
+                if ($fieldAnnot instanceof \Doctrine\ODM\MongoDB\Mapping\Annotations\Field) {
                     $mapping = array_merge($mapping, (array) $fieldAnnot);
                     $class->mapField($mapping);
                 }
@@ -225,7 +225,7 @@ class AnnotationDriver implements Driver
 
         foreach ($methods as $method) {
             if ($method->isPublic()) {
-                if ($alsoLoad = $this->reader->getMethodAnnotation($method, 'Doctrine\ODM\MongoDB\Mapping\AlsoLoad')) {
+                if ($alsoLoad = $this->reader->getMethodAnnotation($method, 'Doctrine\ODM\MongoDB\Mapping\Annotations\AlsoLoad')) {
                     $fields = (array) $alsoLoad->value;
                     foreach ($fields as $value) {
                         $class->alsoLoadMethods[$value] = $method->getName();
@@ -233,40 +233,40 @@ class AnnotationDriver implements Driver
                 }
             }
         }
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\HasLifecycleCallbacks'])) {
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks'])) {
             foreach ($methods as $method) {
                 if ($method->isPublic()) {
                     $annotations = $this->reader->getMethodAnnotations($method);
 
-                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PrePersist'])) {
+                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist'])) {
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::prePersist);
                     }
 
-                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PostPersist'])) {
+                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\Annotations\PostPersist'])) {
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::postPersist);
                     }
 
-                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PreUpdate'])) {
+                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate'])) {
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::preUpdate);
                     }
 
-                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PostUpdate'])) {
+                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\Annotations\PostUpdate'])) {
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::postUpdate);
                     }
 
-                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PreRemove'])) {
+                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\Annotations\PreRemove'])) {
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::preRemove);
                     }
 
-                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PostRemove'])) {
+                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\Annotations\PostRemove'])) {
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::postRemove);
                     }
 
-                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PreLoad'])) {
+                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\Annotations\PreLoad'])) {
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::preLoad);
                     }
 
-                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\PostLoad'])) {
+                    if (isset($annotations['Doctrine\ODM\MongoDB\Mapping\Annotations\PostLoad'])) {
                         $class->addLifecycleCallback($method->getName(), \Doctrine\ODM\MongoDB\Events::postLoad);
                     }
                 }
@@ -301,9 +301,9 @@ class AnnotationDriver implements Driver
     {
         $classAnnotations = $this->reader->getClassAnnotations(new \ReflectionClass($className));
 
-        return ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Document']) &&
-               ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\MappedSuperclass']) &&
-               ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\EmbeddedDocument']);
+        return ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\Document']) &&
+               ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\MappedSuperclass']) &&
+               ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument']);
     }
 
     /**
