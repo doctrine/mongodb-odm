@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
     Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\Common\Annotations\Reader,
     Doctrine\ODM\MongoDB\MongoDBException;
 
 require __DIR__ . '/DoctrineAnnotations.php';
@@ -38,9 +39,9 @@ require __DIR__ . '/DoctrineAnnotations.php';
 class AnnotationDriver implements Driver
 {
     /**
-     * The AnnotationReader.
+     * The annotation reader.
      *
-     * @var AnnotationReader
+     * @var Reader
      */
     private $reader;
 
@@ -64,13 +65,13 @@ class AnnotationDriver implements Driver
     private $classNames;
 
     /**
-     * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
+     * Initializes a new AnnotationDriver that uses the given Reader for reading
      * docblock annotations.
      * 
-     * @param $reader The AnnotationReader to use.
+     * @param $reader Reader The annotation reader to use.
      * @param string|array $paths One or multiple paths where mapping classes can be found. 
      */
-    public function __construct(AnnotationReader $reader, $paths = null)
+    public function __construct(Reader $reader, $paths = null)
     {
         $this->reader = $reader;
         if ($paths) {
@@ -361,10 +362,10 @@ class AnnotationDriver implements Driver
      * Factory method for the Annotation Driver
      * 
      * @param array|string $paths
-     * @param AnnotationReader $reader
+     * @param Reader $reader
      * @return AnnotationDriver
      */
-    static public function create($paths = array(), AnnotationReader $reader = null)
+    static public function create($paths = array(), Reader $reader = null)
     {
         if ($reader == null) {
             $reader = new AnnotationReader();
