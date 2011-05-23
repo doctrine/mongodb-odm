@@ -2,13 +2,15 @@
 
 namespace Documents;
 
-/** @Document(collection="accounts") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="accounts") */
 class Account
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     public function __construct($name)

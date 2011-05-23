@@ -2,25 +2,27 @@
 
 namespace Documents;
 
-/** @Document(collection="users") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="users") */
 class User
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** ODM\String */
     private $username;
 
-    /** @BinDataMD5 */
+    /** @ODM\BinDataMD5 */
     private $password;
 
-    /** @EmbedOne(targetDocument="Address") */
+    /** @ODM\EmbedOne(targetDocument="Address") */
     private $address;
 
-    /** @ReferenceOne(targetDocument="Account") */
+    /** @ODM\ReferenceOne(targetDocument="Account") */
     private $account;
 
-    /** @EmbedMany(targetDocument="Phonenumber") */
+    /** @ODM\EmbedMany(targetDocument="Phonenumber") */
     private $phonenumbers = array();
 
     public function getId()
