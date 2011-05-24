@@ -4,7 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Cache\ApcCache,
-    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader,
+    Doctrine\Common\Annotations\IndexedReader,
     Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,

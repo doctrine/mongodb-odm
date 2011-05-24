@@ -4,9 +4,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Cache\ApcCache,
-    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader,
+    Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\Common\Annotations\IndexedReader,
     Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
+    Doctrine\ODM\MongoDB\Mapping\Annotations as ODM,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
@@ -15,7 +17,6 @@ use Doctrine\Common\ClassLoader,
     Documents\Ecommerce\Currency,
     Documents\Ecommerce\Money,
     Documents\Ecommerce\Option;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class DatabasesTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,7 +32,7 @@ class DatabasesTest extends \PHPUnit_Framework_TestCase
         $config->setHydratorDir(__DIR__ . '/../../../../../Hydrators');
         $config->setHydratorNamespace('Hydrators');
 
-        $reader = new AnnotationReader();
+        $reader = new IndexedReader(new AnnotationReader());
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
         $config->setDefaultDB('testing');
 

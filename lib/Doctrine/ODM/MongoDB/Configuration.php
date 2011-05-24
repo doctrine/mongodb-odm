@@ -99,7 +99,8 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function newDefaultAnnotationDriver($paths = array())
     {
-        $reader = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader();
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, (array) $paths);
     }

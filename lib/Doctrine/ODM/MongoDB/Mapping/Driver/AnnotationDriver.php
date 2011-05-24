@@ -19,9 +19,11 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
+use Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\Common\Annotations\IndexedReader,
     Doctrine\Common\Annotations\Reader,
+    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
+    Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
     Doctrine\ODM\MongoDB\MongoDBException;
 
 require __DIR__ . '/../Annotations/DoctrineAnnotations.php';
@@ -367,7 +369,7 @@ class AnnotationDriver implements Driver
     static public function create($paths = array(), Reader $reader = null)
     {
         if ($reader == null) {
-            $reader = new AnnotationReader();
+            $reader = new IndexedReader(new AnnotationReader());
         }
         return new self($reader, $paths);
     }

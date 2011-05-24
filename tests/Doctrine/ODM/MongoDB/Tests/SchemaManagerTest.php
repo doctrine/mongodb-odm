@@ -4,7 +4,8 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 /**
@@ -262,7 +263,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $config->setDefaultDB('doctrine_odm_tests');
 
-        $reader = new AnnotationReader();
+        $reader = new IndexedReader(new AnnotationReader());
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/../../../../Documents'));
         return DocumentManagerMock::create($this->getConnection(), $config);
     }

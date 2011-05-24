@@ -4,7 +4,8 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 /**
@@ -132,7 +133,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $config->setMetadataCacheImpl(new ApcCache());
         */
 
-        $reader = new AnnotationReader();
+        $reader = new IndexedReader(new AnnotationReader());
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
         return DocumentManager::create($this->getConnection(), $config);
     }
