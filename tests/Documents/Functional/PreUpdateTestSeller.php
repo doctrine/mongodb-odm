@@ -2,16 +2,18 @@
 
 namespace Documents\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document(collection="pre_update_test_seller")
- * @HasLifecycleCallbacks
+ * @ODM\Document(collection="pre_update_test_seller")
+ * @ODM\HasLifecycleCallbacks
  */
 class PreUpdateTestSeller
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     public function getName()
@@ -24,7 +26,7 @@ class PreUpdateTestSeller
         $this->name = $name;
     }
 
-    /** @PreUpdate */
+    /** @ODM\PreUpdate */
     public function preUpdate()
     {
     }

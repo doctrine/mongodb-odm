@@ -2,10 +2,12 @@
 
 namespace Documents\Bars;
 
-/** @EmbeddedDocument */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\EmbeddedDocument */
 class Location
 {
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     public function __construct($name = null)

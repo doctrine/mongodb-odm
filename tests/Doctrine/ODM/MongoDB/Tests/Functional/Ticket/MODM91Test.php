@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM91Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -50,22 +51,22 @@ class MODM91EventListener
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class MODM91TestDocument
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @EmbedOne(targetDocument="MODM91TestEmbeddedDocument") */
+    /** @ODM\EmbedOne(targetDocument="MODM91TestEmbeddedDocument") */
     public $embedded;
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class MODM91TestEmbeddedDocument
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 }

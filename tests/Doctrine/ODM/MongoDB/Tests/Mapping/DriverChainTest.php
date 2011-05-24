@@ -76,8 +76,8 @@ class DriverChainTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testIsTransient()
     {
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         
         $chain = new DriverChain();
         $chain->addDriver(new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, array()), 'Documents');

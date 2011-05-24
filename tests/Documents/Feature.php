@@ -2,17 +2,19 @@
 
 namespace Documents;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class Feature
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     /**
-     * @ReferenceOne(targetDocument="Product", inversedBy="features", cascade={"all"})
+     * @ODM\ReferenceOne(targetDocument="Product", inversedBy="features", cascade={"all"})
      */
     public $product;
 

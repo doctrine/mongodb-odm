@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class ClassMetadataLoadEventTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -28,14 +29,14 @@ class ClassMetadataLoadEventTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
- * @Document
+ * @ODM\Document
  */
 class LoadEventTestDocument
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     private $about;

@@ -2,13 +2,15 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document
+ * @ODM\Document
  */
 class CmsProduct extends CmsContent
 {
     /**
-     * @String
+     * @ODM\String
      */
     public $name;
 }

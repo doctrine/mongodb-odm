@@ -2,19 +2,21 @@
 
 namespace Documents\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document(collection="same_collection")
- * @DiscriminatorField(fieldName="type")
- * @DiscriminatorMap({"test1"="Documents\Functional\SameCollection1", "test2"="Documents\Functional\SameCollection2"})
+ * @ODM\Document(collection="same_collection")
+ * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorMap({"test1"="Documents\Functional\SameCollection1", "test2"="Documents\Functional\SameCollection2"})
  */
 class SameCollection1
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @String */
+    /** @ODM\String */
     public $test;
 }

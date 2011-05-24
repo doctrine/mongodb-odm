@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -38,8 +39,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config->setMetadataCacheImpl(new ApcCache());
         */
 
-        $reader = new AnnotationReader();
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+        $reader = new IndexedReader(new AnnotationReader());
         $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/../../../../Documents');
         $config->setMetadataDriverImpl($this->annotationDriver);
 

@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM50Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -15,26 +17,26 @@ class MODM50Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
- * @Document(collection="files", db="modm50_tests")
- * @InheritanceType("SINGLE_COLLECTION")
- * @DiscriminatorField(fieldName="type")
- * @DiscriminatorMap({
+ * @ODM\Document(collection="files", db="modm50_tests")
+ * @ODM\InheritanceType("SINGLE_COLLECTION")
+ * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorMap({
  *      "file"="MODM50File",
  *      "image"="MODM50Image"
  * })
  */
 class MODM50File
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @File */
+    /** @ODM\File */
     public $file;
 
     function __construct($file) {$this->file = $file;}
 }
 
-/** @Document(collection="files", db="modm50_tests") */
+/** @ODM\Document(collection="files", db="modm50_tests") */
 class MODM50Image extends MODM50File
 {
 }

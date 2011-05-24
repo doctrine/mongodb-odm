@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
 use Documents\ForumUser;
 use Documents\ForumAvatar;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 {
@@ -281,23 +282,23 @@ class ParentAssociationTest
 }
 
 /**
- * @Document
+ * @ODM\Document
  */
 class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 {
     private $_listeners = array();
     /**
-     * @Id
+     * @ODM\Id
      */
     private $id;
     /**
-     * @String
+     * @ODM\String
      */
     private $data;
 
     private $transient; // not persisted
 
-    /** @ReferenceMany(targetDocument="NotifyChangedRelatedItem") */
+    /** @ODM\ReferenceMany(targetDocument="NotifyChangedRelatedItem") */
     private $items;
 
     public function  __construct() {
@@ -344,15 +345,15 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class NotifyChangedRelatedItem
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     private $id;
 
-    /** @ReferenceOne(targetDocument="NotifyChangedDocument") */
+    /** @ODM\ReferenceOne(targetDocument="NotifyChangedDocument") */
     private $owner;
 
     public function getId() {

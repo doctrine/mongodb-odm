@@ -3,14 +3,15 @@
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @Document(db="doctrine_odm_tests", collection="groups") */
+/** @ODM\Document(db="doctrine_odm_tests", collection="groups") */
 class Group
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @Field */
+    /** @ODM\Field */
     private $name;
 
     public function __construct($name = null)

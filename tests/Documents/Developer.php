@@ -4,24 +4,25 @@ namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @Document(db="my_db", collection="developers")
+ * @ODM\Document(db="my_db", collection="developers")
  */
 class Developer
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     private $id;
 
     /**
-     * @String
+     * @ODM\String
      */
     private $name;
 
     /**
-     * @ReferenceMany(targetDocument="Documents\Project", cascade="all")
+     * @ODM\ReferenceMany(targetDocument="Documents\Project", cascade="all")
      */
     private $projects;
 

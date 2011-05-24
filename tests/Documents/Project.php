@@ -4,26 +4,27 @@ namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @Document(db="my_db", collection="projects")
- * @InheritanceType("SINGLE_COLLECTION")
- * @DiscriminatorField(fieldName="type")
- * @DiscriminatorMap({"project"="Documents\Project", "sub-project"="Documents\SubProject", "other-sub-project"="Documents\OtherSubProject"})
+ * @ODM\Document(db="my_db", collection="projects")
+ * @ODM\InheritanceType("SINGLE_COLLECTION")
+ * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorMap({"project"="Documents\Project", "sub-project"="Documents\SubProject", "other-sub-project"="Documents\OtherSubProject"})
  */
 class Project
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
-    /** @EmbedOne(targetDocument="Address") */
+    /** @ODM\EmbedOne(targetDocument="Address") */
     private $address;
 
     /**
-     * @ReferenceMany(targetDocument="SubProject", cascade="all")
+     * @ODM\ReferenceMany(targetDocument="SubProject", cascade="all")
      */
     private $subProjects;
 

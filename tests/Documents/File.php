@@ -3,23 +3,24 @@
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @Document(db="doctrine_odm_tests", collection="files") */
+/** @ODM\Document(db="doctrine_odm_tests", collection="files") */
 class File
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @Field */
+    /** @ODM\Field */
     private $name;
 
-    /** @File */
+    /** @ODM\File */
     private $file;
 
-    /** @Integer @NotSaved */
+    /** @ODM\NotSaved */
     private $length;
 
-    /** @Integer @NotSaved */
+    /** @ODM\NotSaved */
     private $md5;
 
     public function getId()

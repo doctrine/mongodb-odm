@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class CollectionPersisterTest extends BaseTest
 {
@@ -154,29 +155,29 @@ class CollectionPersisterTest extends BaseTest
     }
 }
 
-/** @Document(collection="user_collection_persister_test") */
+/** @ODM\Document(collection="user_collection_persister_test") */
 class CollectionPersisterUser
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $username;
 
-    /** @EmbedMany(targetDocument="CollectionPersisterCategory") */
+    /** @ODM\EmbedMany(targetDocument="CollectionPersisterCategory") */
     public $categories = array();
 
-    /** @ReferenceMany(targetDocument="CollectionPersisterPhonenumber", cascade={"persist"}) */
+    /** @ODM\ReferenceMany(targetDocument="CollectionPersisterPhonenumber", cascade={"persist"}) */
     public $phonenumbers = array();
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class CollectionPersisterCategory
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @EmbedMany(targetDocument="CollectionPersisterCategory") */
+    /** @ODM\EmbedMany(targetDocument="CollectionPersisterCategory") */
     public $children = array();
 
     public function __construct($name)
@@ -185,13 +186,13 @@ class CollectionPersisterCategory
     }
 }
 
-/** @Document(collection="phonenumber_collection_persister_test") */
+/** @ODM\Document(collection="phonenumber_collection_persister_test") */
 class CollectionPersisterPhonenumber
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $phonenumber;
 
     public function __construct($phonenumber)

@@ -2,9 +2,11 @@
 
 namespace Documents;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class ForumAvatar
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 }

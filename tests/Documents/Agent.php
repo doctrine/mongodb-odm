@@ -2,14 +2,16 @@
 
 namespace Documents;
 
-/** @Document(collection="agents") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="agents") */
 class Agent
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
     /**
-     * @ReferenceOne(discriminatorMap={
+     * @ODM\ReferenceOne(discriminatorMap={
      * "server"="Server",
      * "server_guest"="GuestServer"
      * })

@@ -2,17 +2,19 @@
 
 namespace Documents\Functional;
 
-/** @Document(collection="favorites_user") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="favorites_user") */
 class FavoritesUser
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     /**
-     * @ReferenceMany(
+     * @ODM\ReferenceMany(
      *   discriminatorField="type",
      *   discriminatorMap={
      *     "group"="Documents\Group",
@@ -22,13 +24,13 @@ class FavoritesUser
      */
     private $favorites = array();
 
-    /** @EmbedMany */
+    /** @ODM\EmbedMany */
     private $embedded = array();
 
-    /** @ReferenceOne */
+    /** @ODM\ReferenceOne */
     private $favorite;
 
-    /** @EmbedOne */
+    /** @ODM\EmbedOne */
     private $embed;
 
     public function setFavorite($favorite)

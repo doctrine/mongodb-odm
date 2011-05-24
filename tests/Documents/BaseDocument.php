@@ -2,15 +2,17 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @MappedSuperclass
- * @HasLifecycleCallbacks
+ * @ODM\MappedSuperclass
+ * @ODM\HasLifecycleCallbacks
  */
 abstract class BaseDocument
 {
     public $persisted = false;
 
-    /** @String */
+    /** @ODM\String */
     protected $inheritedProperty;
 
     public function setInheritedProperty($value)
@@ -23,7 +25,7 @@ abstract class BaseDocument
         return $this->inheritedProperty;
     }
 
-    /** @PrePersist */
+    /** @ODM\PrePersist */
     public function prePersist()
     {
         $this->persisted = true;

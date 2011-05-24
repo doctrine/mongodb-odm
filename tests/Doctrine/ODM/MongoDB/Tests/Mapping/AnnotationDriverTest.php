@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -13,7 +14,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testLoadMetadataForNonDocumentThrowsException()
     {
         $cm = new ClassMetadata('stdClass');
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
 
         $this->setExpectedException('Doctrine\ODM\MongoDB\MongoDBException');
@@ -26,8 +28,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testColumnWithMissingTypeDefaultsToString()
     {
         $cm = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ColumnWithoutType');
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
 
         $annotationDriver->loadMetadataForClass('Doctrine\ODM\MongoDB\Tests\Mapping\InvalidColumn', $cm);
@@ -99,9 +101,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     protected function _loadDriver()
     {
-        $cache = new \Doctrine\Common\Cache\ArrayCache();
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader($cache);
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
     }
 
@@ -112,10 +113,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 }
 
 /**
- * @Document
+ * @ODM\Document
  */
 class ColumnWithoutType
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 }

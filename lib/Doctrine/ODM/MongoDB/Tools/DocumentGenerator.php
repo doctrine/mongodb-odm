@@ -71,11 +71,6 @@ class DocumentGenerator
     /** Whether or not to generation annotations */
     private $generateAnnotations = false;
 
-    /**
-     * @var string
-     */
-    private $annotationsPrefix = '';
-
     /** Whether or not to generated sub methods */
     private $generateDocumentStubMethods = false;
 
@@ -89,6 +84,8 @@ class DocumentGenerator
 '<?php
 
 <namespace>
+
+<imports>
 
 <documentAnnotation>
 <documentClassName>
@@ -130,9 +127,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 }';
 
     private static $lifecycleCallbackMethodTemplate =
-'/**
- * @<name>
- */
+'<comment>
 public function <methodName>()
 {
 <spaces>// Add your code here
@@ -184,7 +179,7 @@ public function <methodName>()
         if ($this->backupExisting && file_exists($path)) {
             $backupPath = dirname($path) . DIRECTORY_SEPARATOR .  "~" . basename($path);
             if (!copy($path, $backupPath)) {
-                throw new \RuntimeException("Attempt to backup overwritten entitiy file but copy operation failed.");
+                throw new \RuntimeException("Attempt to backup overwritten document file but copy operation failed.");
             }
         }
 
@@ -207,6 +202,7 @@ public function <methodName>()
     {
         $placeHolders = array(
             '<namespace>',
+            '<imports>',
             '<documentAnnotation>',
             '<documentClassName>',
             '<documentBody>'
@@ -214,6 +210,7 @@ public function <methodName>()
 
         $replacements = array(
             $this->generateDocumentNamespace($metadata),
+            $this->generateDocumentImports($metadata),
             $this->generateDocumentDocBlock($metadata),
             $this->generateDocumentClassName($metadata),
             $this->generateDocumentBody($metadata)
@@ -283,16 +280,6 @@ public function <methodName>()
     public function setGenerateAnnotations($bool)
     {
         $this->generateAnnotations = $bool;
-    }
-
-    /**
-     * Set an annotation prefix.
-     *
-     * @param string $prefix
-     */
-    public function setAnnotationPrefix($prefix)
-    {
-        $this->annotationsPrefix = $prefix;
     }
 
     /**
@@ -404,17 +391,23 @@ public function <methodName>()
     private function parseTokensInDocumentFile($path)
     {
         $tokens = token_get_all(file_get_contents($path));
-        $lastSeenNamespace = "";
+        $lastSeenNamespace = '';
         $lastSeenClass = false;
-        
+
         for ($i = 0; $i < count($tokens); $i++) {
             $token = $tokens[$i];
             if ($token[0] == T_NAMESPACE) {
-                $lastSeenNamespace = $tokens[$i+2][1] . "\\";
-            } else if ($token[0] == T_NS_SEPARATOR) {
-                $lastSeenNamespace .= $tokens[$i+1][1] . "\\";
+                $peek = $i;
+                $lastSeenNamespace = '';
+                while (isset($tokens[++$peek])) {
+                    if (';' == $tokens[$peek]) {
+                        break;
+                    } elseif (is_array($tokens[$peek]) && in_array($tokens[$peek][0], array(T_STRING, T_NS_SEPARATOR))) {
+                        $lastSeenNamespace .= $tokens[$peek][1];
+                    }
+                }
             } else if ($token[0] == T_CLASS) {
-                $lastSeenClass = $lastSeenNamespace . $tokens[$i+2][1];
+                $lastSeenClass = $lastSeenNamespace . '\\' . $tokens[$i+2][1];
                 $this->staticReflection[$lastSeenClass]['properties'] = array();
                 $this->staticReflection[$lastSeenClass]['methods'] = array();
             } else if ($token[0] == T_FUNCTION) {
@@ -478,6 +471,13 @@ public function <methodName>()
         return substr($metadata->name, 0, strrpos($metadata->name, '\\'));
     }
 
+    private function generateDocumentImports(ClassMetadataInfo $metadata)
+    {
+        if ($this->generateAnnotations) {
+            return 'use Doctrine\\ODM\\MongoDB\\Mapping\\Annotations as ODM;';
+        }
+    }
+
     private function generateDocumentDocBlock(ClassMetadataInfo $metadata)
     {
         $lines = array();
@@ -488,11 +488,11 @@ public function <methodName>()
             $lines[] = ' *';
 
             if ($metadata->isMappedSuperclass) {
-                $lines[] = ' * @' . $this->annotationsPrefix . 'MappedSupperClass';
+                $lines[] = ' * @ODM\\MappedSupperClass';
             } else if ($metadata->isEmbeddedDocument) {
-                $lines[] = ' * @' . $this->annotationsPrefix . 'EmbeddedDocument';
+                $lines[] = ' * @ODM\\EmbeddedDocument';
             } else {
-                $lines[] = ' * @' . $this->annotationsPrefix . 'Document';
+                $lines[] = ' * @ODM\\Document';
             }
 
             $document = array();
@@ -517,7 +517,7 @@ public function <methodName>()
                     foreach ($index['options'] as $key => $value) {
                         $options[] = '"'.$key.'"="'.$value.'"';
                     }
-                    $indexes[] = '@' . $this->annotationsPrefix . 'Index(keys={' . implode(', ', $keys) . '}, options={' . implode(', ', $options) . '})';
+                    $indexes[] = '@ODM\\Index(keys={' . implode(', ', $keys) . '}, options={' . implode(', ', $options) . '})';
                 }
                 $indexLines[] = "\n *         " . implode(",\n *         ", $indexes);
                 $indexLines[] = "\n *     }";
@@ -532,7 +532,7 @@ public function <methodName>()
             }
 
             if (isset($metadata->lifecycleCallbacks) && $metadata->lifecycleCallbacks) {
-                $lines[] = ' * @' . $this->annotationsPrefix . 'HasLifecycleCallbacks';
+                $lines[] = ' * @ODM\\HasLifecycleCallbacks';
             }
             $methods = array(
                 'generateInheritanceAnnotation',
@@ -555,7 +555,7 @@ public function <methodName>()
     private function generateInheritanceAnnotation($metadata)
     {
         if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
-            return '@' . $this->annotationsPrefix . 'InheritanceType("'.$this->getInheritanceTypeString($metadata->inheritanceType).'")';
+            return '@ODM\\InheritanceType("'.$this->getInheritanceTypeString($metadata->inheritanceType).'")';
         }
     }
 
@@ -563,7 +563,7 @@ public function <methodName>()
     {
         if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
             $discrField = $metadata->discriminatorField;
-            return '@' . $this->annotationsPrefix . 'DiscriminatorField(fieldName="' . $discrField['fieldName'] . '")';
+            return '@ODM\\DiscriminatorField(fieldName="' . $discrField['fieldName'] . '")';
         }
     }
 
@@ -576,13 +576,13 @@ public function <methodName>()
                 $inheritanceClassMap[] .= '"' . $type . '" = "' . $class . '"';
             }
 
-            return '@' . $this->annotationsPrefix . 'DiscriminatorMap({' . implode(', ', $inheritanceClassMap) . '})';
+            return '@ODM\\DiscriminatorMap({' . implode(', ', $inheritanceClassMap) . '})';
         }
     }
 
     private function generateChangeTrackingPolicyAnnotation(ClassMetadataInfo $metadata)
     {
-        return '@' . $this->annotationsPrefix . 'ChangeTrackingPolicy("' . $this->getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . '")';
+        return '@ODM\\ChangeTrackingPolicy("' . $this->getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . '")';
     }
 
     private function generateDocumentStubMethods(ClassMetadataInfo $metadata)
@@ -728,8 +728,8 @@ public function <methodName>()
         }
 
         $replacements = array(
-            '<name>'        => $this->annotationsPrefix . $name,
-            '<methodName>'  => $methodName,
+            '<comment>'    => $this->generateAnnotations ? '/** @ODM\\'.ucfirst($name).' */' : '',
+            '<methodName>' => $methodName,
         );
 
         $method = str_replace(
@@ -783,7 +783,7 @@ public function <methodName>()
                 $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';            
             }
 
-            $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . '' . $type . '(' . implode(', ', $typeOptions) . ')';
+            $lines[] = $this->spaces . ' * @ODM\\' . $type . '(' . implode(', ', $typeOptions) . ')';
         }
 
         $lines[] = $this->spaces . ' */';
@@ -820,7 +820,7 @@ public function <methodName>()
                 if (isset($fieldMapping['strategy'])) {
                     $field[] = 'strategy="' . $this->getIdGeneratorTypeString($metadata->generatorType) . '"';
                 }
-                $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Id(' . implode(', ', $field) . ')';
+                $lines[] = $this->spaces . ' * @ODM\\Id(' . implode(', ', $field) . ')';
             } else {
                 if (isset($fieldMapping['name'])) {
                     $field[] = 'name="' . $fieldMapping['name'] . '"';
@@ -840,11 +840,11 @@ public function <methodName>()
                     }
                     $field[] = "options={".implode(', ', $options)."}";
                 }
-                $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Field(' . implode(', ', $field) . ')';
+                $lines[] = $this->spaces . ' * @ODM\\Field(' . implode(', ', $field) . ')';
             }
 
             if (isset($fieldMapping['version']) && $fieldMapping['version']) {
-                $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Version';
+                $lines[] = $this->spaces . ' * @ODM\\Version';
             }
         }
 

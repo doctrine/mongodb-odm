@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM70Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -26,30 +27,30 @@ class MODM70Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
- * @Document(db="tests", collection="avatars")
+ * @ODM\Document(db="tests", collection="avatars")
  */
 class Avatar
 {
 
 	/**
-	 * @Id
+	 * @ODM\Id
 	 */
 	protected $id;
 
 	/**
-	 * @String(name="na")
+	 * @ODM\String(name="na")
 	 * @var string
 	 */
 	protected $name;
 
 	/**
-	 * @int(name="sex")
+	 * @ODM\Int(name="sex")
 	 * @var int
 	 */
 	protected $sex;
 
 	/**
-	 * @EmbedMany(
+	 * @ODM\EmbedMany(
 	 *	targetDocument="AvatarPart",
 	 *	name="aP"
 	 * )
@@ -114,12 +115,12 @@ class Avatar
 }
 
 /**
- * @EmbeddedDocument
+ * @ODM\EmbeddedDocument
  */
 class AvatarPart
 {
 	/**
-	 * @String(name="col")
+	 * @ODM\String(name="col")
 	 * @var string
 	 */
 	protected $color;

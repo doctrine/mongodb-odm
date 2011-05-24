@@ -2,10 +2,12 @@
 
 namespace Documents;
 
-/** @Document(db="my_db", collection="employees") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(db="my_db", collection="employees") */
 class Employee extends BaseEmployee
 {
-    /** @ReferenceOne(targetDocument="Documents\Manager") */
+    /** @ODM\ReferenceOne(targetDocument="Documents\Manager") */
     private $manager;
 
     public function getManager()

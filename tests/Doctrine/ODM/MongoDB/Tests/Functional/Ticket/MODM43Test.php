@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM43Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -16,19 +18,19 @@ class MODM43Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document(db="modm43_test", collection="people") @HasLifecycleCallbacks */
+/** @ODM\Document(db="modm43_test", collection="people") @ODM\HasLifecycleCallbacks */
 class Person
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $firstName;
 
-    /** @String */
+    /** @ODM\String */
     public $lastName;
 
-    /** @PreLoad */
+    /** @ODM\PreLoad */
     public function preLoad(array &$data)
     {
         if (isset($data['name'])) {

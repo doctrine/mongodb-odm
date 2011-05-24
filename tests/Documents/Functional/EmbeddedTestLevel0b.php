@@ -2,15 +2,17 @@
 
 namespace Documents\Functional;
 
-/** @Document(collection="embedded_test") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="embedded_test") */
 class EmbeddedTestLevel0b
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
-    /** @String */
+    /** @ODM\String */
     public $name;
-    /** @EmbedOne(targetDocument="EmbeddedTestLevel1") */
+    /** @ODM\EmbedOne(targetDocument="EmbeddedTestLevel1") */
     public $oneLevel1;
-    /** @EmbedMany(targetDocument="EmbeddedTestLevel1") */
+    /** @ODM\EmbedMany(targetDocument="EmbeddedTestLevel1") */
     public $level1 = array();
 }

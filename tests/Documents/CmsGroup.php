@@ -2,21 +2,23 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document
+ * @ODM\Document
  */
 class CmsGroup
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     public $id;
     /**
-     * @String
+     * @ODM\String
      */
     public $name;
     /**
-     * @ReferenceMany(targetDocument="CmsUser")
+     * @ODM\ReferenceMany(targetDocument="CmsUser")
      */
     public $users;
 

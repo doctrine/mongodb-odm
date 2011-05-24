@@ -2,18 +2,20 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @EmbeddedDocument
+ * @ODM\EmbeddedDocument
  */
 class Issue
 {
     /**
-     * @String
+     * @ODM\String
      */
     private $name;
 
     /**
-     * @String
+     * @ODM\String
      */
     private $description;
 

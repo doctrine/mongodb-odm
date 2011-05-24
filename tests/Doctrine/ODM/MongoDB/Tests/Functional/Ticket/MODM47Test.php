@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM47Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -16,16 +18,16 @@ class MODM47Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document(db="modm47_test", collection="a") */
+/** @ODM\Document(db="modm47_test", collection="a") */
 class MODM47A
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $b = 'tmp';
 
-    /** @AlsoLoad("c") */
+    /** @ODM\AlsoLoad("c") */
     function renameC($c) {$this->b = $c;}
     function getId() {return $this->id;}
 }

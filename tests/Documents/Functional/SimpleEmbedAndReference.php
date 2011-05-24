@@ -2,21 +2,23 @@
 
 namespace Documents\Functional;
 
-/** @Document(collection="functional_tests") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="functional_tests") */
 class SimpleEmbedAndReference
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @EmbedMany(targetDocument="Reference") */
+    /** @ODM\EmbedMany(targetDocument="Reference") */
     public $embedMany = array();
 
-    /** @ReferenceMany(targetDocument="Embedded") */
+    /** @ODM\ReferenceMany(targetDocument="Embedded") */
     public $referenceMany = array();
 
-    /** @EmbedOne(targetDocument="Reference") */
+    /** @ODM\EmbedOne(targetDocument="Reference") */
     public $embedOne;
 
-    /** @ReferenceOne(targetDocument="Embedded") */
+    /** @ODM\ReferenceOne(targetDocument="Embedded") */
     public $referenceOne;
 }

@@ -2,20 +2,22 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document(collection="servers")
- * @InheritanceType("SINGLE_COLLECTION")
- * @DiscriminatorField(fieldName="stype")
- * @DiscriminatorMap({
+ * @ODM\Document(collection="servers")
+ * @ODM\InheritanceType("SINGLE_COLLECTION")
+ * @ODM\DiscriminatorField(fieldName="stype")
+ * @ODM\DiscriminatorMap({
  * "server"="Server",
  * "server_guest"="GuestServer"
  * })
  */
 class Server
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 }

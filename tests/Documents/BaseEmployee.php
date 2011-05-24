@@ -2,31 +2,33 @@
 
 namespace Documents;
 
-/** @MappedSuperclass */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\MappedSuperclass */
 abstract class BaseEmployee
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
-    /** @Increment */
+    /** @ODM\Increment */
     protected $changes = 0;
 
-    /** @Collection */
+    /** @ODM\Collection */
     protected $notes = array();
 
-    /** @String */
+    /** @ODM\String */
     protected $name;
 
-    /** @Float */
+    /** @ODM\Float */
     protected $salary;
 
-    /** @Date */
+    /** @ODM\Date */
     protected $started;
 
-    /** @Date */
+    /** @ODM\Date */
     protected $left;
 
-    /** @EmbedOne(targetDocument="Address") */
+    /** @ODM\EmbedOne(targetDocument="Address") */
     protected $address;
 
     public function getId()
