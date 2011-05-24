@@ -2,16 +2,18 @@
 
 namespace Documents\Bars;
 
-/** @Document(collection="bars") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="bars") */
 class Bar
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
-    /** @EmbedMany(targetDocument="Documents\Bars\Location") */
+    /** @ODM\EmbedMany(targetDocument="Documents\Bars\Location") */
     private $locations = array();
 
     public function __construct($name = null)

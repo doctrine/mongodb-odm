@@ -2,10 +2,12 @@
 
 namespace Documents;
 
-/** @EmbeddedDocument */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\EmbeddedDocument */
 class Phonenumber
 {
-    /** @String */
+    /** @ODM\String */
     private $phonenumber;
 
     public function __construct($phonenumber = null)

@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Documents\Bars\Bar,
     Documents\Bars\Location;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -82,7 +83,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
- * @Document(collection={
+ * @ODM\Document(collection={
  *   "name"="testing",
  *   "capped"="true",
  *   "size"="1000",
@@ -91,19 +92,19 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
  */
 class CollectionTest
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $username;
 }
 
 /**
- * @Document
+ * @ODM\Document
  */
 class CreateCollectionTest
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
 }

@@ -2,19 +2,21 @@
 
 namespace Documents;
 
-/** @Document(collection="custom_users") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="custom_users") */
 class CustomUser
 {
-    /** @Id(strategy="none") */
+    /** @ODM\Id(strategy="none") */
     protected $id;
 
-    /** @String */
+    /** @ODM\String */
     protected $username;
 
-    /** @String */
+    /** @ODM\String */
     protected $password;
 
-    /** @ReferenceOne(targetDocument="Account", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
     public function getId()

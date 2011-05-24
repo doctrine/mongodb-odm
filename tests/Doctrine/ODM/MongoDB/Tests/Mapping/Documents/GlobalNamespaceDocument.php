@@ -1,54 +1,56 @@
 <?php
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document
+ * @ODM\Document
  */
 class DoctrineGlobal_Article
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     protected $id;
 
     /**
-     * @String
+     * @ODM\String
      */
     protected $headline;
 
     /**
-     * @String
+     * @ODM\String
      */
     protected $text;
 
     /**
-     * @ReferenceMany(targetDocument="DoctrineGlobal_User")
+     * @ODM\ReferenceMany(targetDocument="DoctrineGlobal_User")
      */
     protected $author;
 
     /**
-     * @ReferenceMany(targetDocument="\DoctrineGlobal_User")
+     * @ODM\ReferenceMany(targetDocument="\DoctrineGlobal_User")
      */
     protected $editor;
 }
 
 /**
- * @Document
+ * @ODM\Document
  */
 class DoctrineGlobal_User
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     private $id;
 
     /**
-     * @String
+     * @ODM\String
      * @var string
      */
     private $username;
 
     /**
-     * @String
+     * @ODM\String
      * @var string
      */
     private $email;

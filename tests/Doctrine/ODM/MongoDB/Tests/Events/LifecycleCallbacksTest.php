@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function createUser()
@@ -186,36 +188,36 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class User extends BaseDocument
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @EmbedOne(targetDocument="Profile") */
+    /** @ODM\EmbedOne(targetDocument="Profile") */
     public $profile;
 
-    /** @EmbedMany(targetDocument="Profile") */
+    /** @ODM\EmbedMany(targetDocument="Profile") */
     public $profiles = array();
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class Profile extends BaseDocument
 {
-    /** @EmbedOne(targetDocument="Profile") */
+    /** @ODM\EmbedOne(targetDocument="Profile") */
     public $profile;
 }
 
-/** @MappedSuperclass @HasLifecycleCallbacks */
+/** @ODM\MappedSuperclass @ODM\HasLifecycleCallbacks */
 abstract class BaseDocument
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @Date */
+    /** @ODM\Date */
     public $createdAt;
 
-    /** @Date */
+    /** @ODM\Date */
     public $updatedAt;
 
     public $prePersist = false;
@@ -227,51 +229,51 @@ abstract class BaseDocument
     public $preLoad = false;
     public $postLoad = false;
 
-    /** @PrePersist */
+    /** @ODM\PrePersist */
     public function prePersist()
     {
         $this->prePersist = true;
         $this->createdAt = new \DateTime();
     }
 
-    /** @PostPersist */
+    /** @ODM\PostPersist */
     public function postPersist()
     {
         $this->postPersist = true;
     }
 
-    /** @PreUpdate */
+    /** @ODM\PreUpdate */
     public function preUpdate()
     {
         $this->preUpdate = true;
         $this->updatedAt = new \DateTime();
     }
 
-    /** @PostUpdate */
+    /** @ODM\PostUpdate */
     public function postUpdate()
     {
         $this->postUpdate = true;
     }
 
-    /** @PreRemove */
+    /** @ODM\PreRemove */
     public function preRemove()
     {
         $this->preRemove = true;
     }
 
-    /** @PostRemove */
+    /** @ODM\PostRemove */
     public function postRemove()
     {
         $this->postRemove = true;
     }
 
-    /** @PreLoad */
+    /** @ODM\PreLoad */
     public function preLoad()
     {
         $this->preLoad = true;
     }
 
-    /** @PostLoad */
+    /** @ODM\PostLoad */
     public function postLoad()
     {
         $this->postLoad = true;

@@ -2,17 +2,19 @@
 
 namespace Documents;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class Cart
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @Int */
+    /** @ODM\Int */
     public $numItems = 0;
 
     /**
-     * @ReferenceOne(targetDocument="Customer", inversedBy="cart")
+     * @ODM\ReferenceOne(targetDocument="Customer", inversedBy="cart")
      */
     public $customer;
 }

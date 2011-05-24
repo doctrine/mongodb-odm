@@ -2,29 +2,30 @@
 
 namespace Documents\Ecommerce;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document(db="doctrine_odm_tests", collection="products")
+ * @ODM\Document(db="doctrine_odm_tests", collection="products")
  */
 class ConfigurableProduct
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     protected $id;
 
     /**
-     * @String
+     * @ODM\String
      */
     protected $name;
 
     /**
-     * @EmbedMany(targetDocument="Documents\Ecommerce\Option")
+     * @ODM\EmbedMany(targetDocument="Documents\Ecommerce\Option")
      */
     protected $options = array();
 
     /**
      * @var Documents\Option
-     * @Transient
      */
     protected $selectedOption;
 

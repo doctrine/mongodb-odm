@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class LifecycleTest extends BaseTest
 {
@@ -48,19 +49,19 @@ class LifecycleTest extends BaseTest
     }
 }
 
-/** @Document @HasLifecycleCallbacks */
+/** @ODM\Document @ODM\HasLifecycleCallbacks */
 class ParentObject
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @ReferenceMany(targetDocument="ChildObject", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument="ChildObject", cascade="all") */
     private $children;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
-    /** @EmbedOne(targetDocument="ChildEmbeddedObject") */
+    /** @ODM\EmbedOne(targetDocument="ChildEmbeddedObject") */
     private $childEmbedded;
 
     private $child;
@@ -82,13 +83,13 @@ class ParentObject
         return $this->name;
     }
 
-    /** @PrePersist @PreUpdate */
+    /** @ODM\PrePersist @ODM\PreUpdate */
     public function prePersistPreUpdate()
     {
         $this->children = array($this->child);
     }
 
-    /** @PreUpdate */
+    /** @ODM\PreUpdate */
     public function preUpdate()
     {
         $this->childEmbedded->setName('changed');
@@ -110,13 +111,13 @@ class ParentObject
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class ChildObject
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     public function __construct($name)
@@ -135,10 +136,10 @@ class ChildObject
     }
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class ChildEmbeddedObject
 {
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     public function __construct($name)

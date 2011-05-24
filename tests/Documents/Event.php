@@ -2,19 +2,21 @@
 
 namespace Documents;
 
-/** @Document(db="doctrine_odm_tests", collection="events") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(db="doctrine_odm_tests", collection="events") */
 class Event
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @ReferenceOne(targetDocument="Documents\User") */
+    /** @ODM\ReferenceOne(targetDocument="Documents\User") */
     private $user;
 
-    /** @String */
+    /** @ODM\String */
     private $title;
 
-    /** @String */
+    /** @ODM\String */
     private $type;
 
     public function setUser(User $user)

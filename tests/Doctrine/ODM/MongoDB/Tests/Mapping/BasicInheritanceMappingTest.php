@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -74,38 +75,38 @@ class TransientBaseClass
     private $transient2;
 }
 
-/** @Document */
+/** @ODM\Document */
 class DocumentSubClass extends TransientBaseClass
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 }
 
-/** @MappedSuperclass */
+/** @ODM\MappedSuperclass */
 class MappedSuperclassBase
 {
-    /** @String */
+    /** @ODM\String */
     private $mapped1;
-    /** @String */
+    /** @ODM\String */
     private $mapped2;
 
     /**
-     * @ReferenceOne(targetDocument="MappedSuperclassRelated1")
+     * @ODM\ReferenceOne(targetDocument="MappedSuperclassRelated1")
      */
     private $mappedRelated1;
 
     private $transient;
 }
 
-/** @Document */
+/** @ODM\Document */
 class DocumentSubClass2 extends MappedSuperclassBase
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 }

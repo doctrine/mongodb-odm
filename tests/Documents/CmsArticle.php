@@ -2,32 +2,34 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document
- * @Indexes({
- *   @Index(keys={"topic"="asc"})
+ * @ODM\Document
+ * @ODM\Indexes({
+ *   @ODM\Index(keys={"topic"="asc"})
  * })
  */
 class CmsArticle
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     public $id;
     /**
-     * @String
+     * @ODM\String
      */
     public $topic;
     /**
-     * @String
+     * @ODM\String
      */
     public $text;
     /**
-     * @ReferenceOne(targetDocument="CmsUser")
+     * @ODM\ReferenceOne(targetDocument="CmsUser")
      */
     public $user;
     /**
-     * @ReferenceMany(targetDocument="CmsComment")
+     * @ODM\ReferenceMany(targetDocument="CmsComment")
      */
     public $comments;
 

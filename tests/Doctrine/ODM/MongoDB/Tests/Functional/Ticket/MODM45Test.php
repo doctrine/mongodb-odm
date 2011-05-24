@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM45Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -19,13 +21,13 @@ class MODM45Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document(collection="modm45_test") */
+/** @ODM\Document(collection="modm45_test") */
 class MODM45A
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
-    /** @EmbedOne(targetDocument="MODM45B") */
+    /** @ODM\EmbedOne(targetDocument="MODM45B") */
     protected $b;
 
     function getId()  {return $this->id;}
@@ -33,10 +35,10 @@ class MODM45A
     function setB($b) {$this->b = $b;}
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class MODM45B
 {
-    /** @String */
+    /** @ODM\String */
     protected $val;
     function setVal($val) {$this->val = $val;}
     function getVal() {return $this->val;}

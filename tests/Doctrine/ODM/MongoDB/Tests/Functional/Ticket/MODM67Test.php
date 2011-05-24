@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM67Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -93,34 +94,34 @@ class MODM67TestEventListener
 }
 
 /**
- * @Document
+ * @ODM\Document
  */
 class MODM67DerivedClass
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @EmbedOne(targetDocument="MODM67EmbeddedObject") */
+    /** @ODM\EmbedOne(targetDocument="MODM67EmbeddedObject") */
     public $embedOne;
 }
 
 /**
- * @EmbeddedDocument
+ * @ODM\EmbeddedDocument
  */
 class MODM67EmbeddedObject
 {
-    /** @Int */
+    /** @ODM\Int */
     public $numAccesses = 0;
 
-    /** @Boolean */
+    /** @ODM\Boolean */
     public $prePersist = false;
 
-    /** @Boolean */
+    /** @ODM\Boolean */
     public $postPersist = false;
 
-    /** @Boolean */
+    /** @ODM\Boolean */
     public $preUpdate = false;
 
-    /** @Boolean */
+    /** @ODM\Boolean */
     public $postUpdate = false;
 }

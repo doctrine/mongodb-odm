@@ -3,20 +3,21 @@
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @Document(db="doctrine_odm_tests", collection="profiles") */
+/** @ODM\Document(db="doctrine_odm_tests", collection="profiles") */
 class Profile
 {
-    /** @Id */
+    /** @ODM\Id */
     private $profileId;
 
-    /** @Field */
+    /** @ODM\Field */
     private $firstName;
 
-    /** @Field */
+    /** @ODM\Field */
     private $lastName;
 
-    /** @ReferenceOne(targetDocument="File", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument="File", cascade={"all"}) */
     private $image;
 
     public function getProfileId()

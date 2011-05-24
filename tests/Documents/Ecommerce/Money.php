@@ -2,16 +2,18 @@
 
 namespace Documents\Ecommerce;
 
-/** @EmbeddedDocument */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\EmbeddedDocument */
 class Money
 {
     /**
-     * @Float
+     * @ODM\Float
      */
     protected $amount;
 
     /**
-     * @ReferenceOne(targetDocument="Documents\Ecommerce\Currency", cascade="all")
+     * @ODM\ReferenceOne(targetDocument="Documents\Ecommerce\Currency", cascade="all")
      */
     protected $currency;
 

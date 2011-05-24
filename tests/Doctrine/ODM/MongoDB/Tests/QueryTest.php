@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\QueryBuilder;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class QueryTest extends BaseTest
 {
@@ -124,19 +125,19 @@ class QueryTest extends BaseTest
     }
 }
 
-/** @Document(collection="people") */
+/** @ODM\Document(collection="people") */
 class Person
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $firstName;
 
-    /** @ReferenceOne */
+    /** @ODM\ReferenceOne */
     public $bestFriend;
 
-    /** @ReferenceMany */
+    /** @ODM\ReferenceMany */
     public $friends = array();
 
     public function __construct($firstName)

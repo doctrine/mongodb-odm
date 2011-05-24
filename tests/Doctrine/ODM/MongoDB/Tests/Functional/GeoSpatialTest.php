@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testQueries()
@@ -132,30 +134,30 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
- * @Document
- * @Index(keys={"coordinates"="2d"})
+ * @ODM\Document
+ * @ODM\Index(keys={"coordinates"="2d"})
  */
 class City
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @EmbedOne(targetDocument="Coordinates") */
+    /** @ODM\EmbedOne(targetDocument="Coordinates") */
     public $coordinates;
 
-    /** @Distance */
+    /** @ODM\Distance */
     public $test;
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class Coordinates
 {
-    /** @Float */
+    /** @ODM\Float */
     public $latitude;
 
-    /** @Float */
+    /** @ODM\Float */
     public $longitude;
 }

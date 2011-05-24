@@ -3,12 +3,13 @@
 namespace Documents;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @Document */
+/** @ODM\Document */
 class SubProject extends Project
 {
     /**
-     * @EmbedMany(targetDocument="Documents\Issue")
+     * @ODM\EmbedMany(targetDocument="Documents\Issue")
      */
     private $issues;
 

@@ -155,7 +155,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $cm = new \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo($metadata->name);
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reader->setDefaultAnnotationNamespace("Doctrine\\ODM\\MongoDB\\Mapping\\");
+        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
         $driver->loadMetadataForClass($cm->name, $cm);
 
@@ -168,14 +168,13 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLoadPrefixedMetadata()
     {
-        $this->generator->setAnnotationPrefix('mongodb:');
         $metadata = $this->generateBookDocumentFixture();
 
         $book = $this->newInstance($metadata);
 
         $cm = new \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo($metadata->name);
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reader->setAnnotationNamespaceAlias("Doctrine\\ODM\\MongoDB\\Mapping\\", "mongodb");
+        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
         $driver->loadMetadataForClass($cm->name, $cm);
 

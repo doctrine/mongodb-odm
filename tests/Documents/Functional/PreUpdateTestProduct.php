@@ -2,18 +2,20 @@
 
 namespace Documents\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document(collection="pre_update_test_product")
+ * @ODM\Document(collection="pre_update_test_product")
  */
 class PreUpdateTestProduct
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @EmbedOne(targetDocument="PreUpdateTestSellable") */
+    /** @ODM\EmbedOne(targetDocument="PreUpdateTestSellable") */
     public $sellable;
 
     public function getName()

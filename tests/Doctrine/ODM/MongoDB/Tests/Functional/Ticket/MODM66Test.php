@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -55,13 +56,13 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 }
 
-/** @Document(db="tests", collection="tests") */
+/** @ODM\Document(db="tests", collection="tests") */
 class A
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
-    /** @ReferenceMany(targetDocument="b", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument="b", cascade="all") */
     protected $b;
 
     function __construct($b)
@@ -75,14 +76,14 @@ class A
     }
 }
 
-/** @Document(db="tests", collection="tests2") */
+/** @ODM\Document(db="tests", collection="tests2") */
 class B
 {
 
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
-    /** @String */
+    /** @ODM\String */
     protected $value;
 
     function __construct($v)

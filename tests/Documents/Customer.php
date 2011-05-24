@@ -2,20 +2,22 @@
 
 namespace Documents;
 
-/** @Document */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document */
 class Customer
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @String(name="cart") */
+    /** @ODM\String(name="cart") */
     public $cartTest;
 
     /**
-     * @ReferenceOne(targetDocument="Cart", mappedBy="customer")
+     * @ODM\ReferenceOne(targetDocument="Cart", mappedBy="customer")
      */
     public $cart;
 }

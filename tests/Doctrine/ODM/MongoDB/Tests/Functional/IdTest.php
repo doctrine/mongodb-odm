@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testUuidId()
@@ -99,13 +101,13 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class UuidUser
 {
-    /** @Id(strategy="uuid", options={"salt"="test"}) */
+    /** @ODM\Id(strategy="uuid", options={"salt"="test"}) */
     public $id;
 
-    /** @String(name="t") */
+    /** @ODM\String(name="t") */
     public $name;
 
     public function __construct($name)
@@ -114,19 +116,19 @@ class UuidUser
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class CollectionIdUser
 {
-    /** @Id(strategy="increment") */
+    /** @ODM\Id(strategy="increment") */
     public $id;
 
-    /** @String(name="t") */
+    /** @ODM\String(name="t") */
     public $name;
 
-    /** @ReferenceOne(targetDocument="ReferencedCollectionId", cascade={"persist"}) */
+    /** @ODM\ReferenceOne(targetDocument="ReferencedCollectionId", cascade={"persist"}) */
     public $reference;
 
-    /** @EmbedMany(targetDocument="EmbeddedCollectionId") */
+    /** @ODM\EmbedMany(targetDocument="EmbeddedCollectionId") */
     public $embedded = array();
 
     public function __construct($name)
@@ -135,13 +137,13 @@ class CollectionIdUser
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class ReferencedCollectionId
 {
-    /** @Id(strategy="increment") */
+    /** @ODM\Id(strategy="increment") */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     public function __construct($name)
@@ -155,13 +157,13 @@ class ReferencedCollectionId
     }
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class EmbeddedCollectionId
 {
-    /** @Id(strategy="increment") */
+    /** @ODM\Id(strategy="increment") */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     public function __construct($name)

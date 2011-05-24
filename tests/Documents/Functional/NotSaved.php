@@ -2,15 +2,17 @@
 
 namespace Documents\Functional;
 
-/** @Document(collection="functional_tests") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="functional_tests") */
 class NotSaved
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @NotSaved */
+    /** @ODM\NotSaved */
     public $notSaved;
 }

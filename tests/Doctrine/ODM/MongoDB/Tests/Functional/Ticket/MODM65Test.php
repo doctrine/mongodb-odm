@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM65Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -25,16 +27,16 @@ class MODM65Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
- * @Document(collection="modm65_users")
+ * @ODM\Document(collection="modm65_users")
  */
 class MODM65User
 {
 	/**
-	 * @Id
+	 * @ODM\Id
 	 */
 	public $id;
 	/**
-	 * @EmbedOne(
+	 * @ODM\EmbedOne(
 	 * 	discriminatorField="php",
 	 * 	discriminatorMap={
 	 * 		"fbu"="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\MODM65SocialNetworkUser"
@@ -46,17 +48,17 @@ class MODM65User
 }
 
 /**
- * @EmbeddedDocument
+ * @ODM\EmbeddedDocument
  */
 class MODM65SocialNetworkUser
 {
 	/**
-	 * @String(name="fN")
+	 * @ODM\String(name="fN")
 	 * @var string
 	 */
 	public $firstName;
 	/**
-	 * @String(name="lN")
+	 * @ODM\String(name="lN")
 	 * @var string
 	 */
 	public $lastName;

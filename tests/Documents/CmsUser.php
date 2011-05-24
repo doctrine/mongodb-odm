@@ -3,49 +3,50 @@
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @Document
+ * @ODM\Document
  */
 class CmsUser
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     public $id;
 
     /**
-     * @String
+     * @ODM\String
      */
     public $status;
 
     /**
-     * @String
+     * @ODM\String
      */
     public $username;
 
     /**
-     * @String
+     * @ODM\String
      */
     public $name;
 
     /**
-     * @ReferenceMany(targetDocument="CmsPhonenumber", cascade={"persist", "remove", "merge"})
+     * @ODM\ReferenceMany(targetDocument="CmsPhonenumber", cascade={"persist", "remove", "merge"})
      */
     public $phonenumbers;
 
     /**
-     * @ReferenceMany(targetDocument="CmsArticle")
+     * @ODM\ReferenceMany(targetDocument="CmsArticle")
      */
     public $articles;
 
     /**
-     * @ReferenceOne(targetDocument="CmsAddress", cascade={"persist"})
+     * @ODM\ReferenceOne(targetDocument="CmsAddress", cascade={"persist"})
      */
     public $address;
 
     /**
-     * @ReferenceMany(targetDocument="CmsGroup", cascade={"persist", "merge"})
+     * @ODM\ReferenceMany(targetDocument="CmsGroup", cascade={"persist", "merge"})
      */
     public $groups;
     

@@ -3,25 +3,26 @@
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @Document(collection="articles")
+ * @ODM\Document(collection="articles")
  */
 class Article
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $title;
 
-    /** @String */
+    /** @ODM\String */
     private $body;
 
-    /** @Date */
+    /** @ODM\Date */
     private $createdAt;
 
-    /** @Field(type="collection", strategy="set") */
+    /** @ODM\Field(type="collection", strategy="set") */
     private $tags = array();
 
     public function getId()

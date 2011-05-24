@@ -30,6 +30,7 @@ use Documents\User,
     Documents\Functional\SimpleEmbedAndReference,
     Documents\Album,
     Documents\Song;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -744,14 +745,14 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class ParentAssociationTestA
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
-    /** @String */
+    /** @ODM\String */
     public $name;
-    /** @EmbedOne */
+    /** @ODM\EmbedOne */
     public $child;
     public function __construct($name)
     {
@@ -759,12 +760,12 @@ class ParentAssociationTestA
     }
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class ParentAssociationTestB
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
-    /** @EmbedMany */
+    /** @ODM\EmbedMany */
     public $children = array();
     public function __construct($name)
     {
@@ -772,10 +773,10 @@ class ParentAssociationTestB
     }
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class ParentAssociationTestC
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
     public function __construct($name)
     {

@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -74,17 +75,17 @@ class MODM90EventListener
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class MODM90TestDocument
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     /**
-     * @EmbedOne
+     * @ODM\EmbedOne
      * (
      *   discriminatorField="type",
      *   discriminatorMap={
@@ -96,19 +97,19 @@ class MODM90TestDocument
     public $embedded;
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class MODM90TestEmbeddedDocument
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class MODM90Test2EmbeddedDocument
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @String The discriminator field is a real property */
+    /** @ODM\String The discriminator field is a real property */
     public $type;
 }

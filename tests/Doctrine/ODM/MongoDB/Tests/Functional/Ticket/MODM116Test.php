@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM116Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testIssue()
@@ -31,16 +33,16 @@ class MODM116Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document @InheritanceType("COLLECTION_PER_CLASS") **/
+/** @ODM\Document @ODM\InheritanceType("COLLECTION_PER_CLASS") **/
 class MODM116Parent
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
-    /** @ReferenceOne(targetDocument="MODM116Child") **/
+    /** @ODM\ReferenceOne(targetDocument="MODM116Child") **/
     private $child;
 
     public function getId()
@@ -69,7 +71,7 @@ class MODM116Parent
     }
 }
 
-/** @Document **/
+/** @ODM\Document **/
 class MODM116Child extends MODM116Parent
 {
 }

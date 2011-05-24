@@ -2,13 +2,15 @@
 
 namespace Documents;
 
-/** @Document(collection="tasks") */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\Document(collection="tasks") */
 class Task
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     public function __construct($name)

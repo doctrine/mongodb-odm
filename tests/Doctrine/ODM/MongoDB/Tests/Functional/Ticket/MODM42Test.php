@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM42Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -30,16 +32,16 @@ class MODM42Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document(collection="modm42_directories") */
+/** @ODM\Document(collection="modm42_directories") */
 class Directory
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
-    /** @String */
+    /** @ODM\String */
     protected $test = 'test';
 
-    /** @ReferenceMany(targetDocument="File") */
+    /** @ODM\ReferenceMany(targetDocument="File") */
     protected $files = array();
 
     public function __construct($files)
@@ -58,13 +60,13 @@ class Directory
     }
 }
 
-/** @Document(collection="modm42_files") */
+/** @ODM\Document(collection="modm42_files") */
 class File
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
-    /** @File */
+    /** @ODM\File */
     protected $file;
 
     public function __construct($path)

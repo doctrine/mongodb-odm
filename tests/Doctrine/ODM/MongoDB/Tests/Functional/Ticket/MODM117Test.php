@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM117Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testIssue()
@@ -18,16 +20,16 @@ class MODM117Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class MODM117User
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @Field(type="string") */
+    /** @ODM\Field(type="string") */
     public $first_name;
 
-    /** @Field(type="string", name="last_name") */
+    /** @ODM\Field(type="string", name="last_name") */
     protected $_last_name;
 
     public function __get($name)

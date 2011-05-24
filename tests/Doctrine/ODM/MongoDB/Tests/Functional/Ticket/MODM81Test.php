@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Events,
     Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -58,16 +59,16 @@ class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class MODM81TestDocument
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
-    /** @String */
+    /** @ODM\String */
     protected $name;
 
-    /** @EmbedMany(targetDocument="MODM81TestEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument="MODM81TestEmbeddedDocument") */
     protected $embeddedDocuments;
 
     /**
@@ -112,16 +113,16 @@ class MODM81TestDocument
 
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class MODM81TestEmbeddedDocument
 {
-    /** @String */
+    /** @ODM\String */
     public $message;
 
-    /** @ReferenceOne(targetDocument="MODM81TestDocument") */
+    /** @ODM\ReferenceOne(targetDocument="MODM81TestDocument") */
     public $refTodocument1;
 
-    /** @ReferenceOne(targetDocument="MODM81TestDocument") */
+    /** @ODM\ReferenceOne(targetDocument="MODM81TestDocument") */
     public $refTodocument2;
 
     public function __construct($document1, $document2, $message)

@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MappedSuperclassTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testCRUD()
@@ -33,17 +35,17 @@ class MappedSuperclassTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @MappedSuperclass */
+/** @ODM\MappedSuperclass */
 class MappedSuperclassBase
 {
-    /** @String */
+    /** @ODM\String */
     private $mapped1;
 
-    /** @String */
+    /** @ODM\String */
     private $mapped2;
 
     /**
-     * @ReferenceOne(targetDocument="MappedSuperclassRelated1")
+     * @ODM\ReferenceOne(targetDocument="MappedSuperclassRelated1")
      */
     private $mappedRelated1;
 
@@ -80,13 +82,13 @@ class MappedSuperclassBase
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class MappedSuperclassRelated1
 {
-    /** @Id(strategy="none") */
+    /** @ODM\Id(strategy="none") */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     public function setName($name)
@@ -110,13 +112,13 @@ class MappedSuperclassRelated1
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class DocumentSubClass extends MappedSuperclassBase
 {
-    /** @Id(strategy="none") */
+    /** @ODM\Id(strategy="none") */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
     
     public function setName($name)

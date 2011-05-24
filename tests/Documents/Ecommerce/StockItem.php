@@ -2,28 +2,30 @@
 
 namespace Documents\Ecommerce;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document(db="doctrine_odm_tests", collection="stock_items")
+ * @ODM\Document(db="doctrine_odm_tests", collection="stock_items")
  */
 class StockItem
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     private $id;
 
     /**
-     * @String
+     * @ODM\String
      */
     private $name;
 
     /**
-     * @Int
+     * @ODM\Int
      */
     private $inventory;
 
     /**
-     * @EmbedOne(targetDocument="Documents\Ecommerce\Money")
+     * @ODM\EmbedOne(targetDocument="Documents\Ecommerce\Money")
      */
     private $cost;
 

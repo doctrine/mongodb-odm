@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class MODM52Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
@@ -29,14 +31,14 @@ class MODM52Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
- * @MappedSuperClass
+ * @ODM\MappedSuperClass
  */
 class MODM52Container
 {
-    /** @String */
+    /** @ODM\String */
     public $value;
 
-    /** @EmbedMany(targetDocument="MODM52Embedded", strategy="set") */
+    /** @ODM\EmbedMany(targetDocument="MODM52Embedded", strategy="set") */
     public $items = array();
 
     public function __construct($items = null, $value = null)
@@ -63,13 +65,13 @@ class MODM52Container
     }
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class MODM52Embedded extends MODM52Container
 {}
 
-/** @Document(db="tests", collection="tests") */
+/** @ODM\Document(db="tests", collection="tests") */
 class MODM52Doc extends MODM52Container
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 }

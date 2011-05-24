@@ -5,8 +5,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Cache\ApcCache,
     Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\Common\Annotations\IndexedReader,
     Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
+    Doctrine\ODM\MongoDB\Mapping\Annotations as ODM,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
@@ -30,8 +32,7 @@ class DatabasesTest extends \PHPUnit_Framework_TestCase
         $config->setHydratorDir(__DIR__ . '/../../../../../Hydrators');
         $config->setHydratorNamespace('Hydrators');
 
-        $reader = new AnnotationReader();
-        $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+        $reader = new IndexedReader(new AnnotationReader());
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
         $config->setDefaultDB('testing');
 
@@ -44,13 +45,13 @@ class DatabasesTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-/** @Document(collection="test") */
+/** @ODM\Document(collection="test") */
 class DefaultDatabaseTest
 {
-    /** @Id */
+    /** @ODM\Id */
     private $id;
 
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     public function getId()

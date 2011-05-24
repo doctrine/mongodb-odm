@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class HydratorTest extends BaseTest
 {
     public function testHydrator()
@@ -39,58 +41,58 @@ class HydratorTest extends BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class HydrationClosureUser
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @ReferenceOne(targetDocument="HydrationClosureReferenceOne") */
+    /** @ODM\ReferenceOne(targetDocument="HydrationClosureReferenceOne") */
     public $referenceOne;
 
-    /** @ReferenceMany(targetDocument="HydrationClosureReferenceMany") */
+    /** @ODM\ReferenceMany(targetDocument="HydrationClosureReferenceMany") */
     public $referenceMany = array();
 
-    /** @EmbedOne(targetDocument="HydrationClosureEmbedOne") */
+    /** @ODM\EmbedOne(targetDocument="HydrationClosureEmbedOne") */
     public $embedOne;
 
-    /** @EmbedMany(targetDocument="HydrationClosureEmbedMany") */
+    /** @ODM\EmbedMany(targetDocument="HydrationClosureEmbedMany") */
     public $embedMany = array();
 }
 
-/** @Document */
+/** @ODM\Document */
 class HydrationClosureReferenceOne
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 }
 
-/** @Document */
+/** @ODM\Document */
 class HydrationClosureReferenceMany
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class HydrationClosureEmbedMany
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class HydrationClosureEmbedOne
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 }

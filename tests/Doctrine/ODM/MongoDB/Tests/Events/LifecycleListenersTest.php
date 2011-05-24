@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -153,52 +154,52 @@ class MyEventListener
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class TestDocument
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @EmbedMany(targetDocument="TestEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument="TestEmbeddedDocument") */
     public $embedded;
 
-    /** @EmbedOne(targetDocument="Image") */
+    /** @ODM\EmbedOne(targetDocument="Image") */
     public $image;
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class TestEmbeddedDocument
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 }
 
 
-/** @Document */
+/** @ODM\Document */
 class TestProfile
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @EmbedOne(targetDocument="Image") */
+    /** @ODM\EmbedOne(targetDocument="Image") */
     public $image;
 }
 
 /**
- * @EmbeddedDocument
+ * @ODM\EmbeddedDocument
  */
 class Image
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @EmbedMany(targetDocument="Thumbnail") */
+    /** @ODM\EmbedMany(targetDocument="Thumbnail") */
     public $thumbnails = array();
 
     public function __construct($name)
@@ -208,11 +209,11 @@ class Image
 }
 
 /**
- * @EmbeddedDocument
+ * @ODM\EmbeddedDocument
  */
 class Thumbnail
 {
-    /** @String */
+    /** @ODM\String */
     public $name;
 
     public function __construct($name)

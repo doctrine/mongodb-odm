@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 class UniqueIndexTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function uniqueTest($class)
@@ -130,97 +132,97 @@ class UniqueIndexTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @Document */
+/** @ODM\Document */
 class UniqueOnFieldTest
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String @UniqueIndex(safe=true) */
+    /** @ODM\String @ODM\UniqueIndex(safe=true) */
     public $username;
 
-    /** @String */
+    /** @ODM\String */
     public $email;
 }
 
-/** @Document @UniqueIndex(keys={"username"="asc"}) */
+/** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc"}) */
 class UniqueOnDocumentTest
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $username;
 
-    /** @String */
+    /** @ODM\String */
     public $email;
 }
 
-/** @Document @Indexes(@UniqueIndex(keys={"username"="asc"})) */
+/** @ODM\Document @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"})) */
 class IndexesOnDocumentTest
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $username;
 
-    /** @String */
+    /** @ODM\String */
     public $email;
 }
 
-/** @Document @UniqueIndex(keys={"username"="asc", "email"="asc"}) */
+/** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}) */
 class MultipleFieldsUniqueIndexTest
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $username;
 
-    /** @String */
+    /** @ODM\String */
     public $email;
 }
 
-/** @Document */
+/** @ODM\Document */
 class MultipleFieldIndexes
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String @UniqueIndex(name="test") */
+    /** @ODM\String @ODM\UniqueIndex(name="test") */
     public $username;
 
-    /** @String @Index(unique=true) */
+    /** @ODM\String @ODM\Index(unique=true) */
     public $email;
 }
 
-/** @Document */
+/** @ODM\Document */
 class DocumentWithEmbeddedIndexes
 {
-    /** @Id */
+    /** @ODM\Id */
     public $id;
 
-    /** @String */
+    /** @ODM\String */
     public $name;
 
-    /** @EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
+    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
     public $embedded;
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class EmbeddedDocumentWithIndexes
 {
-    /** @String @Index */
+    /** @ODM\String @ODM\Index */
     public $name;
 
-    /** @EmbedMany(targetDocument="EmbeddedManyDocumentWithIndexes") */
+    /** @ODM\EmbedMany(targetDocument="EmbeddedManyDocumentWithIndexes") */
     public $embeddedMany;
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class EmbeddedManyDocumentWithIndexes
 {
-    /** @String @Index */
+    /** @ODM\String @ODM\Index */
     public $name;
 }

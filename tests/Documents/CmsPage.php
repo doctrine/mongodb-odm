@@ -2,21 +2,23 @@
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @MappedSuperclass
- * @Indexes({
- *   @Index(keys={"slug"="asc"}, options={"unique"="true"})
+ * @ODM\MappedSuperclass
+ * @ODM\Indexes({
+ *   @ODM\Index(keys={"slug"="asc"}, options={"unique"="true"})
  * })
  */
 abstract class CmsPage
 {
     /**
-     * @Id
+     * @ODM\Id
      */
     public $id;
 
     /**
-     * @String
+     * @ODM\String
      */
     public $slug;
 }

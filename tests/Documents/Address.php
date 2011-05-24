@@ -2,25 +2,27 @@
 
 namespace Documents;
 
-/** @EmbeddedDocument */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\EmbeddedDocument */
 class Address
 {
-    /** @String */
+    /** @ODM\String */
     private $address;
 
-    /** @String */
+    /** @ODM\String */
     private $city;
 
-    /** @String */
+    /** @ODM\String */
     private $state;
 
-    /** @String */
+    /** @ODM\String */
     private $zipcode;
 
-    /** @Increment */
+    /** @ODM\Increment */
     public $count = 0;
 
-    /** @EmbedOne(targetDocument="Address") */
+    /** @ODM\EmbedOne(targetDocument="Address") */
     private $subAddress;
 
     public function setSubAddress(Address $subAddress)

@@ -2,8 +2,10 @@
 
 namespace Documents\Ecommerce;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document(db="doctrine_odm_tests", collection="currencies")
+ * @ODM\Document(db="doctrine_odm_tests", collection="currencies")
  */
 class Currency
 {
@@ -13,17 +15,17 @@ class Currency
         JPN   = 'JPN';
 
     /**
-     * @Id
+     * @ODM\Id
      */
     protected $id;
 
     /**
-     * @String
+     * @ODM\String
      */
     protected $name;
 
     /**
-     * @Float
+     * @ODM\Float
      */
     protected $multiplier;
 

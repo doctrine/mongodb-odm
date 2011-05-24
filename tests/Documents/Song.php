@@ -2,10 +2,12 @@
 
 namespace Documents;
 
-/** @EmbeddedDocument */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\EmbeddedDocument */
 class Song
 {
-    /** @String */
+    /** @ODM\String */
     private $name;
 
     public function __construct($name)

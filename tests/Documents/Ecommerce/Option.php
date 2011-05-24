@@ -2,28 +2,30 @@
 
 namespace Documents\Ecommerce;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
- * @Document(db="doctrine_odm_tests", collection="options")
+ * @ODM\Document(db="doctrine_odm_tests", collection="options")
  */
 class Option
 {
-    /** @Id */
+    /** @ODM\Id */
     protected $id;
 
     /**
-     * @String
+     * @ODM\String
      * @var string
      */
     protected $name;
 
     /**
-     * @EmbedOne(targetDocument="Documents\Ecommerce\Money")
+     * @ODM\EmbedOne(targetDocument="Documents\Ecommerce\Money")
      * @var float
      */
     protected $money;
 
     /**
-     * @ReferenceOne(targetDocument="Documents\Ecommerce\StockItem", cascade="all")
+     * @ODM\ReferenceOne(targetDocument="Documents\Ecommerce\StockItem", cascade="all")
      * @var Documents\StockItem
      */
     protected $stockItem;

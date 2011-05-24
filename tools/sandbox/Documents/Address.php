@@ -2,19 +2,21 @@
 
 namespace Documents;
 
-/** @EmbeddedDocument */
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @ODM\EmbeddedDocument */
 class Address
 {
-    /** @String */
+    /** @ODM\String */
     private $street;
 
-    /** @String */
+    /** @ODM\String */
     private $city;
 
-    /** @String */
+    /** @ODM\String */
     private $state;
 
-    /** @String */
+    /** @ODM\String */
     private $postalCode;
 
     public function getStreet()
