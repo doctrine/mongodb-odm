@@ -167,7 +167,6 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLoadPrefixedMetadata()
     {
-        $this->generator->setAnnotationPrefix('mongodb:');
         $metadata = $this->generateBookDocumentFixture();
 
         $book = $this->newInstance($metadata);
