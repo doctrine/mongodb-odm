@@ -49,7 +49,7 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         require_once __DIR__."/Documents/GlobalNamespaceDocument.php";
 
-        $reader = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
+        $reader = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationReader();
         $metadataDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
         $metadataDriver->addPaths(array(__DIR__ . '/../../Documents/'));
 
