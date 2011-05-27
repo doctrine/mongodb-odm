@@ -32,6 +32,7 @@ class DatabasesTest extends \PHPUnit_Framework_TestCase
         $config->setHydratorNamespace('Hydrators');
 
         $reader = new AnnotationReader();
+        $reader->setAutoloadAnnotations(false);
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
         $config->setDefaultDB('testing');
 

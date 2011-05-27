@@ -39,6 +39,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         */
 
         $reader = new AnnotationReader();
+        $reader->setAutoloadAnnotations(false);
         $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/../../../../Documents');
         $config->setMetadataDriverImpl($this->annotationDriver);
 
