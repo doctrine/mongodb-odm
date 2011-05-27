@@ -4,7 +4,6 @@ require_once __DIR__ . '/../../lib/vendor/doctrine-common/lib/Doctrine/Common/Cl
 
 use Doctrine\Common\ClassLoader,
     Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\Common\Annotations\IndexedReader,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
     Doctrine\MongoDB\Connection,
@@ -42,7 +41,7 @@ $config->setLoggerCallable(function(array $log) {
 $config->setMetadataCacheImpl(new ApcCache());
 */
 
-$reader = new IndexedReader(new AnnotationReader());
+$reader = new AnnotationReader();
 $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
 $dm = DocumentManager::create(new Connection(), $config);
