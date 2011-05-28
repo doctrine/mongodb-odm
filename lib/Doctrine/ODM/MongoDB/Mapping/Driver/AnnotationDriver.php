@@ -127,12 +127,13 @@ class AnnotationDriver implements Driver
             }
 
             // non-document class annotations
+            if ($annot instanceof ODM\AbstractIndex) {
+                $this->addIndex($class, $annot);
+            }
             if ($annot instanceof ODM\Indexes) {
                 foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $index) {
                     $this->addIndex($class, $index);
                 }
-            } elseif ($annot instanceof ODM\AbstractIndex) {
-                $this->addIndex($class, $annot);
             } elseif ($annot instanceof ODM\InheritanceType) {
                 $class->setInheritanceType(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::INHERITANCE_TYPE_'.$annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
@@ -188,9 +189,11 @@ class AnnotationDriver implements Driver
             foreach ($this->reader->getPropertyAnnotations($property) as $annot) {
                 if ($annot instanceof ODM\AbstractField) {
                     $fieldAnnot = $annot;
-                } elseif ($annot instanceof ODM\AbstractIndex) {
+                }
+                if ($annot instanceof ODM\AbstractIndex) {
                     $indexes[] = $index;
-                } elseif ($annot instanceof ODM\Indexes) {
+                }
+                if ($annot instanceof ODM\Indexes) {
                     foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $index) {
                         $indexes[] = $index;
                     }
