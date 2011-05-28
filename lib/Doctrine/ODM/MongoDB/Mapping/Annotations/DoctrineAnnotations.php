@@ -203,7 +203,10 @@ final class ReferenceMany extends AbstractField
     public $skip;
     public $strategy = 'pushAll'; // pushAll, set
 }
-final class NotSaved extends AbstractField {}
+final class NotSaved extends AbstractField
+{
+    public $notSaved = true;
+}
 final class Distance extends AbstractField
 {
     public $distance = true;
