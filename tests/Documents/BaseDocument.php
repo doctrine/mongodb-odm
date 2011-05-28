@@ -4,10 +4,7 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\MappedSuperclass
- * @ODM\HasLifecycleCallbacks
- */
+/** @ODM\MappedSuperclass */
 abstract class BaseDocument
 {
     public $persisted = false;

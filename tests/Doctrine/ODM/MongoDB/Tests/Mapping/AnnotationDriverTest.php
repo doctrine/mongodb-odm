@@ -15,7 +15,6 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $cm = new ClassMetadata('stdClass');
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
 
         $this->setExpectedException('Doctrine\ODM\MongoDB\MongoDBException');
@@ -29,7 +28,6 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $cm = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ColumnWithoutType');
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
 
         $annotationDriver->loadMetadataForClass('Doctrine\ODM\MongoDB\Tests\Mapping\InvalidColumn', $cm);
@@ -102,7 +100,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     protected function _loadDriver()
     {
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
+        $reader->setAutoloadAnnotations(false);
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
     }
 

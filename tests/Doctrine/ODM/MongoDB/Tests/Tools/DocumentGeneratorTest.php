@@ -155,7 +155,6 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $cm = new \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo($metadata->name);
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
         $driver->loadMetadataForClass($cm->name, $cm);
 
@@ -174,7 +173,6 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $cm = new \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo($metadata->name);
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reader = new \Doctrine\Common\Annotations\IndexedReader($reader);
         $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
         $driver->loadMetadataForClass($cm->name, $cm);
 

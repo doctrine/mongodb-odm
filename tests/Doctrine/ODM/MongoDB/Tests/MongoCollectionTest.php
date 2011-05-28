@@ -4,7 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 /**
