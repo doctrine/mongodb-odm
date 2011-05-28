@@ -531,9 +531,6 @@ public function <methodName>()
                 $lines[] = ' * )';
             }
 
-            if (isset($metadata->lifecycleCallbacks) && $metadata->lifecycleCallbacks) {
-                $lines[] = ' * @ODM\\HasLifecycleCallbacks';
-            }
             $methods = array(
                 'generateInheritanceAnnotation',
                 'generateDiscriminatorFieldAnnotation',

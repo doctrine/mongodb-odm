@@ -200,10 +200,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     }
 }
 
-/**
- * @ODM\Document(collection="cms_users")
- * @ODM\HasLifecycleCallbacks
- */
+/** @ODM\Document(collection="cms_users") */
 class User
 {
     /**

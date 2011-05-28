@@ -49,7 +49,7 @@ class LifecycleTest extends BaseTest
     }
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/** @ODM\Document */
 class ParentObject
 {
     /** @ODM\Id */

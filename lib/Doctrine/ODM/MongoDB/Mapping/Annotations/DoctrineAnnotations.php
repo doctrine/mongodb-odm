@@ -215,7 +215,6 @@ final class AlsoLoad extends Annotation
 final class ChangeTrackingPolicy extends Annotation {}
 
 /* Annotations for lifecycle callbacks */
-final class HasLifecycleCallbacks extends Annotation {}
 final class PrePersist extends Annotation {}
 final class PostPersist extends Annotation {}
 final class PreUpdate extends Annotation {}

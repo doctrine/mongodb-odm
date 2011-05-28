@@ -208,7 +208,7 @@ class Profile extends BaseDocument
     public $profile;
 }
 
-/** @ODM\MappedSuperclass @ODM\HasLifecycleCallbacks */
+/** @ODM\MappedSuperclass */
 abstract class BaseDocument
 {
     /** @ODM\String */

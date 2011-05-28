@@ -118,7 +118,6 @@ class AnnotationDriver implements Driver
         $reflClass = $class->getReflectionClass();
 
         $documentAnnots = array();
-        $hasLifecycleCallbacks = false;
         foreach ($this->reader->getClassAnnotations($reflClass) as $annot) {
             foreach (self::$documentAnnotationClasses as $i => $annotClass) {
                 if ($annot instanceof $annotClass) {
