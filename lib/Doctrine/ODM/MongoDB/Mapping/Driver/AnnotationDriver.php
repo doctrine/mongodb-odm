@@ -195,7 +195,7 @@ class AnnotationDriver implements Driver
                         $indexes[] = $index;
                     }
                 } elseif ($annot instanceof ODM\AlsoLoad) {
-                    $mapping['alsoLoadFields'] = (array) $alsoLoad->value;
+                    $mapping['alsoLoadFields'] = (array) $annot->value;
                 } elseif ($annot instanceof ODM\NotSaved) {
                     $mapping['notSaved'] = true;
                 } elseif ($annot instanceof ODM\Version) {
