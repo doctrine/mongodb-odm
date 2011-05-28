@@ -100,6 +100,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     protected function _loadDriver()
     {
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $reader->setAutoloadAnnotations(false);
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
     }
 

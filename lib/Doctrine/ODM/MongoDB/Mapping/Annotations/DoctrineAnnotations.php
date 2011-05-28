@@ -23,18 +23,19 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
 
-final class Document extends Annotation
+abstract class AbstractDocument extends Annotation {}
+final class Document extends AbstractDocument
 {
     public $db;
     public $collection;
     public $repositoryClass;
     public $indexes = array();
 }
-final class EmbeddedDocument extends Annotation
+final class EmbeddedDocument extends AbstractDocument
 {
     public $indexes = array();
 }
-final class MappedSuperclass extends Annotation {}
+final class MappedSuperclass extends AbstractDocument {}
 
 final class Inheritance extends Annotation
 {

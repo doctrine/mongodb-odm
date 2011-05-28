@@ -191,7 +191,7 @@ class AnnotationDriver implements Driver
                     $fieldAnnot = $annot;
                 }
                 if ($annot instanceof ODM\AbstractIndex) {
-                    $indexes[] = $index;
+                    $indexes[] = $annot;
                 }
                 if ($annot instanceof ODM\Indexes) {
                     foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $index) {
@@ -214,10 +214,7 @@ class AnnotationDriver implements Driver
             if ($indexes) {
                 foreach ($indexes as $index) {
                     $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
-                    $keys = array($name => 'asc');
-                    if (isset($index->order)) {
-                        $keys[$name] = $index->order;
-                    }
+                    $keys = array($name => $index->order ?: 'asc');
                     $this->addIndex($class, $index, $keys);
                 }
             }
@@ -227,7 +224,7 @@ class AnnotationDriver implements Driver
             if ($method->isPublic()) {
                 foreach ($this->reader->getMethodAnnotations($method) as $annot) {
                     if ($annot instanceof ODM\AlsoLoad) {
-                        foreach ((array) $annot->value as $field) {
+                        foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $field) {
                             $class->alsoLoadMethods[$field] = $method->getName();
                         }
                     } elseif ($annot instanceof ODM\PrePersist) {
@@ -279,9 +276,13 @@ class AnnotationDriver implements Driver
     {
         $classAnnotations = $this->reader->getClassAnnotations(new \ReflectionClass($className));
 
-        return ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\Document']) &&
-               ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\MappedSuperclass']) &&
-               ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument']);
+        foreach ($classAnnotations as $annot) {
+            if ($annot instanceof ODM\AbstractDocument) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
