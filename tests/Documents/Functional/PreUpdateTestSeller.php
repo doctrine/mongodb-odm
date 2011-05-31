@@ -4,10 +4,7 @@ namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document(collection="pre_update_test_seller")
- * @ODM\HasLifecycleCallbacks
- */
+/** @ODM\Document(collection="pre_update_test_seller") */
 class PreUpdateTestSeller
 {
     /** @ODM\Id */

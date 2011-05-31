@@ -23,18 +23,19 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
 
-final class Document extends Annotation
+abstract class AbstractDocument extends Annotation {}
+final class Document extends AbstractDocument
 {
     public $db;
     public $collection;
     public $repositoryClass;
     public $indexes = array();
 }
-final class EmbeddedDocument extends Annotation
+final class EmbeddedDocument extends AbstractDocument
 {
     public $indexes = array();
 }
-final class MappedSuperclass extends Annotation {}
+final class MappedSuperclass extends AbstractDocument {}
 
 final class Inheritance extends Annotation
 {
@@ -203,7 +204,10 @@ final class ReferenceMany extends AbstractField
     public $skip;
     public $strategy = 'pushAll'; // pushAll, set
 }
-final class NotSaved extends AbstractField {}
+final class NotSaved extends AbstractField
+{
+    public $notSaved = true;
+}
 final class Distance extends AbstractField
 {
     public $distance = true;
@@ -215,7 +219,6 @@ final class AlsoLoad extends Annotation
 final class ChangeTrackingPolicy extends Annotation {}
 
 /* Annotations for lifecycle callbacks */
-final class HasLifecycleCallbacks extends Annotation {}
 final class PrePersist extends Annotation {}
 final class PostPersist extends Annotation {}
 final class PreUpdate extends Annotation {}

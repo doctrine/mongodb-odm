@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\Common\Annotations\IndexedReader,
     Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
@@ -36,7 +35,8 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
 
         $config->setDefaultDB('doctrine_odm_tests');
 
-        $reader = new IndexedReader(new AnnotationReader());
+        $reader = new AnnotationReader();
+        $reader->setAutoloadAnnotations(false);
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
         $this->dm = DocumentManager::create(new Connection(), $config);
