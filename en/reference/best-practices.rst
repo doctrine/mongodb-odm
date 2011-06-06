@@ -4,7 +4,7 @@ Best Practices
 Here are some best practices you can follow when working with the Doctrine MongoDB ODM.
 
 Don't use public properties on documents
----------------------------------------
+-------------------------------------------
 
 It is very important that you don't map public properties on
 documents, but only protected or private ones. The reason for this
