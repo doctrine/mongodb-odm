@@ -45,12 +45,12 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetEventManager()
     {
-        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\SchemaManager', $this->dm->getSchemaManager());
+        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\EventManager', $this->dm->getEventManager());
     }
 
     public function testGetSchemaManager()
     {
-        $this->assertInstanceOf('\Doctrine\Common\EventManager', $this->dm->getEventManager());
+        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\SchemaManager', $this->dm->getSchemaManager());
     }
 
     public function testCreateQueryBuilder()
