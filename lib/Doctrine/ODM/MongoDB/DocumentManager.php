@@ -338,7 +338,7 @@ class DocumentManager implements ObjectManager
      * Create a new Query instance for a class.
      *
      * @param string $documentName The document class name.
-     * @return Document\ODM\MongoDB\Query
+     * @return Document\ODM\MongoDB\Query\Builder
      */
     public function createQueryBuilder($documentName = null)
     {
