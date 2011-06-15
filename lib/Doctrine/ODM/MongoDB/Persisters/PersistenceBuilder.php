@@ -326,6 +326,11 @@ class PersistenceBuilder
         if (empty($embeddedDocumentValue)) {
             return (object) $embeddedDocumentValue;
         }
+
+        if ($class->discriminatorField) {
+            $embeddedDocumentValue[$class->discriminatorField['name']] = $class->discriminatorValue;
+        }
+
         return $embeddedDocumentValue;
     }
 
