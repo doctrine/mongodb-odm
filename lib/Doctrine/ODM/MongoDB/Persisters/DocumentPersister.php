@@ -464,7 +464,7 @@ class DocumentPersister
 
         if ($document !== null) {
             $hints[Query::HINT_REFRESH] = true;
-            $id = $result['_id'];
+            $id = $this->class->getPHPIdentifierValue($result['_id']);
             $this->uow->registerManaged($document, $id, $result);
         }
 
