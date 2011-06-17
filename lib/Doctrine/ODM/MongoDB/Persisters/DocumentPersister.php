@@ -300,8 +300,8 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $query = array('_id' => $this->class->getDatabaseIdentifierValue($id));
 
-        if ($this->class->isVersioned) {
-            $query['locked'] = array($this->cmd . 'exists' => false);
+        if ($this->class->isLockable) {
+            $query[$this->class->lockField] = array($this->cmd . 'exists' => false);
             $options['safe'] = true;
         }
 
