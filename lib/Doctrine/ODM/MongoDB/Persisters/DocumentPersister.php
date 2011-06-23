@@ -367,19 +367,19 @@ class DocumentPersister
     {
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria);
-        
+
         if (null !== $orderBy) {
             $cursor->sort($orderBy);
         }
-        
+
         if (null !== $limit) {
             $cursor->limit($limit);
         }
-        
+
         if (null !== $offset) {
             $cursor->skip($offset);
         }
-        
+
         return $this->wrapCursor($cursor);
     }
 
@@ -464,7 +464,7 @@ class DocumentPersister
 
         if ($document !== null) {
             $hints[Query::HINT_REFRESH] = true;
-            $id = $result['_id'];
+            $id = (string) $result['_id'];
             $this->uow->registerManaged($document, $id, $result);
         }
 
