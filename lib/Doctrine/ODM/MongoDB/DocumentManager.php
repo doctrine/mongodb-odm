@@ -647,6 +647,9 @@ class DocumentManager implements ObjectManager
      */
     public function createDBRef($document, array $referenceMapping = null)
     {
+        if (null === $document) {
+            throw new \InvalidArgumentException('Cannot create a DBRef, the document is null');
+        }
         $className = get_class($document);
         $class = $this->getClassMetadata($className);
         $id = $this->unitOfWork->getDocumentIdentifier($document);
