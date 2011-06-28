@@ -1,15 +1,15 @@
 <?php
 
-namespace Symfony\Component\Console\Input;
-
 /*
- * This file is part of the Symfony framework.
+ * This file is part of the Symfony package.
  *
- * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Fabien Potencier <fabien@symfony.com>
  *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Symfony\Component\Console\Input;
 
 /**
  * A InputDefinition represents a set of valid command line arguments and options.
@@ -21,27 +21,38 @@ namespace Symfony\Component\Console\Input;
  *       new InputOption('foo', 'f', InputOption::VALUE_REQUIRED),
  *     ));
  *
- * @author Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @api
  */
 class InputDefinition
 {
-    protected $arguments;
-    protected $requiredCount;
-    protected $hasAnArrayArgument = false;
-    protected $hasOptional;
-    protected $options;
-    protected $shortcuts;
+    private $arguments;
+    private $requiredCount;
+    private $hasAnArrayArgument = false;
+    private $hasOptional;
+    private $options;
+    private $shortcuts;
 
     /**
      * Constructor.
      *
      * @param array $definition An array of InputArgument and InputOption instance
+     *
+     * @api
      */
     public function __construct(array $definition = array())
     {
         $this->setDefinition($definition);
     }
 
+    /**
+     * Sets the definition of the input.
+     *
+     * @param array $definition The definition array
+     *
+     * @api
+     */
     public function setDefinition(array $definition)
     {
         $arguments = array();
@@ -62,6 +73,8 @@ class InputDefinition
      * Sets the InputArgument objects.
      *
      * @param array $arguments An array of InputArgument objects
+     *
+     * @api
      */
     public function setArguments($arguments = array())
     {
@@ -76,6 +89,8 @@ class InputDefinition
      * Add an array of InputArgument objects.
      *
      * @param InputArgument[] $arguments An array of InputArgument objects
+     *
+     * @api
      */
     public function addArguments($arguments = array())
     {
@@ -92,6 +107,8 @@ class InputDefinition
      * @param InputArgument $argument An InputArgument object
      *
      * @throws \LogicException When incorrect argument is given
+     *
+     * @api
      */
     public function addArgument(InputArgument $argument)
     {
@@ -128,6 +145,8 @@ class InputDefinition
      * @return InputArgument An InputArgument object
      *
      * @throws \InvalidArgumentException When argument given doesn't exist
+     *
+     * @api
      */
     public function getArgument($name)
     {
@@ -146,6 +165,8 @@ class InputDefinition
      * @param string|integer $name The InputArgument name or position
      *
      * @return Boolean true if the InputArgument object exists, false otherwise
+     *
+     * @api
      */
     public function hasArgument($name)
     {
@@ -158,6 +179,8 @@ class InputDefinition
      * Gets the array of InputArgument objects.
      *
      * @return array An array of InputArgument objects
+     *
+     * @api
      */
     public function getArguments()
     {
@@ -203,6 +226,8 @@ class InputDefinition
      * Sets the InputOption objects.
      *
      * @param array $options An array of InputOption objects
+     *
+     * @api
      */
     public function setOptions($options = array())
     {
@@ -215,6 +240,8 @@ class InputDefinition
      * Add an array of InputOption objects.
      *
      * @param InputOption[] $options An array of InputOption objects
+     *
+     * @api
      */
     public function addOptions($options = array())
     {
@@ -229,6 +256,8 @@ class InputDefinition
      * @param InputOption $option An InputOption object
      *
      * @throws \LogicException When option given already exist
+     *
+     * @api
      */
     public function addOption(InputOption $option)
     {
@@ -250,6 +279,8 @@ class InputDefinition
      * @param string $name The InputOption name
      *
      * @return InputOption A InputOption object
+     *
+     * @api
      */
     public function getOption($name)
     {
@@ -266,6 +297,8 @@ class InputDefinition
      * @param string $name The InputOption name
      *
      * @return Boolean true if the InputOption object exists, false otherwise
+     *
+     * @api
      */
     public function hasOption($name)
     {
@@ -276,6 +309,8 @@ class InputDefinition
      * Gets the array of InputOption objects.
      *
      * @return array An array of InputOption objects
+     *
+     * @api
      */
     public function getOptions()
     {
@@ -296,6 +331,8 @@ class InputDefinition
 
     /**
      * Gets an InputOption by shortcut.
+     *
+     * @param string $shortcut the Shortcut name
      *
      * @return InputOption An InputOption object
      */
@@ -328,7 +365,7 @@ class InputDefinition
      *
      * @throws \InvalidArgumentException When option given does not exist
      */
-    protected function shortcutToName($shortcut)
+    private function shortcutToName($shortcut)
     {
         if (!isset($this->shortcuts[$shortcut])) {
             throw new \InvalidArgumentException(sprintf('The "-%s" option does not exist.', $shortcut));

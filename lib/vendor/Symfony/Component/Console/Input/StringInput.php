@@ -1,15 +1,15 @@
 <?php
 
-namespace Symfony\Component\Console\Input;
-
 /*
- * This file is part of the Symfony framework.
+ * This file is part of the Symfony package.
  *
- * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Fabien Potencier <fabien@symfony.com>
  *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Symfony\Component\Console\Input;
 
 /**
  * StringInput represents an input provided as a string.
@@ -18,7 +18,9 @@ namespace Symfony\Component\Console\Input;
  *
  *     $input = new StringInput('foo --bar="foobar"');
  *
- * @author Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @api
  */
 class StringInput extends ArgvInput
 {
@@ -30,18 +32,23 @@ class StringInput extends ArgvInput
      *
      * @param string     $input An array of parameters from the CLI (in the argv format)
      * @param InputDefinition $definition A InputDefinition instance
+     *
+     * @api
      */
     public function __construct($input, InputDefinition $definition = null)
     {
         parent::__construct(array(), $definition);
 
-        $this->tokens = $this->tokenize($input);
+        $this->setTokens($this->tokenize($input));
     }
 
     /**
+     * Tokenizes a string.
+     *
+     * @param string $input The input to tokenize
      * @throws \InvalidArgumentException When unable to parse input (should never happen)
      */
-    protected function tokenize($input)
+    private function tokenize($input)
     {
         $input = preg_replace('/(\r\n|\r|\n|\t)/', ' ', $input);
 

@@ -1,15 +1,17 @@
 <?php
 
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Symfony\Component\Console\Output;
 
-/*
- * This file is part of the Symfony framework.
- *
- * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
+use Symfony\Component\Console\Formatter\OutputFormatter;
 
 /**
  * StreamOutput writes the output to a given stream.
@@ -22,22 +24,28 @@ namespace Symfony\Component\Console\Output;
  *
  * $output = new StreamOutput(fopen('/path/to/output.log', 'a', false));
  *
- * @author Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @api
  */
 class StreamOutput extends Output
 {
-    protected $stream;
+    private $stream;
 
     /**
      * Constructor.
      *
-     * @param mixed   $stream    A stream resource
-     * @param integer $verbosity The verbosity level (self::VERBOSITY_QUIET, self::VERBOSITY_NORMAL, self::VERBOSITY_VERBOSE)
-     * @param Boolean $decorated Whether to decorate messages or not (null for auto-guessing)
+     * @param mixed           $stream    A stream resource
+     * @param integer         $verbosity The verbosity level (self::VERBOSITY_QUIET, self::VERBOSITY_NORMAL,
+     *                                   self::VERBOSITY_VERBOSE)
+     * @param Boolean         $decorated Whether to decorate messages or not (null for auto-guessing)
+     * @param OutputFormatter $formatter Output formatter instance
      *
      * @throws \InvalidArgumentException When first argument is not a real stream
+     *
+     * @api
      */
-    public function __construct($stream, $verbosity = self::VERBOSITY_NORMAL, $decorated = null)
+    public function __construct($stream, $verbosity = self::VERBOSITY_NORMAL, $decorated = null, OutputFormatter $formatter = null)
     {
         if (!is_resource($stream) || 'stream' !== get_resource_type($stream)) {
             throw new \InvalidArgumentException('The StreamOutput class needs a stream as its first argument.');
@@ -49,7 +57,7 @@ class StreamOutput extends Output
             $decorated = $this->hasColorSupport($decorated);
         }
 
-        parent::__construct($verbosity, $decorated);
+        parent::__construct($verbosity, $decorated, $formatter);
     }
 
     /**
@@ -79,7 +87,7 @@ class StreamOutput extends Output
             // @codeCoverageIgnoreEnd
         }
 
-        flush();
+        fflush($this->stream);
     }
 
     /**
@@ -97,9 +105,9 @@ class StreamOutput extends Output
         // @codeCoverageIgnoreStart
         if (DIRECTORY_SEPARATOR == '\\') {
             return false !== getenv('ANSICON');
-        } else {
-            return function_exists('posix_isatty') && @posix_isatty($this->stream);
         }
+
+        return function_exists('posix_isatty') && @posix_isatty($this->stream);
         // @codeCoverageIgnoreEnd
     }
 }

@@ -1,19 +1,19 @@
 <?php
 
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Symfony\Component\Console;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
-
-/*
- * This file is part of the Symfony framework.
- *
- * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
 
 /**
  * A Shell wraps an Application to add shell capabilities to it.
@@ -21,13 +21,13 @@ use Symfony\Component\Console\Output\ConsoleOutput;
  * This class only works with a PHP compiled with readline support
  * (either --with-readline or --with-libedit)
  *
- * @author Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien@symfony.com>
  */
 class Shell
 {
-    protected $application;
-    protected $history;
-    protected $output;
+    private $application;
+    private $history;
+    private $output;
 
     /**
      * Constructor.
@@ -86,7 +86,7 @@ class Shell
      * @param string  $text     The last segment of the entered text
      * @param integer $position The current position
      */
-    protected function autocompleter($text, $position)
+    private function autocompleter($text, $position)
     {
         $info = readline_info();
         $text = substr($info['line_buffer'], 0, $info['end']);
@@ -102,7 +102,7 @@ class Shell
 
         // options and arguments?
         try {
-            $command = $this->application->findCommand(substr($text, 0, strpos($text, ' ')));
+            $command = $this->application->find(substr($text, 0, strpos($text, ' ')));
         } catch (\Exception $e) {
             return true;
         }
