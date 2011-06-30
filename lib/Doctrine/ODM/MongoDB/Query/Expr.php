@@ -61,15 +61,23 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
      */
     public function references($document)
     {
+        $dbRef = $this->dm->createDBRef($document);
+
         if ($this->currentField) {
-            $reference = $this->class
-                ? $this->dm->createDBRef($document, $this->class->getFieldMapping($this->currentField))
-                : $this->dm->createDBRef($document);
-            foreach ($reference as $key => $value) {
-                $this->query[$this->currentField . '.' . $key] = $value;
+            $keys = array('ref' => true, 'id' => true, 'db' => true);
+
+            if ($this->class) {
+                $mapping = $this->class->getFieldMapping($this->currentField);
+                if (isset($mapping['targetDocument'])) {
+                    unset($keys['ref'], $keys['db']);
+                }
+            }
+
+            foreach ($keys as $key => $value) {
+                $this->query[$this->currentField . '.' . $this->cmd . $key] = $dbRef[$this->cmd . $key];
             }
         } else {
-            $this->query = $this->dm->createDBRef($document);
+            $this->query = $dbRef;
         }
 
         return $this;
@@ -80,12 +88,23 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
      */
     public function includesReferenceTo($document)
     {
+        $dbRef = $this->dm->createDBRef($document);
+
         if ($this->currentField) {
-            $this->query[$this->currentField][$this->cmd . 'elemMatch'] = $this->class
-                ? $this->dm->createDBRef($document, $this->class->getFieldMapping($this->currentField))
-                : $this->dm->createDBRef($document);
+            $keys = array('ref' => true, 'id' => true, 'db' => true);
+
+            if ($this->class) {
+                $mapping = $this->class->getFieldMapping($this->currentField);
+                if (isset($mapping['targetDocument'])) {
+                    unset($keys['ref'], $keys['db']);
+                }
+            }
+
+            foreach ($keys as $key => $value) {
+                $this->query[$this->currentField][$this->cmd . 'elemMatch'][$this->cmd . $key] = $dbRef[$this->cmd . $key];
+            }
         } else {
-            $this->query[$this->cmd . 'elemMatch'] = $this->dm->createDBRef($document);
+            $this->query[$this->cmd . 'elemMatch'] = $dbRef;
         }
 
         return $this;
