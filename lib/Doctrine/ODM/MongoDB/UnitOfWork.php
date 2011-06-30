@@ -601,8 +601,8 @@ class UnitOfWork implements PropertyChangedListener
                     $values = $value;
                     if (isset($mapping['type']) && $mapping['type'] === 'one') {
                         $values = array($values);
-                    } elseif ($value instanceof PersistentCollection) {
-                        $value = $value->unwrap();
+                    } elseif ($values instanceof PersistentCollection) {
+                        $values = $values->unwrap();
                     }
                     foreach ($values as $obj) {
                         $oid2 = spl_object_hash($obj);
