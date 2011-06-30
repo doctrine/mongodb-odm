@@ -55,7 +55,6 @@ class QueryTest extends BaseTest
             'bestFriend.$ref' => 'people',
             'bestFriend.$id' => new \MongoId($jon->id),
             'bestFriend.$db' => 'doctrine_odm_tests',
-            'bestFriend._doctrine_class_name' => 'Doctrine\ODM\MongoDB\Tests\Person',
         ), $queryArray);
 
         $query = $qb->getQuery();
@@ -86,7 +85,6 @@ class QueryTest extends BaseTest
                     '$ref' => 'people',
                     '$id' => new \MongoId($kris->id),
                     '$db' => 'doctrine_odm_tests',
-                    '_doctrine_class_name' => 'Doctrine\ODM\MongoDB\Tests\Person',
                 ),
             ),
         ), $queryArray);
