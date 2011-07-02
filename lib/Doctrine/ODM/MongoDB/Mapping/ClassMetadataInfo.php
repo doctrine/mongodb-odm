@@ -592,7 +592,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         $this->indexes[] = array(
             'keys' => array_map(function($value) {
                 if ($value == 1 || $value == -1) {
-                    return $value;
+                    return (int) $value;
                 } elseif(is_string($value)) {
                     $lower = strtolower($value);
                     if ($lower === 'asc') {
