@@ -8,3 +8,4 @@ logs/
 reports/
 dist/
 phpunit.xml
+/.idea/
