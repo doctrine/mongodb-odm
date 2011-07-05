@@ -3,7 +3,8 @@
 require_once __DIR__ . '/../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 require_once __DIR__ . '/Doctrine/ODM/MongoDB/Tests/BaseTest.php';
 
-use Doctrine\Common\ClassLoader;
+use Doctrine\Common\ClassLoader,
+    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 $classLoader = new ClassLoader('Doctrine\ODM\MongoDB\Tests', __DIR__ . '/../tests');
 $classLoader->register();
@@ -25,3 +26,5 @@ $classLoader->register();
 
 $classLoader = new ClassLoader('Stubs', __DIR__);
 $classLoader->register();
+
+AnnotationDriver::registerAnnotationClasses();
