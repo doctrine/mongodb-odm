@@ -348,7 +348,6 @@ class AnnotationDriver implements Driver
     {
         if ($reader == null) {
             $reader = new AnnotationReader();
-            $reader->setAutoloadAnnotations(false);
         }
         return new self($reader, $paths);
     }
