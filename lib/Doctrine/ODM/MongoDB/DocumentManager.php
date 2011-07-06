@@ -78,7 +78,7 @@ class DocumentManager implements ObjectManager
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
-     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     * @var \Doctrine\ODM\MongoDB\UnitOfWork
      */
     private $unitOfWork;
 
@@ -229,7 +229,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the UnitOfWork used by the DocumentManager to coordinate operations.
      *
-     * @return Doctrine\ODM\MongoDB\UnitOfWork
+     * @return \Doctrine\ODM\MongoDB\UnitOfWork
      */
     public function getUnitOfWork()
     {
