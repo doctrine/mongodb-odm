@@ -20,14 +20,13 @@
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\Common\Annotations\Reader,
     Doctrine\ODM\MongoDB\Events,
     Doctrine\ODM\MongoDB\Mapping\Annotations as ODM,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
     Doctrine\ODM\MongoDB\MongoDBException;
-
-require __DIR__ . '/../Annotations/DoctrineAnnotations.php';
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -74,6 +73,31 @@ class AnnotationDriver implements Driver
      * @param array
      */
     private $classNames;
+
+    /**
+     * Registers annotation classes to the common registry.
+     *
+     * This method should be called when bootstrapping your application.
+     */
+    public static function registerAnnotationClasses()
+    {
+        static $registered = false;
+
+        if ( ! $registered) {
+            $loader = function($className)
+            {
+                if (0 !== strpos($className, 'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\')) {
+                    return false;
+                }
+
+                require_once __DIR__ . '/../Annotations/DoctrineAnnotations.php';
+                return class_exists($className, false);
+            };
+
+            AnnotationRegistry::registerLoader($loader);
+            $registered = true;
+        }
+    }
 
     /**
      * Initializes a new AnnotationDriver that uses the given Reader for reading
@@ -348,7 +372,6 @@ class AnnotationDriver implements Driver
     {
         if ($reader == null) {
             $reader = new AnnotationReader();
-            $reader->setAutoloadAnnotations(false);
         }
         return new self($reader, $paths);
     }
