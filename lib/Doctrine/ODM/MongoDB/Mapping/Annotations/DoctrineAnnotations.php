@@ -260,6 +260,8 @@ final class ChangeTrackingPolicy extends Annotation {}
 /* Annotations for lifecycle callbacks */
 
 /** @Annotation */
+final class HasLifecycleCallbacks extends Annotation {}
+/** @Annotation */
 final class PrePersist extends Annotation {}
 /** @Annotation */
 final class PostPersist extends Annotation {}
