@@ -50,21 +50,21 @@ class DocumentManager implements ObjectManager
     /**
      * The Doctrine MongoDB connection instance.
      *
-     * @var Doctrine\MongoDB\Connection
+     * @var \Doctrine\MongoDB\Connection
      */
     private $connection;
 
     /**
      * The used Configuration.
      *
-     * @var Doctrine\ODM\MongoDB\Configuration
+     * @var \Doctrine\ODM\MongoDB\Configuration
      */
     private $config;
 
     /**
      * The metadata factory, used to retrieve the ODM metadata of document classes.
      *
-     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     * @var \Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
      */
     private $metadataFactory;
 
@@ -78,7 +78,7 @@ class DocumentManager implements ObjectManager
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
-     * @var \Doctrine\ODM\MongoDB\UnitOfWork
+     * @var UnitOfWork
      */
     private $unitOfWork;
 
@@ -135,9 +135,9 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
-     * @param Doctrine\MongoDB\Connection $conn
-     * @param Doctrine\ODM\MongoDB\Configuration $config
-     * @param Doctrine\Common\EventManager $eventManager
+     * @param \Doctrine\MongoDB\Connection|null $conn
+     * @param Configuration|null $config
+     * @param \Doctrine\Common\EventManager|null $eventManager
      */
     protected function __construct(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
     {
@@ -189,9 +189,11 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
-     * @param Doctrine\MongoDB\Connection $conn
-     * @param Doctrine\ODM\MongoDB\Configuration $config
-     * @param Doctrine\Common\EventManager $eventManager
+     * @static
+     * @param \Doctrine\MongoDB\Connection|null $conn
+     * @param Configuration|null $config
+     * @param \Doctrine\Common\EventManager|null $eventManager
+     * @return DocumentManager
      */
     public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
     {
@@ -201,7 +203,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the EventManager used by the DocumentManager.
      *
-     * @return Doctrine\Common\EventManager
+     * @return \Doctrine\Common\EventManager
      */
     public function getEventManager()
     {
@@ -209,7 +211,7 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Gets the PHP Mongo instance that this DocumentManager wraps.
+     * @return \Doctrine\MongoDB\Connection
      */
     public function getConnection()
     {
@@ -219,7 +221,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the metadata factory used to gather the metadata of classes.
      *
-     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
      */
     public function getMetadataFactory()
     {
@@ -229,7 +231,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the UnitOfWork used by the DocumentManager to coordinate operations.
      *
-     * @return \Doctrine\ODM\MongoDB\UnitOfWork
+     * @return UnitOfWork
      */
     public function getUnitOfWork()
     {
@@ -240,7 +242,7 @@ class DocumentManager implements ObjectManager
      * Gets the Hydrator factory used by the DocumentManager to generate and get hydrators
      * for each type of document.
      *
-     * @return Doctrine\ODM\MongoDB\Hydrator\HydratorInterface
+     * @return \Doctrine\ODM\MongoDB\Hydrator\HydratorInterface
      */
     public function getHydratorFactory()
     {
@@ -250,7 +252,7 @@ class DocumentManager implements ObjectManager
     /**
      * Retuns SchemaManager, used to create/drop indexes/collections/databases
      *
-     * @return Doctrine\ODM\MongoDB\SchemaManager
+     * @return \Doctrine\ODM\MongoDB\SchemaManager
      */
     public function getSchemaManager()
     {
@@ -261,7 +263,7 @@ class DocumentManager implements ObjectManager
      * Returns the metadata for a class.
      *
      * @param string $className The class name.
-     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      * @internal Performance-sensitive method.
      */
     public function getClassMetadata($className)
@@ -273,7 +275,7 @@ class DocumentManager implements ObjectManager
      * Returns the MongoDB instance for a class.
      *
      * @param string $className The class name.
-     * @return Doctrine\MongoDB\Database
+     * @return \Doctrine\MongoDB\Database
      */
     public function getDocumentDatabase($className)
     {
@@ -302,7 +304,7 @@ class DocumentManager implements ObjectManager
      * Returns the MongoCollection instance for a class.
      *
      * @param string $className The class name.
-     * @return Doctrine\MongoDB\Collection
+     * @return \Doctrine\MongoDB\Collection
      */
     public function getDocumentCollection($className)
     {
@@ -502,7 +504,9 @@ class DocumentManager implements ObjectManager
      * has its identifier populated. Otherwise a proxy is returned that automatically
      * loads itself on first access.
      *
-     * @return object The document reference.
+     * @param $documentName
+     * @param $identifier
+     * @return mixed|object The document reference.
      */
     public function getReference($documentName, $identifier)
     {
@@ -611,7 +615,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the Configuration used by the DocumentManager.
      *
-     * @return Doctrine\ODM\MongoDB\Configuration
+     * @return Configuration
      */
     public function getConfiguration()
     {
