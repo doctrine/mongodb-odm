@@ -91,9 +91,10 @@ class DocumentRepository implements ObjectRepository
     }
 
     /**
-     * Finds a document by its identifier.
+     * Finds a document by its identifier
      *
-     * @param $id The identifier.
+     * @throws LockException
+     * @param string|object $id The identifier
      * @param int $lockMode
      * @param int $lockVersion
      * @return object The document.
