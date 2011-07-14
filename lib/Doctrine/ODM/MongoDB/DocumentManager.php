@@ -211,6 +211,8 @@ class DocumentManager implements ObjectManager
     }
 
     /**
+     * Gets the PHP Mongo instance that this DocumentManager wraps.
+     * 
      * @return \Doctrine\MongoDB\Connection
      */
     public function getConnection()
@@ -504,8 +506,8 @@ class DocumentManager implements ObjectManager
      * has its identifier populated. Otherwise a proxy is returned that automatically
      * loads itself on first access.
      *
-     * @param $documentName
-     * @param $identifier
+     * @param string $documentName
+     * @param string|object $identifier
      * @return mixed|object The document reference.
      */
     public function getReference($documentName, $identifier)
