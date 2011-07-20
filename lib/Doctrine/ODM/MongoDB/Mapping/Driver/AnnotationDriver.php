@@ -81,22 +81,7 @@ class AnnotationDriver implements Driver
      */
     public static function registerAnnotationClasses()
     {
-        static $registered = false;
-
-        if ( ! $registered) {
-            $loader = function($className)
-            {
-                if (0 !== strpos($className, 'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\')) {
-                    return false;
-                }
-
-                require_once __DIR__ . '/../Annotations/DoctrineAnnotations.php';
-                return class_exists($className, false);
-            };
-
-            AnnotationRegistry::registerLoader($loader);
-            $registered = true;
-        }
+        AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
     }
 
     /**
@@ -143,6 +128,7 @@ class AnnotationDriver implements Driver
 
         $documentAnnots = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annot) {
+            var_dump($annot);
             foreach (self::$documentAnnotationClasses as $i => $annotClass) {
                 if ($annot instanceof $annotClass) {
                     $documentAnnots[$i] = $annot;
