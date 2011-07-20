@@ -237,16 +237,16 @@ class XmlDriver extends AbstractFileDriver
             $options['name'] = (string) $attributes['name'];
         }
         if (isset($attributes['drop-dups'])) {
-            $options['dropDups'] = (boolean) $attributes['drop-dups'];
+            $options['dropDups'] = ((string) $attributes['dropDups'] == 'false') ? false : true;
         }
         if (isset($attributes['background'])) {
-            $options['background'] = (boolean) $attributes['background'];
+            $options['background'] = ((string) $attributes['background'] == 'false') ? false : true;
         }
         if (isset($attributes['safe'])) {
-            $options['safe'] = (boolean) $attributes['safe'];
+            $options['safe'] = ((string) $attributes['safe'] == 'false') ? false : true;
         }
         if (isset($attributes['unique'])) {
-            $options['unique'] = (boolean) $attributes['unique'];
+            $options['unique'] = ((string) $attributes['unique'] == 'false') ? false : true;
         }
         $index = array(
             'keys' => array(),
