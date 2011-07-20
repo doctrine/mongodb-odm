@@ -128,7 +128,6 @@ class AnnotationDriver implements Driver
 
         $documentAnnots = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annot) {
-            var_dump($annot);
             foreach (self::$documentAnnotationClasses as $i => $annotClass) {
                 if ($annot instanceof $annotClass) {
                     $documentAnnots[$i] = $annot;
