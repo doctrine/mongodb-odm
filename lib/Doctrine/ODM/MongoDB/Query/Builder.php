@@ -71,60 +71,102 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         }
     }
 
+    /**
+     * @param bool $bool
+     * @return Builder
+     */
     public function hydrate($bool = true)
     {
         $this->hydrate = $bool;
         return $this;
     }
 
+    /**
+     * @param bool $bool
+     * @return Builder
+     */
     public function refresh($bool = true)
     {
         $this->refresh = $bool;
         return $this;
     }
 
+    /**
+     * Change the query type to find and optionally set and change the class being queried.
+     *
+     * @param string $documentName
+     * @return Builder
+     */
     public function find($documentName = null)
     {
         $this->setDocumentName($documentName);
         return parent::find();
     }
 
+    /**
+     * @param string $documentName
+     * @return Builder
+     */
     public function findAndUpdate($documentName = null)
     {
         $this->setDocumentName($documentName);
         return parent::findAndUpdate();
     }
 
+    /**
+     * @param string $documentName
+     * @return Builder
+     */
     public function findAndRemove($documentName = null)
     {
         $this->setDocumentName($documentName);
         return parent::findAndRemove();
     }
 
+    /**
+     * @param string $documentName
+     * @return Builder
+     */
     public function update($documentName = null)
     {
         $this->setDocumentName($documentName);
         return parent::update();
     }
 
+    /**
+     * @param string $documentName
+     * @return Builder
+     */
     public function insert($documentName = null)
     {
         $this->setDocumentName($documentName);
         return parent::insert();
     }
 
+    /**
+     * @param string $documentName
+     * @return Builder
+     */
     public function remove($documentName = null)
     {
         $this->setDocumentName($documentName);
         return parent::remove();
     }
 
+    /**
+     * @param $document
+     * @return Builder
+     */
     public function references($document)
     {
         $this->expr->references($document);
         return $this;
     }
 
+    /**
+     * @param $document
+     * @return Builder
+     */
     public function includesReferenceTo($document)
     {
         $this->expr->includesReferenceTo($document);

@@ -309,7 +309,7 @@ class UnitOfWork implements PropertyChangedListener
      * Get the document persister instance for the given document name
      *
      * @param string $documentName
-     * @return DocumentPersister
+     * @return Persisters\DocumentPersister
      */
     public function getDocumentPersister($documentName)
     {
@@ -325,7 +325,7 @@ class UnitOfWork implements PropertyChangedListener
      * Gets a collection persister for a collection-valued association.
      *
      * @param array $mapping
-     * @return CollectionPersister
+     * @return Persisters\CollectionPersister
      */
     public function getCollectionPersister(array $mapping)
     {
@@ -340,7 +340,7 @@ class UnitOfWork implements PropertyChangedListener
      * Set the document persister instance to use for the given document name
      *
      * @param string $documentName
-     * @param DocumentPersister $persister
+     * @param Persisters\DocumentPersister $persister
      */
     public function setDocumentPersister($documentName, Persisters\DocumentPersister $persister)
     {
