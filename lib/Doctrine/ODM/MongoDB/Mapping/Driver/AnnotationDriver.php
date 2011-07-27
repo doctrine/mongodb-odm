@@ -131,7 +131,7 @@ class AnnotationDriver implements Driver
             foreach (self::$documentAnnotationClasses as $i => $annotClass) {
                 if ($annot instanceof $annotClass) {
                     $documentAnnots[$i] = $annot;
-                    goto next_annotation;
+                    continue 2;
                 }
             }
 
@@ -155,7 +155,6 @@ class AnnotationDriver implements Driver
                 $class->setChangeTrackingPolicy(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::CHANGETRACKING_'.$annot->value));
             }
 
-            next_annotation:
         }
 
         if (!$documentAnnots) {
