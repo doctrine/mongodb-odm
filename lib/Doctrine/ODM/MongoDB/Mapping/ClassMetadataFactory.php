@@ -343,7 +343,6 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
 
     private function completeIdGeneratorMapping(ClassMetadata $class)
     {
-        $idGenType = $class->generatorType;
         $idGenOptions = $class->generatorOptions;
         switch ($class->generatorType) {
             case ClassMetadata::GENERATOR_TYPE_AUTO:
@@ -356,6 +355,16 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
                 $uuidGenerator = new \Doctrine\ODM\MongoDB\Id\UuidGenerator($class);
                 $uuidGenerator->setSalt(isset($idGenOptions['salt']) ? $idGenOptions['salt'] : php_uname('n'));
                 $class->setIdGenerator($uuidGenerator);
+                break;
+            case ClassMetadata::GENERATOR_TYPE_ALNUM:
+                $alnumGenerator = new \Doctrine\ODM\MongoDB\Id\AlnumGenerator($class);
+                if(isset($idGenOptions['pad'])) {
+                    $alnumGenerator->setPad($idGenOptions['pad']);
+                }
+                if(isset($idGenOptions['awkwardSafe'])) {
+                    $alnumGenerator->setAwkwardSafeMode($idGenOptions['awkwardSafe']);
+                }
+                $class->setIdGenerator($alnumGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_NONE;
                 break;
