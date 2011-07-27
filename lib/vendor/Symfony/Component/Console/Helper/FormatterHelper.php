@@ -1,20 +1,20 @@
 <?php
 
-namespace Symfony\Component\Console\Helper;
-
 /*
- * This file is part of the Symfony framework.
+ * This file is part of the Symfony package.
  *
- * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Fabien Potencier <fabien@symfony.com>
  *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Symfony\Component\Console\Helper;
 
 /**
  * The Formatter class provides helpers to format messages.
  *
- * @author Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien@symfony.com>
  */
 class FormatterHelper extends Helper
 {
@@ -41,9 +41,7 @@ class FormatterHelper extends Helper
      */
     public function formatBlock($messages, $style, $large = false)
     {
-        if (!is_array($messages)) {
-            $messages = array($messages);
-        }
+        $messages = (array) $messages;
 
         $len = 0;
         $lines = array();
@@ -67,13 +65,22 @@ class FormatterHelper extends Helper
         return implode("\n", $messages);
     }
 
-    protected function strlen($string)
+    /**
+     * Returns the length of a string, uses mb_strlen if it is available.
+     *
+     * @param string $string The string to check its length
+     *
+     * @return integer The length of the string
+     */
+    private function strlen($string)
     {
-        return function_exists('mb_strlen') ? mb_strlen($string) : strlen($string);
+        return function_exists('mb_strlen') ? mb_strlen($string, mb_detect_encoding($string)) : strlen($string);
     }
 
     /**
      * Returns the helper's canonical name
+     *
+     * @return string The canonical name of the helper
      */
     public function getName()
     {
