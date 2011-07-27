@@ -63,10 +63,17 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     const GENERATOR_TYPE_UUID = 3;
 
     /**
+     * ALNUM means Doctrine will generate Alpha-numeric string identifiers, using the INCREMENT
+     * generator to ensure identifier uniqueness
+     */
+    const GENERATOR_TYPE_ALNUM = 4;
+
+    /**
      * NONE means Doctrine will not generate any id for us and you are responsible for manually
      * assigning an id.
      */
-    const GENERATOR_TYPE_NONE = 4;
+    const GENERATOR_TYPE_NONE = 5;
+
 
     const REFERENCE_ONE  = 1;
     const REFERENCE_MANY = 2;
