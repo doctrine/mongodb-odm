@@ -54,7 +54,7 @@ class Yaml
    *
    *  Usage:
    *  <code>
-   *   $array = Yaml::load('config.yml');
+   *   $array = Yaml::parse('config.yml');
    *   print_r($array);
    *  </code>
    *
