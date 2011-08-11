@@ -341,7 +341,7 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
         return $parentClasses;
     }
 
-    private function completeIdGeneratorMapping(ClassMetadata $class)
+    private function completeIdGeneratorMapping(ClassMetadataInfo $class)
     {
         $idGenOptions = $class->generatorOptions;
         switch ($class->generatorType) {

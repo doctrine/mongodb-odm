@@ -133,7 +133,7 @@ class XmlDriver extends AbstractFileDriver
         }
     }
 
-    private function addFieldMapping(ClassMetadata $class, $mapping)
+    private function addFieldMapping(ClassMetadataInfo $class, $mapping)
     {
         $keys = null;
         $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
@@ -172,7 +172,7 @@ class XmlDriver extends AbstractFileDriver
         $class->mapField($mapping);
     }
 
-    private function addEmbedMapping(ClassMetadata $class, $embed, $type)
+    private function addEmbedMapping(ClassMetadataInfo $class, $embed, $type)
     {
         $cascade = array_keys((array) $embed->cascade);
         if (1 === count($cascade)) {
@@ -199,7 +199,7 @@ class XmlDriver extends AbstractFileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addReferenceMapping(ClassMetadata $class, $reference, $type)
+    private function addReferenceMapping(ClassMetadataInfo $class, $reference, $type)
     {
         $cascade = array_keys((array) $reference->cascade);
         if (1 === count($cascade)) {
@@ -229,7 +229,7 @@ class XmlDriver extends AbstractFileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addIndex(ClassMetadata $class, SimpleXmlElement $xmlIndex)
+    private function addIndex(ClassMetadataInfo $class, SimpleXmlElement $xmlIndex)
     {
         $attributes = $xmlIndex->attributes();
         $options = array();
