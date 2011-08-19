@@ -184,6 +184,7 @@ class XmlDriver extends AbstractFileDriver
             'embedded'       => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
+            'fieldName'      => (string) $attributes['fieldName'],
             'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
         );
         if (isset($embed->{'discriminator-field'})) {
@@ -212,6 +213,7 @@ class XmlDriver extends AbstractFileDriver
             'reference'      => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
+            'fieldName'      => (string) $attributes['fieldName'],
             'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
             'inversedBy'     => isset($attributes['inversed-by']) ? (string) $attributes['inversed-by'] : null,
             'mappedBy'       => isset($attributes['mapped-by']) ? (string) $attributes['mapped-by'] : null,
