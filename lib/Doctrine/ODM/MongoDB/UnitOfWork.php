@@ -911,7 +911,7 @@ class UnitOfWork implements PropertyChangedListener
                         $this->recomputeSingleDocumentChangeSet($class, $document);
                     }
 
-                    if ($hasPreUpdateListeners) {
+                    if ($hasPreUpdateListeners && isset($this->documentChangeSets[$oid])) {
                         $this->evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
                             $document, $this->dm, $this->documentChangeSets[$oid])
                         );
@@ -919,7 +919,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->cascadePreUpdate($class, $document);
                 }
 
-                if ( ! $class->isEmbeddedDocument) {
+                if ( ! $class->isEmbeddedDocument && isset($this->documentChangeSets[$oid])) {
                     $persister->update($document, $options);
                 }
                 unset($this->documentUpdates[$oid]);
