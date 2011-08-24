@@ -152,6 +152,10 @@ class ClassMetadata extends ClassMetadataInfo
         if ($this->lifecycleCallbacks) {
             $serialized[] = 'lifecycleCallbacks';
         }
+        
+        if ($this->file) {
+            $serialized[] = 'file';
+        }
 
         return $serialized;
     }
