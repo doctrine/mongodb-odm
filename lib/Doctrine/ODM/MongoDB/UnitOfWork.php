@@ -2328,7 +2328,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function loadCollection(PersistentCollection $collection)
     {
-        $mapping = $collection->getMapping();
         $this->getDocumentPersister(get_class($collection->getOwner()))->loadCollection($collection);
     }
 
