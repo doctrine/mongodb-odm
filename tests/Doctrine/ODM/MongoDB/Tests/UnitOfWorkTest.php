@@ -218,6 +218,23 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(array('name' => 'd'), $c, 'b.c.d'), $unitOfWork->getParentAssociation($d));
     }
 
+    public function testPreUpdateTriggeredWithEmptyChangeset()
+    {
+        $dm = DocumentManagerMock::create();
+        $evm = $dm->getEventManager()->addEventSubscriber(
+            new \Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock()
+        );
+        $user = new \Documents\ForumUser();
+        $user->username = '12345';
+
+        $dm->persist($user);
+        $dm->flush();
+
+        $user->username = '1234';
+        $dm->persist($user);
+        $dm->flush();
+    }
+
     protected function getDocumentManager()
     {
         return new \Stubs\DocumentManager();
