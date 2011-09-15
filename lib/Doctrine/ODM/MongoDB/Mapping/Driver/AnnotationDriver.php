@@ -257,7 +257,7 @@ class AnnotationDriver implements Driver
         }
     }
 
-    private function addIndex(ClassMetadata $class, $index, array $keys = array())
+    private function addIndex(ClassMetadataInfo $class, $index, array $keys = array())
     {
         $keys = array_merge($keys, $index->keys);
         $options = array();
