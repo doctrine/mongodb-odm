@@ -1,15 +1,15 @@
 <?php
 
-namespace Symfony\Component\Console\Input;
-
 /*
- * This file is part of the Symfony framework.
+ * This file is part of the Symfony package.
  *
- * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Fabien Potencier <fabien@symfony.com>
  *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Symfony\Component\Console\Input;
 
 /**
  * Input is the base class for all concrete Input classes.
@@ -20,7 +20,7 @@ namespace Symfony\Component\Console\Input;
  *  * `StringInput`: The input is provided as a string
  *  * `ArrayInput`: The input is provided as an array
  *
- * @author Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien@symfony.com>
  */
 abstract class Input implements InputInterface
 {
@@ -64,6 +64,8 @@ abstract class Input implements InputInterface
     abstract protected function parse();
 
     /**
+     * Validates the input.
+     *
      * @throws \RuntimeException When not enough arguments are given
      */
     public function validate()
@@ -73,11 +75,21 @@ abstract class Input implements InputInterface
         }
     }
 
+    /**
+     * Checks if the input is interactive.
+     *
+     * @return Boolean Returns true if the input is interactive
+     */
     public function isInteractive()
     {
         return $this->interactive;
     }
 
+    /**
+     * Sets the input interactivity.
+     *
+     * @param Boolean $interactive If the input should be interactive
+     */
     public function setInteractive($interactive)
     {
         $this->interactive = (Boolean) $interactive;

@@ -1,15 +1,15 @@
 <?php
 
-namespace Symfony\Component\Console\Input;
-
 /*
- * This file is part of the Symfony framework.
+ * This file is part of the Symfony package.
  *
- * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
+ * (c) Fabien Potencier <fabien@symfony.com>
  *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Symfony\Component\Console\Input;
 
 /**
  * ArrayInput represents an input provided as an array.
@@ -18,17 +18,21 @@ namespace Symfony\Component\Console\Input;
  *
  *     $input = new ArrayInput(array('name' => 'foo', '--bar' => 'foobar'));
  *
- * @author Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @api
  */
 class ArrayInput extends Input
 {
-    protected $parameters;
+    private $parameters;
 
     /**
      * Constructor.
      *
-     * @param array           $param An array of parameters
+     * @param array           $parameters An array of parameters
      * @param InputDefinition $definition A InputDefinition instance
+     *
+     * @api
      */
     public function __construct(array $parameters, InputDefinition $definition = null)
     {
@@ -59,15 +63,13 @@ class ArrayInput extends Input
      * This method is to be used to introspect the input parameters
      * before it has been validated. It must be used carefully.
      *
-     * @param string|array $value The values to look for in the raw parameters (can be an array)
+     * @param string|array $values The values to look for in the raw parameters (can be an array)
      *
      * @return Boolean true if the value is contained in the raw parameters
      */
     public function hasParameterOption($values)
     {
-        if (!is_array($values)) {
-            $values = array($values);
-        }
+        $values = (array) $values;
 
         foreach ($this->parameters as $k => $v) {
             if (!is_int($k)) {
@@ -80,6 +82,32 @@ class ArrayInput extends Input
         }
 
         return false;
+    }
+
+    /**
+     * Returns the value of a raw option (not parsed).
+     *
+     * This method is to be used to introspect the input parameters
+     * before it has been validated. It must be used carefully.
+     *
+     * @param string|array $values The value(s) to look for in the raw parameters (can be an array)
+     * @param mixed $default The default value to return if no result is found
+     *
+     * @return mixed The option value
+     */
+    public function getParameterOption($values, $default = false)
+    {
+        $values = (array) $values;
+
+        foreach ($this->parameters as $k => $v) {
+            if (is_int($k) && in_array($v, $values)) {
+                return true;
+            } elseif (in_array($k, $values)) {
+                return $v;
+            }
+        }
+
+        return $default;
     }
 
     /**
@@ -106,7 +134,7 @@ class ArrayInput extends Input
      *
      * @throws \RuntimeException When option given doesn't exist
      */
-    protected function addShortOption($shortcut, $value)
+    private function addShortOption($shortcut, $value)
     {
         if (!$this->definition->hasShortcut($shortcut)) {
             throw new \InvalidArgumentException(sprintf('The "-%s" option does not exist.', $shortcut));
@@ -124,7 +152,7 @@ class ArrayInput extends Input
      * @throws \InvalidArgumentException When option given doesn't exist
      * @throws \InvalidArgumentException When a required value is missing
      */
-    protected function addLongOption($name, $value)
+    private function addLongOption($name, $value)
     {
         if (!$this->definition->hasOption($name)) {
             throw new \InvalidArgumentException(sprintf('The "--%s" option does not exist.', $name));
@@ -151,7 +179,7 @@ class ArrayInput extends Input
      *
      * @throws \InvalidArgumentException When argument given doesn't exist
      */
-    protected function addArgument($name, $value)
+    private function addArgument($name, $value)
     {
         if (!$this->definition->hasArgument($name)) {
             throw new \InvalidArgumentException(sprintf('The "%s" argument does not exist.', $name));
