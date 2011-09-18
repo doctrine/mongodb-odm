@@ -343,6 +343,7 @@ class DocumentPersister
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria)->limit(1);
         if ($sort) {
+        	$sort = $this->prepareQuery($sort);
             $cursor->sort($sort);
         }
         $result = $cursor->getSingleResult();
@@ -369,6 +370,7 @@ class DocumentPersister
         $cursor = $this->collection->find($criteria);
 
         if (null !== $orderBy) {
+        	$orderBy = $this->prepareQuery($orderBy);
             $cursor->sort($orderBy);
         }
 
