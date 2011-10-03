@@ -180,6 +180,11 @@ final class Increment extends AbstractField
     public $type = 'increment';
 }
 /** @Annotation */
+final class ObjectId extends AbstractField
+{
+    public $type = 'object_id';
+}
+/** @Annotation */
 final class Collection extends AbstractField
 {
     public $type = 'collection';

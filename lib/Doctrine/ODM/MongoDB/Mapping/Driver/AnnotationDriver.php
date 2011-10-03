@@ -24,7 +24,6 @@ use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\Reader,
     Doctrine\ODM\MongoDB\Events,
     Doctrine\ODM\MongoDB\Mapping\Annotations as ODM,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
     Doctrine\ODM\MongoDB\MongoDBException;
 
@@ -131,7 +130,7 @@ class AnnotationDriver implements Driver
             foreach (self::$documentAnnotationClasses as $i => $annotClass) {
                 if ($annot instanceof $annotClass) {
                     $documentAnnots[$i] = $annot;
-                    goto next_annotation;
+                    continue 2;
                 }
             }
 
@@ -155,7 +154,6 @@ class AnnotationDriver implements Driver
                 $class->setChangeTrackingPolicy(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::CHANGETRACKING_'.$annot->value));
             }
 
-            next_annotation:
         }
 
         if (!$documentAnnots) {
@@ -258,7 +256,7 @@ class AnnotationDriver implements Driver
         }
     }
 
-    private function addIndex(ClassMetadata $class, $index, array $keys = array())
+    private function addIndex(ClassMetadataInfo $class, $index, array $keys = array())
     {
         $keys = array_merge($keys, $index->keys);
         $options = array();

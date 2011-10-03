@@ -98,7 +98,7 @@ class XmlDriver extends AbstractFileDriver
                 $attributes = $field->attributes();
                 foreach ($attributes as $key => $value) {
                     $mapping[$key] = (string) $value;
-                    $booleanAttributes = array('id', 'reference', 'embed', 'unique');
+                    $booleanAttributes = array('id', 'reference', 'embed', 'unique', 'file', 'distance');
                     if (in_array($key, $booleanAttributes)) {
                         $mapping[$key] = ('true' === $mapping[$key]) ? true : false;
                     }
@@ -133,7 +133,7 @@ class XmlDriver extends AbstractFileDriver
         }
     }
 
-    private function addFieldMapping(ClassMetadata $class, $mapping)
+    private function addFieldMapping(ClassMetadataInfo $class, $mapping)
     {
         $keys = null;
         $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
@@ -172,7 +172,7 @@ class XmlDriver extends AbstractFileDriver
         $class->mapField($mapping);
     }
 
-    private function addEmbedMapping(ClassMetadata $class, $embed, $type)
+    private function addEmbedMapping(ClassMetadataInfo $class, $embed, $type)
     {
         $cascade = array_keys((array) $embed->cascade);
         if (1 === count($cascade)) {
@@ -184,6 +184,7 @@ class XmlDriver extends AbstractFileDriver
             'embedded'       => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
+            'fieldName'      => (string) $attributes['fieldName'],
             'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
         );
         if (isset($embed->{'discriminator-field'})) {
@@ -199,7 +200,7 @@ class XmlDriver extends AbstractFileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addReferenceMapping(ClassMetadata $class, $reference, $type)
+    private function addReferenceMapping(ClassMetadataInfo $class, $reference, $type)
     {
         $cascade = array_keys((array) $reference->cascade);
         if (1 === count($cascade)) {
@@ -212,6 +213,7 @@ class XmlDriver extends AbstractFileDriver
             'reference'      => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
+            'fieldName'      => (string) $attributes['fieldName'],
             'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
             'inversedBy'     => isset($attributes['inversed-by']) ? (string) $attributes['inversed-by'] : null,
             'mappedBy'       => isset($attributes['mapped-by']) ? (string) $attributes['mapped-by'] : null,
@@ -229,7 +231,7 @@ class XmlDriver extends AbstractFileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addIndex(ClassMetadata $class, SimpleXmlElement $xmlIndex)
+    private function addIndex(ClassMetadataInfo $class, SimpleXmlElement $xmlIndex)
     {
         $attributes = $xmlIndex->attributes();
         $options = array();

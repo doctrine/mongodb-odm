@@ -1,27 +1,27 @@
 <?php
 
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Symfony\Component\Console\Helper;
 
 use Symfony\Component\Console\Command\Command;
 
-/*
- * This file is part of the Symfony framework.
- *
- * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 /**
  * HelperSet represents a set of helpers to be used with a command.
  *
- * @author Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien@symfony.com>
  */
 class HelperSet
 {
-    protected $helpers;
-    protected $command;
+    private $helpers;
+    private $command;
 
     /**
      * @param Helper[] $helpers An array of helper.
@@ -37,8 +37,8 @@ class HelperSet
     /**
      * Sets a helper.
      *
-     * @param HelperInterface $value The helper instance
-     * @param string                    $alias An alias
+     * @param HelperInterface $helper The helper instance
+     * @param string          $alias  An alias
      */
     public function set(HelperInterface $helper, $alias = null)
     {

@@ -541,16 +541,16 @@ class DocumentPersister
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $criteria = array_merge(
                 array('_id' => array($cmd . 'in' => $ids)),
-                $mapping['criteria']
+                isset($mapping['criteria']) ? $mapping['criteria'] : array()
             );
             $cursor = $mongoCollection->find($criteria);
-            if ($mapping['sort']) {
+            if (isset($mapping['sort'])) {
                 $cursor->sort($mapping['sort']);
             }
-            if ($mapping['limit']) {
+            if (isset($mapping['limit'])) {
                 $cursor->limit($mapping['limit']);
             }
-            if ($mapping['skip']) {
+            if (isset($mapping['skip'])) {
                 $cursor->skip($mapping['skip']);
             }
             foreach ($cursor as $documentData) {
@@ -568,7 +568,7 @@ class DocumentPersister
         $owner = $collection->getOwner();
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
         $criteria = array_merge(
-            array($mapping['mappedBy'].'.'.$this->cmd.'id' => $ownerClass->getIdentifierObject($owner)),
+            array($mapping['mappedBy'].'.id' => $ownerClass->getIdentifierObject($owner)),
             isset($mapping['criteria']) ? $mapping['criteria'] : array()
         );
         $qb = $this->dm->createQueryBuilder($mapping['targetDocument'])

@@ -17,40 +17,42 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Event;
-
-use Doctrine\Common\EventArgs,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
-    Doctrine\ODM\MongoDB\DocumentManager;
+namespace Doctrine\ODM\MongoDB\Mapping\Types;
 
 /**
- * Class that holds event arguments for a loadMetadata event.
+ * The ObjectId type.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class LoadClassMetadataEventArgs extends EventArgs
+class ObjectIdType extends Type
 {
-    private $classMetadata;
-
-    private $dm;
-
-    public function __construct(ClassMetadataInfo $classMetadata, DocumentManager $dm)
+    public function convertToDatabaseValue($value)
     {
-        $this->classMetadata = $classMetadata;
-        $this->dm = $dm;
+        if ($value === null) {
+            return null;
+        }
+        if ( ! $value instanceof \MongoId) {
+            $value = new \MongoId($value);
+        }
+        return $value;
     }
 
-    public function getClassMetadata()
+    public function convertToPHPValue($value)
     {
-        return $this->classMetadata;
+        return $value !== null ? (string) $value : null;
     }
 
-    public function getDocumentManager()
+    public function closureToMongo()
     {
-        return $this->dm;
+        return '$return = new MongoId($value);';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = (string) $value;';
     }
 }

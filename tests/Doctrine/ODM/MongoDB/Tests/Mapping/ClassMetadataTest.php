@@ -28,6 +28,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->setCustomRepositoryClass("UserRepository");
         $cm->setDiscriminatorField(array('name' => 'disc'));
         $cm->mapOneEmbedded(array('fieldName' => 'phonenumbers', 'targetDocument' => 'Bar'));
+        $cm->setFile('customFileProperty');
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
         $this->assertEquals(1, count($cm->fieldMappings));
 
@@ -46,6 +47,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('name' => 'disc'), $cm->discriminatorField);
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
         $this->assertEquals(1, count($cm->fieldMappings));
+        $this->assertEquals('customFileProperty', $cm->file);
         $mapping = $cm->getFieldMapping('phonenumbers');
         $this->assertEquals('Documents\Bar', $mapping['targetDocument']);
     }

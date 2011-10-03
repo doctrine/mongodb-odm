@@ -89,6 +89,16 @@ class Cursor extends \Doctrine\MongoDB\Cursor
         return $current ? $current : null;
     }
 
+    /** @override */
+    public function getNext()
+    {
+        $next = parent::getNext();
+        if ($next && $this->hydrate) {
+            return $this->unitOfWork->getOrCreateDocument($this->class->name, $next, $this->hints);
+        }
+        return $next ? $next : null;
+    }
+
     /**
      * Set whether to hydrate the documents to objects or not.
      *
