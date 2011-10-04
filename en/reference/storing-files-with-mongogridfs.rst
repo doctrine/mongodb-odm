@@ -74,6 +74,12 @@ tells the Document that it is is to be stored using the MongoGridFS
 and the MongoGridFSFile instance is placed in the $file property
 for you to access the actual file itself.
 
+The $uploadDate, $chunkSize and $md5 properties are automatically filled in
+for each file stored in GridFS (whether you like that or not).
+Feel free to create getters in your document to actually make use of them,
+but keep in mind that their values will be initially unset for new objects
+until the next time the document is hydrated (fetched from the database).
+
 First you need to create a new Image:
 
 .. code-block:: php
