@@ -129,27 +129,27 @@ every Profile to have a profile image:
         /** @ReferenceOne(targetDocument="Documents\Image") */
         private $image;
     
-        private function getId()
+        public function getId()
         {
           return $this->id;
         }
     
-        private function getName()
+        public function getName()
         {
             return $this->name;
         }
     
-        private function setName($name)
+        public function setName($name)
         {
             $this->name = $name;
         }
     
-        private function getImage()
+        public function getImage()
         {
             return $this->image;
         }
     
-        private function setImage(Image $image)
+        public function setImage(Image $image)
         {
             $this->image = $image;
         }
