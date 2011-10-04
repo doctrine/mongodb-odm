@@ -43,27 +43,27 @@ MongoGridFS:
         /** @Field */
         private $md5;
     
-        private function getId()
+        public function getId()
         {
-            return $id;
+            return $this->id;
         }
     
-        private function setName($name)
+        public function setName($name)
         {
             $this->name = $name;
         }
     
-        private function getName()
+        public function getName()
         {
             return $this->name;
         }
     
-        private function getFile()
+        public function getFile()
         {
             return $this->file;
         }
     
-        private function setFile($file)
+        public function setFile($file)
         {
             $this->file = $file;
         }
