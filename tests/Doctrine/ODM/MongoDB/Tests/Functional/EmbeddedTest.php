@@ -421,7 +421,6 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         {
             $this->assertNotEmpty($directive->getName());
         }
-        $this->dm = null;
     }
 
 }
