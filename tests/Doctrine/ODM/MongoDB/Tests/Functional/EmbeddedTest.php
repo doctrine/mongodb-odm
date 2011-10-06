@@ -405,7 +405,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($vhost);
         $this->dm->flush();
 
-        //$vhost->getVHostDirective()->removeDirective($directive2);
+        $vhost->getVHostDirective()->removeDirective($directive2);
 
         $directive4 = new VirtualHostDirective('Directory', '/var/www/html');
         $directive4->addDirective(new VirtualHostDirective('RewriteEngine','on'));
