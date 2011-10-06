@@ -135,16 +135,18 @@ abstract class Type
      */
     public static function getTypeFromPHPVariable($variable)
     {
-        $type = gettype($variable);
-        $type = $type === 'object' ? get_class($variable) : $type;
-        switch ($type) {
-            case 'DateTime';
-            case 'MongoDate';
+        if (is_object($variable)) {
+            if ($variable instanceof \DateTime) {
                 return self::getType('date');
-            case 'MongoId';
+            } else if ($variable instanceof \MongoId) {
                 return self::getType('id');
-            case 'integer';
-                return self::getType('int');
+            }
+        } else {
+            $type = gettype($variable);
+            switch ($type) {
+                case 'integer';
+                    return self::getType('int');
+            }
         }
         return null;
     }
