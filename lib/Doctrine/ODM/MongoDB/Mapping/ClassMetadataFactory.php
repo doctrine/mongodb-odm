@@ -350,10 +350,12 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
                 break;
             case ClassMetadata::GENERATOR_TYPE_INCREMENT:
                 $incrementGenerator = new \Doctrine\ODM\MongoDB\Id\IncrementGenerator($class);
-                if (isset($idGenOptions['key']))
-                	$incrementGenerator->setKey($idGenOptions['key']);
-                if (isset($idGenOptions['collection']))
-                	$incrementGenerator->setCollection($idGenOptions['collection']);
+                if (isset($idGenOptions['key'])) {
+                    $incrementGenerator->setKey($idGenOptions['key']);
+                }
+                if (isset($idGenOptions['collection'])) {
+                    $incrementGenerator->setCollection($idGenOptions['collection']);
+                }
                 $class->setIdGenerator($incrementGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:

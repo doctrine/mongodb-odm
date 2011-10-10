@@ -40,17 +40,17 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 class IncrementGenerator extends AbstractIdGenerator
 {
-	protected $collection = null;
-	protected $key = null;
-	
-	public function setCollection($collection) { 
-		$this->collection = $collection;
-	}
+    protected $collection = null;
+    protected $key = null;
+    
+    public function setCollection($collection) { 
+        $this->collection = $collection;
+    }
 
-	public function setKey($key) { 
-		$this->key = $key;
-	}
-	
+    public function setKey($key) { 
+        $this->key = $key;
+    }
+    
     /** @inheritDoc */
     public function generate(DocumentManager $dm, $document)
     {
