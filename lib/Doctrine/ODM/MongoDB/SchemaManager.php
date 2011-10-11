@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use InvalidArgumentException;
 
@@ -73,7 +74,7 @@ class SchemaManager
         $visited[$documentName] = true;
 
         $class = $this->dm->getClassMetadata($documentName);
-        $indexes = $class->getIndexes();
+        $indexes = $this->prepareIndexes($class);
 
         // Add indexes from embedded documents
         foreach ($class->fieldMappings as $fieldMapping) {
@@ -90,6 +91,26 @@ class SchemaManager
             }
         }
         return $indexes;
+    }
+
+    private function prepareIndexes(ClassMetadata $class)
+    {
+        $indexes = $class->getIndexes();
+        $newIndexes = array();
+        foreach ($indexes as $index) {
+            $newIndex = array(
+                'keys' => array(),
+                'options' => $index['options']
+            );
+            foreach ($index['keys'] as $key => $value) {
+                $mapping = $class->getFieldMapping($key);
+                $newIndex['keys'][$mapping['name']] = $value;
+            }
+
+            $newIndexes[] = $newIndex;
+        }
+
+        return $newIndexes;
     }
 
     /**
