@@ -79,7 +79,6 @@ class SchemaManager
         // Add indexes from embedded documents
         foreach ($class->fieldMappings as $fieldMapping) {
             if (isset($fieldMapping['embedded']) && isset($fieldMapping['targetDocument'])) {
-                $embeddedClass = $this->dm->getClassMetadata($fieldMapping['targetDocument']);
                 $embeddedIndexes = $this->doGetDocumentIndexes($fieldMapping['targetDocument'], $visited);
                 foreach ($embeddedIndexes as $embeddedIndex) {
                     foreach ($embeddedIndex['keys'] as $key => $value) {
