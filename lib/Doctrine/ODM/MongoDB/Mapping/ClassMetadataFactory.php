@@ -407,4 +407,17 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
             $subClass->addIndex($index['keys'], $index['options']);
         }
     }
+    
+    /**
+     * Whether the class with the specified name should have its metadata loaded.
+     * This is only the case if it is either mapped as an Document or a
+     * MappedSuperclass.
+     *
+     * @param string $className
+     * @return boolean
+     */
+    public function isTransient($className)
+    {
+        return $this->driver->isTransient($className);
+    }
 }
