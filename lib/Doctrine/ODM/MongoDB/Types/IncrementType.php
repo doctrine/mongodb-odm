@@ -17,10 +17,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Id type.
+ * The Increment type.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
@@ -28,31 +28,15 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class IdType extends Type
+class IncrementType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        if ($value === null) {
-            return null;
-        }
-        if ( ! $value instanceof \MongoId) {
-            $value = new \MongoId($value);
-        }
-        return $value;
+        return $value !== null ? (integer) $value : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (string) $value : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = new MongoId($value);';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = (string) $value;';
+        return $value !== null ? (integer) $value : null;
     }
 }

@@ -17,10 +17,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The File type.
+ * The Id type.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
@@ -28,6 +28,31 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class FileType extends Type
+class IdType extends Type
 {
+    public function convertToDatabaseValue($value)
+    {
+        if ($value === null) {
+            return null;
+        }
+        if ( ! $value instanceof \MongoId) {
+            $value = new \MongoId($value);
+        }
+        return $value;
+    }
+
+    public function convertToPHPValue($value)
+    {
+        return $value !== null ? (string) $value : null;
+    }
+
+    public function closureToMongo()
+    {
+        return '$return = new MongoId($value);';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = (string) $value;';
+    }
 }

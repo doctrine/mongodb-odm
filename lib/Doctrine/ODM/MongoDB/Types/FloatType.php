@@ -17,27 +17,36 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Array type.
+ * The Float type.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
+ * @link        www.doctrine-project.org
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
- * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class HashType extends Type
+class FloatType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (array) $value : null;
+        return $value !== null ? (float) $value : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (array) $value : null;
+        return $value !== null ? (float) $value : null;
+    }
+
+    public function closureToMongo()
+    {
+        return '$return = (float) $value;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = (float) $value;';
     }
 }

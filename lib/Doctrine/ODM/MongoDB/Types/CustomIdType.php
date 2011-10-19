@@ -17,36 +17,37 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataMD5 type.
+ * The Id type.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class BinDataMD5Type extends Type
+class CustomIdType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;
+        return $value !== null ? $value : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? $value->bin : null;
+        return $value !== null ? $value : null;
     }
 
     public function closureToMongo()
     {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;';
+        return '$return = $value;';
     }
 
     public function closureToPHP()
     {
-        return '$return = $value !== null ? $value->bin : null;';
+        return '$return = $value;';
     }
 }

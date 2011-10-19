@@ -17,10 +17,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The String type.
+ * The ObjectId type.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
@@ -28,11 +28,17 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class StringType  extends Type
+class ObjectIdType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (string) $value : null;
+        if ($value === null) {
+            return null;
+        }
+        if ( ! $value instanceof \MongoId) {
+            $value = new \MongoId($value);
+        }
+        return $value;
     }
 
     public function convertToPHPValue($value)
@@ -42,7 +48,7 @@ class StringType  extends Type
 
     public function closureToMongo()
     {
-        return '$return = (string) $value;';
+        return '$return = new MongoId($value);';
     }
 
     public function closureToPHP()

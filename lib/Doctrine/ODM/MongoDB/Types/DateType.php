@@ -17,10 +17,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Key type.
+ * The String type.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
@@ -28,14 +28,32 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class KeyType extends Type
+class DateType extends Type
 {
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
             return null;
         }
-        return $value ? new \MongoMaxKey : new \MongoMinKey;
+        if ($value instanceof \MongoDate) {
+            return $value;
+        }
+        $timestamp = false;
+        if ($value instanceof \DateTime) {
+            $timestamp = $value->getTimestamp();
+        } elseif (is_numeric($value)) {
+            $timestamp = $value;
+        } elseif (is_string($value)) {
+            $timestamp = strtotime($value);
+        }
+        // Could not convert date to timestamp so store ISO 8601 formatted date instead
+        if ($timestamp === false) {
+            $date = new \DateTime($value);
+            return $date->format('c');
+        } else {
+            $value = $timestamp;
+        }
+        return new \MongoDate($value);
     }
 
     public function convertToPHPValue($value)
@@ -43,6 +61,22 @@ class KeyType extends Type
         if ($value === null) {
             return null;
         }
-        return $value instanceof \MongoMaxKey ? 1 : 0;
+        if ($value instanceof \MongoDate) {
+            $date = new \DateTime();
+            $date->setTimestamp($value->sec);
+        } else {
+            $date = new \DateTime($value);
+        }
+        return $date;
+    }
+
+    public function closureToMongo()
+    {
+        return 'if ($value instanceof \DateTime) { $value = $value->getTimestamp(); } else if (is_string($value)) { $value = strtotime($value); } $return = new \MongoDate($value);';
+    }
+
+    public function closureToPHP()
+    {
+        return 'if ($value instanceof \MongoDate) { $date = new \DateTime(); $date->setTimestamp($value->sec); $return = $date; } else { $return = new \DateTime($value); }';
     }
 }

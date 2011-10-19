@@ -17,10 +17,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Int type.
+ * The BinDataMD5 type.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
@@ -28,25 +28,25 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class IntType extends Type
+class BinDataMD5Type extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (integer) $value : null;
+        return $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (integer) $value : null;
+        return $value !== null ? $value->bin : null;
     }
 
     public function closureToMongo()
     {
-        return '$return = (int) $value;';
+        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;';
     }
 
     public function closureToPHP()
     {
-        return '$return = (int) $value;';
+        return '$return = $value !== null ? $value->bin : null;';
     }
 }
