@@ -1,8 +1,8 @@
 <?php
 
-namespace Doctrine\ODM\MongoDB\Tests\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Tests\Types;
 
-use Doctrine\ODM\MongoDB\Mapping\Types\IdType;
+use Doctrine\ODM\MongoDB\Types\IdType;
 
 class IdTypeTest extends \PHPUnit_Framework_TestCase
 {

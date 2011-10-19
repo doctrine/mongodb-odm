@@ -17,34 +17,44 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Increment type.
+ * The Id type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class IncrementType extends Type
+class IdType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (is_float($value) ? (float) $value : (int) $value) : null;
+        if ($value === null) {
+            return null;
+        }
+        if ( ! $value instanceof \MongoId) {
+            try {
+                $value = new \MongoId($value);
+            } catch (\MongoException $e) {
+                $value = new \MongoId();
+            }
+        }
+        return $value;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (is_float($value) ? (float) $value : (int) $value) : null;
+        return $value instanceof \MongoId ? (string) $value : $value;
     }
 
     public function closureToMongo()
     {
-        return '$return = is_float($value) ? (float) $value : (int) $value;';
+        return '$return = new MongoId($value);';
     }
 
     public function closureToPHP()
     {
-        return '$return = is_float($value) ? (float) $value : (int) $value;';
+        return '$return = $value instanceof \MongoId ? (string) $value : $value;';
     }
 }

@@ -17,35 +17,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Id type.
+ * The BinDataCustom type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
- * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class CustomIdType extends Type
+class BinDataCustomType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? $value : null;
+        return $value !== null ? new \MongoBinData($value, \MongoBinData::CUSTOM) : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? $value : null;
+        return $value !== null ? $value->bin : null;
     }
 
     public function closureToMongo()
     {
-        return '$return = $value;';
+        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::CUSTOM) : null;';
     }
 
     public function closureToPHP()
     {
-        return '$return = $value;';
+        return '$return = $value !== null ? $value->bin : null;';
     }
 }

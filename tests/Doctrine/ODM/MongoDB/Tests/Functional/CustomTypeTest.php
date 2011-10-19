@@ -4,8 +4,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\Types\DateType;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+use Doctrine\ODM\MongoDB\Types\DateType;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

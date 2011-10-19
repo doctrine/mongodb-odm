@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Types\Type;
 use InvalidArgumentException;
 
 /**
@@ -1290,7 +1291,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function getPHPIdentifierValue($id)
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
-        return Types\Type::getType($idType)->convertToPHPValue($id);
+        return Type::getType($idType)->convertToPHPValue($id);
     }
 
     /**
@@ -1302,7 +1303,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function getDatabaseIdentifierValue($id)
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
-        return Types\Type::getType($idType)->convertToDatabaseValue($id);
+        return Type::getType($idType)->convertToDatabaseValue($id);
     }
 
     /**

@@ -17,34 +17,25 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataMD5 type.
+ * The Collection type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class BinDataMD5Type extends Type
+class CollectionType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;
+        return $value !== null ? array_values($value) : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? $value->bin : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = $value !== null ? $value->bin : null;';
+        return $value !== null ? array_values($value) : null;
     }
 }

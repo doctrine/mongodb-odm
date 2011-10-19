@@ -17,34 +17,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The String type.
+ * The Float type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class StringType  extends Type
+class FloatType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (string) $value : null;
+        return $value !== null ? (float) $value : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (string) $value : null;
+        return $value !== null ? (float) $value : null;
     }
 
     public function closureToMongo()
     {
-        return '$return = (string) $value;';
+        return '$return = (float) $value;';
     }
 
     public function closureToPHP()
     {
-        return '$return = (string) $value;';
+        return '$return = (float) $value;';
     }
 }

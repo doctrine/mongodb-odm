@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The BinDataUUID type.

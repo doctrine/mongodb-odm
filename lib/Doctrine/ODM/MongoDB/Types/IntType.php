@@ -17,44 +17,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Id type.
+ * The Int type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class IdType extends Type
+class IntType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        if ($value === null) {
-            return null;
-        }
-        if ( ! $value instanceof \MongoId) {
-            try {
-                $value = new \MongoId($value);
-            } catch (\MongoException $e) {
-                $value = new \MongoId();
-            }
-        }
-        return $value;
+        return $value !== null ? (integer) $value : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value instanceof \MongoId ? (string) $value : $value;
+        return $value !== null ? (integer) $value : null;
     }
 
     public function closureToMongo()
     {
-        return '$return = new MongoId($value);';
+        return '$return = (int) $value;';
     }
 
     public function closureToPHP()
     {
-        return '$return = $value instanceof \MongoId ? (string) $value : $value;';
+        return '$return = (int) $value;';
     }
 }
