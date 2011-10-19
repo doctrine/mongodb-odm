@@ -25,7 +25,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\MongoDBException,
     Doctrine\ODM\MongoDB\Events,
     Doctrine\Common\Cache\Cache,
-    Doctrine\ODM\MongoDB\Mapping\Types\Type;
+    Doctrine\ODM\MongoDB\Types\Type;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the

@@ -697,7 +697,7 @@ public function <methodName>()
 
         $variableType = $typeHint ? $typeHint . ' ' : null;
 
-        $types = \Doctrine\ODM\MongoDB\Mapping\Types\Type::getTypesMap();
+        $types = \Doctrine\ODM\MongoDB\Types\Type::getTypesMap();
         $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
 
         $replacements = array(

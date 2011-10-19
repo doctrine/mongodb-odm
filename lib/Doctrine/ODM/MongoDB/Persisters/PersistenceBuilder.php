@@ -21,7 +21,7 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\UnitOfWork,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mapping\Types\Type;
+    Doctrine\ODM\MongoDB\Types\Type;
 
 /**
  * PersistenceBuilder builds the queries used by the persisters to update and insert
