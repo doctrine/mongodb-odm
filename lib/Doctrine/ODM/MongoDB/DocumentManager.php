@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
     Doctrine\MongoDB\Connection,
     Doctrine\ODM\MongoDB\PersistentCollection,
+    Doctrine\ORM\MongoDB\Proxy\Proxy,
     Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\EventManager,
@@ -228,6 +229,22 @@ class DocumentManager implements ObjectManager
     public function getMetadataFactory()
     {
         return $this->metadataFactory;
+    }
+
+    /**
+     * Helper method to initialize a lazy loading proxy or persistent collection.
+     *
+     * This method is a no-op for other objects.
+     *
+     * @param object $obj
+     */
+    public function initializeObject($obj)
+    {
+        if ($obj instanceof Proxy) {
+            $obj->__load();
+        } else if ($obj instanceof PersistentCollection) {
+            $obj->initialize();
+        }
     }
 
     /**
