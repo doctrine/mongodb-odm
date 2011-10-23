@@ -343,6 +343,7 @@ class DocumentPersister
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria)->limit(1);
         if ($sort) {
+        	$sort = $this->prepareQuery($sort);
             $cursor->sort($sort);
         }
         $result = $cursor->getSingleResult();
@@ -369,6 +370,7 @@ class DocumentPersister
         $cursor = $this->collection->find($criteria);
 
         if (null !== $orderBy) {
+        	$orderBy = $this->prepareQuery($orderBy);
             $cursor->sort($orderBy);
         }
 
@@ -660,14 +662,26 @@ class DocumentPersister
      */
     private function prepareQueryValue(&$fieldName, $value)
     {
+    	return $this->prepareQueryValueImpl($fieldName, $value, $this->class);
+    }
+
+    /**
+     * Prepares the query value for a fieldName and value in the context of a given class
+     * @param string $fieldName
+     * @param string $value
+     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $metadata
+     * @return mixed $value 
+     */
+    private function prepareQueryValueImpl(&$fieldName, $value, $metadata)
+    {
         // Process "association.fieldName"
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
 
-            $mapping = $this->class->getFieldMapping($e[0]);
+            $mapping = $metadata->getFieldMapping($e[0]);
 
-            if ($this->class->hasField($e[0])) {
-                $name = $this->class->fieldMappings[$e[0]]['name'];
+            if ($metadata->hasField($e[0])) {
+                $name = $metadata->fieldMappings[$e[0]]['name'];
                 if ($name !== $e[0]) {
                     $e[0] = $name;
                 }
@@ -676,6 +690,7 @@ class DocumentPersister
             if (isset($mapping['targetDocument'])) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
                 if ($targetClass->hasField($e[1])) {
+                	// reference document
                     if ($targetClass->identifier === $e[1]) {
                         $fieldName = $e[0] . '.$id';
                         if (is_array($value)) {
@@ -686,33 +701,42 @@ class DocumentPersister
                             $value = $targetClass->getDatabaseIdentifierValue($value);
                         }
                     }
+                    // embedded document
+                    else if ($targetClass->isEmbeddedDocument) {
+                        // shift off the field belonging to this class, then continue the preparation using
+                        // the embedded document as root
+                        $rootField = array_shift($e);
+                        $newFieldName = implode('.', $e);
+                        $value = $this->prepareQueryValueImpl($newFieldName, $value, $targetClass);
+                        $fieldName= $rootField.'.'.$newFieldName;
+                    }
                 }
             }
 
         // Process all non identifier fields
         // We only change the field names here to the mongodb field name used for persistence
-        } elseif ($this->class->hasField($fieldName) && ! $this->class->isIdentifier($fieldName)) {
-            $name = $this->class->fieldMappings[$fieldName]['name'];
-            $mapping = $this->class->fieldMappings[$fieldName];
+        } elseif ($metadata->hasField($fieldName) && ! $metadata->isIdentifier($fieldName)) {
+            $name = $metadata->fieldMappings[$fieldName]['name'];
+            $mapping = $metadata->fieldMappings[$fieldName];
             if ($name !== $fieldName) {
                 $fieldName = $name;
             }
 
         // Process identifier
-        } elseif (($this->class->hasField($fieldName) && $this->class->isIdentifier($fieldName)) || $fieldName === '_id') {
+        } elseif (($metadata->hasField($fieldName) && $metadata->isIdentifier($fieldName)) || $fieldName === '_id') {
             $fieldName = '_id';
             if (is_array($value)) {
                 foreach ($value as $k => $v) {
                     if ($k[0] === '$' && is_array($v)) {
                         foreach ($v as $k2 => $v2) {
-                            $value[$k][$k2] = $this->class->getDatabaseIdentifierValue($v2);
+                            $value[$k][$k2] = $metadata->getDatabaseIdentifierValue($v2);
                         }
                     } else {
-                        $value[$k] = $this->class->getDatabaseIdentifierValue($v);
+                        $value[$k] = $metadata->getDatabaseIdentifierValue($v);
                     }
                 }
             } else {
-                $value = $this->class->getDatabaseIdentifierValue($value);
+                $value = $metadata->getDatabaseIdentifierValue($value);
             }
         }
         return $value;
