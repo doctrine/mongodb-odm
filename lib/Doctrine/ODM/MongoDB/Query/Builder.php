@@ -187,10 +187,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         $query = $this->query;
 
-        $query['query'] = $this->dm->getUnitOfWork()
-            ->getDocumentPersister($this->class->name)
-            ->prepareQuery($this->expr->getQuery());
-
+        $query['query'] = $this->expr->getQuery();
         $query['newObj'] = $this->expr->getNewObj();
 
         return new Query(
@@ -213,7 +210,10 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     public function expr()
     {
-        return new Expr($this->dm, $this->cmd);
+        $expr = new Expr($this->dm, $this->cmd);
+        $expr->setClassMetadata($this->class);
+
+        return $expr;
     }
 
     private function setDocumentName($documentName)
