@@ -184,9 +184,11 @@ class XmlDriver extends AbstractFileDriver
             'embedded'       => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
-            'fieldName'      => (string) $attributes['fieldName'],
             'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
         );
+        if (isset($attributes['fieldName'])) {
+            $mapping['fieldName'] = (string) $attributes['fieldName'];
+        }
         if (isset($embed->{'discriminator-field'})) {
             $attr = $embed->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
@@ -213,11 +215,13 @@ class XmlDriver extends AbstractFileDriver
             'reference'      => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
-            'fieldName'      => (string) $attributes['fieldName'],
             'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
             'inversedBy'     => isset($attributes['inversed-by']) ? (string) $attributes['inversed-by'] : null,
             'mappedBy'       => isset($attributes['mapped-by']) ? (string) $attributes['mapped-by'] : null,
         );
+        if (isset($attributes['fieldName'])) {
+            $mapping['fieldName'] = (string) $attributes['fieldName'];
+        }
         if (isset($reference->{'discriminator-field'})) {
             $attr = $reference->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
