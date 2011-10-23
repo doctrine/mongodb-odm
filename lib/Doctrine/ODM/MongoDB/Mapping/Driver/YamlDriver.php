@@ -19,7 +19,6 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**
@@ -133,7 +132,7 @@ class YamlDriver extends AbstractFileDriver
         }
     }
 
-    private function addFieldMapping(ClassMetadata $class, $mapping)
+    private function addFieldMapping(ClassMetadataInfo $class, $mapping)
     {
         $keys = null;
         $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
@@ -160,7 +159,7 @@ class YamlDriver extends AbstractFileDriver
         $class->mapField($mapping);
     }
 
-    private function addMappingFromEmbed(ClassMetadata $class, $fieldName, $embed, $type)
+    private function addMappingFromEmbed(ClassMetadataInfo $class, $fieldName, $embed, $type)
     {
         $mapping = array(
             'type'           => $type,
@@ -178,7 +177,7 @@ class YamlDriver extends AbstractFileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addMappingFromReference(ClassMetadata $class, $fieldName, $reference, $type)
+    private function addMappingFromReference(ClassMetadataInfo $class, $fieldName, $reference, $type)
     {
         $mapping = array(
             'cascade'        => isset($reference['cascade']) ? $reference['cascade'] : null,
