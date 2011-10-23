@@ -231,6 +231,18 @@ class DocumentManager implements ObjectManager
     }
 
     /**
+     * Helper method to initialize a lazy loading proxy or persistent collection.
+     *
+     * This method is a no-op for other objects.
+     *
+     * @param object $obj
+     */
+    public function initializeObject($obj)
+    {
+        $this->unitOfWork->initializeObject($obj);
+    }
+
+    /**
      * Gets the UnitOfWork used by the DocumentManager to coordinate operations.
      *
      * @return UnitOfWork

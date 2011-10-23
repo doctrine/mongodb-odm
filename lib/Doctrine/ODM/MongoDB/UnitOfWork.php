@@ -2525,6 +2525,21 @@ class UnitOfWork implements PropertyChangedListener
     public function getScheduledCollectionUpdates()
     {
         return $this->collectionUpdates;
+    }    
+
+    /**
+     * Helper method to initialize a lazy loading proxy or persistent collection.
+     * 
+     * @param object
+     * @return void
+     */
+    public function initializeObject($obj)
+    {
+        if ($obj instanceof Proxy) {
+            $obj->__load();
+        } else if ($obj instanceof PersistentCollection) {
+            $obj->initialize();
+        }
     }
 
     private static function objToStr($obj)
