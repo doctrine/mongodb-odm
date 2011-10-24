@@ -349,7 +349,14 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
                 $class->setIdGenerator(new \Doctrine\ODM\MongoDB\Id\AutoGenerator($class));
                 break;
             case ClassMetadata::GENERATOR_TYPE_INCREMENT:
-                $class->setIdGenerator(new \Doctrine\ODM\MongoDB\Id\IncrementGenerator($class));
+                $incrementGenerator = new \Doctrine\ODM\MongoDB\Id\IncrementGenerator($class);
+                if (isset($idGenOptions['key'])) {
+                    $incrementGenerator->setKey($idGenOptions['key']);
+                }
+                if (isset($idGenOptions['collection'])) {
+                    $incrementGenerator->setCollection($idGenOptions['collection']);
+                }
+                $class->setIdGenerator($incrementGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:
                 $uuidGenerator = new \Doctrine\ODM\MongoDB\Id\UuidGenerator($class);
