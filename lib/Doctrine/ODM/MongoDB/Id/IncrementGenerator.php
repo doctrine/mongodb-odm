@@ -43,11 +43,13 @@ class IncrementGenerator extends AbstractIdGenerator
     protected $collection = null;
     protected $key = null;
     
-    public function setCollection($collection) { 
+    public function setCollection($collection) 
+    { 
         $this->collection = $collection;
     }
 
-    public function setKey($key) { 
+    public function setKey($key) 
+    { 
         $this->key = $key;
     }
     
