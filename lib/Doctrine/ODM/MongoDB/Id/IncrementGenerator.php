@@ -24,8 +24,14 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * IncrementGenerator is responsible for generating auto increment identifiers. It uses
- * a collection named "doctrine_increment_ids" which stores a document for each document
- * type and generates the next id by using $inc on a field named "current_id".
+ * a collection and generates the next id by using $inc on a field named "current_id".
+ *
+ * The 'collection' property determines which collection name is used to store the 
+ * id values. If not specified it defaults to 'doctrine_increment_ids'.
+ * 
+ * The 'key' property determines the document ID used to store the id values in the
+ * collection. If not specified it defaults to the name of the collection for the 
+ * document.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
@@ -34,18 +40,33 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 class IncrementGenerator extends AbstractIdGenerator
 {
+    protected $collection = null;
+    protected $key = null;
+    
+    public function setCollection($collection) 
+    { 
+        $this->collection = $collection;
+    }
+
+    public function setKey($key) 
+    { 
+        $this->key = $key;
+    }
+    
     /** @inheritDoc */
     public function generate(DocumentManager $dm, $document)
     {
         $className = get_class($document);
         $db = $dm->getDocumentDatabase($className);
-        $coll = $dm->getDocumentCollection($className);
-
-        $query = array('_id' => $coll->getName());
+        
+        $coll = $this->collection ?: 'doctrine_increment_ids';
+        $key = $this->key ?: $dm->getDocumentCollection($className)->getName();
+        
+        $query = array('_id' => $key);
         $newObj = array('$inc' => array('current_id' => 1));
 
         $command = array();
-        $command['findandmodify'] = 'doctrine_increment_ids';
+        $command['findandmodify'] = $coll;
         $command['query'] = $query;
         $command['update'] = $newObj;
         $command['upsert'] = true;
