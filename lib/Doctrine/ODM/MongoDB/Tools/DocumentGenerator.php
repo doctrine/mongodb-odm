@@ -177,7 +177,7 @@ public function <methodName>()
         }
 
         if ($this->backupExisting && file_exists($path)) {
-            $backupPath = dirname($path) . DIRECTORY_SEPARATOR .  "~" . basename($path);
+            $backupPath = dirname($path) . DIRECTORY_SEPARATOR . basename($path) . '~' ;
             if (!copy($path, $backupPath)) {
                 throw new \RuntimeException("Attempt to backup overwritten document file but copy operation failed.");
             }
