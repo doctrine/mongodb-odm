@@ -174,15 +174,15 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
 
     <?php
 
-    $config = new Configuration();
+    $config = new \Doctrine\ODM\MongoDB\Configuration();
     $config->setProxyDir('/path/to/generate/proxies');
     $config->setProxyNamespace('Proxies');
 
-    $reader = new AnnotationReader();
+    $reader = new \Doctrine\Common\Annotations\AnnotationReader();
     $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
     $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
-    $dm = DocumentManager::create(new Mongo(), $config);
+    $dm = \Doctrine\ODM\MongoDB\DocumentManager::create(new Mongo(), $config);
 
 Usage
 -----
