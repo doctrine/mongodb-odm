@@ -12,7 +12,7 @@ Installation
 
 First you just need to get the code by cloning the `github`_ repository:
 
-.. 
+.. code-block:: console
 
     $ git clone git://github.com/doctrine/mongodb-odm-softdelete.git
 
