@@ -57,9 +57,8 @@ Retrieve a blog post and only select the first 10 comments:
 
     $replies = $post->getReplies();
 
-You can read more about this pattern on the
-`MongoDB <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-FullTreeinSingleDocument>`_
-website!
+You can read more about this pattern on the MongoDB documentation page "Trees in MongoDB" in the
+`Full Tree in Single Document <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-FullTreeinSingleDocument>`_ section.
 
 Parent Reference
 ----------------
@@ -97,9 +96,8 @@ Query for children by a specific parent id:
         ->getQuery()
         ->execute();
 
-You can read more about this pattern on the
-`MongoDB <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-ParentLinks>`_
-website!
+You can read more about this pattern on the MongoDB documentation page "Trees in MongoDB" in the
+`Parent Links <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-ParentLinks>`_ section.
 
 Child Reference
 ---------------
@@ -150,9 +148,8 @@ Query for immediate parent of a category:
         ->getQuery()
         ->getSingleResult();
 
-You can read more about this pattern on the
-`MongoDB <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-ChildLinks>`_
-website!
+You can read more about this pattern on the MongoDB documentation page "Trees in MongoDB" in the
+`Child Links <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-ChildLinks>`_ section.
 
 Array of Ancestors
 ------------------
@@ -220,9 +217,8 @@ Query for all ancestors of a category:
 
     $ancestors = $category->getAncestors();
 
-You can read more about this pattern on the
-`MongoDB <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-ArrayofAncestors>`_
-website!
+You can read more about this pattern on the MongoDB documentation page "Trees in MongoDB" in the
+`Array of Ancestors <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-ArrayofAncestors>`_ section.
 
 Materialized Paths
 ------------------
@@ -267,6 +263,5 @@ Query for the node 'b' and all its descendants:
         ->getQuery()
         ->execute();
 
-You can read more about this pattern on the
-`MongoDB <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-MaterializedPaths%28FullPathinEachNode%29>`_
-website!
+You can read more about this pattern on the MongoDB documentation page "Trees in MongoDB" in the
+`Materialized Paths (Full Path in Each Node) <http://www.mongodb.org/display/DOCS/Trees+in+MongoDB#TreesinMongoDB-MaterializedPaths%28FullPathinEachNode%29>`_ section.

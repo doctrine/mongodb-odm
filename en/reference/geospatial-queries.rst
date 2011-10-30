@@ -58,6 +58,7 @@ First, setup some documents like the following:
           coordinates:
             keys:
               coordinates: 2d
+
 Near Query
 ----------
 
