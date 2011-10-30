@@ -193,7 +193,7 @@ If you were to print the `$order` you would see that we got back regular PHP obj
 
 The above would output the following:
 
-.. code-block::
+.. code-block:: php
 
     Order Object
     (

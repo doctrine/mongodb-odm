@@ -436,7 +436,7 @@ in the Mongo docs.
         ->field('field')->mod('field', array(10, 1));
 
 Read more about the
-`$mod operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod) in the Mongo docs.
+`$mod operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod>`_ in the Mongo docs.
 
 Update Queries
 ~~~~~~~~~~~~~~
