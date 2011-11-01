@@ -887,7 +887,26 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         $this->distance = $distance;
     }
-
+    
+    /**
+     * Returns the field mappings for fields marked as 'parent'
+     *
+     * @return array array of field mappings.
+     */
+    public function getParentFields()
+    {
+    	$result = array();
+        
+        foreach ($this->fieldMappings as $fieldMapping) {
+        	if (isset($fieldMapping['parent'])) {
+        		$fieldName = $fieldMapping['fieldName'];
+        		$result[] = $this->fieldMappings[$fieldName];
+        	}
+        }
+        
+        return $result;
+    }
+    
     /**
      * Map a field.
      *
