@@ -895,13 +895,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getParentFields()
     {
-    	$result = array();
+        $result = array();
         
         foreach ($this->fieldMappings as $fieldMapping) {
-        	if (isset($fieldMapping['parent'])) {
-        		$fieldName = $fieldMapping['fieldName'];
-        		$result[] = $this->fieldMappings[$fieldName];
-        	}
+            if (isset($fieldMapping['parent'])) {
+                $fieldName = $fieldMapping['fieldName'];
+                $result[] = $this->fieldMappings[$fieldName];
+            }
         }
         
         return $result;

@@ -290,8 +290,8 @@ class UnitOfWork implements PropertyChangedListener
         
         $classMetadata = $this->dm->getClassMetadata($className);
         foreach ($classMetadata->getParentFields() as $fieldMetadata) {
-        	$fieldName = $fieldMetadata['fieldName'];
-        	$classMetadata->reflFields[$fieldName]->setValue($document, $parent);
+            $fieldName = $fieldMetadata['fieldName'];
+            $classMetadata->reflFields[$fieldName]->setValue($document, $parent);
         }
     }
     
