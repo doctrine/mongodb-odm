@@ -209,7 +209,7 @@ class AnnotationDriver implements Driver
                     $mapping['version'] = true;
                 } elseif ($annot instanceof ODM\Lock) {
                     $mapping['lock'] = true;
-                } elseif ($annot instanceof ODM\TheParent) {
+                } elseif ($annot instanceof ODM\InitWithParent) {
                     $mapping['parent'] = true;
                 }
             }
