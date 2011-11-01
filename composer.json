@@ -8,7 +8,7 @@
     "authors": [
         {"name": "Bulat Shakirzyanov", "email": "mallluhuct@gmail.com"},
         {"name": "Kris Wallsmith", "email": "kris@symfony.com"},
-        {"name": "Jonathan H. Wage", "email": "jonwage@gmail.com"},
+        {"name": "Jonathan H. Wage", "email": "jonwage@gmail.com"}
     ],
     "require": {
         "php": ">=5.3.2",
