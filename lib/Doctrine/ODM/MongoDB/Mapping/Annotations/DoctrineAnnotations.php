@@ -251,7 +251,6 @@ class NotSavedBase extends AbstractField
 /** @Annotation */
 final class NotSaved extends NotSavedBase
 {
-    public $notSaved = true;
 }
 /** @Annotation */  
 final class InitWithParent extends NotSavedBase {}
