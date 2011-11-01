@@ -284,8 +284,16 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
         $this->parentAssociations[$oid] = array($mapping, $parent, $propertyPath);
+        
+        // todo: should use get_class($document) instead?
+        $className = $mapping['targetDocument'];
+        
+        $classMetadata = $this->dm->getClassMetadata($className);
+        foreach ($classMetadata->getParentFields() as $fieldName) {
+            $classMetadata->reflFields[$fieldName]->setValue($document, $parent);
+        }
     }
-
+    
     /**
      * Gets the parent association for a given embedded document.
      *

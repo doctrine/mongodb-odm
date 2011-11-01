@@ -244,11 +244,16 @@ final class ReferenceMany extends AbstractField
     public $skip;
     public $strategy = 'pushAll'; // pushAll, set
 }
-/** @Annotation */
-final class NotSaved extends AbstractField
+class NotSavedBase extends AbstractField
 {
     public $notSaved = true;
 }
+/** @Annotation */
+final class NotSaved extends NotSavedBase
+{
+}
+/** @Annotation */  
+final class InitWithParent extends NotSavedBase {}
 /** @Annotation */
 final class Distance extends AbstractField
 {

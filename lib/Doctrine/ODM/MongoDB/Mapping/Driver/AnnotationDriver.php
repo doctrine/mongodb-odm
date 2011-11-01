@@ -188,7 +188,6 @@ class AnnotationDriver implements Driver
             if ($class->isMappedSuperclass && !$property->isPrivate() || $class->isInheritedField($property->name)) {
                 continue;
             }
-
             $indexes = array();
             $mapping = array('fieldName' => $property->getName());
             $fieldAnnot = null;
@@ -210,6 +209,8 @@ class AnnotationDriver implements Driver
                     $mapping['version'] = true;
                 } elseif ($annot instanceof ODM\Lock) {
                     $mapping['lock'] = true;
+                } elseif ($annot instanceof ODM\InitWithParent) {
+                    $mapping['parent'] = true;
                 }
             }
 

@@ -361,6 +361,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * @var mixed $lockField
      */
     public $lockField;
+    
+    /**
+     * READ-ONLY: The name of the fields that should be initialized with the parent document instance
+     *
+     * @var array $parentFields
+     */
+    public $parentFields = array();
 
     /**
      * The ReflectionClass instance of the mapped class.
@@ -887,7 +894,17 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         $this->distance = $distance;
     }
-
+    
+    /**
+     * Returns the field mappings for fields marked as 'parent'
+     *
+     * @return array array of field mappings.
+     */
+    public function getParentFields()
+    {
+        return $this->parentFields;
+    }
+    
     /**
      * Map a field.
      *
@@ -989,6 +1006,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['lock'])) {
             $this->setLockMapping($mapping);
         }
+        if (isset($mapping['parent'])) {
+        	$this->parentFields[] = $mapping['fieldName'];
+        }
+        
         $mapping['isOwningSide'] = true;
         $mapping['isInverseSide'] = false;
         if (isset($mapping['reference'])) {
