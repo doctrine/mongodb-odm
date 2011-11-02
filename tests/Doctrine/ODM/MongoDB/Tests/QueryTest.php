@@ -121,6 +121,26 @@ class QueryTest extends BaseTest
             ->field('intfields.inttwo')->set('2');
         $this->assertEquals(array('testInt' => 0, 'intfields' => array('intone' => 1, 'inttwo' => 2)), $qb->getNewObj());
     }
+
+    public function testQueryWithMultipleEmbeddedDocuments()
+    {
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\EmbedTest')
+            ->find()
+            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.name')->equals('Foo');
+        $query = $qb->getQuery();
+        $this->assertEquals(array('eO.eO.embeddedMany.eO.n' => 'Foo'), $query->debug());
+    }
+
+    public function testQueryWithMultipleEmbeddedDocumentsAndReference()
+    {
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\EmbedTest')
+            ->find()
+            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.person.id')->equals('Foo');
+        $query = $qb->getQuery();
+        $debug = $query->debug();
+        $this->assertTrue(array_key_exists('eO.eO.embeddedMany.eO.p.$id', $debug));
+        $this->assertInstanceOf('\MongoId', $debug['eO.eO.embeddedMany.eO.p.$id']);
+    }
 }
 
 /** @ODM\Document(collection="people") */
@@ -142,4 +162,20 @@ class Person
     {
         $this->firstName = $firstName;
     }
+}
+
+/** @ODM\EmbeddedDocument */
+class EmbedTest
+{
+    /** @ODM\EmbedOne(name="eO", targetDocument="Doctrine\ODM\MongoDB\Tests\EmbedTest") */
+    public $embeddedOne;
+
+    /** @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\EmbedTest") */
+    public $embeddedMany;
+
+    /** @ODM\String(name="n") */
+    public $name;
+
+    /** @ODM\ReferenceOne(name="p", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
+    public $person;
 }
