@@ -177,7 +177,7 @@ public function <methodName>()
         }
 
         if ($this->backupExisting && file_exists($path)) {
-            $backupPath = dirname($path) . DIRECTORY_SEPARATOR .  "~" . basename($path);
+            $backupPath = dirname($path) . DIRECTORY_SEPARATOR . basename($path) . '~' ;
             if (!copy($path, $backupPath)) {
                 throw new \RuntimeException("Attempt to backup overwritten document file but copy operation failed.");
             }
@@ -235,7 +235,7 @@ public function <methodName>()
         $body = str_replace('<spaces>', $this->spaces, $body);
         $last = strrpos($currentCode, '}');
 
-        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : ''). "}";
+        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : ''). "}\n";
     }
 
     /**

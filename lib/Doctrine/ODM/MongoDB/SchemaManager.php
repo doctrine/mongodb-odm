@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use InvalidArgumentException;
 
@@ -73,12 +74,11 @@ class SchemaManager
         $visited[$documentName] = true;
 
         $class = $this->dm->getClassMetadata($documentName);
-        $indexes = $class->getIndexes();
+        $indexes = $this->prepareIndexes($class);
 
-        // Add indexes from embedded documents
+        // Add indexes from embedded & referenced documents
         foreach ($class->fieldMappings as $fieldMapping) {
             if (isset($fieldMapping['embedded']) && isset($fieldMapping['targetDocument'])) {
-                $embeddedClass = $this->dm->getClassMetadata($fieldMapping['targetDocument']);
                 $embeddedIndexes = $this->doGetDocumentIndexes($fieldMapping['targetDocument'], $visited);
                 foreach ($embeddedIndexes as $embeddedIndex) {
                     foreach ($embeddedIndex['keys'] as $key => $value) {
@@ -87,9 +87,39 @@ class SchemaManager
                     }
                     $indexes[] = $embeddedIndex;
                 }
+
+            } else if (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
+                foreach ($indexes as $idx => $index) {
+                    foreach ($index['keys'] as $key => $v) {
+                        if ($key == $fieldMapping['name']) {
+                            $indexes[$idx]['keys'][$key . '.$id'] = $v;
+                            unset($indexes[$idx]['keys'][$key]);
+                        }
+                    }
+                }
             }
         }
         return $indexes;
+    }
+
+    private function prepareIndexes(ClassMetadata $class)
+    {
+        $indexes = $class->getIndexes();
+        $newIndexes = array();
+        foreach ($indexes as $index) {
+            $newIndex = array(
+                'keys' => array(),
+                'options' => $index['options']
+            );
+            foreach ($index['keys'] as $key => $value) {
+                $mapping = $class->getFieldMapping($key);
+                $newIndex['keys'][$mapping['name']] = $value;
+            }
+
+            $newIndexes[] = $newIndex;
+        }
+
+        return $newIndexes;
     }
 
     /**
