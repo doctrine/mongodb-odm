@@ -674,7 +674,7 @@ class DocumentPersister
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
                 if ($targetClass->hasField($e[1])) {
                     if ($targetClass->identifier === $e[1]) {
-                        $e[1] = '$id';
+                        $fieldName =  $e[0] . '.$id';
                         if (is_array($value)) {
                             foreach ($value as $k => $v) {
                                 $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
@@ -682,15 +682,22 @@ class DocumentPersister
                         } else {
                             $value = $targetClass->getDatabaseIdentifierValue($value);
                         }
+
                     } else {
                         $targetMapping = $targetClass->getFieldMapping($e[1]);
                         $targetName = $targetMapping['name'];
                         if ($targetName !== $e[1]) {
                             $e[1] = $targetName;
                         }
-                    }
+                        $fieldName =  $e[0] . '.' . $e[1];
 
-                    $fieldName =  $e[0] . '.' . $e[1];
+                        if(count($e) > 2) {
+                            unset($e[0], $e[1]);
+                            $key = implode('.', $e);
+                            $value = $this->prepareQueryValue($key, $value);
+                            $fieldName .= '.' . $key;
+                        }
+                    }
                 }
             }
 
