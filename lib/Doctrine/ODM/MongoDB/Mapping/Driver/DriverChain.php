@@ -19,9 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
+    Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * The DriverChain allows you to add multiple other mapping drivers for
