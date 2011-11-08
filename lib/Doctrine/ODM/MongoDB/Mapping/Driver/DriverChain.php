@@ -19,7 +19,6 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\MongoDBException;
 
