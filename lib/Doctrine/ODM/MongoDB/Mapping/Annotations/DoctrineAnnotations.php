@@ -214,6 +214,7 @@ final class ReferenceOne extends AbstractField
 {
     public $type = 'one';
     public $reference = true;
+    public $simple = false;
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
@@ -231,6 +232,7 @@ final class ReferenceMany extends AbstractField
 {
     public $type = 'many';
     public $reference = true;
+    public $simple = false;
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
