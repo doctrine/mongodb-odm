@@ -210,9 +210,15 @@ EOF
         /** @ReferenceOne */
         if (isset(\$data['%1\$s'])) {
             \$reference = \$data['%1\$s'];
-            \$className = \$this->dm->getClassNameFromDiscriminatorValue(\$this->class->fieldMappings['%2\$s'], \$reference);
+            if (isset(\$this->class->fieldMappings['%2\$s']['simple']) && \$this->class->fieldMappings['%2\$s']['simple']) {
+                \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
+                \$mongoId = \$reference;
+            } else {
+                \$className = \$this->dm->getClassNameFromDiscriminatorValue(\$this->class->fieldMappings['%2\$s'], \$reference);
+                \$mongoId = \$reference['\$id'];
+            }
             \$targetMetadata = \$this->dm->getClassMetadata(\$className);
-            \$id = \$targetMetadata->getPHPIdentifierValue(\$reference['\$id']);
+            \$id = \$targetMetadata->getPHPIdentifierValue(\$mongoId);
             \$return = \$this->dm->getReference(\$className, \$id);
             \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
             \$hydratedData['%2\$s'] = \$return;
@@ -241,9 +247,13 @@ EOF
                 } else {
                     $code .= sprintf(<<<EOF
 
-        \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
+        \$mapping = \$this->class->fieldMappings['%2\$s'];
+        \$className = \$mapping['targetDocument'];
+        \$targetClass = \$this->dm->getClassMetadata(\$mapping['targetDocument']);
+        \$mappedByMapping = \$targetClass->fieldMappings[\$mapping['mappedBy']];
+        \$mappedByFieldName = isset(\$mappedByMapping['simple']) && \$mappedByMapping['simple'] ? \$mapping['mappedBy'] : \$mapping['mappedBy'].'.id';
         \$criteria = array_merge(
-            array(\$this->class->fieldMappings['%2\$s']['mappedBy'] . '.\$id' => \$data['_id']),
+            array(\$mappedByFieldName => \$data['_id']),
             isset(\$this->class->fieldMappings['%2\$s']['criteria']) ? \$this->class->fieldMappings['%2\$s']['criteria'] : array() 
         );
         \$sort = isset(\$this->class->fieldMappings['%2\$s']['sort']) ? \$this->class->fieldMappings['%2\$s']['sort'] : array();

@@ -672,6 +672,10 @@ class DocumentManager implements ObjectManager
         $class = $this->getClassMetadata($className);
         $id = $this->unitOfWork->getDocumentIdentifier($document);
 
+        if (isset($referenceMapping['simple']) && $referenceMapping['simple']) {
+            return $class->getDatabaseIdentifierValue($id);
+        }
+
         $dbRef = array(
             $this->cmd . 'ref' => $class->getCollection(),
             $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($id),

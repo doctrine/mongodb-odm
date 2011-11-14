@@ -50,6 +50,12 @@ class User extends BaseDocument
     /** @ODM\Increment */
     protected $count = 0;
 
+    /** @ODM\ReferenceOne(targetDocument="Documents\SimpleReferenceUser", mappedBy="user") */
+    protected $simpleReferenceOneInverse;
+
+    /** @ODM\ReferenceMany(targetDocument="Documents\SimpleReferenceUser", mappedBy="users") */
+    protected $simpleReferenceManyInverse;
+
     /** @ODM\Collection */
     private $logs = array();
 
@@ -200,6 +206,16 @@ class User extends BaseDocument
     public function setCount($count)
     {
         $this->count = $count;
+    }
+
+    public function getSimpleReferenceOneInverse()
+    {
+        return $this->simpleReferenceOneInverse;
+    }
+
+    public function getSimpleReferenceManyInverse()
+    {
+        return $this->simpleReferenceManyInverse;
     }
 
     public function incrementCount($num = null)
