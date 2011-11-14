@@ -110,7 +110,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         
         $this->generator->writeDocumentClass($metadata, $this->tmpDir);
 
-        $this->assertFileExists($this->tmpDir . "/" . $this->namespace . "/~DocumentGeneratorBook.php");
+        $this->assertFileExists($this->tmpDir . "/" . $this->namespace . "/DocumentGeneratorBook.php");
 
         $book = $this->newInstance($metadata);
         $reflClass = new \ReflectionClass($metadata->name);
@@ -120,7 +120,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($reflClass->hasProperty('id'), "Regenerating keeps property 'id'.");
 
         $this->assertTrue($reflClass->hasProperty('test'), "Check for property test failed.");
-        $this->assertTrue($reflClass->getProperty('test')->isPrivate(), "Check for private property test failed.");
+        $this->assertTrue($reflClass->getProperty('test')->isProtected(), "Check for protected property test failed.");
         $this->assertTrue($reflClass->hasMethod('getTest'), "Check for method 'getTest' failed.");
         $this->assertTrue($reflClass->getMethod('getTest')->isPublic(), "Check for public visibility of method 'getTest' failed.");
         $this->assertTrue($reflClass->hasMethod('setTest'), "Check for method 'getTest' failed.");
