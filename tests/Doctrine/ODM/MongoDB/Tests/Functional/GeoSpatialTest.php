@@ -50,7 +50,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getSingleResult();
         $this->assertNotNull($city);
 
-        $this->assertEquals(20, (int) $city->test);
+        $this->assertEquals(20, round($city->test));
 
         $query = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->near(50, 50)
