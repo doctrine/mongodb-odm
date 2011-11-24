@@ -513,7 +513,7 @@ class DocumentPersister
                 $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument);
                 $this->uow->registerManaged($embeddedDocumentObject, null, $data);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'].'.'.$key);
-                if ($mapping['strategy'] == 'set') {
+                if ($mapping['strategy'] === 'set') {
                     $collection->set($key, $embeddedDocumentObject);
                 } else {
                     $collection->add($embeddedDocumentObject);
@@ -532,7 +532,7 @@ class DocumentPersister
             $mongoId = $reference[$cmd . 'id'];
             $id = (string) $mongoId;
             $reference = $this->dm->getReference($className, $id);
-            if ($mapping['strategy'] == 'set') {
+            if ($mapping['strategy'] === 'set') {
                 $collection->set($key, $reference);
             } else {
                 $collection->add($reference);
