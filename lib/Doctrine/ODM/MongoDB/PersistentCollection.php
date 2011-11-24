@@ -140,7 +140,7 @@ class PersistentCollection implements BaseCollection
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {
                 foreach ($newObjects as $key => $obj) {
-                    if ($this->mapping['strategy'] == 'set') {
+                    if ($this->mapping['strategy'] === 'set') {
                         $this->coll->set($key, $obj);
                     } else {
                         $this->coll->add($obj);
