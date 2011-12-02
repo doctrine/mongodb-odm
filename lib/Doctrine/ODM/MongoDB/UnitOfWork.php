@@ -598,6 +598,10 @@ class UnitOfWork implements PropertyChangedListener
                 $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
                 if ($value !== null) {
                     $this->computeAssociationChanges($document, $mapping, $value);
+                    if(isset($mapping['reference'])) {
+                        continue;
+                    }
+
                     $values = $value;
                     if (isset($mapping['type']) && $mapping['type'] === 'one') {
                         $values = array($values);
