@@ -513,7 +513,11 @@ class DocumentPersister
                 $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument);
                 $this->uow->registerManaged($embeddedDocumentObject, null, $data);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'].'.'.$key);
-                $collection->add($embeddedDocumentObject);
+                if ($mapping['strategy'] === 'set') {
+                    $collection->set($key, $embeddedDocumentObject);
+                } else {
+                    $collection->add($embeddedDocumentObject);
+                }
             }
         }
     }
@@ -523,12 +527,16 @@ class DocumentPersister
         $mapping = $collection->getMapping();
         $cmd = $this->cmd;
         $groupedIds = array();
-        foreach ($collection->getMongoData() as $reference) {
+        foreach ($collection->getMongoData() as $key => $reference) {
             $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
             $mongoId = $reference[$cmd . 'id'];
             $id = (string) $mongoId;
             $reference = $this->dm->getReference($className, $id);
-            $collection->add($reference);
+            if ($mapping['strategy'] === 'set') {
+                $collection->set($key, $reference);
+            } else {
+                $collection->add($reference);
+            }
             if ($reference instanceof Proxy && ! $reference->__isInitialized__) {
                 if ( ! isset($groupedIds[$className])) {
                     $groupedIds[$className] = array();

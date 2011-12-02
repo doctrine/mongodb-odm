@@ -139,8 +139,12 @@ class PersistentCollection implements BaseCollection
             $this->takeSnapshot();
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {
-                foreach ($newObjects as $obj) {
-                    $this->coll->add($obj);
+                foreach ($newObjects as $key => $obj) {
+                    if ($this->mapping['strategy'] === 'set') {
+                        $this->coll->set($key, $obj);
+                    } else {
+                        $this->coll->add($obj);
+                    }
                 }
                 $this->isDirty = true;
             }
@@ -419,7 +423,6 @@ class PersistentCollection implements BaseCollection
      */
     public function set($key, $value)
     {
-        $this->initialize();
         $this->coll->set($key, $value);
         $this->changed();
     }
