@@ -69,6 +69,10 @@ class XmlDriver extends AbstractFileDriver
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
             $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
         }
+        if (isset($xmlRoot['change-tracking-policy'])) {
+            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
+                    . strtoupper((string)$xmlRoot['change-tracking-policy'])));
+        }
         if (isset($xmlRoot->{'discriminator-field'})) {
             $discrField = $xmlRoot->{'discriminator-field'};
             $class->setDiscriminatorField(array(
@@ -82,10 +86,6 @@ class XmlDriver extends AbstractFileDriver
                 $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
             }
             $class->setDiscriminatorMap($map);
-        }
-        if (isset($xmlRoot->{'change-tracking-policy'})) {
-            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
-                    . strtoupper((string)$xmlRoot->{'change-tracking-policy'})));
         }
         if (isset($xmlRoot->{'indexes'})) {
             foreach($xmlRoot->{'indexes'}->{'index'} as $index) {
