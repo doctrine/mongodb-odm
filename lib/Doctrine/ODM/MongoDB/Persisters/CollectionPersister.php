@@ -121,9 +121,9 @@ class CollectionPersister
      */
     private function deleteRows(PersistentCollection $coll, array $options)
     {
-        list($propertyPath, $parent) = $this->getPathAndParent($coll);
         $deleteDiff = $coll->getDeleteDiff();
         if ($deleteDiff) {
+            list($propertyPath, $parent) = $this->getPathAndParent($coll);
             $query = array($this->cmd.'unset' => array());
             foreach ($deleteDiff as $key => $document) {
                 $query[$this->cmd.'unset'][$propertyPath.'.'.$key] = true;
