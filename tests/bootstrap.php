@@ -21,6 +21,9 @@ $classLoader->register();
 $classLoader = new ClassLoader('Symfony\Component\Yaml', __DIR__ . '/../lib/vendor');
 $classLoader->register();
 
+$classLoader = new ClassLoader('Symfony\Component\Console', __DIR__ . '/../lib/vendor');
+$classLoader->register();
+
 $classLoader = new ClassLoader('Documents', __DIR__);
 $classLoader->register();
 
