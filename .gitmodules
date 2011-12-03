@@ -4,3 +4,9 @@
 [submodule "lib/vendor/doctrine-mongodb"]
 	path = lib/vendor/doctrine-mongodb
 	url = git://github.com/doctrine/mongodb.git
+[submodule "lib/vendor/Symfony/Component/Console"]
+	path = lib/vendor/Symfony/Component/Console
+	url = https://github.com/symfony/Console.git
+[submodule "lib/vendor/Symfony/Component/Yaml"]
+	path = lib/vendor/Symfony/Component/Yaml
+	url = https://github.com/symfony/Yaml.git
