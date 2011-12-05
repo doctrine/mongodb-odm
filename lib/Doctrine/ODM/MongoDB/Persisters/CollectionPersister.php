@@ -121,9 +121,9 @@ class CollectionPersister
      */
     private function deleteRows(PersistentCollection $coll, array $options)
     {
-        list($propertyPath, $parent) = $this->getPathAndParent($coll);
         $deleteDiff = $coll->getDeleteDiff();
         if ($deleteDiff) {
+            list($propertyPath, $parent) = $this->getPathAndParent($coll);
             $query = array($this->cmd.'unset' => array());
             foreach ($deleteDiff as $key => $document) {
                 $query[$this->cmd.'unset'][$propertyPath.'.'.$key] = true;
@@ -138,7 +138,10 @@ class CollectionPersister
              * "Using "$unset" with an expression like this "array.$" will result in the array item becoming null, not being removed. You can issue an update with "{$pull:{x:null}}" to remove all nulls."
              * http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset
              */
-            $this->executeQuery($parent, array($this->cmd.'pull' => array($propertyPath => null)), $options);
+            $mapping = $coll->getMapping();
+            if ($mapping['strategy'] !== 'set') {
+                $this->executeQuery($parent, array($this->cmd.'pull' => array($propertyPath => null)), $options);
+            }
         }
     }
 
