@@ -7,7 +7,7 @@ form of XML documents.
 The XML driver is backed by an XML Schema document that describes
 the structure of a mapping document. The most recent version of the
 XML Schema document is available online at
-`http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd <http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping>`_.
+`http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd <http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd>`_.
 The most convenient way to work with XML mapping files is to use an
 IDE/editor that can provide code-completion based on such an XML
 Schema document. The following is an outline of a XML mapping
