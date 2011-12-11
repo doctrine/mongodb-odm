@@ -425,6 +425,9 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
      */
     public function isTransient($className)
     {
+        if (!$this->initialized) {
+            $this->initialize();
+        }
         return $this->driver->isTransient($className);
     }
 }
