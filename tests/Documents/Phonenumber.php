@@ -11,9 +11,13 @@ class Phonenumber
     /** @ODM\String */
     private $phonenumber;
 
-    public function __construct($phonenumber = null)
+    /** @ODM\ReferenceOne(targetDocument="User", cascade={"persist"}) */
+    private $lastCalledBy;
+
+    public function __construct($phonenumber = null, User $lastCalledBy = null)
     {
         $this->phonenumber = $phonenumber;
+        $this->lastCalledBy = $lastCalledBy;
     }
 
     public function getPhonenumber()
@@ -24,5 +28,15 @@ class Phonenumber
     public function setPhonenumber($phonenumber)
     {
         $this->phonenumber = $phonenumber;
+    }
+
+    public function getLastCalledBy()
+    {
+        return $this->lastCalledBy;
+    }
+
+    public function setLastCalledBy(User $lastCalledBy = null)
+    {
+        $this->lastCalledBy = $lastCalledBy;
     }
 }

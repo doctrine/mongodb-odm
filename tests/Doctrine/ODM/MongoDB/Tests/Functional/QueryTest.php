@@ -41,6 +41,27 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNotNull($user);
     }
 
+    public function testAddElemMatchWithDeepFields()
+    {
+        $user1 = new User();
+        $user1->setUsername('ben');
+
+        $user2 = new User();
+        $user2->setUsername('boo');
+        $phonenumber = new Phonenumber('2125550123', $user1);
+        $user2->addPhonenumber($phonenumber);
+
+        $this->dm->persist($user1);
+        $this->dm->persist($user2);
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $qb->field('phonenumbers')->elemMatch($qb->expr()->field('lastCalledBy.$id')->equals(new \MongoId($user1->getId())));
+        $query = $qb->getQuery();
+        $user = $query->getSingleResult();
+        $this->assertNotNull($user);
+    }
+
     public function testAddNot()
     {
         $user = new User();
