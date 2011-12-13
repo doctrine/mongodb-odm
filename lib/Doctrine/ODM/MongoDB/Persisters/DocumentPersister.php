@@ -662,17 +662,20 @@ class DocumentPersister
      * Prepares a query value and converts the php value to the database value if it is an identifier.
      * It also handles converting $fieldName to the database name if they are different.
      *
-     * @param string $fieldName
-     * @param string $value
-     * @return mixed $value
+     * @param string        $fieldName
+     * @param string        $value
+     * @param ClassMetadata $metadata   Defaults to $this->class
+     * @return mixed        $value
      */
-    private function prepareQueryValue(&$fieldName, $value)
+    private function prepareQueryValue(&$fieldName, $value, $metadata = null)
     {
+        $metadata = ($metadata === null) ? $this->class : $metadata;
+        
         // Process "association.fieldName"
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
 
-            $mapping = $this->class->getFieldMapping($e[0]);
+            $mapping = $metadata->getFieldMapping($e[0]);
             $name = $mapping['name'];
             if ($name !== $e[0]) {
                 $e[0] = $name;
@@ -702,7 +705,14 @@ class DocumentPersister
                         if(count($e) > 2) {
                             unset($e[0], $e[1]);
                             $key = implode('.', $e);
-                            $value = $this->prepareQueryValue($key, $value);
+
+                            if (isset($targetMapping['targetDocument'])) {
+                                $nextTargetClass = $this->dm->getClassMetadata($targetMapping['targetDocument']);
+                                $value = $this->prepareQueryValue($key, $value, $nextTargetClass);
+                            } else {
+                                $value = $this->prepareQueryValue($key, $value);
+                            }
+                            
                             $fieldName .= '.' . $key;
                         }
                     }
@@ -711,28 +721,28 @@ class DocumentPersister
 
         // Process all non identifier fields
         // We only change the field names here to the mongodb field name used for persistence
-        } elseif ($this->class->hasField($fieldName) && ! $this->class->isIdentifier($fieldName)) {
-            $name = $this->class->fieldMappings[$fieldName]['name'];
-            $mapping = $this->class->fieldMappings[$fieldName];
+        } elseif ($metadata->hasField($fieldName) && ! $metadata->isIdentifier($fieldName)) {
+            $name = $metadata->fieldMappings[$fieldName]['name'];
+            $mapping = $metadata->fieldMappings[$fieldName];
             if ($name !== $fieldName) {
                 $fieldName = $name;
             }
 
         // Process identifier
-        } elseif (($this->class->hasField($fieldName) && $this->class->isIdentifier($fieldName)) || $fieldName === '_id') {
+        } elseif (($metadata->hasField($fieldName) && $metadata->isIdentifier($fieldName)) || $fieldName === '_id') {
             $fieldName = '_id';
             if (is_array($value)) {
                 foreach ($value as $k => $v) {
                     if ($k[0] === '$' && is_array($v)) {
                         foreach ($v as $k2 => $v2) {
-                            $value[$k][$k2] = $this->class->getDatabaseIdentifierValue($v2);
+                            $value[$k][$k2] = $metadata->getDatabaseIdentifierValue($v2);
                         }
                     } else {
-                        $value[$k] = $this->class->getDatabaseIdentifierValue($v);
+                        $value[$k] = $metadata->getDatabaseIdentifierValue($v);
                     }
                 }
             } else {
-                $value = $this->class->getDatabaseIdentifierValue($value);
+                $value = $metadata->getDatabaseIdentifierValue($value);
             }
         }
         return $value;
