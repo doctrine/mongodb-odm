@@ -2,9 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
-use Doctrine\ODM\MongoDB\Tools\SchemaTool,
-    Doctrine\ODM\MongoDB\Tools\DocumentGenerator,
-    Doctrine\ODM\MongoDB\Tools\Export\ClassMetadataInfoExporter,
+use Doctrine\ODM\MongoDB\Tools\DocumentGenerator,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest

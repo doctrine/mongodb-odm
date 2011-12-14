@@ -15,4 +15,10 @@
             <directory>./tests/Doctrine/</directory>
         </testsuite>
     </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./lib/Doctrine/ODM/MongoDB</directory>
+        </whitelist>
+    </filter>
 </phpunit>

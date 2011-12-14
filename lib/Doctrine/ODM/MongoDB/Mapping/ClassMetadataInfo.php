@@ -1242,6 +1242,21 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         return (string) $this->reflFields[$this->identifier]->getValue($document);
     }
+    
+    /**
+     * Get identifier values of this document.
+     * 
+     * Since MongoDB only allows exactly one identifier field this is a proxy
+     * to {@see getIdentifierValue()} and returns an array with the identifier
+     * field as a key.
+     * 
+     * @param object $document
+     * @return array
+     */
+    public function getIdentifierValues($document)
+    {
+        return array($this->identifier => $this->getIdentifierValue($document));
+    }
 
     /**
      * Get the document identifier object.
@@ -1505,23 +1520,68 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         $this->lockField = $lockField;
     }
 
+    /**
+     * A numerically indexed list of field names of this persistent class.
+     *
+     * This array includes identifier fields if present on this class.
+     *
+     * @return array
+     */
     public function getFieldNames()
     {
-        throw new \BadMethodCallException(__METHOD__.'() is not implemented yet.');
+        return array_keys($this->fieldMappings);
     }
 
+    /**
+     * A numerically indexed list of association names of this persistent class.
+     *
+     * This array includes identifier associations if present on this class.
+     *
+     * @return array
+     */
     public function getAssociationNames()
     {
         throw new \BadMethodCallException(__METHOD__.'() is not implemented yet.');
     }
 
+    /**
+     * Gets the type of a field.
+     *
+     * @param string $fieldName
+     * @return Doctrine\DBAL\Types\Type
+     */
     public function getTypeOfField($fieldName)
     {
-        throw new \BadMethodCallException(__METHOD__.'($fieldName) is not implemented yet.');
+        return isset($this->fieldMappings[$fieldName]) ?
+                $this->fieldMappings[$fieldName]['type'] : null;
     }
 
+    /**
+     * Returns the target class name of the given association.
+     *
+     * @param string $assocName
+     * @return string
+     */
     public function getAssociationTargetClass($assocName)
     {
         throw new \BadMethodCallException(__METHOD__.'($assocName) is not implemented yet.');
+    }
+
+    /**
+     * @param string $fieldName
+     * @return bool
+     */
+    public function isAssociationInverseSide($fieldName)
+    {
+        throw new \BadMethodCallException(__METHOD__.'() is not implemented yet.');
+    }
+
+    /**
+     * @param string $fieldName
+     * @return string
+     */
+    public function getAssociationMappedByTargetField($fieldName)
+    {
+        throw new \BadMethodCallException(__METHOD__.'() is not implemented yet.');
     }
 }
