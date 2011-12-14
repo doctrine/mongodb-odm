@@ -135,11 +135,12 @@ class QueryTest extends BaseTest
     {
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\EmbedTest')
             ->find()
-            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.person.id')->equals('Foo');
+            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals('Foo');
         $query = $qb->getQuery();
         $debug = $query->debug();
-        $this->assertTrue(array_key_exists('eO.eO.embeddedMany.eO.p.$id', $debug));
-        $this->assertInstanceOf('\MongoId', $debug['eO.eO.embeddedMany.eO.p.$id']);
+
+        $this->assertTrue(array_key_exists('eO.eO.embeddedMany.eO.eP.pO._id', $debug));
+        $this->assertInstanceOf('\MongoId', $debug['eO.eO.embeddedMany.eO.eP.pO._id']);
     }
 }
 
@@ -155,6 +156,9 @@ class Person
     /** @ODM\ReferenceOne */
     public $bestFriend;
 
+    /** @ODM\ReferenceOne(name="s") */
+    public $son;
+
     /** @ODM\ReferenceMany */
     public $friends = array();
 
@@ -162,6 +166,13 @@ class Person
     {
         $this->firstName = $firstName;
     }
+}
+
+/** @ODM\EmbeddedDocument */
+class Pet
+{
+    /** @ODM\ReferenceOne(name="pO", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
+    public $owner;
 }
 
 /** @ODM\EmbeddedDocument */
@@ -178,4 +189,7 @@ class EmbedTest
 
     /** @ODM\ReferenceOne(name="p", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
     public $person;
+
+    /** @ODM\EmbedOne(name="eP", targetDocument="Doctrine\ODM\MongoDB\Tests\Pet") */
+    public $pet;
 }
