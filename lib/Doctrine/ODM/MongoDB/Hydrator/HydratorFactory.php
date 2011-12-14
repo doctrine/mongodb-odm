@@ -224,7 +224,7 @@ EOF
                     $mapping['fieldName']
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isInverseSide']) {
-                if ($mapping['repositoryMethod']) {
+                if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
                     $code .= sprintf(<<<EOF
 
         \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
