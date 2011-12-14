@@ -527,9 +527,15 @@ class DocumentPersister
         $mapping = $collection->getMapping();
         $cmd = $this->cmd;
         $groupedIds = array();
+
         foreach ($collection->getMongoData() as $key => $reference) {
-            $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
-            $mongoId = $reference[$cmd . 'id'];
+            if (isset($mapping['simple']) && $mapping['simple']) {
+                $className = $mapping['targetDocument'];
+                $mongoId = $reference;
+            } else {
+                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
+                $mongoId = $reference[$cmd . 'id'];
+            }
             $id = (string) $mongoId;
             $reference = $this->dm->getReference($className, $id);
             if ($mapping['strategy'] === 'set') {
@@ -575,8 +581,11 @@ class DocumentPersister
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
+        $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+        $mappedByMapping = $targetClass->fieldMappings[$mapping['mappedBy']];
+        $mappedByFieldName = isset($mappedByMapping['simple']) && $mappedByMapping['simple'] ? $mapping['mappedBy'] : $mapping['mappedBy'].'.id';
         $criteria = array_merge(
-            array($mapping['mappedBy'].'.id' => $ownerClass->getIdentifierObject($owner)),
+            array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
             isset($mapping['criteria']) ? $mapping['criteria'] : array()
         );
         $qb = $this->dm->createQueryBuilder($mapping['targetDocument'])
@@ -722,10 +731,15 @@ class DocumentPersister
         // Process all non identifier fields
         // We only change the field names here to the mongodb field name used for persistence
         } elseif ($metadata->hasField($fieldName) && ! $metadata->isIdentifier($fieldName)) {
-            $name = $metadata->fieldMappings[$fieldName]['name'];
             $mapping = $metadata->fieldMappings[$fieldName];
+            $name = $mapping['name'];
             if ($name !== $fieldName) {
                 $fieldName = $name;
+            }
+
+            if (isset($mapping['reference']) && isset($mapping['simple']) && $mapping['simple']) {
+                $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+                $value = $targetClass->getDatabaseIdentifierValue($value);
             }
 
         // Process identifier
