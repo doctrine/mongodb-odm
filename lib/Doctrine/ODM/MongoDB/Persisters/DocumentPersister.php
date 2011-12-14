@@ -576,7 +576,7 @@ class DocumentPersister
         $owner = $collection->getOwner();
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
         $criteria = array_merge(
-            array($mapping['mappedBy'].'.id' => $ownerClass->getIdentifierObject($owner)),
+            array($mapping['mappedBy'].'.$id' => $ownerClass->getIdentifierObject($owner)),
             isset($mapping['criteria']) ? $mapping['criteria'] : array()
         );
         $qb = $this->dm->createQueryBuilder($mapping['targetDocument'])
