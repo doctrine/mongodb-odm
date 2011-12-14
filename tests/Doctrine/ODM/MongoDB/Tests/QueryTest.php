@@ -156,9 +156,6 @@ class Person
     /** @ODM\ReferenceOne */
     public $bestFriend;
 
-    /** @ODM\ReferenceOne(name="s") */
-    public $son;
-
     /** @ODM\ReferenceMany */
     public $friends = array();
 
