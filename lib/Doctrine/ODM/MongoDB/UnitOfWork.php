@@ -699,11 +699,13 @@ class UnitOfWork implements PropertyChangedListener
         } elseif ($value instanceof PersistentCollection) {
             $value = $value->unwrap();
         }
+        $count = 0;
         foreach ($value as $key => $entry) {
             $targetClass = $this->dm->getClassMetadata(get_class($entry));
             $state = $this->getDocumentState($entry, self::STATE_NEW);
             $oid = spl_object_hash($entry);
-            $path = $mapping['type'] === 'many' ? $mapping['name'].'.'.$key : $mapping['name'];
+            $path = $mapping['type'] === 'many' ? $mapping['name'].'.'.$count : $mapping['name'];
+            $count++;
             if ($state == self::STATE_NEW) {
                 if ( ! $targetClass->isEmbeddedDocument && ! $mapping['isCascadePersist']) {
                     throw new \InvalidArgumentException("A new document was found through a relationship that was not"
