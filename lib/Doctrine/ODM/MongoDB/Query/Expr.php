@@ -61,22 +61,25 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
      */
     public function references($document)
     {
-        $dbRef = $this->dm->createDBRef($document);
-
         if ($this->currentField) {
-            $keys = array('ref' => true, 'id' => true, 'db' => true);
+            $mapping = $this->class->getFieldMapping($this->currentField);
+            $dbRef = $this->dm->createDBRef($document, $mapping);
 
-            if ($this->class) {
-                $mapping = $this->class->getFieldMapping($this->currentField);
+            if (isset($mapping['simple']) && $mapping['simple']) {
+                $this->query[$mapping['name']] = $dbRef;
+            } else {
+                $keys = array('ref' => true, 'id' => true, 'db' => true);
+
                 if (isset($mapping['targetDocument'])) {
                     unset($keys['ref'], $keys['db']);
                 }
-            }
 
-            foreach ($keys as $key => $value) {
-                $this->query[$this->currentField . '.' . $this->cmd . $key] = $dbRef[$this->cmd . $key];
+                foreach ($keys as $key => $value) {
+                    $this->query[$this->currentField . '.' . $this->cmd . $key] = $dbRef[$this->cmd . $key];
+                }
             }
         } else {
+            $dbRef = $this->dm->createDBRef($document);
             $this->query = $dbRef;
         }
 
