@@ -124,15 +124,15 @@ class QueryTest extends BaseTest
 
     public function testElemMatch()
     {
-        $refId = new \MongoId('000000000000000000000001');
+        $refId = '000000000000000000000001';
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
         $qb->field('phonenumbers')->elemMatch($qb->expr()
-            ->field('lastCalledBy.$id')->equals($refId)
+            ->field('lastCalledBy.id')->equals($refId)
         );
         $query = $qb->getQuery();
 
-        $expectedQuery = array('phonenumbers' => array('$elemMatch' => array('lastCalledBy.$id' => $refId)));
+        $expectedQuery = array('phonenumbers' => array('$elemMatch' => array('lastCalledBy.$id' => new \MongoId($refId))));
         $this->assertEquals($expectedQuery, $query->debug());
     }
 
