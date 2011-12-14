@@ -12,6 +12,8 @@ use Documents\Address,
     Documents\Functional\EmbeddedTestLevel0b,
     Documents\Functional\EmbeddedTestLevel1,
     Documents\Functional\EmbeddedTestLevel2,
+    Documents\Functional\VirtualHost,
+    Documents\Functional\VirtualHostDirective,
     Doctrine\ODM\MongoDB\PersistentCollection;
 
 class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -384,4 +386,41 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEmpty($check['phonenumbers']);
         $this->assertFalse(isset($check['address']));
     }
+
+    public function testRemoveAddDeepEmbedded()
+    {
+        $vhost = new VirtualHost();
+
+        $directive1 = new VirtualHostDirective('DirectoryIndex', 'index.php');
+        $vhost->getVHostDirective()->addDirective($directive1);
+
+        $directive2 = new VirtualHostDirective('Directory', '/var/www/html');
+        $directive2->addDirective(new VirtualHostDirective('AllowOverride','All'));
+        $vhost->getVHostDirective()->addDirective($directive2);
+
+        $directive3 = new VirtualHostDirective('Directory', '/var/www/html');
+        $directive3->addDirective(new VirtualHostDirective('RewriteEngine','on'));
+        $vhost->getVHostDirective()->addDirective($directive3);
+
+        $this->dm->persist($vhost);
+        $this->dm->flush();
+
+        $vhost->getVHostDirective()->removeDirective($directive2);
+
+        $directive4 = new VirtualHostDirective('Directory', '/var/www/html');
+        $directive4->addDirective(new VirtualHostDirective('RewriteEngine','on'));
+        $vhost->getVHostDirective()->addDirective($directive4);
+
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $vhost = $this->dm->find('Documents\Functional\VirtualHost', $vhost->getId());
+
+        foreach($vhost->getVHostDirective()->getDirectives() as $directive)
+        {
+            $this->assertNotEmpty($directive->getName());
+        }
+    }
+
 }
