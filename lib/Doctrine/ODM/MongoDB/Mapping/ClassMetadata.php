@@ -179,17 +179,6 @@ class ClassMetadata extends ClassMetadataInfo
             $reflField->setAccessible(true);
             $this->reflFields[$field] = $reflField;
         }
-
-        foreach ($this->fieldMappings as $field => $mapping) {
-            if (isset($mapping['declared'])) {
-                $reflField = new \ReflectionProperty($mapping['declared'], $field);
-            } else {
-                $reflField = $this->reflClass->getProperty($field);
-            }
-
-            $reflField->setAccessible(true);
-            $this->reflFields[$field] = $reflField;
-        }
     }
 
     /**
