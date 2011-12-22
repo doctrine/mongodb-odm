@@ -428,6 +428,19 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
+     * Get identifier field names of this class.
+     *
+     * Since MongoDB only allows exactly one identifier field this is a proxy
+     * to {@see getIdentifier()} and returns an array.
+     *
+     * @return array
+     */
+    public function getIdentifierFieldNames()
+    {
+        return array($this->identifier);
+    }
+
+    /**
      * Checks whether the class has a (mapped) field with a certain name.
      *
      * @return boolean
@@ -1242,14 +1255,14 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         return (string) $this->reflFields[$this->identifier]->getValue($document);
     }
-    
+
     /**
      * Get identifier values of this document.
-     * 
+     *
      * Since MongoDB only allows exactly one identifier field this is a proxy
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
-     * 
+     *
      * @param object $document
      * @return array
      */
