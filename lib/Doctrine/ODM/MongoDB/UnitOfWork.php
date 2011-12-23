@@ -687,7 +687,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 } else if (is_object($orgValue) && $orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
-                } else if (is_array($orgValue) && false === $this->arrayEquals($orgValue, $actualValue)) {
+                } else if ((is_array($orgValue) || is_array($actualValue)) && false === $this->arrayEquals($orgValue, $actualValue)) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
@@ -888,7 +888,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
             } else if (is_object($orgValue) && $orgValue !== $actualValue) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
-            } else if (is_array($orgValue) && false === $this->arrayEquals($orgValue, $actualValue)) {
+            } else if ((is_array($orgValue) || is_array($actualValue)) && false === $this->arrayEquals($orgValue, $actualValue)) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
             } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
