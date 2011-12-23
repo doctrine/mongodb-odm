@@ -90,12 +90,14 @@ class SchemaManager
 
             } else if (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
                 foreach ($indexes as $idx => $index) {
+                    $newKeys = array();
                     foreach ($index['keys'] as $key => $v) {
                         if ($key == $fieldMapping['name']) {
-                            $indexes[$idx]['keys'][$key . '.$id'] = $v;
-                            unset($indexes[$idx]['keys'][$key]);
+                            $key = $key . '.$id';
                         }
+                        $newKeys[$key] = $v;
                     }
+                    $indexes[$idx]['keys'] = $newKeys;
                 }
             }
         }
