@@ -106,10 +106,7 @@ class SchemaManager
     {
         $indexes = $class->getIndexes();
         $newIndexes = array();
-        $discriminatorFieldName = null;
-        if ($class->discriminatorField !== null) {
-            $discriminatorFieldName = $class->discriminatorField['name'];
-        }
+        $discriminatorFieldName = ($class->discriminatorField !== null) ? $class->discriminatorField['name'] : null;
         foreach ($indexes as $index) {
             $newIndex = array(
                 'keys' => array(),
