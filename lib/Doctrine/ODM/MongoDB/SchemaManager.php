@@ -119,9 +119,11 @@ class SchemaManager
                     //There's no mapping for the discriminator field,
                     //but it's still a valid document field.
                     $newIndex['keys'][$discriminatorFieldName] = $value;
-                } else {
+                } elseif ($class->hasField($key)) {
                     $mapping = $class->getFieldMapping($key);
                     $newIndex['keys'][$mapping['name']] = $value;
+                } else {
+                    $newIndex['keys'][$key] = $value;
                 }
             }
 
