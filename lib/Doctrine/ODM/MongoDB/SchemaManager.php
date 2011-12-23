@@ -106,14 +106,21 @@ class SchemaManager
     {
         $indexes = $class->getIndexes();
         $newIndexes = array();
+        $discriminatorFieldName = ($class->discriminatorField !== null) ? $class->discriminatorField['name'] : null;
         foreach ($indexes as $index) {
             $newIndex = array(
                 'keys' => array(),
                 'options' => $index['options']
             );
             foreach ($index['keys'] as $key => $value) {
-                $mapping = $class->getFieldMapping($key);
-                $newIndex['keys'][$mapping['name']] = $value;
+                if ($key === $discriminatorFieldName) {
+                    //There's no mapping for the discriminator field,
+                    //but it's still a valid document field.
+                    $newIndex['keys'][$discriminatorFieldName] = $value;
+                } else {
+                    $mapping = $class->getFieldMapping($key);
+                    $newIndex['keys'][$mapping['name']] = $value;
+                }
             }
 
             $newIndexes[] = $newIndex;
