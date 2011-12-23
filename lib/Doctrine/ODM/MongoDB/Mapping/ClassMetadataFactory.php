@@ -425,6 +425,16 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
      */
     public function isTransient($className)
     {
+        if (!$this->initialized) {
+            $this->initialize();
+        }
+
+        // Check for namespace alias
+        if (strpos($className, ':') !== false) {
+            list($namespaceAlias, $simpleClassName) = explode(':', $className);
+            $className = $this->dm->getConfiguration()->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
+        }
+
         return $this->driver->isTransient($className);
     }
 }
