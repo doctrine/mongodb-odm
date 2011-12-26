@@ -2548,9 +2548,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function initializeObject($obj)
     {
-        if ($obj instanceof Proxy) {
-            $obj->__load();
-        } else if ($obj instanceof PersistentCollection) {
+        if ($obj instanceof PersistentCollection) {
             $obj->initialize();
         }
     }
