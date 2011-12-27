@@ -2735,10 +2735,10 @@ class UnitOfWork implements PropertyChangedListener
      *
      * Can handle object values whereas $array != $array2 cannot
      *
-     * @param $array1 first array to compare
-     * @param $array2 second array to compare to
+     * @param mixed $array1 first array to compare
+     * @param mixed $array2 second array to compare to
      *
-     * @return bool true arrays are equal, false arrays are different
+     * @return boolean true arrays are equal, false arrays are different
      */
     public function arrayEquals($array1, $array2)
     {
