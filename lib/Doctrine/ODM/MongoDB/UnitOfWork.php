@@ -2740,24 +2740,24 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return bool true arrays are equal, false arrays are different
      */
-    public function arrayEquals ($array1, $array2)
+    public function arrayEquals($array1, $array2)
     {
         if (count($array1) !== count($array2)) {
             return false;
         }
 
-        foreach ($array1 as $key=>$element) {
+        foreach ($array1 as $key => $element) {
             if (!array_key_exists($key, $array2)) {
                 return false;
-            }else if (is_object($element) || is_object($array2[$key])) {
+            } else if (is_object($element) || is_object($array2[$key])) {
                 if ($element !== $array2[$key]) {
                     return false;
                 }
-            } elseif (is_array($element)) {
-                if (! $this->arrayEquals($element, $array2[$key])) {
+            } else if (is_array($element)) {
+                if (!$this->arrayEquals($element, $array2[$key])) {
                     return false;
                 }
-            } elseif ($element != $array2[$key]) {
+            } else if ($element != $array2[$key]) {
                 return false;
             }
         }
