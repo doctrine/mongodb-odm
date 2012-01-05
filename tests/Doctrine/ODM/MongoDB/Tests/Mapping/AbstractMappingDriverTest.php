@@ -216,13 +216,13 @@ class User
 
     /**
      * @ODM\String
-     * @ODM\UniqueIndex(order="desc", dropDups="true")
+     * @ODM\UniqueIndex(order="desc", dropDups=true)
      */
     public $email;
 
     /**
      * @ODM\Int
-     * @ODM\UniqueIndex(order="desc", dropDups="true")
+     * @ODM\UniqueIndex(order="desc", dropDups=true)
      */
     public $mysqlProfileId;
 
