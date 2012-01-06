@@ -127,7 +127,9 @@ class QueryTest extends BaseTest
         $refId = '000000000000000000000001';
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
-        $qb->field('phonenumbers')->elemMatch($qb->expr()
+        $embeddedQb = $this->dm->createQueryBuilder('Documents\Phonenumber');
+
+        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()
             ->field('lastCalledBy.id')->equals($refId)
         );
         $query = $qb->getQuery();

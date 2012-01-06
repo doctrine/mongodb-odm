@@ -35,7 +35,9 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
-        $qb->field('phonenumbers')->elemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
+        $embeddedQb = $this->dm->createQueryBuilder('Documents\Phonenumber');
+
+        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('phonenumber')->equals('6155139185'));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertNotNull($user);
@@ -56,7 +58,9 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
-        $qb->field('phonenumbers')->elemMatch($qb->expr()->field('lastCalledBy.$id')->equals(new \MongoId($user1->getId())));
+        $embeddedQb = $this->dm->createQueryBuilder('Documents\Phonenumber');
+
+        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('lastCalledBy.$id')->equals(new \MongoId($user1->getId())));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertNotNull($user);
