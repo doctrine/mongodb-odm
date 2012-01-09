@@ -268,7 +268,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
         $this->__documentPersister__ = $documentPersister;
         $this->__identifier__ = $identifier;
     }
-    private function __load()
+    public function __load()
     {
         if (!$this->__isInitialized__ && $this->__documentPersister__) {
             $this->__isInitialized__ = true;
