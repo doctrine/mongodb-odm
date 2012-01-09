@@ -140,6 +140,25 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      * @depends testCustomFieldName
      * @param ClassMetadata $class
      */
+    public function testDiscriminator($class)
+    {
+        $this->assertTrue(isset($class->discriminatorField));
+        $this->assertTrue(isset($class->discriminatorMap));
+        $this->assertEquals(array(
+            'fieldName' => 'discr',
+            'name' => 'discr',
+        ), $class->discriminatorField);
+        $this->assertEquals(array(
+            'default' => 'Doctrine\ODM\MongoDB\Tests\Mapping\User',
+        ), $class->discriminatorMap);
+
+        return $class;
+    }
+
+    /**
+     * @depends testDiscriminator
+     * @param ClassMetadata $class
+     */
     public function testEmbedDiscriminator($class)
     {
         $this->assertTrue(isset($class->fieldMappings['otherPhonenumbers']['discriminatorField']));
@@ -200,7 +219,11 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     }
 }
 
-/** @ODM\Document(collection="cms_users") */
+/**
+ * @ODM\Document(collection="cms_users")
+ * @ODM\DiscriminatorField(fieldName="discr")
+ * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\User"})
+ */
 class User
 {
     /**
@@ -274,6 +297,12 @@ class User
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
+        $metadata->setDiscriminatorField(array(
+            'fieldName' => 'discr',
+        ));
+        $metadata->setDiscriminatorMap(array(
+            'default' => __CLASS__,
+        ));
         $metadata->mapField(array(
            'id' => true,
            'fieldName' => 'id',
