@@ -145,7 +145,7 @@ class AnnotationDriver implements Driver
             } elseif ($annot instanceof ODM\InheritanceType) {
                 $class->setInheritanceType(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::INHERITANCE_TYPE_'.$annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
-                $class->setDiscriminatorField(array('fieldName' => $annot->fieldName));
+                $class->setDiscriminatorField(array('fieldName' => $annot->fieldName, 'name' => $annot->name));
             } elseif ($annot instanceof ODM\DiscriminatorMap) {
                 $class->setDiscriminatorMap($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
