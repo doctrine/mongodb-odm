@@ -4,7 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-class UniqueIndexTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function uniqueTest($class)
     {
@@ -42,6 +42,23 @@ class UniqueIndexTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
         $this->assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
+    }
+
+    public function testDiscriminatorIndexes()
+    {
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\DocumentWithDiscriminatorIndex');
+        $sm = $this->dm->getSchemaManager();
+        $indexes = $sm->getDocumentIndexes($class->name);
+
+        $this->assertTrue(isset($indexes[0]['keys']['type']));
+        $this->assertEquals(1, $indexes[0]['keys']['type']);
+
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\DocumentWithRenamedDiscriminatorIndex');
+        $sm = $this->dm->getSchemaManager();
+        $indexes = $sm->getDocumentIndexes($class->name);
+
+        $this->assertTrue(isset($indexes[0]['keys']['typeMongo']));
+        $this->assertEquals(1, $indexes[0]['keys']['typeMongo']);
     }
 
     public function testIndexDefinitions()
@@ -208,6 +225,32 @@ class DocumentWithEmbeddedIndexes
 
     /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
     public $embedded;
+}
+
+/**
+ * @ODM\Document
+ * @ODM\DiscriminatorField(fieldName="type")
+ */
+class DocumentWithDiscriminatorIndex
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** ODM\String @ODM\Index */
+    public $type;
+}
+
+/**
+ * @ODM\Document
+ * @ODM\DiscriminatorField(fieldName="typeMongo",name="typePhp")
+ */
+class DocumentWithRenamedDiscriminatorIndex
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** ODM\String @ODM\Index */
+    public $typePhp;
 }
 
 /** @ODM\EmbeddedDocument */
