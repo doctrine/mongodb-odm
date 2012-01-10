@@ -76,7 +76,7 @@ class XmlDriver extends AbstractFileDriver
         if (isset($xmlRoot->{'discriminator-field'})) {
             $discrField = $xmlRoot->{'discriminator-field'};
             $class->setDiscriminatorField(array(
-                'name' => (string) $discrField['name'],
+                'name' => isset($discrField['name']) ? (string) $discrField['name'] : null,
                 'fieldName' => (string) $discrField['fieldName'],
             ));
         }

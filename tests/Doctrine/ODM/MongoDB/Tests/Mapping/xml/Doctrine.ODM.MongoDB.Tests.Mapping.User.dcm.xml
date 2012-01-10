@@ -6,6 +6,10 @@
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="Doctrine\ODM\MongoDB\Tests\Mapping\User" collection="cms_users">
+        <discriminator-field fieldName="discr" />
+        <discriminator-map>
+            <discriminator-mapping value="default" class="Doctrine\ODM\MongoDB\Tests\Mapping\User" />
+        </discriminator-map>
         <field fieldName="id" id="true" />
         <field fieldName="name" name="username" type="string" />
         <field fieldName="email" type="string" unique="true" drop-dups="true" order="desc" />
