@@ -1829,8 +1829,11 @@ class UnitOfWork implements PropertyChangedListener
                         if ( ! $mergeCol instanceof PersistentCollection) {
                             $mergeCol = new PersistentCollection($mergeCol, $this->dm, $this, $this->cmd);
                             $mergeCol->setInitialized(true);
+                        } else {
+                            $mergeCol->setDocumentManager($this->dm);
                         }
                         $mergeCol->setOwner($managedCopy, $assoc2);
+                        $mergeCol->setDirty(true); // mark for dirty checking
                         $prop->setValue($managedCopy, $mergeCol);
                     }
                 }
