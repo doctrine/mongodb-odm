@@ -104,6 +104,17 @@ class PersistentCollection implements BaseCollection
     }
 
     /**
+     * Sets the document manager and unit of work (used during merge operations).
+     *
+     * @param type $dm 
+     */
+    public function setDocumentManager(DocumentManager $dm)
+    {
+        $this->dm = $dm;
+        $this->uow = $dm->getUnitOfWork();
+    }
+
+    /**
      * Sets the array of raw mongo data that will be used to initialize this collection.
      *
      * @param array $mongoData
