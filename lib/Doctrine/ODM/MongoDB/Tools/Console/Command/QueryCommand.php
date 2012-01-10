@@ -83,7 +83,7 @@ EOT
     {
         $dm = $this->getHelper('dm')->getDocumentManager();
         $query = json_decode($input->getArgument('query'));
-        $cursor = $dm->getRepository($input->getArgument('class'))->findAll((array) $query);
+        $cursor = $dm->getRepository($input->getArgument('class'))->findBy((array) $query);
         $cursor->hydrate((bool) $input->getOption('hydrate'));
 
         $depth = $input->getOption('depth');
