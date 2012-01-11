@@ -118,7 +118,7 @@ You can provide your mapping information in Annotations, XML, or YAML:
                 <field fieldName="email" type="string" />
                 <reference-many fieldName="posts" targetDocument="Documents\BlogPost">
                     <cascade>
-                        <cascade-all/>
+                        <all/>
                     </cascade>
                 </reference-many>
           </document>
