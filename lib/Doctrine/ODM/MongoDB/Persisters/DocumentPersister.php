@@ -536,7 +536,10 @@ class DocumentPersister
                 $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
                 $mongoId = $reference[$cmd . 'id'];
             }
-            $id = (string) $mongoId;
+            if (!is_int($mongoId)) {
+                $mongoId = (string) $mongoId;
+            }
+            
             $reference = $this->dm->getReference($className, $id);
             if ($mapping['strategy'] === 'set') {
                 $collection->set($key, $reference);
