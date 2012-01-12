@@ -539,6 +539,7 @@ class DocumentPersister
             if (!is_int($mongoId)) {
                 $mongoId = (string) $mongoId;
             }
+            $id = $mongoId;
             
             $reference = $this->dm->getReference($className, $id);
             if ($mapping['strategy'] === 'set') {
