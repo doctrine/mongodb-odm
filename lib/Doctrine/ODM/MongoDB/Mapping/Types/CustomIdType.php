@@ -33,7 +33,7 @@ class CustomIdType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? $value : null;
+        return $value !== null ? (int)$value : null;
     }
 
     public function convertToPHPValue($value)
