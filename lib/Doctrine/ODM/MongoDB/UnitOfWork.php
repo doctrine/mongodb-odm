@@ -677,7 +677,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
-        $isNewParentDocument = in_array($parentDocument,$this->documentInsertions,true);
+        $isNewParentDocument = in_array($parentDocument,$this->documentInsertions, true);
         $class = $this->dm->getClassMetadata(get_class($parentDocument));
         $topOrExistingDocument = (!$isNewParentDocument || !$class->isEmbeddedDocument);
 
@@ -719,14 +719,12 @@ class UnitOfWork implements PropertyChangedListener
                 }
                 $this->persistNew($targetClass, $entry);
                 $this->setParentAssociation($entry, $mapping, $parentDocument, $path);
-                if ($topOrExistingDocument)
-                {
+                if ($topOrExistingDocument) {
                     $this->computeChangeSet($targetClass, $entry);
                 }
             } else if ($state == self::STATE_MANAGED && $targetClass->isEmbeddedDocument) {
                 $this->setParentAssociation($entry, $mapping, $parentDocument, $path);
-                if ($topOrExistingDocument)
-                {
+                if ($topOrExistingDocument) {
                     $this->computeChangeSet($targetClass, $entry);
                 }
             } else if ($state == self::STATE_REMOVED) {
