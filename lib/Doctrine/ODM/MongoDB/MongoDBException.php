@@ -170,4 +170,9 @@ class MongoDBException extends \Exception
         return new self("No identifier/primary key specified for Document '$documentName'."
                 . " Every Document must have an identifier/primary key.");
     }
+
+    public static function missingIdentifierField($className, $fieldName)
+    {
+        return new self("The identifier $fieldName is missing for a query of " . $className);
+    }
 }

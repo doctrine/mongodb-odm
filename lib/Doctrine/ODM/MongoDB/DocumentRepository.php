@@ -101,6 +101,16 @@ class DocumentRepository implements ObjectRepository
      */
     public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
+        if (is_array($id)) {
+            list($identifierFieldName) = $this->class->getIdentifierFieldNames();
+
+            if (!isset($id[$identifierFieldName])) {
+                throw MongoDBException::missingIdentifierField($this->documentName, $identifierFieldName);
+            }
+
+            $id = $id[$identifierFieldName];
+        }
+
         // Check identity map first
         if ($document = $this->uow->tryGetById($id, $this->class->rootDocumentName)) {
             if ($lockMode != LockMode::NONE) {
@@ -109,8 +119,6 @@ class DocumentRepository implements ObjectRepository
 
             return $document; // Hit!
         }
-
-        $id = array('_id' => $id);
 
         if ($lockMode == LockMode::NONE) {
             return $this->uow->getDocumentPersister($this->documentName)->load($id);
