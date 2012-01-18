@@ -578,11 +578,11 @@ class UnitOfWork implements PropertyChangedListener
                 } else if (isset($class->fieldMappings[$propName]['file'])) {
                     if ($orgValue !== $actualValue || $actualValue->isDirty()) {
                         $changeSet[$propName] = array($orgValue, $actualValue);
-                    } //*
+                    }
                 } else if ($orgValue instanceof \DateTime) {
-                	if ($orgValue != $actualValue) {
-                		$changeSet[$propName] = array($orgValue, $actualValue);
-                	} //*/
+                    if ($orgValue != $actualValue) {
+                        $changeSet[$propName] = array($orgValue, $actualValue);
+                    }
                 } else if (is_object($orgValue) && $orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
