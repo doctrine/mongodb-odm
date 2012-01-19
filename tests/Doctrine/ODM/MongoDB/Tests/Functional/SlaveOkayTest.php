@@ -26,6 +26,19 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->clear();
 
+        $users = $this->dm->getRepository('Documents\User')
+            ->createQueryBuilder()
+            ->getQuery()
+            ->execute();
+
+        $this->assertEquals(array(), $users->getHints());
+
+        $users = array_values($users->toArray());
+        $user = $users[0];
+        $this->assertEquals(array(), $user->getGroups()->getHints());
+
+        $this->dm->clear();
+
         $user = $this->dm->getRepository('Documents\User')
             ->createQueryBuilder()
             ->slaveOkay(true)
@@ -33,5 +46,30 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getSingleResult();
 
         $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $user->getGroups()->getHints());
+
+        $this->dm->clear();
+
+        $users = $this->dm->getRepository('Documents\User')
+            ->createQueryBuilder()
+            ->getQuery()
+            ->execute()
+            ->slaveOkay(true);
+
+        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $users->getHints());
+
+        $users = array_values($users->toArray());
+        $user = $users[0];
+        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $user->getGroups()->getHints());
+
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')
+            ->createQueryBuilder()
+            ->getQuery()
+            ->getSingleResult();
+
+        $groups = $user->getGroups();
+        $groups->setHints(array(Query::HINT_SLAVE_OKAY => true));
+        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $groups->getHints());
     }
 }

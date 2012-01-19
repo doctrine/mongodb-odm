@@ -179,7 +179,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
             $cursor = new Cursor($mongoCursor, $this->dm->getUnitOfWork(), $this->class);
         }
         $cursor->hydrate($this->hydrate);
-        $cursor->refresh($this->refresh);
         $cursor->setHints($hints);
 
         return $cursor;

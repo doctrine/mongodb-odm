@@ -89,6 +89,16 @@ class Cursor extends \Doctrine\MongoDB\Cursor
         $this->hints = $hints;
     }
 
+    /**
+     * Get hints to account for during reconstitution/lookup of the documents.
+     *
+     * @return array $hints
+     */
+    public function getHints()
+    {
+        return $this->hints;
+    }
+
     /** @override */
     public function current()
     {
@@ -133,6 +143,18 @@ class Cursor extends \Doctrine\MongoDB\Cursor
         } else {
             unset($this->hints[Query::HINT_REFRESH]);
         }
+        return $this;
+    }
+
+    /** @override */
+    public function slaveOkay($okay = true)
+    {
+        if ($okay) {
+            $this->hints[Query::HINT_SLAVE_OKAY] = true;
+        } else {
+            unset($this->hints[Query::HINT_SLAVE_OKAY]);
+        }
+        parent::slaveOkay($okay);
         return $this;
     }
 }
