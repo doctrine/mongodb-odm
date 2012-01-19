@@ -645,7 +645,7 @@ class DocumentPersister
      */
     public function prepareQuery($query)
     {
-        if (is_scalar($query)) {
+        if (is_scalar($query) || $query instanceof \MongoId) {
             $query = array('_id' => $query);
         }
         if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
