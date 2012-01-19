@@ -79,6 +79,16 @@ class Cursor extends \Doctrine\MongoDB\Cursor
         $this->class = $class;
     }
 
+    /**
+     * Set hints to account for during reconstitution/lookup of the documents.
+     *
+     * @param array $hints
+     */
+    public function setHints(array $hints)
+    {
+        $this->hints = $hints;
+    }
+
     /** @override */
     public function current()
     {

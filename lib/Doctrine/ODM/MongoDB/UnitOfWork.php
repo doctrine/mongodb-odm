@@ -2289,7 +2289,7 @@ class UnitOfWork implements PropertyChangedListener
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
             }
             if ($overrideLocalValues) {
-                $data = $this->hydratorFactory->hydrate($document, $data);
+                $data = $this->hydratorFactory->hydrate($document, $data, $hints);
                 $this->originalDocumentData[$oid] = $data;
             }
         } else {
@@ -2298,7 +2298,7 @@ class UnitOfWork implements PropertyChangedListener
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
             $this->identityMap[$class->rootDocumentName][$id] = $document;
-            $data = $this->hydratorFactory->hydrate($document, $data);
+            $data = $this->hydratorFactory->hydrate($document, $data, $hints);
             $this->originalDocumentData[$oid] = $data;
         }
         return $document;

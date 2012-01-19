@@ -524,6 +524,7 @@ class DocumentPersister
 
     private function loadReferenceManyCollectionOwningSide(PersistentCollection $collection)
     {
+        $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $cmd = $this->cmd;
         $groupedIds = array();
@@ -567,7 +568,11 @@ class DocumentPersister
             if (isset($mapping['skip'])) {
                 $cursor->skip($mapping['skip']);
             }
-            foreach ($cursor as $documentData) {
+            if (isset($hints[Query::HINT_SLAVE_OKAY])) {
+                $cursor->slaveOkay(true);
+            }
+            $documents = $cursor->toArray();
+            foreach ($documents as $documentData) {
                 $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
@@ -578,6 +583,7 @@ class DocumentPersister
 
     private function loadReferenceManyCollectionInverseSide(PersistentCollection $collection)
     {
+        $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
@@ -600,9 +606,11 @@ class DocumentPersister
         if (isset($mapping['skip'])) {
             $qb->skip($mapping['skip']);
         }
-        $query = $qb->getQuery();
-        $cursor = $query->execute();
-        foreach ($cursor as $document) {
+        if (isset($hints[Query::HINT_SLAVE_OKAY])) {
+            $qb->slaveOkay(true);
+        }
+        $documents = $qb->getQuery()->execute()->toArray();
+        foreach ($documents as $document) {
             $collection->add($document);
         }
     }
@@ -620,7 +628,11 @@ class DocumentPersister
         if ($mapping['skip']) {
             $cursor->skip($mapping['skip']);
         }
-        foreach ($cursor as $document) {
+        if (isset($hints[Query::HINT_SLAVE_OKAY])) {
+            $cursor->slaveOkay(true);
+        }
+        $documents = $cursor->toArray();
+        foreach ($documents as $document) {
             $collection->add($document);
         }
     }
