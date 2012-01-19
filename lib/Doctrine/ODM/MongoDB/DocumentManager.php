@@ -377,8 +377,11 @@ class DocumentManager implements ObjectManager
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
+
         $this->errorIfClosed();
         $this->unitOfWork->persist($document);
+
+        return $this;
     }
 
     /**
@@ -394,8 +397,11 @@ class DocumentManager implements ObjectManager
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
+
         $this->errorIfClosed();
         $this->unitOfWork->remove($document);
+
+        return $this;
     }
 
     /**
@@ -409,8 +415,11 @@ class DocumentManager implements ObjectManager
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
+
         $this->errorIfClosed();
         $this->unitOfWork->refresh($document);
+
+        return $this;
     }
 
     /**
@@ -427,7 +436,10 @@ class DocumentManager implements ObjectManager
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
+
         $this->unitOfWork->detach($document);
+
+        return $this;
     }
 
     /**
@@ -508,6 +520,8 @@ class DocumentManager implements ObjectManager
     {
         $this->errorIfClosed();
         $this->unitOfWork->commit($options);
+
+        return $this;
     }
 
     /**
@@ -600,6 +614,8 @@ class DocumentManager implements ObjectManager
             //TODO
             throw new MongoDBException("DocumentManager#clear(\$documentName) not yet implemented.");
         }
+
+        return $this;
     }
 
     /**

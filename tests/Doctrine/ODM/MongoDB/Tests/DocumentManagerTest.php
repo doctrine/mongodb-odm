@@ -66,6 +66,21 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNull($user->getName());
     }
 
+    public function testFluentInterface()
+    {
+        $document = new \Documents\CmsUser();
+
+        $this->assertSame($this->dm, $this->dm->persist($document));
+        $this->assertSame($this->dm, $this->dm->flush());
+
+        $this->assertSame($this->dm, $this->dm->refresh($document));
+        $this->assertSame($this->dm, $this->dm->detach($document));
+
+        $this->assertSame($this->dm, $this->dm->remove($document));
+        $this->assertSame($this->dm, $this->dm->clear());
+
+    }
+
     static public function dataMethodsAffectedByNoObjectArguments()
     {
         return array(
