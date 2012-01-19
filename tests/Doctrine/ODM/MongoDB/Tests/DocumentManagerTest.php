@@ -70,14 +70,14 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $document = new \Documents\CmsUser();
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\DocumentManager', $this->dm->persist($document));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\DocumentManager', $this->dm->flush());
+        $this->assertSame($this->dm, $this->dm->persist($document));
+        $this->assertSame($this->dm, $this->dm->flush());
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\DocumentManager', $this->dm->refresh($document));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\DocumentManager', $this->dm->detach($document));
+        $this->assertSame($this->dm, $this->dm->refresh($document));
+        $this->assertSame($this->dm, $this->dm->detach($document));
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\DocumentManager', $this->dm->remove($document));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\DocumentManager', $this->dm->clear());
+        $this->assertSame($this->dm, $this->dm->remove($document));
+        $this->assertSame($this->dm, $this->dm->clear());
 
     }
 
