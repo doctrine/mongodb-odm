@@ -26,7 +26,8 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->uow = $this->dm->getUnitOfWork();
     }
 
-    protected function tearDown() {
+    protected function tearDown()
+    {
         unset($this->dm, $this->uow);
     }
 

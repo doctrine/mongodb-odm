@@ -33,7 +33,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $city->coordinates->longitude = 30;
 
         $this->dm->persist($city);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
         $this->dm->clear();
 
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
@@ -71,7 +71,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $city->coordinates->longitude = -118.8713314;
 
         $this->dm->persist($city);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
         $this->dm->clear();
 
         $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
@@ -93,7 +93,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $city->coordinates->longitude = 73.992964;
 
         $this->dm->persist($city);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
         $this->dm->clear();
 
         $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
@@ -121,7 +121,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $city->coordinates->longitude = 30;
 
         $this->dm->persist($city);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
         $this->dm->clear();
 
         $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')

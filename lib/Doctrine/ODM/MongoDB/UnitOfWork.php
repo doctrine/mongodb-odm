@@ -365,12 +365,17 @@ class UnitOfWork implements PropertyChangedListener
      * 2) All document updates
      * 3) All document deletions
      *
+     * @param object $document
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
      */
-    public function commit(array $options = array())
+    public function commit($document = null, array $options = array())
     {
         // Compute changes done since last commit.
-        $this->computeChangeSets();
+        if ($document === null) {
+            $this->computeChangeSets();
+        } else {
+            $this->computeSingleDocumentChangeSet($document);
+        }
 
         if ( ! ($this->documentInsertions ||
                 $this->documentUpserts ||
@@ -451,6 +456,58 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
         $this->orphanRemovals = array();
+    }
+
+    /**
+     * Compute the changesets of all documents scheduled for insertion
+     *
+     * @return void
+     */
+    private function computeScheduleInsertsChangeSets()
+    {
+        foreach ($this->documentInsertions as $document) {
+            $class = $this->dm->getClassMetadata(get_class($document));
+
+            $this->computeChangeSet($class, $document);
+        }
+    }
+
+    /**
+     * Only flush the given document according to a ruleset that keeps the UoW consistent.
+     *
+     * 1. All documents scheduled for insertion, (orphan) removals and changes in collections are processed as well!
+     * 2. Proxies are skipped.
+     * 3. Only if document is properly managed.
+     *
+     * @param  object $document
+     * @return void
+     */
+    private function computeSingleDocumentChangeSet($document)
+    {
+        if ( ! $this->isInIdentityMap($document) ) {
+            throw new \InvalidArgumentException("Document has to be managed for single computation " . self::objToStr($document));
+        }
+
+        $class = $this->dm->getClassMetadata(get_class($document));
+
+        if ($class->isChangeTrackingDeferredImplicit()) {
+            $this->persist($document);
+        }
+
+        // Compute changes for INSERTed documents first. This must always happen even in this case.
+        $this->computeScheduleInsertsChangeSets();
+
+        // Ignore uninitialized proxy objects
+        if ($document instanceof Proxy && ! $document->__isInitialized__) {
+            return;
+        }
+
+        // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION are processed here.
+        $oid = spl_object_hash($document);
+
+        if ( ! isset($this->documentInsertions[$oid]) && isset($this->documentStates[$oid])) {
+            $this->computeChangeSet($class, $document);
+        }
     }
 
     /**
@@ -639,11 +696,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function computeChangeSets()
     {
-        // Compute changes for INSERTed documents first. This must always happen.
-        foreach ($this->documentInsertions as $document) {
-            $class = $this->dm->getClassMetadata(get_class($document));
-            $this->computeChangeSet($class, $document);
-        }
+        $this->computeScheduleInsertsChangeSets();
 
         // Compute changes for other MANAGED documents. Change tracking policies take effect here.
         foreach ($this->identityMap as $className => $documents) {
@@ -1249,7 +1302,7 @@ class UnitOfWork implements PropertyChangedListener
      * Schedules an extra update that will be executed immediately after the
      * regular entity updates within the currently running commit cycle.
      *
-     * Extra updates for entities are stored as (entity, changeset) tuples.
+     * Extra updates for documents are stored as (entity, changeset) tuples.
      *
      * @ignore
      * @param object $document The entity for which to schedule an extra update.

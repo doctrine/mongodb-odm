@@ -19,7 +19,7 @@ class MODM48Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $a->getB()->setVal('test');
 
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
         $this->dm->clear();
 
         $a = $this->dm->find(__NAMESPACE__.'\MODM48A', $a->id);
