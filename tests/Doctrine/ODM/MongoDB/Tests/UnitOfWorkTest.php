@@ -232,6 +232,8 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $d = new ParentAssociationTest('c');
 
         $documentManager = $this->getDocumentManager();
+        $documentManager->setClassMetadata('Doctrine\ODM\MongoDB\Tests\ParentAssociationTest', $this->getClassMetadata('Doctrine\ODM\MongoDB\Tests\ParentAssociationTest', 'Document'));
+
         $unitOfWork = $this->getUnitOfWork($documentManager);
         $unitOfWork->setParentAssociation($b, array('name' => 'b'), $a, 'b');
         $unitOfWork->setParentAssociation($c, array('name' => 'c'), $b, 'b.c');
