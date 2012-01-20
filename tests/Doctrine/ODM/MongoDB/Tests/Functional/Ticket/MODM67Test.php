@@ -32,7 +32,7 @@ class MODM67Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $testDoc->embedOne = new MODM67EmbeddedObject();
 
         $dm->persist($testDoc);
-        $dm->flush(array('safe' => true));
+        $dm->flush(null, array('safe' => true));
 
         $this->assertTrue($testDoc->embedOne->prePersist);
         $this->assertTrue($testDoc->embedOne->postPersist);
@@ -44,7 +44,7 @@ class MODM67Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $testDoc = $dm->find(__NAMESPACE__ . '\MODM67DerivedClass', $testDoc->id);
         $testDoc->embedOne->numAccesses = 1;
-        $dm->flush(array('safe' => true));
+        $dm->flush(null, array('safe' => true));
 
         $this->assertTrue($testDoc->embedOne->preUpdate);
         $this->assertTrue($testDoc->embedOne->postUpdate);

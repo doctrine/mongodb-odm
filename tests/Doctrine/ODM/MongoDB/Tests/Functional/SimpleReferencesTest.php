@@ -24,7 +24,7 @@ class SimpleReferencesTest extends BaseTest
         $this->test->addUser($this->user);
         $this->dm->persist($this->test);
         $this->dm->persist($this->user);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
         $this->dm->clear();
     }
 
