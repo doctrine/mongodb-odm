@@ -72,6 +72,37 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
 
+    public function testPrepareUpsertData()
+    {
+        $article = new CmsArticle();
+        $article->title = 'persistence builder test';
+        $this->dm->persist($article);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $article = $this->dm->find(get_class($article), $article->id);
+        $comment = new CmsComment();
+        $comment->topic = 'test';
+        $comment->text = 'text';
+        $comment->article = $article;
+
+        $this->dm->persist($comment);
+        $this->uow->computeChangeSets();
+
+        $expectedData = array(
+            '$set' => array(
+                'topic' => 'test',
+                'text' => 'text',
+                'article' => array(
+                    '$db' => 'doctrine_odm_tests',
+                    '$id' => new \MongoId($article->id),
+                    '$ref' => 'CmsArticle'
+                )
+            )
+        );
+        $this->assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
+    }
+
     /**
      * @dataProvider getDocumentsAndExpectedData
      */
