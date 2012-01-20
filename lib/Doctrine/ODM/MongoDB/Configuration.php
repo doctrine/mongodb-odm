@@ -311,4 +311,25 @@ class Configuration extends \Doctrine\MongoDB\Configuration
         }
         return $this->_attributes['classMetadataFactoryName'];
     }
+
+    /**
+     * Gets array of default commit options.
+     *
+     * @return boolean
+     */
+    public function getDefaultCommitOptions()
+    {
+        return isset($this->attributes['defaultCommitOptions']) ?
+            $this->attributes['defaultCommitOptions'] : array('safe' => true);
+    }
+
+    /**
+     * Sets array of default commit options.
+     *
+     * @param boolean $defaultCommitOptions
+     */
+    public function setDefaultCommitOptions($defaultCommitOptions)
+    {
+        $this->attributes['defaultCommitOptions'] = $defaultCommitOptions;
+    }
 }

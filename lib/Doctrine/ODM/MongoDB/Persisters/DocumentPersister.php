@@ -302,6 +302,7 @@ class DocumentPersister
                 }
             }
 
+            unset($update[$this->cmd.'set']['_id']);
             $result = $this->collection->update($query, $update, $options);
 
             if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
