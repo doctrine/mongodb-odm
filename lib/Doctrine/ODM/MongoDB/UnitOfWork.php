@@ -143,6 +143,13 @@ class UnitOfWork implements PropertyChangedListener
     private $documentUpdates = array();
 
     /**
+     * A list of all pending document upserts.
+     *
+     * @var array
+     */
+    private $documentUpserts = array();
+
+    /**
      * Any pending extra updates that have been scheduled by persisters.
      *
      * @var array
@@ -366,6 +373,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->computeChangeSets();
 
         if ( ! ($this->documentInsertions ||
+                $this->documentUpserts ||
                 $this->documentDeletions ||
                 $this->documentUpdates ||
                 $this->collectionUpdates ||
@@ -433,6 +441,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Clear up
         $this->documentInsertions =
+        $this->documentUpserts =
         $this->documentUpdates =
         $this->documentDeletions =
         $this->extraUpdates =
@@ -500,7 +509,7 @@ class UnitOfWork implements PropertyChangedListener
                 $coll->setDirty( ! $value->isEmpty());
                 $class->reflFields[$name]->setValue($document, $coll);
                 $actualData[$name] = $coll;
-            } else if ( ! $class->isIdentifier($name) || $class->isIdGeneratorNone()) {
+            } else {
                 $actualData[$name] = $value;
             }
         }
@@ -808,7 +817,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->documentStates[$oid] = self::STATE_MANAGED;
 
-        $this->scheduleForInsert($document);
+        $this->scheduleForInsert($class, $document);
     }
 
     /**
@@ -1098,6 +1107,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($documentChangeSet === null) {
             $documentChangeSet = array_merge(
                 $this->documentInsertions,
+                $this->documentUpserts,
                 $this->documentUpdates,
                 $this->documentDeletions
             );
@@ -1166,7 +1176,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $document The document to schedule for insertion.
      */
-    public function scheduleForInsert($document)
+    public function scheduleForInsert($class, $document)
     {
         $oid = spl_object_hash($document);
 
@@ -1182,6 +1192,11 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->documentInsertions[$oid] = $document;
 
+        if (!$class->isEmbeddedDocument && $idValue = $class->getIdentifierValue($document)) {
+            $this->documentUpserts[$oid] = $document;
+            $this->documentIdentifiers[$oid] = $idValue;
+        }
+
         if (isset($this->documentIdentifiers[$oid])) {
             $this->addToIdentityMap($document);
         }
@@ -1196,6 +1211,17 @@ class UnitOfWork implements PropertyChangedListener
     public function isScheduledForInsert($document)
     {
         return isset($this->documentInsertions[spl_object_hash($document)]);
+    }
+
+    /**
+     * Checks whether an document is scheduled for upsert.
+     *
+     * @param object $document
+     * @return boolean
+     */
+    public function isScheduledForUpsert($document)
+    {
+        return isset($this->documentUpserts[spl_object_hash($document)]);
     }
 
     /**
@@ -1577,7 +1603,7 @@ class UnitOfWork implements PropertyChangedListener
                         unset($this->documentDeletions[$oid]);
                     } else {
                         //FIXME: There's more to think of here...
-                        $this->scheduleForInsert($document);
+                        $this->scheduleForInsert($class, $document);
                     }
                     break;
                 }
