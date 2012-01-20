@@ -502,12 +502,13 @@ class DocumentManager implements ObjectManager
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
      *
+     * @param object $document
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
      */
-    public function flush(array $options = array())
+    public function flush($document = null, array $options = array())
     {
         $this->errorIfClosed();
-        $this->unitOfWork->commit($options);
+        $this->unitOfWork->commit($document, $options);
     }
 
     /**

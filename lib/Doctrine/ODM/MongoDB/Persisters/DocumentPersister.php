@@ -197,10 +197,13 @@ class DocumentPersister
 
         $postInsertIds = array();
         $inserts = array();
+        $upserts = array();
         foreach ($this->queuedInserts as $oid => $document) {
-            $data = $this->pb->prepareInsertData($document);
-            if ( ! $data) {
-                continue;
+            $upsert = $this->uow->isScheduledForUpsert($document);
+            if ($upsert) {
+                $data = $this->pb->prepareUpsertData($document);
+            } else {
+                $data = $this->pb->prepareInsertData($document);
             }
 
             // Set the initial version for each insert
@@ -217,17 +220,35 @@ class DocumentPersister
                 }
             }
 
-            $inserts[$oid] = $data;
+            if ($upsert) {
+                $upserts[$oid] = $data;
+            } else {
+                $inserts[$oid] = $data;
+            }
         }
-        if (empty($inserts)) {
-            return;
-        }
-        $this->collection->batchInsert($inserts, $options);
+        if ($inserts) {
+            $this->collection->batchInsert($inserts, $options);
 
-        foreach ($inserts as $oid => $data) {
-            $document = $this->queuedInserts[$oid];
-            $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
+            foreach ($inserts as $oid => $data) {
+                $document = $this->queuedInserts[$oid];
+                $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
+            }
         }
+
+        if ($upserts) {
+            $upsertOptions = $options;
+            $upsertOptions['upsert'] = true;
+            foreach ($upserts as $oid => $data) {
+                $criteria = array('_id' => $data[$this->cmd.'set']['_id']);
+                unset($data[$this->cmd.'set']['_id']);
+                // stupid php
+                if (empty($data[$this->cmd.'set'])) {
+                    $data[$this->cmd.'set'] = new \stdClass;
+                }
+                $this->collection->update($criteria, $data, $upsertOptions);
+            }
+        }
+
         $this->queuedInserts = array();
 
         return $postInsertIds;
@@ -526,6 +547,7 @@ class DocumentPersister
     {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
+        $owner = $collection->getOwner();
         $cmd = $this->cmd;
         $groupedIds = array();
 
@@ -539,6 +561,7 @@ class DocumentPersister
             }
             $id = (string) $mongoId;
             $reference = $this->dm->getReference($className, $id);
+            $this->uow->setParentAssociation($reference, $mapping, $owner, $mapping['name'].'.'.$key);
             if ($mapping['strategy'] === 'set') {
                 $collection->set($key, $reference);
             } else {
@@ -610,14 +633,18 @@ class DocumentPersister
             $qb->slaveOkay(true);
         }
         $documents = $qb->getQuery()->execute()->toArray();
+        $count = 0;
         foreach ($documents as $document) {
+            $count++;
             $collection->add($document);
+            $this->uow->setParentAssociation($document, $mapping, $owner, $mapping['name'].'.'.$count);
         }
     }
 
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
     {
         $mapping = $collection->getMapping();
+        $owner = $collection->getOwner();
         $cursor = $this->dm->getRepository($mapping['targetDocument'])->$mapping['repositoryMethod']($collection->getOwner());
         if ($mapping['sort']) {
             $cursor->sort($mapping['sort']);
@@ -632,8 +659,11 @@ class DocumentPersister
             $cursor->slaveOkay(true);
         }
         $documents = $cursor->toArray();
+        $count = 0;
         foreach ($documents as $document) {
+            $count++;
             $collection->add($document);
+            $this->uow->setParentAssociation($document, $mapping, $owner, $mapping['name'].'.'.$count);
         }
     }
 

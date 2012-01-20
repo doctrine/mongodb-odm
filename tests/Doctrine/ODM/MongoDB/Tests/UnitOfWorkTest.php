@@ -26,8 +26,30 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->uow = $this->dm->getUnitOfWork();
     }
 
-    protected function tearDown() {
+    protected function tearDown()
+    {
         unset($this->dm, $this->uow);
+    }
+
+    public function testScheduleForInsert()
+    {
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
+        $user = new ForumUser();
+        $this->assertFalse($this->uow->isScheduledForInsert($user));
+        $this->uow->scheduleForInsert($class, $user);
+        $this->assertTrue($this->uow->isScheduledForInsert($user));
+    }
+
+    public function testScheduleForInsertUpsert()
+    {
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
+        $user = new ForumUser();
+        $user->id = 1;
+        $this->assertFalse($this->uow->isScheduledForInsert($user));
+        $this->assertFalse($this->uow->isScheduledForUpsert($user));
+        $this->uow->scheduleForInsert($class, $user);
+        $this->assertTrue($this->uow->isScheduledForInsert($user));
+        $this->assertTrue($this->uow->isScheduledForUpsert($user));
     }
 
     public function testRegisterRemovedOnNewEntityIsIgnored()
@@ -210,6 +232,8 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $d = new ParentAssociationTest('c');
 
         $documentManager = $this->getDocumentManager();
+        $documentManager->setClassMetadata('Doctrine\ODM\MongoDB\Tests\ParentAssociationTest', $this->getClassMetadata('Doctrine\ODM\MongoDB\Tests\ParentAssociationTest', 'Document'));
+
         $unitOfWork = $this->getUnitOfWork($documentManager);
         $unitOfWork->setParentAssociation($b, array('name' => 'b'), $a, 'b');
         $unitOfWork->setParentAssociation($c, array('name' => 'c'), $b, 'b.c');

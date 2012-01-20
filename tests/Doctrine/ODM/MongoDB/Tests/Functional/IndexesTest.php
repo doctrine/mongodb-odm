@@ -15,20 +15,20 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test->username = 'jwage';
         $test->email = 'jonwage@gmail.com';
         $this->dm->persist($test);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
         $this->dm->clear();
 
         $test = new $class();
         $test->username = 'jwage';
         $test->email = 'jonathan.wage@sensio.com';
         $this->dm->persist($test);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
 
         $test = new $class();
         $test->username = 'jwage';
         $test->email = 'jonathan.wage@sensio.com';
         $this->dm->persist($test);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
     }
 
     public function testEmbeddedIndexes()
