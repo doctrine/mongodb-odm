@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\MongoDB\Loggable;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
@@ -55,7 +56,7 @@ class LoggableCursor extends Cursor implements Loggable
      */
     protected $fields = array();
 
-    public function __construct(\MongoCursor $mongoCursor, UnitOfWork $uow, ClassMetadata $class, $loggerCallable, array $query, array $fields)
+    public function __construct(BaseCursor $mongoCursor, UnitOfWork $uow, ClassMetadata $class, $loggerCallable, array $query, array $fields)
     {
         parent::__construct($mongoCursor, $uow, $class);
         $this->loggerCallable = $loggerCallable;

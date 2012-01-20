@@ -413,10 +413,9 @@ class DocumentPersister
      */
     private function wrapCursor(BaseCursor $cursor)
     {
-        $mongoCursor = $cursor->getMongoCursor();
         if ($cursor instanceof BaseLoggableCursor) {
             return new LoggableCursor(
-                $mongoCursor,
+                $cursor,
                 $this->uow,
                 $this->class,
                 $cursor->getLoggerCallable(),
@@ -424,7 +423,7 @@ class DocumentPersister
                 $cursor->getFields()
             );
         } else {
-            return new Cursor($mongoCursor, $this->uow, $this->class);
+            return new Cursor($cursor, $this->uow, $this->class);
         }
     }
 

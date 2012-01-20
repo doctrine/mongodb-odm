@@ -19,7 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use \MongoCursor;
+use MongoCursor;
+use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
 
@@ -72,9 +73,9 @@ class Cursor extends \Doctrine\MongoDB\Cursor
     private $hints = array();
 
     /** @override */
-    public function __construct(MongoCursor $mongoCursor, UnitOfWork $uow, ClassMetadata $class)
+    public function __construct(BaseCursor $mongoCursor, UnitOfWork $uow, ClassMetadata $class)
     {
-        parent::__construct($mongoCursor);
+        $this->mongoCursor = $mongoCursor;
         $this->unitOfWork = $uow;
         $this->class = $class;
     }

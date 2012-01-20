@@ -151,7 +151,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
         // Wrap odm cursor with EagerCursor if true
         if ($this->query['eagerCursor'] === true) {
-            $results = new EagerCursor($results);
+            $results = new EagerCursor($results, $this->dm->getUnitOfWork(), $this->class);
         }
 
         // GeoLocationFindQuery just returns an instance of ArrayIterator so we have to
@@ -177,10 +177,9 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
     private function wrapCursor(BaseCursor $baseCursor, array $hints)
     {
-        $mongoCursor = $baseCursor->getMongoCursor();
         if ($baseCursor instanceof BaseLoggableCursor) {
             $cursor = new LoggableCursor(
-                $mongoCursor,
+                $baseCursor,
                 $this->dm->getUnitOfWork(),
                 $this->class,
                 $baseCursor->getLoggerCallable(),
@@ -188,7 +187,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
                 $baseCursor->getFields()
             );
         } else {
-            $cursor = new Cursor($mongoCursor, $this->dm->getUnitOfWork(), $this->class);
+            $cursor = new Cursor($baseCursor, $this->dm->getUnitOfWork(), $this->class);
         }
         $cursor->hydrate($this->hydrate);
         $cursor->setHints($hints);
