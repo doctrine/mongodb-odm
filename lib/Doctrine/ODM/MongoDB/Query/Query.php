@@ -20,9 +20,11 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
 use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\MongoDB\Database;
 use Doctrine\MongoDB\Collection;
@@ -137,9 +139,19 @@ class Query extends \Doctrine\MongoDB\Query\Query
             $hints[self::HINT_SLAVE_OKAY] = true;
         }
 
+        // Unwrap the BaseEagerCursor
+        if ($results instanceof BaseEagerCursor) {
+            $results = $results->getCursor();
+        }
+
         // Convert the regular mongodb cursor to the odm cursor
         if ($results instanceof BaseCursor) {
             $results = $this->wrapCursor($results, $hints);
+        }
+
+        // Wrap odm cursor with EagerCursor if true
+        if ($this->query['eagerCursor'] === true) {
+            $results = new EagerCursor($results);
         }
 
         // GeoLocationFindQuery just returns an instance of ArrayIterator so we have to
