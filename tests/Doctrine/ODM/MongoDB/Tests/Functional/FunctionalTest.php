@@ -85,7 +85,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->id = $id;
         $user->hits = 100;
         $this->dm->persist($user);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
 
         $check = $this->dm->getDocumentCollection($className)->findOne(array('_id' => $id));
         $this->assertEquals(3, $check['count']);
@@ -95,6 +95,27 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
         $this->assertTrue(isset($check['username']));
         $this->assertEquals('test', $check['username']);
+    }
+
+    public function testFlushSingleDocument()
+    {
+        $user1 = new \Documents\ForumUser();
+        $user1->username = 'romanb';
+        $user2 = new \Documents\ForumUser();
+        $user2->username = 'jwage';
+        $this->dm->persist($user1);
+        $this->dm->persist($user2);
+        $this->dm->flush();
+
+        $user1->username = 'changed';
+        $user2->username = 'changed';
+        $this->dm->flush($user1);
+
+        $check = $this->dm->getDocumentCollection('Documents\ForumUser')->find(array('username' => 'jwage'));
+        $this->assertNotNull($check);
+
+        $check = $this->dm->getDocumentCollection('Documents\ForumUser')->find(array('username' => 'changed'));
+        $this->assertNotNull($check);
     }
 
     public function testNestedCategories()

@@ -143,7 +143,7 @@ class CollectionPersisterTest extends BaseTest
         $user->categories[0]->children[1]->children[1] = new CollectionPersisterCategory('Child of Category1_1 2');
 
         $this->dm->persist($user);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
         return $user;
     }
 

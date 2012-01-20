@@ -330,7 +330,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $article = new Article();
         $article->setTitle('test');
         $this->dm->persist($article);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
 
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $query = $qb->getQuery();

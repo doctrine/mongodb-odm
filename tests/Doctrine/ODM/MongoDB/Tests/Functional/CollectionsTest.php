@@ -60,7 +60,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $locations = $bar->getLocations();
         $locations->clear();
         $this->assertEquals(0, count($locations));
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
         $this->dm->clear();
         $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
         $locations = $bar->getLocations();
