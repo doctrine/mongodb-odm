@@ -267,10 +267,10 @@ The conditional operators in Mongo are available to limit the returned results t
 * ``in($values)``
 * ``notIn($values)``
 * ``notEqual($value)``
-* ``greaterThan($value)``
-* ``greaterThanOrEq($value)``
-* ``lessThan($value)``
-* ``lessThanOrEq($value)``
+* ``gt($value)``
+* ``gte($value)``
+* ``lt($value)``
+* ``lte($value)``
 * ``range($start, $end)``
 * ``size($size)``
 * ``exists($bool)``
@@ -332,7 +332,7 @@ Query for accounts with an amount due greater than 30:
     <?php
 
     $qb = $dm->createQueryBuilder('Account')
-        ->field('amount_due')->greaterThan(30);
+        ->field('amount_due')->gt(30);
 
 Query for accounts with an amount due greater than or equal to 30:
 
@@ -341,7 +341,7 @@ Query for accounts with an amount due greater than or equal to 30:
     <?php
 
     $qb = $dm->createQueryBuilder('Account')
-        ->field('amount_due')->greaterThanOrEq(30);
+        ->field('amount_due')->gte(30);
 
 Query for accounts with an amount due less than 30:
 
@@ -350,7 +350,7 @@ Query for accounts with an amount due less than 30:
     <?php
 
     $qb = $dm->createQueryBuilder('Account')
-        ->field('amount_due')->lessThan(30);
+        ->field('amount_due')->lt(30);
 
 Query for accounts with an amount due less than or equal to 30:
 
@@ -359,7 +359,7 @@ Query for accounts with an amount due less than or equal to 30:
     <?php
 
     $qb = $dm->createQueryBuilder('Account')
-        ->field('amount_due')->lessThanOrEq(30);
+        ->field('amount_due')->lte(30);
 
 Query for accounts with an amount due between 10 and 20:
 
@@ -436,7 +436,7 @@ in the Mongo docs.
         ->field('field')->mod('field', array(10, 1));
 
 Read more about the
-`$mod operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod) in the Mongo docs.
+`$mod operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod>`_ in the Mongo docs.
 
 Update Queries
 ~~~~~~~~~~~~~~
@@ -693,7 +693,7 @@ operation similar to SQL's GROUP BY command.
     $result = $this->dm->createQueryBuilder('Documents\User')
         ->group(array(), array('count' => 0))
         ->reduce('function (obj, prev) { prev.count++; }')
-        ->field('a')->greaterThan(1)
+        ->field('a')->gt(1)
         ->getQuery()
         ->execute();
 

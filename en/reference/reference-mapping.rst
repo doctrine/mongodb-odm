@@ -80,7 +80,7 @@ Reference one document:
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\Product">
-                <reference-one fieldName="shipping" targetDocument="Documents\Shipping" />
+                <reference-one field="shipping" target-document="Documents\Shipping" />
           </document>
         </doctrine-mongo-mapping>
 
@@ -132,7 +132,7 @@ Reference many documents:
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\Product">
-                <reference-many fieldName="accounts" targetDocument="Documents\Account" />
+                <reference-many field="accounts" target-document="Documents\Account" />
           </document>
         </doctrine-mongo-mapping>
 

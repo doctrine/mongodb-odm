@@ -31,7 +31,7 @@ Here is an example. You could setup a reference to the last 5 comments for blog 
          * @ReferenceMany(
          *      targetDocument="Comment",
          *      mappedBy="blogPost",
-         *      sort={"date" : "desc"},
+         *      sort={"date"="desc"},
          *      limit=5
          * )
          */
@@ -58,7 +58,7 @@ You can specify a ``mappedBy`` reference for one or many so if you wanted to you
      * @ReferenceOne(
      *      targetDocument="Comment",
      *      mappedBy="blogPost",
-     *      sort={"date" : "desc"}
+     *      sort={"date"="desc"}
      * )
      */
     private $lastComment;

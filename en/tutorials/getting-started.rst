@@ -168,21 +168,21 @@ You can provide your mapping information in Annotations, XML, or YAML:
 That’s it, we have our models, and we can save and retrieve them. Now
 all we need to do is to properly instantiate the ``DocumentManager``
 instance. Read more about setting up the Doctrine MongoDB ODM in the
-`Introduction to MongoDB Object Document Mapper`_:
+:doc:`Introduction to MongoDB Object Document Mapper <../reference/introduction>`:
 
 .. code-block:: php
 
     <?php
 
-    $config = new Configuration();
+    $config = new \Doctrine\ODM\MongoDB\Configuration();
     $config->setProxyDir('/path/to/generate/proxies');
     $config->setProxyNamespace('Proxies');
 
-    $reader = new AnnotationReader();
+    $reader = new \Doctrine\Common\Annotations\AnnotationReader();
     $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
     $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
-    $dm = DocumentManager::create(new Mongo(), $config);
+    $dm = \Doctrine\ODM\MongoDB\DocumentManager::create(new Mongo(), $config);
 
 Usage
 -----
@@ -289,6 +289,6 @@ If you want to iterate over the posts the user references it is as easy as the f
 
 You will notice that working with objects is nothing magical and you only have access to the properties,
 getters and setters that you have defined yourself so the semantics are very clear. You can continue
-reading about the MongoDB in the `Introduction to MongoDB Object Document Mapper`_.
+reading about the MongoDB in the :doc:`Introduction to MongoDB Object Document Mapper <../reference/introduction>`.
 
 .. _php-mongodb-admin project, hosted on github: http://github.com/jwage/php-mongodb-admin

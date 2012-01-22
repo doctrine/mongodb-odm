@@ -43,27 +43,27 @@ MongoGridFS:
         /** @Field */
         private $md5;
     
-        private function getId()
+        public function getId()
         {
-            return $id;
+            return $this->id;
         }
     
-        private function setName($name)
+        public function setName($name)
         {
             $this->name = $name;
         }
     
-        private function getName()
+        public function getName()
         {
             return $this->name;
         }
     
-        private function getFile()
+        public function getFile()
         {
             return $this->file;
         }
     
-        private function setFile($file)
+        public function setFile($file)
         {
             $this->file = $file;
         }
@@ -73,6 +73,12 @@ Notice how we annotated the $file property with @File. This is what
 tells the Document that it is is to be stored using the MongoGridFS
 and the MongoGridFSFile instance is placed in the $file property
 for you to access the actual file itself.
+
+The $uploadDate, $chunkSize and $md5 properties are automatically filled in
+for each file stored in GridFS (whether you like that or not).
+Feel free to create getters in your document to actually make use of them,
+but keep in mind that their values will be initially unset for new objects
+until the next time the document is hydrated (fetched from the database).
 
 First you need to create a new Image:
 
@@ -123,27 +129,27 @@ every Profile to have a profile image:
         /** @ReferenceOne(targetDocument="Documents\Image") */
         private $image;
     
-        private function getId()
+        public function getId()
         {
           return $this->id;
         }
     
-        private function getName()
+        public function getName()
         {
             return $this->name;
         }
     
-        private function setName($name)
+        public function setName($name)
         {
             $this->name = $name;
         }
     
-        private function getImage()
+        public function getImage()
         {
             return $this->image;
         }
     
-        private function setImage(Image $image)
+        public function setImage(Image $image)
         {
             $this->image = $image;
         }
