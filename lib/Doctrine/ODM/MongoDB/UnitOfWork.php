@@ -1839,8 +1839,11 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->getDocumentState($document, self::STATE_DETACHED) == self::STATE_MANAGED) {
             $managedCopy = $document;
         } else {
-            // Try to look the entity up in the identity map.
-            $id = $class->getIdentifierValue($document);
+            $id = null;
+            if (!$class->isEmbeddedDocument) {
+                // Try to look the entity up in the identity map.
+                $id = $class->getIdentifierValue($document);
+            }
 
             // If there is no ID, it is actually NEW.
             if ( ! $id) {
