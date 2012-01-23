@@ -1574,7 +1574,7 @@ class UnitOfWork implements PropertyChangedListener
                 break;
             case self::STATE_NEW:
                 $this->persistNew($class, $document);
-                return;
+                break;
             case self::STATE_DETACHED:
                 throw new \InvalidArgumentException(
                         "Behavior of persist() for a detached document is not yet defined.");
