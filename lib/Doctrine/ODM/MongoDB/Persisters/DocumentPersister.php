@@ -674,11 +674,13 @@ class DocumentPersister
             $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
         }
         $newQuery = array();
-        foreach ($query as $key => $value) {
-            $value = $this->prepareQueryValue($key, $value);
-            $newQuery[$key] = $value;
+        if ($query) {
+            foreach ($query as $key => $value) {
+                $value = $this->prepareQueryValue($key, $value);
+                $newQuery[$key] = $value;
+            }
+            $newQuery = $this->convertTypes($newQuery);
         }
-        $newQuery = $this->convertTypes($newQuery);
         return $newQuery;
     }
 
