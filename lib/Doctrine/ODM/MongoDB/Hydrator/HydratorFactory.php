@@ -221,7 +221,6 @@ EOF
             \$id = \$targetMetadata->getPHPIdentifierValue(\$mongoId);
             \$return = \$this->dm->getReference(\$className, \$id);
             \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
-            \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
             \$hydratedData['%2\$s'] = \$return;
         }
 
@@ -237,9 +236,6 @@ EOF
         \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
         \$return = \$this->dm->getRepository(\$className)->%3\$s(\$document);
         \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
-        if (\$return) {
-            \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
-        }
         \$hydratedData['%2\$s'] = \$return;
 
 EOF
@@ -263,9 +259,6 @@ EOF
         \$sort = isset(\$this->class->fieldMappings['%2\$s']['sort']) ? \$this->class->fieldMappings['%2\$s']['sort'] : array();
         \$return = \$this->unitOfWork->getDocumentPersister(\$className)->load(\$criteria, null, array(), 0, \$sort);
         \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
-        if (\$return) {
-            \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
-        }
         \$hydratedData['%2\$s'] = \$return;
 
 EOF

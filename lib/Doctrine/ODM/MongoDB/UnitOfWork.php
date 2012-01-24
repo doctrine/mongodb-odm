@@ -291,16 +291,8 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
         $this->parentAssociations[$oid] = array($mapping, $parent, $propertyPath);
-
-        $className = get_class($document);
-        $classMetadata = $this->dm->getClassMetadata($className);
-        if ($classMetadata->parentFields) {
-            foreach ($classMetadata->parentFields as $fieldName) {
-                $classMetadata->reflFields[$fieldName]->setValue($document, $parent);
-            }
-        }
     }
-    
+
     /**
      * Gets the parent association for a given embedded document.
      *
@@ -792,11 +784,9 @@ class UnitOfWork implements PropertyChangedListener
                 $this->persistNew($targetClass, $entry);
                 $this->setParentAssociation($entry, $mapping, $parentDocument, $path);
                 $this->computeChangeSet($targetClass, $entry);
-            } else if ($state == self::STATE_MANAGED) {
+            } else if ($state == self::STATE_MANAGED && $targetClass->isEmbeddedDocument) {
                 $this->setParentAssociation($entry, $mapping, $parentDocument, $path);
-                if ($targetClass->isEmbeddedDocument) {
-                    $this->computeChangeSet($targetClass, $entry);
-                }
+                $this->computeChangeSet($targetClass, $entry);
             } else if ($state == self::STATE_REMOVED) {
                 return new \InvalidArgumentException("Removed document detected during flush: "
                         . self::objToStr($removedDocument).". Remove deleted documents from associations.");
