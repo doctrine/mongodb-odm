@@ -101,6 +101,9 @@ class DocumentRepository implements ObjectRepository
      */
     public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
+        if ($id === null) {
+            return;
+        }
         if (is_array($id)) {
             list($identifierFieldName) = $this->class->getIdentifierFieldNames();
 
