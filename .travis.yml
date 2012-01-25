@@ -9,5 +9,6 @@ env:
 before_script:
   - pyrus install pecl/mongo
   - phpenv rehash
+  - git submodule update --init
 
 script: phpunit -c .
