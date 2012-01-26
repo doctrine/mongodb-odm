@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** * @ODM\Document(db="doctrine_odm_tests", collection="special_users") */
 class SpecialUser extends User
 {
-    /** @ODM\Field */
+    /** @ODM\Field(type="collection") */
     private $rules = array();
 
     public function setRules(array $rules)
