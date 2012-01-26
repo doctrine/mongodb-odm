@@ -65,13 +65,6 @@ class Cursor extends \Doctrine\MongoDB\Cursor
      */
     private $class;
 
-    /**
-     * The array of hints for the UnitOfWork.
-     *
-     * @var array
-     */
-    private $hints = array();
-
     /** @override */
     public function __construct(BaseCursor $mongoCursor, UnitOfWork $uow, ClassMetadata $class)
     {
