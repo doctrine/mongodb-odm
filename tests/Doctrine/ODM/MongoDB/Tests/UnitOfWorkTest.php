@@ -26,8 +26,30 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->uow = $this->dm->getUnitOfWork();
     }
 
-    protected function tearDown() {
+    protected function tearDown()
+    {
         unset($this->dm, $this->uow);
+    }
+
+    public function testScheduleForInsert()
+    {
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
+        $user = new ForumUser();
+        $this->assertFalse($this->uow->isScheduledForInsert($user));
+        $this->uow->scheduleForInsert($class, $user);
+        $this->assertTrue($this->uow->isScheduledForInsert($user));
+    }
+
+    public function testScheduleForInsertUpsert()
+    {
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
+        $user = new ForumUser();
+        $user->id = 1;
+        $this->assertFalse($this->uow->isScheduledForInsert($user));
+        $this->assertFalse($this->uow->isScheduledForUpsert($user));
+        $this->uow->scheduleForInsert($class, $user);
+        $this->assertTrue($this->uow->isScheduledForInsert($user));
+        $this->assertTrue($this->uow->isScheduledForUpsert($user));
     }
 
     public function testRegisterRemovedOnNewEntityIsIgnored()

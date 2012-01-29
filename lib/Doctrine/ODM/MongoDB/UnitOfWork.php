@@ -143,6 +143,13 @@ class UnitOfWork implements PropertyChangedListener
     private $documentUpdates = array();
 
     /**
+     * A list of all pending document upserts.
+     *
+     * @var array
+     */
+    private $documentUpserts = array();
+
+    /**
      * Any pending extra updates that have been scheduled by persisters.
      *
      * @var array
@@ -358,14 +365,26 @@ class UnitOfWork implements PropertyChangedListener
      * 2) All document updates
      * 3) All document deletions
      *
+     * @param object $document
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
      */
-    public function commit(array $options = array())
+    public function commit($document = null, array $options = array())
     {
+        $defaultOptions = $this->dm->getConfiguration()->getDefaultCommitOptions();
+        if ($options) {
+            $options = array_merge($defaultOptions, $options);
+        } else {
+            $options = $defaultOptions;
+        }
         // Compute changes done since last commit.
-        $this->computeChangeSets();
+        if ($document === null) {
+            $this->computeChangeSets();
+        } else {
+            $this->computeSingleDocumentChangeSet($document);
+        }
 
         if ( ! ($this->documentInsertions ||
+                $this->documentUpserts ||
                 $this->documentDeletions ||
                 $this->documentUpdates ||
                 $this->collectionUpdates ||
@@ -433,6 +452,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Clear up
         $this->documentInsertions =
+        $this->documentUpserts =
         $this->documentUpdates =
         $this->documentDeletions =
         $this->extraUpdates =
@@ -442,6 +462,58 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
         $this->orphanRemovals = array();
+    }
+
+    /**
+     * Compute the changesets of all documents scheduled for insertion
+     *
+     * @return void
+     */
+    private function computeScheduleInsertsChangeSets()
+    {
+        foreach ($this->documentInsertions as $document) {
+            $class = $this->dm->getClassMetadata(get_class($document));
+
+            $this->computeChangeSet($class, $document);
+        }
+    }
+
+    /**
+     * Only flush the given document according to a ruleset that keeps the UoW consistent.
+     *
+     * 1. All documents scheduled for insertion, (orphan) removals and changes in collections are processed as well!
+     * 2. Proxies are skipped.
+     * 3. Only if document is properly managed.
+     *
+     * @param  object $document
+     * @return void
+     */
+    private function computeSingleDocumentChangeSet($document)
+    {
+        if ( ! $this->isInIdentityMap($document) ) {
+            throw new \InvalidArgumentException("Document has to be managed for single computation " . self::objToStr($document));
+        }
+
+        $class = $this->dm->getClassMetadata(get_class($document));
+
+        if ($class->isChangeTrackingDeferredImplicit()) {
+            $this->persist($document);
+        }
+
+        // Compute changes for INSERTed documents first. This must always happen even in this case.
+        $this->computeScheduleInsertsChangeSets();
+
+        // Ignore uninitialized proxy objects
+        if ($document instanceof Proxy && ! $document->__isInitialized__) {
+            return;
+        }
+
+        // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION are processed here.
+        $oid = spl_object_hash($document);
+
+        if ( ! isset($this->documentInsertions[$oid]) && isset($this->documentStates[$oid])) {
+            $this->computeChangeSet($class, $document);
+        }
     }
 
     /**
@@ -500,7 +572,7 @@ class UnitOfWork implements PropertyChangedListener
                 $coll->setDirty( ! $value->isEmpty());
                 $class->reflFields[$name]->setValue($document, $coll);
                 $actualData[$name] = $coll;
-            } else if ( ! $class->isIdentifier($name) || $class->isIdGeneratorNone()) {
+            } else {
                 $actualData[$name] = $value;
             }
         }
@@ -630,11 +702,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function computeChangeSets()
     {
-        // Compute changes for INSERTed documents first. This must always happen.
-        foreach ($this->documentInsertions as $document) {
-            $class = $this->dm->getClassMetadata(get_class($document));
-            $this->computeChangeSet($class, $document);
-        }
+        $this->computeScheduleInsertsChangeSets();
 
         // Compute changes for other MANAGED documents. Change tracking policies take effect here.
         foreach ($this->identityMap as $className => $documents) {
@@ -816,7 +884,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->documentStates[$oid] = self::STATE_MANAGED;
 
-        $this->scheduleForInsert($document);
+        $this->scheduleForInsert($class, $document);
     }
 
     /**
@@ -1106,6 +1174,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($documentChangeSet === null) {
             $documentChangeSet = array_merge(
                 $this->documentInsertions,
+                $this->documentUpserts,
                 $this->documentUpdates,
                 $this->documentDeletions
             );
@@ -1174,7 +1243,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $document The document to schedule for insertion.
      */
-    public function scheduleForInsert($document)
+    public function scheduleForInsert($class, $document)
     {
         $oid = spl_object_hash($document);
 
@@ -1190,6 +1259,11 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->documentInsertions[$oid] = $document;
 
+        if (!$class->isEmbeddedDocument && $idValue = $class->getIdentifierValue($document)) {
+            $this->documentUpserts[$oid] = $document;
+            $this->documentIdentifiers[$oid] = $idValue;
+        }
+
         if (isset($this->documentIdentifiers[$oid])) {
             $this->addToIdentityMap($document);
         }
@@ -1204,6 +1278,17 @@ class UnitOfWork implements PropertyChangedListener
     public function isScheduledForInsert($document)
     {
         return isset($this->documentInsertions[spl_object_hash($document)]);
+    }
+
+    /**
+     * Checks whether an document is scheduled for upsert.
+     *
+     * @param object $document
+     * @return boolean
+     */
+    public function isScheduledForUpsert($document)
+    {
+        return isset($this->documentUpserts[spl_object_hash($document)]);
     }
 
     /**
@@ -1231,7 +1316,7 @@ class UnitOfWork implements PropertyChangedListener
      * Schedules an extra update that will be executed immediately after the
      * regular entity updates within the currently running commit cycle.
      *
-     * Extra updates for entities are stored as (entity, changeset) tuples.
+     * Extra updates for documents are stored as (entity, changeset) tuples.
      *
      * @ignore
      * @param object $document The entity for which to schedule an extra update.
@@ -1585,7 +1670,7 @@ class UnitOfWork implements PropertyChangedListener
                         unset($this->documentDeletions[$oid]);
                     } else {
                         //FIXME: There's more to think of here...
-                        $this->scheduleForInsert($document);
+                        $this->scheduleForInsert($class, $document);
                     }
                     break;
                 }
@@ -1752,8 +1837,11 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->getDocumentState($document, self::STATE_DETACHED) == self::STATE_MANAGED) {
             $managedCopy = $document;
         } else {
-            // Try to look the entity up in the identity map.
-            $id = $class->getIdentifierValue($document);
+            $id = null;
+            if (!$class->isEmbeddedDocument) {
+                // Try to look the entity up in the identity map.
+                $id = $class->getIdentifierValue($document);
+            }
 
             // If there is no ID, it is actually NEW.
             if ( ! $id) {
@@ -2297,7 +2385,7 @@ class UnitOfWork implements PropertyChangedListener
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
             }
             if ($overrideLocalValues) {
-                $data = $this->hydratorFactory->hydrate($document, $data);
+                $data = $this->hydratorFactory->hydrate($document, $data, $hints);
                 $this->originalDocumentData[$oid] = $data;
             }
         } else {
@@ -2306,7 +2394,7 @@ class UnitOfWork implements PropertyChangedListener
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
             $this->identityMap[$class->rootDocumentName][$id] = $document;
-            $data = $this->hydratorFactory->hydrate($document, $data);
+            $data = $this->hydratorFactory->hydrate($document, $data, $hints);
             $this->originalDocumentData[$oid] = $data;
         }
         return $document;

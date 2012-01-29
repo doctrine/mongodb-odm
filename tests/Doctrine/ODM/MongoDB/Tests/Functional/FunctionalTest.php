@@ -34,6 +34,90 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function provideUpsertObjects()
+    {
+        return array(
+            array('Documents\\UserUpsert', new \MongoId('4f18f593acee41d724000005')),
+            array('Documents\\UserUpsertIdStrategyNone', 'jwage')
+        );
+    }
+
+    /**
+     * @dataProvider provideUpsertObjects
+     */
+    public function testUpsertObject($className, $id)
+    {
+        $user = new $className();
+        $user->id = (string) $id;
+        $user->username = 'test';
+        $user->count = 1;
+        $group = new \Documents\Group('Group');
+        $user->groups = array($group);
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $check = $this->dm->getDocumentCollection($className)->findOne(array('_id' => $id));
+        $this->assertNotNull($check);
+        $this->assertEquals((string) $id, (string) $check['_id']);
+        $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
+
+        $group2 = new \Documents\Group('Group');
+
+        $user = new $className();
+        $user->id = $id;
+        $user->hits = 5;
+        $user->count = 2;
+        $user->groups = array($group2);
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $check = $this->dm->getDocumentCollection($className)->findOne(array('_id' => $id));
+        $this->assertEquals(3, $check['count']);
+        $this->assertEquals(5, $check['hits']);
+        $this->assertEquals(2, count($check['groups']));
+        $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
+        $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
+        $this->assertTrue(isset($check['username']));
+        $this->assertEquals('test', $check['username']);
+
+        $user = new $className();
+        $user->id = $id;
+        $user->hits = 100;
+        $this->dm->persist($user);
+        $this->dm->flush(null, array('safe' => true));
+
+        $check = $this->dm->getDocumentCollection($className)->findOne(array('_id' => $id));
+        $this->assertEquals(3, $check['count']);
+        $this->assertEquals(100, $check['hits']);
+        $this->assertEquals(2, count($check['groups']));
+        $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
+        $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
+        $this->assertTrue(isset($check['username']));
+        $this->assertEquals('test', $check['username']);
+    }
+
+    public function testFlushSingleDocument()
+    {
+        $user1 = new \Documents\ForumUser();
+        $user1->username = 'romanb';
+        $user2 = new \Documents\ForumUser();
+        $user2->username = 'jwage';
+        $this->dm->persist($user1);
+        $this->dm->persist($user2);
+        $this->dm->flush();
+
+        $user1->username = 'changed';
+        $user2->username = 'changed';
+        $this->dm->flush($user1);
+
+        $check = $this->dm->getDocumentCollection('Documents\ForumUser')->find(array('username' => 'jwage'));
+        $this->assertNotNull($check);
+
+        $check = $this->dm->getDocumentCollection('Documents\ForumUser')->find(array('username' => 'changed'));
+        $this->assertNotNull($check);
+    }
+
     public function testNestedCategories()
     {
         $root = new \Documents\Category('Root');

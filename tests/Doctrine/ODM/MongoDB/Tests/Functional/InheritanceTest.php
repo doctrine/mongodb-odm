@@ -30,6 +30,7 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
+        $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertEquals('Wage', $user->getProfile()->getLastName());
         $this->assertTrue($user instanceof \Documents\SpecialUser);

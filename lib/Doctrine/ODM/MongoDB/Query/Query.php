@@ -20,9 +20,11 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
 use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\MongoDB\Database;
 use Doctrine\MongoDB\Collection;
@@ -39,6 +41,7 @@ use Doctrine\ODM\MongoDB\LoggableCursor;
 class Query extends \Doctrine\MongoDB\Query\Query
 {
     const HINT_REFRESH = 1;
+    const HINT_SLAVE_OKAY = 2;
 
     /**
      * The DocumentManager instance.
@@ -128,14 +131,27 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
         $results = parent::execute();
 
-        // Convert the regular mongodb cursor to the odm cursor
-        if ($results instanceof BaseCursor) {
-            $results = $this->wrapCursor($results);
-        }
-
         $hints = array();
         if ($this->refresh) {
             $hints[self::HINT_REFRESH] = true;
+        }
+        if ($this->query['slaveOkay'] === true) {
+            $hints[self::HINT_SLAVE_OKAY] = true;
+        }
+
+        // Unwrap the BaseEagerCursor
+        if ($results instanceof BaseEagerCursor) {
+            $results = $results->getCursor();
+        }
+
+        // Convert the regular mongodb cursor to the odm cursor
+        if ($results instanceof BaseCursor) {
+            $results = $this->wrapCursor($results, $hints);
+        }
+
+        // Wrap odm cursor with EagerCursor if true
+        if ($this->query['eagerCursor'] === true) {
+            $results = new EagerCursor($results, $this->dm->getUnitOfWork(), $this->class);
         }
 
         // GeoLocationFindQuery just returns an instance of ArrayIterator so we have to
@@ -159,12 +175,11 @@ class Query extends \Doctrine\MongoDB\Query\Query
         return $results;
     }
 
-    private function wrapCursor(BaseCursor $baseCursor)
+    private function wrapCursor(BaseCursor $baseCursor, array $hints)
     {
-        $mongoCursor = $baseCursor->getMongoCursor();
         if ($baseCursor instanceof BaseLoggableCursor) {
             $cursor = new LoggableCursor(
-                $mongoCursor,
+                $baseCursor,
                 $this->dm->getUnitOfWork(),
                 $this->class,
                 $baseCursor->getLoggerCallable(),
@@ -172,10 +187,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
                 $baseCursor->getFields()
             );
         } else {
-            $cursor = new Cursor($mongoCursor, $this->dm->getUnitOfWork(), $this->class);
+            $cursor = new Cursor($baseCursor, $this->dm->getUnitOfWork(), $this->class);
         }
         $cursor->hydrate($this->hydrate);
-        $cursor->refresh($this->refresh);
+        $cursor->setHints($hints);
 
         return $cursor;
     }

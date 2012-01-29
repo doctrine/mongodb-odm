@@ -197,10 +197,13 @@ class DocumentPersister
 
         $postInsertIds = array();
         $inserts = array();
+        $upserts = array();
         foreach ($this->queuedInserts as $oid => $document) {
-            $data = $this->pb->prepareInsertData($document);
-            if ( ! $data) {
-                continue;
+            $upsert = $this->uow->isScheduledForUpsert($document);
+            if ($upsert) {
+                $data = $this->pb->prepareUpsertData($document);
+            } else {
+                $data = $this->pb->prepareInsertData($document);
             }
 
             // Set the initial version for each insert
@@ -217,17 +220,35 @@ class DocumentPersister
                 }
             }
 
-            $inserts[$oid] = $data;
+            if ($upsert) {
+                $upserts[$oid] = $data;
+            } else {
+                $inserts[$oid] = $data;
+            }
         }
-        if (empty($inserts)) {
-            return;
-        }
-        $this->collection->batchInsert($inserts, $options);
+        if ($inserts) {
+            $this->collection->batchInsert($inserts, $options);
 
-        foreach ($inserts as $oid => $data) {
-            $document = $this->queuedInserts[$oid];
-            $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
+            foreach ($inserts as $oid => $data) {
+                $document = $this->queuedInserts[$oid];
+                $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
+            }
         }
+
+        if ($upserts) {
+            $upsertOptions = $options;
+            $upsertOptions['upsert'] = true;
+            foreach ($upserts as $oid => $data) {
+                $criteria = array('_id' => $data[$this->cmd.'set']['_id']);
+                unset($data[$this->cmd.'set']['_id']);
+                // stupid php
+                if (empty($data[$this->cmd.'set'])) {
+                    $data[$this->cmd.'set'] = new \stdClass;
+                }
+                $this->collection->update($criteria, $data, $upsertOptions);
+            }
+        }
+
         $this->queuedInserts = array();
 
         return $postInsertIds;
@@ -281,6 +302,7 @@ class DocumentPersister
                 }
             }
 
+            unset($update[$this->cmd.'set']['_id']);
             $result = $this->collection->update($query, $update, $options);
 
             if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
@@ -392,10 +414,9 @@ class DocumentPersister
      */
     private function wrapCursor(BaseCursor $cursor)
     {
-        $mongoCursor = $cursor->getMongoCursor();
         if ($cursor instanceof BaseLoggableCursor) {
             return new LoggableCursor(
-                $mongoCursor,
+                $cursor,
                 $this->uow,
                 $this->class,
                 $cursor->getLoggerCallable(),
@@ -403,7 +424,7 @@ class DocumentPersister
                 $cursor->getFields()
             );
         } else {
-            return new Cursor($mongoCursor, $this->uow, $this->class);
+            return new Cursor($cursor, $this->uow, $this->class);
         }
     }
 
@@ -524,6 +545,7 @@ class DocumentPersister
 
     private function loadReferenceManyCollectionOwningSide(PersistentCollection $collection)
     {
+        $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $cmd = $this->cmd;
         $groupedIds = array();
@@ -567,7 +589,11 @@ class DocumentPersister
             if (isset($mapping['skip'])) {
                 $cursor->skip($mapping['skip']);
             }
-            foreach ($cursor as $documentData) {
+            if (isset($hints[Query::HINT_SLAVE_OKAY])) {
+                $cursor->slaveOkay(true);
+            }
+            $documents = $cursor->toArray();
+            foreach ($documents as $documentData) {
                 $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
@@ -578,6 +604,7 @@ class DocumentPersister
 
     private function loadReferenceManyCollectionInverseSide(PersistentCollection $collection)
     {
+        $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
@@ -600,9 +627,11 @@ class DocumentPersister
         if (isset($mapping['skip'])) {
             $qb->skip($mapping['skip']);
         }
-        $query = $qb->getQuery();
-        $cursor = $query->execute();
-        foreach ($cursor as $document) {
+        if (isset($hints[Query::HINT_SLAVE_OKAY])) {
+            $qb->slaveOkay(true);
+        }
+        $documents = $qb->getQuery()->execute()->toArray();
+        foreach ($documents as $document) {
             $collection->add($document);
         }
     }
@@ -620,7 +649,11 @@ class DocumentPersister
         if ($mapping['skip']) {
             $cursor->skip($mapping['skip']);
         }
-        foreach ($cursor as $document) {
+        if (isset($hints[Query::HINT_SLAVE_OKAY])) {
+            $cursor->slaveOkay(true);
+        }
+        $documents = $cursor->toArray();
+        foreach ($documents as $document) {
             $collection->add($document);
         }
     }
@@ -633,7 +666,7 @@ class DocumentPersister
      */
     public function prepareQuery($query)
     {
-        if (is_scalar($query)) {
+        if (is_scalar($query) || $query instanceof \MongoId) {
             $query = array('_id' => $query);
         }
         if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
@@ -641,11 +674,13 @@ class DocumentPersister
             $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
         }
         $newQuery = array();
-        foreach ($query as $key => $value) {
-            $value = $this->prepareQueryValue($key, $value);
-            $newQuery[$key] = $value;
+        if ($query) {
+            foreach ($query as $key => $value) {
+                $value = $this->prepareQueryValue($key, $value);
+                $newQuery[$key] = $value;
+            }
+            $newQuery = $this->convertTypes($newQuery);
         }
-        $newQuery = $this->convertTypes($newQuery);
         return $newQuery;
     }
 

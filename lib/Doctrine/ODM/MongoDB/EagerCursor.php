@@ -19,23 +19,18 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use MongoCursor;
 use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Query\Query;
 
 /**
- * Cursor extends the default Doctrine\MongoDB\Cursor implementation and changes the default
- * data returned to be mapped Doctrine document class instances. To disable the hydration
- * use hydrate(false) and the Cursor will give you normal document arrays instance of objects.
+ * EagerCursor extends the default Doctrine\MongoDB\EagerCursor implementation.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
-class Cursor extends \Doctrine\MongoDB\Cursor
+class EagerCursor implements \Doctrine\MongoDB\Iterator
 {
     /**
      * Whether or not to hydrate the data to documents.
@@ -65,10 +60,36 @@ class Cursor extends \Doctrine\MongoDB\Cursor
      */
     private $class;
 
+    /**
+     * The array of hints for the UnitOfWork.
+     *
+     * @var array
+     */
+    private $hints = array();
+
+    /**
+     * @var object Doctrine\MongoDB\ODM\Cursor
+     */
+    private $cursor;
+
+    /**
+     * Array of data from Cursor to iterate over
+     *
+     * @var array
+     */
+    private $data = array();
+
+    /**
+     * Whether or not the EagerCursor has been initialized
+     *
+     * @var bool $initialized
+     */
+    private $initialized = false;
+
     /** @override */
-    public function __construct(BaseCursor $mongoCursor, UnitOfWork $uow, ClassMetadata $class)
+    public function __construct(BaseCursor $cursor, UnitOfWork $uow, ClassMetadata $class)
     {
-        $this->mongoCursor = $mongoCursor;
+        $this->cursor = $cursor;
         $this->unitOfWork = $uow;
         $this->class = $class;
     }
@@ -93,24 +114,75 @@ class Cursor extends \Doctrine\MongoDB\Cursor
         return $this->hints;
     }
 
-    /** @override */
+    public function getCursor()
+    {
+        return $this->cursor;
+    }
+
+    public function isInitialized()
+    {
+        return $this->initialized;
+    }
+
+    public function initialize()
+    {
+        if ($this->initialized === false) {
+            $this->data = $this->cursor->getMongoCursor()->toArray();
+        }
+        $this->initialized = true;
+    }
+
+    public function rewind()
+    {
+        $this->initialize();
+        reset($this->data);
+    }
+  
     public function current()
     {
-        $current = parent::current();
+        $this->initialize();
+        $current = current($this->data);
         if ($current && $this->hydrate) {
             return $this->unitOfWork->getOrCreateDocument($this->class->name, $current, $this->hints);
         }
         return $current ? $current : null;
     }
 
-    /** @override */
-    public function getNext()
+    public function key() 
     {
-        $next = parent::getNext();
-        if ($next && $this->hydrate) {
-            return $this->unitOfWork->getOrCreateDocument($this->class->name, $next, $this->hints);
-        }
-        return $next ? $next : null;
+        $this->initialize();
+        return key($this->data);
+    }
+  
+    public function next() 
+    {
+        $this->initialize();
+        return next($this->data);
+    }
+  
+    public function valid()
+    {
+        $this->initialize();
+        $key = key($this->data);
+        return ($key !== NULL && $key !== FALSE);
+    }
+
+    public function count()
+    {
+        $this->initialize();
+        return count($this->data);
+    }
+
+    public function toArray()
+    {
+        $this->initialize();
+        return iterator_to_array($this);
+    }
+
+    public function getSingleResult()
+    {
+        $this->initialize();
+        return $this->current();
     }
 
     /**
@@ -148,7 +220,7 @@ class Cursor extends \Doctrine\MongoDB\Cursor
         } else {
             unset($this->hints[Query::HINT_SLAVE_OKAY]);
         }
-        parent::slaveOkay($okay);
+        $this->cursor->slaveOkay($okay);
         return $this;
     }
 }

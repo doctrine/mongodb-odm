@@ -251,6 +251,91 @@ class PersistenceBuilder
     }
 
     /**
+     * Prepares the update query to upsert a given document object in mongodb.
+     *
+     * @param object $document
+     * @return array $updateData
+     */
+    public function prepareUpsertData($document)
+    {
+        $oid = spl_object_hash($document);
+        $class = $this->dm->getClassMetadata(get_class($document));
+        $changeset = $this->uow->getDocumentChangeSet($document);
+
+        $updateData = array();
+        foreach ($changeset as $fieldName => $change) {
+            $mapping = $class->fieldMappings[$fieldName];
+
+            // skip not saved fields
+            if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
+                continue;
+            }
+
+            // Skip version and lock fields
+            if (isset($mapping['version']) || isset($mapping['lock'])) {
+                continue;
+            }
+
+            list($old, $new) = $change;
+
+            // @Inc
+            if ($mapping['type'] === 'increment') {
+                if ($new >= $old) {
+                    $updateData[$this->cmd . 'inc'][$mapping['name']] = $new - $old;
+                } else {
+                    $updateData[$this->cmd . 'inc'][$mapping['name']] = ($old - $new) * -1;
+                }
+
+            // @Field, @String, @Date, etc.
+            } elseif ( ! isset($mapping['association'])) {
+                if (isset($new) || $mapping['nullable'] === true) {
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                }
+
+            // @EmbedOne
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
+                // If we have a new embedded document then lets set the whole thing
+                if ($new && $this->uow->isScheduledForInsert($new)) {
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
+
+                // Update existing embedded document
+                } else {
+                    $update = $this->prepareUpsertData($new);
+                    foreach ($update as $cmd => $values) {
+                        foreach ($values as $key => $value) {
+                            $updateData[$cmd][$mapping['name'] . '.' . $key] = $value;
+                        }
+                    }
+                }
+
+            // @EmbedMany
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
+                foreach ($new as $key => $embeddedDoc) {
+                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
+                        $update = $this->prepareUpsertData($embeddedDoc);
+                        foreach ($update as $cmd => $values) {
+                            foreach ($values as $name => $value) {
+                                $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
+                            }
+                        }
+                    }
+                }
+
+            // @ReferenceOne
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
+                if (isset($new) || $mapping['nullable'] === true) {
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
+                }
+
+            // @ReferenceMany
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
+                // Do nothing right now
+            }
+        }
+        return $updateData;
+    }
+
+    /**
      * Returns the reference representation to be stored in mongodb or null if not applicable.
      *
      * @param array $referenceMapping

@@ -153,6 +153,65 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('crap', $this->user->getUsername());
     }
 
+    public function testUpsertUpdateQuery()
+    {
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->update()
+            ->upsert(true)
+            ->field('username')
+            ->set('crap')
+            ->equals('foo');
+        $query = $qb->getQuery();
+        $result = $query->execute();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->find()
+            ->field('username')->equals('crap');
+        $query = $qb->getQuery();
+        $user = $query->getSingleResult();
+        $this->assertNotNull($user);
+    }
+
+    public function testMultipleUpdateQuery()
+    {
+        $user = new User();
+        $user->setUsername('multiple_test');
+        $user->setCount(1);
+        $this->dm->persist($user);
+
+        $user = new User();
+        $user->setUsername('multiple_test');
+        $user->setCount(1);
+        $this->dm->persist($user);
+
+        $user = new User();
+        $user->setUsername('multiple_test');
+        $user->setCount(2);
+        $this->dm->persist($user);
+
+        $user = new User();
+        $user->setUsername('multiple_test');
+        $user->setCount(3);
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->update()
+            ->multiple()
+            ->field('username')->equals('multiple_test')
+            ->field('username')->set('foo');
+        $q = $qb->getQuery();
+        $results = $q->execute();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->find()
+            ->field('username')->equals('foo');
+        $q = $qb->getQuery();
+        $users = array_values($q->execute()->toArray());
+
+        $this->assertEquals(4, count($users));
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */
@@ -271,7 +330,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $article = new Article();
         $article->setTitle('test');
         $this->dm->persist($article);
-        $this->dm->flush(array('safe' => true));
+        $this->dm->flush(null, array('safe' => true));
 
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $query = $qb->getQuery();

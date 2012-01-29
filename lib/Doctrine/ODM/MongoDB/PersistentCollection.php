@@ -95,6 +95,13 @@ class PersistentCollection implements BaseCollection
      */
     private $mongoData = array();
 
+    /**
+     * Any hints to account for during reconstitution/lookup of the documents.
+     *
+     * @var array
+     */
+    private $hints = array();
+
     public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow, $cmd)
     {
         $this->coll = $coll;
@@ -132,6 +139,26 @@ class PersistentCollection implements BaseCollection
     public function getMongoData()
     {
         return $this->mongoData;
+    }
+
+    /**
+     * Set hints to account for during reconstitution/lookup of the documents.
+     *
+     * @param array $hints
+     */
+    public function setHints(array $hints)
+    {
+        $this->hints = $hints;
+    }
+
+    /**
+     * Get hints to account for during reconstitution/lookup of the documents.
+     *
+     * @return array $hints
+     */
+    public function getHints()
+    {
+        return $this->hints;
     }
 
     /**
