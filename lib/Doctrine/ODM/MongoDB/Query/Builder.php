@@ -189,6 +189,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         $query['query'] = $this->expr->getQuery();
         $query['newObj'] = $this->expr->getNewObj();
+        $query['sort'] = $this->dm->getUnitOfWork()
+            ->getDocumentPersister($this->class->name)
+            ->prepareSort($query['sort']);
 
         return new Query(
             $this->dm,

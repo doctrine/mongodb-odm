@@ -25,6 +25,9 @@ class Address
     /** @ODM\EmbedOne(targetDocument="Address") */
     private $subAddress;
 
+    /** @ODM\String(name="testFieldName") */
+    private $test;
+
     public function setSubAddress(Address $subAddress)
     {
         $this->subAddress = $subAddress;

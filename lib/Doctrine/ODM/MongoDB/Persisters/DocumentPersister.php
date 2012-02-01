@@ -659,10 +659,39 @@ class DocumentPersister
     }
 
     /**
+     * Prepares a sort array and converts PHP property names to MongoDB field names.
+     *
+     * @param array $sort
+     * @return array $newSort
+     */
+    public function prepareSort($sort)
+    {
+        $metadata = null;
+        $newSort = array();
+        foreach ($sort as $key => $value) {
+            $key = $this->prepareSortKey($key);
+            $newSort[$key] = $value;
+        }
+        return $newSort;
+    }
+
+    /**
+     * Prepare a sort key and convert PHP property names to MongoDB field names.
+     *
+     * @param string $key
+     * @return string $preparedKey
+     */
+    private function prepareSortKey($key)
+    {
+        $this->prepareQueryElement($key, null, null, false);
+        return $key;
+    }
+
+    /**
      * Prepares a query array by converting the portable Doctrine types to the types mongodb expects.
      *
      * @param string|array $query
-     * @return array $query
+     * @return array $newQuery
      */
     public function prepareQuery($query)
     {
@@ -676,8 +705,11 @@ class DocumentPersister
         $newQuery = array();
         if ($query) {
             foreach ($query as $key => $value) {
-                $value = $this->prepareQueryValue($key, $value);
-                $newQuery[$key] = $value;
+                if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
+                    $newQuery[$key] = $this->prepareQuery($value);
+                } else {
+                    $newQuery[$key] = $this->prepareQueryElement($key, $value, null, true);
+                }
             }
             $newQuery = $this->convertTypes($newQuery);
         }
@@ -709,9 +741,10 @@ class DocumentPersister
      * @param string        $fieldName
      * @param string        $value
      * @param ClassMetadata $metadata   Defaults to $this->class
+     * @param bool          $prepareValue Whether or not to prepare the value
      * @return mixed        $value
      */
-    private function prepareQueryValue(&$fieldName, $value, $metadata = null)
+    private function prepareQueryElement(&$fieldName, $value = null, $metadata = null, $prepareValue = true)
     {
         $metadata = ($metadata === null) ? $this->class : $metadata;
         
@@ -719,42 +752,45 @@ class DocumentPersister
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
 
-            $mapping = $metadata->getFieldMapping($e[0]);
-            $name = $mapping['name'];
-            if ($name !== $e[0]) {
-                $e[0] = $name;
-            }
+            $mapping = $metadata->fieldMappings[$e[0]];
+            $e[0] = $mapping['name'];
 
             if (isset($mapping['targetDocument'])) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
                 if ($targetClass->hasField($e[1])) {
                     if ($targetClass->identifier === $e[1]) {
                         $fieldName =  $e[0] . '.$id';
-                        if (is_array($value)) {
-                            foreach ($value as $k => $v) {
-                                $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
+                        if ($prepareValue === true) {
+                            if (is_array($value)) {
+                                $keys = array_keys($value);
+                                if (isset($keys[0][0]) && $keys[0][0] === $this->cmd) {
+                                    foreach ($value[$keys[0]] as $k => $v) {
+                                        $value[$keys[0]][$k] = $targetClass->getDatabaseIdentifierValue($v);
+                                    }
+                                } else {
+                                    foreach ($value as $k => $v) {
+                                        $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
+                                    }
+                                }
+                            } else {
+                                $value = $targetClass->getDatabaseIdentifierValue($value);
                             }
-                        } else {
-                            $value = $targetClass->getDatabaseIdentifierValue($value);
                         }
 
                     } else {
                         $targetMapping = $targetClass->getFieldMapping($e[1]);
-                        $targetName = $targetMapping['name'];
-                        if ($targetName !== $e[1]) {
-                            $e[1] = $targetName;
-                        }
+                        $e[1] = $targetMapping['name'];
                         $fieldName =  $e[0] . '.' . $e[1];
 
-                        if(count($e) > 2) {
+                        if (count($e) > 2) {
                             unset($e[0], $e[1]);
                             $key = implode('.', $e);
 
                             if (isset($targetMapping['targetDocument'])) {
                                 $nextTargetClass = $this->dm->getClassMetadata($targetMapping['targetDocument']);
-                                $value = $this->prepareQueryValue($key, $value, $nextTargetClass);
+                                $value = $this->prepareQueryElement($key, $value, $nextTargetClass, $prepareValue);
                             } else {
-                                $value = $this->prepareQueryValue($key, $value);
+                                $value = $this->prepareQueryElement($key, $value, null, $prepareValue);
                             }
                             
                             $fieldName .= '.' . $key;
@@ -767,12 +803,9 @@ class DocumentPersister
         // We only change the field names here to the mongodb field name used for persistence
         } elseif ($metadata->hasField($fieldName) && ! $metadata->isIdentifier($fieldName)) {
             $mapping = $metadata->fieldMappings[$fieldName];
-            $name = $mapping['name'];
-            if ($name !== $fieldName) {
-                $fieldName = $name;
-            }
+            $fieldName = $mapping['name'];
 
-            if (isset($mapping['reference']) && isset($mapping['simple']) && $mapping['simple']) {
+            if ($prepareValue === true && isset($mapping['reference']) && isset($mapping['simple']) && $mapping['simple']) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
                 $value = $targetClass->getDatabaseIdentifierValue($value);
             }
@@ -780,18 +813,20 @@ class DocumentPersister
         // Process identifier
         } elseif (($metadata->hasField($fieldName) && $metadata->isIdentifier($fieldName)) || $fieldName === '_id') {
             $fieldName = '_id';
-            if (is_array($value)) {
-                foreach ($value as $k => $v) {
-                    if ($k[0] === '$' && is_array($v)) {
-                        foreach ($v as $k2 => $v2) {
-                            $value[$k][$k2] = $metadata->getDatabaseIdentifierValue($v2);
+            if ($prepareValue === true) {
+                if (is_array($value)) {
+                    foreach ($value as $k => $v) {
+                        if ($k[0] === '$' && is_array($v)) {
+                            foreach ($v as $k2 => $v2) {
+                                $value[$k][$k2] = $metadata->getDatabaseIdentifierValue($v2);
+                            }
+                        } else {
+                            $value[$k] = $metadata->getDatabaseIdentifierValue($v);
                         }
-                    } else {
-                        $value[$k] = $metadata->getDatabaseIdentifierValue($v);
                     }
+                } else {
+                    $value = $metadata->getDatabaseIdentifierValue($value);
                 }
-            } else {
-                $value = $metadata->getDatabaseIdentifierValue($value);
             }
         }
         return $value;

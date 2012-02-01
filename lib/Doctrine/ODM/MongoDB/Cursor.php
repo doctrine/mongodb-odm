@@ -151,4 +151,14 @@ class Cursor extends \Doctrine\MongoDB\Cursor
         parent::slaveOkay($okay);
         return $this;
     }
+
+    /** @override */
+    public function sort($fields)
+    {
+        $fields = $this->unitOfWork
+            ->getDocumentPersister($this->class->name)
+            ->prepareSort($fields);
+        $fields = parent::sort($fields);
+        return $this;
+    }
 }

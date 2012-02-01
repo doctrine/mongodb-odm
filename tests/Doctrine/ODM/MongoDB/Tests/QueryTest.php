@@ -144,7 +144,7 @@ class QueryTest extends BaseTest
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.name')->equals('Foo');
         $query = $qb->getQuery();
-        $this->assertEquals(array('eO.eO.embeddedMany.eO.n' => 'Foo'), $query->debug());
+        $this->assertEquals(array('eO.eO.e1.eO.n' => 'Foo'), $query->debug());
     }
 
     public function testQueryWithMultipleEmbeddedDocumentsAndReference()
@@ -155,8 +155,8 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug();
 
-        $this->assertTrue(array_key_exists('eO.eO.embeddedMany.eO.eP.pO._id', $debug));
-        $this->assertInstanceOf('\MongoId', $debug['eO.eO.embeddedMany.eO.eP.pO._id']);
+        $this->assertTrue(array_key_exists('eO.eO.e1.eO.eP.pO._id', $debug));
+        $this->assertInstanceOf('\MongoId', $debug['eO.eO.e1.eO.eP.pO._id']);
     }
 }
 
@@ -194,7 +194,7 @@ class EmbedTest
     /** @ODM\EmbedOne(name="eO", targetDocument="Doctrine\ODM\MongoDB\Tests\EmbedTest") */
     public $embeddedOne;
 
-    /** @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\EmbedTest") */
+    /** @ODM\EmbedMany(name="e1", targetDocument="Doctrine\ODM\MongoDB\Tests\EmbedTest") */
     public $embeddedMany;
 
     /** @ODM\String(name="n") */
