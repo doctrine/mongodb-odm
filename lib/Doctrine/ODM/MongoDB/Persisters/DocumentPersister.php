@@ -504,30 +504,54 @@ class DocumentPersister
      */
     public function primeCollection(Iterator $collection, $fieldName, $primer, array $hints = array())
     {
+        if (!count($collection)) {
+            return;
+        }
         $collection = $collection->toArray();
         $collectionMetaData = $this->dm->getClassMetaData(get_class(current($collection)));
 
         $fieldMapping = $collectionMetaData->fieldMappings[$fieldName];
 
-        $ids = array();
+        $cmd = $this->cmd;
+        $groupedIds = array();
+
         foreach ($collection as $element) {
             if ($fieldMapping['type'] == 'many') {
-                foreach ($collectionMetaData->getFieldValue($element, $fieldName)->getMongoData() as $data) {
-                    $ids[] = $data['$id'];
+                $fieldValue = $collectionMetaData->getFieldValue($element, $fieldName);
+                if ($fieldValue instanceof PersistentCollection) {
+                    foreach ($fieldValue->getMongoData() as $key => $reference) {
+                        if (isset($mapping['simple']) && $mapping['simple']) {
+                            $className = $mapping['targetDocument'];
+                            $mongoId = $reference;
+                        } else {
+                            $className = $this->dm->getClassNameFromDiscriminatorValue($fieldMapping, $reference);
+                            $mongoId = $reference[$cmd . 'id'];
+                        }
+                        $id = (string) $mongoId;
+                        $document = $this->uow->tryGetById($id, $className);
+                        if (!$document || $document instanceof Proxy && ! $document->__isInitialized__) {
+                            if ( ! isset($groupedIds[$className])) {
+                                $groupedIds[$className] = array();
+                            }
+                            $groupedIds[$className][] = $mongoId;
+                        }
+                    }
                 }
             } else if ($fieldMapping['type'] == 'one') {
-                if ($document = $collectionMetaData->getFieldValue($element, $fieldName)) {
-                    $ids[] = $this->uow->getDocumentIdentifier($document);
+                $document = $collectionMetaData->getFieldValue($element, $fieldName);
+                if ($document && $document instanceof Proxy && ! $document->__isInitialized__) {
+                    $class = $this->dm->getClassMetadata(get_class($document));
+                    $groupedIds[$class->name][] = $this->uow->getDocumentIdentifier($document);
                 }
             }
         }
-
-        if (! empty($ids)) {
+        foreach ($groupedIds as $className => $ids) {
+            $class = $this->dm->getClassMetadata($className);
             if ($primer instanceof \Closure) {
-                $primer($this->dm);
+                $primer($this->dm, $className, $fieldName, $ids, $hints);
             } else {
-                $fieldRepository = $this->dm->getRepository($fieldMapping['targetDocument']);
-                $qb = $fieldRepository->createQueryBuilder()
+                $repository = $this->dm->getRepository($className);
+                $qb = $repository->createQueryBuilder()
                     ->field('id')->in($ids);
                 if (isset($hints[Query::HINT_SLAVE_OKAY])) {
                     $qb->slaveOkay(true);

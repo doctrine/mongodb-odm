@@ -91,6 +91,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function prime($primer = true)
     {
         $this->primers[$this->currentField] = $primer;
+        return $this;
     }
 
     /**
