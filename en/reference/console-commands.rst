@@ -3,13 +3,14 @@ Console Commands
 
 Doctrine MongoDB ODM offers some console commands to ease your development process:
 
-- ``mongodb:query`` - Query mongodb and inspect the outputted results from your document classes.
-- ``mongodb:generate:documents`` - Generate document classes and method stubs from your mapping information.
-- ``mongodb:generate:hydrators`` - Generates hydrator classes for document classes.
-- ``mongodb:generate:proxies`` - Generates proxy classes for document classes.
-- ``mongodb:generate:repositories`` -  Generate repository classes from your mapping information.
-- ``mongodb:schema:create`` - Allows you to create databases, collections and indexes for your documents
-- ``mongodb:schema:drop`` - Allows you to drop databases, collections and indexes for your documents
+- ``odm:clear-cache:metadata`` - Clear all metadata cache of the various cache drivers.
+- ``odm:query`` - Query mongodb and inspect the outputted results from your document classes.
+- ``odm:generate:documents`` - Generate document classes and method stubs from your mapping information.
+- ``odm:generate:hydrators`` - Generates hydrator classes for document classes.
+- ``odm:generate:proxies`` - Generates proxy classes for document classes.
+- ``odm:generate:repositories`` -  Generate repository classes from your mapping information.
+- ``odm:schema:create`` - Allows you to create databases, collections and indexes for your documents
+- ``odm:schema:drop`` - Allows you to drop databases, collections and indexes for your documents
 
 You can setup a console command easily with the following code. You just need an existing
 ``DocumentManager`` instance:
@@ -40,6 +41,7 @@ You can setup a console command easily with the following code. You just need an
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateRepositoriesCommand(),
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateProxiesCommand(),
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateHydratorsCommand(),
+        new \Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache\MetadataCommand()
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\CreateCommand(),
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\DropCommand(),
     ));
@@ -47,6 +49,6 @@ You can setup a console command easily with the following code. You just need an
 
 Now you can run commands like the following:
 
-    $ php mongodb.php mongodb:query User "{ username : 'jwage' }"
+    $ php mongodb.php odm:query User "{ username : 'jwage' }"
 
 The above would output the results from the query.
