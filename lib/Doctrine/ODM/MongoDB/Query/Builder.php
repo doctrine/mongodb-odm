@@ -61,6 +61,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     private $refresh = false;
 
+    /**
+     * Array of primer Closure instances.
+     *
+     * @var array
+     */
+    private $primers = array();
+
     public function __construct(DocumentManager $dm, $cmd, $documentName = null)
     {
         $this->dm   = $dm;
@@ -69,6 +76,21 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         if ($documentName !== null) {
             $this->setDocumentName($documentName);
         }
+    }
+
+    /**
+     * Use a primer to load the current fields referenced data efficiently.
+     *
+     *     $qb->field('user')->prime(true);
+     *     $qb->field('user')->prime(function(DocumentManager $dm) {
+     *         // do something that will prime all the associated users in one query
+     *     });
+     *
+     * @param Closure|boolean $primer
+     */
+    public function prime($primer = true)
+    {
+        $this->primers[$this->currentField] = $primer;
     }
 
     /**
@@ -202,7 +224,8 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $options,
             $this->cmd,
             $this->hydrate,
-            $this->refresh
+            $this->refresh,
+            $this->primers
         );
     }
 

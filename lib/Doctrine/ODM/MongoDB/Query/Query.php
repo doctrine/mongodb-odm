@@ -71,13 +71,21 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     private $refresh = false;
 
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query = array(), array $options = array(), $cmd = '$', $hydrate = true, $refresh = false)
+    /**
+     * Array of primer Closure instances.
+     *
+     * @var array
+     */
+    private $primers = array();
+
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query = array(), array $options = array(), $cmd = '$', $hydrate = true, $refresh = false, array $primers = array())
     {
         parent::__construct($database, $collection, $query, $options, $cmd);
         $this->dm      = $dm;
         $this->class   = $class;
         $this->hydrate = $hydrate;
         $this->refresh = $refresh;
+        $this->primers = $primers;
     }
 
     /**
@@ -165,6 +173,15 @@ class Query extends \Doctrine\MongoDB\Query\Query
                 $results[$key] = $uow->getOrCreateDocument($this->class->name, $document, $hints);
             }
             $results->reset();
+        }
+
+        if ($this->primers) {
+            $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
+            foreach ($this->primers as $fieldName => $primer) {
+                if ($primer) {
+                    $documentPersister->primeCollection($results, $fieldName, $primer, $hints);
+                }
+            }
         }
 
         if ($this->hydrate && is_array($results) && isset($results['_id'])) {

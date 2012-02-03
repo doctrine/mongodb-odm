@@ -38,6 +38,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Cursor,
     Doctrine\ODM\MongoDB\LoggableCursor,
     Doctrine\MongoDB\Cursor as BaseCursor,
+    Doctrine\MongoDB\Iterator,
     Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
 
 /**
@@ -490,6 +491,51 @@ class DocumentPersister
         }
 
         return $this->uow->getOrCreateDocument($this->class->name, $result, $hints);
+    }
+
+    /**
+     * Prime a collection of documents property with an efficient single query instead of
+     * lazily loading each field with a single query.
+     *
+     * @param Iterator $collection
+     * @param string $fieldName
+     * @param Closure|boolean $primer
+     * @param array $hints
+     */
+    public function primeCollection(Iterator $collection, $fieldName, $primer, array $hints = array())
+    {
+        $collection = $collection->toArray();
+        $collectionMetaData = $this->dm->getClassMetaData(get_class(current($collection)));
+
+        $fieldMapping = $collectionMetaData->fieldMappings[$fieldName];
+
+        $ids = array();
+        foreach ($collection as $element) {
+            if ($fieldMapping['type'] == 'many') {
+                foreach ($collectionMetaData->getFieldValue($element, $fieldName)->getMongoData() as $data) {
+                    $ids[] = $data['$id'];
+                }
+            } else if ($fieldMapping['type'] == 'one') {
+                if ($document = $collectionMetaData->getFieldValue($element, $fieldName)) {
+                    $ids[] = $this->uow->getDocumentIdentifier($document);
+                }
+            }
+        }
+
+        if (! empty($ids)) {
+            if ($primer instanceof \Closure) {
+                $primer($this->dm);
+            } else {
+                $fieldRepository = $this->dm->getRepository($fieldMapping['targetDocument']);
+                $qb = $fieldRepository->createQueryBuilder()
+                    ->field('id')->in($ids);
+                if (isset($hints[Query::HINT_SLAVE_OKAY])) {
+                    $qb->slaveOkay(true);
+                }
+                $query = $qb->getQuery();
+                $query->execute()->toArray();
+            }
+        }
     }
 
     /**
