@@ -49,7 +49,7 @@ abstract class Type
         'bin_func' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataFuncType',
         'bin_uuid' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataUUIDType',
         'bin_md5' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataMD5Type',
-        'custom' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataCustomType',
+        'bin_custom' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataCustomType',
         'file' => 'Doctrine\ODM\MongoDB\Mapping\Types\FileType',
         'hash' => 'Doctrine\ODM\MongoDB\Mapping\Types\HashType',
         'collection' => 'Doctrine\ODM\MongoDB\Mapping\Types\CollectionType',
