@@ -16,6 +16,9 @@ class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\UserProfileItem');
     }
 
+    /**
+     * This test demonstrates a CommentableAct being published to feed items.
+     */
     public function testReferenceDiscriminators()
     {
         $this->dm->persist($commentableAct = new CommentableAct('user_status_update'));
@@ -23,6 +26,7 @@ class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($programMemberDashboardItem = new ProgramMembersDashboardItem($commentableAct, 'fitness_bootcamp'));
         $this->dm->persist($userDashboardItem = new UserDashboardItem($commentableAct, 'bob'));
         $this->dm->persist($userProfileItem = new UserProfileItem($commentableAct, 'bob'));
+
         $this->dm->flush();
         $this->dm->clear();
 
@@ -36,6 +40,50 @@ class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame($commentableAct, $programMemberDashboardItem->getAct());
         $this->assertSame($commentableAct, $userDashboardItem->getAct());
         $this->assertSame($commentableAct, $userProfileItem->getAct());
+    }
+
+    /**
+     * This tests demonstrates a race condition between two requests which are
+     * both publishing a CommentableAct to feed items.
+     */
+    public function testReferenceDiscriminatorsRaceCondition()
+    {
+        $this->dm->persist($commentableAct1 = new CommentableAct('user_status_update'));
+        $this->dm->persist($programMainDashboardItem1 = new ProgramMainDashboardItem($commentableAct1, 'fitness_bootcamp'));
+        $this->dm->persist($programMemberDashboardItem1 = new ProgramMembersDashboardItem($commentableAct1, 'fitness_bootcamp'));
+        $this->dm->persist($userDashboardItem1 = new UserDashboardItem($commentableAct1, 'bob'));
+        $this->dm->persist($userProfileItem1 = new UserProfileItem($commentableAct1, 'bob'));
+
+        $this->dm->persist($commentableAct2 = new CommentableAct('user_status_update'));
+        $this->dm->persist($programMainDashboardItem2 = new ProgramMainDashboardItem($commentableAct2, 'fitness_bootcamp'));
+        $this->dm->persist($programMemberDashboardItem2 = new ProgramMembersDashboardItem($commentableAct2, 'fitness_bootcamp'));
+        $this->dm->persist($userDashboardItem2 = new UserDashboardItem($commentableAct2, 'bob'));
+        $this->dm->persist($userProfileItem2 = new UserProfileItem($commentableAct2, 'bob'));
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $commentableAct1 = $this->dm->find(__NAMESPACE__ . '\CommentableAct', $commentableAct1->getId());
+        $programMainDashboardItem1 = $this->dm->find(__NAMESPACE__ . '\ProgramMainDashboardItem', $programMainDashboardItem1->getId());
+        $programMemberDashboardItem1 = $this->dm->find(__NAMESPACE__ . '\ProgramMembersDashboardItem', $programMemberDashboardItem1->getId());
+        $userDashboardItem1 = $this->dm->find(__NAMESPACE__ . '\UserDashboardItem', $userDashboardItem1->getId());
+        $userProfileItem1 = $this->dm->find(__NAMESPACE__ . '\UserProfileItem', $userProfileItem1->getId());
+
+        $commentableAct2 = $this->dm->find(__NAMESPACE__ . '\CommentableAct', $commentableAct2->getId());
+        $programMainDashboardItem2 = $this->dm->find(__NAMESPACE__ . '\ProgramMainDashboardItem', $programMainDashboardItem2->getId());
+        $programMemberDashboardItem2 = $this->dm->find(__NAMESPACE__ . '\ProgramMembersDashboardItem', $programMemberDashboardItem2->getId());
+        $userDashboardItem2 = $this->dm->find(__NAMESPACE__ . '\UserDashboardItem', $userDashboardItem2->getId());
+        $userProfileItem2 = $this->dm->find(__NAMESPACE__ . '\UserProfileItem', $userProfileItem2->getId());
+
+        $this->assertSame($commentableAct1, $programMainDashboardItem1->getAct());
+        $this->assertSame($commentableAct1, $programMemberDashboardItem1->getAct());
+        $this->assertSame($commentableAct1, $userDashboardItem1->getAct());
+        $this->assertSame($commentableAct1, $userProfileItem1->getAct());
+
+        $this->assertSame($commentableAct2, $programMainDashboardItem2->getAct());
+        $this->assertSame($commentableAct2, $programMemberDashboardItem2->getAct());
+        $this->assertSame($commentableAct2, $userDashboardItem2->getAct());
+        $this->assertSame($commentableAct2, $userProfileItem2->getAct());
     }
 }
 
