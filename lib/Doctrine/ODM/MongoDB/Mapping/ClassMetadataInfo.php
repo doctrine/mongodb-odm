@@ -172,6 +172,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $indexes = array();
 
     /**
+     * READ-ONLY: Whether or not queries on this document should require indexes.
+     */
+    public $requireIndexes = false;
+
+    /**
      * READ-ONLY: The name of the document class.
      */
     public $name;
@@ -628,6 +633,16 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             }, $keys),
             'options' => $options
         );
+    }
+
+    /**
+     * Set whether or not queries on this document should require indexes.
+     *
+     * @param bool $requireIndexes
+     */
+    public function setRequireIndexes($requireIndexes)
+    {
+        $this->requireIndexes = $requireIndexes;
     }
 
     /**

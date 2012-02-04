@@ -68,6 +68,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     private $primers = array();
 
+    /**
+     * Whether or not to require indexes.
+     *
+     * @var bool
+     */
+    private $requireIndexes;
+
     public function __construct(DocumentManager $dm, $cmd, $documentName = null)
     {
         $this->dm   = $dm;
@@ -79,6 +86,18 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     }
 
     /**
+     * Set whether or not to require indexes.
+     *
+     * @param bool $requireIndexes
+     * @return Builder
+     */
+    public function requireIndexes($requireIndexes = true)
+    {
+        $this->requireIndexes = $requireIndexes;
+        return $this;
+    }
+
+    /**
      * Use a primer to load the current fields referenced data efficiently.
      *
      *     $qb->field('user')->prime(true);
@@ -87,6 +106,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      *     });
      *
      * @param Closure|boolean $primer
+     * @return Builder
      */
     public function prime($primer = true)
     {
@@ -226,7 +246,8 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->cmd,
             $this->hydrate,
             $this->refresh,
-            $this->primers
+            $this->primers,
+            $this->requireIndexes
         );
     }
 

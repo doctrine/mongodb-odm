@@ -175,4 +175,12 @@ class MongoDBException extends \Exception
     {
         return new self("The identifier $fieldName is missing for a query of " . $className);
     }
+
+    public static function queryNotIndexed($className, $unindexedFields)
+    {
+        return new self(sprintf('Cannot execute unindexed queries on %s. Unindexed fields: %s',
+            $className,
+            implode(', ', $unindexedFields)
+        ));
+    }
 }

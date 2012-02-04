@@ -86,6 +86,9 @@ class YamlDriver extends AbstractFileDriver
             $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
                     . strtoupper($element['changeTrackingPolicy'])));
         }
+        if (isset($element['requireIndexes'])) {
+            $class->setRequireIndexes($element['requireIndexes']);
+        }
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $fieldName => $mapping) {
                 if (is_string($mapping)) {

@@ -31,6 +31,7 @@ final class Document extends AbstractDocument
     public $collection;
     public $repositoryClass;
     public $indexes = array();
+    public $requireIndexes = false;
 }
 /** @Annotation */
 final class EmbeddedDocument extends AbstractDocument
