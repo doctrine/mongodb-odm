@@ -1939,6 +1939,9 @@ class UnitOfWork implements PropertyChangedListener
                         }
 
                         if ( ! $mergeCol instanceof PersistentCollection) {
+                            if ( ! $mergeCol instanceof Collection) {
+                                $mergeCol = new ArrayCollection($mergeCol);
+                            }
                             $mergeCol = new PersistentCollection($mergeCol, $this->dm, $this, $this->cmd);
                             $mergeCol->setInitialized(true);
                         } else {
