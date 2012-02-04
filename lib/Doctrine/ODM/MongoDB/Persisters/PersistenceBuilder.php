@@ -332,6 +332,12 @@ class PersistenceBuilder
                 // Do nothing right now
             }
         }
+
+        // add discriminator if the class has one
+        if ($class->hasDiscriminator()) {
+            $updateData[$this->cmd . 'set'][$class->discriminatorField['name']] = $class->discriminatorValue;
+        }
+
         return $updateData;
     }
 
