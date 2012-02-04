@@ -187,7 +187,26 @@ EOF
                 }
             }
 
-            if ( ! isset($mapping['association'])) {
+            if ($mapping['type'] === 'date') {
+                $code .= sprintf(<<<EOF
+
+        /** @Field(type="date") */
+        if (isset(\$data['%1\$s'])) {
+            \$value = \$data['%1\$s'];
+            %3\$s
+            \$this->class->reflFields['%2\$s']->setValue(\$document, clone \$return);
+            \$hydratedData['%2\$s'] = \$return;
+        }
+
+EOF
+                ,
+                    $mapping['name'],
+                    $mapping['fieldName'],
+                    Type::getType($mapping['type'])->closureToPHP()
+                );
+
+
+            } elseif ( ! isset($mapping['association'])) {
                 $code .= sprintf(<<<EOF
 
         /** @Field(type="{$mapping['type']}") */
