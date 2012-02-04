@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\MongoDB\Collection;
+use Doctrine\MongoDB\Connection;
 use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\MongoDB\Loggable;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -42,46 +44,11 @@ class LoggableCursor extends Cursor implements Loggable
      */
     protected $loggerCallable;
 
-    /**
-     * The query array that was used when creating this cursor.
-     *
-     * @var array
-     */
-    protected $query = array();
-
-    /**
-     * The array of fields that were selected when creating this cursor.
-     *
-     * @var array
-     */
-    protected $fields = array();
-
-    public function __construct(BaseCursor $mongoCursor, UnitOfWork $uow, ClassMetadata $class, $loggerCallable, array $query, array $fields)
+    /** @override */
+    public function __construct(Connection $connection, Collection $collection, UnitOfWork $uow, ClassMetadata $class, BaseCursor $baseCursor, array $query = array(), array $fields = array(), $numRetries = 0, $loggerCallable)
     {
-        parent::__construct($mongoCursor, $uow, $class);
+        parent::__construct($connection, $collection, $uow, $class, $baseCursor, $query, $fields, $numRetries);
         $this->loggerCallable = $loggerCallable;
-        $this->query = $query;
-        $this->fields = $fields;
-    }
-
-    /**
-     * Gets the query array that was used when creating this cursor.
-     *
-     * @return array $query
-     */
-    public function getQuery()
-    {
-        return $this->query;
-    }
-
-    /**
-     * Gets the array of fields that were selected when creating this cursor.
-     *
-     * @return array $fields
-     */
-    public function getFields()
-    {
-        return $this->fields;
     }
 
     /** @proxy */

@@ -196,15 +196,27 @@ class Query extends \Doctrine\MongoDB\Query\Query
     {
         if ($baseCursor instanceof BaseLoggableCursor) {
             $cursor = new LoggableCursor(
-                $baseCursor,
+                $this->dm->getConnection(),
+                $this->collection,
                 $this->dm->getUnitOfWork(),
                 $this->class,
-                $baseCursor->getLoggerCallable(),
+                $baseCursor,
                 $baseCursor->getQuery(),
-                $baseCursor->getFields()
+                $baseCursor->getFields(),
+                $this->dm->getConfiguration()->getRetryQuery(),
+                $baseCursor->getLoggerCallable()
             );
         } else {
-            $cursor = new Cursor($baseCursor, $this->dm->getUnitOfWork(), $this->class);
+            $cursor = new Cursor(
+                $this->dm->getConnection(),
+                $this->collection,
+                $this->dm->getUnitOfWork(),
+                $this->class,
+                $baseCursor,
+                $baseCursor->getQuery(),
+                $baseCursor->getFields(),
+                $this->dm->getConfiguration()->getRetryQuery()
+            );
         }
         $cursor->hydrate($this->hydrate);
         $cursor->setHints($hints);

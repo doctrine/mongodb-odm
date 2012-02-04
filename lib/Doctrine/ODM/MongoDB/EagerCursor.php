@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
@@ -68,7 +68,7 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
     private $hints = array();
 
     /**
-     * @var object Doctrine\MongoDB\ODM\Cursor
+     * @var object Doctrine\ODM\MongoDB\Cursor
      */
     private $cursor;
 
@@ -127,7 +127,7 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
     public function initialize()
     {
         if ($this->initialized === false) {
-            $this->data = $this->cursor->getMongoCursor()->toArray();
+            $this->data = $this->cursor->getBaseCursor()->toArray();
         }
         $this->initialized = true;
     }

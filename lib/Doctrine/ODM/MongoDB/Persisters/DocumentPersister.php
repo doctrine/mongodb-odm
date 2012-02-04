@@ -417,15 +417,27 @@ class DocumentPersister
     {
         if ($cursor instanceof BaseLoggableCursor) {
             return new LoggableCursor(
-                $cursor,
-                $this->uow,
+                $this->dm->getConnection(),
+                $this->collection,
+                $this->dm->getUnitOfWork(),
                 $this->class,
-                $cursor->getLoggerCallable(),
+                $cursor,
                 $cursor->getQuery(),
-                $cursor->getFields()
+                $cursor->getFields(),
+                $this->dm->getConfiguration()->getRetryQuery(),
+                $cursor->getLoggerCallable()
             );
         } else {
-            return new Cursor($cursor, $this->uow, $this->class);
+            return new Cursor(
+                $this->dm->getConnection(),
+                $this->collection,
+                $this->dm->getUnitOfWork(),
+                $this->class,
+                $cursor,
+                $cursor->getQuery(),
+                $cursor->getFields(),
+                $this->dm->getConfiguration()->getRetryQuery()
+            );
         }
     }
 
