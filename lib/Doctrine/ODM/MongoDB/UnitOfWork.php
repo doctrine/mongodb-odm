@@ -1187,7 +1187,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Calculate dependencies for new nodes
-        foreach ($newNodes as $class) {
+        while ($class = array_pop($newNodes)) {
             $this->addDependencies($class, $calc);
         }
         return $calc->getCommitOrder();
@@ -1203,26 +1203,34 @@ class UnitOfWork implements PropertyChangedListener
     private function addDependencies(ClassMetadata $class, $calc)
     {
         foreach ($class->fieldMappings as $mapping) {
-            if ($mapping['isOwningSide'] && isset($mapping['reference']) && isset($mapping['targetDocument'])) {
+            if ((isset($mapping['embedded']) || (isset($mapping['reference']) && $mapping['isOwningSide'])) && isset($mapping['targetDocument'])) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+
                 if ( ! $calc->hasClass($targetClass->name)) {
                     $calc->addClass($targetClass);
                 }
-                if ( ! $calc->hasDependency($targetClass, $class)) {
-                    $calc->addDependency($targetClass, $class);
+
+                $calc->addDependency($targetClass, $class);
+
+                // If the target class has mapped subclasses, these share the same dependency.
+                if ( ! $targetClass->subClasses) {
+                    continue;
                 }
-            }
-            if (isset($mapping['embedded']) && isset($mapping['targetDocument'])) {
-                $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-                if ( ! $calc->hasClass($targetClass->name)) {
-                    $calc->addClass($targetClass);
-                }
-                if ( ! $calc->hasDependency($targetClass, $class)) {
-                    $calc->addDependency($targetClass, $class);
+
+                foreach ($targetClass->subClasses as $subClassName) {
+                    $targetSubClass = $this->dm->getClassMetadata($subClassName);
+
+                    if ( ! $calc->hasClass($subClassName)) {
+                        $calc->addClass($targetSubClass);
+
+                        $newNodes[] = $targetSubClass;
+                    }
+
+                    $calc->addDependency($targetSubClass, $class);
                 }
 
                 // avoid infinite recursion
-                if ($class != $targetClass) {
+                if ($class !== $targetClass) {
                     $this->addDependencies($targetClass, $calc);
                 }
             }
