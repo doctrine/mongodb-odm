@@ -7,6 +7,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * @ODM\Document(collection="users_upsert")
+ * @ODM\InheritanceType("SINGLE_COLLECTION")
+ * @ODM\DiscriminatorField(fieldName="discriminator")
+ * @ODM\DiscriminatorMap({
+ *     "user"="Documents\UserUpsert",
+ *     "child"="Documents\UserUpsertChild"
+ * })
  */
 class UserUpsert
 {

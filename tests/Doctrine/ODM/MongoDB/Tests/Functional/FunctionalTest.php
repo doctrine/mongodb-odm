@@ -37,15 +37,16 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function provideUpsertObjects()
     {
         return array(
-            array('Documents\\UserUpsert', new \MongoId('4f18f593acee41d724000005')),
-            array('Documents\\UserUpsertIdStrategyNone', 'jwage')
+            array('Documents\\UserUpsert', new \MongoId('4f18f593acee41d724000005'), 'user'),
+            array('Documents\\UserUpsertIdStrategyNone', 'jwage', 'user'),
+            array('Documents\\UserUpsertChild', new \MongoId('4f18f593acee41d724000005'), 'child')
         );
     }
 
     /**
      * @dataProvider provideUpsertObjects
      */
-    public function testUpsertObject($className, $id)
+    public function testUpsertObject($className, $id, $discriminator)
     {
         $user = new $className();
         $user->id = (string) $id;
@@ -61,6 +62,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNotNull($check);
         $this->assertEquals((string) $id, (string) $check['_id']);
         $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
+        $this->assertEquals($discriminator, $check['discriminator']);
 
         $group2 = new \Documents\Group('Group');
 
@@ -73,6 +75,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection($className)->findOne(array('_id' => $id));
+        $this->assertEquals($discriminator, $check['discriminator']);
         $this->assertEquals(3, $check['count']);
         $this->assertEquals(5, $check['hits']);
         $this->assertEquals(2, count($check['groups']));
@@ -88,6 +91,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush(null, array('safe' => true));
 
         $check = $this->dm->getDocumentCollection($className)->findOne(array('_id' => $id));
+        $this->assertEquals($discriminator, $check['discriminator']);
         $this->assertEquals(3, $check['count']);
         $this->assertEquals(100, $check['hits']);
         $this->assertEquals(2, count($check['groups']));
