@@ -84,10 +84,6 @@ class PersistenceBuilder
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
                 continue;
             }
-            // Skip version and lock fields
-            if (isset($mapping['version']) || isset($mapping['lock'])) {
-                continue;
-            }
 
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
 
@@ -178,11 +174,6 @@ class PersistenceBuilder
                 continue;
             }
 
-            // Skip version and lock fields
-            if (isset($mapping['version']) || isset($mapping['lock'])) {
-                continue;
-            }
-
             list($old, $new) = $change;
 
             // @Inc
@@ -268,11 +259,6 @@ class PersistenceBuilder
 
             // skip not saved fields
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
-                continue;
-            }
-
-            // Skip version and lock fields
-            if (isset($mapping['version']) || isset($mapping['lock'])) {
                 continue;
             }
 

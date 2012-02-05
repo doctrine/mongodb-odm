@@ -1012,9 +1012,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         }
         */
         if (isset($mapping['version'])) {
+            $mapping['notSaved'] = true;
             $this->setVersionMapping($mapping);
         }
         if (isset($mapping['lock'])) {
+            $mapping['notSaved'] = true;
             $this->setLockMapping($mapping);
         }
         $mapping['isOwningSide'] = true;
