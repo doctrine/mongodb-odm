@@ -580,7 +580,7 @@ class UnitOfWork implements PropertyChangedListener
                 $value = new GridFSFile($value);
                 $class->reflFields[$name]->setValue($document, $value);
                 $actualData[$name] = $value;
-            } elseif (($class->isCollectionValuedReference($name) || $class->isCollectionValuedEmbed($name))
+            } elseif ((isset($mapping['association']) && $mapping['type'] === 'many')
                     && $value !== null && ! ($value instanceof PersistentCollection)) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
                 if ( ! $value instanceof Collection) {
