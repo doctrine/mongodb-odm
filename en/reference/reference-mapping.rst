@@ -283,7 +283,7 @@ must explicitly enable it:
 
         <reference-one target-document="Documents\Profile">
             <cascade>
-                <cascade-persist/>
+                <persist/>
             </cascade>
         </reference-one>
 
