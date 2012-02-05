@@ -359,3 +359,108 @@ options structures manually:
           coordinates:
             keys:
               coordinates: 2d
+
+Requiring Indexes
+-----------------
+
+Sometimes you may want to require indexes for all your queries to ensure you don't let stray unindexed queries
+make it to the database and cause performance problems.
+
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        /**
+         * @Document(requireIndexes=true)
+         */
+        class Place
+        {
+            /** @Id */
+            public $id;
+    
+            /** @String @Index */
+            public $city;
+        }
+
+    .. code-block:: xml
+
+        // Documents.Place.dcm.xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping
+                            http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
+        
+            <document name="Documents\Place" require-indexes="true">
+                <field fieldName="id" id="true" />
+                <field fieldName="city" type="string" />
+                <indexes>
+                    <index>
+                        <key name="city">
+                    </index>
+                </indexes>
+            </document>
+        </doctrine-mongo-mapping>
+
+    .. code-block:: yaml
+
+        # Documents.Place.dcm.yml
+
+        Documents\Place:
+          fields:
+            id:
+              id: true
+            city:
+              type: string
+          indexes:
+            index1:
+              keys:
+                city: asc
+
+When you run queries it will check that it is indexed and throw an exception if it is not indexed:
+
+.. code-block:: php
+
+    <?php
+
+    $qb = $dm->createQueryBuilder('Documents\Place')
+        ->field('city')->equals('Nashville');
+    $query = $qb->getQuery();
+    $places = $query->execute();
+
+When you execute the query it will throw an exception if `city` was not indexed in the database. You can control
+whether or not an exception will be thrown by using the `requireIndexes()` method:
+
+.. code-block:: php
+
+    <?php
+
+    $qb->requireIndexes(false);
+
+You can also check if the query is indexed and with the `isIndexed()` method and use it to display your
+own notification when a query is unindexed:
+
+.. code-block:: php
+
+    <?php
+
+    $query = $qb->getQuery();
+    if ($query->isIndexed()) {
+        $notifier->addError('Cannot execute queries that are not indexed.');
+    }
+
+If you don't want to require indexes for all queries you can set leave `requireIndexes` as false and control
+it on a per query basis:
+
+.. code-block:: php
+
+    <?php
+
+    $qb->requireIndexes(true);
+    $query = $qb->getQuery();
+    $results = $query->execute();
