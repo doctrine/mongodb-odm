@@ -38,7 +38,8 @@ Iterating over the ``$users`` and getting the accounts will hit the database and
     <?php
 
     foreach ($users as $user) {
-        foreach ($user->getAccounts() as $account) { // another query to load accounts
+        // another query to load accounts for $user
+        foreach ($user->getAccounts() as $account) {
             
         }
     }
