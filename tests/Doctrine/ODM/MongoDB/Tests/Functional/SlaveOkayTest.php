@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Documents\User;
 use Documents\Group;
@@ -72,4 +73,21 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $groups->setHints(array(Query::HINT_SLAVE_OKAY => true));
         $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $groups->getHints());
     }
+
+    public function testSlaveOkayDocument()
+    {
+        $users = $this->dm->getRepository(__NAMESPACE__.'\SlaveOkayDocument')
+            ->createQueryBuilder()
+            ->getQuery()
+            ->execute();
+
+        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $users->getHints());
+    }
+}
+
+/** @ODM\Document(slaveOkay=true) */
+class SlaveOkayDocument
+{
+    /** @ODM\Id */
+    public $id;
 }

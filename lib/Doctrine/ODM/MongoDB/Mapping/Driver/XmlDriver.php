@@ -92,8 +92,11 @@ class XmlDriver extends AbstractFileDriver
                 $this->addIndex($class, $index);
             }
         }
-        if (isset($xmlRoot->{'requireIndexes'})) {
-            $class->setRequireIndexes((bool) $xmlRoot->{'requireIndexes'});
+        if (isset($xmlRoot->{'require-indexes'})) {
+            $class->setRequireIndexes((bool) $xmlRoot->{'require-indexes'});
+        }
+        if (isset($xmlRoot->{'slave-okay'})) {
+            $class->setSlaveOkay((bool) $xmlRoot->{'slave-okay'});
         }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {

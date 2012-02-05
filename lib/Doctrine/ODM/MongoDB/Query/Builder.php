@@ -236,6 +236,10 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             ->getDocumentPersister($this->class->name)
             ->prepareSort($query['sort']);
 
+        if ($this->class->slaveOkay) {
+            $query['slaveOkay'] = $this->class->slaveOkay;
+        }
+
         return new Query(
             $this->dm,
             $this->class,

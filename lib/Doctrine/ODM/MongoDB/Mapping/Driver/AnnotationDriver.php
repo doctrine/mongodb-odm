@@ -186,6 +186,9 @@ class AnnotationDriver implements Driver
         if (isset($documentAnnot->requireIndexes)) {
             $class->setRequireIndexes($documentAnnot->requireIndexes);
         }
+        if (isset($documentAnnot->slaveOkay)) {
+            $class->setSlaveOkay($documentAnnot->slaveOkay);
+        }
 
         foreach ($reflClass->getProperties() as $property) {
             if ($class->isMappedSuperclass && !$property->isPrivate() || $class->isInheritedField($property->name)) {
