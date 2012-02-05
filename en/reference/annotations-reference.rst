@@ -841,7 +841,7 @@ DocBlock.
     {
         // ...
     
-        /** @PreUpdated */
+        /** @PreUpdate */
         public function preUpdated()
         {
             // ...
