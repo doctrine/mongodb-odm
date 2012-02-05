@@ -156,7 +156,7 @@ Required attributes:
    fieldName - The field name of the discriminator. This name is also
    used during Array hydration as key to specify the class-name.
 
--
+Example:
 
 .. code-block:: php
 
