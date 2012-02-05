@@ -24,7 +24,7 @@ For example you can update a job and return it:
 
     $job = $dm->createrQueryBuilder('Job')
         // Find the job
-        ->findAndModify()
+        ->findAndUpdate()
         ->field('in_progress')->set(true)
         ->field('in_progress')->equals(false)
         ->sort('priority', 'desc')
@@ -45,7 +45,7 @@ Here is an example where we return the new updated job document:
     <?php
     $job = $dm->createrQueryBuilder('Job')
         // Find the job
-        ->findAndModify()
+        ->findAndUpdate()
         ->returnNew()
         ->field('in_progress')->equals(false)
         ->sort('priority', 'desc')
