@@ -107,6 +107,31 @@ Now you can ``execute()`` that query and it will return a cursor for you to iter
 
     $users = $query->execute();
 
+Eager Cursors
+~~~~~~~~~~~~~
+
+You can configure queries to return an eager cursor instead of a normal mongodb cursor using the ``Builder#eagerCursor()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    $qb = $dm->createQueryBuilder('User')
+        ->eagerCursor(true);
+    $query = $qb->getQuery();
+    $cursor = $query->execute(); // instanceof Doctrine\ODM\MongoDB\EagerCursor
+
+Iterating over the ``$cursor`` will fetch all the data in a short and small cursor all at once and will hydrate
+one document at a time in to an object as you iterate:
+
+.. code-block::php
+
+    <?php
+
+    foreach ($cursor as $user) { // queries for all users and data is held internally
+        // each User object is hydrated from the data one at a time.
+    }
+
 Getting Single Result
 ~~~~~~~~~~~~~~~~~~~~~
 
