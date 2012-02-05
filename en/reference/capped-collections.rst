@@ -43,14 +43,14 @@ Creating
 Remember that you must manually create the collections. If you let
 MongoDB create the collection lazily the first time it is selected,
 it will not be created with the capped configuration. You can
-create the collection for a document with your ``DocumentManager``
-instance:
+create the collection for a document with the ``SchemaManager``
+that can be acquired from your ``DocumentManager`` instance:
 
 .. code-block:: php
 
     <?php
 
-    $dm->createDocumentCollection('Category');
+    $documentManager->getSchemaManager()->createDocumentCollection('Category');
 
 You can drop the collection too if it already exists:
 
@@ -58,4 +58,4 @@ You can drop the collection too if it already exists:
 
     <?php
 
-    $dm->dropDocumentCollection('Category');
+    $documentManager->getSchemaManager()->dropDocumentCollection('Category');
