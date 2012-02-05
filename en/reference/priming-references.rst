@@ -51,6 +51,7 @@ We can improve this by using the ``prime()`` method:
     <?php
 
     $qb = $dm->createQueryBuilder('User')
+        ->field('accounts')->prime(true)
         ->limit(100);
     $query = $qb->getQuery();
 
