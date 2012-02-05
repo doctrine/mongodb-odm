@@ -1,5 +1,7 @@
 <?php
 /*
+ * THIS SOFTWARE IS PROVIDED BY THE <?php
+/*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -229,13 +231,19 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $persisters = array();
 
-
     /**
      * The collection persister instance used to persist changes to collections.
      *
      * @var CollectionPersister
      */
     private $collectionPersister;
+
+    /**
+     * The persistence builder instance used in DocumentPersisters.
+     *
+     * @var PersistenceBuilder
+     */
+    private $persistenceBuilder;
 
     /**
      * Array of parent associations between embedded documents
@@ -276,7 +284,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getPersistenceBuilder()
     {
-        return new PersistenceBuilder($this->dm, $this, $this->cmd);
+        if (!$this->persistenceBuilder) {
+            $this->persistenceBuilder = new PersistenceBuilder($this->dm, $this, $this->cmd);
+        }
+        return $this->persistenceBuilder;
     }
 
     /**
