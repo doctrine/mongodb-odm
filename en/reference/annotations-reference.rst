@@ -4,6 +4,21 @@ Annotations Reference
 In this chapter a reference of every Doctrine 2 ODM Annotation is
 given with short explanations on their context and usage.
 
+@AlsoLoad
+---------
+
+Specify an additional mongodb field to check for and load data from it if it exists.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Field @AlsoLoad("oldFieldName")*/
+    private $fieldName;
+
+The above `$fieldName` will be loaded from `fieldName` if it exists and will fallback to `oldFieldName`
+if it does not exist.
+
 @Bin
 ----
 
@@ -99,11 +114,18 @@ Alias of @Field, with "type" attribute set to
 "collection". Stores and retrieves the value as numeric indexed
 array.
 
+Optional attributes:
+
+-
+    strategy - The strategy to use to persist the data. Possible values are `set` and `pushAll` and `pushAll` is the default.
+
+Example:
+
 .. code-block:: php
 
     <?php
 
-    /** @Collection */
+    /** @Collection(strategy="pushAll") */
     private $tags = array();
 
 @Date
@@ -245,7 +267,11 @@ Optional attributes:
    collection - By default collection name is extracted from the
    document's class name, but this attribute can be used to override.
 - 
-   repositoryClass - Specifies custom repository class to use when .
+   repositoryClass - Specifies custom repository class to use when.
+-
+   indexes - Specifies an array of indexes for this document.
+-
+   requireIndexes - Specifies whether or not queries should require indexes.
 
 Example:
 
@@ -254,7 +280,15 @@ Example:
     <?php
 
     /**
-     * @Document(db="documents", collection="users", repositoryClass="MyProject\UserRepository")
+     * @Document(
+     *     db="documents",
+     *     collection="users",
+     *     repositoryClass="MyProject\UserRepository",
+     *     indexes={
+     *         @Index(keys={"username"="desc"}, options={"unique"=true})
+     *     },
+     *     requireIndexes=true
+     * )
      */
     class User
     {
@@ -271,6 +305,36 @@ collection of documents
 Required attributes:
 
 -  targetDocument - A full class name of the target document.
+
+Optional attributes:
+
+- 
+    discriminatorField - The field name to store the discriminator value in.
+-
+    discriminatorMap - Map of discriminator values to class names.
+-
+    strategy - The strategy to use to persist the reference. Possible values are `set` and `pushAll` and `pushAll` is the default.
+
+Example:
+
+.. code-block:: php
+
+    <?php
+
+    /**
+     * @EmbedMany(
+     *     strategy="set",
+     *     discriminatorField="type",
+     *     discriminatorMap={
+     *         "book"="Documents\BookTag",
+     *         "song"="DOcuments\SongTag"
+     *     }
+     * )
+     */
+    private $tags = array();
+
+Depending on the type of Document a value of `user` or `author` will be stored in a field named `type`
+and will be used to properly reconstruct the right class during hydration.
 
 @EmbedOne
 ---------
@@ -293,6 +357,36 @@ MongoDB docs:
 Required attributes:
 
 -  targetDocument - A full class name of the target document.
+
+Optional attributes:
+
+- 
+    discriminatorField - The field name to store the discriminator value in.
+-
+    discriminatorMap - Map of discriminator values to class names.
+-
+    strategy - The strategy to use to persist the reference. Possible values are `set` and `pushAll` and `pushAll` is the default.
+
+Example:
+
+.. code-block:: php
+
+    <?php
+
+    /**
+     * @EmbedOne(
+     *     strategy="set",
+     *     discriminatorField="type",
+     *     discriminatorMap={
+     *         "book"="Documents\BookTag",
+     *         "song"="DOcuments\SongTag"
+     *     }
+     * )
+     */
+    private $tags = array();
+
+Depending on the type of Document a value of `user` or `author` will be stored in a field named `type`
+and will be used to properly reconstruct the right class during hydration.
 
 @EmbeddedDocument
 -----------------
@@ -860,8 +954,30 @@ Required attributes:
 
 Optional attributes:
 
-
--  cascade - Cascade Option
+-
+    simple - Create simple references and only store a `MongoId` instead of a `DBRef`.
+-
+    cascade - Cascade Option
+- 
+    discriminatorField - The field name to store the discriminator value in.
+-
+    discriminatorMap - Map of discriminator values to class names.
+-
+    inversedBy - The field name of the inverse side. Only allowed on owning side.
+-
+    mappedBy - The field name of the owning side. Only allowed on the inverse side.
+-
+    repositoryMethod - The name of the repository method to call to to populate this reference.
+-
+    sort - The default sort for the query that loads the reference.
+-
+    criteria - Array of default criteria for the query that loads the reference.
+-
+    limit - Limit for the query that loads the reference.
+-
+    skip - Skip for the query that lods the reference.
+-
+    strategy - The strategy to use to persist the reference. Possible values are `set` and `pushAll` and `pushAll` is the default.
 
 Example:
 
@@ -870,9 +986,18 @@ Example:
     <?php
 
     /**
-     * @ReferenceMany(targetDocument="Documents\PhoneNumber", cascade="all")
+     * @ReferenceMany(
+     *     strategy="set",
+     *     targetDocument="Documents\Item",
+     *     cascade="all",
+     *     discriminatorField="type",
+     *     discriminatorMap={
+     *         "book"="Documents\BookItem",
+     *         "song"="DOcuments\SongItem"
+     *     }
+     * )
      */
-    private $phones = array();
+    private $cart;
 
 @String
 -------
@@ -921,7 +1046,28 @@ Required attributes:
 
 Optional attributes:
 
--  cascade - Cascade Option
+-
+    simple - Create simple references and only store a `MongoId` instead of a `DBRef`.
+-
+    cascade - Cascade Option
+- 
+    discriminatorField - The field name to store the discriminator value in.
+-
+    discriminatorMap - Map of discriminator values to class names.
+-
+    inversedBy - The field name of the inverse side. Only allowed on owning side.
+-
+    mappedBy - The field name of the owning side. Only allowed on the inverse side.
+-
+    repositoryMethod - The name of the repository method to call to to populate this reference.
+-
+    sort - The default sort for the query that loads the reference.
+-
+    criteria - Array of default criteria for the query that loads the reference.
+-
+    limit - Limit for the query that loads the reference.
+-
+    skip - Skip for the query that lods the reference.
 
 Example:
 
@@ -930,6 +1076,14 @@ Example:
     <?php
 
     /**
-     * @ReferenceOne(targetDocument="Documents\ShoppingCart", cascade="all")
+     * @ReferenceOne(
+     *     targetDocument="Documents\Item",
+     *     cascade="all",
+     *     discriminatorField="type",
+     *     discriminatorMap={
+     *         "book"="Documents\BookItem",
+     *         "song"="DOcuments\SongItem"
+     *     }
+     * )
      */
     private $cart;
