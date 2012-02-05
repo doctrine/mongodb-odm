@@ -160,10 +160,20 @@ the life-time of their registered documents.
    loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
    (annotations/xml/yaml).
+-
+   preFlush - The preFlush event occurs before the change-sets of all
+   managed documents are computed. This both a lifecycle call back and
+   and listener.
+-
+   postFlush - The postFlush event occurs after the change-sets of all
+   managed documents are computed.
 - 
    onFlush - The onFlush event occours after the change-sets of all
    managed documents are computed. This event is not a lifecycle
    callback.
+-
+   onClear - The onClear event occurs after the UnitOfWork has had
+   its state cleared.
 
 You can access the Event constants from the ``Events`` class in the
 ORM package.
@@ -251,6 +261,12 @@ event occurs.
         public function doStuffOnPreUpdate()
         {
             $this->value = 'changed from preUpdate callback!';
+        }
+
+        /** @PreFlush */
+        public function preFlush()
+        {
+            $this->value = 'changed from preFlush callback!';
         }
     }
 
@@ -355,6 +371,33 @@ Define the ``EventTest`` class with a ``preRemove()`` method:
         }
     }
 
+preFlush
+~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::preFlush, $test);
+
+Define the ``EventTest`` class with a ``preFlush()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs)
+        {
+            $dm = $eventArgs->getDocumentManager();
+            $uow = $dm->getUnitOfWork();
+            // do something
+        }
+    }
+
 onFlush
 ~~~~~~~
 
@@ -375,6 +418,33 @@ Define the ``EventTest`` class with a ``onFlush()`` method:
     class EventTest
     {
         public function onFlush(\Doctrine\ODM\MongoDB\Event\OnFlushEventArgs $eventArgs)
+        {
+            $dm = $eventArgs->getDocumentManager();
+            $uow = $dm->getUnitOfWork();
+            // do something
+        }
+    }
+
+postFlush
+~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::postFlush, $test);
+
+Define the ``EventTest`` class with a ``postFlush()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function postFlush(\Doctrine\ODM\MongoDB\Event\PostFlushEventArgs $eventArgs)
         {
             $dm = $eventArgs->getDocumentManager();
             $uow = $dm->getUnitOfWork();
@@ -415,6 +485,39 @@ Define the ``EventTest`` class with a ``preUpdate()`` method:
 
     If you modify a document in the preUpdate event you must call ``recomputeSingleDocumentChangeSet``
     for the modified document in order for the changes to be persisted.
+
+onClear
+~~~~~~~
+
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::onClear, $test);
+
+Define the ``EventTest`` class with a ``onClear()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function onClear(\Doctrine\ODM\MongoDB\Event\OnClearEventArgs $eventArgs)
+        {
+            $class = $eventArgs->getDocumentClass();
+            $dm = $eventArgs->getDocumentManager();
+            $uow = $dm->getUnitOfWork();
+            
+            // Check if event clears all documents.
+            if ($eventArgs->clearsAllDocuments()) {
+                // do something
+            }
+            // do something
+        }
+    }
 
 postUpdate, postRemove, postPersist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
