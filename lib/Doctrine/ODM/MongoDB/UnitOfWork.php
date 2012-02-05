@@ -381,6 +381,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function commit($document = null, array $options = array())
     {
+        // Raise preFlush
+        if ($this->evm->hasListeners(Events::preFlush)) {
+            $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->dm));
+        }
+
         $defaultOptions = $this->dm->getConfiguration()->getDefaultCommitOptions();
         if ($options) {
             $options = array_merge($defaultOptions, $options);
@@ -459,6 +464,11 @@ class UnitOfWork implements PropertyChangedListener
         // Take new snapshots from visited collections
         foreach ($this->visitedCollections as $coll) {
             $coll->takeSnapshot();
+        }
+
+        // Raise postFlush
+        if ($this->evm->hasListeners(Events::postFlush)) {
+            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
         }
 
         // Clear up
@@ -618,6 +628,11 @@ class UnitOfWork implements PropertyChangedListener
     {
         if ( ! $class->isInheritanceTypeNone()) {
             $class = $this->dm->getClassMetadata(get_class($document));
+        }
+
+        // Fire PreFlush lifecycle callbacks
+        if (isset($class->lifecycleCallbacks[Events::preFlush])) {
+            $class->invokeLifecycleCallbacks(Events::preFlush, $document);
         }
 
         $oid = spl_object_hash($document);
@@ -2323,25 +2338,43 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Clears the UnitOfWork.
+     *
+     * @param string $documentName if given, only documents of this type will get detached
      */
-    public function clear()
+    public function clear($documentName = null)
     {
-        $this->identityMap =
-        $this->documentIdentifiers =
-        $this->originalDocumentData =
-        $this->documentChangeSets =
-        $this->documentStates =
-        $this->scheduledForDirtyCheck =
-        $this->documentInsertions =
-        $this->documentUpdates =
-        $this->documentDeletions =
-        $this->collectionUpdates =
-        $this->collectionDeletions =
-        $this->extraUpdates =
-        $this->parentAssociations =
-        $this->orphanRemovals = array();
-        if ($this->commitOrderCalculator !== null) {
-            $this->commitOrderCalculator->clear();
+        if ($documentName === null) {
+            $this->identityMap =
+            $this->documentIdentifiers =
+            $this->originalDocumentData =
+            $this->documentChangeSets =
+            $this->documentStates =
+            $this->scheduledForDirtyCheck =
+            $this->documentInsertions =
+            $this->documentUpdates =
+            $this->documentDeletions =
+            $this->collectionUpdates =
+            $this->collectionDeletions =
+            $this->extraUpdates =
+            $this->parentAssociations =
+            $this->orphanRemovals = array();
+
+            if ($this->commitOrderCalculator !== null) {
+                $this->commitOrderCalculator->clear();
+            }
+        } else {
+            $visited = array();
+            foreach ($this->identityMap as $className => $entities) {
+                if ($className === $entityName) {
+                    foreach ($entities as $entity) {
+                        $this->doDetach($entity, $visited, true);
+                    }
+                }
+            }
+        }
+
+        if ($this->evm->hasListeners(Events::onClear)) {
+            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->dm, $documentName));
         }
     }
 

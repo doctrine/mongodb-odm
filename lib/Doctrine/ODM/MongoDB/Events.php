@@ -132,6 +132,13 @@ final class Events
     const loadClassMetadata = 'loadClassMetadata';
 
     /**
+     * The preFlush event occurs when the DocumentManager#flush() operation is invoked,
+     * but before any changes to managed documents have been calculated. This event is
+     * always raised right after DocumentManager#flush() call.
+     */
+    const preFlush = 'preFlush';
+
+    /**
      * The onFlush event occurs when the DocumentManager#flush() operation is invoked,
      * after any changes to managed documents have been determined but before any
      * actual database operations are executed. The event is only raised if there is
@@ -141,4 +148,23 @@ final class Events
      * @var string
      */
     const onFlush = 'onFlush';
+
+    /**
+     * The postFlush event occurs when the DocumentManager#flush() operation is invoked and
+     * after all actual database operations are executed successfully. The event is only raised if there is
+     * actually something to do for the underlying UnitOfWork. If nothing needs to be done,
+     * the postFlush event is not raised. The event won't be raised if an error occurs during the
+     * flush operation.
+     *
+     * @var string
+     */
+    const postFlush = 'postFlush';
+
+    /**
+     * The onClear event occurs when the DocumentManager#clear() operation is invoked,
+     * after all references to documents have been removed from the unit of work.
+     *
+     * @var string
+     */
+    const onClear = 'onClear';
 }

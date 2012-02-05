@@ -253,6 +253,8 @@ class AnnotationDriver implements Driver
                         $class->addLifecycleCallback($method->getName(), Events::preLoad);
                     } elseif ($annot instanceof ODM\PostLoad) {
                         $class->addLifecycleCallback($method->getName(), Events::postLoad);
+                    } elseif ($annot instanceof ODM\PreFlush) {
+                        $class->addLifecycleCallback($method->getName(), Events::preFlush);
                     }
                 }
             }
