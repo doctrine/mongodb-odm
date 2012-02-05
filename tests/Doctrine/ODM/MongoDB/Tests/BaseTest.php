@@ -68,7 +68,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         if ($this->dm) {
             $collections = $this->dm->getConnection()->selectDatabase('doctrine_odm_tests')->listCollections();
             foreach ($collections as $collection) {
-                $collection->remove(array());
+                $collection->remove(array(), array('safe' => true));
             }
         }
     }
