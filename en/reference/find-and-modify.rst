@@ -81,4 +81,4 @@ You can read more about the find and modify functionality on the
 .. note::
 
     If you don't need to return the document, you can use just run a normal update which can
-    affect - $0ple documents, as well.
+    affect multiple documents, as well.
