@@ -8,7 +8,7 @@ If you want to instruct your queries to read from a slave you can use the ``slav
     <?php
 
     $qb = $dm->createQueryBuilder('User')
-    	->slaveOkay(true);
+        ->slaveOkay(true);
     $query = $qb->getQuery();
     $users = $query->execute();
 
@@ -17,14 +17,14 @@ The data in the query above will be read from a slave. Even if you have a ``@Ref
 
 .. code-block:: php
 
-	<?php
+    <?php
 
-	/** @Document */
-	class User
-	{
-		/** @ReferenceMany(targetDocument="Account") */
-		private $accounts;
-	}
+    /** @Document */
+    class User
+    {
+        /** @ReferenceMany(targetDocument="Account") */
+        private $accounts;
+    }
 
 Now when you query and iterate over the accounts, they will be loaded from a slave:
 
@@ -33,12 +33,12 @@ Now when you query and iterate over the accounts, they will be loaded from a sla
     <?php
 
     $qb = $dm->createQueryBuilder('User')
-    	->slaveOkay(true);
+        ->slaveOkay(true);
     $query = $qb->getQuery();
     $users = $query->execute();
 
     foreach ($users as $user) {
-    	foreach ($user->getAccounts() as $account) {
-    		echo $account->getName();
-    	}
+        foreach ($user->getAccounts() as $account) {
+            echo $account->getName();
+        }
     }
