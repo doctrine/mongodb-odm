@@ -63,7 +63,6 @@ First Annotations:
 
         /**
          * @Document
-         * @HasLifecycleCallbacks
          */
         class Order
         {

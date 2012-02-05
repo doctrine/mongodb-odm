@@ -57,7 +57,6 @@ Next create the `Order` entity that has a `$product` and `$productId` property l
     /**
      * @Entity
      * @Table(name="orders")
-     * @HasLifecycleCallbacks
      */
     class Order
     {

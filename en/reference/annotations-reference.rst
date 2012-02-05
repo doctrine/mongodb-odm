@@ -527,34 +527,6 @@ class upon retreival
 Alias of @Field, with "type" attribute set to
 "float"
 
-@HasLifecycleCallbacks
-----------------------
-
-Annotation which has to be set on the document-class PHP DocBlock
-to notify Doctrine that this document has document life-cycle
-callback annotations set on at least one of its methods. Using
-@PostLoad, @PrePersist, @PostPersist, @PreRemove, @PostRemove,
-@PreUpdate or @PostUpdate without this marker annotation will make
-Doctrine ignore the callbacks.
-
-Example:
-
-.. code-block:: php
-
-    <?php
-
-    /**
-     * @Document
-     * @HasLifecycleCallbacks
-     */
-    class User
-    {
-        /**
-         * @PostPersist
-         */
-        public function sendOptinMail() {}
-    }
-
 @Hash
 -----
 
@@ -762,14 +734,12 @@ they exist but never saved.
 --------
 
 Marks a method on the document to be called as a @PreLoad event.
-Only works with @HasLifecycleCallbacks in the document class PHP
-DocBlock.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    /** @Document */
     class Article
     {
         // ...
@@ -785,14 +755,12 @@ DocBlock.
 ---------
 
 Marks a method on the document to be called as a @PostLoad event.
-Only works with @HasLifecycleCallbacks in the document class PHP
-DocBlock.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    /** @Document */
     class Article
     {
         // ...
@@ -808,14 +776,13 @@ DocBlock.
 ------------
 
 Marks a method on the document to be called as a @PostPersist
-event. Only works with @HasLifecycleCallbacks in the document class
-PHP DocBlock.
+event.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    /** @Document */
     class Article
     {
         // ...
@@ -831,14 +798,12 @@ PHP DocBlock.
 -----------
 
 Marks a method on the document to be called as a @PostRemove event.
-Only works with @HasLifecycleCallbacks in the document class PHP
-DocBlock.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    /** @Document */
     class Article
     {
         // ...
@@ -854,14 +819,12 @@ DocBlock.
 -----------
 
 Marks a method on the document to be called as a @PostUpdate event.
-Only works with @HasLifecycleCallbacks in the document class PHP
-DocBlock.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    /** @Document */
     class Article
     {
         // ...
@@ -877,14 +840,12 @@ DocBlock.
 -----------
 
 Marks a method on the document to be called as a @PrePersist event.
-Only works with @HasLifecycleCallbacks in the document class PHP
-DocBlock.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    /** @Document */
     class Article
     {
         // ...
@@ -900,14 +861,12 @@ DocBlock.
 ----------
 
 Marks a method on the document to be called as a @PreRemove event.
-Only works with @HasLifecycleCallbacks in the document class PHP
-DocBlock.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    /** @Document */
     class Article
     {
         // ...
@@ -923,14 +882,12 @@ DocBlock.
 ----------
 
 Marks a method on the document to be called as a @PreUpdate event.
-Only works with @HasLifecycleCallbacks in the document class PHP
-DocBlock.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    /** @Document */
     class Article
     {
         // ...
