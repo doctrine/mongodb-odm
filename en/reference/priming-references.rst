@@ -48,6 +48,8 @@ We can improve this by using the ``prime()`` method:
 
 .. code-block:: php
 
+    <?php
+    
     $qb = $dm->createQueryBuilder('User')
         ->limit(100);
     $query = $qb->getQuery();
