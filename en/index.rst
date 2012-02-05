@@ -31,6 +31,8 @@ Reference Guide
    reference/events
    reference/migrating-schemas
    reference/query-builder-api
+   reference/slave-okay-queries
+   reference/priming-references
    reference/find-and-modify
    reference/trees
    reference/storing-files-with-mongogridfs
