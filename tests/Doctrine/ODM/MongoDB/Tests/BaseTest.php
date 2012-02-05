@@ -66,12 +66,10 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         if ($this->dm) {
-            foreach ($this->dm->getDocumentDatabases() as $db) {
-                foreach ($db->listCollections() as $collection) {
-                    $collection->drop();
-                }
+            $collections = $this->dm->getConnection()->selectDatabase('doctrine_odm_tests')->listCollections();
+            foreach ($collections as $collection) {
+                $collection->remove(array());
             }
-            $this->dm->getConnection()->close();
         }
     }
 
