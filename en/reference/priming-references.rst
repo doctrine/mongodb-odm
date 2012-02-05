@@ -8,7 +8,7 @@ the infamous n+1 problem.
 
 Here is an example:
 
-..code-block:: php
+.. code-block:: php
 
 	<?php
 
@@ -22,7 +22,7 @@ Here is an example:
 If you run a query to find users and you want to load each users accounts, that means one
 additional query per user.
 
-..code-block:: php
+.. code-block:: php
 
 	<?php
 
@@ -33,7 +33,7 @@ additional query per user.
 
 Iterating over the ``$users`` and getting the accounts will hit the database and load the users accounts:
 
-..code-block:: php
+.. code-block:: php
 
 	<?php
 
