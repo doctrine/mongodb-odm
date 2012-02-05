@@ -124,7 +124,7 @@ You can configure queries to return an eager cursor instead of a normal mongodb 
 Iterating over the ``$cursor`` will fetch all the data in a short and small cursor all at once and will hydrate
 one document at a time in to an object as you iterate:
 
-.. code-block::php
+.. code-block:: php
 
     <?php
 
