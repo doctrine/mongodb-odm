@@ -22,7 +22,7 @@ The data in the query above will be read from a slave. Even if you have a ``@Ref
 	/** @Document */
 	class User
 	{
-		/** @ReferenceMany(targetDocument="Account")
+		/** @ReferenceMany(targetDocument="Account") */
 		private $accounts;
 	}
 
