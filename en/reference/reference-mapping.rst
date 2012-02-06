@@ -261,6 +261,44 @@ option:
           favorites:
             discriminatorField: type
 
+Simple References
+-----------------
+
+By default all referneces are stored as a ``DBRef`` with the traditional ``$id``,
+``$db`` and ``$ref`` fields but if you want you can configure your refernces
+to be simple and only store a ``MongoId``.
+
+Example:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        /**
+         * @ReferenceOne(targetDocument="Profile", simple=true)
+         */
+        private $profile;
+
+    .. code-block:: xml
+
+        <reference-one target-document="Documents\Profile", simple="true" />
+
+    .. code-block:: yaml
+
+        referenceOne:
+          profile:
+            simple: true
+
+Now when you create a new reference to a Profile only a ``MongoId`` instance
+will be stored in the ``profile`` field.
+
+Benefits:
+
+- Smaller amount of storage used.
+- Performance and simple indexing.
+
 Cascading Operations
 --------------------
 

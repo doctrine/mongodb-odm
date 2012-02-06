@@ -7,7 +7,7 @@ Understanding
 In this chapter we will help you understand the ``DocumentManager``
 and the ``UnitOfWork``. A Unit of Work is similar to an
 object-level transaction. A new Unit of Work is implicitly started
-when an DocumentManager is initially created or after
+when a DocumentManager is initially created or after
 ``DocumentManager#flush()`` has been invoked. A Unit of Work is
 committed (and a new one started) by invoking
 ``DocumentManager#flush()``.
@@ -128,6 +128,60 @@ are as follows:
 
     Do not pass detached documents to the persist operation.
 
+Flushing single documents
+-------------------------
+
+You can flush a single document by passing the document object to the
+``flush`` method.
+
+Example:
+
+.. code-block:: php
+
+    <?php
+
+    $user = $dm->getRepository('User')->find($userId);
+    // ...
+    $user->setPassword('changeme');
+    $dm->flush($user);
+
+
+Flush Options
+-------------
+
+When committings your documents you can specify an array of options to the
+``flush`` method. With it you can send options to the underlying database
+like ``safe``, ``fsync``, etc.
+
+Example:
+
+.. code-block:: php
+
+    <?php
+
+    $user = $dm->getRepository('User')->find($userId);
+    // ...
+    $user->setPassword('changeme');
+    $dm->flush(null, array('safe' => true, 'fsync' => true));
+
+You can configure the default flush options on your ``Configuration`` object
+if you want to set them globally for all flushes.
+
+Example:
+
+.. code-block:: php
+
+    <?php
+
+    $config->setDefaultCommitOptions(array(
+        'safe' => true,
+        'fsync' => true
+    ));
+
+.. note::
+
+    Safe is set to true by default for all writes when using the ODM.
+
 Removing documents
 ------------------
 
@@ -179,7 +233,7 @@ as follows:
 Detaching documents
 -------------------
 
-A document is detached from an DocumentManager and thus no longer
+A document is detached from a DocumentManager and thus no longer
 managed by invoking the ``DocumentManager#detach($document)``
 method on it or by cascading the detach operation to it. Changes
 made to the detached document, if any (including removal of the
@@ -236,7 +290,7 @@ Merging documents
 -----------------
 
 Merging documents refers to the merging of (usually detached)
-documents into the context of an DocumentManager so that they
+documents into the context of a DocumentManager so that they
 become managed again. To merge the state of a document into an
 DocumentManager use the ``DocumentManager#merge($document)``
 method. The state of the passed document will be merged into a

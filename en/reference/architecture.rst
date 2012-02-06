@@ -46,16 +46,16 @@ Document states
 A document instance can be characterized as being NEW, MANAGED, DETACHED or REMOVED.
 
 -  A NEW document instance has no persistent identity, and is not yet
-   associated with an DocumentManager and a UnitOfWork (i.e. those just
+   associated with a DocumentManager and a UnitOfWork (i.e. those just
    created with the "new" operator).
 -  A MANAGED document instance is an instance with a persistent
-   identity that is associated with an DocumentManager and whose
+   identity that is associated with a DocumentManager and whose
    persistence is thus managed.
 -  A DETACHED document instance is an instance with a persistent
    identity that is not (or no longer) associated with an
    DocumentManager and a UnitOfWork.
 -  A REMOVED document instance is an instance with a persistent
-   identity, associated with an DocumentManager, that will be removed
+   identity, associated with a DocumentManager, that will be removed
    from the database upon transaction commit.
 
 Persistent fields

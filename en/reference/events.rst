@@ -203,7 +203,7 @@ listeners:
 .. note::
 
     All Lifecycle events that happen during the ``flush()`` of
-    an DocumentManager have very specific constraints on the allowed
+    a DocumentManager have very specific constraints on the allowed
     operations that can be executed. Please read the
     *Implementing Event Listeners* section very carefully to understand
     which operations are allowed in which lifecycle event.

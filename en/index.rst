@@ -34,6 +34,8 @@ Reference Guide
    reference/slave-okay-queries
    reference/priming-references
    reference/find-and-modify
+   reference/upserting-documents
+   reference/eager-cursors
    reference/trees
    reference/storing-files-with-mongogridfs
    reference/map-reduce
