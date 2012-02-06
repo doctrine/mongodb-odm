@@ -28,8 +28,10 @@ Example:
     $users = $qb->execute(); // returns instance of Doctrine\MongoDB\ODM\EagerCursor
 
 At this point all data is loaded from the database and cursors to MongoDB
-have been closed but hydration of the data in to objects has not begin. That
-happens once iteration starts:
+have been closed but hydration of the data in to objects has not bugun. Once
+itertion starts the data will be hydrated in to PHP objects.
+
+Example:
 
 .. code-block:: php
 
