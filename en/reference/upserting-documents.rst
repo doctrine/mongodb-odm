@@ -21,13 +21,13 @@ The above would result in an operation like the following:
 
 .. code-block:: php
 
-	<?php
+    <?php
 
-	$articleCollection->update(
-		array('_id' => new MongoId($articleId)),
-		array('$inc' => array('numViews' => 1)),
-		array('upsert' => true, 'safe' => true)
-	);
+    $articleCollection->update(
+        array('_id' => new MongoId($articleId)),
+        array('$inc' => array('numViews' => 1)),
+        array('upsert' => true, 'safe' => true)
+    );
 
 The extra benefit is the fact that you don't have to fetch the ``$article`` in order
 to append some new data to the document or change something. All you need is the

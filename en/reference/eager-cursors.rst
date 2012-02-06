@@ -23,7 +23,7 @@ Example:
     <?php
 
     $qb = $dm->createQueryBuilder('User')
-    	->eagerCursor(true);
+        ->eagerCursor(true);
     $query = $qb->getQuery();
     $users = $qb->execute(); // returns instance of Doctrine\MongoDB\ODM\EagerCursor
 
@@ -33,11 +33,11 @@ happens once iteration starts:
 
 .. code-block:: php
 
-	<?php
+    <?php
 
-	foreach ($users as $user) {
-		echo $user->getUsername()."\n";
-	}
+    foreach ($users as $user) {
+        echo $user->getUsername()."\n";
+    }
 
 Not all documents are converted to objects at once, the hydration is still done
 one document at a time during iteration. The only change is that all data is retrieved
