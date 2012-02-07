@@ -1,64 +1,97 @@
 Doctrine MongoDB ODM's documentation!
 =====================================
 
-Tutorials
----------
+The Doctrine MongoDB ODM documentation is comprised of tutorials, a reference section and
+cookbook articles that explain different parts of the Object Document mapper.
 
-.. toctree::
-   :maxdepth: 1
+Getting Help
+------------
 
-   tutorials/getting-started
+If this documentation is not helping to answer questions you have about
+Doctrine MongoDB ODM don't panic. You can get help from different sources:
 
-Reference Guide
+-  The `Doctrine Mailing List <http://groups.google.com/group/doctrine-user>`_
+-  Internet Relay Chat (IRC) in `#doctrine on Freenode <irc://irc.freenode.net/doctrine>`_
+-  Report a bug on `JIRA <http://www.doctrine-project.org/jira>`_.
+-  On `Twitter <https://twitter.com/search/%23doctrine2>`_ with ``#doctrine-mongodb``
+-  On `StackOverflow <http://stackoverflow.com/questions/tagged/doctrine-mongodb>`_
+
+Getting Started
 ---------------
 
-.. toctree::
-   :maxdepth: 1
-   :numbered:
+* **Tutorial**:
+  :doc:`Getting Started <tutorials/getting-started>` |
 
-   reference/introduction
-   reference/architecture
-   reference/basic-mapping
-   reference/reference-mapping
-   reference/bidirectional-references
-   reference/complex-references
-   reference/embedded-mapping
-   reference/inheritance-mapping
-   reference/indexes
-   reference/working-with-objects
-   reference/change-tracking-policies
-   reference/geospatial-queries
-   reference/events
-   reference/migrating-schemas
-   reference/query-builder-api
-   reference/slave-okay-queries
-   reference/priming-references
-   reference/find-and-modify
-   reference/upserting-documents
-   reference/eager-cursors
-   reference/trees
-   reference/storing-files-with-mongogridfs
-   reference/map-reduce
-   reference/logging
-   reference/capped-collections
-   reference/annotations-reference
-   reference/xml-mapping
-   reference/yml-mapping
-   reference/console-commands
-   reference/metadata-drivers
-   reference/best-practices
+* **Reference**:
+  :doc:`Introduction <reference/introduction>` |
+  :doc:`Architecture <reference/architecture>`
+
+Mapping Objects onto a Database
+-------------------------------
+
+* **Basic Reference**:
+  :doc:`Objects and Fields <reference/basic-mapping>` |
+  :doc:`References <reference/reference-mapping>` |
+  :doc:`Bi-Directional References <reference/complex-references>` |
+  :doc:`Complex References <reference/complex-references>` |
+  :doc:`Embedded <reference/embedded-mapping>` |
+  :doc:`Trees <reference/trees>` |
+  :doc:`Storing Files in GridFS <reference/storing-files-with-mongogridfs>` |
+  :doc:`Inheritance <reference/inheritance-mapping>` |
+  :doc:`Indexes <reference/indexes>`
+
+* **Mapping Driver References**:
+  :doc:`XML <reference/xml-mapping>` |
+  :doc:`YAML <reference/yml-mapping>` |
+  :doc:`Docblock Annotations <reference/annotations-reference>` |
+  :doc:`Metadata Drivers <reference/metadata-drivers>`
+
+Working with Objects
+--------------------
+
+* **Basic Reference**:
+  :doc:`Documents <reference/working-with-objects>` |
+  :doc:`Events <reference/events>` |
+  :doc:`Migrations <reference/migrating-schemas>`
+
+* **Query Reference**:
+  :doc:`Query Builder API <reference/query-builder-api>` |
+  :doc:`Geo Spatial Queries <reference/geospatial-queries>` |
+  :doc:`Slave Okay Queries <reference/slave-okay-queries>` |
+  :doc:`Find and Update <reference/find-and-update>` |
+  :doc:`Priming References <reference/priming-references>` |
+  :doc:`Eager Cursors <reference/eager-cursors>` |
+  :doc:`Map Reduce <reference/map-reduce>`
+
+Advanced Topics
+---------------
+
+* **Capped Collections**
+  :doc:`Capped Collections <reference/capped-collections>`
+
+* **Best Practices**:
+  :doc:`Best Practices <reference/best-practices>`
+
+* **Performance**:
+  :doc:`Change Tracking Policies <reference/change-tracking-policies>`
+
+* **Logging**:
+  :doc:`Logging <reference/logging>`
 
 Cookbook
----------
+--------
 
-.. toctree::
-   :maxdepth: 1
+* **Examples**:
+  :doc:`Soft Delete <cookbook/soft-delete-extension>` |
+  :doc:`Simple Search Engine <cookbook/simple-search-engine>`
 
-   cookbook/blending-orm-and-mongodb-odm
-   cookbook/implementing-array-access-for-domain-objects
-   cookbook/implementing-the-notify-changetracking-policy
-   cookbook/implementing-wakeup-or-clone
-   cookbook/validation-of-documents
-   cookbook/soft-delete-extension
-   cookbook/mapping-classes-to-orm-and-odm
-   cookbook/simple-search-engine
+* **Tricks**:
+  :doc:`Blending ORM and MongoDB ODM <cookbook/blending-orm-and-mongodb-odm>` |
+  :doc:`Mapping classes to ORM and ODM <cookbook/mapping-classes-to-orm-and-odm>`
+
+* **Implementation**:
+  :doc:`Array Access <cookbook/implementing-array-access-for-domain-objects>` |
+  :doc:`Notify ChangeTracking Example <cookbook/implementing-the-notify-changetracking-policy>` |
+  :doc:`Using Wakeup Or Clone <cookbook/implementing-wakeup-or-clone>` |
+  :doc:`Validation <cookbook/validation-of-documents>` |
+  :doc:`Simple Search Engine <cookbook/simple-search-engine>`
