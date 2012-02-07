@@ -19,7 +19,7 @@ Doctrine MongoDB ODM don't panic. You can get help from different sources:
 Getting Started
 ---------------
 
-  :doc:`Getting Started <tutorials/getting-started>`
+  :doc:`Getting Started <tutorials/getting-started>` |
   :doc:`Introduction <reference/introduction>` |
   :doc:`Architecture <reference/architecture>`
 
@@ -30,16 +30,16 @@ Mapping Objects onto a Database
   :doc:`Objects and Fields <reference/basic-mapping>` |
   :doc:`References <reference/reference-mapping>` |
   :doc:`Bi-Directional References <reference/complex-references>` |
-  :doc:`Complex References <reference/complex-references>`
-  :doc:`Indexes <reference/indexes>`
-  :doc:`Inheritance <reference/inheritance-mapping>` |
+  :doc:`Complex References <reference/complex-references>` |
+  :doc:`Indexes <reference/indexes>` |
+  :doc:`Inheritance <reference/inheritance-mapping>`
 
 * **Embedded Data**:
   :doc:`Embedded <reference/embedded-mapping>` |
-  :doc:`Trees <reference/trees>` |
+  :doc:`Trees <reference/trees>`
 
 * **GridFS**:
-  :doc:`Storing Files in GridFS <reference/storing-files-with-mongogridfs>` |
+  :doc:`Storing Files in GridFS <reference/storing-files-with-mongogridfs>`
 
 * **Mapping Driver References**:
   :doc:`XML <reference/xml-mapping>` |
