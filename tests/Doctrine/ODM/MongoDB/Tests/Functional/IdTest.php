@@ -57,6 +57,10 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals('referenced 1', $check1->reference->getName());
         $this->assertEquals('referenced 2', $check2->reference->getName());
+
+        $check = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->find((string) $user1->id);
+        $this->assertNotNull($check);
+
     }
 
     public function testEmbeddedDocumentWithId()
