@@ -66,6 +66,11 @@ class User extends BaseDocument
         $this->createdAt = new \DateTime();
     }
 
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     public function getLogs()
     {
         return $this->logs;
@@ -121,7 +126,7 @@ class User extends BaseDocument
         return $this->address;
     }
 
-    public function setAddress(Address $address)
+    public function setAddress(Address $address = null)
     {
         $this->address = $address;
     }
