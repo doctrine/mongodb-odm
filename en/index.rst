@@ -20,7 +20,7 @@ Getting Started
 ---------------
 
 * **Tutorial**:
-  :doc:`Getting Started <tutorials/getting-started>` |
+  :doc:`Getting Started <tutorials/getting-started>`
 
 * **Reference**:
   :doc:`Introduction <reference/introduction>` |
