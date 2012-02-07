@@ -28,6 +28,12 @@ class SimpleReferencesTest extends BaseTest
         $this->dm->clear();
     }
 
+    public function testIndexes()
+    {
+        $indexes = $this->dm->getSchemaManager()->getDocumentIndexes('Documents\SimpleReferenceUser');
+        $this->assertEquals(array('userId' => 1), $indexes[0]['keys']);
+    }
+
     public function testStorage()
     {
         $test = $this->dm->getDocumentCollection('Documents\SimpleReferenceUser')->findOne();

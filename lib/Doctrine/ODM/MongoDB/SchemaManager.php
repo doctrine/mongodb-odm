@@ -93,7 +93,7 @@ class SchemaManager
                     $newKeys = array();
                     foreach ($index['keys'] as $key => $v) {
                         if ($key == $fieldMapping['name']) {
-                            $key = $key . '.$id';
+                            $key = $fieldMapping['simple'] ? $key : $key . '.$id';
                         }
                         $newKeys[$key] = $v;
                     }

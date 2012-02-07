@@ -13,7 +13,7 @@ class SimpleReferenceUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\User", simple=true, name="userId") */
+    /** @ODM\ReferenceOne(targetDocument="Documents\User", simple=true, name="userId") @ODM\Index */
     public $user;
 
     /** @ODM\ReferenceMany(targetDocument="Documents\User", simple=true) */
