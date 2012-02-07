@@ -8,14 +8,14 @@ The YAML mapping document of a class is loaded on-demand the first
 time it is requested and subsequently stored in the metadata cache.
 In order to work, this requires certain conventions:
 
-- 
+-
    Each document/mapped superclass must get its own dedicated YAML
    mapping document.
-- 
+-
    The name of the mapping document must consist of the fully
    qualified name of the class, where namespace separators are
    replaced by dots (.).
-- 
+-
    All mapping documents should get the extension ".dcm.yml" to
    identify it as a Doctrine mapping file. This is more of a
    convention and you are not forced to do this. You can change the
@@ -92,6 +92,54 @@ of several common elements:
         groups:
           targetDocument: Documents\Group
           cascade: all
+
+    # Alternative syntax for the exact same example
+    # (allows custom key name for embedded document and reference).
+    Documents\User:
+      db: documents
+      collection: user
+      fields:
+        id:
+          id: true
+        username:
+          name: login
+          type: string
+        email:
+          unique:
+            order: desc
+        createdAt:
+          type: date
+        address:
+          embedded: true
+          type: one
+          targetDocument: Documents\Address
+        phonenumbers:
+          embedded: true
+          type: many
+          targetDocument: Documents\Phonenumber
+        profile:
+          reference: true
+          type: one
+          targetDocument: Documents\Profile
+          cascade: all
+        account:
+          reference: true
+          type: one
+          targetDocument: Documents\Account
+          cascade: all
+        groups:
+          reference: true
+          type: many
+          targetDocument: Documents\Group
+          cascade: all
+      indexes:
+        index1:
+          keys:
+            username: desc
+          options:
+            unique: true
+            dropDups: true
+            safe: true
 
 Be aware that class-names specified in the YAML files should be
 fully qualified.
