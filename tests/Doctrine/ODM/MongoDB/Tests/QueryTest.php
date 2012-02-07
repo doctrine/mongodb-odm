@@ -7,6 +7,16 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class QueryTest extends BaseTest
 {
+    public function testSelectAndSelectSliceOnSameField()
+    {
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person')
+            ->exclude('comments')
+            ->select('comments')
+            ->selectSlice('comments', 0, 10);
+        $query = $qb->getQuery();
+        $results = $query->execute();
+    }
+
     public function testThatOrAcceptsAnotherQuery()
     {
         $kris = new Person('Kris');
