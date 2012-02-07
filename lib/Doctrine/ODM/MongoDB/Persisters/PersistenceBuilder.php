@@ -284,6 +284,9 @@ class PersistenceBuilder
                 if ($new && $this->uow->isScheduledForInsert($new)) {
                     $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
 
+                // If we don't have a new value then do nothing on upsert
+                } elseif ( ! $new) {
+
                 // Update existing embedded document
                 } else {
                     $update = $this->prepareUpsertData($new);

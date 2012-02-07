@@ -20,21 +20,12 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testSetEmbeddedToNull()
     {
-        $address = new Address();
-        $address->setAddress('6512 Mercomatic Ct.');
-        $address->setCity('Nashville');
-        $address->setState('TN');
-        $address->setZipcode('37209');
-
         $user = new User();
         $user->setId((string) new \MongoId());
         $user->setUsername('jwage');
-        $user->setAddress($address);
+        $user->setAddress(null);
 
         $this->dm->persist($user);
-        $this->dm->flush();
-
-        $user->setAddress(null);
         $this->dm->flush();
         $this->dm->clear();
         $userId = $user->getId();
