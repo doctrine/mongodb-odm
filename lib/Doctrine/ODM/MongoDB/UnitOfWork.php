@@ -1030,7 +1030,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->cascadePreUpdate($class, $document);
                 }
 
-                if ( ! $class->isEmbeddedDocument && isset($this->documentChangeSets[$oid])) {
+                if ( ! $class->isEmbeddedDocument && isset($this->documentChangeSets[$oid]) && $this->documentChangeSets[$oid]) {
                     $persister->update($document, $options);
                 }
                 unset($this->documentUpdates[$oid]);
@@ -2623,7 +2623,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clearDocumentChangeSet($oid)
     {
-        unset($this->documentChangeSets[$oid]);
+        $this->documentChangeSets[$oid] = array();
     }
 
     /* PropertyChangedListener implementation */
