@@ -43,7 +43,7 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function getIndexedClasses()
     {
         return array(
-            array(array('Documents\Comment', 'Documents\CmsArticle', 'Documents\CmsAddress', 'Documents\CmsComment', 'Documents\CmsProduct'))
+            array(array('Documents\SimpleReferenceUser', 'Documents\Comment', 'Documents\CmsArticle', 'Documents\CmsAddress', 'Documents\CmsComment', 'Documents\CmsProduct'))
         );
     }
 
