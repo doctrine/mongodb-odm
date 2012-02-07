@@ -19,6 +19,11 @@ class Event
     /** @ODM\String */
     private $type;
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function setUser(User $user)
     {
         $this->user = $user;

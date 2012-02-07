@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\ODM\MongoDB\MongoDBException,
     Doctrine\ODM\MongoDB\LockException,
+    Doctrine\ODM\MongoDB\Proxy\Proxy,
     ReflectionClass;
 
 /**
@@ -1285,6 +1286,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getIdentifierValue($document)
     {
+        if ($document instanceof Proxy) {
+            return $document->__identifier__;
+        }
         return (string) $this->reflFields[$this->identifier]->getValue($document);
     }
 
@@ -1336,6 +1340,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getFieldValue($document, $field)
     {
+        if ($field === $this->identifier) {
+            return $document->__identifier__;
+        }
         return $this->reflFields[$field]->getValue($document);
     }
 

@@ -41,13 +41,13 @@ class ProxyException extends MongoDBException
         return new self("You must configure a proxy directory. See docs for details");
     }
 
+    public static function proxyDirectoryNotWritable()
+    {
+        return new self("Your proxy directory must be writable.");
+    }
+
     public static function proxyNamespaceRequired()
     {
         return new self("You must configure a proxy namespace. See docs for details");
-    }
-
-    public static function proxyDirectoryMustExist()
-    {
-        return new self("You must create a proxy directory specified");
     }
 }

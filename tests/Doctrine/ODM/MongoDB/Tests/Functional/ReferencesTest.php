@@ -63,7 +63,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $profile = $user->getProfile();
 
-        $this->assertTrue($profile instanceof \Proxies\DocumentsProfileProxy);
+        $this->assertTrue($profile instanceof \Proxies\__CG__\Documents\Profile);
 
         $profile->getFirstName();
 

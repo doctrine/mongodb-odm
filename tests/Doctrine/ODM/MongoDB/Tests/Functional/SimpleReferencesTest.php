@@ -69,7 +69,7 @@ class SimpleReferencesTest extends BaseTest
 
         $this->assertNotNull($test);
         $this->assertNotNull($test->getUser());
-        $this->assertInstanceOf('Proxies\DocumentsUserProxy', $test->getUser());
+        $this->assertInstanceOf('Proxies\__CG__\Documents\User', $test->getUser());
         $this->assertFalse($test->getUser()->__isInitialized__);
         $this->assertEquals('jwage', $test->getUser()->getUsername());
         $this->assertTrue($test->getUser()->__isInitialized__);
