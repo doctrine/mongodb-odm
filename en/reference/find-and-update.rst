@@ -22,7 +22,7 @@ For example you can update a job and return it:
 
     <?php
 
-    $job = $dm->createrQueryBuilder('Job')
+    $job = $dm->createQueryBuilder('Job')
         // Find the job
         ->findAndUpdate()
         ->field('in_progress')->set(true)
@@ -43,7 +43,7 @@ Here is an example where we return the new updated job document:
 .. code-block:: php
 
     <?php
-    $job = $dm->createrQueryBuilder('Job')
+    $job = $dm->createQueryBuilder('Job')
         // Find the job
         ->findAndUpdate()
         ->returnNew()
