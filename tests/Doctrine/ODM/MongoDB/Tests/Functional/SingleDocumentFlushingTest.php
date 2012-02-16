@@ -7,7 +7,7 @@ class SingleDocumentFlushingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testFlushSingleDocument()
     {
         $user = new \Documents\ForumUser();
-        $user->username = 'сhucky';
+        $user->username = 'chucky';
         $this->dm->persist($user);
         $this->dm->flush($user);
     }
