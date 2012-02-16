@@ -9,91 +9,91 @@ class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function setUp()
     {
         parent::setUp();
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\CommentableAct');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\ProgramMainDashboardItem');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\ProgramMembersDashboardItem');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\UserDashboardItem');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\UserProfileItem');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\CommentableAction');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\GroupMainActivityStreamItem');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\GroupMembersActivityStreamItem');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\UserDashboardActivityStreamItem');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\UserProfileActivityStreamItem');
     }
 
     /**
-     * This test demonstrates a CommentableAct being published to feed items.
+     * This test demonstrates a CommentableAction being published to activity streams.
      */
     public function testReferenceDiscriminators()
     {
-        $this->dm->persist($commentableAct = new CommentableAct('user_status_update'));
-        $this->dm->persist($programMainDashboardItem = new ProgramMainDashboardItem($commentableAct, 'fitness_bootcamp'));
-        $this->dm->persist($programMemberDashboardItem = new ProgramMembersDashboardItem($commentableAct, 'fitness_bootcamp'));
-        $this->dm->persist($userDashboardItem = new UserDashboardItem($commentableAct, 'bob'));
-        $this->dm->persist($userProfileItem = new UserProfileItem($commentableAct, 'bob'));
+        $this->dm->persist($commentableAction = new CommentableAction('actionType'));
+        $this->dm->persist($groupMainActivityStreamItem = new GroupMainActivityStreamItem($commentableAction, 'groupId'));
+        $this->dm->persist($groupMemberActivityStreamItem = new GroupMembersActivityStreamItem($commentableAction, 'groupId'));
+        $this->dm->persist($userDashboardActivityStreamItem = new UserDashboardActivityStreamItem($commentableAction, 'userId'));
+        $this->dm->persist($userProfileActivityStreamItem = new UserProfileActivityStreamItem($commentableAction, 'userId'));
 
         $this->dm->flush();
         $this->dm->clear();
 
-        $commentableAct = $this->dm->find(__NAMESPACE__ . '\CommentableAct', $commentableAct->getId());
-        $programMainDashboardItem = $this->dm->find(__NAMESPACE__ . '\ProgramMainDashboardItem', $programMainDashboardItem->getId());
-        $programMemberDashboardItem = $this->dm->find(__NAMESPACE__ . '\ProgramMembersDashboardItem', $programMemberDashboardItem->getId());
-        $userDashboardItem = $this->dm->find(__NAMESPACE__ . '\UserDashboardItem', $userDashboardItem->getId());
-        $userProfileItem = $this->dm->find(__NAMESPACE__ . '\UserProfileItem', $userProfileItem->getId());
+        $commentableAction = $this->dm->find(__NAMESPACE__ . '\CommentableAction', $commentableAction->getId());
+        $groupMainActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\GroupMainActivityStreamItem', $groupMainActivityStreamItem->getId());
+        $groupMemberActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem->getId());
+        $userDashboardActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem->getId());
+        $userProfileActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\UserProfileActivityStreamItem', $userProfileActivityStreamItem->getId());
 
-        $this->assertSame($commentableAct, $programMainDashboardItem->getAct());
-        $this->assertSame($commentableAct, $programMemberDashboardItem->getAct());
-        $this->assertSame($commentableAct, $userDashboardItem->getAct());
-        $this->assertSame($commentableAct, $userProfileItem->getAct());
+        $this->assertSame($commentableAction, $groupMainActivityStreamItem->getAction());
+        $this->assertSame($commentableAction, $groupMemberActivityStreamItem->getAction());
+        $this->assertSame($commentableAction, $userDashboardActivityStreamItem->getAction());
+        $this->assertSame($commentableAction, $userProfileActivityStreamItem->getAction());
     }
 
     /**
      * This tests demonstrates a race condition between two requests which are
-     * both publishing a CommentableAct to feed items.
+     * both publishing a CommentableAction to activity streams.
      */
     public function testReferenceDiscriminatorsRaceCondition()
     {
-        $this->dm->persist($commentableAct1 = new CommentableAct('user_status_update'));
-        $this->dm->persist($programMainDashboardItem1 = new ProgramMainDashboardItem($commentableAct1, 'fitness_bootcamp'));
-        $this->dm->persist($programMemberDashboardItem1 = new ProgramMembersDashboardItem($commentableAct1, 'fitness_bootcamp'));
-        $this->dm->persist($userDashboardItem1 = new UserDashboardItem($commentableAct1, 'bob'));
-        $this->dm->persist($userProfileItem1 = new UserProfileItem($commentableAct1, 'bob'));
+        $this->dm->persist($commentableAction1 = new CommentableAction('actionType'));
+        $this->dm->persist($groupMainActivityStreamItem1 = new GroupMainActivityStreamItem($commentableAction1, 'groupId'));
+        $this->dm->persist($groupMemberActivityStreamItem1 = new GroupMembersActivityStreamItem($commentableAction1, 'groupId'));
+        $this->dm->persist($userDashboardActivityStreamItem1 = new UserDashboardActivityStreamItem($commentableAction1, 'userId'));
+        $this->dm->persist($userProfileActivityStreamItem1 = new UserProfileActivityStreamItem($commentableAction1, 'userId'));
 
-        $this->dm->persist($commentableAct2 = new CommentableAct('user_status_update'));
-        $this->dm->persist($programMainDashboardItem2 = new ProgramMainDashboardItem($commentableAct2, 'fitness_bootcamp'));
-        $this->dm->persist($programMemberDashboardItem2 = new ProgramMembersDashboardItem($commentableAct2, 'fitness_bootcamp'));
-        $this->dm->persist($userDashboardItem2 = new UserDashboardItem($commentableAct2, 'bob'));
-        $this->dm->persist($userProfileItem2 = new UserProfileItem($commentableAct2, 'bob'));
+        $this->dm->persist($commentableAction2 = new CommentableAction('actionType'));
+        $this->dm->persist($groupMainActivityStreamItem2 = new GroupMainActivityStreamItem($commentableAction2, 'groupId'));
+        $this->dm->persist($groupMemberActivityStreamItem2 = new GroupMembersActivityStreamItem($commentableAction2, 'groupId'));
+        $this->dm->persist($userDashboardActivityStreamItem2 = new UserDashboardActivityStreamItem($commentableAction2, 'userId'));
+        $this->dm->persist($userProfileActivityStreamItem2 = new UserProfileActivityStreamItem($commentableAction2, 'userId'));
 
         $this->dm->flush();
         $this->dm->clear();
 
-        $commentableAct1 = $this->dm->find(__NAMESPACE__ . '\CommentableAct', $commentableAct1->getId());
-        $programMainDashboardItem1 = $this->dm->find(__NAMESPACE__ . '\ProgramMainDashboardItem', $programMainDashboardItem1->getId());
-        $programMemberDashboardItem1 = $this->dm->find(__NAMESPACE__ . '\ProgramMembersDashboardItem', $programMemberDashboardItem1->getId());
-        $userDashboardItem1 = $this->dm->find(__NAMESPACE__ . '\UserDashboardItem', $userDashboardItem1->getId());
-        $userProfileItem1 = $this->dm->find(__NAMESPACE__ . '\UserProfileItem', $userProfileItem1->getId());
+        $commentableAction1 = $this->dm->find(__NAMESPACE__ . '\CommentableAction', $commentableAction1->getId());
+        $groupMainActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\GroupMainActivityStreamItem', $groupMainActivityStreamItem1->getId());
+        $groupMemberActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem1->getId());
+        $userDashboardActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem1->getId());
+        $userProfileActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\UserProfileActivityStreamItem', $userProfileActivityStreamItem1->getId());
 
-        $commentableAct2 = $this->dm->find(__NAMESPACE__ . '\CommentableAct', $commentableAct2->getId());
-        $programMainDashboardItem2 = $this->dm->find(__NAMESPACE__ . '\ProgramMainDashboardItem', $programMainDashboardItem2->getId());
-        $programMemberDashboardItem2 = $this->dm->find(__NAMESPACE__ . '\ProgramMembersDashboardItem', $programMemberDashboardItem2->getId());
-        $userDashboardItem2 = $this->dm->find(__NAMESPACE__ . '\UserDashboardItem', $userDashboardItem2->getId());
-        $userProfileItem2 = $this->dm->find(__NAMESPACE__ . '\UserProfileItem', $userProfileItem2->getId());
+        $commentableAction2 = $this->dm->find(__NAMESPACE__ . '\CommentableAction', $commentableAction2->getId());
+        $groupMainActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\GroupMainActivityStreamItem', $groupMainActivityStreamItem2->getId());
+        $groupMemberActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem2->getId());
+        $userDashboardActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem2->getId());
+        $userProfileActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\UserProfileActivityStreamItem', $userProfileActivityStreamItem2->getId());
 
-        $this->assertSame($commentableAct1, $programMainDashboardItem1->getAct());
-        $this->assertSame($commentableAct1, $programMemberDashboardItem1->getAct());
-        $this->assertSame($commentableAct1, $userDashboardItem1->getAct());
-        $this->assertSame($commentableAct1, $userProfileItem1->getAct());
+        $this->assertSame($commentableAction1, $groupMainActivityStreamItem1->getAction());
+        $this->assertSame($commentableAction1, $groupMemberActivityStreamItem1->getAction());
+        $this->assertSame($commentableAction1, $userDashboardActivityStreamItem1->getAction());
+        $this->assertSame($commentableAction1, $userProfileActivityStreamItem1->getAction());
 
-        $this->assertSame($commentableAct2, $programMainDashboardItem2->getAct());
-        $this->assertSame($commentableAct2, $programMemberDashboardItem2->getAct());
-        $this->assertSame($commentableAct2, $userDashboardItem2->getAct());
-        $this->assertSame($commentableAct2, $userProfileItem2->getAct());
+        $this->assertSame($commentableAction2, $groupMainActivityStreamItem2->getAction());
+        $this->assertSame($commentableAction2, $groupMemberActivityStreamItem2->getAction());
+        $this->assertSame($commentableAction2, $userDashboardActivityStreamItem2->getAction());
+        $this->assertSame($commentableAction2, $userProfileActivityStreamItem2->getAction());
     }
 }
 
 /**
-* @ODM\Document(collection="act_act")
+* @ODM\Document(collection="rdt_action")
 * @ODM\InheritanceType("SINGLE_COLLECTION")
 * @ODM\DiscriminatorField(fieldName="discriminator")
-* @ODM\DiscriminatorMap({"act"="Act", "commentable_act"="CommentableAct"})
+* @ODM\DiscriminatorMap({"action"="Action", "commentable_action"="CommentableAction"})
 */
-class Act
+class Action
 {
     /** @ODM\Id */
     protected $id;
@@ -118,7 +118,7 @@ class Act
 }
 
 /** @ODM\Document */
-class CommentableAct extends Act
+class CommentableAction extends Action
 {
     /**
      * @ODM\Collection
@@ -138,17 +138,17 @@ class CommentableAct extends Act
 }
 
 /** @ODM\MappedSuperclass */
-abstract class FeedItem
+abstract class ActivityStreamItem
 {
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Act") */
-    protected $act;
+    /** @ODM\ReferenceOne(targetDocument="Action") */
+    protected $action;
 
-    public function __construct(Act $act)
+    public function __construct(Action $action)
     {
-        $this->act = $act;
+        $this->action = $action;
     }
 
     public function getId()
@@ -156,55 +156,55 @@ abstract class FeedItem
         return $this->id;
     }
 
-    public function getAct()
+    public function getAction()
     {
-        return $this->act;
+        return $this->action;
     }
 }
 
 /**
  * @ODM\MappedSuperclass
- * @ODM\UniqueIndex(keys={"programId"="asc", "act.$id"="asc"}, options={"unique"="true", "dropDups"="true"})
+ * @ODM\UniqueIndex(keys={"groupId"="asc", "action.$id"="asc"}, options={"unique"="true", "dropDups"="true"})
  */
-abstract class ProgramFeedItem extends FeedItem
+abstract class GroupActivityStreamItem extends ActivityStreamItem
 {
     /** @ODM\String */
-    protected $programId;
+    protected $groupId;
 
-    public function __construct(Act $act, $programId)
+    public function __construct(Action $action, $groupId)
     {
-        parent::__construct($act);
-        $this->programId = $programId;
+        parent::__construct($action);
+        $this->groupId = $groupId;
     }
 
-    public function getProgramId()
+    public function getGroupId()
     {
-        return $this->programId;
+        return $this->groupId;
     }
 }
 
-/** @ODM\Document(collection="act_program_main_dashboard_item") */
-class ProgramMainDashboardItem extends ProgramFeedItem
+/** @ODM\Document(collection="rdt_group_main_activity_stream_item") */
+class GroupMainActivityStreamItem extends GroupActivityStreamItem
 {
 }
 
-/** @ODM\Document(collection="act_program_members_dashboard_item") */
-class ProgramMembersDashboardItem extends ProgramFeedItem
+/** @ODM\Document(collection="rdt_group_members_activity_stream_item") */
+class GroupMembersActivityStreamItem extends GroupActivityStreamItem
 {
 }
 
 /**
  * @ODM\MappedSuperclass
- * @ODM\UniqueIndex(keys={"userId"="asc", "act.$id"="asc"}, options={"unique"="true", "dropDups"="true"})
+ * @ODM\UniqueIndex(keys={"userId"="asc", "action.$id"="asc"}, options={"unique"="true", "dropDups"="true"})
  */
-abstract class UserFeedItem extends FeedItem
+abstract class UserActivityStreamItem extends ActivityStreamItem
 {
     /** @ODM\String */
     protected $userId;
 
-    public function __construct(Act $act, $userId)
+    public function __construct(Action $action, $userId)
     {
-        parent::__construct($act);
+        parent::__construct($action);
         $this->userId = $userId;
     }
 
@@ -214,12 +214,12 @@ abstract class UserFeedItem extends FeedItem
     }
 }
 
-/** @ODM\Document(collection="act_user_dashboard_item") */
-class UserDashboardItem extends ProgramFeedItem
+/** @ODM\Document(collection="rdt_user_dashboard_activity_stream_item") */
+class UserDashboardActivityStreamItem extends UserActivityStreamItem
 {
 }
 
-/** @ODM\Document(collection="act_user_profile_item") */
-class UserProfileItem extends ProgramFeedItem
+/** @ODM\Document(collection="rdt_user_profile_activity_stream_item") */
+class UserProfileActivityStreamItem extends UserActivityStreamItem
 {
 }
