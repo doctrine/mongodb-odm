@@ -378,7 +378,7 @@ class DocumentManager implements ObjectManager
      */
     public function persist($document)
     {
-        if ( ! is_object($document)) {
+        if (!is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
@@ -395,7 +395,7 @@ class DocumentManager implements ObjectManager
      */
     public function remove($document)
     {
-        if ( ! is_object($document)) {
+        if (!is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
@@ -410,7 +410,7 @@ class DocumentManager implements ObjectManager
      */
     public function refresh($document)
     {
-        if ( ! is_object($document)) {
+        if (!is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
@@ -428,7 +428,7 @@ class DocumentManager implements ObjectManager
      */
     public function detach($document)
     {
-        if ( ! is_object($document)) {
+        if (!is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->unitOfWork->detach($document);
@@ -444,7 +444,7 @@ class DocumentManager implements ObjectManager
      */
     public function merge($document)
     {
-        if ( ! is_object($document)) {
+        if (!is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
@@ -462,6 +462,9 @@ class DocumentManager implements ObjectManager
      */
     public function lock($document, $lockMode, $lockVersion = null)
     {
+        if (!is_object($document)) {
+            throw new \InvalidArgumentException(gettype($document));
+        }
         $this->unitOfWork->lock($document, $lockMode, $lockVersion);
     }
 
@@ -472,6 +475,9 @@ class DocumentManager implements ObjectManager
      */
     public function unlock($document)
     {
+        if (!is_object($document)) {
+            throw new \InvalidArgumentException(gettype($document));
+        }
         $this->unitOfWork->unlock($document);
     }
 
@@ -511,6 +517,9 @@ class DocumentManager implements ObjectManager
      */
     public function flush($document = null, array $options = array())
     {
+        if (null !== $document && !is_object($document)) {
+            throw new \InvalidArgumentException(gettype($document));
+        }
         $this->errorIfClosed();
         $this->unitOfWork->commit($document, $options);
     }
@@ -626,6 +635,9 @@ class DocumentManager implements ObjectManager
      */
     public function contains($document)
     {
+        if (!is_object($document)) {
+            throw new \InvalidArgumentException(gettype($document));
+        }
         return $this->unitOfWork->isScheduledForInsert($document) ||
                $this->unitOfWork->isInIdentityMap($document) &&
                ! $this->unitOfWork->isScheduledForDelete($document);
