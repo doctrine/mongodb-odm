@@ -257,6 +257,78 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $dm->flush();
     }
 
+    /**
+     * @dataProvider getScheduleForUpdateWithArraysTests
+     */
+    public function testScheduleForUpdateWithArrays($origData, $updateData, $shouldInUpdate)
+    {
+        $pb = $this->getMockPersistenceBuilder();
+        $class = $this->dm->getClassMetadata("Doctrine\ODM\MongoDB\Tests\ArrayTest");
+        $persister = $this->getMockDocumentPersister($pb, $class);
+        $this->uow->setDocumentPersister('Doctrine\ODM\MongoDB\Tests\ArrayTest', $persister);
+
+        $arrayTest = new ArrayTest($origData);
+        $this->uow->persist($arrayTest);
+        $this->uow->computeChangeSets();
+
+        $arrayTest->data = $updateData;
+        $this->uow->persist($arrayTest);
+        $this->uow->computeChangeSets();
+
+        $this->assertEquals($shouldInUpdate, $this->uow->isScheduledForUpdate($arrayTest));
+    }
+
+    public function getScheduleForUpdateWithArraysTests()
+    {
+        return array(
+            array(
+                null,
+                array('bar' => 'foo'),
+                true
+            ),
+            array(
+                array('foo' => 'bar'),
+                null,
+                true
+            ),
+            array(
+                array('foo' => 'bar'),
+                array('bar' => 'foo'),
+                true
+            ),
+            array(
+                array('foo' => 'bar'),
+                array('foo' => 'foo'),
+                true
+            ),
+            array(
+                array('foo' => 'bar'),
+                array('foo' => 'bar'),
+                false
+            ),
+            array(
+                array('foo' => 'bar'),
+                array('foo' => true),
+                true
+            ),
+            array(
+                array('foo' => 'bar'),
+                array('foo' => 99),
+                true
+            ),
+            array(
+                array('foo' => 99),
+                array('foo' => true),
+                true
+            ),
+            array(
+                array('foo' => true),
+                array('foo' => true),
+                false
+            ),
+        );
+    }
+
     protected function getDocumentManager()
     {
         return new \Stubs\DocumentManager();
@@ -405,5 +477,25 @@ class NotifyChangedRelatedItem
 
     public function setOwner($owner) {
         $this->owner = $owner;
+    }
+}
+
+/**
+ * @ODM\Document
+ */
+class ArrayTest
+{
+    /**
+     * @ODM\Id
+     */
+    private $id;
+    /**
+     * @ODM\Hash
+     */
+    public $data;
+
+    public function __construct($data)
+    {
+        $this->data = $data;
     }
 }
