@@ -29,7 +29,7 @@ Mapping Objects onto a Database
 * **Basic Reference**:
   :doc:`Objects and Fields <reference/basic-mapping>` |
   :doc:`References <reference/reference-mapping>` |
-  :doc:`Bi-Directional References <reference/complex-references>` |
+  :doc:`Bi-Directional References <reference/bidirectional-references>` |
   :doc:`Complex References <reference/complex-references>` |
   :doc:`Indexes <reference/indexes>` |
   :doc:`Inheritance <reference/inheritance-mapping>`
