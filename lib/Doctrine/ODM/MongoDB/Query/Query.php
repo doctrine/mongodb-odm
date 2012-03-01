@@ -137,6 +137,28 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $this->refresh = $bool;
     }
 
+    public function getFieldsInQuery()
+    {
+        $fields = array();
+        foreach ($this->query['query'] as $fieldName => $value) {
+            if (is_array($value)) {
+                foreach ($value as $k => $v) {
+                    if ($k === $this->cmd.'elemMatch') {
+                        foreach (array_keys($v) as $field) {
+                            $fields[] = $fieldName.'.'.$field;
+                        }
+                    } else {
+                        $fields[] = $fieldName;
+                    }
+                }
+            } else {
+                $fields[] = $fieldName;
+            }
+        }
+        $fields = array_unique(array_merge($fields, array_keys($this->query['sort'])));
+        return $fields;
+    }
+
     /**
      * Check if this query is indexed.
      *
@@ -144,7 +166,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function isIndexed()
     {
-        $fields = array_unique(array_merge(array_keys($this->query['query']), array_keys($this->query['sort'])));
+        $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {
             if (!$this->collection->isFieldIndexed($field)) {
                 return false;
@@ -161,7 +183,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function getUnindexedFields()
     {
         $unindexedFields = array();
-        $fields = array_unique(array_merge(array_keys($this->query['query']), array_keys($this->query['sort'])));
+        $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {
             if (!$this->collection->isFieldIndexed($field)) {
                 $unindexedFields[] = $field;

@@ -14,6 +14,27 @@ class RequireIndexesTest extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument');
     }
 
+    public function testGetFieldsInQuery()
+    {
+        $date = new \DateTime();
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument');
+        $qb->field('flashes')->elemMatch(
+            $qb->expr()->field('startDate')->lt($date)->field('endDate')->gte($date)
+        );
+        $query = $qb->getQuery();
+        $this->assertEquals(array(
+            'flashes.startDate',
+            'flashes.endDate'
+        ), $query->getFieldsInQuery());
+
+        $date = new \DateTime();
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument');
+        $qb->field('test')->in(array(1));
+        $query = $qb->getQuery();
+        $this->assertEquals(array('test'), $query->getFieldsInQuery());
+
+    }
+
     public function testIsIndexedTrue()
     {
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument')
