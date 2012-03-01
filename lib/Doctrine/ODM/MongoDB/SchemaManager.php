@@ -146,9 +146,6 @@ class SchemaManager
         if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
-                if (!isset($index['options']['background'])) {
-                    $index['options']['background'] = true;
-                }
                 $collection->ensureIndex($index['keys'], $index['options']);
             }
         }
