@@ -63,6 +63,10 @@ You can customize the index with some additional options:
    **order** - The order of the index (asc or desc).
 -
    **unique** - Create a unique index.
+-
+   **sparse** - Create a sparse index. If a unique index is being created
+   the sparse option will allow duplicate null entries, but the field must be
+   unique otherwise.
 
 Unique Index
 ------------
