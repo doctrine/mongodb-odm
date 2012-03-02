@@ -21,266 +21,654 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
+interface Annotation
+{
+}
 
-abstract class AbstractDocument extends Annotation {}
-/** @Annotation */
+abstract class AbstractDocument implements Annotation
+{
+}
+
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
 final class Document extends AbstractDocument
 {
+    /** @var string */
     public $db;
+
+    /** @var string */
     public $collection;
+
+    /** @var string */
     public $repositoryClass;
+
+    /** @var array<Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex> */
     public $indexes = array();
     public $requireIndexes = false;
     public $slaveOkay;
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
 final class EmbeddedDocument extends AbstractDocument
 {
+    /** @var array<Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex> */
     public $indexes = array();
 }
-/** @Annotation */
-final class MappedSuperclass extends AbstractDocument {}
 
-/** @Annotation */
-final class Inheritance extends Annotation
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
+final class MappedSuperclass extends AbstractDocument
 {
+}
+
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
+final class Inheritance implements Annotation
+{
+    /** @var string */
     public $type = 'NONE';
+
+    /** @var array<string> */
     public $discriminatorMap = array();
+
+    /** @var string */
     public $discriminatorField;
 }
-/** @Annotation */
-final class InheritanceType extends Annotation {}
-/** @Annotation */
-final class DiscriminatorField extends Annotation
+
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
+final class InheritanceType implements Annotation
 {
+    /** @var string */
+    public $value;
+}
+
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
+final class DiscriminatorField implements Annotation
+{
+    /** @var string */
     public $name;
+
+    /** @var string */
     public $fieldName;
 }
-/** @Annotation */
-final class DiscriminatorMap extends Annotation {}
-/** @Annotation */
-final class DiscriminatorValue extends Annotation {}
 
-/** @Annotation */
-final class Indexes extends Annotation {}
-abstract class AbstractIndex extends Annotation
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
+final class DiscriminatorMap implements Annotation
 {
+    /** @var array<string> */
+    public $value;
+}
+
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
+final class DiscriminatorValue implements Annotation
+{
+    /** @var string */
+    public $value;
+}
+
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
+final class Indexes implements Annotation
+{
+    /** @var array<Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex> */
+    public $value;
+}
+
+abstract class AbstractIndex implements Annotation
+{
+    /** @var array */
     public $keys = array();
+
+    /** @var string */
     public $name;
+    
+    /** @var boolean */
     public $dropDups;
+
+    /** @var boolean */
     public $background;
+
+    /** @var boolean */
     public $safe;
+
+    /** @var string */
     public $order;
+
+    /** @var boolean */
     public $unique = false;
+
+    /** @var array */
     public $options = array();
 }
-/** @Annotation */
-final class Index extends AbstractIndex {}
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target({"CLASS","ANNOTATION","PROPERTY"})
+ */
+final class Index extends AbstractIndex
+{
+}
+
+/**
+ * @Annotation
+ * @Target({"CLASS","ANNOTATION","PROPERTY"})
+ */
 final class UniqueIndex extends AbstractIndex
 {
     public $unique = true;
 }
 
-/** @Annotation */
-final class Version extends Annotation {}
-/** @Annotation */
-final class Lock extends Annotation {}
-
-abstract class AbstractField extends Annotation
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
+final class Version implements Annotation
 {
+}
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
+final class Lock implements Annotation
+{
+}
+
+abstract class AbstractField implements Annotation
+{
+    /** @var string */
     public $name;
+
+    /** @var string */
     public $type = 'string';
+
+    /** @var boolean */
     public $nullable = false;
+
+    /** @var array */
     public $options = array();
+
+    /** @var string */
     public $strategy;
 }
-/** @Annotation */
-final class Field extends AbstractField {}
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
+final class Field extends AbstractField
+{
+}
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Id extends AbstractField
 {
+    /** @var string */
     public $id = true;
+
+    /** @var string */
     public $type = 'id';
+
+    /** @var string */
     public $strategy = 'auto';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Hash extends AbstractField
 {
+    /** @var string */
     public $type = 'hash';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Boolean extends AbstractField
 {
+    /** @var string */
     public $type = 'boolean';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Int extends AbstractField
 {
+    /** @var string */
     public $type = 'int';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Float extends AbstractField
 {
+    /** @var string */
     public $type = 'float';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class String extends AbstractField
 {
+    /** @var string */
     public $type = 'string';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Date extends AbstractField
 {
+    /** @var string */
     public $type = 'date';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Key extends AbstractField
 {
+    /** @var string */
     public $type = 'key';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Timestamp extends AbstractField
 {
+    /** @var string */
     public $type = 'timestamp';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Bin extends AbstractField
 {
+    /** @var string */
     public $type = 'bin';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class BinFunc extends AbstractField
 {
+    /** @var string */
     public $type = 'bin_func';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class BinUUID extends AbstractField
 {
+    /** @var string */
     public $type = 'bin_uuid';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class BinMD5 extends AbstractField
 {
+    /** @var string */
     public $type = 'bin_md5';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class BinCustom extends AbstractField
 {
+    /** @var string */
     public $type = 'bin_custom';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class File extends AbstractField
 {
+    /** @var string */
     public $type = 'file';
+
+    /** @var boolean */
     public $file = true;
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Increment extends AbstractField
 {
+    /** @var string */
     public $type = 'increment';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class ObjectId extends AbstractField
 {
+    /** @var string */
     public $type = 'object_id';
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Collection extends AbstractField
 {
+    /** @var string */
     public $type = 'collection';
+
+    /** @var string */
     public $strategy = 'pushAll'; // pushAll, set
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class EmbedOne extends AbstractField
 {
+    /** @var string */
     public $type = 'one';
+
+    /** @var boolean */
     public $embedded = true;
+
+    /** @var string */
     public $targetDocument;
+
+    /** @var string */
     public $discriminatorField;
+
+    /** @var array<string> */
     public $discriminatorMap;
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class EmbedMany extends AbstractField
 {
+    /** @var string */
     public $type = 'many';
+
+    /** @var boolean */
     public $embedded = true;
+
+    /** @var string */
     public $targetDocument;
+
+    /** @var string */
     public $discriminatorField;
+
+    /** @var array<string> */
     public $discriminatorMap;
+
+    /** @var string */
     public $strategy = 'pushAll'; // pushAll, set
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class ReferenceOne extends AbstractField
 {
+    /** @var string */
     public $type = 'one';
+
+    /** @var boolean */
     public $reference = true;
+
+    /** @var boolean */
     public $simple = false;
+
+    /** @var string */
     public $targetDocument;
+
+    /** @var string */
     public $discriminatorField;
+
+    /** @var array<string> */
     public $discriminatorMap;
+
+    /** @var array<string> */
     public $cascade;
+
+    /** @var string */
     public $inversedBy;
+
+    /** @var string */
     public $mappedBy;
+
+    /** @var string */
     public $repositoryMethod;
+
+    /** @var array<string> */
     public $sort = array();
+
+    /** @var array<boolean> */
     public $criteria = array();
+
+    /** @var integer */
     public $limit;
+
+    /** @var boolean */
     public $skip;
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class ReferenceMany extends AbstractField
 {
+
+    /** @var string */
     public $type = 'many';
+
+    /** @var boolean */
     public $reference = true;
+
+    /** @var boolean */
     public $simple = false;
+
+    /** @var string */
     public $targetDocument;
+
+    /** @var string */
     public $discriminatorField;
+
+    /** @var array<string> */
     public $discriminatorMap;
+
+    /** @var array<string> */
     public $cascade;
+
+    /** @var string */
     public $inversedBy;
+
+    /** @var string */
     public $mappedBy;
+
+    /** @var string */
     public $repositoryMethod;
+
+    /** @var array<string> */
     public $sort = array();
+
+    /** @var array<boolean> */
     public $criteria = array();
+
+    /** @var integer */
     public $limit;
+
+    /** @var boolean */
     public $skip;
+
+    /** @var string */
     public $strategy = 'pushAll'; // pushAll, set
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class NotSaved extends AbstractField
 {
+    /** @var boolean */
     public $notSaved = true;
 }
-/** @Annotation */
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
 final class Distance extends AbstractField
 {
+    /** @var boolean */
     public $distance = true;
 }
-/** @Annotation */
-final class AlsoLoad extends Annotation
+
+/**
+ * @Annotation
+ * @Target({"PROPERTY","METHOD"})
+ */
+final class AlsoLoad implements Annotation
 {
+    /** @var array<string> */
+    public $value;
+
+    /** @var string */
     public $name;
 }
-/** @Annotation */
-final class ChangeTrackingPolicy extends Annotation {}
+
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
+final class ChangeTrackingPolicy implements Annotation
+{
+    /** @var string */
+    public $value;
+}
 
 /* Annotations for lifecycle callbacks */
 
-/** @Annotation */
-final class PrePersist extends Annotation {}
-/** @Annotation */
-final class PostPersist extends Annotation {}
-/** @Annotation */
-final class PreUpdate extends Annotation {}
-/** @Annotation */
-final class PostUpdate extends Annotation {}
-/** @Annotation */
-final class PreRemove extends Annotation {}
-/** @Annotation */
-final class PostRemove extends Annotation {}
-/** @Annotation */
-final class PreLoad extends Annotation {}
-/** @Annotation */
-final class PostLoad extends Annotation {}
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+final class PrePersist implements Annotation
+{
+}
+
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+final class PostPersist implements Annotation
+{
+}
+
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+final class PreUpdate implements Annotation
+{
+}
+
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+final class PostUpdate implements Annotation
+{
+}
+
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+final class PreRemove implements Annotation
+{
+}
+
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+final class PostRemove implements Annotation
+{
+}
+
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+final class PreLoad implements Annotation
+{
+}
+
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+final class PostLoad implements Annotation
+{
+}
