@@ -386,6 +386,13 @@ class PersistenceBuilder
                 /** @ReferenceOne */
                 } elseif (isset($mapping['association']) && $mapping['association'] == ClassMetadata::REFERENCE_ONE) {
                     $value = $this->prepareReferencedDocumentValue($mapping, $rawValue);
+
+                /** @ReferenceMany */
+                } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
+                    $value = array();
+                    foreach ($rawValue as $reference) {
+                        $value[] = $this->prepareReferencedDocumentValue($mapping, $reference);
+                    }
                 }
             }
 
