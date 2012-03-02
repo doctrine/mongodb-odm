@@ -86,9 +86,9 @@ class AnnotationDriver implements Driver
     /**
      * Initializes a new AnnotationDriver that uses the given Reader for reading
      * docblock annotations.
-     * 
+     *
      * @param $reader Reader The annotation reader to use.
-     * @param string|array $paths One or multiple paths where mapping classes can be found. 
+     * @param string|array $paths One or multiple paths where mapping classes can be found.
      */
     public function __construct(Reader $reader, $paths = null)
     {
@@ -268,7 +268,7 @@ class AnnotationDriver implements Driver
     {
         $keys = array_merge($keys, $index->keys);
         $options = array();
-        $allowed = array('name', 'dropDups', 'background', 'safe', 'unique');
+        $allowed = array('name', 'dropDups', 'background', 'safe', 'unique', 'sparse');
         foreach ($allowed as $name) {
             if (isset($index->$name)) {
                 $options[$name] = $index->$name;
@@ -354,7 +354,7 @@ class AnnotationDriver implements Driver
 
     /**
      * Factory method for the Annotation Driver
-     * 
+     *
      * @param array|string $paths
      * @param Reader $reader
      * @return AnnotationDriver

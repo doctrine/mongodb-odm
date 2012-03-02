@@ -104,7 +104,7 @@ class XmlDriver extends AbstractFileDriver
                 $attributes = $field->attributes();
                 foreach ($attributes as $key => $value) {
                     $mapping[$key] = (string) $value;
-                    $booleanAttributes = array('id', 'reference', 'embed', 'unique', 'file', 'distance');
+                    $booleanAttributes = array('id', 'reference', 'embed', 'unique', 'sparse', 'file', 'distance');
                     if (in_array($key, $booleanAttributes)) {
                         $mapping[$key] = ('true' === $mapping[$key]) ? true : false;
                     }
@@ -172,6 +172,9 @@ class XmlDriver extends AbstractFileDriver
             }
             if (isset($mapping['unique'])) {
                 $options['unique'] = (boolean) $mapping['unique'];
+            }
+            if (isset($mapping['sparse'])) {
+                $options['sparse'] = (boolean) $mapping['sparse'];
             }
             $class->addIndex($keys, $options);
         }
@@ -259,6 +262,9 @@ class XmlDriver extends AbstractFileDriver
         }
         if (isset($attributes['unique'])) {
             $options['unique'] = ((string) $attributes['unique'] == 'false') ? false : true;
+        }
+        if (isset($attributes['sparse'])) {
+            $options['sparse'] = ((string) $attributes['sparse'] == 'false') ? false : true;
         }
         $index = array(
             'keys' => array(),

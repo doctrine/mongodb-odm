@@ -73,6 +73,7 @@ abstract class AbstractIndex extends Annotation
     public $safe;
     public $order;
     public $unique = false;
+    public $sparse = false;
     public $options = array();
 }
 /** @Annotation */
