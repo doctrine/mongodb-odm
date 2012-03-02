@@ -136,6 +136,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'name' => 'profile',
             'type' => 'one',
             'reference' => true,
+            'simple' => true,
             'targetDocument' => 'Documents\Profile',
             'isCascadeCallbacks' => true,
             'isCascadeDetach' => true,
@@ -149,6 +150,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'strategy' => 'pushAll',
             'inversedBy' => null,
             'mappedBy' => null,
+            'repositoryMethod' => null,
+            'limit' => null,
+            'skip' => null,
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
@@ -157,6 +161,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'name' => 'account',
             'type' => 'one',
             'reference' => true,
+            'simple' => false,
             'targetDocument' => 'Documents\Account',
             'isCascadeCallbacks' => true,
             'isCascadeDetach' => true,
@@ -170,6 +175,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'strategy' => 'pushAll',
             'inversedBy' => null,
             'mappedBy' => null,
+            'repositoryMethod' => null,
+            'limit' => null,
+            'skip' => null,
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
@@ -178,6 +186,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'name' => 'groups',
             'type' => 'many',
             'reference' => true,
+            'simple' => false,
             'targetDocument' => 'Documents\Group',
             'isCascadeCallbacks' => true,
             'isCascadeDetach' => true,
@@ -191,6 +200,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'strategy' => 'pushAll',
             'inversedBy' => null,
             'mappedBy' => null,
+            'repositoryMethod' => null,
+            'limit' => null,
+            'skip' => null,
         ), $classMetadata->fieldMappings['groups']);
 
         $this->assertEquals(array(

@@ -23,6 +23,7 @@ TestDocuments\User:
       targetDocument: Documents\Phonenumber
   referenceOne:
     profile:
+      simple: true
       targetDocument: Documents\Profile
       cascade: all
     account:
