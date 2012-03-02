@@ -158,6 +158,9 @@ class YamlDriver extends AbstractFileDriver
             } elseif (isset($mapping['unique'])) {
                 $options = $mapping['unique'];
                 $options['unique'] = true;
+            } elseif (isset($mapping['sparse'])) {
+                $options = $mapping['sparse'];
+                $options['sparse'] = true;
             }
             $class->addIndex($keys, $options);
         }

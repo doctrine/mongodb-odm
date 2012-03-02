@@ -85,6 +85,34 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\UniqueSparseOnFieldTest');
+        $indexes = $class->getIndexes();
+        $this->assertTrue(isset($indexes[0]['keys']['username']));
+        $this->assertEquals(1, $indexes[0]['keys']['username']);
+        $this->assertTrue(isset($indexes[0]['options']['unique']));
+        $this->assertEquals(true, $indexes[0]['options']['unique']);
+        $this->assertEquals(true, $indexes[0]['options']['safe']);
+        $this->assertTrue(isset($indexes[0]['options']['sparse']));
+        $this->assertEquals(true, $indexes[0]['options']['sparse']);
+
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\UniqueSparseOnDocumentTest');
+        $indexes = $class->getIndexes();
+        $this->assertTrue(isset($indexes[0]['keys']['username']));
+        $this->assertEquals(1, $indexes[0]['keys']['username']);
+        $this->assertTrue(isset($indexes[0]['options']['unique']));
+        $this->assertEquals(true, $indexes[0]['options']['unique']);
+        $this->assertTrue(isset($indexes[0]['options']['sparse']));
+        $this->assertEquals(true, $indexes[0]['options']['sparse']);
+
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\SparseIndexesOnDocumentTest');
+        $indexes = $class->getIndexes();
+        $this->assertTrue(isset($indexes[0]['keys']['username']));
+        $this->assertEquals(1, $indexes[0]['keys']['username']);
+        $this->assertTrue(isset($indexes[0]['options']['unique']));
+        $this->assertEquals(true, $indexes[0]['options']['unique']);
+        $this->assertTrue(isset($indexes[0]['options']['sparse']));
+        $this->assertEquals(true, $indexes[0]['options']['sparse']);
+
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\MultipleFieldsUniqueIndexTest');
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
@@ -93,6 +121,17 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, $indexes[0]['keys']['email']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
+
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\MultipleFieldsUniqueSparseIndexTest');
+        $indexes = $class->getIndexes();
+        $this->assertTrue(isset($indexes[0]['keys']['username']));
+        $this->assertEquals(1, $indexes[0]['keys']['username']);
+        $this->assertTrue(isset($indexes[0]['keys']['email']));
+        $this->assertEquals(1, $indexes[0]['keys']['email']);
+        $this->assertTrue(isset($indexes[0]['options']['unique']));
+        $this->assertEquals(true, $indexes[0]['options']['unique']);
+        $this->assertTrue(isset($indexes[0]['options']['sparse']));
+        $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\MultipleFieldIndexes');
         $indexes = $class->getIndexes();
@@ -190,6 +229,58 @@ class IndexesOnDocumentTest
 
 /** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}) */
 class MultipleFieldsUniqueIndexTest
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\String */
+    public $username;
+
+    /** @ODM\String */
+    public $email;
+}
+
+/** @ODM\Document */
+class UniqueSparseOnFieldTest
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\String @ODM\UniqueIndex(safe=true, sparse=true) */
+    public $username;
+
+    /** @ODM\String */
+    public $email;
+}
+
+/** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc"}, options={"sparse"=true}) */
+class UniqueSparseOnDocumentTest
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\String */
+    public $username;
+
+    /** @ODM\String */
+    public $email;
+}
+
+/** @ODM\Document @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"}, options={"sparse"=true})) */
+class SparseIndexesOnDocumentTest
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\String */
+    public $username;
+
+    /** @ODM\String */
+    public $email;
+}
+
+/** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}, options={"sparse"=true}) */
+class MultipleFieldsUniqueSparseIndexTest
 {
     /** @ODM\Id */
     public $id;
