@@ -188,20 +188,30 @@ class YamlDriver extends AbstractFileDriver
     private function addMappingFromReference(ClassMetadataInfo $class, $fieldName, $reference, $type)
     {
         $mapping = array(
-            'cascade'        => isset($reference['cascade']) ? $reference['cascade'] : null,
-            'type'           => $type,
-            'reference'      => true,
-            'targetDocument' => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
-            'fieldName'      => $fieldName,
-            'strategy'       => isset($reference['strategy']) ? (string) $reference['strategy'] : 'pushAll',
-            'inversedBy'     => isset($reference['inversedBy']) ? (string) $reference['inversedBy'] : null,
-            'mappedBy'       => isset($reference['mappedBy']) ? (string) $reference['mappedBy'] : null,
+            'cascade'          => isset($reference['cascade']) ? $reference['cascade'] : null,
+            'type'             => $type,
+            'reference'        => true,
+            'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false,
+            'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
+            'fieldName'        => $fieldName,
+            'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : 'pushAll',
+            'inversedBy'       => isset($reference['inversedBy']) ? (string) $reference['inversedBy'] : null,
+            'mappedBy'         => isset($reference['mappedBy']) ? (string) $reference['mappedBy'] : null,
+            'repositoryMethod' => isset($reference['repositoryMethod']) ? (string) $reference['repositoryMethod'] : null,
+            'limit'            => isset($reference['limit']) ? (integer) $reference['limit'] : null,
+            'skip'             => isset($reference['skip']) ? (integer) $reference['skip'] : null,
         );
         if (isset($reference['discriminatorField'])) {
             $mapping['discriminatorField'] = $reference['discriminatorField'];
         }
         if (isset($reference['discriminatorMap'])) {
             $mapping['discriminatorMap'] = $reference['discriminatorMap'];
+        }
+        if (isset($reference['sort'])) {
+            $mapping['sort'] = $reference['sort'];
+        }
+        if (isset($reference['criteria'])) {
+            $mapping['criteria'] = $reference['criteria'];
         }
         $this->addFieldMapping($class, $mapping);
     }

@@ -12,7 +12,7 @@
         <field name="tags" type="collection" />
         <embed-one target-document="Documents\Address" field="address" />
         <!--<field name="profile" targetDocument="Documents\Profile" reference="true" type="one" cascade="all" />-->
-        <reference-one target-document="Documents\Profile" field="profile">
+        <reference-one target-document="Documents\Profile" field="profile" simple="true">
             <cascade>
                 <all />
             </cascade>
