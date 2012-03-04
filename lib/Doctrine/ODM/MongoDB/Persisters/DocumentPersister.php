@@ -564,7 +564,7 @@ class DocumentPersister
             } else {
                 $repository = $this->dm->getRepository($className);
                 $qb = $repository->createQueryBuilder()
-                    ->field('id')->in($ids);
+                    ->field($class->identifier)->in($ids);
                 if (isset($hints[Query::HINT_SLAVE_OKAY])) {
                     $qb->slaveOkay(true);
                 }
