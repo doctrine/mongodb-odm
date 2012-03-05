@@ -369,7 +369,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
             }
 
             if ($this->__documentPersister__->load($this->__identifier__, $this) === null) {
-                throw \Doctrine\ODM\MongoDB\MongoDBException::documentNotFound(get_class($this), $this->__identifier__);
+                throw \Doctrine\ODM\MongoDB\DocumentNotFoundException::documentNotFound(get_class($this), $this->__identifier__);
             }
             unset($this->__documentPersister__, $this->__identifier__);
         }
