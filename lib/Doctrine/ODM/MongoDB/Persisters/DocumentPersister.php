@@ -539,7 +539,7 @@ class DocumentPersister
                             $className = $this->dm->getClassNameFromDiscriminatorValue($fieldMapping, $reference);
                             $mongoId = $reference[$cmd . 'id'];
                         }
-                        $id = (string) $mongoId;
+                        $id = ($mongoId instanceof \MongoId) ? (string) $mongoId : $mongoId;
                         $document = $this->uow->tryGetById($id, $className);
                         if (!$document || $document instanceof Proxy && ! $document->__isInitialized__) {
                             if ( ! isset($groupedIds[$className])) {
@@ -640,7 +640,7 @@ class DocumentPersister
                 $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
                 $mongoId = $reference[$cmd . 'id'];
             }
-            $id = (string) $mongoId;
+            $id = ($mongoId instanceof \MongoId) ? (string) $mongoId : $mongoId;
             $reference = $this->dm->getReference($className, $id);
             if ($mapping['strategy'] === 'set') {
                 $collection->set($key, $reference);
