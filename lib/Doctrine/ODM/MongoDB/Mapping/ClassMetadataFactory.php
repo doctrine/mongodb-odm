@@ -64,7 +64,7 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
     /**
      * Sets the DocumentManager instance for this class.
      *
-     * @param EntityManager $dm The DocumentManager instance
+     * @param DocumentManager $dm The DocumentManager instance
      */
     public function setDocumentManager(DocumentManager $dm)
     {
@@ -241,13 +241,12 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
             // Invoke driver
             try {
                 $this->driver->loadMetadataForClass($className, $class);
-            } catch(ReflectionException $e) {
+            } catch (\ReflectionException $e) {
                 throw MongoDBException::reflectionFailure($className, $e);
             }
 
-            if ( ! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
-                throw MongoDBException::identifierRequired($className);
-            }
+            $this->validateIdentifier($class);
+
             if ($parent && ! $parent->isMappedSuperclass && ! $class->isEmbeddedDocument) {
                 if ($parent->generatorType) {
                     $class->setIdGeneratorType($parent->generatorType);
@@ -286,6 +285,18 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
         }
 
         return $loaded;
+    }
+
+    /**
+     * Validates the identifier mapping.
+     *
+     * @param ClassMetadata $class
+     */
+    protected function validateIdentifier($class)
+    {
+        if ( ! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
+            throw MongoDBException::identifierRequired($class->name);
+        }
     }
 
     /**
@@ -414,7 +425,7 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
             $subClass->addIndex($index['keys'], $index['options']);
         }
     }
-    
+
     /**
      * Whether the class with the specified name should have its metadata loaded.
      * This is only the case if it is either mapped as an Document or a
