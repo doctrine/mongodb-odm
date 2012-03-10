@@ -24,7 +24,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**
  * The DisconnectedClassMetadataFactory is used to create ClassMetadata objects
- * that do not require the document class actually exist. This allows us to 
+ * that do not require the document class actually exist. This allows us to
  * load some mapping information and use it to do things like generate code
  * from the mapping information.
  *
@@ -58,5 +58,13 @@ class DisconnectedClassMetadataFactory extends ClassMetadataFactory
     protected function getParentClasses($name)
     {
         return array();
+    }
+
+    /**
+     * @override
+     */
+    protected function validateIdentifier($class)
+    {
+        // do nothing as the DisconnectedClassMetadataFactory cannot validate an inherited id
     }
 }
