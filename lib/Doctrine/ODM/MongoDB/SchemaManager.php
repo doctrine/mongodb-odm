@@ -106,6 +106,7 @@ class SchemaManager
 
     private function prepareIndexes(ClassMetadata $class)
     {
+        $persister = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
         $indexes = $class->getIndexes();
         $newIndexes = array();
 
@@ -115,6 +116,7 @@ class SchemaManager
                 'options' => $index['options']
             );
             foreach ($index['keys'] as $key => $value) {
+                $key = $persister->prepareFieldName($key);
                 if (isset($class->discriminatorField) && $key === $class->discriminatorField['name']) {
                     // The discriminator field may have its own mapping
                     $newIndex['keys'][$class->discriminatorField['fieldName']] = $value;

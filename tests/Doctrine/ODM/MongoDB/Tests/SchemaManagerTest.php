@@ -12,12 +12,20 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
  */
 class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    protected $uow;
     protected $dm;
 
     public function setUp()
     {
+        $this->uow = $this->getUnitOfWork();
+        $documentPersister = $this->getDocumentPersister();
+        $this->uow->expects($this->any())
+            ->method('getDocumentPersister')
+            ->will($this->returnValue($documentPersister));
+
         $this->dm = $this->getDocumentManager();
         $this->dm->setSchemaManager(new \Doctrine\ODM\MongoDB\SchemaManager($this->dm, $this->dm->getMetadataFactory()));
+        $this->dm->setUnitOfWork($this->uow);
     }
 
     public function tearDown()
@@ -265,6 +273,20 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $reader = new AnnotationReader();
         $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/../../../../Documents'));
         return DocumentManagerMock::create($this->getConnection(), $config);
+    }
+
+    protected function getDocumentPersister()
+    {
+        return $this->getMockBuilder('Doctrine\ODM\MongoDB\Persisters\DocumentPersister')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    protected function getUnitOfWork()
+    {
+        return $this->getMockBuilder('Doctrine\ODM\MongoDB\UnitOfWork')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     protected function getConnection()

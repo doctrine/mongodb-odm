@@ -751,19 +751,19 @@ class DocumentPersister
         $metadata = null;
         $newSort = array();
         foreach ($sort as $key => $value) {
-            $key = $this->prepareSortKey($key);
+            $key = $this->prepareFieldName($key);
             $newSort[$key] = $value;
         }
         return $newSort;
     }
 
     /**
-     * Prepare a sort key and convert PHP property names to MongoDB field names.
+     * Prepare a mongodb field name and convert the PHP property names to MongoDB field names.
      *
      * @param string $key
      * @return string $preparedKey
      */
-    private function prepareSortKey($key)
+    public function prepareFieldName($key)
     {
         $this->prepareQueryElement($key, null, null, false);
         return $key;
@@ -834,6 +834,10 @@ class DocumentPersister
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
 
+            if (!isset($metadata->fieldMappings[$e[0]])) {
+                return;
+            }
+
             $mapping = $metadata->fieldMappings[$e[0]];
             $e[0] = $mapping['name'];
 
@@ -841,7 +845,13 @@ class DocumentPersister
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
                 if ($targetClass->hasField($e[1])) {
                     if ($targetClass->identifier === $e[1]) {
-                        $fieldName =  $e[0] . '.$id';
+                        $targetMapping = $targetClass->getFieldMapping($e[1]);
+                        $e[1] = $targetMapping['name'];
+                        if (isset($mapping['reference']) && $mapping['reference']) {
+                            $fieldName =  $mapping['simple'] ? $e[0] . '.' .$e[1] : $e[0] . '.$id';
+                        } else {
+                            $fieldName = $e[0] . '.' .$e[1];
+                        }
                         if ($prepareValue === true) {
                             if (is_array($value)) {
                                 $keys = array_keys($value);
