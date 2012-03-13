@@ -8,3 +8,6 @@ logs/
 reports/
 dist/
 phpunit.xml
+vendor
+composer.lock
+composer.phar

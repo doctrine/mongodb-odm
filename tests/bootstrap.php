@@ -1,27 +1,19 @@
 <?php
 
-require_once __DIR__ . '/../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
-require_once __DIR__ . '/Doctrine/ODM/MongoDB/Tests/BaseTest.php';
+$file = __DIR__.'/../vendor/.composer/autoload.php';
+if (!file_exists($file)) {
+    throw new RuntimeException('Install dependencies to run test suite.');
+}
 
-use Doctrine\Common\ClassLoader,
-    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+require_once $file;
+
+use Doctrine\Common\ClassLoader;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 $classLoader = new ClassLoader('Doctrine\ODM\MongoDB\Tests', __DIR__ . '/../tests');
 $classLoader->register();
 
 $classLoader = new ClassLoader('Doctrine\ODM\MongoDB', __DIR__ . '/../lib');
-$classLoader->register();
-
-$classLoader = new ClassLoader('Doctrine\MongoDB', __DIR__ . '/../lib/vendor/doctrine-mongodb/lib');
-$classLoader->register();
-
-$classLoader = new ClassLoader('Doctrine', __DIR__ . '/../lib/vendor/doctrine-common/lib');
-$classLoader->register();
-
-$classLoader = new ClassLoader('Symfony\Component\Yaml', __DIR__ . '/../lib/vendor');
-$classLoader->register();
-
-$classLoader = new ClassLoader('Symfony\Component\Console', __DIR__ . '/../lib/vendor');
 $classLoader->register();
 
 $classLoader = new ClassLoader('Documents', __DIR__);
