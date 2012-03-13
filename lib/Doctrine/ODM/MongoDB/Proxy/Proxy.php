@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Proxy;
 
+use Doctrine\Common\Persistence\Proxy as BaseProxy;
+
 /**
  * Document Proxy interface.
  *
@@ -28,4 +30,4 @@ namespace Doctrine\ODM\MongoDB\Proxy;
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
-interface Proxy {}
+interface Proxy extends BaseProxy {}
