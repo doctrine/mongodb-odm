@@ -2,6 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Documents\CmsAddress;
+use Documents\CmsArticle;
+use Documents\CmsUser;
 use Documents\FriendUser;
 
 class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -49,6 +52,108 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // now the size is 3! userA and userB and userC are in the UOW.
         $this->assertSize(1);
+    }
+
+    public function testFlushSingleManagedDocument()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $user->status = 'administrator';
+        $this->dm->flush($user);
+        $this->dm->clear();
+
+        $user = $this->dm->find(get_class($user), $user->id);
+        $this->assertEquals('administrator', $user->status);
+    }
+
+    public function testFlushSingleUnmanagedDocument()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->setExpectedException('InvalidArgumentException', 'Document has to be managed for single computation');
+        $this->dm->flush($user);
+    }
+
+    public function testFlushSingleAndNewDocument()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $otherUser = new CmsUser;
+        $otherUser->name = 'Dominik2';
+        $otherUser->username = 'domnikl2';
+        $otherUser->status = 'developer';
+
+        $user->status = 'administrator';
+
+        $this->dm->persist($otherUser);
+        $this->dm->flush($user);
+
+        $this->assertTrue($this->dm->contains($otherUser), "Other user is contained in DocumentManager");
+        $this->assertTrue($otherUser->id > 0, "other user has an id");
+    }
+
+    public function testFlushAndCascadePersist()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $address = new CmsAddress();
+        $address->city = "Springfield";
+        $address->zip = "12354";
+        $address->country = "Germany";
+        $address->street = "Foo Street";
+        $address->user = $user;
+        $user->address = $address;
+
+        $this->dm->flush($user);
+
+        $this->assertTrue($this->dm->contains($address), "Other user is contained in DocumentManager");
+        $this->assertTrue($address->id > 0, "other user has an id");
+    }
+
+    public function testProxyIsIgnored()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getReference(get_class($user), $user->id);
+
+        $otherUser = new CmsUser;
+        $otherUser->name = 'Dominik2';
+        $otherUser->username = 'domnikl2';
+        $otherUser->status = 'developer';
+
+        $this->dm->persist($otherUser);
+        $this->dm->flush($user);
+
+        $this->assertTrue($this->dm->contains($otherUser), "Other user is contained in DocumentManager");
+        $this->assertTrue($otherUser->id > 0, "other user has an id");
     }
 
     protected function assertSize($size)
