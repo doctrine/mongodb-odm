@@ -829,7 +829,7 @@ class DocumentPersister
     private function prepareQueryElement(&$fieldName, $value = null, $metadata = null, $prepareValue = true)
     {
         $metadata = ($metadata === null) ? $this->class : $metadata;
-        
+
         // Process "association.fieldName"
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
@@ -884,7 +884,7 @@ class DocumentPersister
                             } else {
                                 $value = $this->prepareQueryElement($key, $value, null, $prepareValue);
                             }
-                            
+
                             $fieldName .= '.' . $key;
                         }
                     }
@@ -897,7 +897,7 @@ class DocumentPersister
             $mapping = $metadata->fieldMappings[$fieldName];
             $fieldName = $mapping['name'];
 
-            if ($prepareValue === true && isset($mapping['reference']) && isset($mapping['simple']) && $mapping['simple']) {
+            if (is_string($value) && $prepareValue === true && isset($mapping['reference']) && isset($mapping['simple']) && $mapping['simple']) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
                 $value = $targetClass->getDatabaseIdentifierValue($value);
             }
