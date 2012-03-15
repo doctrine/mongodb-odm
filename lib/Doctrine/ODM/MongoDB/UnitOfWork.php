@@ -395,8 +395,12 @@ class UnitOfWork implements PropertyChangedListener
         // Compute changes done since last commit.
         if ($document === null) {
             $this->computeChangeSets();
-        } else {
+        } else if (is_object($document)) {
             $this->computeSingleDocumentChangeSet($document);
+        } else if (is_array($document)) {
+            foreach ($document as $object) {
+                $this->computeSingleDocumentChangeSet($object);
+            }
         }
 
         if ( ! ($this->documentInsertions ||

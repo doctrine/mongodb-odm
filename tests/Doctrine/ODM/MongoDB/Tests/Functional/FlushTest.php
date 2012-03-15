@@ -54,6 +54,23 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSize(1);
     }
 
+    public function testFlushManyExplicitDocuments()
+    {
+        $userA = new FriendUser('userA');
+        $userB = new FriendUser('userB');
+        $userC = new FriendUser('userC');
+
+        $this->dm->persist($userA);
+        $this->dm->persist($userB);
+        $this->dm->persist($userC);
+
+        $this->dm->flush(array($userA, $userB, $userC));
+
+        $this->assertNotNull($userA->id);
+        $this->assertNotNull($userB->id);
+        $this->assertNotNull($userC->id);
+    }
+
     public function testFlushSingleManagedDocument()
     {
         $user = new CmsUser;
