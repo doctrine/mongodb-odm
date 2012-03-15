@@ -687,7 +687,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 } else if (is_object($orgValue) && $orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
-                } else if (is_array($orgValue) && is_array($actualValue) && ($diff = array_diff($actualValue, $orgValue))) {
+                } else if (is_array($orgValue) && is_array($actualValue) && $actualValue !== $orgValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
