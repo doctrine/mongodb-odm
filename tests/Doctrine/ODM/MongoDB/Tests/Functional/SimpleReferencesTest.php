@@ -53,6 +53,10 @@ class SimpleReferencesTest extends BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->equals($this->user->getId());
         $this->assertEquals(array('userId' => new \MongoId($this->user->getId())), $qb->getQuery()->debug());
+
+        $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
+        $qb->field('user')->in(array($this->user->getId()));
+        $this->assertEquals(array('userId' => array('$in' => array(new \MongoId($this->user->getId())))), $qb->getQuery()->debug());
     }
 
     public function testProxy()
