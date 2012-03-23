@@ -11,6 +11,3 @@ phpunit.xml
 vendor
 composer.lock
 composer.phar
-
-.idea/
-atlassian-ide-plugin.xml
