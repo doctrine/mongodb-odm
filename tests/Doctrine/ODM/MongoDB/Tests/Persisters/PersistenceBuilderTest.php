@@ -8,6 +8,8 @@ use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\ConfigurableProduct;
 use Documents\CmsArticle;
 use Documents\CmsComment;
+use Documents\Functional\SameCollection1;
+use Documents\Functional\SameCollection2;
 
 class PersistenceBuilderTest extends BaseTest
 {
@@ -27,28 +29,58 @@ class PersistenceBuilderTest extends BaseTest
 
     public function testFindWithOrOnCollectionWithDiscriminatorMap()
     {
-        $id = '4f28aa84acee41388900000a';
-        $ids = array($id);
+        $sameCollection1 = new SameCollection1();
+        $sameCollection2a = new SameCollection2();
+        $sameCollection2b = new SameCollection2();
+        $ids = array(
+            '4f28aa84acee413889000001',
+            '4f28aa84acee41388900002a',
+            '4f28aa84acee41388900002b'
+        );
+
+        $sameCollection1->id = $ids[0];
+        $sameCollection1->name = 'First entry in SameCollection1';
+        $sameCollection1->test = 1;
+        $this->dm->persist($sameCollection1);
+        $this->dm->flush();
+
+        $sameCollection2a->id = $ids[1];
+        $sameCollection2a->name = 'First entry in SameCollection2';
+        $sameCollection2a->ok = true;
+        $this->dm->persist($sameCollection2a);
+        $this->dm->flush();
+
+        $sameCollection2b->id = $ids[2];
+        $sameCollection2b->name = 'Second entry in SameCollection2';
+        $sameCollection2b->w00t = '!!';
+        $this->dm->persist($sameCollection2b);
+        $this->dm->flush();
+
+        $this->uow->computeChangeSets();
 
         /**
          * @var \Doctrine\ODM\MongoDB\Query\Builder $qb
          */
         $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
         $qb
-            ->addOr($qb->expr()->field('id')->in($ids))
-            ->select('id')->hydrate(false);
+            ->field('id')->in($ids)
+            ->select('id');
         /**
          * @var \Doctrine\ODM\MongoDB\Query\Query $query
          * @var \Doctrine\ODM\MongoDB\Cursor $results
          */
         $query = $qb->getQuery();
-        $results = $query->execute();
         $debug = $query->debug();
+        $results = $query->execute();
 
-        $this->assertEquals($id, (string) current($debug['$or'][0]['_id']['$in']));
+        $targetClass = $this->dm->getClassMetadata('Documents\Functional\SameCollection1');
+        $mongoId0 = $targetClass->getDatabaseIdentifierValue($ids[0]);
+
+        $this->assertEquals($mongoId0, (string) current($debug['_id']['$in']));
 
         $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $results);
-        $this->assertEquals(0, $query->count());
+
+        $this->assertEquals(2, $results->count());
     }
 
     public function testPrepareInsertDataWithCreatedReferenceOne()
