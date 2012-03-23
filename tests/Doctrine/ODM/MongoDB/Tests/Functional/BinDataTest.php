@@ -44,15 +44,15 @@ class BinDataTestUser
 	/** @ODM\Bin */
 	public $bin;
 
-	/** @ODM\BinFunc */
+	/** @ODM\Bin(type="bin_func") */
 	public $binFunc;
 
-	/** @ODM\BinUUID */
+	/** @ODM\Bin(type="bin_uuid") */
 	public $BinUUID;
 
-	/** @ODM\BinMd5 */
+	/** @ODM\Bin(type="bin_md5") */
 	public $binMd5;
 
-	/** @ODM\BinCustom */
+	/** @ODM\Bin(type="bin_custom") */
 	public $binCustom;
 }

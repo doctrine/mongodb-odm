@@ -17,7 +17,7 @@ class User extends BaseDocument
     /** @ODM\Field(type="string") */
     protected $username;
 
-    /** @ODM\BinMD5 */
+    /** @ODM\Bin(type="bin_md5") */
     protected $password;
 
     /** @ODM\Date */
