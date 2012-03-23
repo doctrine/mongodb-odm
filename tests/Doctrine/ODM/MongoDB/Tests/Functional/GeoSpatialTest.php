@@ -22,6 +22,14 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         ), $qb->getQueryArray());
     }
 
+    public function testGetFieldsInCoordinatesQuery()
+    {
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City');
+        $qb->field('coordinates')->withinBox(41, 41, 72, 72);
+        $query = $qb->getQuery();
+        $this->assertEquals(array('coordinates'), $query->getFieldsInQuery());
+    }
+
     public function testGeoSpatial1()
     {
         $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\City');
