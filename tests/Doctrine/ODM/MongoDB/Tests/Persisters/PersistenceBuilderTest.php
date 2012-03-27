@@ -42,7 +42,7 @@ class PersistenceBuilderTest extends BaseTest
         /**
          * @var \Doctrine\ODM\MongoDB\Query\Builder $qb
          */
-        $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection2');
+        $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
         $qb->update()
             ->field('ok')->set(true)
             ->field('id')->equals($id);
