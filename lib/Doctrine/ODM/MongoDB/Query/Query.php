@@ -137,26 +137,15 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $this->refresh = $bool;
     }
 
+    /**
+     * Gets the fields involved in this query.
+     *
+     * @return array $fields An array of fields names used in this query.
+     */
     public function getFieldsInQuery()
     {
-        $fields = array();
-        foreach ($this->query['query'] as $fieldName => $value) {
-            if (is_array($value)) {
-                foreach ($value as $k => $v) {
-                    if ($k === $this->cmd.'elemMatch') {
-                        foreach (array_keys($v) as $field) {
-                            $fields[] = $fieldName.'.'.$field;
-                        }
-                    } else {
-                        $fields[] = $fieldName;
-                    }
-                }
-            } else {
-                $fields[] = $fieldName;
-            }
-        }
-        $fields = array_unique(array_merge($fields, array_keys($this->query['sort'])));
-        return $fields;
+        $extractor = new FieldExtractor($this->query['query'], $this->query['sort'], $this->cmd);
+        return $extractor->getFields();
     }
 
     /**
