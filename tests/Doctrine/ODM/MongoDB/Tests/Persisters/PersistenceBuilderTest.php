@@ -27,6 +27,38 @@ class PersistenceBuilderTest extends BaseTest
         parent::tearDown();
     }
 
+    public function testQueryBuilderUpdateWithDiscriminatorMap()
+    {
+        $testCollection = new SameCollection1();
+        $id = '4f28aa84acee413889000001';
+
+        $testCollection->id = $id;
+        $testCollection->name = 'First entry';
+        $testCollection->ok = false;
+        $this->dm->persist($testCollection);
+        $this->dm->flush();
+        $this->uow->computeChangeSets();
+
+        /**
+         * @var \Doctrine\ODM\MongoDB\Query\Builder $qb
+         */
+        $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection2');
+        $qb->update()
+            ->field('ok')->set(true)
+            ->field('id')->equals($id);
+
+        /**
+         * @var \Doctrine\ODM\MongoDB\Query\Query $query
+         * @var \Doctrine\ODM\MongoDB\Cursor $results
+         */
+        $query = $qb->getQuery();
+        $results = $query->execute();
+
+        $this->dm->refresh($testCollection);
+        $this->assertEquals(true, $testCollection->ok);
+    }
+
+
     public function testFindWithOrOnCollectionWithDiscriminatorMap()
     {
         $sameCollection1 = new SameCollection1();
