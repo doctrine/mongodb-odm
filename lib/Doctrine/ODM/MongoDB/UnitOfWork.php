@@ -685,11 +685,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ($orgValue != $actualValue) {
                         $changeSet[$propName] = array($orgValue, $actualValue);
                     }
-                } else if (is_object($orgValue) && $orgValue !== $actualValue) {
-                    $changeSet[$propName] = array($orgValue, $actualValue);
-                } else if (is_array($orgValue) && is_array($actualValue) && ($diff = array_diff($actualValue, $orgValue))) {
-                    $changeSet[$propName] = array($orgValue, $actualValue);
-                } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+                } else if ($orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 }
             }
@@ -886,9 +882,7 @@ class UnitOfWork implements PropertyChangedListener
                         $this->visitedCollections[] = $actualValue;
                     }
                 }
-            } else if (is_object($orgValue) && $orgValue !== $actualValue) {
-                $changeSet[$propName] = array($orgValue, $actualValue);
-            } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+            } else if ($orgValue !== $actualValue) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
         }
@@ -2706,11 +2700,11 @@ class UnitOfWork implements PropertyChangedListener
     public function getScheduledCollectionUpdates()
     {
         return $this->collectionUpdates;
-    }
+    }    
 
     /**
      * Helper method to initialize a lazy loading proxy or persistent collection.
-     *
+     * 
      * @param object
      * @return void
      */
