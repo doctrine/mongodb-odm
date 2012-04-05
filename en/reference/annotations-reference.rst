@@ -267,7 +267,7 @@ Optional attributes:
    collection - By default collection name is extracted from the
    document's class name, but this attribute can be used to override.
 - 
-   repositoryClass - Specifies custom repository class to use when.
+   repositoryClass - Specifies custom repository class to use.
 -
    indexes - Specifies an array of indexes for this document.
 -
