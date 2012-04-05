@@ -797,6 +797,28 @@ class DocumentPersister
         }
         return $newQuery;
     }
+    
+    /**
+     * Prepares a new object array by converting the portable Doctrine types to the types mongodb expects.
+     *
+     * @param string|array newObjy
+     * @return array $newQuery
+     */
+    public function prepareNewObj($newObj)
+    {
+        $prepared = array();
+        if ($newObj) {
+            foreach ($newObj as $key => $value) {
+                if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
+                    $prepared[$key] = $this->prepareSubQuery($value);
+                } else {
+                    $prepared[$key] = $this->prepareQueryElement($key, $value, null, true);
+                }
+            }
+            $prepared = $this->convertTypes($prepared);
+        }
+        return $prepared;
+    }
 
     /**
      * Convert a subquery.
