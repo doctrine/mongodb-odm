@@ -34,7 +34,6 @@ class PersistenceBuilderTest extends BaseTest
 
         $testCollection->id = $id;
         $testCollection->name = 'First entry';
-        $testCollection->ok = false;
         $this->dm->persist($testCollection);
         $this->dm->flush();
         $this->uow->computeChangeSets();
@@ -58,7 +57,6 @@ class PersistenceBuilderTest extends BaseTest
         $this->dm->refresh($testCollection);
 
         $this->assertEquals('OK! TEST', $testCollection->test);
-        $this->assertEquals(true, $testCollection->ok);
     }
 
 
