@@ -25,6 +25,23 @@ class PersistenceBuilderTest extends BaseTest
         parent::tearDown();
     }
 
+    public function testPrepareUpdateDataDoesNotIncludeId()
+    {
+        $article = new CmsArticle();
+        $article->topic = 'persistence builder test';
+        $this->dm->persist($article);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $article = $this->dm->getRepository(get_class($article))->find($article->id);
+        $article->id = null;
+        $article->topic = 'test';
+
+        $this->uow->computeChangeSets();
+        $data = $this->pb->prepareUpdateData($article);
+        $this->assertFalse(isset($data['$unset']['_id']));
+    }
+
     public function testFindWithOrOnCollectionWithDiscriminatorMap()
     {
         $id = '4f28aa84acee41388900000a';
