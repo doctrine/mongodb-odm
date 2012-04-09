@@ -45,6 +45,7 @@ class PersistenceBuilderTest extends BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
         $qb->update()
             ->field('ok')->set(true)
+            ->field('test')->set('OK! TEST')
             ->field('id')->equals($id);
 
         /**
@@ -55,6 +56,8 @@ class PersistenceBuilderTest extends BaseTest
         $results = $query->execute();
 
         $this->dm->refresh($testCollection);
+
+        $this->assertEquals('OK! TEST', $testCollection->test);
         $this->assertEquals(true, $testCollection->ok);
     }
 
@@ -275,5 +278,5 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertInstanceOf('Documents\CmsArticle', $singleResult->article);
 
         $this->assertEquals($articleId, $singleResult->article->id);
-}
+    }
 }

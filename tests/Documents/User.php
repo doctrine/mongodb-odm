@@ -50,6 +50,9 @@ class User extends BaseDocument
     /** @ODM\Increment */
     protected $count = 0;
 
+    /** @ODM\ReferenceMany(targetDocument="BlogPost", mappedBy="user", nullable=true) */
+    protected $posts;
+
     /** @ODM\ReferenceOne(targetDocument="Documents\SimpleReferenceUser", mappedBy="user") */
     protected $simpleReferenceOneInverse;
 
@@ -63,6 +66,7 @@ class User extends BaseDocument
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->groups = array();
+        $this->posts = array();
         $this->createdAt = new \DateTime();
     }
 
@@ -231,4 +235,31 @@ class User extends BaseDocument
             $this->count = $this->count + $num;
         }
     }
+
+    public function setPosts($posts)
+    {
+        $this->posts = $posts;
+    }
+
+    public function addPost(BlogPost $post)
+    {
+        $this->posts[] = $post;
+    }
+
+    public function removePost($id)
+    {
+        foreach ($this->posts as $key => $post) {
+            if ($post->getId() === $id) {
+                unset($this->groups[$key]);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getPosts()
+    {
+        return $this->posts;
+    }
+
 }
