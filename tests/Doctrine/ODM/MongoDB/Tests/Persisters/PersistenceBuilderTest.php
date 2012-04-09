@@ -8,6 +8,8 @@ use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\ConfigurableProduct;
 use Documents\CmsArticle;
 use Documents\CmsComment;
+use Documents\Functional\SameCollection1;
+use Documents\Functional\SameCollection2;
 
 class PersistenceBuilderTest extends BaseTest
 {
@@ -25,30 +27,96 @@ class PersistenceBuilderTest extends BaseTest
         parent::tearDown();
     }
 
-    public function testFindWithOrOnCollectionWithDiscriminatorMap()
+    public function testQueryBuilderUpdateWithDiscriminatorMap()
     {
-        $id = '4f28aa84acee41388900000a';
-        $ids = array($id);
+        $testCollection = new SameCollection1();
+        $id = '4f28aa84acee413889000001';
+
+        $testCollection->id = $id;
+        $testCollection->name = 'First entry';
+        $testCollection->ok = false;
+        $this->dm->persist($testCollection);
+        $this->dm->flush();
+        $this->uow->computeChangeSets();
 
         /**
          * @var \Doctrine\ODM\MongoDB\Query\Builder $qb
          */
         $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
-        $qb
-            ->addOr($qb->expr()->field('id')->in($ids))
-            ->select('id')->hydrate(false);
+        $qb->update()
+            ->field('ok')->set(true)
+            ->field('test')->set('OK! TEST')
+            ->field('id')->equals($id);
+
         /**
          * @var \Doctrine\ODM\MongoDB\Query\Query $query
          * @var \Doctrine\ODM\MongoDB\Cursor $results
          */
         $query = $qb->getQuery();
         $results = $query->execute();
-        $debug = $query->debug();
 
-        $this->assertEquals($id, (string) current($debug['$or'][0]['_id']['$in']));
+        $this->dm->refresh($testCollection);
+
+        $this->assertEquals('OK! TEST', $testCollection->test);
+        $this->assertEquals(true, $testCollection->ok);
+    }
+
+
+    public function testFindWithOrOnCollectionWithDiscriminatorMap()
+    {
+        $sameCollection1 = new SameCollection1();
+        $sameCollection2a = new SameCollection2();
+        $sameCollection2b = new SameCollection2();
+        $ids = array(
+            '4f28aa84acee413889000001',
+            '4f28aa84acee41388900002a',
+            '4f28aa84acee41388900002b'
+        );
+
+        $sameCollection1->id = $ids[0];
+        $sameCollection1->name = 'First entry in SameCollection1';
+        $sameCollection1->test = 1;
+        $this->dm->persist($sameCollection1);
+        $this->dm->flush();
+
+        $sameCollection2a->id = $ids[1];
+        $sameCollection2a->name = 'First entry in SameCollection2';
+        $sameCollection2a->ok = true;
+        $this->dm->persist($sameCollection2a);
+        $this->dm->flush();
+
+        $sameCollection2b->id = $ids[2];
+        $sameCollection2b->name = 'Second entry in SameCollection2';
+        $sameCollection2b->w00t = '!!';
+        $this->dm->persist($sameCollection2b);
+        $this->dm->flush();
+
+        $this->uow->computeChangeSets();
+
+        /**
+         * @var \Doctrine\ODM\MongoDB\Query\Builder $qb
+         */
+        $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection2');
+        $qb
+            ->field('id')->in($ids)
+            ->select('id')->hydrate(false);
+        /**
+         * @var \Doctrine\ODM\MongoDB\Query\Query $query
+         * @var \Doctrine\ODM\MongoDB\Cursor $results
+         */
+        $query = $qb->getQuery();
+        $debug = $query->debug();
+        $results = $query->execute();
 
         $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $results);
-        $this->assertEquals(0, $query->count());
+
+        $targetClass = $this->dm->getClassMetadata('Documents\Functional\SameCollection2');
+        $mongoId1 = $targetClass->getDatabaseIdentifierValue($ids[1]);
+
+        $this->assertEquals($mongoId1, $debug['_id']['$in'][1]);
+
+
+        $this->assertEquals(2, $results->count(true));
     }
 
     public function testPrepareInsertDataWithCreatedReferenceOne()
@@ -167,5 +235,48 @@ class PersistenceBuilderTest extends BaseTest
         }
         unset($preparedData['_id']);
         $this->assertEquals(array_keys($expectedData), array_keys($preparedData));
+    }
+
+    public function testAdvancedQueriesOnReferenceWithDiscriminatorMap()
+    {
+        $article = new CmsArticle();
+        $article->title = 'advanced queries test';
+        $this->dm->persist($article);
+        $this->dm->flush();
+
+        $comment = new CmsComment();
+        $comment->article = $article;
+        $this->dm->persist($comment);
+        $this->dm->flush();
+
+        $this->uow->computeChangeSets();
+
+        $articleId = (string) $article->id;
+        $commentId = (string) $comment->id;
+
+        /**
+         * @var \Doctrine\ODM\MongoDB\Query\Builder $qb
+         */
+        $qb = $this->dm->createQueryBuilder('Documents\CmsComment');
+        $qb
+            ->field('article')->in(array($articleId));
+        /**
+         * @var \Doctrine\ODM\MongoDB\Query\Query $query
+         * @var \Doctrine\ODM\MongoDB\Cursor $results
+         */
+        $query = $qb->getQuery();
+        $debug = $query->debug();
+        $results = $query->execute();
+
+        $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $results);
+
+        $this->assertEquals(1, $results->count(true));
+
+        $singleResult = $results->getSingleResult();
+        $this->assertEquals($commentId, $singleResult->id);
+
+        $this->assertInstanceOf('Documents\CmsArticle', $singleResult->article);
+
+        $this->assertEquals($articleId, $singleResult->article->id);
     }
 }
