@@ -238,11 +238,13 @@ class PersistenceBuilderTest extends BaseTest
     public function testAdvancedQueriesOnReferenceWithDiscriminatorMap()
     {
         $article = new CmsArticle();
+        $article->id = '4f8373f952fbfe7411000001';
         $article->title = 'advanced queries test';
         $this->dm->persist($article);
         $this->dm->flush();
 
         $comment = new CmsComment();
+        $comment->id = '4f8373f952fbfe7411000002';
         $comment->article = $article;
         $this->dm->persist($comment);
         $this->dm->flush();
@@ -268,13 +270,14 @@ class PersistenceBuilderTest extends BaseTest
 
         $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $results);
 
-        $this->assertEquals(1, $results->count(true));
-
         $singleResult = $results->getSingleResult();
+        $this->assertInstanceOf('Documents\CmsComment', $singleResult);
+
         $this->assertEquals($commentId, $singleResult->id);
 
         $this->assertInstanceOf('Documents\CmsArticle', $singleResult->article);
 
         $this->assertEquals($articleId, $singleResult->article->id);
+        $this->assertEquals(1, $results->count(true));
     }
 }
