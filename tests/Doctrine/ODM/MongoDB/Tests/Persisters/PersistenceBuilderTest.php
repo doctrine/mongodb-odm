@@ -59,7 +59,6 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertEquals('OK! TEST', $testCollection->test);
     }
 
-
     public function testFindWithOrOnCollectionWithDiscriminatorMap()
     {
         $sameCollection1 = new SameCollection1();
@@ -115,6 +114,23 @@ class PersistenceBuilderTest extends BaseTest
 
 
         $this->assertEquals(2, $results->count(true));
+    }
+
+    public function testPrepareUpdateDataDoesNotIncludeId()
+    {
+        $article = new CmsArticle();
+        $article->topic = 'persistence builder test';
+        $this->dm->persist($article);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $article = $this->dm->getRepository(get_class($article))->find($article->id);
+        $article->id = null;
+        $article->topic = 'test';
+
+        $this->uow->computeChangeSets();
+        $data = $this->pb->prepareUpdateData($article);
+        $this->assertFalse(isset($data['$unset']['_id']));
     }
 
     public function testPrepareInsertDataWithCreatedReferenceOne()

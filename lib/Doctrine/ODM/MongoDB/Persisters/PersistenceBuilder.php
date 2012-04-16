@@ -174,6 +174,11 @@ class PersistenceBuilder
                 continue;
             }
 
+            // skip identifiers
+            if (isset($mapping['id']) && $mapping['id'] === true) {
+                continue;
+            }
+
             list($old, $new) = $change;
 
             // @Inc
