@@ -160,10 +160,10 @@ can simply omit the ``targetDocument`` option:
         class User
         {
             // ..
-    
+
             /** @ReferenceMany */
             private $favorites = array();
-    
+
             // ...
         }
 
@@ -172,7 +172,7 @@ can simply omit the ``targetDocument`` option:
         <field fieldName="favorites" />
 
     .. code-block:: yaml
-    
+
         referenceMany:
             favorites: ~
 
@@ -195,7 +195,7 @@ qualified class name with each reference:
         class User
         {
             // ..
-    
+
             /**
              * @ReferenceMany(
              *   discriminatorMap={
@@ -205,7 +205,7 @@ qualified class name with each reference:
              * )
              */
             private $favorites = array();
-    
+
             // ...
         }
 
@@ -240,12 +240,12 @@ option:
         class User
         {
             // ..
-    
+
             /**
              * @ReferenceMany(discriminatorField="type")
              */
             private $favorites = array();
-    
+
             // ...
         }
 
@@ -264,8 +264,8 @@ option:
 Simple References
 -----------------
 
-By default all referneces are stored as a ``DBRef`` with the traditional ``$id``,
-``$db`` and ``$ref`` fields but if you want you can configure your refernces
+By default all references are stored as a ``DBRef`` with the traditional ``$id``,
+``$db`` and ``$ref`` fields but if you want you can configure your references
 to be simple and only store a ``MongoId``.
 
 Example:
