@@ -257,6 +257,18 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $dm->flush();
     }
 
+    public function testNotSaved()
+    {
+        $test = new \Documents\Functional\AlsoLoad();
+        $test->bar = 'test';
+        $test->firstName = 'Jon';
+        $this->dm->persist($test);
+
+        $this->uow->computeChangeSets();
+        $changeset = $this->uow->getDocumentChangeSet($test);
+        $this->assertFalse(isset($changeset['bar']));
+    }
+
     /**
      * @dataProvider getScheduleForUpdateWithArraysTests
      */
