@@ -146,7 +146,7 @@ MongoDate http://www.php.net/manual/en/class.mongodate.php.
 -------------------
 
 This annotation is a required annotation for the topmost/super
-class of an inheritance hierachy. It specifies the details of the
+class of an inheritance hierarchy. It specifies the details of the
 field which saves the name of the class, which the document is
 actually instantiated as.
 
@@ -174,8 +174,8 @@ Example:
 @DiscriminatorMap
 -----------------
 
-The discrimnator map is a required annotation on the top-most/super
-class in an inheritance hierachy. It takes an array as only
+The discriminator map is a required annotation on the top-most/super
+class in an inheritance hierarchy. It takes an array as only
 argument which defines which class should be saved under which name
 in the database. Keys are the database value and values are the
 classes, either as fully- or as unqualified class names depending
@@ -298,7 +298,7 @@ Example:
 @EmbedMany
 ----------
 
-This annotation is simmilar to @EmbedOne, but
+This annotation is similar to @EmbedOne, but
 instead of embedding one document, it informs MongoDB to embed a
 collection of documents
 
@@ -327,7 +327,7 @@ Example:
      *     discriminatorField="type",
      *     discriminatorMap={
      *         "book"="Documents\BookTag",
-     *         "song"="DOcuments\SongTag"
+     *         "song"="Documents\SongTag"
      *     }
      * )
      */
@@ -349,7 +349,7 @@ MongoDB docs:
     collections?" In relational databases, each sub-item of interest
     typically becomes a separate table (unless denormalizing for
     performance). In Mongo, this is not recommended - embedding objects
-    is much more efficient. Data is then colocated on disk;
+    is much more efficient. Data is then collocated on disk;
     client-server turnarounds to the database are eliminated. So in
     general the question to ask is, "why would I not want to embed this
     object?"
@@ -379,7 +379,7 @@ Example:
      *     discriminatorField="type",
      *     discriminatorMap={
      *         "book"="Documents\BookTag",
-     *         "song"="DOcuments\SongTag"
+     *         "song"="Documents\SongTag"
      *     }
      * )
      */
@@ -519,7 +519,7 @@ Tells ODM that the property is a file, must be set to a existing
 file path before saving to MongoDB Will be instantiated as instance
 of
 MongoGridFSFile http://www.php.net/manual/en/class.mongogridfsfile.php
-class upon retreival
+class upon retrieval
 
 @Float
 ------
@@ -655,7 +655,7 @@ Alias of @Field, with "type" attribute set to
 @InheritanceType
 ----------------
 
-In an inheritance hierachy you have to use this annotation on the
+In an inheritance hierarchy you have to use this annotation on the
 topmost/super class to define which strategy should be used for
 inheritance. Currently SINGLE\_COLLECTION and
 COLLECTION\_PER\_CLASS are supported.
@@ -932,7 +932,7 @@ Optional attributes:
 -
     limit - Limit for the query that loads the reference.
 -
-    skip - Skip for the query that lods the reference.
+    skip - Skip for the query that loads the reference.
 -
     strategy - The strategy to use to persist the reference. Possible values are `set` and `pushAll` and `pushAll` is the default.
 
@@ -950,7 +950,7 @@ Example:
      *     discriminatorField="type",
      *     discriminatorMap={
      *         "book"="Documents\BookItem",
-     *         "song"="DOcuments\SongItem"
+     *         "song"="Documents\SongItem"
      *     }
      * )
      */
@@ -1024,7 +1024,7 @@ Optional attributes:
 -
     limit - Limit for the query that loads the reference.
 -
-    skip - Skip for the query that lods the reference.
+    skip - Skip for the query that loads the reference.
 
 Example:
 
@@ -1039,7 +1039,7 @@ Example:
      *     discriminatorField="type",
      *     discriminatorMap={
      *         "book"="Documents\BookItem",
-     *         "song"="DOcuments\SongItem"
+     *         "song"="Documents\SongItem"
      *     }
      * )
      */
