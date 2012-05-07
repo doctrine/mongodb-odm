@@ -154,82 +154,83 @@ class CollectionPersisterTest extends BaseTest
         return new CollectionPersister($this->dm, $pb, $uow, '$');
     }
 
-    public function testNestedEmbedManySetStrategy() {
-      $post = new CollectionPersisterPost("Doest it work?");
-      $comment = new CollectionPersisterComment("no way...", "skeptic");
-      $comment2 = new CollectionPersisterComment("Hell yeah!", "asafdav");
-      $comment3 = new CollectionPersisterComment("Awesome", "all");
+    public function testNestedEmbedManySetStrategy()
+    {
+        $post = new CollectionPersisterPost("Doest it work?");
+        $comment = new CollectionPersisterComment("no way...", "skeptic");
+        $comment2 = new CollectionPersisterComment("Hell yeah!", "asafdav");
+        $comment3 = new CollectionPersisterComment("Awesome", "all");
 
-      $post->comments->set('first', $comment);
-      $comment->comments->set('first', $comment2);
-      $comment->comments->set('second', $comment3);
+        $post->comments->set('first', $comment);
+        $comment->comments->set('first', $comment2);
+        $comment->comments->set('second', $comment3);
 
-      $this->dm->persist($post);
-      $this->dm->flush(null, array('safe' => true));
+        $this->dm->persist($post);
+        $this->dm->flush(null, array('safe' => true));
 
-      /** @var CollectionPersisterPost $check  */
-      $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'Doest it work?'));
-      $this->assertEquals(1, count($check['comments']), 'First level persisted correctly');
-      $this->assertTrue(isset($check['comments']['first']));
-      $this->assertEquals(2, count($check['comments']['first']['comments']), 'Second level persisted correctly');
-      $this->assertTrue(isset($check['comments']['first']['comments']['first']));
-      $this->assertTrue(isset($check['comments']['first']['comments']['second']));
+        /** @var CollectionPersisterPost $check  */
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'Doest it work?'));
+        $this->assertEquals(1, count($check['comments']), 'First level persisted correctly');
+        $this->assertTrue(isset($check['comments']['first']));
+        $this->assertEquals(2, count($check['comments']['first']['comments']), 'Second level persisted correctly');
+        $this->assertTrue(isset($check['comments']['first']['comments']['first']));
+        $this->assertTrue(isset($check['comments']['first']['comments']['second']));
 
-      // Test add comments
-      $comment4 = new CollectionPersisterComment("Does add comment work?", "Someone");
-      $comment5 = new CollectionPersisterComment("Sure!", "asafdav");
+        // Test add comments
+        $comment4 = new CollectionPersisterComment("Does add comment work?", "Someone");
+        $comment5 = new CollectionPersisterComment("Sure!", "asafdav");
 
-      $post->comments->set('second', $comment4);
-      $comment4->comments->set('just-a-key', $comment5);
+        $post->comments->set('second', $comment4);
+        $comment4->comments->set('just-a-key', $comment5);
 
-      $this->dm->persist($post);
-      $this->dm->flush(null, array('safe' => true));
-      $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'Doest it work?'));
+        $this->dm->persist($post);
+        $this->dm->flush(null, array('safe' => true));
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'Doest it work?'));
 
-      $this->assertEquals(2, count($check['comments']), 'First level persisted correctly');
-      $this->assertTrue(isset($check['comments']['first']));
-      $this->assertEquals(2, count($check['comments']['first']['comments']), 'Second level persisted correctly');
-      $this->assertTrue(isset($check['comments']['first']['comments']['first']));
-      $this->assertTrue(isset($check['comments']['first']['comments']['second']));
-      $this->assertTrue(isset($check['comments']['second']));
-      $this->assertEquals($comment4->comment, $check['comments']['second']['comment']);
-      $this->assertEquals(1, count($check['comments']['second']['comments']), 'New comment persisted correctly');
-      $this->assertTrue(isset($check['comments']['second']['comments']['just-a-key']));
-      $this->assertEquals($comment5->comment, $check['comments']['second']['comments']['just-a-key']['comment']);
+        $this->assertEquals(2, count($check['comments']), 'First level persisted correctly');
+        $this->assertTrue(isset($check['comments']['first']));
+        $this->assertEquals(2, count($check['comments']['first']['comments']), 'Second level persisted correctly');
+        $this->assertTrue(isset($check['comments']['first']['comments']['first']));
+        $this->assertTrue(isset($check['comments']['first']['comments']['second']));
+        $this->assertTrue(isset($check['comments']['second']));
+        $this->assertEquals($comment4->comment, $check['comments']['second']['comment']);
+        $this->assertEquals(1, count($check['comments']['second']['comments']), 'New comment persisted correctly');
+        $this->assertTrue(isset($check['comments']['second']['comments']['just-a-key']));
+        $this->assertEquals($comment5->comment, $check['comments']['second']['comments']['just-a-key']['comment']);
 
-      // Update two comments
-      $comment4->comment = "Sorry, I could tell";
-      $comment3->comment = "Hallelujah";
+        // Update two comments
+        $comment4->comment = "Sorry, I could tell";
+        $comment3->comment = "Hallelujah";
 
-      $this->dm->persist($post);
-      $this->dm->flush(null, array('safe' => true));
-      $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'Doest it work?'));
+        $this->dm->persist($post);
+        $this->dm->flush(null, array('safe' => true));
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'Doest it work?'));
 
-      $this->assertEquals(2, count($check['comments']), 'First level persisted correctly');
-      $this->assertTrue(isset($check['comments']['first']));
-      $this->assertEquals(2, count($check['comments']['first']['comments']), 'Second level persisted correctly');
-      $this->assertTrue(isset($check['comments']['first']['comments']['first']));
-      $this->assertTrue(isset($check['comments']['first']['comments']['second']));
-      $this->assertEquals($comment3->comment, $check['comments']['first']['comments']['second']['comment']);
-      $this->assertTrue(isset($check['comments']['second']));
-      $this->assertEquals($comment4->comment, $check['comments']['second']['comment']);
-      $this->assertEquals(1, count($check['comments']['second']['comments']), 'New comment persisted correctly');
-      $this->assertTrue(isset($check['comments']['second']['comments']['just-a-key']));
-      $this->assertEquals($comment5->comment, $check['comments']['second']['comments']['just-a-key']['comment']);
+        $this->assertEquals(2, count($check['comments']), 'First level persisted correctly');
+        $this->assertTrue(isset($check['comments']['first']));
+        $this->assertEquals(2, count($check['comments']['first']['comments']), 'Second level persisted correctly');
+        $this->assertTrue(isset($check['comments']['first']['comments']['first']));
+        $this->assertTrue(isset($check['comments']['first']['comments']['second']));
+        $this->assertEquals($comment3->comment, $check['comments']['first']['comments']['second']['comment']);
+        $this->assertTrue(isset($check['comments']['second']));
+        $this->assertEquals($comment4->comment, $check['comments']['second']['comment']);
+        $this->assertEquals(1, count($check['comments']['second']['comments']), 'New comment persisted correctly');
+        $this->assertTrue(isset($check['comments']['second']['comments']['just-a-key']));
+        $this->assertEquals($comment5->comment, $check['comments']['second']['comments']['just-a-key']['comment']);
 
-      // Delete  comment
-      unset($post->comments['second']);
-      $this->dm->persist($post);
-      $this->dm->flush(null, array('safe' => true));
-      $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'Doest it work?'));
+        // Delete  comment
+        unset($post->comments['second']);
+        $this->dm->persist($post);
+        $this->dm->flush(null, array('safe' => true));
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'Doest it work?'));
 
-      $this->assertEquals(1, count($check['comments']), 'First level persisted correctly');
-      $this->assertTrue(isset($check['comments']['first']));
-      $this->assertEquals(2, count($check['comments']['first']['comments']), 'Second level persisted correctly');
-      $this->assertTrue(isset($check['comments']['first']['comments']['first']));
-      $this->assertTrue(isset($check['comments']['first']['comments']['second']));
-      $this->assertEquals($comment3->comment, $check['comments']['first']['comments']['second']['comment']);
-      $this->assertFalse(isset($check['comments']['second']));
+        $this->assertEquals(1, count($check['comments']), 'First level persisted correctly');
+        $this->assertTrue(isset($check['comments']['first']));
+        $this->assertEquals(2, count($check['comments']['first']['comments']), 'Second level persisted correctly');
+        $this->assertTrue(isset($check['comments']['first']['comments']['first']));
+        $this->assertTrue(isset($check['comments']['first']['comments']['second']));
+        $this->assertEquals($comment3->comment, $check['comments']['first']['comments']['second']['comment']);
+        $this->assertFalse(isset($check['comments']['second']));
     }
 }
 

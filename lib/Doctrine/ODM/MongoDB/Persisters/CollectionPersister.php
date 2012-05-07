@@ -159,20 +159,20 @@ class CollectionPersister
             $setData = array();
             $insertDiff = $coll->getInsertDiff();
             if ($insertDiff) {
-              foreach ($insertDiff as $key => $document) {
-                  if (isset($mapping['reference'])) {
-                    $documentUpdates = $this->pb->prepareReferencedDocumentValue($mapping, $document);
-                  } else {
-                    $documentUpdates = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
-                  }
+                foreach ($insertDiff as $key => $document) {
+                    if (isset($mapping['reference'])) {
+                        $documentUpdates = $this->pb->prepareReferencedDocumentValue($mapping, $document);
+                    } else {
+                        $documentUpdates = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
+                    }
 
-                foreach ($documentUpdates as $currFieldName=> $currFieldValue) {
-                  $setData[$propertyPath. '.' .$key . '.' . $currFieldName] = $currFieldValue;
+                    foreach ($documentUpdates as $currFieldName => $currFieldValue) {
+                        $setData[$propertyPath. '.' .$key . '.' . $currFieldName] = $currFieldValue;
+                    }
                 }
-              }
 
-              $query = array($this->cmd.'set' => $setData);
-              $this->executeQuery($parent, $query, $options);
+                $query = array($this->cmd.'set' => $setData);
+                $this->executeQuery($parent, $query, $options);
             }
         } else {
             $strategy = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
