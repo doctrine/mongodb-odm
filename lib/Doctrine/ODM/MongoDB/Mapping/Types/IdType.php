@@ -36,7 +36,13 @@ class IdType extends Type
             return null;
         }
         if ( ! $value instanceof \MongoId) {
-            $value = new \MongoId($value);
+            if (is_array($value)) {
+                foreach ($value as $k => $v) {
+                    $value[$k] = self::convertToDatabaseValue($v);
+                }
+            } else {
+                $value = new \MongoId($value);
+            }
         }
         return $value;
     }
