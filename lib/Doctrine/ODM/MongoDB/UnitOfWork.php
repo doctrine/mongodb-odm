@@ -1429,7 +1429,8 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $this->removeFromIdentityMap($document);
-
+        $this->documentStates[$oid] = self::STATE_REMOVED;
+        
         if (isset($this->documentUpdates[$oid])) {
             unset($this->documentUpdates[$oid]);
         }
