@@ -275,7 +275,7 @@ class PersistenceBuilderTest extends BaseTest
          */
         $qb = $this->dm->createQueryBuilder('Documents\CmsComment');
         $qb
-            ->field('article')->in(array($articleId));
+            ->field('article.id')->in(array($articleId));
         /**
          * @var \Doctrine\ODM\MongoDB\Query\Query $query
          * @var \Doctrine\ODM\MongoDB\Cursor $results
