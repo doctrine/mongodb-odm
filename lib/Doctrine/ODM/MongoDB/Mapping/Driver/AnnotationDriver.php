@@ -281,8 +281,8 @@ class AnnotationDriver implements Driver
     /**
      * Whether the class with the specified name is transient. Only non-transient
      * classes, that is entities and mapped superclasses, should have their metadata loaded.
-     * A class is non-transient if it is annotated with either @Entity or
-     * @MappedSuperclass in the class doc block.
+     * A class is non-transient if it is annotated with either (at)Entity or
+     * (at)MappedSuperclass in the class doc block.
      *
      * @param string $className
      * @return boolean

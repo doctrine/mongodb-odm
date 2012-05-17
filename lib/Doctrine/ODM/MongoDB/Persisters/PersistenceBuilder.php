@@ -183,7 +183,7 @@ class PersistenceBuilder
             // @Field, @String, @Date, etc.
             } elseif ( ! isset($mapping['association'])) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
                 } else {
                     $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
                 }
@@ -224,7 +224,7 @@ class PersistenceBuilder
             // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 } else {
                     $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
                 }
@@ -266,7 +266,7 @@ class PersistenceBuilder
             // @Field, @String, @Date, etc.
             } elseif ( ! isset($mapping['association'])) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
                 }
 
             // @EmbedOne
@@ -304,7 +304,7 @@ class PersistenceBuilder
             // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 }
 
             // @ReferenceMany
