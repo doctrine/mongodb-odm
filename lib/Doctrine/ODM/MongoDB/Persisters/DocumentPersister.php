@@ -532,8 +532,8 @@ class DocumentPersister
                 $fieldValue = $collectionMetaData->getFieldValue($element, $fieldName);
                 if ($fieldValue instanceof PersistentCollection) {
                     foreach ($fieldValue->getMongoData() as $key => $reference) {
-                        if (isset($mapping['simple']) && $mapping['simple']) {
-                            $className = $mapping['targetDocument'];
+                        if (isset($fieldMapping['simple']) && $fieldMapping['simple']) {
+                            $className = $fieldMapping['targetDocument'];
                             $mongoId = $reference;
                         } else {
                             $className = $this->dm->getClassNameFromDiscriminatorValue($fieldMapping, $reference);
