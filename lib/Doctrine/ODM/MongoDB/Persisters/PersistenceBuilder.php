@@ -80,10 +80,6 @@ class PersistenceBuilder
             if ($mapping['type'] === ClassMetadata::MANY) {
                 continue;
             }
-            // skip not saved fields
-            if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
-                continue;
-            }
 
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
 
@@ -168,11 +164,6 @@ class PersistenceBuilder
         $updateData = array();
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
-
-            // skip not saved fields
-            if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
-                continue;
-            }
 
             // skip identifiers
             if (isset($mapping['id']) && $mapping['id'] === true) {
@@ -261,11 +252,6 @@ class PersistenceBuilder
         $updateData = array();
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
-
-            // skip not saved fields
-            if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
-                continue;
-            }
 
             list($old, $new) = $change;
 
@@ -360,11 +346,6 @@ class PersistenceBuilder
         $class = $this->dm->getClassMetadata($className);
         $embeddedDocumentValue = array();
         foreach ($class->fieldMappings as $mapping) {
-            // Skip not saved fields
-            if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
-                continue;
-            }
-
             $rawValue = $class->reflFields[$mapping['fieldName']]->getValue($embeddedDocument);
 
             // Generate a document identifier
