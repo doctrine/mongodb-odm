@@ -812,7 +812,11 @@ class UnitOfWork implements PropertyChangedListener
             $targetClass = $this->dm->getClassMetadata(get_class($entry));
             $state = $this->getDocumentState($entry, self::STATE_NEW);
             $oid = spl_object_hash($entry);
-            $path = $mapping['type'] === 'many' ? $mapping['name'].'.'.$count : $mapping['name'];
+
+            // Handle "set" strategy for multi-level hierarchy
+            $pathKey = $mapping['strategy'] !== 'set' ? $count : $key;
+            $path = $mapping['type'] === 'many' ? $mapping['name'].'.'.$pathKey : $mapping['name'];
+
             $count++;
             if ($state == self::STATE_NEW) {
                 if ( ! $targetClass->isEmbeddedDocument && ! $mapping['isCascadePersist']) {
