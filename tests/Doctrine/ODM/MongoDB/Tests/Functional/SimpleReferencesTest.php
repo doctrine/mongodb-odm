@@ -101,4 +101,18 @@ class SimpleReferencesTest extends BaseTest
         $test = $user->getSimpleReferenceOneInverse();
         $this->assertEquals('test', $test->getName());
     }
+
+    public function testQueryForNonIds() {
+        $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
+        $qb->field('user')->equals(null);
+        $this->assertEquals(array('userId' => null), $qb->getQueryArray());
+
+        $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
+        $qb->field('user')->notEqual(null);
+        $this->assertEquals(array('userId' => array('$ne' => null)), $qb->getQueryArray());
+
+        $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
+        $qb->field('user')->exists(true);
+        $this->assertEquals(array('userId' => array('$exists' => true)), $qb->getQueryArray());
+    }
 }
