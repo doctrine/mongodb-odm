@@ -130,18 +130,18 @@ class SchemaManager
                     }
                 }
 
-                if ($update) {
-                    $this->ensureDocumentIndexes($documentName);
-                }
-
                 // The rest need to be deleted
                 foreach ($mongoIndexes as $mongoIndex) {
-                    if (isset($mongoIndex['name'])) {
+                    if (isset($mongoIndex['options']['name'])) {
                         $collection->getDatabase()->command(array(
                             'deleteIndexes' => $collection->getName(),
-                            'index' => $mongoIndex['name']
+                            'index' => $mongoIndex['options']['name']
                         ));
                     }
+                }
+
+                if ($update) {
+                    $this->ensureDocumentIndexes($documentName);
                 }
             }
         }
