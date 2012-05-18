@@ -194,6 +194,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
             throw MongoDBException::queryNotIndexed($this->class->name, $this->getUnindexedFields());
         }
 
+        $this->query['query'] = array_merge($this->query['query'], $this->dm->getFilters()->getFilterCriteria($this->class));  
         $results = parent::execute();
 
         $hints = array();

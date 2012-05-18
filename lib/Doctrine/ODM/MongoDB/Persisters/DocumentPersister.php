@@ -363,7 +363,7 @@ class DocumentPersister
      */
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = array())
     {
-        $criteria = $this->injectFilters($criteria);
+        $criteria = array_merge($criteria, $this->dm->getFilters()->getFilterCriteria($this->class));  
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria)->limit(1);
         if ($sort) {
@@ -389,7 +389,7 @@ class DocumentPersister
      */
     public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
     {
-        $criteria = $this->injectFilters($criteria);        
+        $criteria = array_merge($criteria, $this->dm->getFilters()->getFilterCriteria($this->class));        
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria);
 
@@ -406,19 +406,6 @@ class DocumentPersister
         }
 
         return $this->wrapCursor($cursor);
-    }
-
-    /**
-     * Injects any enabled filters into the query criteria.
-     *
-     * @param array $criteria
-     * @return array
-     */    
-    private function injectFilters($critera){
-        foreach ($this->dm->getFilters()->getEnabledFilters() as $filter) {
-            $criteria = array_merge($criteria, $filter->addFilterConstraint($this->class));
-        }
-        return $criteria;
     }
     
     /**

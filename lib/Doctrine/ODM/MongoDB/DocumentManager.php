@@ -749,16 +749,6 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Checks whether the state of the filter collection is clean.
-     *
-     * @return boolean True, if the filter collection is clean.
-     */
-    public function isFiltersStateClean()
-    {
-        return null === $this->filterCollection || $this->filterCollection->isClean();
-    }
-
-    /**
      * Checks whether the Document Manager has filters.
      *
      * @return True, if the DM has a filter collection.

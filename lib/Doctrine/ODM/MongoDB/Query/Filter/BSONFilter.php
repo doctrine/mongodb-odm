@@ -58,27 +58,36 @@ abstract class BsonFilter
      * Sets a parameter that can be used by the filter.
      *
      * @param string $name Name of the parameter.
-     * @param string $value Value of the parameter.
+     * @param mixed $value Value of the parameter.
      *
      * @return BsonFilter The current Bson filter.
      */
     final public function setParameter($name, $value)
     {
-        $this->parameters[$name] = array('value' => $value);
-
-        // Keep the parameters sorted for the hash
-        ksort($this->parameters);
-
-        // The filter collection of the dm is now dirty
-        $this->dm->getFilters()->setFiltersStateDirty();
-
+        $this->parameters[$name] = $value;
         return $this;
     }
 
+    /**
+     * Gets a parameter to use in a query.
+     *
+     * These are not like SQL parameters. These parameters can hold anything, 
+     * even objects. Thye are not automatically injected into a query, they
+     * are to be used in the addFilterConstraint method.
+     *
+     * @param string $name Name of the parameter.
+     *
+     * @return mixed The parameter.
+     */
+    final public function getParameter($name)
+    {
+        return $this->parameters[$name];
+    }
+    
     /**
      * Gets the critera part to add to a query.
      *
      * @return array The criteria array, if there is available, empty array otherwise
      */
-    abstract public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);  
+    abstract public function addFilterCriteria(ClassMetadata $targetEntity);  
 }

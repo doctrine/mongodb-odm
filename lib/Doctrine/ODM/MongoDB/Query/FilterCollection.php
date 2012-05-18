@@ -20,7 +20,8 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\Configuration,
-    Doctrine\ODM\MongoDB\DocumentManager;
+    Doctrine\ODM\MongoDB\DocumentManager,
+    Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
 
 /**
 * Collection class for all the query filters.
@@ -29,17 +30,6 @@ use Doctrine\ODM\MongoDB\Configuration,
 */
 class FilterCollection
 {
-    /* Filter STATES */
-    /**
-     * A filter object is in CLEAN state when it has no changed parameters.
-     */
-    const FILTERS_STATE_CLEAN = 1;
-
-    /**
-     * A filter object is in DIRTY state when it has changed parameters.
-     */
-    const FILTERS_STATE_DIRTY = 2;
-
     /**
      * The used Configuration.
      *
@@ -60,16 +50,6 @@ class FilterCollection
      * @var array
      */
     private $enabledFilters = array();
-
-    /**
-     * @var string The filter hash from the last time the query was parsed.
-     */
-    private $filterHash;
-
-    /**
-     * @var integer $state The current state of this filter
-     */
-    private $filtersState = self::FILTERS_STATE_CLEAN;
 
     /**
      * Constructor.
@@ -108,13 +88,7 @@ class FilterCollection
         }
 
         if (!isset($this->enabledFilters[$name])) {
-            $this->enabledFilters[$name] = new $filterClass($this->em);
-
-            // Keep the enabled filters sorted for the hash
-            ksort($this->enabledFilters);
-
-            // Now the filter collection is dirty
-            $this->filtersState = self::FILTERS_STATE_DIRTY;
+            $this->enabledFilters[$name] = new $filterClass($this->dm);
         }
 
         return $this->enabledFilters[$name];
@@ -135,9 +109,6 @@ class FilterCollection
         $filter = $this->getFilter($name);
 
         unset($this->enabledFilters[$name]);
-
-        // Now the filter collection is dirty
-        $this->filtersState = self::FILTERS_STATE_DIRTY;
 
         return $filter;
     }
@@ -161,38 +132,16 @@ class FilterCollection
     }
 
     /**
-     * @return boolean True, if the filter collection is clean.
-     */
-    public function isClean()
-    {
-        return self::FILTERS_STATE_CLEAN === $this->filtersState;
-    }
-
-    /**
-     * Generates a string of currently enabled filters to use for the cache id.
+     * Gets enabled filter criteria.
      *
-     * @return string
-     */
-    public function getHash()
-    {
-        // If there are only clean filters, the previous hash can be returned
-        if (self::FILTERS_STATE_CLEAN === $this->filtersState) {
-            return $this->filterHash;
+     * @param array $criteria
+     * @return array
+     */    
+    public function getFilterCriteria(ClassMetadata $metaData){
+        $criteria = array();
+        foreach ($this->dm->getFilters()->getEnabledFilters() as $filter) {
+            $criteria = array_merge($criteria, $filter->addFilterCriteria($metaData));
         }
-
-        $filterHash = '';
-        foreach ($this->enabledFilters as $name => $filter) {
-            $filterHash .= $name . $filter;
-        }
-
-        return $filterHash;
-    }
-
-    /**
-     * Set the filter state to dirty.
-     */
-    public function setFiltersStateDirty()
-    {
-        $this->filtersState = self::FILTERS_STATE_DIRTY;
+        return $criteria;
     }
 }
