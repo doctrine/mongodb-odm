@@ -28,7 +28,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\EventManager,
     Doctrine\ODM\MongoDB\Hydrator\HydratorFactory,
-    Doctrine\Common\Persistence\ObjectManager;
+    Doctrine\Common\Persistence\ObjectManager,
+    Doctrine\ODM\MongoDB\Query\FilterCollection;
 
 /**
  * The DocumentManager class is the central access point for managing the
