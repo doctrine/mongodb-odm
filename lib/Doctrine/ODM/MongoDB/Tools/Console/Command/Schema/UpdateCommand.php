@@ -19,7 +19,7 @@ class UpdateCommand extends AbstractCommand
 
     protected function processDocumentIndex(SchemaManager $sm, $document)
     {
-        echo 'processDocumentIndex' . PHP_EOL;
+        $sm->updateDocumentIndexes($document);
     }
 
     protected function processIndex(SchemaManager $sm)
