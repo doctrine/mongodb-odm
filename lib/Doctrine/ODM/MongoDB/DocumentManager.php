@@ -131,6 +131,14 @@ class DocumentManager implements ObjectManager
      */
     private $cmd;
 
+
+    /**
+     * Collection of query filters.
+     *
+     * @var \Doctrine\ODM\MongoDB\Query\FilterCollection
+     */
+    private $filterCollection;
+    
     /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
@@ -724,4 +732,38 @@ class DocumentManager implements ObjectManager
             throw MongoDBException::documentManagerClosed();
         }
     }
+    
+    /**
+     * Gets the enabled filters.
+     *
+     * @return \Doctrine\ODM\MongoDB\Query\FilterCollection The active filter collection.
+     */
+    public function getFilters()
+    {
+        if (null === $this->filterCollection) {
+            $this->filterCollection = new FilterCollection($this);
+        }
+
+        return $this->filterCollection;
+    }
+
+    /**
+     * Checks whether the state of the filter collection is clean.
+     *
+     * @return boolean True, if the filter collection is clean.
+     */
+    public function isFiltersStateClean()
+    {
+        return null === $this->filterCollection || $this->filterCollection->isClean();
+    }
+
+    /**
+     * Checks whether the Document Manager has filters.
+     *
+     * @return True, if the DM has a filter collection.
+     */
+    public function hasFilters()
+    {
+        return null !== $this->filterCollection;
+    }    
 }

@@ -332,4 +332,30 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         $this->attributes['defaultCommitOptions'] = $defaultCommitOptions;
     }
+
+    /**
+     * Add a filter to the list of possible filters.
+     *
+     * @param string $name The name of the filter.
+     * @param string $className The class name of the filter.
+     */
+    public function addFilter($name, $className)
+    {
+        $this->attributes['filters'][$name] = $className;
+    }
+
+    /**
+     * Gets the class name for a given filter name.
+     *
+     * @param string $name The name of the filter.
+     *
+     * @return string The class name of the filter, or null of it is not
+     * defined.
+     */
+    public function getFilterClassName($name)
+    {
+        return isset($this->attributes['filters'][$name])
+            ? $this->attributes['filters'][$name]
+            : null;
+    }       
 }
