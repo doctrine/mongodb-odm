@@ -361,9 +361,8 @@ class DocumentPersister
      * @return object The loaded and managed document instance or NULL if the document can not be found.
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load(array $criteria = array(), $document = null, array $hints = array(), $lockMode = 0, array $sort = array())
-    {
-        $criteria = array_merge($criteria, $this->dm->getFilters()->getFilterCriteria($this->class));  
+    public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = array())
+    {     
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria)->limit(1);
         if ($sort) {
@@ -388,8 +387,7 @@ class DocumentPersister
      * @return array
      */
     public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
-    {
-        $criteria = array_merge($criteria, $this->dm->getFilters()->getFilterCriteria($this->class));        
+    {   
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria);
 
@@ -777,11 +775,13 @@ class DocumentPersister
      * @param string|array $query
      * @return array $newQuery
      */
-    public function prepareQuery($query)
+    public function prepareQuery($query = array())
     {
         if (is_scalar($query) || $query instanceof \MongoId) {
             $query = array('_id' => $query);
         }
+        $query = array_merge($query, $this->dm->getFilters()->getFilterCriteria($this->class));
+        
         if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
             $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
