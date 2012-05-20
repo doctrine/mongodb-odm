@@ -113,6 +113,7 @@ public function <methodName>()
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
 <spaces>$this-><fieldName> = $<variableName>;
+<spaces>return $this-><fieldName>;
 }';
 
     private static $addMethodTemplate =
