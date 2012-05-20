@@ -361,7 +361,7 @@ class DocumentPersister
      * @return object The loaded and managed document instance or NULL if the document can not be found.
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = array())
+    public function load(array $criteria = array(), $document = null, array $hints = array(), $lockMode = 0, array $sort = array())
     {
         $criteria = array_merge($criteria, $this->dm->getFilters()->getFilterCriteria($this->class));  
         $criteria = $this->prepareQuery($criteria);
