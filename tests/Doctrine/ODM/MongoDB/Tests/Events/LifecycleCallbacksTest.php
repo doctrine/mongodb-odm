@@ -59,6 +59,17 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($user->postUpdate);
         $this->assertTrue($user->profile->postUpdate);
     }
+    
+    public function testPreFlush()
+    {
+        $user = $this->createUser();
+        $user->name = 'jwage';
+        $user->profile->name = 'Jon Doe';
+        $this->dm->flush();
+
+        $this->assertTrue($user->preFlush);
+        $this->assertTrue($user->profile->preFlush);
+    }
 
     public function testPreLoadAndPostLoad()
     {
@@ -228,6 +239,7 @@ abstract class BaseDocument
     public $postRemove = false;
     public $preLoad = false;
     public $postLoad = false;
+    public $preFlush = false;
 
     /** @ODM\PrePersist */
     public function prePersist()
@@ -277,5 +289,11 @@ abstract class BaseDocument
     public function postLoad()
     {
         $this->postLoad = true;
+    }
+    
+    /** @ODM\PreFlush */
+    public function preFlush()
+    {
+        $this->preFlush = true;
     }
 }
