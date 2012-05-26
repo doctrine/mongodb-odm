@@ -119,6 +119,16 @@ class AnnotationDriver implements Driver
     }
 
     /**
+     * Retrieve the current annotation reader
+     *
+     * @return AnnotationReader
+     */
+    public function getReader()
+    {
+        return $this->reader;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function loadMetadataForClass($className, ClassMetadataInfo $class)
