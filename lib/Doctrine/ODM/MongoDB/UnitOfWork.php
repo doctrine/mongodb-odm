@@ -472,7 +472,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Raise postFlush
         if ($this->evm->hasListeners(Events::postFlush)) {
-            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
+            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->dm));
         }
 
         // Clear up
