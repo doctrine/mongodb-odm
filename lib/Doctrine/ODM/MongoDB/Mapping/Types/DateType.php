@@ -40,7 +40,7 @@ class DateType extends Type
         }
         $timestamp = false;
         if ($value instanceof \DateTime) {
-            $timestamp = $value->getTimestamp();
+            $timestamp = $value->format('U');
         } elseif (is_numeric($value)) {
             $timestamp = $value;
         } elseif (is_string($value)) {
