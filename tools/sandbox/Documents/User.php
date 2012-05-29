@@ -13,7 +13,7 @@ class User
     /** ODM\String */
     private $username;
 
-    /** @ODM\BinDataMD5 */
+    /** @ODM\Bin(type="bin_md5") */
     private $password;
 
     /** @ODM\EmbedOne(targetDocument="Address") */
