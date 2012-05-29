@@ -13,9 +13,6 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 $classLoader = new ClassLoader('Doctrine\ODM\MongoDB\Tests', __DIR__ . '/../tests');
 $classLoader->register();
 
-$classLoader = new ClassLoader('Doctrine\ODM\MongoDB', __DIR__ . '/../lib');
-$classLoader->register();
-
 $classLoader = new ClassLoader('Documents', __DIR__);
 $classLoader->register();
 
