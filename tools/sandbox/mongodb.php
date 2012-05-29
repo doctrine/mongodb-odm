@@ -1,13 +1,16 @@
 <?php
 
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\HelperSet;
+
 require __DIR__ . DIRECTORY_SEPARATOR . 'cli-config.php';
 
-$helperSet = isset($helperSet) ? $helperSet : new \Symfony\Component\Console\Helper\HelperSet();
+$helperSet = isset($helperSet) ? $helperSet : new HelperSet();
 foreach ($helpers as $name => $helper) {
     $helperSet->set($helper, $name);
 }
 
-$cli = new \Symfony\Component\Console\Application('Doctrine ODM MongoDB Command Line Interface', Doctrine\ODM\MongoDB\Version::VERSION);
+$cli = new Application('Doctrine ODM MongoDB Command Line Interface', Doctrine\ODM\MongoDB\Version::VERSION);
 $cli->setCatchExceptions(true);
 $cli->setHelperSet($helperSet);
 $cli->addCommands(array(

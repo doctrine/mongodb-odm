@@ -2,9 +2,9 @@
 
 require_once 'config.php';
 
-use Documents\User,
-    Documents\Address,
-    Documents\Phonenumber,
-    Documents\Account;
+use Documents\User;
+use Documents\Address;
+use Documents\Phonenumber;
+use Documents\Account;
 
 // Your code here...
