@@ -51,7 +51,6 @@ class LoggableCursor extends Cursor implements Loggable
         $this->loggerCallable = $loggerCallable;
     }
 
-    /** @proxy */
     public function sort($fields)
     {
         $this->log(array(
