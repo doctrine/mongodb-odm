@@ -1,7 +1,6 @@
 <?php
 
 use Doctrine\Common\ClassLoader;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -30,8 +29,8 @@ $config->setHydratorNamespace('Hydrators');
 $config->setDefaultDB('doctrine_odm_sandbox');
 
 // $config->setLoggerCallable(function(array $log) { print_r($log); });
-// $config->setMetadataCacheImpl(new ApcCache());
+// $config->setMetadataCacheImpl(new Doctrine\Common\Cache\ApcCache());
 
-$config->setMetadataDriverImpl(new AnnotationDriver(new AnnotationReader(), __DIR__ . '/Documents'));
+$config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/Documents'));
 
 $dm = DocumentManager::create(new Connection(), $config);
