@@ -10,7 +10,7 @@ class User
     /** @ODM\Id */
     private $id;
 
-    /** ODM\String */
+    /** @ODM\String */
     private $username;
 
     /** @ODM\Bin(type="bin_md5") */
