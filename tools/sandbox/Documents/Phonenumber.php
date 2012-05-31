@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class Phonenumber
 {
     /** @ODM\String */
-    private $phonenumber;
+    protected $phonenumber;
 
     public function __construct($phonenumber = null)
     {

@@ -8,16 +8,16 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class Address
 {
     /** @ODM\String */
-    private $street;
+    protected $street;
 
     /** @ODM\String */
-    private $city;
+    protected $city;
 
     /** @ODM\String */
-    private $state;
+    protected $state;
 
     /** @ODM\String */
-    private $postalCode;
+    protected $postalCode;
 
     public function getStreet()
     {
