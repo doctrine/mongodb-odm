@@ -291,6 +291,7 @@ The conditional operators in Mongo are available to limit the returned results t
 * ``where($javascript)``
 * ``in($values)``
 * ``notIn($values)``
+* ``equals($value)``
 * ``notEqual($value)``
 * ``gt($value)``
 * ``gte($value)``
