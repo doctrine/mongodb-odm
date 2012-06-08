@@ -516,10 +516,10 @@ class DocumentPersister
      */
     public function primeCollection(Iterator $collection, $fieldName, $primer, array $hints = array())
     {
+        $collection = $collection->toArray();
         if (!count($collection)) {
             return;
         }
-        $collection = $collection->toArray();
         $collectionMetaData = $this->dm->getClassMetaData(get_class(current($collection)));
 
         $fieldMapping = $collectionMetaData->fieldMappings[$fieldName];
@@ -797,7 +797,7 @@ class DocumentPersister
         }
         return $newQuery;
     }
-    
+
     /**
      * Prepares a new object array by converting the portable Doctrine types to the types mongodb expects.
      *
@@ -874,7 +874,7 @@ class DocumentPersister
     private function prepareQueryElement(&$fieldName, $value = null, $metadata = null, $prepareValue = true)
     {
         $metadata = ($metadata === null) ? $this->class : $metadata;
-        
+
         // Process "association.fieldName"
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
@@ -929,7 +929,7 @@ class DocumentPersister
                             } else {
                                 $value = $this->prepareQueryElement($key, $value, null, $prepareValue);
                             }
-                            
+
                             $fieldName .= '.' . $key;
                         }
                     }
