@@ -40,7 +40,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testFieldMappings($class)
     {
-        $this->assertEquals(8, count($class->fieldMappings));
+        $this->assertEquals(9, count($class->fieldMappings));
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertTrue(isset($class->fieldMappings['email']));
@@ -76,7 +76,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testAssocations($class)
     {
-        $this->assertEquals(8, count($class->fieldMappings));
+        $this->assertEquals(9, count($class->fieldMappings));
 
         return $class;
     }
@@ -134,6 +134,16 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
         $this->assertEquals('username', $class->fieldMappings['name']['name']);
 
         return $class;
+    }
+
+    /**
+     * @depends testCustomFieldName
+     * @param ClassMetadata $class
+     */
+    public function testCustomReferenceFieldName($class)
+    {
+        $this->assertEquals('morePhoneNumbers', $class->fieldMappings['morePhoneNumbers']['fieldName']);
+        $this->assertEquals('more_phone_numbers', $class->fieldMappings['morePhoneNumbers']['name']);
     }
 
     /**
@@ -265,6 +275,11 @@ class User
     public $groups;
 
     /**
+     * @ODM\ReferenceMany(targetDocument="Phonenumber", name="more_phone_numbers")
+     */
+    public $morePhoneNumbers;
+
+    /**
      * @ODM\EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"})
      */
     public $otherPhonenumbers;
@@ -323,7 +338,7 @@ class User
         $metadata->mapOneReference(array(
            'fieldName' => 'address',
            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Address',
-           'cascade' => 
+           'cascade' =>
            array(
            0 => 'remove',
            )
@@ -331,7 +346,7 @@ class User
         $metadata->mapManyReference(array(
            'fieldName' => 'phonenumbers',
            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
-           'cascade' => 
+           'cascade' =>
            array(
            1 => 'persist',
            ),
@@ -342,9 +357,14 @@ class User
            )
           ));
         $metadata->mapManyReference(array(
+           'fieldName' => 'morePhoneNumbers',
+           'name' => 'more_phone_numbers',
+           'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber'
+        ));
+        $metadata->mapManyReference(array(
            'fieldName' => 'groups',
            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Group',
-           'cascade' => 
+           'cascade' =>
            array(
            0 => 'remove',
            1 => 'persist',
