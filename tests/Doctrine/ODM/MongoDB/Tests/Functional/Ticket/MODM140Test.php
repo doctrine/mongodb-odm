@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 use Doctrine\Common\Collections\ArrayCollection,
     Documents\Functional\EmbeddedTestLevel0,
     Documents\Functional\EmbeddedTestLevel1,
@@ -97,16 +99,16 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 	
 }
 
-/** @Document(collection="tests", db="tests") */
+/** @ODM\Document(collection="tests", db="tests") */
 class Category 
 {
-	/** @Id */
+	/** @ODM\Id */
 	protected $id;
 	
-	/** @String */
+	/** @ODM\String */
 	public $name;
 	
-	/** @EmbedMany(targetDocument="Post") */
+	/** @ODM\EmbedMany(targetDocument="Post") */
 	public $posts;
 	
 	public function __construct()
@@ -116,11 +118,11 @@ class Category
 	
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class Post
 {
 	
-	/** @EmbedMany(targetDocument="PostVersion") */
+	/** @ODM\EmbedMany(targetDocument="PostVersion") */
 	public $versions;
 	
 	public function __construct()
@@ -130,11 +132,11 @@ class Post
 	
 }
 
-/** @EmbeddedDocument */
+/** @ODM\EmbeddedDocument */
 class PostVersion
 {
 	
-	/** @String */
+	/** @ODM\String */
 	public $name;
 	
 	public function __construct($name)
