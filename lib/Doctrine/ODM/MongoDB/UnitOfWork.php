@@ -2100,8 +2100,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->dm->getClassMetadata(get_class($document));
         if ($this->getDocumentState($document) == self::STATE_MANAGED) {
-            $id = $class->getDatabaseIdentifierValue($this->documentIdentifiers[$oid]);
-            $this->getDocumentPersister($class->name)->refresh($id, $document);
+            $this->getDocumentPersister($class->name)->refresh($document);
         } else {
             throw new \InvalidArgumentException("Document is not MANAGED.");
         }
