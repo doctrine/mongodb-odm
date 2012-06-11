@@ -149,8 +149,12 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $result = $query->execute();
 
-        $this->dm->refresh($this->user);
-        $this->assertEquals('crap', $this->user->getUsername());
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->find()
+            ->field('username')->equals('crap');
+        $query = $qb->getQuery();
+        $user = $query->getSingleResult();
+        $this->assertNotNull($user);
     }
 
     public function testUpsertUpdateQuery()
