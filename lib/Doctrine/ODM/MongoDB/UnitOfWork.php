@@ -1140,9 +1140,7 @@ class UnitOfWork implements PropertyChangedListener
                             $this->recomputeSingleDocumentChangeSet($entryClass, $entry);
                         }
                         if ($this->evm->hasListeners(Events::postUpdate)) {
-                            $this->evm->dispatchEvent(Events::postUpdate, new Event\PreUpdateEventArgs(
-                                $entry, $this->dm, $this->documentChangeSets[$entryOid])
-                            );
+                            $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($entry, $this->dm));
                         }
                     }
                     $this->cascadePostUpdateAndPostPersist($entryClass, $entry);
