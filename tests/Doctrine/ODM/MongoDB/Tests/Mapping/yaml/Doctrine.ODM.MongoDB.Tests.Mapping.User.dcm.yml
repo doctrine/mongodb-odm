@@ -5,6 +5,7 @@ Doctrine\ODM\MongoDB\Tests\Mapping\User:
     fieldName: discr
   discriminatorMap:
     default: Doctrine\ODM\MongoDB\Tests\Mapping\User
+  queryFields: [id, name]
   fields:
     id:
       type: id

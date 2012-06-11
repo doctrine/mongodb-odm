@@ -157,6 +157,10 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'file';
         }
 
+        if($this->hasQueryFields()) {
+            $serialized[] = 'queryFields';
+        }
+
         return $serialized;
     }
 

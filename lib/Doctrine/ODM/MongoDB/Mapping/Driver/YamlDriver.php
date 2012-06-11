@@ -65,6 +65,9 @@ class YamlDriver extends AbstractFileDriver
         } elseif ($element['type'] === 'embeddedDocument') {
             $class->isEmbeddedDocument = true;
         }
+        if (isset($element['queryFields'])) {
+            $class->setQueryFields($element['queryFields']);
+        }
         if (isset($element['indexes'])) {
             foreach($element['indexes'] as $index) {
                 $class->addIndex($index['keys'], isset($index['options']) ? $index['options'] : array());

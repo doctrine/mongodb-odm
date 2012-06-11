@@ -183,6 +183,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $requireIndexes = false;
 
     /**
+     * READ-ONLY: The fields for the query for the document collection.
+     */
+    public $queryFields = array();
+
+    /**
      * READ-ONLY: The name of the document class.
      */
     public $name;
@@ -679,6 +684,40 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function hasIndexes()
     {
         return $this->indexes ? true : false;
+    }
+
+    /**
+     * Returns the custom query fields for this Document.
+     *
+     * @return array $fields The fields for the query.
+     */
+    public function getQueryFields()
+    {
+        return $this->queryFields;
+    }
+
+    /**
+     * Checks whether this document has custom query fields or not.
+     *
+     * @return boolean
+     */
+    public function hasQueryFields()
+    {
+        return $this->queryFields ? true : false;
+    }
+
+    /**
+     * Sets the custom query fields for this Document.
+     *
+     * @param array $fields Array of fields for the query.
+     */
+    public function setQueryFields($fields)
+    {
+        if(!is_array($fields)) {
+            $fields = array($fields);
+        }
+
+        $this->queryFields = $fields;
     }
 
     /**
