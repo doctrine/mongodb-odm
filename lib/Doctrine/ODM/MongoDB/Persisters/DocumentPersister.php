@@ -241,8 +241,8 @@ class DocumentPersister
             $upsertOptions['upsert'] = true;
             foreach ($upserts as $oid => $data) {
                 $query = $this->getDocumentQuery($this->queuedInserts[$oid]);
-                foreach($query as $field => $value) {
-                    if(isset($data[$this->cmd.'set'][$field])) {
+                foreach ($query as $field => $value) {
+                    if (isset($data[$this->cmd.'set'][$field])) {
                         unset($data[$this->cmd.'set'][$field]);
                     }
                 }
@@ -746,12 +746,12 @@ class DocumentPersister
      */
     public function getDocumentQuery($document)
     {
-        if($this->class->hasQueryFields()) {
+        if ($this->class->hasQueryFields()) {
             $changeSet = $this->uow->getDocumentChangeSet($document);
             $query = array();
-            foreach($this->class->queryFields as $field) {
-                if(isset($changeSet[$field])) {
-                    if(null !== $changeSet[$field][0]) {
+            foreach ($this->class->queryFields as $field) {
+                if (isset($changeSet[$field])) {
+                    if (null !== $changeSet[$field][0]) {
                         $query[$field] = $changeSet[$field][0];
                     } else {
                         // upsert new document
