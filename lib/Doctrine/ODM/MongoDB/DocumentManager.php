@@ -735,26 +735,16 @@ class DocumentManager implements ObjectManager
     }
     
     /**
-     * Gets the enabled filters.
+     * Gets the filter collection.
      *
      * @return \Doctrine\ODM\MongoDB\Query\FilterCollection The active filter collection.
      */
-    public function getFilters()
+    public function getFilterCollection()
     {
         if (null === $this->filterCollection) {
             $this->filterCollection = new FilterCollection($this);
         }
 
         return $this->filterCollection;
-    }
-
-    /**
-     * Checks whether the Document Manager has filters.
-     *
-     * @return True, if the DM has a filter collection.
-     */
-    public function hasFilters()
-    {
-        return null !== $this->filterCollection;
-    }    
+    }   
 }

@@ -61,7 +61,21 @@ class FilterCollection
         $this->dm = $dm;
         $this->config = $dm->getConfiguration();
     }
-
+    
+    /**
+     * Checks whether there are any enabled filters.
+     *
+     * @return True, if there are enabled filters
+     */    
+    public function hasEnabledFilters()
+    {
+        if(count($this->enabledFilters)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * Get all the enabled filters.
      *
@@ -139,7 +153,7 @@ class FilterCollection
      */    
     public function getFilterCriteria(ClassMetadata $metaData){
         $criteria = array();
-        foreach ($this->dm->getFilters()->getEnabledFilters() as $filter) {
+        foreach ($this->getEnabledFilters() as $filter) {
             $criteria = array_merge($criteria, $filter->addFilterCriteria($metaData));
         }
         return $criteria;

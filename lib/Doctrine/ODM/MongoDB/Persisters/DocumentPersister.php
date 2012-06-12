@@ -780,7 +780,7 @@ class DocumentPersister
         if (is_scalar($query) || $query instanceof \MongoId) {
             $query = array('_id' => $query);
         }
-        $query = array_merge($query, $this->dm->getFilters()->getFilterCriteria($this->class));
+        $query = array_merge($query, $this->dm->getFilterCollection()->getFilterCriteria($this->class));
         
         if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
