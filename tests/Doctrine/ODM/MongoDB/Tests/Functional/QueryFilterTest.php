@@ -6,8 +6,7 @@ use Documents\User;
 
 class QueryFilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testFilter()
-    {
+    protected function createUsers(){
         $tim = new User();
         $tim->setUsername('Tim');
         $this->dm->persist($tim);
@@ -16,18 +15,36 @@ class QueryFilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $john->setUsername('John');
         $this->dm->persist($john);
         
-        $this->dm->flush();
-               
-        $this->assertEquals(array('Tim', 'John'), $this->getUsernameArray());
-        
-        $this->dm->getFilterCollection()->enable('testFilter');
-        $this->assertEquals(array('Tim'), $this->getUsernameArray()); 
-        
-        $this->dm->getFilterCollection()->disable('testFilter');
-        $this->assertEquals(array('Tim', 'John'), $this->getUsernameArray());         
+        $this->dm->flush();        
     }
     
-    protected function getUsernameArray(){
+    public function testRepositoryFilter()
+    {
+        $this->createUsers();
+               
+        $this->assertEquals(array('Tim', 'John'), $this->getRepositoryUsernameArray());
+        
+        $this->dm->getFilterCollection()->enable('testFilter');
+        $this->assertEquals(array('Tim'), $this->getRepositoryUsernameArray()); 
+        
+        $this->dm->getFilterCollection()->disable('testFilter');
+        $this->assertEquals(array('Tim', 'John'), $this->getRepositoryUsernameArray());         
+    }
+        
+    public function testQueryFilter()
+    {
+        $this->createUsers();
+        
+        $this->assertEquals(array('Tim', 'John'), $this->getQueryUsernameArray());
+        
+        $this->dm->getFilterCollection()->enable('testFilter');
+        $this->assertEquals(array('Tim'), $this->getQueryUsernameArray()); 
+        
+        $this->dm->getFilterCollection()->disable('testFilter');
+        $this->assertEquals(array('Tim', 'John'), $this->getQueryUsernameArray());         
+    }
+    
+    protected function getRepositoryUsernameArray(){
         $all = $this->dm->getRepository('Documents\User')->findAll();
 
         $usernames = array();
@@ -36,5 +53,17 @@ class QueryFilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         }
         return $usernames;
     }
+    
+    protected function getQueryUsernameArray(){        
+        $qb = $this->dm->createQueryBuilder('Documents\User');        
+        $query = $qb->getQuery();
+        $all = $query->execute(); 
+
+        $usernames = array();
+        foreach($all as $user){
+            $usernames[] = $user->getUsername();
+        }
+        return $usernames;        
+    }    
 }
 

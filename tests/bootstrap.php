@@ -1,11 +1,21 @@
 <?php
 
-$file = __DIR__.'/../vendor/autoload.php';
-if (!file_exists($file)) {
-    throw new RuntimeException('Install dependencies to run test suite.');
+$files = array(
+    __DIR__.'/../vendor/autoload.php', //submodule autoloading
+    __DIR__.'/../../../autoload.php' //composer autoloading
+);
+
+foreach ($files as $file){
+    if (file_exists($file)) {
+        require_once $file;        
+        $autoloaded = true;
+        break;
+    }
 }
 
-require_once $file;
+if(!$autoloaded){    
+    throw new RuntimeException('Install dependencies to run test suite.');
+}
 
 use Doctrine\Common\ClassLoader;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
