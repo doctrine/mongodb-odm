@@ -31,7 +31,7 @@ use Doctrine\ODM\MongoDB\Configuration,
 class FilterCollection
 {
     /* Filter STATES */
-    
+
     /**
      * A filter object is in CLEAN state when it has no changed parameters.
      */
@@ -41,7 +41,7 @@ class FilterCollection
      * A filter object is in DIRTY state when it has changed parameters.
      */
     const FILTERS_STATE_DIRTY = 2;
-    
+
     /**
      * The used Configuration.
      *
@@ -67,9 +67,9 @@ class FilterCollection
      * @var integer $state The current state of this filterCollection
      */
     private $filtersState = self::FILTERS_STATE_CLEAN;
-    
+
     private $version = 0;
-    
+
     /**
      * Constructor.
      *
@@ -108,8 +108,8 @@ class FilterCollection
 
         if (!isset($this->enabledFilters[$name])) {
             $this->enabledFilters[$name] = new $filterClass($this->dm);
-            
-            $this->filtersState = self::FILTERS_STATE_DIRTY;            
+
+            $this->filtersState = self::FILTERS_STATE_DIRTY;
         }
 
         return $this->enabledFilters[$name];
@@ -160,7 +160,7 @@ class FilterCollection
     {
         $this->filtersState = self::FILTERS_STATE_DIRTY;
     }
-    
+
     public function getVersion()
     {
         if ($this->filtersState == self::FILTERS_STATE_DIRTY){
@@ -169,7 +169,7 @@ class FilterCollection
         }
         return $this->version;
     }
-    
+
     /**
      * Gets enabled filter criteria.
      *

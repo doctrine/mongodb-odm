@@ -93,10 +93,10 @@ class UnitOfWork implements PropertyChangedListener
     private $documentIdentifiers = array();
 
     /**
-     * Map of the filter version a document was hydrated with
+     * Map of the filter version a document was loaded with
      */
     private $documentFilterVersions = array();
-    
+
     /**
      * Map of the original document data of managed documents.
      * Keys are object ids (spl_object_hash). This is used for calculating changesets
@@ -1437,7 +1437,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->removeFromIdentityMap($document);
         $this->documentStates[$oid] = self::STATE_REMOVED;
-        
+
         if (isset($this->documentUpdates[$oid])) {
             unset($this->documentUpdates[$oid]);
         }
@@ -1611,7 +1611,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Tries to get an document by its identifier hash. If no document is found for
-     * the given hash, FALSE is returned.
+     * the given hash, or the document's filterVersion is out of date, FALSE is returned.
      *
      * @ignore
      * @param string $id
@@ -1622,14 +1622,14 @@ class UnitOfWork implements PropertyChangedListener
     {
         if (isset($this->identityMap[$rootClassName][$id])){
             $documentId = array_search($id, $this->documentIdentifiers);
-            $documentFilterVersion = isset($this->documentFilterVersions[$documentId]) ? 
-                $this->documentFilterVersions[$documentId] : 
+            $documentFilterVersion = isset($this->documentFilterVersions[$documentId]) ?
+                $this->documentFilterVersions[$documentId] :
                 null;
             if ($documentFilterVersion === null){
-                return $this->identityMap[$rootClassName][$id];                 
-            }           
+                return $this->identityMap[$rootClassName][$id];
+            }
             if ($documentFilterVersion == $this->dm->getFilterCollection()->getVersion()){
-                return $this->identityMap[$rootClassName][$id];   
+                return $this->identityMap[$rootClassName][$id];
             }
             $this->detach($this->identityMap[$rootClassName][$id]);
         }
@@ -2535,7 +2535,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function loadCollection(PersistentCollection $collection)
     {
-        $this->getDocumentPersister(get_class($collection->getOwner()))->loadCollection($collection);        
+        $this->getDocumentPersister(get_class($collection->getOwner()))->loadCollection($collection);
     }
 
     /**
@@ -2733,11 +2733,11 @@ class UnitOfWork implements PropertyChangedListener
     public function getScheduledCollectionUpdates()
     {
         return $this->collectionUpdates;
-    }    
+    }
 
     /**
      * Helper method to initialize a lazy loading proxy or persistent collection.
-     * 
+     *
      * @param object
      * @return void
      */
@@ -2754,7 +2754,7 @@ class UnitOfWork implements PropertyChangedListener
      * Method to attempt load of proxy object, and supress DocumentNotFoundError.
      * Used when filters are enabled to check if a proxy object will be filtered out
      * or loaded as normal.
-     * 
+     *
      * @param object
      * @return boolean
      */
@@ -2768,7 +2768,7 @@ class UnitOfWork implements PropertyChangedListener
             return false;
         }
     }
-    
+
     private static function objToStr($obj)
     {
         return method_exists($obj, '__toString') ? (string)$obj : get_class($obj).'@'.spl_object_hash($obj);

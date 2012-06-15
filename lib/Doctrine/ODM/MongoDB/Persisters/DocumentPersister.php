@@ -682,7 +682,6 @@ class DocumentPersister
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;
             }
-            //foreach()
         }
     }
 
@@ -775,7 +774,7 @@ class DocumentPersister
      * Prepares a query array by converting the portable Doctrine types to the types mongodb expects.
      *
      * @param string|array $query
-     * @return /Doctrine/ODM/Query/Criteria $newQuery
+     * @return array $newQuery
      */
     public function prepareQuery($query = array())
     {
@@ -783,7 +782,7 @@ class DocumentPersister
             $query = array('_id' => $query);
         }
         $query = array_merge($query, $this->dm->getFilterCollection()->getFilterCriteria($this->class));
-        
+
         if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
             $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
