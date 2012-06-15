@@ -1382,7 +1382,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function hasDiscriminator()
     {
-        return $this->discriminatorField && $this->discriminatorValue ? true : false;
+        return isset($this->discriminatorField) && isset($this->discriminatorValue) ? true : false;
     }
 
     /**
