@@ -194,6 +194,11 @@ final class Collection extends AbstractField
     public $strategy = 'pushAll'; // pushAll, set
 }
 /** @Annotation */
+final class Raw extends AbstractField
+{
+    public $type = 'raw';
+}
+/** @Annotation */
 final class EmbedOne extends AbstractField
 {
     public $type = 'one';
