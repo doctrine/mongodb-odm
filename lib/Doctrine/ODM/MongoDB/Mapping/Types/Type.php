@@ -54,7 +54,8 @@ abstract class Type
         'hash' => 'Doctrine\ODM\MongoDB\Mapping\Types\HashType',
         'collection' => 'Doctrine\ODM\MongoDB\Mapping\Types\CollectionType',
         'increment' => 'Doctrine\ODM\MongoDB\Mapping\Types\IncrementType',
-        'object_id' => 'Doctrine\ODM\MongoDB\Mapping\Types\ObjectIdType'
+        'object_id' => 'Doctrine\ODM\MongoDB\Mapping\Types\ObjectIdType',
+        'json' => 'Doctrine\ODM\MongoDB\Mapping\Types\JsonType',
     );
 
     /**
