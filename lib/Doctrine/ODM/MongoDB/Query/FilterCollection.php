@@ -1,21 +1,21 @@
 <?php
 /*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-* A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-* OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-* THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-* This software consists of voluntary contributions made by many individuals
-* and is licensed under the LGPL. For more information, see
-* <http://www.doctrine-project.org>.
-*/
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\ODM\MongoDB\Query;
 
@@ -30,6 +30,18 @@ use Doctrine\ODM\MongoDB\Configuration,
 */
 class FilterCollection
 {
+    /* Filter STATES */
+    
+    /**
+     * A filter object is in CLEAN state when it has no changed parameters.
+     */
+    const FILTERS_STATE_CLEAN = 1;
+
+    /**
+     * A filter object is in DIRTY state when it has changed parameters.
+     */
+    const FILTERS_STATE_DIRTY = 2;
+    
     /**
      * The used Configuration.
      *
@@ -52,6 +64,13 @@ class FilterCollection
     private $enabledFilters = array();
 
     /**
+     * @var integer $state The current state of this filterCollection
+     */
+    private $filtersState = self::FILTERS_STATE_CLEAN;
+    
+    private $version = 0;
+    
+    /**
      * Constructor.
      *
      * @param DocumentManager $dm
@@ -61,21 +80,7 @@ class FilterCollection
         $this->dm = $dm;
         $this->config = $dm->getConfiguration();
     }
-    
-    /**
-     * Checks whether there are any enabled filters.
-     *
-     * @return True, if there are enabled filters
-     */    
-    public function hasEnabledFilters()
-    {
-        if(count($this->enabledFilters)){
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
+
     /**
      * Get all the enabled filters.
      *
@@ -103,6 +108,8 @@ class FilterCollection
 
         if (!isset($this->enabledFilters[$name])) {
             $this->enabledFilters[$name] = new $filterClass($this->dm);
+            
+            $this->filtersState = self::FILTERS_STATE_DIRTY;            
         }
 
         return $this->enabledFilters[$name];
@@ -124,6 +131,8 @@ class FilterCollection
 
         unset($this->enabledFilters[$name]);
 
+        $this->filtersState = self::FILTERS_STATE_DIRTY;
+
         return $filter;
     }
 
@@ -141,19 +150,35 @@ class FilterCollection
         if (!isset($this->enabledFilters[$name])) {
             throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
         }
-
         return $this->enabledFilters[$name];
     }
 
+    /**
+     * Set the filter state to dirty.
+     */
+    public function setFiltersStateDirty()
+    {
+        $this->filtersState = self::FILTERS_STATE_DIRTY;
+    }
+    
+    public function getVersion()
+    {
+        if ($this->filtersState == self::FILTERS_STATE_DIRTY){
+            $this->filtersState = self::FILTERS_STATE_CLEAN;
+            ++$this->version;
+        }
+        return $this->version;
+    }
+    
     /**
      * Gets enabled filter criteria.
      *
      * @param array $criteria
      * @return array
-     */    
+     */
     public function getFilterCriteria(ClassMetadata $metaData){
         $criteria = array();
-        foreach ($this->getEnabledFilters() as $filter) {
+        foreach ($this->enabledFilters as $filter) {
             $criteria = array_merge($criteria, $filter->addFilterCriteria($metaData));
         }
         return $criteria;

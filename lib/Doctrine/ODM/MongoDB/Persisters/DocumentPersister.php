@@ -362,7 +362,7 @@ class DocumentPersister
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = array())
-    {     
+    {
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria)->limit(1);
         if ($sort) {
@@ -377,7 +377,7 @@ class DocumentPersister
             }
         }
 
-        return $this->createDocument($result, $document, $hints);
+        return $this->createDocument($result, $document, $hints, $this->dm->getFilterCollection()->getVersion());
     }
 
     /**
@@ -387,7 +387,7 @@ class DocumentPersister
      * @return array
      */
     public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
-    {   
+    {
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria);
 
@@ -405,7 +405,7 @@ class DocumentPersister
 
         return $this->wrapCursor($cursor);
     }
-    
+
     /**
      * Wraps the supplied base cursor as an ODM one.
      *
@@ -490,7 +490,7 @@ class DocumentPersister
      * @param array $hints Hints for document creation.
      * @return object The filled and managed document object or NULL, if the query result is empty.
      */
-    private function createDocument($result, $document = null, array $hints = array())
+    private function createDocument($result, $document = null, array $hints = array(), $filterVersion = null)
     {
         if ($result === null) {
             return null;
@@ -499,10 +499,10 @@ class DocumentPersister
         if ($document !== null) {
             $hints[Query::HINT_REFRESH] = true;
             $id = $this->class->getPHPIdentifierValue($result['_id']);
-            $this->uow->registerManaged($document, $id, $result);
+            $this->uow->registerManaged($document, $id, $result, $filterVersion);
         }
 
-        return $this->uow->getOrCreateDocument($this->class->name, $result, $hints);
+        return $this->uow->getOrCreateDocument($this->class->name, $result, $hints, $filterVersion);
     }
 
     /**
@@ -659,6 +659,7 @@ class DocumentPersister
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $criteria = array_merge(
                 array('_id' => array($cmd . 'in' => $ids)),
+                $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
             );
             $cursor = $mongoCollection->find($criteria);
@@ -681,6 +682,7 @@ class DocumentPersister
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;
             }
+            //foreach()
         }
     }
 
@@ -773,7 +775,7 @@ class DocumentPersister
      * Prepares a query array by converting the portable Doctrine types to the types mongodb expects.
      *
      * @param string|array $query
-     * @return array $newQuery
+     * @return /Doctrine/ODM/Query/Criteria $newQuery
      */
     public function prepareQuery($query = array())
     {
@@ -799,7 +801,7 @@ class DocumentPersister
         }
         return $newQuery;
     }
-    
+
     /**
      * Prepares a new object array by converting the portable Doctrine types to the types mongodb expects.
      *
@@ -876,7 +878,7 @@ class DocumentPersister
     private function prepareQueryElement(&$fieldName, $value = null, $metadata = null, $prepareValue = true)
     {
         $metadata = ($metadata === null) ? $this->class : $metadata;
-        
+
         // Process "association.fieldName"
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
@@ -931,7 +933,7 @@ class DocumentPersister
                             } else {
                                 $value = $this->prepareQueryElement($key, $value, null, $prepareValue);
                             }
-                            
+
                             $fieldName .= '.' . $key;
                         }
                     }

@@ -55,7 +55,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Resolves a registered namespace alias to the full namespace.
      *
-     * @param string $documentNamespaceAlias 
+     * @param string $documentNamespaceAlias
      * @return string
      * @throws MongoDBException
      */
@@ -93,14 +93,14 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Add a new default annotation driver with a correctly configured annotation reader.
-     * 
+     *
      * @param array $paths
      * @return Mapping\Driver\AnnotationDriver
      */
     public function newDefaultAnnotationDriver($paths = array())
     {
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        
+
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, (array) $paths);
     }
 
@@ -182,7 +182,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Gets the namespace where proxy classes reside.
-     * 
+     *
      * @return string
      */
     public function getProxyNamespace()
@@ -193,7 +193,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Sets the namespace where proxy classes reside.
-     * 
+     *
      * @param string $ns
      */
     public function setProxyNamespace($ns)
@@ -247,7 +247,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Gets the namespace where hydrator classes reside.
-     * 
+     *
      * @return string
      */
     public function getHydratorNamespace()
@@ -258,7 +258,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Sets the namespace where hydrator classes reside.
-     * 
+     *
      * @param string $ns
      */
     public function setHydratorNamespace($ns)
@@ -357,5 +357,5 @@ class Configuration extends \Doctrine\MongoDB\Configuration
         return isset($this->attributes['filters'][$name])
             ? $this->attributes['filters'][$name]
             : null;
-    }       
+    }
 }

@@ -139,7 +139,7 @@ class DocumentManager implements ObjectManager
      * @var \Doctrine\ODM\MongoDB\Query\FilterCollection
      */
     private $filterCollection;
-    
+
     /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
@@ -221,7 +221,7 @@ class DocumentManager implements ObjectManager
 
     /**
      * Gets the PHP Mongo instance that this DocumentManager wraps.
-     * 
+     *
      * @return \Doctrine\MongoDB\Connection
      */
     public function getConnection()
@@ -251,6 +251,19 @@ class DocumentManager implements ObjectManager
         $this->unitOfWork->initializeObject($obj);
     }
 
+    /**
+     * Method to attempt load of proxy object, and supress DocumentNotFoundError.
+     * Used when filters are enabled to check if a proxy object will be filtered out
+     * or loaded as normal.
+     * 
+     * @param object
+     * @return boolean
+     */
+    public function objectIsInitalizable($obj)
+    {
+        return $this->unitOfWork->objectIsInitalizable($obj);        
+    }    
+    
     /**
      * Gets the UnitOfWork used by the DocumentManager to coordinate operations.
      *
@@ -553,6 +566,7 @@ class DocumentManager implements ObjectManager
         if ($document = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
             return $document;
         }
+        
         $document = $this->proxyFactory->getProxy($class->name, $identifier);
         $this->unitOfWork->registerManaged($document, $identifier, array());
 
@@ -733,7 +747,7 @@ class DocumentManager implements ObjectManager
             throw MongoDBException::documentManagerClosed();
         }
     }
-    
+
     /**
      * Gets the filter collection.
      *
@@ -746,5 +760,5 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->filterCollection;
-    }   
+    }
 }

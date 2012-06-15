@@ -93,6 +93,11 @@ class UnitOfWork implements PropertyChangedListener
     private $documentIdentifiers = array();
 
     /**
+     * Map of the filter version a document was hydrated with
+     */
+    private $documentFilterVersions = array();
+    
+    /**
      * Map of the original document data of managed documents.
      * Keys are object ids (spl_object_hash). This is used for calculating changesets
      * at commit time.
@@ -1615,8 +1620,20 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetById($id, $rootClassName)
     {
-        return isset($this->identityMap[$rootClassName][$id]) ?
-                $this->identityMap[$rootClassName][$id] : false;
+        if (isset($this->identityMap[$rootClassName][$id])){
+            $documentId = array_search($id, $this->documentIdentifiers);
+            $documentFilterVersion = isset($this->documentFilterVersions[$documentId]) ? 
+                $this->documentFilterVersions[$documentId] : 
+                null;
+            if ($documentFilterVersion === null){
+                return $this->identityMap[$rootClassName][$id];                 
+            }           
+            if ($documentFilterVersion == $this->dm->getFilterCollection()->getVersion()){
+                return $this->identityMap[$rootClassName][$id];   
+            }
+            $this->detach($this->identityMap[$rootClassName][$id]);
+        }
+        return false;
     }
 
     /**
@@ -2436,7 +2453,7 @@ class UnitOfWork implements PropertyChangedListener
      * @return object The document instance.
      * @internal Highly performance-sensitive method.
      */
-    public function getOrCreateDocument($className, $data, &$hints = array())
+    public function getOrCreateDocument($className, $data, &$hints = array(), $filterVersion = null)
     {
         $class = $this->dm->getClassMetadata($className);
 
@@ -2468,7 +2485,7 @@ class UnitOfWork implements PropertyChangedListener
             }
         } else {
             $document = $class->newInstance();
-            $this->registerManaged($document, $id, $data);
+            $this->registerManaged($document, $id, $data, $filterVersion);
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
             $this->identityMap[$class->rootDocumentName][$id] = $document;
@@ -2518,7 +2535,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function loadCollection(PersistentCollection $collection)
     {
-        $this->getDocumentPersister(get_class($collection->getOwner()))->loadCollection($collection);
+        $this->getDocumentPersister(get_class($collection->getOwner()))->loadCollection($collection);        
     }
 
     /**
@@ -2617,7 +2634,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param array $id The identifier values.
      * @param array $data The original document data.
      */
-    public function registerManaged($document, $id, array $data)
+    public function registerManaged($document, $id, array $data, $filterVersion = null)
     {
         $oid = spl_object_hash($document);
         if ($id === null) {
@@ -2627,6 +2644,7 @@ class UnitOfWork implements PropertyChangedListener
         }
         $this->documentStates[$oid] = self::STATE_MANAGED;
         $this->originalDocumentData[$oid] = $data;
+        $this->documentFilterVersions[$oid] = $filterVersion;
         $this->addToIdentityMap($document);
     }
 
@@ -2732,6 +2750,25 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
+    /**
+     * Method to attempt load of proxy object, and supress DocumentNotFoundError.
+     * Used when filters are enabled to check if a proxy object will be filtered out
+     * or loaded as normal.
+     * 
+     * @param object
+     * @return boolean
+     */
+    public function objectIsInitalizable($obj)
+    {
+        try {
+            $this->initializeObject($obj);
+            return true;
+        } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
+            $this->detach($obj);
+            return false;
+        }
+    }
+    
     private static function objToStr($obj)
     {
         return method_exists($obj, '__toString') ? (string)$obj : get_class($obj).'@'.spl_object_hash($obj);

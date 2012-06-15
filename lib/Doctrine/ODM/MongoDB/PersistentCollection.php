@@ -102,6 +102,8 @@ class PersistentCollection implements BaseCollection
      */
     private $hints = array();
 
+    private $isFiltered = array();
+    
     public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow, $cmd)
     {
         $this->coll = $coll;
@@ -173,8 +175,16 @@ class PersistentCollection implements BaseCollection
                 $newObjects = $this->coll->toArray();
             }
             $this->coll->clear();
-            $this->uow->loadCollection($this);
+            $this->uow->loadCollection($this);            
             $this->takeSnapshot();
+            
+            //Remove any uninitalized objects due to filtering
+            foreach ($this->coll as $key => $obj){
+                if (!$obj->__isInitialized__){
+                    unset($this->coll[$key]);
+                }
+            }
+            
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {
                 foreach ($newObjects as $key => $obj) {
