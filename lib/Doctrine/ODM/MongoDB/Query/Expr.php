@@ -63,23 +63,16 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     {
         if ($this->currentField) {
             $mapping = $this->class->getFieldMapping($this->currentField);
-            $dbRef = $this->dm->createDBRef($document, $mapping);
-
+            $dbRef = $this->dm->createDBRef($document, $mapping, true);
             if (isset($mapping['simple']) && $mapping['simple']) {
-                $this->query[$mapping['name']] = $dbRef;
+                $this->query[$this->currentField] = $dbRef;
             } else {
-                $keys = array('ref' => true, 'id' => true, 'db' => true);
-
-                if (isset($mapping['targetDocument'])) {
-                    unset($keys['ref'], $keys['db']);
-                }
-
-                foreach ($keys as $key => $value) {
-                    $this->query[$this->currentField . '.' . $this->cmd . $key] = $dbRef[$this->cmd . $key];
+                foreach ($dbRef as $key => $value) {
+                    $this->query[$this->currentField . '.' . $key] = $value;
                 }
             }
         } else {
-            $dbRef = $this->dm->createDBRef($document);
+            $dbRef = $this->dm->createDBRef($document, null, true);
             $this->query = $dbRef;
         }
 
@@ -93,23 +86,9 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     {
         if ($this->currentField) {
             $mapping = $this->class->getFieldMapping($this->currentField);
-            $dbRef = $this->dm->createDBRef($document, $mapping);
-
-            if (isset($mapping['simple']) && $mapping['simple']) {
-                $this->query[$mapping['name']][$this->cmd . 'elemMatch'] = $dbRef;
-            } else {
-                $keys = array('ref' => true, 'id' => true, 'db' => true);
-
-                if (isset($mapping['targetDocument'])) {
-                    unset($keys['ref'], $keys['db']);
-                }
-
-                foreach ($keys as $key => $value) {
-                    $this->query[$this->currentField][$this->cmd . 'elemMatch'][$this->cmd . $key] = $dbRef[$this->cmd . $key];
-                }
-            }
+            $this->query[$this->currentField][$this->cmd . 'elemMatch'] = $this->dm->createDBRef($document, $mapping, true);
         } else {
-            $dbRef = $this->dm->createDBRef($document);
+            $dbRef = $this->dm->createDBRef($document, null, true);
             $this->query[$this->cmd . 'elemMatch'] = $dbRef;
         }
 

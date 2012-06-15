@@ -360,7 +360,7 @@ class DocumentPersister
      * @return object The loaded and managed document instance or NULL if the document can not be found.
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = array())
+    public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = null)
     {
         $criteria = $this->prepareQuery($criteria);
         $cursor = $this->collection->find($criteria)->limit(1);
@@ -499,7 +499,7 @@ class DocumentPersister
             $this->uow->registerManaged($document, $id, $result);
         }
 
-        return $this->uow->getOrCreateDocument($this->class->name, $result, $hints);
+        return $this->uow->getOrCreateDocument($this->class->name, $result, $hints, $document);
     }
 
     /**
@@ -522,7 +522,7 @@ class DocumentPersister
         $fieldMapping = $collectionMetaData->fieldMappings[$fieldName];
 
         $cmd = $this->cmd;
-        $groupedIds = array();
+        $groupedQueries = array();
 
         foreach ($collection as $element) {
             if ($fieldMapping['type'] == 'many') {
@@ -539,10 +539,14 @@ class DocumentPersister
                         $id = (string) $mongoId;
                         $document = $this->uow->tryGetById($id, $className);
                         if (!$document || $document instanceof Proxy && ! $document->__isInitialized__) {
-                            if ( ! isset($groupedIds[$className])) {
-                                $groupedIds[$className] = array();
+                            if ( ! isset($groupedQueries[$className])) {
+                                $groupedQueries[$className] = array();
                             }
-                            $groupedIds[$className][] = $mongoId;
+                            if ($document instanceof Proxy) {
+                                $groupedQueries[$className][] = $document->__query__;
+                            } else {
+                                $groupedQueries[$className][] = $this->dm->getReferenceQueryFromDBRef($reference, $id, $this->dm->getClassMetadata($className), $fieldMapping);
+                            }
                         }
                     }
                 }
@@ -550,23 +554,16 @@ class DocumentPersister
                 $document = $collectionMetaData->getFieldValue($element, $fieldName);
                 if ($document && $document instanceof Proxy && ! $document->__isInitialized__) {
                     $class = $this->dm->getClassMetadata(get_class($document));
-                    $groupedIds[$class->name][] = $this->uow->getDocumentIdentifier($document);
+                    $groupedQueries[$class->name][] = $document->__query__;
                 }
             }
         }
-        foreach ($groupedIds as $className => $ids) {
-            $class = $this->dm->getClassMetadata($className);
+        foreach ($groupedQueries as $className => $queries) {
             if ($primer instanceof \Closure) {
-                $primer($this->dm, $className, $fieldName, $ids, $hints);
+                $primer($this->dm, $className, $fieldName, $queries, $hints);
             } else {
-                $repository = $this->dm->getRepository($className);
-                $qb = $repository->createQueryBuilder()
-                    ->field($class->identifier)->in($ids);
-                if (isset($hints[Query::HINT_SLAVE_OKAY])) {
-                    $qb->slaveOkay(true);
-                }
-                $query = $qb->getQuery();
-                $query->execute()->toArray();
+                $qb = $this->createGroupedQueriesBuilder($className, $queries, $hints);
+                $qb->getQuery()->execute()->toArray();
             }
         }
     }
@@ -627,7 +624,7 @@ class DocumentPersister
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $cmd = $this->cmd;
-        $groupedIds = array();
+        $groupedQueries = array();
 
         foreach ($collection->getMongoData() as $key => $reference) {
             if (isset($mapping['simple']) && $mapping['simple']) {
@@ -638,46 +635,34 @@ class DocumentPersister
                 $mongoId = $reference[$cmd . 'id'];
             }
             $id = (string) $mongoId;
-            $reference = $this->dm->getReference($className, $id);
+            $query = $this->dm->getReferenceQueryFromDBRef($reference, $id, $this->dm->getClassMetadata($className), $mapping);
+            $reference = $this->dm->getReference($className, $id, $query);
             if ($mapping['strategy'] === 'set') {
                 $collection->set($key, $reference);
             } else {
                 $collection->add($reference);
             }
             if ($reference instanceof Proxy && ! $reference->__isInitialized__) {
-                if ( ! isset($groupedIds[$className])) {
-                    $groupedIds[$className] = array();
+                if ( ! isset($groupedQueries[$className])) {
+                    $groupedQueries[$className] = array();
                 }
-                $groupedIds[$className][] = $mongoId;
+                $groupedQueries[$className][] = $query;
             }
         }
-        foreach ($groupedIds as $className => $ids) {
-            $class = $this->dm->getClassMetadata($className);
-            $mongoCollection = $this->dm->getDocumentCollection($className);
-            $criteria = array_merge(
-                array('_id' => array($cmd . 'in' => $ids)),
-                isset($mapping['criteria']) ? $mapping['criteria'] : array()
-            );
-            $cursor = $mongoCollection->find($criteria);
+        foreach ($groupedQueries as $className => $queries) {
+            $qb = $this->createGroupedQueriesBuilder($className, $queries, $hints);
+
             if (isset($mapping['sort'])) {
-                $cursor->sort($mapping['sort']);
+                $qb->sort($mapping['sort']);
             }
             if (isset($mapping['limit'])) {
-                $cursor->limit($mapping['limit']);
+                $qb->limit($mapping['limit']);
             }
             if (isset($mapping['skip'])) {
-                $cursor->skip($mapping['skip']);
+                $qb->skip($mapping['skip']);
             }
-            if (isset($hints[Query::HINT_SLAVE_OKAY])) {
-                $cursor->slaveOkay(true);
-            }
-            $documents = $cursor->toArray();
-            foreach ($documents as $documentData) {
-                $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
-                $data = $this->hydratorFactory->hydrate($document, $documentData);
-                $this->uow->setOriginalDocumentData($document, $data);
-                $document->__isInitialized__ = true;
-            }
+
+            $qb->getQuery()->execute()->toArray();
         }
     }
 
@@ -686,16 +671,12 @@ class DocumentPersister
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
-        $ownerClass = $this->dm->getClassMetadata(get_class($owner));
-        $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-        $mappedByMapping = $targetClass->fieldMappings[$mapping['mappedBy']];
-        $mappedByFieldName = isset($mappedByMapping['simple']) && $mappedByMapping['simple'] ? $mapping['mappedBy'] : $mapping['mappedBy'].'.id';
-        $criteria = array_merge(
-            array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
-            isset($mapping['criteria']) ? $mapping['criteria'] : array()
-        );
-        $qb = $this->dm->createQueryBuilder($mapping['targetDocument'])
-            ->setQueryArray($criteria);
+
+        $qb = $this->dm->createQueryBuilder($mapping['targetDocument']);
+        if (isset($mapping['criteria'])) {
+            $qb->setQueryArray($mapping['criteria']);
+        }
+        $qb->field($mapping['mappedBy'])->references($owner);
 
         if (isset($mapping['sort'])) {
             $qb->sort($mapping['sort']);
@@ -735,6 +716,46 @@ class DocumentPersister
         foreach ($documents as $document) {
             $collection->add($document);
         }
+    }
+
+    /**
+     * Creates a query builder for the grouped queries.
+     *
+     * @param string $className
+     * @param array $queries
+     * @param array $hints
+     *
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    private function createGroupedQueriesBuilder($className, array $queries, array $hints)
+    {
+        $qb = $this->dm->createQueryBuilder($className);
+
+        $query = current($queries);
+        if (is_scalar($query) || count($query) == 1) {
+            $fieldName = is_scalar($query) ? 'id' : key($query);
+            $qb->field($fieldName)->in($queries);
+        } else {
+            if (count($queries) == 1) {
+                foreach ($query as $fieldName => $value) {
+                    $qb->field($fieldName)->equals($value);
+                }
+            } else {
+                foreach ($queries as $query) {
+                    $expr = $qb->expr();
+                    foreach ($query as $fieldName => $value) {
+                        $expr->field($fieldName)->equals($value);
+                    }
+                    $qb->addOr($expr);
+                }
+            }
+        }
+
+        if (isset($hints[Query::HINT_SLAVE_OKAY])) {
+            $qb->slaveOkay(true);
+        }
+
+        return $qb;
     }
 
     /**

@@ -703,7 +703,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function hasQueryFields()
     {
-        return $this->queryFields ? true : false;
+        return (boolean) $this->queryFields;
     }
 
     /**
@@ -713,8 +713,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setQueryFields($fields)
     {
-        if(!is_array($fields)) {
-            $fields = array($fields);
+        $fields = is_array($fields) ? $fields : array($fields);
+        foreach ($fields as $field) {
+            if (strpos($field, '.') !== false) {
+                return new MongoDBException(sprintf('Embedded or reference shard keys not supported. Key "%s" in class "%s"', $field, $this->name));
+            }
         }
 
         $this->queryFields = $fields;
@@ -1163,6 +1166,17 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
+     * Gets the database field name.
+     *
+     * @param string $fieldName
+     * @return string
+     */
+    public function getDatabaseFieldName($fieldName)
+    {
+        return $this->fieldMappings[$fieldName]['name'];
+    }
+
+    /**
      * Checks whether the class has a mapped association with the given field name.
      *
      * @param string $fieldName
@@ -1383,6 +1397,30 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             return $document->__identifier__;
         }
         return $this->reflFields[$field]->getValue($document);
+    }
+
+    /**
+     * Casts the field value to its php type.
+     *
+     * @param mixed $value
+     * @param string $field
+     */
+    public function getPHPFieldValue($value, $field)
+    {
+        $type = $this->fieldMappings[$field]['type'];
+        return Types\Type::getType($type)->convertToPHPValue($value);
+    }
+
+    /**
+     * Casts the field value to its database type.
+     *
+     * @param mixed $value
+     * @param string $field
+     */
+    public function getDatabaseFieldValue($value, $field)
+    {
+        $type = $this->fieldMappings[$field]['type'];
+        return Types\Type::getType($type)->convertToDatabaseValue($value);
     }
 
     /**

@@ -86,9 +86,11 @@ class ProxyFactory
      *
      * @param string $className
      * @param mixed $identifier
+     * @param mixed $query
+     * @param array $sort
      * @return object
      */
-    public function getProxy($className, $identifier)
+    public function getProxy($className, $identifier, $query, array $sort = null)
     {
         $fqn = self::generateProxyClassName($className, $this->proxyNamespace);
 
@@ -106,7 +108,7 @@ class ProxyFactory
 
         $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($className);
 
-        return new $fqn($documentPersister, $identifier);
+        return new $fqn($documentPersister, $identifier, $query, $sort);
     }
 
     /**
@@ -251,7 +253,7 @@ class ProxyFactory
                 if ($this->isShortIdentifierGetter($method, $class)) {
                     $identifier = lcfirst(substr($method->getName(), 3));
 
-                    $methods .= '        if ($this->__isInitialized__ === false) {' . "\n";
+                    $methods .= '        if ($this->__isInitialized__ === false && null !== $this->__identifier__) {' . "\n";
                     $methods .= '            return $this->__identifier__;' . "\n";
                     $methods .= '        }' . "\n";
                 }
@@ -350,10 +352,14 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
     private $__documentPersister__;
     public $__identifier__;
     public $__isInitialized__ = false;
-    public function __construct(DocumentPersister $documentPersister, $identifier)
+    public $__query__;
+    public $__sort__;
+    public function __construct(DocumentPersister $documentPersister, $identifier, $query, $sort)
     {
         $this->__documentPersister__ = $documentPersister;
         $this->__identifier__ = $identifier;
+        $this->__query__ = $query;
+        $this->__sort__ = $sort;
     }
     /** @private */
     public function __load()
@@ -368,10 +374,10 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
                 $this->__wakeup();
             }
 
-            if ($this->__documentPersister__->load($this->__identifier__, $this) === null) {
-                throw \Doctrine\ODM\MongoDB\DocumentNotFoundException::documentNotFound(get_class($this), $this->__identifier__);
+            if ($this->__documentPersister__->load($this->__query__, $this, array(), 0, $this->__sort__) === null) {
+                throw \Doctrine\ODM\MongoDB\DocumentNotFoundException::documentNotFound(get_class($this), $this->__query__);
             }
-            unset($this->__documentPersister__, $this->__identifier__);
+            unset($this->__documentPersister__, $this->__identifier__, $this->__query__, $this->__sort__);
         }
     }
 
@@ -393,14 +399,14 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
         if (!$this->__isInitialized__ && $this->__documentPersister__) {
             $this->__isInitialized__ = true;
             $class = $this->__documentPersister__->getClassMetadata();
-            $original = $this->__documentPersister__->load($this->__identifier__);
+            $original = $this->__documentPersister__->load($this->__query__, null, array(), 0, $this->__sort__);
             if ($original === null) {
-                throw \Doctrine\ODM\MongoDB\MongoDBException::documentNotFound(get_class($this), $this->__identifier__);
+                throw \Doctrine\ODM\MongoDB\MongoDBException::documentNotFound(get_class($this), $this->__query__);
             }
-            foreach ($class->reflFields AS $field => $reflProperty) {
+            foreach ($class->reflFields as $field => $reflProperty) {
                 $reflProperty->setValue($this, $reflProperty->getValue($original));
             }
-            unset($this->__documentPersister__, $this->__identifier__);
+            unset($this->__documentPersister__, $this->__identifier__, $this->__query__, $this->__sort__);
         }
         <cloneImpl>
     }
