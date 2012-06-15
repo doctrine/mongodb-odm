@@ -45,10 +45,18 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(is_array($criteria));
         $this->assertEquals(0, count($criteria));
 
-        $filterCollection->enable('testFilter');
+        $this->enableUserFilter();
         $criteria = $filterCollection->getFilterCriteria($metadata);
         $this->assertTrue(is_array($criteria));
         $this->assertArrayHasKey('username', $criteria);
         $this->assertEquals($criteria['username'], 'Tim');
+    }
+
+    protected function enableUserFilter(){
+        $this->dm->getFilterCollection()->enable('testFilter');
+        $testFilter = $this->dm->getFilterCollection()->getFilter('testFilter');
+        $testFilter->setParameter('class', 'Documents\User');
+        $testFilter->setParameter('field', 'username');
+        $testFilter->setParameter('value', 'Tim');
     }
 }
