@@ -8,18 +8,16 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $filterCollection = $this->dm->getFilterCollection();
 
-        $this->assertFalse($filterCollection->hasEnabledFilters());
+        $this->assertCount(0, $filterCollection->getEnabledFilters());
 
         $filterCollection->enable('testFilter');
-        $this->assertTrue($filterCollection->hasEnabledFilters());
 
         $enabledFilters = $filterCollection->getEnabledFilters();
-        $this->assertTrue(is_array($enabledFilters));
         $this->assertCount(1, $enabledFilters);
         $this->assertContainsOnly('Doctrine\ODM\MongoDB\Query\Filter\BsonFilter', $enabledFilters);
 
         $filterCollection->disable('testFilter');
-        $this->assertFalse($filterCollection->hasEnabledFilters());
+        $this->assertCount(0, $filterCollection->getEnabledFilters());
     }
 
     /**
