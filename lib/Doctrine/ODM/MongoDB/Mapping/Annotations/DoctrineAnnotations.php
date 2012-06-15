@@ -285,3 +285,5 @@ final class PostRemove extends Annotation {}
 final class PreLoad extends Annotation {}
 /** @Annotation */
 final class PostLoad extends Annotation {}
+/** @Annotation */
+final class PreFlush extends Annotation {}
