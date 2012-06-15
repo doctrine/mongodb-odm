@@ -45,13 +45,13 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         // now the size is 2! userA and userB are in the UOW.
-        $this->assertSize(1);
+        $this->assertSize(2);
 
         // second flush
         $this->dm->flush();
 
         // now the size is 3! userA and userB and userC are in the UOW.
-        $this->assertSize(1);
+        $this->assertSize(3);
     }
 
     public function testFlushManyExplicitDocuments()

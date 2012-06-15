@@ -99,7 +99,7 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 	
 }
 
-/** @ODM\Document(collection="tests", db="tests") */
+/** @ODM\Document(collection="tests") */
 class Category 
 {
 	/** @ODM\Id */
