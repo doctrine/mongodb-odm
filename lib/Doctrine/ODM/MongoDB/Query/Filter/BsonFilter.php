@@ -65,7 +65,6 @@ abstract class BsonFilter
     final public function setParameter($name, $value)
     {
         $this->parameters[$name] = $value;
-        $this->dm->getFilterCollection()->setFiltersStateDirty();
         return $this;
     }
 

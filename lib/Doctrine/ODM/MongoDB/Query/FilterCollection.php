@@ -19,9 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
-use Doctrine\ODM\MongoDB\Configuration,
-    Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
+use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
 
 /**
 * Collection class for all the query filters.
@@ -30,18 +30,6 @@ use Doctrine\ODM\MongoDB\Configuration,
 */
 class FilterCollection
 {
-    /* Filter STATES */
-
-    /**
-     * A filter object is in CLEAN state when it has no changed parameters.
-     */
-    const FILTERS_STATE_CLEAN = 1;
-
-    /**
-     * A filter object is in DIRTY state when it has changed parameters.
-     */
-    const FILTERS_STATE_DIRTY = 2;
-
     /**
      * The used Configuration.
      *
@@ -62,13 +50,6 @@ class FilterCollection
      * @var array
      */
     private $enabledFilters = array();
-
-    /**
-     * @var integer $state The current state of this filterCollection
-     */
-    private $filtersState = self::FILTERS_STATE_CLEAN;
-
-    private $version = 0;
 
     /**
      * Constructor.
@@ -108,8 +89,6 @@ class FilterCollection
 
         if (!isset($this->enabledFilters[$name])) {
             $this->enabledFilters[$name] = new $filterClass($this->dm);
-
-            $this->filtersState = self::FILTERS_STATE_DIRTY;
         }
 
         return $this->enabledFilters[$name];
@@ -128,11 +107,7 @@ class FilterCollection
     {
         // Get the filter to return it
         $filter = $this->getFilter($name);
-
         unset($this->enabledFilters[$name]);
-
-        $this->filtersState = self::FILTERS_STATE_DIRTY;
-
         return $filter;
     }
 
@@ -151,23 +126,6 @@ class FilterCollection
             throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
         }
         return $this->enabledFilters[$name];
-    }
-
-    /**
-     * Set the filter state to dirty.
-     */
-    public function setFiltersStateDirty()
-    {
-        $this->filtersState = self::FILTERS_STATE_DIRTY;
-    }
-
-    public function getVersion()
-    {
-        if ($this->filtersState == self::FILTERS_STATE_DIRTY){
-            $this->filtersState = self::FILTERS_STATE_CLEAN;
-            ++$this->version;
-        }
-        return $this->version;
     }
 
     /**

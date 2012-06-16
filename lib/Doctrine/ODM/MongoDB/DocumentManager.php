@@ -252,19 +252,6 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Method to attempt load of proxy object, and supress DocumentNotFoundError.
-     * Used when filters are enabled to check if a proxy object will be filtered out
-     * or loaded as normal.
-     *
-     * @param object
-     * @return boolean
-     */
-    public function objectIsInitalizable($obj)
-    {
-        return $this->unitOfWork->objectIsInitalizable($obj);
-    }
-
-    /**
      * Gets the UnitOfWork used by the DocumentManager to coordinate operations.
      *
      * @return UnitOfWork

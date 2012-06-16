@@ -70,9 +70,11 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('John', 'Tim'), $this->getRepositoryFind());
 
         $this->enableUserFilter();
+        $this->dm->clear();
         $this->assertEquals(array('Tim'), $this->getRepositoryFind());
 
         $this->fc->disable('testFilter');
+        $this->dm->clear();
         $this->assertEquals(array('John', 'Tim'), $this->getRepositoryFind());
     }
 
@@ -100,9 +102,11 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('John', 'Tim'), $this->getRepositoryFindBy());
 
         $this->enableUserFilter();
+        $this->dm->clear();        
         $this->assertEquals(array('Tim'), $this->getRepositoryFindBy());
 
         $this->fc->disable('testFilter');
+        $this->dm->clear();
         $this->assertEquals(array('John', 'Tim'), $this->getRepositoryFindBy());
     }
 
@@ -122,9 +126,11 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('John', $this->getRepositoryFindOneBy());
 
         $this->enableUserFilter();
+        $this->dm->clear();        
         $this->assertEquals(null, $this->getRepositoryFindOneBy());
 
         $this->fc->disable('testFilter');
+        $this->dm->clear();        
         $this->assertEquals('John', $this->getRepositoryFindOneBy());
     }
 
@@ -143,9 +149,11 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('John', 'Tim'), $this->getRepositoryFindAll());
 
         $this->enableUserFilter();
+        $this->dm->clear();        
         $this->assertEquals(array('Tim'), $this->getRepositoryFindAll());
 
         $this->fc->disable('testFilter');
+        $this->dm->clear();        
         $this->assertEquals(array('John', 'Tim'), $this->getRepositoryFindAll());
     }
 
@@ -164,9 +172,11 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('groupA', 'groupB'), $this->getReferenceMany());
 
         $this->enableGroupFilter();
+        $this->dm->clear();        
         $this->assertEquals(array('groupA'), $this->getReferenceMany());
 
         $this->fc->disable('testFilter');
+        $this->dm->clear();        
         $this->assertEquals(array('groupA', 'groupB'), $this->getReferenceMany());
     }
 
@@ -175,8 +185,10 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $groupnames = array();
         foreach($tim->getGroups() as $group){
-            if($this->dm->objectIsInitalizable($group)){
+            try {
                 $groupnames[] = $group->getName();
+            } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
+               //Proxy object filtered 
             }
         }
         sort($groupnames);
@@ -187,9 +199,11 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Timothy', $this->getReferenceOne());
 
         $this->enableProfileFilter();
+        $this->dm->clear();        
         $this->assertEquals(null, $this->getReferenceOne());
 
         $this->fc->disable('testFilter');
+        $this->dm->clear();        
         $this->assertEquals('Timothy', $this->getReferenceOne());
     }
 
@@ -197,10 +211,11 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $tim = $this->dm->getRepository('Documents\User')->find($this->ids['tim']);
 
         $profile = $tim->getProfile();
-        if ($profile && $this->dm->objectIsInitalizable($profile)){
+        try {
             return $profile->getFirstname();
-        } else {
-            return null;
+        } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
+            //Proxy object filtered
+            return null;                
         }
     }
 
@@ -208,9 +223,11 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('John', 'Tim'), $this->getDocumentManagerRef());
 
         $this->enableUserFilter();
+        $this->dm->clear();         
         $this->assertEquals(array('Tim'), $this->getDocumentManagerRef());
 
         $this->fc->disable('testFilter');
+        $this->dm->clear();         
         $this->assertEquals(array('John', 'Tim'), $this->getDocumentManagerRef());
     }
 
@@ -220,11 +237,16 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $usernames = array();
 
-        if($this->dm->objectIsInitalizable($tim)){
+        try {
             $usernames[] = $tim->getUsername();
-        }
-        if($this->dm->objectIsInitalizable($john)){
+        } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
+            //Proxy object filtered            
+        }        
+        
+        try {
             $usernames[] = $john->getUsername();
+        } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
+            //Proxy object filtered            
         }
 
         sort($usernames);
@@ -236,9 +258,11 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('John', 'Tim'), $this->getQuery());
 
         $this->enableUserFilter();
+        $this->dm->clear();          
         $this->assertEquals(array('Tim'), $this->getQuery());
 
         $this->fc->disable('testFilter');
+        $this->dm->clear();          
         $this->assertEquals(array('John', 'Tim'), $this->getQuery());
     }
 

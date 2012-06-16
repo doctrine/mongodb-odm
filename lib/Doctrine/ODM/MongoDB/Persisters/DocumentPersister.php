@@ -490,7 +490,7 @@ class DocumentPersister
      * @param array $hints Hints for document creation.
      * @return object The filled and managed document object or NULL, if the query result is empty.
      */
-    private function createDocument($result, $document = null, array $hints = array(), $filterVersion = null)
+    private function createDocument($result, $document = null, array $hints = array())
     {
         if ($result === null) {
             return null;
@@ -499,10 +499,10 @@ class DocumentPersister
         if ($document !== null) {
             $hints[Query::HINT_REFRESH] = true;
             $id = $this->class->getPHPIdentifierValue($result['_id']);
-            $this->uow->registerManaged($document, $id, $result, $filterVersion);
+            $this->uow->registerManaged($document, $id, $result);
         }
 
-        return $this->uow->getOrCreateDocument($this->class->name, $result, $hints, $filterVersion);
+        return $this->uow->getOrCreateDocument($this->class->name, $result, $hints);
     }
 
     /**
