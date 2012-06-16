@@ -377,7 +377,7 @@ class DocumentPersister
             }
         }
 
-        return $this->createDocument($result, $document, $hints, $this->dm->getFilterCollection()->getVersion());
+        return $this->createDocument($result, $document, $hints);
     }
 
     /**
