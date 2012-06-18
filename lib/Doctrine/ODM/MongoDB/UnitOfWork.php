@@ -664,34 +664,55 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-                if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
+
+                // skip if value has not changed
+                if ($orgValue === $actualValue) {
+                    // but consider dirty GridFSFile instances as changed
+                    if ( ! (isset($class->fieldMappings[$propName]['file']) && $actualValue->isDirty())) {
+                        continue;
+                    }
+                }
+
+                // if embed-one relationship
+                if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one') {
                     if ($orgValue !== null) {
                         $this->scheduleOrphanRemoval($orgValue);
                     }
                     $changeSet[$propName] = array($orgValue, $actualValue);
-                } else if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $class->fieldMappings[$propName]['isOwningSide'] && $orgValue !== $actualValue) {
-                    $changeSet[$propName] = array($orgValue, $actualValue);
-                } else if ($isChangeTrackingNotify) {
                     continue;
-                } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many' && $orgValue !== $actualValue) {
-                    if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']) {
-                        continue; // ignore inverse side
-                    }
+                }
+
+                // if owning side of reference-one relationship
+                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $class->fieldMappings[$propName]['isOwningSide']) {
+                    $changeSet[$propName] = array($orgValue, $actualValue);
+                    continue;
+                }
+
+                if ($isChangeTrackingNotify) {
+                    continue;
+                }
+
+                // ignore inverse side of reference-many relationship
+                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'many' && $class->fieldMappings[$propName]['isInverseSide']) {
+                    continue;
+                }
+
+                // if embed-many or reference-many relationship
+                if ($class->fieldMappings[$propName]['type'] === 'many') {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                     if ($orgValue instanceof PersistentCollection) {
                         $this->collectionDeletions[] = $orgValue;
                     }
-                } else if (isset($class->fieldMappings[$propName]['file'])) {
-                    if ($orgValue !== $actualValue || $actualValue->isDirty()) {
-                        $changeSet[$propName] = array($orgValue, $actualValue);
-                    }
-                } else if ($orgValue instanceof \DateTime || $actualValue instanceof \DateTime) {
-                    if ($orgValue != $actualValue) {
-                        $changeSet[$propName] = array($orgValue, $actualValue);
-                    }
-                } else if ($orgValue !== $actualValue) {
-                    $changeSet[$propName] = array($orgValue, $actualValue);
+                    continue;
                 }
+
+                // skip equivalent DateTime values
+                if (($orgValue instanceof \DateTime || $actualValue instanceof \DateTime) && $orgValue == $actualValue) {
+                    continue;
+                }
+
+                // regular field
+                $changeSet[$propName] = array($orgValue, $actualValue);
             }
             if ($changeSet) {
                 $this->documentChangeSets[$oid] = $changeSet;
