@@ -697,6 +697,23 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
+                // Persistent collection was exchanged with the "originally"
+                // created one. This can only mean it was cloned and replaced
+                // on another document.
+                if ($actualValue instanceof PersistentCollection) {
+                    $owner = $actualValue->getOwner();
+                    if ($owner === null) { // cloned
+                        $actualValue->setOwner($document, $class->fieldMappings[$propName]);
+                    } else if ($owner !== $document) { // no clone, we have to fix
+                        if (!$actualValue->isInitialized()) {
+                            $actualValue->initialize(); // we have to do this otherwise the cols share state
+                        }
+                        $newValue = clone $actualValue;
+                        $newValue->setOwner($document, $class->fieldMappings[$propName]);
+                        $class->reflFields[$propName]->setValue($document, $newValue);
+                    }
+                }
+
                 // if embed-many or reference-many relationship
                 if ($class->fieldMappings[$propName]['type'] === 'many') {
                     $changeSet[$propName] = array($orgValue, $actualValue);
