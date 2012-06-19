@@ -3,10 +3,9 @@
 namespace Doctrine\ODM\MongoDB\Tests\Query\Filter;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
-use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
-use Documents\User;
+use Doctrine\ODM\MongoDB\Query\Filter\BSONFilter;
 
-class Filter extends BsonFilter
+class Filter extends BSONFilter
 {
     public function addFilterCriteria(ClassMetadata $targetMetadata)
     {
@@ -15,5 +14,4 @@ class Filter extends BsonFilter
         }
         return array();
     }
-
 }

@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Query\Filter;
 
-class BsonFilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class BSONFilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
 
     /**
