@@ -1430,7 +1430,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->removeFromIdentityMap($document);
         $this->documentStates[$oid] = self::STATE_REMOVED;
-        
+
         if (isset($this->documentUpdates[$oid])) {
             unset($this->documentUpdates[$oid]);
         }
@@ -1616,7 +1616,7 @@ class UnitOfWork implements PropertyChangedListener
         return isset($this->identityMap[$rootClassName][$id]) ?
                 $this->identityMap[$rootClassName][$id] : false;
     }
-
+    
     /**
      * Schedules a document for dirty-checking at commit-time.
      *
@@ -2713,11 +2713,11 @@ class UnitOfWork implements PropertyChangedListener
     public function getScheduledCollectionUpdates()
     {
         return $this->collectionUpdates;
-    }    
+    }
 
     /**
      * Helper method to initialize a lazy loading proxy or persistent collection.
-     * 
+     *
      * @param object
      * @return void
      */
