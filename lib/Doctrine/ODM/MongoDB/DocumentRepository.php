@@ -113,7 +113,7 @@ class DocumentRepository implements ObjectRepository
 
             $id = $id[$identifierFieldName];
         }
-
+        
         // Check identity map first
         if ($document = $this->uow->tryGetById($id, $this->class->rootDocumentName)) {
             if ($lockMode != LockMode::NONE) {

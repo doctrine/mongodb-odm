@@ -55,7 +55,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Resolves a registered namespace alias to the full namespace.
      *
-     * @param string $documentNamespaceAlias 
+     * @param string $documentNamespaceAlias
      * @return string
      * @throws MongoDBException
      */
@@ -93,14 +93,14 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Add a new default annotation driver with a correctly configured annotation reader.
-     * 
+     *
      * @param array $paths
      * @return Mapping\Driver\AnnotationDriver
      */
     public function newDefaultAnnotationDriver($paths = array())
     {
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        
+
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, (array) $paths);
     }
 
@@ -182,7 +182,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Gets the namespace where proxy classes reside.
-     * 
+     *
      * @return string
      */
     public function getProxyNamespace()
@@ -193,7 +193,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Sets the namespace where proxy classes reside.
-     * 
+     *
      * @param string $ns
      */
     public function setProxyNamespace($ns)
@@ -247,7 +247,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Gets the namespace where hydrator classes reside.
-     * 
+     *
      * @return string
      */
     public function getHydratorNamespace()
@@ -258,7 +258,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
 
     /**
      * Sets the namespace where hydrator classes reside.
-     * 
+     *
      * @param string $ns
      */
     public function setHydratorNamespace($ns)
@@ -331,5 +331,31 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function setDefaultCommitOptions($defaultCommitOptions)
     {
         $this->attributes['defaultCommitOptions'] = $defaultCommitOptions;
+    }
+
+    /**
+     * Add a filter to the list of possible filters.
+     *
+     * @param string $name The name of the filter.
+     * @param string $className The class name of the filter.
+     */
+    public function addFilter($name, $className)
+    {
+        $this->attributes['filters'][$name] = $className;
+    }
+
+    /**
+     * Gets the class name for a given filter name.
+     *
+     * @param string $name The name of the filter.
+     *
+     * @return string The class name of the filter, or null of it is not
+     * defined.
+     */
+    public function getFilterClassName($name)
+    {
+        return isset($this->attributes['filters'][$name])
+            ? $this->attributes['filters'][$name]
+            : null;
     }
 }

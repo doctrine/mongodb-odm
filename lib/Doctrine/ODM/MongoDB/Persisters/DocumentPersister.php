@@ -659,6 +659,7 @@ class DocumentPersister
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $criteria = array_merge(
                 array('_id' => array($cmd . 'in' => $ids)),
+                $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
             );
             $cursor = $mongoCollection->find($criteria);
@@ -775,11 +776,13 @@ class DocumentPersister
      * @param string|array $query
      * @return array $newQuery
      */
-    public function prepareQuery($query)
+    public function prepareQuery($query = array())
     {
         if (is_scalar($query) || $query instanceof \MongoId) {
             $query = array('_id' => $query);
         }
+        $query = array_merge($query, $this->dm->getFilterCollection()->getFilterCriteria($this->class));
+
         if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
             $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
@@ -797,7 +800,7 @@ class DocumentPersister
         }
         return $newQuery;
     }
-    
+
     /**
      * Prepares a new object array by converting the portable Doctrine types to the types mongodb expects.
      *
@@ -874,7 +877,7 @@ class DocumentPersister
     private function prepareQueryElement(&$fieldName, $value = null, $metadata = null, $prepareValue = true)
     {
         $metadata = ($metadata === null) ? $this->class : $metadata;
-        
+
         // Process "association.fieldName"
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
@@ -929,7 +932,7 @@ class DocumentPersister
                             } else {
                                 $value = $this->prepareQueryElement($key, $value, null, $prepareValue);
                             }
-                            
+
                             $fieldName .= '.' . $key;
                         }
                     }

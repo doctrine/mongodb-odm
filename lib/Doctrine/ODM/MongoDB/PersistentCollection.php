@@ -113,7 +113,7 @@ class PersistentCollection implements BaseCollection
     /**
      * Sets the document manager and unit of work (used during merge operations).
      *
-     * @param type $dm 
+     * @param type $dm
      */
     public function setDocumentManager(DocumentManager $dm)
     {
@@ -175,6 +175,7 @@ class PersistentCollection implements BaseCollection
             $this->coll->clear();
             $this->uow->loadCollection($this);
             $this->takeSnapshot();
+
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {
                 foreach ($newObjects as $key => $obj) {

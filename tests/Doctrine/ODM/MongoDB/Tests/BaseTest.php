@@ -38,6 +38,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config->setMetadataCacheImpl(new ApcCache());
         */
 
+        $config->addFilter('testFilter', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
+        
         $reader = new AnnotationReader();
         $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/../../../../Documents');
         $config->setMetadataDriverImpl($this->annotationDriver);
