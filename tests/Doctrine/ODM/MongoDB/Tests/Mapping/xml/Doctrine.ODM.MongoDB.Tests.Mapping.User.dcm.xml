@@ -40,7 +40,7 @@
                 <all />
             </cascade>
         </reference-many>
-        <reference-many target-document="Phonenumber" field="morePhoneNumbers" name="more_phone_numbers">
+        <reference-many target-document="Phonenumber" fieldName="morePhoneNumbers" field="more_phone_numbers">
         </reference-many>
         <embed-many target-document="Phonenumber" field="otherPhonenumbers">
             <discriminator-field name="discr" />
