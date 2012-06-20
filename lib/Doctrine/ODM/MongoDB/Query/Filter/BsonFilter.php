@@ -19,8 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Query\Filter;
 
-use Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
 
 /**
  * The base class that user defined filters should extend.
@@ -30,7 +30,7 @@ use Doctrine\ODM\MongoDB\DocumentManager,
  * @author Tim Roediger <superdweebie@gmail.com>
  * @abstract
  */
-abstract class BSONFilter
+abstract class BsonFilter
 {
     /**
      * The entity manager.

@@ -2,9 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Query\Filter;
 
-class BSONFilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class BsonFilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-
     /**
      * @expectedException InvalidArgumentException
      */

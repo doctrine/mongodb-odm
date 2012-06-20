@@ -52,7 +52,8 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($criteria['username'], 'Tim');
     }
 
-    protected function enableUserFilter(){
+    protected function enableUserFilter()
+    {
         $this->dm->getFilterCollection()->enable('testFilter');
         $testFilter = $this->dm->getFilterCollection()->getFilter('testFilter');
         $testFilter->setParameter('class', 'Documents\User');
