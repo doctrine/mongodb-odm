@@ -87,6 +87,9 @@ class XmlDriver extends AbstractFileDriver
             }
             $class->setDiscriminatorMap($map);
         }
+        if (isset($xmlRoot->{'query-fields'})) {
+            $this->setQueryFields($class, $xmlRoot->{'query-fields'});
+        }
         if (isset($xmlRoot->{'indexes'})) {
             foreach($xmlRoot->{'indexes'}->{'index'} as $index) {
                 $this->addIndex($class, $index);
@@ -299,6 +302,15 @@ class XmlDriver extends AbstractFileDriver
             }
         }
         $class->addIndex($index['keys'], $index['options']);
+    }
+
+    private function setQueryFields(ClassMetadataInfo $class, SimpleXmlElement $xmlIndex)
+    {
+        $fields = array();
+        foreach ($xmlIndex->{'key'} as $key) {
+            $fields[(string) $key['name']] = (string) $key['name'];
+        }
+        $class->setQueryFields(array_values($fields));
     }
 
     protected function loadMappingFile($file)

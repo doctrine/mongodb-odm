@@ -61,6 +61,8 @@ final class DiscriminatorField extends Annotation
 final class DiscriminatorMap extends Annotation {}
 /** @Annotation */
 final class DiscriminatorValue extends Annotation {}
+/** @Annotation */
+final class QueryFields extends Annotation {}
 
 /** @Annotation */
 final class Indexes extends Annotation {}

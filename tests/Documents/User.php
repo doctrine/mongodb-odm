@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /**
  * @ODM\Document(collection="users")
  * @ODM\InheritanceType("COLLECTION_PER_CLASS")
+ * @ODM\QueryFields({"id", "username"})
  */
 class User extends BaseDocument
 {

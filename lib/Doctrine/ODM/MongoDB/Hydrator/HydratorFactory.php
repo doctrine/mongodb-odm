@@ -238,7 +238,8 @@ EOF
             }
             \$targetMetadata = \$this->dm->getClassMetadata(\$className);
             \$id = \$targetMetadata->getPHPIdentifierValue(\$mongoId);
-            \$return = \$this->dm->getReference(\$className, \$id);
+            \$query = \$this->dm->getReferenceQueryFromDBRef(\$reference, \$id, \$targetMetadata, \$this->class->fieldMappings['%2\$s']);
+            \$return = \$this->dm->getReference(\$className, \$id, \$query);
             \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
             \$hydratedData['%2\$s'] = \$return;
         }
@@ -252,6 +253,7 @@ EOF
                 if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
                     $code .= sprintf(<<<EOF
 
+        /** @ReferenceOne(RepositoryMethod) */
         \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
         \$return = \$this->dm->getRepository(\$className)->%3\$s(\$document);
         \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
@@ -264,19 +266,17 @@ EOF
                     $mapping['repositoryMethod']
                 );
                 } else {
+                    // TODO: Sharding
                     $code .= sprintf(<<<EOF
 
+        /** @ReferenceOne(InverseSide) */
         \$mapping = \$this->class->fieldMappings['%2\$s'];
-        \$className = \$mapping['targetDocument'];
-        \$targetClass = \$this->dm->getClassMetadata(\$mapping['targetDocument']);
-        \$mappedByMapping = \$targetClass->fieldMappings[\$mapping['mappedBy']];
-        \$mappedByFieldName = isset(\$mappedByMapping['simple']) && \$mappedByMapping['simple'] ? \$mapping['mappedBy'] : \$mapping['mappedBy'].'.id';
-        \$criteria = array_merge(
-            array(\$mappedByFieldName => \$data['_id']),
-            isset(\$this->class->fieldMappings['%2\$s']['criteria']) ? \$this->class->fieldMappings['%2\$s']['criteria'] : array() 
-        );
-        \$sort = isset(\$this->class->fieldMappings['%2\$s']['sort']) ? \$this->class->fieldMappings['%2\$s']['sort'] : array();
-        \$return = \$this->unitOfWork->getDocumentPersister(\$className)->load(\$criteria, null, array(), 0, \$sort);
+        \$qb = \$this->dm->createQueryBuilder(\$mapping['targetDocument']);
+        if (isset(\$mapping['criteria'])) {
+            \$qb->setQueryArray(\$mapping['criteria']);
+        }
+        \$qb->field(\$mapping['mappedBy'])->references(\$document);
+        \$return = \$this->dm->getReference(\$mapping['targetDocument'], null, \$qb->getQueryArray(), isset(\$mapping['sort']) ? \$mapping['sort'] : null);
         \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
         \$hydratedData['%2\$s'] = \$return;
 
@@ -287,9 +287,10 @@ EOF
                     );
                 }
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY || $mapping['association'] === ClassMetadata::EMBED_MANY) {
+                $comment = $mapping['association'] === ClassMetadata::REFERENCE_MANY ? 'ReferenceMany' : 'EmbedMany';
                 $code .= sprintf(<<<EOF
 
-        /** @Many */
+        /** @%3\$s */
         \$mongoData = isset(\$data['%1\$s']) ? \$data['%1\$s'] : null;
         \$return = new \Doctrine\ODM\MongoDB\PersistentCollection(new \Doctrine\Common\Collections\ArrayCollection(), \$this->dm, \$this->unitOfWork, '$');
         \$return->setHints(\$hints);
@@ -304,7 +305,8 @@ EOF
 EOF
                 ,
                     $mapping['name'],
-                    $mapping['fieldName']
+                    $mapping['fieldName'],
+                    $comment
                 );
             } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 $code .= sprintf(<<<EOF

@@ -534,17 +534,20 @@ class DocumentManager implements ObjectManager
      *
      * @param string $documentName
      * @param string|object $identifier
+     * @param mixed $query
+     * @param array $sort
      * @return mixed|object The document reference.
      */
-    public function getReference($documentName, $identifier)
+    public function getReference($documentName, $identifier, $query = null, array $sort = null)
     {
         $class = $this->metadataFactory->getMetadataFor($documentName);
 
         // Check identity map first, if its already in there just return it.
-        if ($document = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
+        if ($identifier && $document = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
             return $document;
         }
-        $document = $this->proxyFactory->getProxy($class->name, $identifier);
+
+        $document = $this->proxyFactory->getProxy($class->name, $identifier, $query ?: $identifier, $sort);
         $this->unitOfWork->registerManaged($document, $identifier, array());
 
         return $document;
@@ -677,40 +680,85 @@ class DocumentManager implements ObjectManager
      *
      * @param mixed $document A document object
      * @param array $referenceMapping Mapping for the field the references the document
+     * @param boolean $forQuery Is the DBRef for a query?
      *
      * @return array A DBRef array
      */
-    public function createDBRef($document, array $referenceMapping = null)
+    public function createDBRef($document, array $referenceMapping = null, $forQuery = false)
     {
         if (!is_object($document)) {
             throw new \InvalidArgumentException('Cannot create a DBRef, the document is not an object');
         }
         $className = get_class($document);
         $class = $this->getClassMetadata($className);
-        $id = $this->unitOfWork->getDocumentIdentifier($document);
+        $id = $class->getDatabaseIdentifierValue($this->unitOfWork->getDocumentIdentifier($document));
 
-        if (isset($referenceMapping['simple']) && $referenceMapping['simple']) {
-            return $class->getDatabaseIdentifierValue($id);
+        if ($referenceMapping && isset($referenceMapping['simple']) && $referenceMapping['simple']) {
+            return $id;
         }
 
-        $dbRef = array(
-            $this->cmd . 'ref' => $class->getCollection(),
-            $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($id),
-            $this->cmd . 'db'  => $this->getDocumentDatabase($className)->getName()
-        );
-
-        if ($class->discriminatorField) {
-            $dbRef[$class->discriminatorField['name']] = $class->discriminatorValue;
+        $dbRef = array();
+        if (!$forQuery || null === $referenceMapping || !isset($referenceMapping['targetDocument'])) {
+            $dbRef[$this->cmd . 'ref'] = $class->getCollection();
+            $dbRef[$this->cmd . 'db'] = $this->getDocumentDatabase($className)->getName();
         }
 
-        // add a discriminator value if the referenced document is not mapped explicitely to a targetDocument
-        if ($referenceMapping && ! isset($referenceMapping['targetDocument'])) {
-            $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_name';
-            $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search($class->getName(), $referenceMapping['discriminatorMap']) : $class->getName();
-            $dbRef[$discriminatorField] = $discriminatorValue;
+        if ($class->hasQueryFields()) {
+            foreach ($class->queryFields as $field) {
+                $dbRef[$this->cmd . ($class->isIdentifier($field) ? 'id' : $class->getDatabaseFieldName($field))] = $class->getDatabaseFieldValue($class->getFieldValue($document, $field), $field);
+            }
+
+            if (!$forQuery) {
+                $dbRef[$this->cmd . 'id'] = $id;
+            }
+        } else {
+            $dbRef[$this->cmd . 'id'] = $id;
+        }
+
+        if (!$forQuery) {
+            if ($class->discriminatorField) {
+                $dbRef[$class->discriminatorField['name']] = $class->discriminatorValue;
+            }
+
+            // add a discriminator value if the referenced document is not mapped explicitely to a targetDocument
+            if ($referenceMapping && ! isset($referenceMapping['targetDocument'])) {
+                $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_name';
+                $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search($class->getName(), $referenceMapping['discriminatorMap']) : $class->getName();
+                $dbRef[$discriminatorField] = $discriminatorValue;
+            }
         }
 
         return $dbRef;
+    }
+
+    /**
+     * Returns a reference query array from a db ref.
+     *
+     * @param mixed $reference
+     * @param string|object $identifier
+     * @param ClassMetadata $metadata
+     * @param array $referenceMapping
+     *
+     * @return array A DBRef query array
+     */
+    public function getReferenceQueryFromDBRef($reference, $identifier, ClassMetadata $metadata, array $referenceMapping)
+    {
+        if (is_scalar($reference) || !$metadata->hasQueryFields() || isset($referenceMapping['simple']) && $referenceMapping['simple']) {
+            $query = $identifier;
+        } else {
+            $query = array();
+            foreach ($metadata->queryFields as $field) {
+                $fieldName = $metadata->isIdentifier($field) ? 'id' : $metadata->getDatabaseFieldName($field);
+                if (isset($reference[$this->cmd . $fieldName])) {
+                    $query[$fieldName] = $metadata->getPHPFieldValue($reference[$this->cmd . $fieldName], $field);
+                }
+            }
+            if (empty($query)) {
+                $query = $identifier;
+            }
+        }
+
+        return $query;
     }
 
     /**

@@ -10,6 +10,10 @@
         <discriminator-map>
             <discriminator-mapping value="default" class="Doctrine\ODM\MongoDB\Tests\Mapping\User" />
         </discriminator-map>
+        <query-fields>
+            <key name="id" />
+            <key name="name" />
+        </query-fields>
         <field fieldName="id" id="true" />
         <field fieldName="name" name="username" type="string" />
         <field fieldName="email" type="string" unique="true" drop-dups="true" order="desc" />

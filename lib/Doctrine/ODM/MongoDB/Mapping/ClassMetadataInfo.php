@@ -183,6 +183,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $requireIndexes = false;
 
     /**
+     * READ-ONLY: The fields for the query for the document collection.
+     */
+    public $queryFields = array();
+
+    /**
      * READ-ONLY: The name of the document class.
      */
     public $name;
@@ -682,6 +687,43 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
+     * Returns the custom query fields for this Document.
+     *
+     * @return array $fields The fields for the query.
+     */
+    public function getQueryFields()
+    {
+        return $this->queryFields;
+    }
+
+    /**
+     * Checks whether this document has custom query fields or not.
+     *
+     * @return boolean
+     */
+    public function hasQueryFields()
+    {
+        return (boolean) $this->queryFields;
+    }
+
+    /**
+     * Sets the custom query fields for this Document.
+     *
+     * @param array $fields Array of fields for the query.
+     */
+    public function setQueryFields($fields)
+    {
+        $fields = is_array($fields) ? $fields : array($fields);
+        foreach ($fields as $field) {
+            if (strpos($field, '.') !== false) {
+                return new MongoDBException(sprintf('Embedded or reference shard keys not supported. Key "%s" in class "%s"', $field, $this->name));
+            }
+        }
+
+        $this->queryFields = $fields;
+    }
+
+    /**
      * Sets the change tracking policy used by this class.
      *
      * @param integer $policy
@@ -1124,6 +1166,17 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
+     * Gets the database field name.
+     *
+     * @param string $fieldName
+     * @return string
+     */
+    public function getDatabaseFieldName($fieldName)
+    {
+        return $this->fieldMappings[$fieldName]['name'];
+    }
+
+    /**
      * Checks whether the class has a mapped association with the given field name.
      *
      * @param string $fieldName
@@ -1289,7 +1342,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ($document instanceof Proxy && !$document->__isInitialized()) {
             return $document->__identifier__;
         }
-        return (string) $this->reflFields[$this->identifier]->getValue($document);
+        return $this->reflFields[$this->identifier]->getValue($document);
     }
 
     /**
@@ -1344,6 +1397,30 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             return $document->__identifier__;
         }
         return $this->reflFields[$field]->getValue($document);
+    }
+
+    /**
+     * Casts the field value to its php type.
+     *
+     * @param mixed $value
+     * @param string $field
+     */
+    public function getPHPFieldValue($value, $field)
+    {
+        $type = $this->fieldMappings[$field]['type'];
+        return Types\Type::getType($type)->convertToPHPValue($value);
+    }
+
+    /**
+     * Casts the field value to its database type.
+     *
+     * @param mixed $value
+     * @param string $field
+     */
+    public function getDatabaseFieldValue($value, $field)
+    {
+        $type = $this->fieldMappings[$field]['type'];
+        return Types\Type::getType($type)->convertToDatabaseValue($value);
     }
 
     /**

@@ -217,12 +217,25 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
         return $class;
     }
+
+    /**
+     * @depends testCustomFieldName
+     * @param ClassMetadata $class
+     */
+    public function testQueryFields($class)
+    {
+        $this->assertTrue(isset($class->queryFields));
+        $this->assertEquals(array('id', 'name'), $class->queryFields);
+
+        return $class;
+    }
 }
 
 /**
  * @ODM\Document(collection="cms_users")
  * @ODM\DiscriminatorField(fieldName="discr")
  * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\User"})
+ * @ODM\QueryFields({"id", "name"})
  */
 class User
 {
@@ -366,5 +379,6 @@ class User
         $metadata->addIndex(array('username' => 'desc'), array('unique' => true));
         $metadata->addIndex(array('email' => 'desc'), array('unique' => true, 'dropDups' => true));
         $metadata->addIndex(array('mysqlProfileId' => 'desc'), array('unique' => true, 'dropDups' => true));
+        $metadata->setQueryFields(array('id', 'name'));
     }
 }

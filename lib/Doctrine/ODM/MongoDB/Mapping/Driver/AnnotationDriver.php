@@ -152,6 +152,8 @@ class AnnotationDriver implements Driver
                 foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $index) {
                     $this->addIndex($class, $index);
                 }
+            } elseif ($annot instanceof ODM\QueryFields) {
+                $class->setQueryFields($annot->value);
             } elseif ($annot instanceof ODM\InheritanceType) {
                 $class->setInheritanceType(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::INHERITANCE_TYPE_'.$annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {

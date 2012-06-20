@@ -2096,8 +2096,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->dm->getClassMetadata(get_class($document));
         if ($this->getDocumentState($document) == self::STATE_MANAGED) {
-            $id = $class->getDatabaseIdentifierValue($this->documentIdentifiers[$oid]);
-            $this->getDocumentPersister($class->name)->refresh($id, $document);
+            $this->getDocumentPersister($class->name)->refresh($document);
         } else {
             throw new \InvalidArgumentException("Document is not MANAGED.");
         }
@@ -2431,10 +2430,11 @@ class UnitOfWork implements PropertyChangedListener
      * @param string $className The name of the document class.
      * @param array $data The data for the document.
      * @param array $hints Any hints to account for during reconstitution/lookup of the document.
+     * @param object $document The document object to fill, if any.
      * @return object The document instance.
      * @internal Highly performance-sensitive method.
      */
-    public function getOrCreateDocument($className, $data, &$hints = array())
+    public function getOrCreateDocument($className, $data, &$hints = array(), $document = null)
     {
         $class = $this->dm->getClassMetadata($className);
 
@@ -2448,8 +2448,12 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $id = $class->getPHPIdentifierValue($data['_id']);
-        if (isset($this->identityMap[$class->rootDocumentName][$id])) {
-            $document = $this->identityMap[$class->rootDocumentName][$id];
+        if ($document || isset($this->identityMap[$class->rootDocumentName][$id])) {
+            if (!$document) {
+                // use the managed document
+                $document = $this->identityMap[$class->rootDocumentName][$id];
+            }
+
             $oid = spl_object_hash($document);
             if ($document instanceof Proxy && ! $document->__isInitialized__) {
                 $document->__isInitialized__ = true;
