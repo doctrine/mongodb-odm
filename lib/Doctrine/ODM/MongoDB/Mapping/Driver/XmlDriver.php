@@ -142,7 +142,15 @@ class XmlDriver extends AbstractFileDriver
     private function addFieldMapping(ClassMetadataInfo $class, $mapping)
     {
         $keys = null;
-        $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
+
+        if (isset($mapping['name'])) {
+            $name = $mapping['name'];
+        } elseif (isset($mapping['fieldName'])) {
+            $name = $mapping['fieldName'];
+        } else {
+            throw new \InvalidArgumentException('Cannot infer a MongoDB name from the mapping');
+        }
+
         if (isset($mapping['type']) && $mapping['type'] === 'collection') {
             $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
         }

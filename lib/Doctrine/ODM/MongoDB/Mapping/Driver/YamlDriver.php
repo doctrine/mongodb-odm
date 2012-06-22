@@ -140,7 +140,15 @@ class YamlDriver extends AbstractFileDriver
     private function addFieldMapping(ClassMetadataInfo $class, $mapping)
     {
         $keys = null;
-        $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
+
+        if (isset($mapping['name'])) {
+            $name = $mapping['name'];
+        } elseif (isset($mapping['fieldName'])) {
+            $name = $mapping['fieldName'];
+        } else {
+            throw new \InvalidArgumentException('Cannot infer a MongoDB name from the mapping');
+        }
+
         if (isset($mapping['index'])) {
             $keys = array(
                 $name => isset($mapping['index']['order']) ? $mapping['index']['order'] : 'asc'
