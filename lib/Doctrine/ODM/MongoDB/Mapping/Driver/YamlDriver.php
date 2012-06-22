@@ -201,6 +201,9 @@ class YamlDriver extends AbstractFileDriver
             'limit'            => isset($reference['limit']) ? (integer) $reference['limit'] : null,
             'skip'             => isset($reference['skip']) ? (integer) $reference['skip'] : null,
         );
+        if (isset($reference['name'])) {
+            $mapping['name'] = $reference['name'];
+        }
         if (isset($reference['discriminatorField'])) {
             $mapping['discriminatorField'] = $reference['discriminatorField'];
         }
