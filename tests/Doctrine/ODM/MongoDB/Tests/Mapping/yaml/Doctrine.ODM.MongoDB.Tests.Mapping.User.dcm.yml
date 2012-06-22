@@ -49,6 +49,10 @@ Doctrine\ODM\MongoDB\Tests\Mapping\User:
     morePhoneNumbers:
       targetDocument: Phonenumber
       name: more_phone_numbers
+  embedOne:
+    embeddedPhonenumber:
+      targetDocument: Phonenumber
+      name: embedded_phone_number
   embedMany:
     otherPhonenumbers:
       targetDocument: Phonenumber

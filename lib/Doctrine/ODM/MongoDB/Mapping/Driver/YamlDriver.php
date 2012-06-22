@@ -176,6 +176,9 @@ class YamlDriver extends AbstractFileDriver
             'fieldName'      => $fieldName,
             'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : 'pushAll',
         );
+        if (isset($embed['name'])) {
+            $mapping['name'] = $embed['name'];
+        }
         if (isset($embed['discriminatorField'])) {
             $mapping['discriminatorField'] = $embed['discriminatorField'];
         }

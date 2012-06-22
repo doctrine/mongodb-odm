@@ -40,7 +40,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testFieldMappings($class)
     {
-        $this->assertEquals(9, count($class->fieldMappings));
+        $this->assertEquals(10, count($class->fieldMappings));
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertTrue(isset($class->fieldMappings['email']));
@@ -76,7 +76,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testAssocations($class)
     {
-        $this->assertEquals(9, count($class->fieldMappings));
+        $this->assertEquals(10, count($class->fieldMappings));
 
         return $class;
     }
@@ -144,10 +144,24 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     {
         $this->assertEquals('morePhoneNumbers', $class->fieldMappings['morePhoneNumbers']['fieldName']);
         $this->assertEquals('more_phone_numbers', $class->fieldMappings['morePhoneNumbers']['name']);
+
+        return $class;
     }
 
     /**
-     * @depends testCustomFieldName
+     * @depends testCustomReferenceFieldName
+     * @param ClassMetadata $class
+     */
+    public function testCustomEmbedFieldName($class)
+    {
+        $this->assertEquals('embeddedPhonenumber', $class->fieldMappings['embeddedPhonenumber']['fieldName']);
+        $this->assertEquals('embedded_phone_number', $class->fieldMappings['embeddedPhonenumber']['name']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testCustomEmbedFieldName
      * @param ClassMetadata $class
      */
     public function testDiscriminator($class)
@@ -280,6 +294,11 @@ class User
     public $morePhoneNumbers;
 
     /**
+     * @ODM\EmbedMany(targetDocument="Phonenumber", name="embedded_phone_number")
+     */
+    public $embeddedPhonenumber;
+
+    /**
      * @ODM\EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"})
      */
     public $otherPhonenumbers;
@@ -365,6 +384,10 @@ class User
                 3 => 'merge',
                 4 => 'detach',
             ),
+        ));
+        $metadata->mapOneEmbedded(array(
+           'fieldName' => 'embeddedPhonenumber',
+           'name' => 'embedded_phone_number',
         ));
         $metadata->mapManyEmbedded(array(
            'fieldName' => 'otherPhonenumbers',
