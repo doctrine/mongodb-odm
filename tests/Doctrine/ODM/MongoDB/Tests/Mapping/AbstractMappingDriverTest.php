@@ -319,70 +319,62 @@ class User
             'default' => __CLASS__,
         ));
         $metadata->mapField(array(
-           'id' => true,
-           'fieldName' => 'id',
-          ));
+            'id' => true,
+            'fieldName' => 'id',
+        ));
         $metadata->mapField(array(
-           'fieldName' => 'name',
-           'name' => 'username',
-           'type' => 'string'
-          ));
+            'fieldName' => 'name',
+            'name' => 'username',
+            'type' => 'string',
+        ));
         $metadata->mapField(array(
-           'fieldName' => 'email',
-           'type' => 'string'
-          ));
-          $metadata->mapField(array(
-             'fieldName' => 'mysqlProfileId',
-             'type' => 'integer'
-            ));
+            'fieldName' => 'email',
+            'type' => 'string',
+        ));
+        $metadata->mapField(array(
+            'fieldName' => 'mysqlProfileId',
+            'type' => 'integer',
+        ));
         $metadata->mapOneReference(array(
-           'fieldName' => 'address',
-           'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Address',
-           'cascade' =>
-           array(
-           0 => 'remove',
-           )
-          ));
-        $metadata->mapManyReference(array(
-           'fieldName' => 'phonenumbers',
-           'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
-           'cascade' =>
-           array(
-           1 => 'persist',
-           ),
-           'discriminatorField' => 'discr',
-           'discriminatorMap' => array(
-            'home' => 'HomePhonenumber',
-            'work' => 'WorkPhonenumber'
-           )
-          ));
-        $metadata->mapManyReference(array(
-           'fieldName' => 'morePhoneNumbers',
-           'name' => 'more_phone_numbers',
-           'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber'
+            'fieldName' => 'address',
+            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Address',
+            'cascade' => array(0 => 'remove'),
         ));
         $metadata->mapManyReference(array(
-           'fieldName' => 'groups',
-           'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Group',
-           'cascade' =>
-           array(
-           0 => 'remove',
-           1 => 'persist',
-           2 => 'refresh',
-           3 => 'merge',
-           4 => 'detach',
-           ),
-          ));
+            'fieldName' => 'phonenumbers',
+            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
+            'cascade' => array(1 => 'persist'),
+            'discriminatorField' => 'discr',
+            'discriminatorMap' => array(
+                'home' => 'HomePhonenumber',
+                'work' => 'WorkPhonenumber'
+            ),
+        ));
+        $metadata->mapManyReference(array(
+            'fieldName' => 'morePhoneNumbers',
+            'name' => 'more_phone_numbers',
+            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
+        ));
+        $metadata->mapManyReference(array(
+            'fieldName' => 'groups',
+            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Group',
+            'cascade' => array(
+                0 => 'remove',
+                1 => 'persist',
+                2 => 'refresh',
+                3 => 'merge',
+                4 => 'detach',
+            ),
+        ));
         $metadata->mapManyEmbedded(array(
            'fieldName' => 'otherPhonenumbers',
            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
            'discriminatorField' => 'discr',
            'discriminatorMap' => array(
-            'home' => 'HomePhonenumber',
-            'work' => 'WorkPhonenumber'
-           )
-           )
-          );
+                'home' => 'HomePhonenumber',
+                'work' => 'WorkPhonenumber',
+           ),
+        ));
         $metadata->addIndex(array('username' => 'desc'), array('unique' => true));
         $metadata->addIndex(array('email' => 'desc'), array('unique' => true, 'dropDups' => true));
         $metadata->addIndex(array('mysqlProfileId' => 'desc'), array('unique' => true, 'dropDups' => true));
