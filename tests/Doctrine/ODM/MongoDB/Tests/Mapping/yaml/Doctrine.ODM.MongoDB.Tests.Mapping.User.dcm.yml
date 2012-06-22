@@ -46,6 +46,13 @@ Doctrine\ODM\MongoDB\Tests\Mapping\User:
     groups:
       targetDocument: Group
       cascade: [ all ]
+    morePhoneNumbers:
+      targetDocument: Phonenumber
+      name: more_phone_numbers
+  embedOne:
+    embeddedPhonenumber:
+      targetDocument: Phonenumber
+      name: embedded_phone_number
   embedMany:
     otherPhonenumbers:
       targetDocument: Phonenumber
@@ -53,7 +60,7 @@ Doctrine\ODM\MongoDB\Tests\Mapping\User:
       discriminatorMap:
         home: HomePhonenumber
         work: WorkPhonenumber
-        
+
   lifecycleCallbacks:
-    prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ] 
+    prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ]
     postPersist: [ doStuffOnPostPersist ]

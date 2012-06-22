@@ -140,7 +140,15 @@ class YamlDriver extends AbstractFileDriver
     private function addFieldMapping(ClassMetadataInfo $class, $mapping)
     {
         $keys = null;
-        $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
+
+        if (isset($mapping['name'])) {
+            $name = $mapping['name'];
+        } elseif (isset($mapping['fieldName'])) {
+            $name = $mapping['fieldName'];
+        } else {
+            throw new \InvalidArgumentException('Cannot infer a MongoDB name from the mapping');
+        }
+
         if (isset($mapping['index'])) {
             $keys = array(
                 $name => isset($mapping['index']['order']) ? $mapping['index']['order'] : 'asc'
@@ -176,6 +184,9 @@ class YamlDriver extends AbstractFileDriver
             'fieldName'      => $fieldName,
             'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : 'pushAll',
         );
+        if (isset($embed['name'])) {
+            $mapping['name'] = $embed['name'];
+        }
         if (isset($embed['discriminatorField'])) {
             $mapping['discriminatorField'] = $embed['discriminatorField'];
         }
@@ -201,6 +212,9 @@ class YamlDriver extends AbstractFileDriver
             'limit'            => isset($reference['limit']) ? (integer) $reference['limit'] : null,
             'skip'             => isset($reference['skip']) ? (integer) $reference['skip'] : null,
         );
+        if (isset($reference['name'])) {
+            $mapping['name'] = $reference['name'];
+        }
         if (isset($reference['discriminatorField'])) {
             $mapping['discriminatorField'] = $reference['discriminatorField'];
         }
