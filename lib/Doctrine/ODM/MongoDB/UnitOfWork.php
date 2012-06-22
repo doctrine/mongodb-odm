@@ -588,18 +588,42 @@ class UnitOfWork implements PropertyChangedListener
                 $value = new GridFSFile($value);
                 $class->reflFields[$name]->setValue($document, $value);
                 $actualData[$name] = $value;
-            } elseif ((isset($mapping['association']) && $mapping['type'] === 'many')
-                    && $value !== null && ! ($value instanceof PersistentCollection)) {
-                // If $actualData[$name] is not a Collection then use an ArrayCollection.
-                if ( ! $value instanceof Collection) {
-                    $value = new ArrayCollection($value);
+//            } elseif ((isset($mapping['association']) && $mapping['type'] === 'many')
+//                    && $value !== null && ! ($value instanceof PersistentCollection)) {
+//                // If $actualData[$name] is not a Collection then use an ArrayCollection.
+//                if ( ! $value instanceof Collection) {
+//                    $value = new ArrayCollection($value);
+//                }
+//
+//                // Inject PersistentCollection
+//                $coll = new PersistentCollection($value, $this->dm, $this, $this->cmd);
+//                $coll->setOwner($document, $mapping);
+//                $coll->setDirty( ! $value->isEmpty());
+//                $class->reflFields[$name]->setValue($document, $coll);
+//                $actualData[$name] = $coll;
+//            } else {
+                
+                } elseif ((isset($mapping['association']) && $mapping['type'] === 'many')
+                    && $value !== null) {
+                if (! $value instanceof PersistentCollection) {
+                    // If $actualData[$name] is not a Collection then use an ArrayCollection.
+                    if ( ! $value instanceof Collection) {
+                        $value = new ArrayCollection($value);
+                    }
+
+                    // Inject PersistentCollection
+                    $coll = new PersistentCollection($value, $this->dm, $this, $this->cmd);
+                    $coll->setOwner($document, $mapping);
+                    $coll->setDirty( ! $value->isEmpty());
+                    $class->reflFields[$name]->setValue($document, $coll);
                 }
 
-                // Inject PersistentCollection
-                $coll = new PersistentCollection($value, $this->dm, $this, $this->cmd);
+                // Create copy of collection for actualData - otherwise both the document and orginaldata reference
+                // the same object
+                $arrayCopy = $value->toArray();
+                $coll = new PersistentCollection(new ArrayCollection($arrayCopy), $this->dm, $this, $this->cmd);
                 $coll->setOwner($document, $mapping);
                 $coll->setDirty( ! $value->isEmpty());
-                $class->reflFields[$name]->setValue($document, $coll);
                 $actualData[$name] = $coll;
             } else {
                 $actualData[$name] = $value;
@@ -1618,7 +1642,7 @@ class UnitOfWork implements PropertyChangedListener
         return isset($this->identityMap[$rootClassName][$id]) ?
                 $this->identityMap[$rootClassName][$id] : false;
     }
-    
+
     /**
      * Schedules a document for dirty-checking at commit-time.
      *
