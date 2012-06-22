@@ -804,6 +804,8 @@ class UnitOfWork implements PropertyChangedListener
                 return; // Ignore uninitialized proxy objects
             }
             $value = array($value);
+        } elseif ($value instanceof PersistentCollection) {
+            $value = $value->unwrap();
         }
         $count = 0;
         foreach ($value as $key => $entry) {
