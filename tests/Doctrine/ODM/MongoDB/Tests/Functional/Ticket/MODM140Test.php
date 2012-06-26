@@ -47,6 +47,7 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testInsertingEmbeddedCollectionWithRefMany()
     {
+        $this->markTestSkipped();
         $comment = new Comment();
 
         $post = new Post();
