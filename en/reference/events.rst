@@ -111,7 +111,7 @@ notified for that event.
 
     $evm->dispatchEvent(TestEventSubscriber::preFoo);
 
-Now the test the ``$eventSubscriber`` instance to see if the
+Now test the ``$eventSubscriber`` instance to see if the
 ``preFoo()`` method was invoked.
 
 .. code-block:: php
@@ -168,7 +168,7 @@ the life-time of their registered documents.
    postFlush - The postFlush event occurs after the change-sets of all
    managed documents are computed.
 - 
-   onFlush - The onFlush event occours after the change-sets of all
+   onFlush - The onFlush event occurs after the change-sets of all
    managed documents are computed. This event is not a lifecycle
    callback.
 -
