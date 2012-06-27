@@ -45,6 +45,27 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(2, $category->posts->get(1)->versions->count());
     }
 
+    public function testInsertingEmbeddedCollectionWithRefMany()
+    {
+        $this->markTestSkipped();
+        $comment = new Comment();
+
+        $post = new Post();
+        $post->comments[] = $comment;
+
+        $category = new Category();
+        $category->name = "My Category";
+        $category->posts->add($post);
+
+        $this->dm->persist($category);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneByName('My Category');
+        $this->assertEquals(1, $count($category->posts->count()));
+        $this->assertEquals(1, $count($category->posts->get(0)->comments->count()));
+    }
+
     public function testAddingAnotherEmbeddedDocument()
     {
         $test = new EmbeddedTestLevel0();
@@ -127,9 +148,13 @@ class Post
 	/** @ODM\EmbedMany(targetDocument="PostVersion") */
 	public $versions;
 	
+	/** @ODM\ReferenceMany(targetDocument="Comment") */
+	public $comments;
+
 	public function __construct()
 	{
 		$this->versions = new ArrayCollection();
+		$this->comments = new ArrayCollection();
 	}
 	
 }
@@ -148,3 +173,12 @@ class PostVersion
 	
 }
 
+/** @ODM\Document(collection="comments", db="tests") */
+class Comment
+{
+	/** @ODM\Id */
+	protected $id;
+
+	/** @ODM\String */
+	public $content;
+}
