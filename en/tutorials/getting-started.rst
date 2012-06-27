@@ -174,15 +174,21 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
 
     <?php
 
-    $config = new \Doctrine\ODM\MongoDB\Configuration();
+    use Doctrine\MongoDB\Connection;
+    use Doctrine\ODM\MongoDB\Configuration;
+    use Doctrine\ODM\MongoDB\DocumentManager;
+    use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+
+    AnnotationDriver::registerAnnotationClasses();
+
+    $config = new Configuration();
     $config->setProxyDir('/path/to/generate/proxies');
     $config->setProxyNamespace('Proxies');
+    $config->setHydratorDir('/path/to/generate/hydrators');
+    $config->setHydratorNamespace('Hydrators');
+    $config->setMetadataDriverImpl(AnnotationDriver::create('/path/to/document/classes'));
 
-    $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
-    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
-
-    $dm = \Doctrine\ODM\MongoDB\DocumentManager::create(new Mongo(), $config);
+    $dm = DocumentManager::create(new Connection(), $config);
 
 Usage
 -----
