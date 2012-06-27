@@ -55,19 +55,3 @@ class DoctrineGlobal_User
      */
     private $email;
 }
-
-/**
- * @ODM\Document
- */
-class DoctrineGlobal_Country
-{
-    /**
-     * @ODM\Id
-     */
-    private $id;
-
-    /**
-     * @ODM\Field(type="date_collection");
-     */
-    public $national_holidays;
-}
