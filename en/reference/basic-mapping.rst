@@ -404,9 +404,12 @@ class:
      */
     class MyType extends Type
     {
-        public function convertToPHPValue($value)
+        public function closureToPHP()
         {
-            // This is executed when the value is read from the database. Make your conversions here.
+            // Return the content of a closure (as text) that will receive
+            // $value and has to put the result of the conversion in a $result variable eg:
+            return '$return = new \DateTime($value);';
+
         }
     
         public function convertToDatabaseValue($value)
