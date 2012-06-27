@@ -27,13 +27,26 @@ class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      * @expectedException        Doctrine\ODM\MongoDB\Tests\Mapping\Types\CustomTypeException
      * @expectedExceptionMessage Currently converting to DB value
      */
-    public function testCustomTypeToDBValue()
+    public function testCustomTypeToDBValueIsCalled()
     {
         $country = new \DoctrineGlobal_Country;
         $country->national_holidays = '2012-07-14';
 
         $this->dm->persist($country);
         $this->dm->flush();
+    }
+
+    public function testCustomTypeToDBValue()
+    {
+        $country = new \DoctrineGlobal_Country;
+        $country->national_holidays = array(new \DateTime, new \DateTime);
+
+        $this->dm->persist($country);
+        $this->dm->flush();
+
+        $this->dm->refresh($country);
+
+        $this->assertInstanceOf('\MongoDate', $country->national_holidays[0]);
     }
     
     /**
@@ -49,6 +62,5 @@ class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $this->dm->refresh($country);
-
     }
 }
