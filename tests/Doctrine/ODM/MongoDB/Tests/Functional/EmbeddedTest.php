@@ -12,6 +12,8 @@ use Documents\Address,
     Documents\Functional\EmbeddedTestLevel0b,
     Documents\Functional\EmbeddedTestLevel1,
     Documents\Functional\EmbeddedTestLevel2,
+    Documents\Functional\NotSaved,
+    Documents\Functional\NotSavedEmbedded,
     Documents\Functional\VirtualHost,
     Documents\Functional\VirtualHostDirective,
     Doctrine\ODM\MongoDB\PersistentCollection;
@@ -438,5 +440,22 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         {
             $this->assertNotEmpty($directive->getName());
         }
+    }
+
+    public function testEmbeddedDocumentNotSavedFields()
+    {
+        $document = new NotSaved();
+        $document->embedded = new NotSavedEmbedded();
+        $document->embedded->name = 'foo';
+        $document->embedded->notSaved = 'bar';
+
+        $this->dm->persist($document);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->find('Documents\Functional\NotSaved', $document->id);
+
+        $this->assertEquals('foo', $document->embedded->name);
+        $this->assertNull($document->embedded->notSaved);
     }
 }

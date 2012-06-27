@@ -346,6 +346,11 @@ class PersistenceBuilder
         $class = $this->dm->getClassMetadata($className);
         $embeddedDocumentValue = array();
         foreach ($class->fieldMappings as $mapping) {
+            // Skip not saved fields
+            if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
+                continue;
+            }
+
             $rawValue = $class->reflFields[$mapping['fieldName']]->getValue($embeddedDocument);
 
             // Generate a document identifier
