@@ -1610,7 +1610,13 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
         $classMetadata = $this->dm->getClassMetadata(get_class($document));
+        
+        // Check if id is registered first
+        if (!isset($this->documentIdentifiers[$oid])) {
+            return false;
+        }
         $id = $this->documentIdentifiers[$oid];
+
         if ( ! $classMetadata->isEmbeddedDocument) {
             $id = $classMetadata->getPHPIdentifierValue($id);
         }
@@ -1656,7 +1662,7 @@ class UnitOfWork implements PropertyChangedListener
         return isset($this->identityMap[$rootClassName][$id]) ?
                 $this->identityMap[$rootClassName][$id] : false;
     }
-    
+
     /**
      * Schedules a document for dirty-checking at commit-time.
      *
