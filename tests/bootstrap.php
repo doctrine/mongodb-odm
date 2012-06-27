@@ -1,22 +1,13 @@
 <?php
 
-$file = __DIR__.'/../vendor/autoload.php';
-if (!file_exists($file)) {
+if (!file_exists($file = __DIR__.'/../vendor/autoload.php')) {
     throw new RuntimeException('Install dependencies to run test suite.');
 }
 
-require_once $file;
+$loader = require_once $file;
 
-use Doctrine\Common\ClassLoader;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+$loader->add('Doctrine\ODM\MongoDB\Tests', __DIR__ . '/../tests');
+$loader->add('Documents', __DIR__);
+$loader->add('Stubs', __DIR__);
 
-$classLoader = new ClassLoader('Doctrine\ODM\MongoDB\Tests', __DIR__ . '/../tests');
-$classLoader->register();
-
-$classLoader = new ClassLoader('Documents', __DIR__);
-$classLoader->register();
-
-$classLoader = new ClassLoader('Stubs', __DIR__);
-$classLoader->register();
-
-AnnotationDriver::registerAnnotationClasses();
+\Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver::registerAnnotationClasses();
