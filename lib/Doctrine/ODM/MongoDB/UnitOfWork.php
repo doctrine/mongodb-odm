@@ -643,6 +643,18 @@ class UnitOfWork implements PropertyChangedListener
             $class->invokeLifecycleCallbacks(Events::preFlush, $document);
         }
 
+        $this->computeOrRecomputeChangeSet($class, $document);
+    }
+
+    /**
+     * Used to do the common work of computeChangeSet and recomputeSingleDocumentChangeSet
+     *
+     * @param \Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
+     * @param object $document
+     * @param boolean $recompute
+     */
+    private function computeOrRecomputeChangeSet(ClassMetadata $class, $document, $recompute = false)
+    {
         $oid = spl_object_hash($document);
         $actualData = $this->getDocumentActualData($document);
         $isNewDocument = ! isset($this->originalDocumentData[$oid]);
@@ -660,9 +672,18 @@ class UnitOfWork implements PropertyChangedListener
             // and we have a copy of the original data
             $originalData = $this->originalDocumentData[$oid];
             $isChangeTrackingNotify = $class->isChangeTrackingNotify();
-            $changeSet = $isChangeTrackingNotify ? $this->documentChangeSets[$oid] : array();
+            if ($isChangeTrackingNotify && !$recompute) {
+                $changeSet = $this->documentChangeSets[$oid];
+            } else {
+                $changeSet = array();
+            }
 
             foreach ($actualData as $propName => $actualValue) {
+                // skip not saved fields
+                if (isset($class->fieldMappings[$propName]['notSaved']) && $class->fieldMappings[$propName]['notSaved'] === true) {
+                    continue;
+                }
+
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
 
                 // skip if value has not changed
@@ -732,7 +753,11 @@ class UnitOfWork implements PropertyChangedListener
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
             if ($changeSet) {
-                $this->documentChangeSets[$oid] = $changeSet;
+                if ($recompute) {
+                    $this->documentChangeSets[$oid] = $changeSet + $this->documentChangeSets[$oid];
+                } else {
+                    $this->documentChangeSets[$oid] = $changeSet;
+                }
                 $this->originalDocumentData[$oid] = $actualData;
                 $this->documentUpdates[$oid] = $document;
             }
@@ -895,7 +920,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param object $document The document for which to (re)calculate the change set.
      * @throws InvalidArgumentException If the passed document is not MANAGED.
      */
-    public function recomputeSingleDocumentChangeSet($class, $document)
+    public function recomputeSingleDocumentChangeSet(ClassMetadata $class, $document)
     {
         $oid = spl_object_hash($document);
 
@@ -907,45 +932,7 @@ class UnitOfWork implements PropertyChangedListener
             $class = $this->dm->getClassMetadata(get_class($document));
         }
 
-        $actualData = $this->getDocumentActualData($document);
-        $isChangeTrackingNotify = $class->isChangeTrackingNotify();
-
-        $originalData = isset($this->originalDocumentData[$oid]) ? $this->originalDocumentData[$oid] : array();
-        $changeSet = array();
-        foreach ($actualData as $propName => $actualValue) {
-            // skip not saved fields
-            if (isset($class->fieldMappings[$propName]['notSaved']) && $class->fieldMappings[$propName]['notSaved'] === true) {
-                continue;
-            }
-            $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-            if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
-                if ($orgValue !== null) {
-                    $this->scheduleOrphanRemoval($orgValue);
-                }
-                $changeSet[$propName] = array($orgValue, $actualValue);
-            } else if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $orgValue !== $actualValue) {
-                $changeSet[$propName] = array($orgValue, $actualValue);
-            } else if ($isChangeTrackingNotify) {
-                continue;
-            } else if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
-                if ($orgValue !== $actualValue) {
-                    $changeSet[$propName] = array($orgValue, $actualValue);
-                    if ($orgValue instanceof PersistentCollection) {
-                        $this->collectionDeletions[] = $orgValue;
-                        $this->collectionUpdates[] = $actualValue;
-                        $this->visitedCollections[] = $actualValue;
-                    }
-                }
-            } else if ($orgValue !== $actualValue) {
-                $changeSet[$propName] = array($orgValue, $actualValue);
-            }
-        }
-        if ($changeSet) {
-            if (isset($this->documentChangeSets[$oid])) {
-                $this->documentChangeSets[$oid] = $changeSet + $this->documentChangeSets[$oid];
-            }
-            $this->originalDocumentData[$oid] = $actualData;
-        }
+        $this->computeOrRecomputeChangeSet($class, $document, true);
     }
 
     private function persistNew($class, $document)
