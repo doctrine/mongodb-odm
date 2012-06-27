@@ -491,7 +491,8 @@ Change a users password:
 
     <?php
 
-    $dm->createQueryBuilder('User')->update()
+    $dm->createQueryBuilder('User')
+        ->update()
         ->field('password')->set('newpassword')
         ->field('username')->equals('jwage')
         ->getQuery()
@@ -505,7 +506,8 @@ tell it the update is not an atomic one:
 
     <?php
 
-    $dm->createQueryBuilder('User')->update()
+    $dm->createQueryBuilder('User')
+        ->update()
         ->field('username')->set('jwage', false)
         ->field('password')->set('password', false)
         // ... set other remaining fields
@@ -556,7 +558,8 @@ exists:
 
     <?php
 
-    $dm->createQueryBuilder('User')->update()
+    $dm->createQueryBuilder('User')
+        ->update()
         ->field('login')->unsetField()->exists(true)
         ->getQuery()
         ->execute();
@@ -571,7 +574,8 @@ Append new tag to the tags array:
 
     <?php
 
-    $dm->createQueryBuilder('Article')->update()
+    $dm->createQueryBuilder('Article')
+        ->update()
         ->field('tags')->push('tag5')
         ->field('id')->equals('theid')
         ->getQuery()
@@ -587,7 +591,8 @@ Append new tags to the tags array:
 
     <?php
 
-    $dm->createQueryBuilder('Article')->update()
+    $dm->createQueryBuilder('Article')
+        ->update()
         ->field('tags')->pushAll(array('tag6', 'tag7'))
         ->field('id')->equals('theid')
         ->getQuery()
@@ -603,7 +608,8 @@ Add value to array only if its not in the array already:
 
     <?php
 
-    $dm->createQueryBuilder('Article')->update()
+    $dm->createQueryBuilder('Article')
+        ->update()
         ->field('tags')->addToSet('tag1')
         ->field('id')->equals('theid')
         ->getQuery()
@@ -620,7 +626,8 @@ already:
 
     <?php
 
-    $dm->createQueryBuilder('Article')->update()
+    $dm->createQueryBuilder('Article')
+        ->update()
         ->field('tags')->addManyToSet(array('tag6', 'tag7'))
         ->field('id')->equals('theid')
         ->getQuery()
@@ -636,7 +643,8 @@ Remove first element in an array:
 
     <?php
 
-    $dm->createQueryBuilder('Article')->update()
+    $dm->createQueryBuilder('Article')
+        ->update()
         ->field('tags')->popFirst()
         ->field('id')->equals('theid')
         ->getQuery()
@@ -648,7 +656,8 @@ Remove last element in an array:
 
     <?php
 
-    $dm->createQueryBuilder('Article')->update()
+    $dm->createQueryBuilder('Article')
+        ->update()
         ->field('tags')->popLast()
         ->field('id')->equals('theid')
         ->getQuery()
@@ -664,7 +673,8 @@ Remove all occurrences of value from array:
 
     <?php
 
-    $dm->createQueryBuilder('Article')->update()
+    $dm->createQueryBuilder('Article')
+        ->update()
         ->field('tags')->pull('tag1')
         ->getQuery()
         ->execute();
@@ -677,7 +687,8 @@ in the Mongo docs.
 
     <?php
 
-    $dm->createQueryBuilder('Article')->update()
+    $dm->createQueryBuilder('Article')
+        ->update()
         ->field('tags')->pullAll(array('tag1', 'tag2'))
         ->getQuery()
         ->execute();
