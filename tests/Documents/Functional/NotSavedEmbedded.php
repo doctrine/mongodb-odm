@@ -4,18 +4,12 @@ namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="functional_tests") */
-class NotSaved
+/** @ODM\EmbeddedDocument */
+class NotSavedEmbedded
 {
-    /** @ODM\Id */
-    public $id;
-
     /** @ODM\String */
     public $name;
 
     /** @ODM\NotSaved */
     public $notSaved;
-
-    /** @ODM\EmbedOne(targetDocument="NotSavedEmbedded") */
-    public $embedded;
 }
