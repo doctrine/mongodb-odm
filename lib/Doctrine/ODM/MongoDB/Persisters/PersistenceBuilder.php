@@ -126,7 +126,7 @@ class PersistenceBuilder
                 } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
                     $value = array();
                     foreach ($new as $reference) {
-                        $value[] = $this->prepareReferenceDocValue($mapping, $reference);
+                        $value[] = $this->prepareReferencedDocumentValue($mapping, $reference);
                     }
 
                 // @EmbedMany
