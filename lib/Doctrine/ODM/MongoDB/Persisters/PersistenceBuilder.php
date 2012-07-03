@@ -405,7 +405,7 @@ class PersistenceBuilder
             return (object) $embeddedDocumentValue;
         }
 
-        if ($class->discriminatorField) {
+        if ($class->hasDiscriminator()) {
             $embeddedDocumentValue[$class->discriminatorField['name']] = $class->discriminatorValue;
         }
 
