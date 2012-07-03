@@ -133,7 +133,7 @@ of employee, we would get an Employee instance back:
 
     <?php
 
-    $employee = new Empoyee();
+    $employee = new Employee();
     // ...
     $dm->persist($employee);
     $dm->flush();
