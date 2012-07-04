@@ -92,6 +92,7 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
         $this->cursor = $cursor;
         $this->unitOfWork = $uow;
         $this->class = $class;
+	    $this->setHints($cursor->getHints());
     }
 
     /**

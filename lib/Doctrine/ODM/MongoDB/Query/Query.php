@@ -221,6 +221,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         // Wrap odm cursor with EagerCursor if true
         if ($this->query['eagerCursor'] === true) {
             $results = new EagerCursor($results, $this->dm->getUnitOfWork(), $this->class);
+	        $results->hydrate($this->hydrate);
         }
 
         // GeoLocationFindQuery just returns an instance of ArrayIterator so we have to
