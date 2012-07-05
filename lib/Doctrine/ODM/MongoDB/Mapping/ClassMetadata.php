@@ -156,6 +156,10 @@ class ClassMetadata extends ClassMetadataInfo
         if ($this->file) {
             $serialized[] = 'file';
         }
+        
+        if ($this->slaveOkay) {
+            $serialized[] = 'slaveOkay';
+        }
 
         return $serialized;
     }
