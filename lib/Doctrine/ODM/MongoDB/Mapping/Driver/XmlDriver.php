@@ -19,8 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
     SimpleXmlElement;
 
 /**
@@ -32,24 +33,30 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class XmlDriver extends AbstractFileDriver
+class XmlDriver extends FileDriver
 {
-    /**
-     * The file extension of mapping documents.
-     *
-     * @var string
-     */
-    protected $fileExtension = '.dcm.xml';
+    const DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $class)
+    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
+        parent::__construct($locator, $fileExtension);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function loadMetadataForClass($className, ClassMetadata $class)
+    {
+        /* @var $class ClassMetadataInfo */
+        /* @var $xmlRoot SimpleXMLElement */
         $xmlRoot = $this->getElement($className);
         if ( ! $xmlRoot) {
             return;
         }
+
         if ($xmlRoot->getName() == 'document') {
             if (isset($xmlRoot['repository-class'])) {
                 $class->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
@@ -309,6 +316,9 @@ class XmlDriver extends AbstractFileDriver
         $class->addIndex($index['keys'], $index['options']);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function loadMappingFile($file)
     {
         $result = array();

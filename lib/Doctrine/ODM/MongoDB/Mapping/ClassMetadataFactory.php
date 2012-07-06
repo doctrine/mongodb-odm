@@ -51,7 +51,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var Configuration The Configuration instance */
     private $config;
 
-    /** @var \Doctrine\ODM\MongoDB\Mapping\Driver\Driver The used metadata driver. */
+    /** @var \Doctrine\Common\Persistence\Mapping\Driver\MappingDriver The used metadata driver. */
     private $driver;
 
     /** @var \Doctrine\Common\EventManager The event manager instance */

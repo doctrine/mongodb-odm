@@ -19,8 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * The PHPDriver invokes a static PHP function on the document class itself passing
@@ -32,9 +33,10 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class PHPDriver implements Driver
+class PHPDriver implements MappingDriver
 {
     private $paths = array();
+    private $classNames;
 
     public function __construct($paths)
     {
@@ -49,11 +51,11 @@ class PHPDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         call_user_func_array(array($className, 'loadMetadata'), array($metadata));
     }
-    
+
     /**
      * {@inheritDoc}
      * @todo Same code exists in AnnotationDriver, should we re-use it somehow or not worry about it?
