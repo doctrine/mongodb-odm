@@ -745,7 +745,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // skip equivalent DateTime values
-                if (($orgValue instanceof \DateTime || $actualValue instanceof \DateTime) && $orgValue == $actualValue) {
+                if ($this->datesAreEqual($orgValue, $actualValue)) {
                     continue;
                 }
 
@@ -2767,4 +2767,56 @@ class UnitOfWork implements PropertyChangedListener
     {
         return method_exists($obj, '__toString') ? (string)$obj : get_class($obj).'@'.spl_object_hash($obj);
     }
+
+  /**
+     * returns false if  one of the parameter is no Date
+     *
+     * return true, if dates are equal
+     * return false, if dates are not equal
+     *
+     * @param $dateA
+     * @param $dateB
+     * @return bool
+     */
+    private function datesAreEqual($dateA, $dateB){
+        if(! $this->_isValidDate($dateA)) return false;
+        if(! $this->_isValidDate($dateB)) return false;
+
+        $dateA = $this->_getDate($dateA);
+        $dateB = $this->_getDate($dateB);
+
+        return $dateA == $dateB;
+    }
+
+    /**
+     * return false if $date is not instance of \DateTime and not instance of \MongoDate
+     *
+     * return $date if instance of \DateTime
+     *
+     * transform the \MongoDate into \DateTime instance
+     *
+     * @param $date
+     * @return bool|\DateTime
+     */
+    private function _getDate($date){
+        if($this->_isValidDate($date)) return false;
+
+        if($date instanceof \DateTime) return $date;
+
+        $tmpDate = new \DateTime();
+        $tmpDate->setTimestamp($date->sec);
+
+        return $tmpDate;
+    }
+
+    /**
+     * return true if $date is instance of \DateTime or instance of \MongoDate
+     *
+     * @param $date
+     */
+    private function _isValidDate($date){
+        return ($date instanceof \DateTime || $date instanceof \MongoDate);
+    }
+
+
 }
