@@ -66,7 +66,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         $documentAnnots = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annot) {
-            foreach (self::$documentAnnotationClasses as $i => $annotClass) {
+            foreach ($this->entityAnnotationClasses as $annotClass => $i) {
                 if ($annot instanceof $annotClass) {
                     $documentAnnots[$i] = $annot;
                     continue 2;
