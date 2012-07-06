@@ -49,16 +49,6 @@ class MongoDBException extends \Exception
         return new self(sprintf('Invalid document state "%s"', $state));
     }
 
-    public static function mappingFileNotFound($className, $fileName)
-    {
-        return new self(sprintf('Could not find mapping file "%s" for class "%s".', $fileName, $className));
-    }
-
-    public static function documentNotMappedToDB($className)
-    {
-        return new self(sprintf('The "%s" document is not mapped to a MongoDB database.', $className));
-    }
-
     public static function documentNotMappedToCollection($className)
     {
         return new self(sprintf('The "%s" document is not mapped to a MongoDB database collection.', $className));
@@ -78,11 +68,6 @@ class MongoDBException extends \Exception
     public static function typeExists($name)
     {
         return new self('Type '.$name.' already exists.');
-    }
-
-    public static function unknownFieldType($name)
-    {
-        return new self('Unknown field type '.$name.' requested.');
     }
 
     public static function typeNotFound($name)
@@ -134,17 +119,6 @@ class MongoDBException extends \Exception
     public static function classIsNotAValidDocument($className)
     {
         return new self('Class '.$className.' is not a valid document or mapped super class.');
-    }
-
-    public static function pathRequired()
-    {
-        return new self("Specifying the paths to your documents is required ".
-            "in the AnnotationDriver to retrieve all class names.");
-    }
-
-    public static function fileMappingDriversRequireConfiguredDirectoryPath()
-    {
-        return new self('File mapping drivers must have a valid directory path, however the given path seems to be incorrect!');
     }
 
     /**

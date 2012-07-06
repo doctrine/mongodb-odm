@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
@@ -67,7 +68,7 @@ class PHPDriver implements MappingDriver
         }
 
         if (!$this->paths) {
-            throw MongoDBException::pathRequired();
+            throw MappingException::pathRequired();
         }
 
         $classes = array();
@@ -75,7 +76,7 @@ class PHPDriver implements MappingDriver
 
         foreach ($this->paths as $path) {
             if ( ! is_dir($path)) {
-                throw MongoDBException::fileMappingDriversRequireConfiguredDirectoryPath();
+                throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
             }
 
             $iterator = new \RecursiveIteratorIterator(
