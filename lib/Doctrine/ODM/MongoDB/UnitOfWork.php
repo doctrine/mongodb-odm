@@ -793,7 +793,7 @@ class UnitOfWork implements PropertyChangedListener
                             break;
                         }
                     }
-                 }
+                }
             }
         }
     }
@@ -848,13 +848,16 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
-        if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide']) {
-            $owner = $value->getOwner();
-            $className = get_class($owner);
-            $class = $this->dm->getClassMetadata($className);
+        $isNewParentDocument = in_array($parentDocument,$this->documentInsertions,true);
+        $class = $this->dm->getClassMetadata(get_class($parentDocument));
+        $topOrExistingDocument = (!$isNewParentDocument || !$class->isEmbeddedDocument);
+
+        if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide'] && ($topOrExistingDocument || $mapping['strategy'] === 'set')) {
             if (!in_array($value, $this->collectionUpdates, true)) {
                 $this->collectionUpdates[] = $value;
             }
+            $this->visitedCollections[] = $value;
+        } else if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide']) {
             $this->visitedCollections[] = $value;
         }
 
