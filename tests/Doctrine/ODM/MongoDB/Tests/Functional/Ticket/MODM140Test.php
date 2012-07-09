@@ -62,8 +62,8 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneByName('My Category');
-        $this->assertEquals(1, $count($category->posts->count()));
-        $this->assertEquals(1, $count($category->posts->get(0)->comments->count()));
+        $this->assertEquals(1, $category->posts->count());
+        $this->assertEquals(1, $category->posts->get(0)->comments->count());
     }
 
     public function testAddingAnotherEmbeddedDocument()
