@@ -122,7 +122,7 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 	
 }
 
-/** @ODM\Document(collection="tests", db="tests") */
+/** @ODM\Document */
 class Category 
 {
 	/** @ODM\Id */
@@ -173,7 +173,7 @@ class PostVersion
 	
 }
 
-/** @ODM\Document(collection="comments", db="tests") */
+/** @ODM\Document */
 class Comment
 {
 	/** @ODM\Id */
