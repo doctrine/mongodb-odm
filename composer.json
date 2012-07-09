@@ -4,7 +4,7 @@
     "description": "Doctrine MongoDB Object Document Mapper",
     "keywords": ["persistence", "mongodb"],
     "homepage": "http://www.doctrine-project.org",
-    "license": "LGPL",
+    "license": "MIT",
     "authors": [
         {"name": "Bulat Shakirzyanov", "email": "mallluhuct@gmail.com"},
         {"name": "Kris Wallsmith", "email": "kris@symfony.com"},
