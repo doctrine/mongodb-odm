@@ -15,7 +15,7 @@
         "symfony/yaml": ">=2.0",
         "symfony/console": ">=2.0",
         "doctrine/common": ">=2.2.0",
-        "doctrine/mongodb": "master@dev"
+        "doctrine/mongodb": "@dev"
     },
     "autoload": {
         "psr-0": { "Doctrine\\ODM\\MongoDB": "lib/" }
