@@ -32,7 +32,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * A minimum identifier length can be enforced by setting a numeric value to the "pad" option
  * (with only 6 chars you will have more than 56 billion unique id's, 15 billion in 'awkward safe mode')
  *
- * The character set used for ID generation can be explicitly set with the "chars" option
+ * The character set used for ID generation can be explicitly set with the "chars" option (e.g. base36, etc.)
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
