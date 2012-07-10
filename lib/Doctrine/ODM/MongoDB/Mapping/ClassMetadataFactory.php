@@ -376,12 +376,15 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
                 break;
             case ClassMetadata::GENERATOR_TYPE_ALNUM:
                 $alnumGenerator = new \Doctrine\ODM\MongoDB\Id\AlnumGenerator($class);
-                if(isset($idGenOptions['pad'])) {
+                if (isset($idGenOptions['pad'])) {
                     $alnumGenerator->setPad($idGenOptions['pad']);
                 }
-                if(isset($idGenOptions['awkwardSafe'])) {
+                if (isset($idGenOptions['chars'])) {
+                    $alnumGenerator->setChars($idGenOptions['chars']);
+                } elseif (isset($idGenOptions['awkwardSafe'])) {
                     $alnumGenerator->setAwkwardSafeMode($idGenOptions['awkwardSafe']);
                 }
+
                 $class->setIdGenerator($alnumGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_NONE;
