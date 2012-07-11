@@ -14,8 +14,6 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testInsertingNestedEmbeddedCollections()
     {
-        $this->markTestSkipped();
-
         $category = new Category;
         $category->name = "My Category";
 
@@ -47,7 +45,6 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testInsertingEmbeddedCollectionWithRefMany()
     {
-        $this->markTestSkipped();
         $comment = new Comment();
 
         $post = new Post();
