@@ -745,7 +745,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // skip equivalent DateTime values
-                if (($orgValue instanceof \DateTime || $actualValue instanceof \DateTime) && $orgValue == $actualValue) {
+                if (($orgValue instanceof \DateTime || $actualValue instanceof \DateTime) && $orgValue === $actualValue) {
                     continue;
                 }
 
