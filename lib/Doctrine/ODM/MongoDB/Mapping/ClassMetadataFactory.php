@@ -222,11 +222,9 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
             $class = $this->newClassMetadataInstance($className);
 
             if ($parent) {
-                if (!$parent->isMappedSuperclass) {
-                    $class->setInheritanceType($parent->inheritanceType);
-                    $class->setDiscriminatorField($parent->discriminatorField);
-                    $class->setDiscriminatorMap($parent->discriminatorMap);
-                }
+                $class->setInheritanceType($parent->inheritanceType);
+                $class->setDiscriminatorField($parent->discriminatorField);
+                $class->setDiscriminatorMap($parent->discriminatorMap);
                 $class->setIdGeneratorType($parent->generatorType);
                 $this->addInheritedFields($class, $parent);
                 $this->addInheritedIndexes($class, $parent);
@@ -236,6 +234,9 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
                 $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
                 $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
                 $class->setFile($parent->getFile());
+                if ($parent->isMappedSuperclass) {
+                    $class->setCustomRepositoryClass($parent->customRepositoryClassName);
+                }
             }
 
             // Invoke driver
