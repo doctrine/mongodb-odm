@@ -371,8 +371,11 @@ class PersistenceBuilder
 
                 /** @EmbedMany */
                 } elseif (isset($mapping['association']) && $mapping['association'] == ClassMetadata::EMBED_MANY) {
-                    // do nothing for embedded many
-                    // CollectionPersister will take care of this
+                    if ($mapping['strategy'] !== 'set') {
+                        foreach ($rawValue as $key => $item) {
+                            $value[$key] = $this->prepareEmbeddedDocumentValue($mapping, $item);
+                        }
+                    }
 
                 /** @ReferenceOne */
                 } elseif (isset($mapping['association']) && $mapping['association'] == ClassMetadata::REFERENCE_ONE) {
