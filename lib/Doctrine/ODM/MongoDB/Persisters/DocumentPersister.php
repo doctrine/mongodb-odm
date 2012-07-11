@@ -937,6 +937,8 @@ class DocumentPersister
                         }
                     }
                 }
+            } elseif ($mapping['type'] === 'hash') {
+                $fieldName = implode('.', $e);
             }
 
         // Process all non identifier fields
