@@ -516,10 +516,10 @@ class DocumentPersister
      */
     public function primeCollection(Iterator $collection, $fieldName, $primer, array $hints = array())
     {
+        $collection = $collection->toArray();
         if (!count($collection)) {
             return;
         }
-        $collection = $collection->toArray();
         $collectionMetaData = $this->dm->getClassMetaData(get_class(current($collection)));
 
         $fieldMapping = $collectionMetaData->fieldMappings[$fieldName];
