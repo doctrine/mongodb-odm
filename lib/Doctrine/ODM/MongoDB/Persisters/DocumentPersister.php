@@ -888,6 +888,7 @@ class DocumentPersister
 
             $mapping = $metadata->fieldMappings[$e[0]];
             $e[0] = $mapping['name'];
+            $fieldName = $e[0] . '.' .$e[1];
 
             if (isset($mapping['targetDocument'])) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
