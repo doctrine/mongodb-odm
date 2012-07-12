@@ -59,7 +59,159 @@ class SchemaManager
         }
     }
 
-    public function  getDocumentIndexes($documentName)
+    /**
+     * Ensure indexes are created for all documents that can be loaded with the
+     * metadata factory and delete the indexes that exist in Mongo but not
+     * in each document.
+     */
+    public function updateIndexes()
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+                continue;
+            }
+            $this->updateDocumentIndexes($class->name);
+        }
+    }
+    
+    /**
+     * Ensure the given documents indexes are updated.
+     *
+     * @param string $documentName The document name to ensure the indexes for.
+     */
+    public function updateDocumentIndexes($documentName)
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            throw new InvalidArgumentException('Cannot create document indexes for mapped super classes or embedded documents.');
+        }
+
+        if ($documentIndexes = $this->getDocumentIndexes($documentName)) {
+
+            $defaults = array(
+                'safe'       => true,
+                'dropDups'   => false,
+                'background' => false,
+                'unique'     => false,
+                'sparse'     => false,
+            );
+            foreach ($documentIndexes as &$documentIndex) {
+                $documentIndex['options'] = array_merge($defaults, $documentIndex['options']);
+            }
+
+            if ($collection = $this->dm->getDocumentCollection($class->name)) {
+
+                $mongoIndexes = $collection->getIndexInfo();
+                foreach ($mongoIndexes as $i => $mongoIndex) {
+                    if ($mongoIndex['name'] === '_id_') {
+                        unset($mongoIndexes[$i]);
+                        continue;
+                    }
+                    $mongoIndexes[$i] = $this->rawIndexToDocumentIndex($mongoIndex);
+                }
+
+                $update = false;
+                foreach ($documentIndexes as $i => $documentIndex) {
+                    // Remove each index from array that exists already
+                    foreach ($mongoIndexes as $j => $mongoIndex) {
+                        $keyDiff = array_diff_assoc($mongoIndex['keys'], $documentIndex['keys']);
+                        $optDiff = array_diff_assoc($mongoIndex['options'], $documentIndex['options']);
+                        if (empty($keyDiff)) {
+                            if (empty($optDiff) || (count($optDiff) === 1 && isset($optDiff['name']))) {
+                                // Index exists exactly as document
+                                unset($mongoIndexes[$j]);
+                                continue;
+                            } else {
+                                // Only options differ, update
+                                unset($mongoIndexes[$j]);
+                                $update = true;
+                            }
+                        }
+                    }
+                }
+
+                // The rest need to be deleted
+                foreach ($mongoIndexes as $mongoIndex) {
+                    if (isset($mongoIndex['options']['name'])) {
+                        $collection->getDatabase()->command(array(
+                            'deleteIndexes' => $collection->getName(),
+                            'index' => $mongoIndex['options']['name']
+                        ));
+                    }
+                }
+
+                if ($update) {
+                    $this->ensureDocumentIndexes($documentName);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns all indexes - indexed by documentName
+     *
+     * @param bool $raw As MongoDB returns them (or as ODM stores them)
+     * @return array
+     */
+    public function getAllIndexes($raw = true)
+    {
+        $all = array();
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+                continue;
+            }
+            if ($collection = $this->dm->getDocumentCollection($class->name)) {
+                $indexes = $collection->getIndexInfo();
+                if ($raw) {
+                    $all[$class->name] = $indexes;
+                } else {
+                    $odmIndexes = array();
+                    foreach ($indexes as $rawIndex) {
+                        if ($rawIndex['name'] === '_id_') {
+                            continue;
+                        }
+                        $odmIndexes[] = $this->rawIndexToDocumentIndex($rawIndex);
+                    }
+                    $all[$class->name] = $odmIndexes;
+                }
+            }
+        }
+
+        return $all;
+    }
+
+    /**
+     * Returns all document indexes - indexed by documentName
+     *
+     * @return array
+     */
+    public function getAllDocumentIndexes()
+    {
+        $return = array();
+        $defaults = array(
+            'safe'       => true,
+            'dropDups'   => false,
+            'background' => false,
+            'unique'     => false,
+            'sparse'     => false,
+        );
+
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+                continue;
+            }
+            if ($indexes = $this->getDocumentIndexes($class->name)) {
+                foreach ($indexes as &$index) {
+                    $index['options'] = array_merge($defaults, $index['options']);
+                }
+                $return[$class->name] = $indexes;
+            }
+        }
+
+        return $return;
+    }
+
+    public function getDocumentIndexes($documentName)
     {
         $visited = array();
         return $this->doGetDocumentIndexes($documentName, $visited);
@@ -297,5 +449,26 @@ class SchemaManager
             throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
         }
         $this->dm->getDocumentDatabase($documentName)->execute("function() { return true; }");
+    }
+
+    /**
+     * Convert an array from a raw MongoDB index to ODM style.
+     *
+     * @param array $rawIndex
+     * @return array
+     */
+    private function rawIndexToDocumentIndex($rawIndex)
+    {
+        return array(
+            'keys' => $rawIndex['key'],
+            'options' => array(
+                'name'       => $rawIndex['name'],
+                'safe'       => isset($rawIndex['safe']) ? $rawIndex['safe'] : true,
+                'dropDups'   => isset($rawIndex['dropDups']) ? $rawIndex['dropDups'] : false,
+                'background' => isset($rawIndex['background']) ? $rawIndex['background'] : false,
+                'unique'     => isset($rawIndex['unique']) ? $rawIndex['unique'] : false,
+                'sparse'     => isset($rawIndex['sparse']) ? $rawIndex['sparse'] : false,
+            )
+        );
     }
 }
