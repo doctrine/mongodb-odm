@@ -588,7 +588,6 @@ class DocumentPersister
                 break;
 
             case ClassMetadata::REFERENCE_MANY:
-                $mapping = $collection->getMapping();
                 if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
                     $this->loadReferenceManyWithRepositoryMethod($collection);
                 } else {
