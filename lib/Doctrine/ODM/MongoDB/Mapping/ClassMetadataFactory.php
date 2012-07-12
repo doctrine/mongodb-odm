@@ -13,7 +13,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
@@ -222,11 +222,9 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
             $class = $this->newClassMetadataInstance($className);
 
             if ($parent) {
-                if (!$parent->isMappedSuperclass) {
-                    $class->setInheritanceType($parent->inheritanceType);
-                    $class->setDiscriminatorField($parent->discriminatorField);
-                    $class->setDiscriminatorMap($parent->discriminatorMap);
-                }
+                $class->setInheritanceType($parent->inheritanceType);
+                $class->setDiscriminatorField($parent->discriminatorField);
+                $class->setDiscriminatorMap($parent->discriminatorMap);
                 $class->setIdGeneratorType($parent->generatorType);
                 $this->addInheritedFields($class, $parent);
                 $this->addInheritedIndexes($class, $parent);
@@ -236,6 +234,9 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
                 $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
                 $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
                 $class->setFile($parent->getFile());
+                if ($parent->isMappedSuperclass) {
+                    $class->setCustomRepositoryClass($parent->customRepositoryClassName);
+                }
             }
 
             // Invoke driver
@@ -376,12 +377,15 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
                 break;
             case ClassMetadata::GENERATOR_TYPE_ALNUM:
                 $alnumGenerator = new \Doctrine\ODM\MongoDB\Id\AlnumGenerator($class);
-                if(isset($idGenOptions['pad'])) {
+                if (isset($idGenOptions['pad'])) {
                     $alnumGenerator->setPad($idGenOptions['pad']);
                 }
-                if(isset($idGenOptions['awkwardSafe'])) {
+                if (isset($idGenOptions['chars'])) {
+                    $alnumGenerator->setChars($idGenOptions['chars']);
+                } elseif (isset($idGenOptions['awkwardSafe'])) {
                     $alnumGenerator->setAwkwardSafeMode($idGenOptions['awkwardSafe']);
                 }
+
                 $class->setIdGenerator($alnumGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_NONE;

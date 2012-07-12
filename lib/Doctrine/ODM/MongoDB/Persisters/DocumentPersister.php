@@ -13,7 +13,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
@@ -516,10 +516,10 @@ class DocumentPersister
      */
     public function primeCollection(Iterator $collection, $fieldName, $primer, array $hints = array())
     {
+        $collection = $collection->toArray();
         if (!count($collection)) {
             return;
         }
-        $collection = $collection->toArray();
         $collectionMetaData = $this->dm->getClassMetaData(get_class(current($collection)));
 
         $fieldMapping = $collectionMetaData->fieldMappings[$fieldName];
@@ -588,7 +588,6 @@ class DocumentPersister
                 break;
 
             case ClassMetadata::REFERENCE_MANY:
-                $mapping = $collection->getMapping();
                 if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
                     $this->loadReferenceManyWithRepositoryMethod($collection);
                 } else {
@@ -659,6 +658,7 @@ class DocumentPersister
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $criteria = array_merge(
                 array('_id' => array($cmd . 'in' => $ids)),
+                $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
             );
             $cursor = $mongoCollection->find($criteria);
@@ -722,13 +722,13 @@ class DocumentPersister
     {
         $mapping = $collection->getMapping();
         $cursor = $this->dm->getRepository($mapping['targetDocument'])->$mapping['repositoryMethod']($collection->getOwner());
-        if ($mapping['sort']) {
+        if (isset($mapping['sort']) && $mapping['sort']) {
             $cursor->sort($mapping['sort']);
         }
-        if ($mapping['limit']) {
+        if (isset($mapping['limit']) && $mapping['limit']) {
             $cursor->limit($mapping['limit']);
         }
-        if ($mapping['skip']) {
+        if (isset($mapping['skip']) && $mapping['skip']) {
             $cursor->skip($mapping['skip']);
         }
         if (isset($hints[Query::HINT_SLAVE_OKAY])) {
@@ -775,11 +775,13 @@ class DocumentPersister
      * @param string|array $query
      * @return array $newQuery
      */
-    public function prepareQuery($query)
+    public function prepareQuery($query = array())
     {
         if (is_scalar($query) || $query instanceof \MongoId) {
             $query = array('_id' => $query);
         }
+        $query = array_merge($query, $this->dm->getFilterCollection()->getFilterCriteria($this->class));
+
         if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
             $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
@@ -797,7 +799,7 @@ class DocumentPersister
         }
         return $newQuery;
     }
-    
+
     /**
      * Prepares a new object array by converting the portable Doctrine types to the types mongodb expects.
      *
@@ -874,7 +876,7 @@ class DocumentPersister
     private function prepareQueryElement(&$fieldName, $value = null, $metadata = null, $prepareValue = true)
     {
         $metadata = ($metadata === null) ? $this->class : $metadata;
-        
+
         // Process "association.fieldName"
         if (strpos($fieldName, '.') !== false) {
             $e = explode('.', $fieldName);
@@ -885,6 +887,7 @@ class DocumentPersister
 
             $mapping = $metadata->fieldMappings[$e[0]];
             $e[0] = $mapping['name'];
+            $fieldName = $e[0] . '.' .$e[1];
 
             if (isset($mapping['targetDocument'])) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
@@ -929,11 +932,13 @@ class DocumentPersister
                             } else {
                                 $value = $this->prepareQueryElement($key, $value, null, $prepareValue);
                             }
-                            
+
                             $fieldName .= '.' . $key;
                         }
                     }
                 }
+            } elseif ($mapping['type'] === 'hash') {
+                $fieldName = implode('.', $e);
             }
 
         // Process all non identifier fields

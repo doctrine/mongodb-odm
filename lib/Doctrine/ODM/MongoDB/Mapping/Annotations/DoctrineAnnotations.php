@@ -15,7 +15,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
@@ -194,6 +194,11 @@ final class Collection extends AbstractField
     public $strategy = 'pushAll'; // pushAll, set
 }
 /** @Annotation */
+final class Raw extends AbstractField
+{
+    public $type = 'raw';
+}
+/** @Annotation */
 final class EmbedOne extends AbstractField
 {
     public $type = 'one';
@@ -285,3 +290,5 @@ final class PostRemove extends Annotation {}
 final class PreLoad extends Annotation {}
 /** @Annotation */
 final class PostLoad extends Annotation {}
+/** @Annotation */
+final class PreFlush extends Annotation {}

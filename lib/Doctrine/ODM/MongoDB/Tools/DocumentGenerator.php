@@ -13,7 +13,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
@@ -109,10 +109,12 @@ public function <methodName>()
  * <description>
  *
  * @param <variableType>$<variableName>
+ * @return <document>
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
 <spaces>$this-><fieldName> = $<variableName>;
+<spaces>return $this;
 }';
 
     private static $addMethodTemplate =
@@ -706,7 +708,8 @@ public function <methodName>()
           '<variableType>'      => $variableType,
           '<variableName>'      => Inflector::camelize($fieldName),
           '<methodName>'        => $methodName,
-          '<fieldName>'         => $fieldName
+          '<fieldName>'         => $fieldName,
+          '<document>'          => $this->getClassName($metadata),
         );
 
         $method = str_replace(

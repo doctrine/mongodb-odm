@@ -8,10 +8,10 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class Account
 {
     /** @ODM\Id */
-    private $id;
+    protected $id;
 
     /** @ODM\String */
-    private $name;
+    protected $name;
 
     public function __construct($name)
     {

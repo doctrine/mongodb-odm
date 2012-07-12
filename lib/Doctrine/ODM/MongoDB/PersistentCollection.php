@@ -13,7 +13,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
@@ -113,7 +113,7 @@ class PersistentCollection implements BaseCollection
     /**
      * Sets the document manager and unit of work (used during merge operations).
      *
-     * @param type $dm 
+     * @param type $dm
      */
     public function setDocumentManager(DocumentManager $dm)
     {
@@ -175,6 +175,7 @@ class PersistentCollection implements BaseCollection
             $this->coll->clear();
             $this->uow->loadCollection($this);
             $this->takeSnapshot();
+
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {
                 foreach ($newObjects as $key => $obj) {
@@ -196,11 +197,18 @@ class PersistentCollection implements BaseCollection
      */
     private function changed()
     {
-        if ( ! $this->isDirty) {
-            $this->isDirty = true;
-            if ($this->dm && $this->mapping !== null && $this->mapping['isOwningSide'] && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
-                $this->uow->scheduleForDirtyCheck($this->owner);
-            }
+        if ($this->isDirty) {
+            return;
+        }
+
+        $this->isDirty = true;
+
+        if ($this->dm &&
+            $this->mapping !== null &&
+            $this->mapping['isOwningSide'] &&
+            $this->owner &&
+            $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
+            $this->uow->scheduleForDirtyCheck($this->owner);
         }
     }
 
@@ -645,5 +653,30 @@ class PersistentCollection implements BaseCollection
     public function unwrap()
     {
         return $this->coll;
+    }
+
+    /**
+     * Cleanup internal state of cloned persistent collection.
+     *
+     * The following problems have to be prevented:
+     * 1. Added documents are added to old PersistentCollection
+     * 2. New collection is not dirty, if reused on other document nothing
+     * changes.
+     * 3. Snapshot leads to invalid diffs being generated.
+     * 4. Lazy loading grabs entities from old owner object.
+     * 5. New collection is connected to old owner and leads to duplicate keys.
+     */
+    public function __clone()
+    {
+        if (is_object($this->coll)) {
+            $this->coll = clone $this->coll;
+        }
+
+        $this->initialize();
+
+        $this->owner = null;
+        $this->snapshot = array();
+
+        $this->changed();
     }
 }

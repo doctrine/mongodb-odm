@@ -40,7 +40,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testFieldMappings($class)
     {
-        $this->assertEquals(8, count($class->fieldMappings));
+        $this->assertEquals(10, count($class->fieldMappings));
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertTrue(isset($class->fieldMappings['email']));
@@ -76,7 +76,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testAssocations($class)
     {
-        $this->assertEquals(8, count($class->fieldMappings));
+        $this->assertEquals(10, count($class->fieldMappings));
 
         return $class;
     }
@@ -138,6 +138,30 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testCustomFieldName
+     * @param ClassMetadata $class
+     */
+    public function testCustomReferenceFieldName($class)
+    {
+        $this->assertEquals('morePhoneNumbers', $class->fieldMappings['morePhoneNumbers']['fieldName']);
+        $this->assertEquals('more_phone_numbers', $class->fieldMappings['morePhoneNumbers']['name']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testCustomReferenceFieldName
+     * @param ClassMetadata $class
+     */
+    public function testCustomEmbedFieldName($class)
+    {
+        $this->assertEquals('embeddedPhonenumber', $class->fieldMappings['embeddedPhonenumber']['fieldName']);
+        $this->assertEquals('embedded_phone_number', $class->fieldMappings['embeddedPhonenumber']['name']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testCustomEmbedFieldName
      * @param ClassMetadata $class
      */
     public function testDiscriminator($class)
@@ -265,6 +289,16 @@ class User
     public $groups;
 
     /**
+     * @ODM\ReferenceMany(targetDocument="Phonenumber", name="more_phone_numbers")
+     */
+    public $morePhoneNumbers;
+
+    /**
+     * @ODM\EmbedMany(targetDocument="Phonenumber", name="embedded_phone_number")
+     */
+    public $embeddedPhonenumber;
+
+    /**
      * @ODM\EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"})
      */
     public $otherPhonenumbers;
@@ -304,65 +338,66 @@ class User
             'default' => __CLASS__,
         ));
         $metadata->mapField(array(
-           'id' => true,
-           'fieldName' => 'id',
-          ));
+            'id' => true,
+            'fieldName' => 'id',
+        ));
         $metadata->mapField(array(
-           'fieldName' => 'name',
-           'name' => 'username',
-           'type' => 'string'
-          ));
+            'fieldName' => 'name',
+            'name' => 'username',
+            'type' => 'string',
+        ));
         $metadata->mapField(array(
-           'fieldName' => 'email',
-           'type' => 'string'
-          ));
-          $metadata->mapField(array(
-             'fieldName' => 'mysqlProfileId',
-             'type' => 'integer'
-            ));
+            'fieldName' => 'email',
+            'type' => 'string',
+        ));
+        $metadata->mapField(array(
+            'fieldName' => 'mysqlProfileId',
+            'type' => 'integer',
+        ));
         $metadata->mapOneReference(array(
-           'fieldName' => 'address',
-           'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Address',
-           'cascade' => 
-           array(
-           0 => 'remove',
-           )
-          ));
+            'fieldName' => 'address',
+            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Address',
+            'cascade' => array(0 => 'remove'),
+        ));
         $metadata->mapManyReference(array(
-           'fieldName' => 'phonenumbers',
-           'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
-           'cascade' => 
-           array(
-           1 => 'persist',
-           ),
-           'discriminatorField' => 'discr',
-           'discriminatorMap' => array(
-            'home' => 'HomePhonenumber',
-            'work' => 'WorkPhonenumber'
-           )
-          ));
+            'fieldName' => 'phonenumbers',
+            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
+            'cascade' => array(1 => 'persist'),
+            'discriminatorField' => 'discr',
+            'discriminatorMap' => array(
+                'home' => 'HomePhonenumber',
+                'work' => 'WorkPhonenumber'
+            ),
+        ));
         $metadata->mapManyReference(array(
-           'fieldName' => 'groups',
-           'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Group',
-           'cascade' => 
-           array(
-           0 => 'remove',
-           1 => 'persist',
-           2 => 'refresh',
-           3 => 'merge',
-           4 => 'detach',
-           ),
-          ));
+            'fieldName' => 'morePhoneNumbers',
+            'name' => 'more_phone_numbers',
+            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
+        ));
+        $metadata->mapManyReference(array(
+            'fieldName' => 'groups',
+            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Group',
+            'cascade' => array(
+                0 => 'remove',
+                1 => 'persist',
+                2 => 'refresh',
+                3 => 'merge',
+                4 => 'detach',
+            ),
+        ));
+        $metadata->mapOneEmbedded(array(
+           'fieldName' => 'embeddedPhonenumber',
+           'name' => 'embedded_phone_number',
+        ));
         $metadata->mapManyEmbedded(array(
            'fieldName' => 'otherPhonenumbers',
            'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
            'discriminatorField' => 'discr',
            'discriminatorMap' => array(
-            'home' => 'HomePhonenumber',
-            'work' => 'WorkPhonenumber'
-           )
-           )
-          );
+                'home' => 'HomePhonenumber',
+                'work' => 'WorkPhonenumber',
+           ),
+        ));
         $metadata->addIndex(array('username' => 'desc'), array('unique' => true));
         $metadata->addIndex(array('email' => 'desc'), array('unique' => true, 'dropDups' => true));
         $metadata->addIndex(array('mysqlProfileId' => 'desc'), array('unique' => true, 'dropDups' => true));

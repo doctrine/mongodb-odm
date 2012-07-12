@@ -58,6 +58,11 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Query\Builder', $this->dm->createQueryBuilder());
     }
 
+    public function testGetFilterCollection()
+    {
+        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Query\FilterCollection', $this->dm->getFilterCollection());
+    }  
+    
     public function testGetPartialReference()
     {
         $user = $this->dm->getPartialReference('Documents\CmsUser', 42);

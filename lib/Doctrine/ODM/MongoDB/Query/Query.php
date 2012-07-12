@@ -13,7 +13,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
@@ -194,6 +194,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
             throw MongoDBException::queryNotIndexed($this->class->name, $this->getUnindexedFields());
         }
 
+        $this->query['query'] = array_merge(
+            $this->query['query'], 
+            $this->dm->getFilterCollection()->getFilterCriteria($this->class)
+        );  
         $results = parent::execute();
 
         $hints = array();

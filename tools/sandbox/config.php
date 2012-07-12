@@ -1,25 +1,19 @@
 <?php
 
-require_once __DIR__ . '/../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
+use Doctrine\Common\ClassLoader;
+use Doctrine\MongoDB\Connection;
+use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
-use Doctrine\Common\ClassLoader,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\ODM\MongoDB\Configuration,
-    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
-    Doctrine\MongoDB\Connection,
-    Doctrine\ODM\MongoDB\DocumentManager;
+$file = __DIR__.'/../../vendor/autoload.php';
+if (!file_exists($file)) {
+    throw new RuntimeException('Install dependencies to run the sandbox.');
+}
 
-$classLoader = new ClassLoader('Doctrine\Common', __DIR__ . '/../../lib/vendor/doctrine-common/lib');
-$classLoader->register();
+require_once $file;
 
-$classLoader = new ClassLoader('Doctrine\ODM\MongoDB', __DIR__ . '/../../lib');
-$classLoader->register();
-
-$classLoader = new ClassLoader('Doctrine\MongoDB', __DIR__ . '/../../lib/vendor/doctrine-mongodb/lib');
-$classLoader->register();
-
-$classLoader = new ClassLoader('Symfony', __DIR__ . '/../../lib/vendor');
-$classLoader->register();
+AnnotationDriver::registerAnnotationClasses();
 
 $classLoader = new ClassLoader('Documents', __DIR__);
 $classLoader->register();
@@ -34,14 +28,9 @@ $config->setHydratorNamespace('Hydrators');
 
 $config->setDefaultDB('doctrine_odm_sandbox');
 
-/*
-$config->setLoggerCallable(function(array $log) {
-    print_r($log);
-});
-$config->setMetadataCacheImpl(new ApcCache());
-*/
+// $config->setLoggerCallable(function(array $log) { print_r($log); });
+// $config->setMetadataCacheImpl(new Doctrine\Common\Cache\ApcCache());
 
-$reader = new AnnotationReader();
-$config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+$config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/Documents'));
 
 $dm = DocumentManager::create(new Connection(), $config);

@@ -13,7 +13,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 namespace Doctrine\ODM\MongoDB\Persisters;
@@ -126,7 +126,7 @@ class PersistenceBuilder
                 } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
                     $value = array();
                     foreach ($new as $reference) {
-                        $value[] = $this->prepareReferenceDocValue($mapping, $reference);
+                        $value[] = $this->prepareReferencedDocumentValue($mapping, $reference);
                     }
 
                 // @EmbedMany
@@ -346,6 +346,11 @@ class PersistenceBuilder
         $class = $this->dm->getClassMetadata($className);
         $embeddedDocumentValue = array();
         foreach ($class->fieldMappings as $mapping) {
+            // Skip not saved fields
+            if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
+                continue;
+            }
+
             $rawValue = $class->reflFields[$mapping['fieldName']]->getValue($embeddedDocument);
 
             // Generate a document identifier
@@ -366,8 +371,11 @@ class PersistenceBuilder
 
                 /** @EmbedMany */
                 } elseif (isset($mapping['association']) && $mapping['association'] == ClassMetadata::EMBED_MANY) {
-                    // do nothing for embedded many
-                    // CollectionPersister will take care of this
+                    if ($mapping['strategy'] !== 'set') {
+                        foreach ($rawValue as $key => $item) {
+                            $value[$key] = $this->prepareEmbeddedDocumentValue($mapping, $item);
+                        }
+                    }
 
                 /** @ReferenceOne */
                 } elseif (isset($mapping['association']) && $mapping['association'] == ClassMetadata::REFERENCE_ONE) {
@@ -400,7 +408,7 @@ class PersistenceBuilder
             return (object) $embeddedDocumentValue;
         }
 
-        if ($class->discriminatorField) {
+        if ($class->hasDiscriminator()) {
             $embeddedDocumentValue[$class->discriminatorField['name']] = $class->discriminatorValue;
         }
 

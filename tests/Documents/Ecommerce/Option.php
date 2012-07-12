@@ -5,7 +5,7 @@ namespace Documents\Ecommerce;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @ODM\Document(db="doctrine_odm_tests", collection="options")
+ * @ODM\EmbeddedDocument()
  */
 class Option
 {

@@ -8,22 +8,22 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class User
 {
     /** @ODM\Id */
-    private $id;
+    protected $id;
 
-    /** ODM\String */
+    /** @ODM\String */
     private $username;
 
-    /** @ODM\BinDataMD5 */
-    private $password;
+    /** @ODM\Bin(type="bin_md5") */
+    protected $password;
 
     /** @ODM\EmbedOne(targetDocument="Address") */
-    private $address;
+    protected $address;
 
     /** @ODM\ReferenceOne(targetDocument="Account") */
-    private $account;
+    protected $account;
 
     /** @ODM\EmbedMany(targetDocument="Phonenumber") */
-    private $phonenumbers = array();
+    protected $phonenumbers = array();
 
     public function getId()
     {
