@@ -248,7 +248,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Array of parent associations between embedded documents
      *
-     * @todo We might need to clean up this array in clear(), doDetch(), etc.
+     * @todo We might need to clean up this array in clear(), doDetach(), etc.
      * @var array
      */
     private $parentAssociations = array();
@@ -1247,7 +1247,7 @@ class UnitOfWork implements PropertyChangedListener
         $calc = $this->getCommitOrderCalculator();
 
         // See if there are any new classes in the changeset, that are not in the
-        // commit order graph yet (dont have a node).
+        // commit order graph yet (don't have a node).
         // We have to inspect changeSet to be able to correctly build dependencies.
         // It is not possible to use IdentityMap here because post inserted ids
         // are not yet available.
@@ -1963,7 +1963,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($class->isVersioned) {
                 $managedCopyVersion = $class->reflFields[$class->versionField]->getValue($managedCopy);
                 $documentVersion = $class->reflFields[$class->versionField]->getValue($document);
-                // Throw exception if versions dont match.
+                // Throw exception if versions don't match.
                 if ($managedCopyVersion != $documentVersion) {
                     throw LockException::lockFailedVersionMissmatch($documentVersion, $managedCopyVersion);
                 }
@@ -2548,7 +2548,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Initializes (loads) an uninitialized persistent collection of a document.
      *
-     * @param PeristentCollection $collection The collection to initialize.
+     * @param PersistentCollection $collection The collection to initialize.
      */
     public function loadCollection(PersistentCollection $collection)
     {
