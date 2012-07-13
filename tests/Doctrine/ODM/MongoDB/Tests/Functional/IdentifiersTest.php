@@ -82,7 +82,7 @@ class IdentifiersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user4 = $qb->getQuery()->getSingleResult();
         $this->assertEquals('changed', $user4->getUsername());
 
-        $qb = $this->dm->createQueryBuilder('Documents\USer')
+        $qb = $this->dm->createQueryBuilder('Documents\User')
             ->findAndUpdate()
             ->returnNew(true)
             ->hydrate(true)
