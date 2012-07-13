@@ -101,7 +101,7 @@ class DocumentPersister
     private $collection;
 
     /**
-     * Array of quered inserts for the persister to insert.
+     * Array of queued inserts for the persister to insert.
      *
      * @var array
      */
@@ -803,7 +803,7 @@ class DocumentPersister
     /**
      * Prepares a new object array by converting the portable Doctrine types to the types mongodb expects.
      *
-     * @param string|array newObjy
+     * @param string|array newObj
      * @return array $newQuery
      */
     public function prepareNewObj($newObj)

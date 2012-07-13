@@ -273,7 +273,7 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Retuns SchemaManager, used to create/drop indexes/collections/databases
+     * Returns SchemaManager, used to create/drop indexes/collections/databases.
      *
      * @return \Doctrine\ODM\MongoDB\SchemaManager
      */
@@ -713,7 +713,7 @@ class DocumentManager implements ObjectManager
             $dbRef[$class->discriminatorField['name']] = $class->discriminatorValue;
         }
 
-        // add a discriminator value if the referenced document is not mapped explicitely to a targetDocument
+        // add a discriminator value if the referenced document is not mapped explicitly to a targetDocument
         if ($referenceMapping && ! isset($referenceMapping['targetDocument'])) {
             $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_name';
             $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search($class->getName(), $referenceMapping['discriminatorMap']) : $class->getName();

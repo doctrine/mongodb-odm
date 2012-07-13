@@ -147,7 +147,7 @@ class Cursor extends BaseCursor
     /**
      * Sets whether to refresh the documents data if it already exists in the identity map.
      *
-     * @param boeolan $bool
+     * @param boolean $bool
      */
     public function refresh($bool = true)
     {
