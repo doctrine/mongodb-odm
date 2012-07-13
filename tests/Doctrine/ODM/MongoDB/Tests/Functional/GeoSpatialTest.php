@@ -4,14 +4,13 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GeoSpatialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testQueries()
     {
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
-            ->field('latitude')->near(1000000)
-            ->field('longitude')->near(11111);
-        $this->assertEquals(array('latitude' => 1000000, 'longitude' => 11111), $qb->debug('near'));
+            ->geoNear(1000000, 11111);
+        $this->assertEquals(array('near' => array(1000000, 11111)), $qb->debug('geoNear'));
 
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->withinBox(41, 41, 72, 72);
@@ -45,15 +44,13 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
-            ->field('latitude')->near(1000000)
-            ->field('longitude')->near(11111);
+            ->geoNear(1000000, 11111);
         $query = $qb->getQuery();
         $city = $query->getSingleResult();
         $this->assertNull($city);
 
         $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
-            ->field('latitude')->near(50)
-            ->field('longitude')->near(50)
+            ->geoNear(50, 50)
             ->getQuery()
             ->getSingleResult();
         $this->assertNotNull($city);
@@ -83,8 +80,7 @@ class GeoSpacialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $city = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
-            ->field('coordinates.latitude')->near(50)
-            ->field('coordinates.longitude')->near(50)
+            ->field('coordinates')->near(50, 50)
             ->getQuery()
             ->getSingleResult();
         $this->assertNotNull($city);
