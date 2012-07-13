@@ -87,62 +87,40 @@ class SchemaManager
 
         if ($documentIndexes = $this->getDocumentIndexes($documentName)) {
 
-            $defaults = array(
-                'safe'       => true,
-                'dropDups'   => false,
-                'background' => false,
-                'unique'     => false,
-                'sparse'     => false,
-            );
-            foreach ($documentIndexes as &$documentIndex) {
-                $documentIndex['options'] = array_merge($defaults, $documentIndex['options']);
+            $collection = $this->dm->getDocumentCollection($documentName);
+            $mongoIndexes = $collection->getIndexInfo();
+
+            /* Determine which Mongo indexes should be deleted. Exclude the ID
+             * index and those that are equivalent to any in the class metadata.
+             */
+            $mongoIndexes = array_filter($mongoIndexes, function($mongoIndex) use ($documentIndexes) {
+                if ('_id_' === $mongoIndex['name']) {
+                    return false;
+                }
+
+                foreach ($documentIndexes as $documentIndex) {
+                    if ($this->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            // Delete indexes that do not exist in class metadata
+            foreach ($mongoIndexes as $mongoIndex) {
+                if (isset($mongoIndex['name'])) {
+                    /* Note: MongoCollection::deleteIndex() cannot delete
+                     * custom-named indexes, so use the deleteIndexes command.
+                     */
+                    $collection->getDatabase()->command(array(
+                        'deleteIndexes' => $collection->getName(),
+                        'index' => $mongoIndex['name'],
+                    ));
+                }
             }
 
-            if ($collection = $this->dm->getDocumentCollection($class->name)) {
-
-                $mongoIndexes = $collection->getIndexInfo();
-                foreach ($mongoIndexes as $i => $mongoIndex) {
-                    if ($mongoIndex['name'] === '_id_') {
-                        unset($mongoIndexes[$i]);
-                        continue;
-                    }
-                    $mongoIndexes[$i] = $this->rawIndexToDocumentIndex($mongoIndex);
-                }
-
-                $update = false;
-                foreach ($documentIndexes as $i => $documentIndex) {
-                    // Remove each index from array that exists already
-                    foreach ($mongoIndexes as $j => $mongoIndex) {
-                        $keyDiff = array_diff_assoc($mongoIndex['keys'], $documentIndex['keys']);
-                        $optDiff = array_diff_assoc($mongoIndex['options'], $documentIndex['options']);
-                        if (empty($keyDiff)) {
-                            if (empty($optDiff) || (count($optDiff) === 1 && isset($optDiff['name']))) {
-                                // Index exists exactly as document
-                                unset($mongoIndexes[$j]);
-                                continue;
-                            } else {
-                                // Only options differ, update
-                                unset($mongoIndexes[$j]);
-                                $update = true;
-                            }
-                        }
-                    }
-                }
-
-                // The rest need to be deleted
-                foreach ($mongoIndexes as $mongoIndex) {
-                    if (isset($mongoIndex['options']['name'])) {
-                        $collection->getDatabase()->command(array(
-                            'deleteIndexes' => $collection->getName(),
-                            'index' => $mongoIndex['options']['name']
-                        ));
-                    }
-                }
-
-                if ($update) {
-                    $this->ensureDocumentIndexes($documentName);
-                }
-            }
+            $this->ensureDocumentIndexes($documentName);
         }
     }
 
@@ -177,37 +155,6 @@ class SchemaManager
         }
 
         return $all;
-    }
-
-    /**
-     * Returns all document indexes - indexed by documentName
-     *
-     * @return array
-     */
-    public function getAllDocumentIndexes()
-    {
-        $return = array();
-        $defaults = array(
-            'safe'       => true,
-            'dropDups'   => false,
-            'background' => false,
-            'unique'     => false,
-            'sparse'     => false,
-        );
-
-        foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-                continue;
-            }
-            if ($indexes = $this->getDocumentIndexes($class->name)) {
-                foreach ($indexes as &$index) {
-                    $index['options'] = array_merge($defaults, $index['options']);
-                }
-                $return[$class->name] = $indexes;
-            }
-        }
-
-        return $return;
     }
 
     public function getDocumentIndexes($documentName)
@@ -451,23 +398,56 @@ class SchemaManager
     }
 
     /**
-     * Convert an array from a raw MongoDB index to ODM style.
+     * Determine if an index returned by MongoCollection::getIndexInfo() can be
+     * considered equivalent to an index in class metadata.
      *
-     * @param array $rawIndex
-     * @return array
+     * Indexes are considered different if:
+     *
+     *   (a) Key/direction pairs differ or are not in the same order
+     *   (b) Sparse or unique options differ
+     *   (c) Mongo index is unique without dropDups and mapped index is unique
+     *       with dropDups
+     *   (d) Geospatial options differ (bits, max, min)
+     *
+     * Regarding (c), the inverse case is not a reason to delete and
+     * recreate the index, since dropDups only affects creation of
+     * the unique index. Additionally, the background option is only
+     * relevant to index creation and is not considered.
      */
-    private function rawIndexToDocumentIndex($rawIndex)
+    private function isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)
     {
-        return array(
-            'keys' => $rawIndex['key'],
-            'options' => array(
-                'name'       => $rawIndex['name'],
-                'safe'       => isset($rawIndex['safe']) ? $rawIndex['safe'] : true,
-                'dropDups'   => isset($rawIndex['dropDups']) ? $rawIndex['dropDups'] : false,
-                'background' => isset($rawIndex['background']) ? $rawIndex['background'] : false,
-                'unique'     => isset($rawIndex['unique']) ? $rawIndex['unique'] : false,
-                'sparse'     => isset($rawIndex['sparse']) ? $rawIndex['sparse'] : false,
-            )
-        );
+        $documentIndexOptions = $documentIndex['options'];
+
+        if ($mongoIndex['key'] !== $documentIndex['keys']) {
+            return false;
+        }
+
+        if (empty($mongoIndex['sparse']) xor empty($documentIndexOptions['sparse'])) {
+            return false;
+        }
+
+        if (empty($mongoIndex['unique']) xor empty($documentIndexOptions['unique'])) {
+            return false;
+        }
+
+        if (!empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
+            !empty($documentIndexOptions['unique']) && !empty($documentIndexOptions)) {
+
+            return false;
+        }
+
+        foreach (array('bits', 'max', 'min') as $option) {
+            if (isset($mongoIndex[$option]) xor isset($documentIndexOptions[$option])) {
+                return false;
+            }
+
+            if (isset($mongoIndex[$option]) && isset($documentIndexOptions[$option]) &&
+                $mongoIndex[$option] !== $documentIndexOptions[$option]) {
+
+                return false;
+            }
+        }
+
+        return true;
     }
 }
