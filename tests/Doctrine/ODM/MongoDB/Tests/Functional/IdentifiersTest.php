@@ -89,10 +89,11 @@ class IdentifiersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')->equals('jwage')
             ->field('count')->inc(1);
 
-        $result = $qb->getQuery()->execute();
+        $result = $qb->refresh(false)->getQuery()->execute();
+        $this->assertEquals(0, $result->getCount());
 
         $result = $qb->refresh(false)->getQuery()->execute();
-        $this->assertEquals(1, $result->getCount());
+        $this->assertEquals(0, $result->getCount());
 
         $result = $qb->refresh(true)->getQuery()->execute();
         $this->assertEquals(3, $result->getCount());
