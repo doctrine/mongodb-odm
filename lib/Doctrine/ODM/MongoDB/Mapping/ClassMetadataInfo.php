@@ -131,7 +131,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $db;
 
     /**
-     * READ-ONLY: The name of the monge collection the document is mapped to.
+     * READ-ONLY: The name of the mongo collection the document is mapped to.
      */
     public $collection;
 
@@ -496,7 +496,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * lifecycle callbacks and lifecycle listeners.
      *
      * @param string $event The lifecycle event.
-     * @param Document $document The Document on which the event occured.
+     * @param Document $document The Document on which the event occurred.
      */
     public function invokeLifecycleCallbacks($lifecycleEvent, $document, array $arguments = null)
     {

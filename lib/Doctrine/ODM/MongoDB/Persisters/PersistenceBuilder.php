@@ -396,7 +396,7 @@ class PersistenceBuilder
             $embeddedDocumentValue[$mapping['name']] = $value;
         }
 
-        // Store a discriminator value if the embedded document is not mapped explicitely to a targetDocument
+        // Store a discriminator value if the embedded document is not mapped explicitly to a targetDocument
         if ( ! isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_name';
             $discriminatorValue = isset($embeddedMapping['discriminatorMap']) ? array_search($class->getName(), $embeddedMapping['discriminatorMap']) : $class->getName();
