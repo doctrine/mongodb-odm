@@ -744,11 +744,6 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // skip equivalent DateTime values
-                if (($orgValue instanceof \DateTime || $actualValue instanceof \DateTime) && $orgValue == $actualValue) {
-                    continue;
-                }
-
                 // regular field
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
