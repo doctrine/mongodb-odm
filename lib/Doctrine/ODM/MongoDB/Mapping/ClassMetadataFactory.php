@@ -219,6 +219,13 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
                 continue;
             }
 
+            // Proxy classes should use parent's metadata
+            $classReflection = new \ReflectionClass($className);
+            if ($classReflection->implementsInterface('Doctrine\ODM\MongoDB\Proxy\Proxy')) {
+                $this->loadedMetadata[$className] = $parent;
+                continue;
+            }
+
             $class = $this->newClassMetadataInstance($className);
 
             if ($parent) {
