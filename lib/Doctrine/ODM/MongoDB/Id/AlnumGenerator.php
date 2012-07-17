@@ -34,10 +34,10 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  *
  * The character set used for ID generation can be explicitly set with the "chars" option (e.g. base36, etc.)
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
- * @since       1.0
- * @author      Frederik Eychenié <feychenie@gmail.com>
+ * @author  Frederik Eychenié <feychenie@gmail.com>
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.com
+ * @since   1.0
  */
 class AlnumGenerator extends IncrementGenerator
 {
@@ -50,17 +50,27 @@ class AlnumGenerator extends IncrementGenerator
 
     protected $awkwardSafeChars = '0123456789BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz';
 
+    /**
+     * Set padding on generated id
+     *
+     * @param int $pad
+     */
     public function setPad($pad)
     {
         $this->pad = intval($pad);
     }
 
+    /**
+     * Enable awkwardSafeMode character set
+     *
+     * @param bool $awkwardSafeMode
+     */
     public function setAwkwardSafeMode($awkwardSafeMode = false)
     {
         $this->awkwardSafeMode = $awkwardSafeMode;
     }
 
-    /*
+    /**
      * Set the character set used for ID generation
      *
      * @param string $chars ID character set
@@ -77,15 +87,16 @@ class AlnumGenerator extends IncrementGenerator
         $index = $this->awkwardSafeMode ? $this->awkwardSafeChars : $this->chars;
         $base  = strlen($index);
 
-		$out = "";
+        $out = "";
         do {
             $out = $index[bcmod($id, $base)] . $out;
             $id = bcdiv($id, $base);
         } while (bccomp($id, 0) == 1);
 
-        if(is_numeric($this->pad)) {
-            $out = str_pad( $out, $this->pad, "0", STR_PAD_LEFT);
+        if (is_numeric($this->pad)) {
+            $out = str_pad($out, $this->pad, "0", STR_PAD_LEFT);
         }
-		return $out;
+
+        return $out;
     }
 }
