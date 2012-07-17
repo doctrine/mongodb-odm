@@ -78,11 +78,11 @@ class AlnumGenerator extends IncrementGenerator
         $base  = strlen($index);
 
 		$out = "";
-        for ( $t = floor( log10( $id ) / log10( $base ) ); $t >= 0; $t-- ) {
-            $a = floor( $id / pow( $base, $t ) );
-            $out = $out . substr( $index, $a, 1 );
-            $id = $id - ( $a * pow( $base, $t ) );
-        }
+        do {
+            $out = $index[bcmod($id, $base)] . $out;
+            $id = bcdiv($id, $base);
+        } while (bccomp($id, 0) == 1);
+
         if(is_numeric($this->pad)) {
             $out = str_pad( $out, $this->pad, "0", STR_PAD_LEFT);
         }
