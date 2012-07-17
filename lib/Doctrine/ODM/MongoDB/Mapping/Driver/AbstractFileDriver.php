@@ -113,6 +113,11 @@ abstract class AbstractFileDriver implements Driver
     {
         if ($file = $this->findMappingFile($className)) {
             $result = $this->loadMappingFile($file);
+
+            if (!isset($result[$className])) {
+                throw MongoDBException::mappingClassNotFoundInFile($className, $file);
+            }
+
             return $result[$className];
         }
         return false;

@@ -54,6 +54,11 @@ class MongoDBException extends \Exception
         return new self(sprintf('Could not find mapping file "%s" for class "%s".', $fileName, $className));
     }
 
+    public static function mappingClassNotFoundInFile($className, $fileName)
+    {
+        return new self(sprintf('Could not find mapping for class "%s" in file "%s".', $className, $fileName));
+    }
+
     public static function documentNotMappedToDB($className)
     {
         return new self(sprintf('The "%s" document is not mapped to a MongoDB database.', $className));
