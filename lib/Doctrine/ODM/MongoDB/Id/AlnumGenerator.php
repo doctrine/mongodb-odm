@@ -34,10 +34,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  *
  * The character set used for ID generation can be explicitly set with the "chars" option (e.g. base36, etc.)
  *
- * @author  Frederik Eychenié <feychenie@gmail.com>
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.com
- * @since   1.0
+ * @author Frederik Eychenié <feychenie@gmail.com>
  */
 class AlnumGenerator extends IncrementGenerator
 {
