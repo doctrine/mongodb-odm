@@ -90,16 +90,18 @@ class SchemaManager
             $collection = $this->dm->getDocumentCollection($documentName);
             $mongoIndexes = $collection->getIndexInfo();
 
-            /* Determine which Mongo indexes should be deleted. Exclude the ID
-             * index and those that are equivalent to any in the class metadata.
+            /**
+             * Determine which Mongo indexes should be deleted. Exclude the ID
+             index and those that are equivalent to any in the class metadata.
              */
-            $mongoIndexes = array_filter($mongoIndexes, function($mongoIndex) use ($documentIndexes) {
+            $self = $this;
+            $mongoIndexes = array_filter($mongoIndexes, function($mongoIndex) use ($documentIndexes, $self) {
                 if ('_id_' === $mongoIndex['name']) {
                     return false;
                 }
 
                 foreach ($documentIndexes as $documentIndex) {
-                    if ($this->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)) {
+                    if ($self->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)) {
                         return false;
                     }
                 }
@@ -414,7 +416,7 @@ class SchemaManager
      * the unique index. Additionally, the background option is only
      * relevant to index creation and is not considered.
      */
-    private function isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)
+    public function isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)
     {
         $documentIndexOptions = $documentIndex['options'];
 
