@@ -90,7 +90,8 @@ class SchemaManager
             $collection = $this->dm->getDocumentCollection($documentName);
             $mongoIndexes = $collection->getIndexInfo();
 
-            /* Determine which Mongo indexes should be deleted. Exclude the ID
+            /**
+             * Determine which Mongo indexes should be deleted. Exclude the ID
              * index and those that are equivalent to any in the class metadata.
              */
             $self = $this;
