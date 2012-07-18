@@ -92,7 +92,7 @@ class SchemaManager
 
             /**
              * Determine which Mongo indexes should be deleted. Exclude the ID
-             index and those that are equivalent to any in the class metadata.
+             * index and those that are equivalent to any in the class metadata.
              */
             $self = $this;
             $mongoIndexes = array_filter($mongoIndexes, function($mongoIndex) use ($documentIndexes, $self) {
