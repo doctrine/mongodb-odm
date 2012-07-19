@@ -131,12 +131,6 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertEquals('boo', $user->getUsername());
-
-        $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->reduce("function() { return this.username == 'boo' }");
-        $query = $qb->getQuery();
-        $user = $query->getSingleResult();
-        $this->assertEquals('boo', $user->getUsername());
     }
 
     public function testUpdateQuery()
