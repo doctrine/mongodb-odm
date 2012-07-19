@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use Doctrine\ODM\MongoDB\MongoDBException,
+use Doctrine\ODM\MongoDB\Mapping\MappingException,
     Doctrine\ODM\MongoDB\LockException,
     Doctrine\ODM\MongoDB\Proxy\Proxy,
     ReflectionClass;
@@ -568,7 +568,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             $discriminatorField['name'] = $discriminatorField['fieldName'];
         }
         if (isset($this->fieldMappings[$discriminatorField['name']])) {
-            throw MongoDBException::duplicateFieldMapping($this->name, $discriminatorField['name']);
+            throw MappingException::duplicateFieldMapping($this->name, $discriminatorField['name']);
         }
         $this->discriminatorField = $discriminatorField;
     }
@@ -590,7 +590,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 $this->discriminatorValue = $value;
             } else {
                 if ( ! class_exists($className)) {
-                    throw MongoDBException::invalidClassInDiscriminatorMap($className, $this->name);
+                    throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
                 }
                 if (is_subclass_of($className, $this->name)) {
                     $this->subClasses[] = $className;
@@ -943,16 +943,16 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             $mapping['fieldName'] = $mapping['name'];
         }
         if ( ! isset($mapping['fieldName'])) {
-            throw MongoDBException::missingFieldName($this->name);
+            throw MappingException::missingFieldName($this->name);
         }
         if ( ! isset($mapping['name'])) {
             $mapping['name'] = $mapping['fieldName'];
         }
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
-            throw MongoDBException::duplicateFieldMapping($this->name, $mapping['fieldName']);
+            throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
         if ($this->discriminatorField['name'] === $mapping['fieldName']) {
-            throw MongoDBException::duplicateFieldMapping($this->name, $mapping['fieldName']);
+            throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
         if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
@@ -1355,7 +1355,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function getFieldMapping($fieldName)
     {
         if ( ! isset($this->fieldMappings[$fieldName])) {
-            throw MongoDBException::mappingNotFound($this->name, $fieldName);
+            throw MappingException::mappingNotFound($this->name, $fieldName);
         }
         return $this->fieldMappings[$fieldName];
     }

@@ -17,7 +17,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
         $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\MongoDBException');
+        $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
     }
 

@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\Driver,
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
     Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
     Doctrine\Common\Cache\Cache;
 
@@ -82,11 +82,11 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Sets the cache driver implementation that is used for metadata caching.
      *
-     * @param Driver $driverImpl
+     * @param MappingDriver $driverImpl
      * @todo Force parameter to be a Closure to ensure lazy evaluation
      *       (as soon as a metadata cache is in effect, the driver never needs to initialize).
      */
-    public function setMetadataDriverImpl(Driver $driverImpl)
+    public function setMetadataDriverImpl(MappingDriver $driverImpl)
     {
         $this->attributes['metadataDriverImpl'] = $driverImpl;
     }
@@ -107,7 +107,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Gets the cache driver implementation that is used for the mapping metadata.
      *
-     * @return Mapping\Driver\Driver
+     * @return MappingDriver
      */
     public function getMetadataDriverImpl()
     {
