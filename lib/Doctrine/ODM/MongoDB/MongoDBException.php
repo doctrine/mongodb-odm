@@ -34,11 +34,6 @@ class MongoDBException extends \Exception
         return new self(sprintf('Invalid find by call %s::$fieldName (%s)', $documentName, $fieldName, $method));
     }
 
-    public static function removedDocumentInCollectionDetected($document, $mapping)
-    {
-        return new self(sprintf('Removed document in collection detected "%s"', get_class($document), $mapping['fieldName']));
-    }
-
     public static function detachedDocumentCannotBeRemoved()
     {
         return new self('Detached document cannot be removed');
@@ -64,17 +59,6 @@ class MongoDBException extends \Exception
         return new self("You need to pass a parameter to '".$methodName."'");
     }
 
-
-    public static function typeExists($name)
-    {
-        return new self('Type '.$name.' already exists.');
-    }
-
-    public static function typeNotFound($name)
-    {
-        return new self('Type to be overwritten '.$name.' does not exist.');
-    }
-
     public static function unknownDocumentNamespace($documentNamespaceAlias)
     {
         return new self("Unknown Document namespace alias '$documentNamespaceAlias'.");
@@ -83,66 +67,6 @@ class MongoDBException extends \Exception
     public static function cannotPersistMappedSuperclass($className)
     {
         return new self('Cannot persist an embedded document or mapped superclass ' . $className);
-    }
-
-    public static function mappingNotFound($className, $fieldName)
-    {
-        return new self("No mapping found for field '$fieldName' in class '$className'.");
-    }
-
-    public static function duplicateFieldMapping($document, $fieldName)
-    {
-        return new self('Property "'.$fieldName.'" in "'.$document.'" was already declared, but it must be declared only once');
-    }
-
-    /**
-     * Throws an exception that indicates that a class used in a discriminator map does not exist.
-     * An example would be an outdated (maybe renamed) classname.
-     *
-     * @param string $className The class that could not be found
-     * @param string $owningClass The class that declares the discriminator map.
-     * @return self
-     */
-    public static function invalidClassInDiscriminatorMap($className, $owningClass)
-    {
-        return new self(
-            "Document class '$className' used in the discriminator map of class '$owningClass' ".
-            "does not exist."
-        );
-    }
-
-    public static function missingFieldName($className)
-    {
-        return new self("The Document class '$className' field mapping misses the 'fieldName' attribute.");
-    }
-
-    public static function classIsNotAValidDocument($className)
-    {
-        return new self('Class '.$className.' is not a valid document or mapped super class.');
-    }
-
-    /**
-     * Exception for reflection exceptions - adds the document name,
-     * because there might be long classnames that will be shortened
-     * within the stacktrace
-     *
-     * @param string $document The document's name
-     * @param \ReflectionException $previousException
-     */
-    public static function reflectionFailure($document, \ReflectionException $previousException)
-    {
-        return new self('An error occurred in ' . $document, 0, $previousException);
-    }
-
-    public static function identifierRequired($documentName)
-    {
-        return new self("No identifier/primary key specified for Document '$documentName'."
-                . " Every Document must have an identifier/primary key.");
-    }
-
-    public static function missingIdentifierField($className, $fieldName)
-    {
-        return new self("The identifier $fieldName is missing for a query of " . $className);
     }
 
     public static function queryNotIndexed($className, $unindexedFields)

@@ -25,7 +25,7 @@ use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\ODM\MongoDB\DocumentManager,
     Doctrine\ODM\MongoDB\Configuration,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\MongoDBException,
+    Doctrine\ODM\MongoDB\Mapping\MappingException,
     Doctrine\ODM\MongoDB\Events;
 
 /**
@@ -153,7 +153,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         try {
             $this->driver->loadMetadataForClass($class->getName(), $class);
         } catch (\ReflectionException $e) {
-            throw MongoDBException::reflectionFailure($class->getName(), $e);
+            throw MappingException::reflectionFailure($class->getName(), $e);
         }
 
         $this->validateIdentifier($class);
@@ -193,7 +193,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function validateIdentifier($class)
     {
         if ( ! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
-            throw MongoDBException::identifierRequired($class->name);
+            throw MappingException::identifierRequired($class->name);
         }
     }
 
@@ -246,7 +246,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             case ClassMetadata::GENERATOR_TYPE_NONE;
                 break;
             default:
-                throw new MongoDBException("Unknown generator type: " . $class->generatorType);
+                throw new MappingException("Unknown generator type: " . $class->generatorType);
         }
     }
 

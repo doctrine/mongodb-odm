@@ -27,7 +27,7 @@ use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ODM\MongoDB\Events,
     Doctrine\ODM\MongoDB\Mapping\Annotations as ODM,
     Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
-    Doctrine\ODM\MongoDB\MongoDBException;
+    Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -96,7 +96,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         if (!$documentAnnots) {
-            throw MongoDBException::classIsNotAValidDocument($className);
+            throw MappingException::classIsNotAValidDocument($className);
         }
 
         // find the winning document annotation
