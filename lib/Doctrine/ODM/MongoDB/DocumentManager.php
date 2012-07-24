@@ -347,9 +347,6 @@ class DocumentManager implements ObjectManager
             }
         }
         $collection = $this->documentCollections[$className];
-        if (isset($metadata->slaveOkay)) {
-            $collection->setSlaveOkay($metadata->slaveOkay);
-        }
         return $this->documentCollections[$className];
     }
 
