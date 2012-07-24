@@ -5,7 +5,7 @@ php:
   - 5.4
 
 env:
-  - MONGO_VERSION=1.2.11
+  - MONGO_VERSION=1.2.12
 
 before_script:
   - wget http://pecl.php.net/get/mongo-${MONGO_VERSION}.tgz
