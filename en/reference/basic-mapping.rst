@@ -148,24 +148,24 @@ Doctrine Mapping Types
 A Doctrine Mapping Type defines the mapping between a PHP type and
 an MongoDB type. You can even write your own custom mapping types.
 
-Here is a quick overview of the built-in mapping types:
+Here is a quick overview of the built-in mapping types and what objects should be used with PHP:
 
 -  ``bin_data_custom``
 -  ``bin_data_func``
 -  ``bin_data_md5``
 -  ``bin_data``
 -  ``bin_data_uuid``
--  ``boolean``
--  ``date``
+-  ``boolean``: ``boolean``
+-  ``date``: ``\DateTime``
 -  ``file``
--  ``float``
+-  ``float``: ``float``
 -  ``hash``
--  ``id``
--  ``int``
+-  ``id``: ``integer``
+-  ``int``: ``integer``
 -  ``key``
--  ``string``
--  ``timestamp``
--  ``increment``
+-  ``string``: ``string``
+-  ``timestamp``: ``integer``
+-  ``increment``: ``integer``
 
 You can read more about the available MongoDB types on `php.net <http://us.php.net/manual/en/mongo.types.php>`_.
 
