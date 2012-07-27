@@ -640,6 +640,9 @@ class DocumentPersister
                 $mongoId = $reference[$cmd . 'id'];
             }
             $id = (string) $mongoId;
+            if (!$id) {
+                continue;
+            }
             $reference = $this->dm->getReference($className, $id);
             if ($mapping['strategy'] === 'set') {
                 $collection->set($key, $reference);
