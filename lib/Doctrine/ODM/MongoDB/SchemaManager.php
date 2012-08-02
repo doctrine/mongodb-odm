@@ -247,6 +247,9 @@ class SchemaManager
         if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
+                if(!is_array($index['options'])) { 
+                    $index['options'] = array(); 
+                }
                 if (!isset($index['options']['safe'])) {
                     $index['options']['safe'] = true;
                 }
