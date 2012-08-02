@@ -32,7 +32,11 @@ class TimestampType  extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        if($value instanceof \MongoTimestamp){ return $value; }
+        
+        if($value instanceof \MongoTimestamp){ 
+            return $value; 
+        }
+        
         return $value !== null ? new \MongoTimestamp($value) : null;
     }
 
