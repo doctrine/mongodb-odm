@@ -33,7 +33,7 @@ class TimestampType  extends Type
     public function convertToDatabaseValue($value)
     {
         
-        if($value instanceof \MongoTimestamp) { 
+        if($value instanceof \MongoTimestamp){ 
             return $value; 
         }
         
