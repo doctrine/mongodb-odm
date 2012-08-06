@@ -15,7 +15,7 @@
         "symfony/yaml": ">=2.0",
         "symfony/console": ">=2.0",
         "doctrine/common": ">=2.2.0,<2.5-dev",
-        "doctrine/mongodb": "dev-master"
+        "doctrine/mongodb": "1.0.0-BETA1"
     },
     "minimum-stability": "dev",
     "autoload": {
