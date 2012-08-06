@@ -95,6 +95,15 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('address.subAddress.subAddress.subAddress.testFieldName' => 'test'), $debug);
     }
 
+    public function testPrepareNestedCollectionDocuments()
+    {
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('phonenumbers.$.phonenumber')->equals('test');
+        $query = $qb->getQuery();
+        $debug = $query->debug();
+        $this->assertEquals(array('phonenumbers.$.phonenumber' => 'test'), $debug);
+    }
+
     public function testSortIsPrepared()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
