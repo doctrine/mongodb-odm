@@ -132,7 +132,6 @@ class DocumentManager implements ObjectManager
      */
     private $cmd;
 
-
     /**
      * Collection of query filters.
      *
@@ -144,8 +143,8 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
-     * @param \Doctrine\MongoDB\Connection|null $conn
-     * @param Configuration|null $config
+     * @param \Doctrine\MongoDB\Connection|null  $conn
+     * @param Configuration|null                 $config
      * @param \Doctrine\Common\EventManager|null $eventManager
      */
     protected function __construct(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
@@ -199,9 +198,9 @@ class DocumentManager implements ObjectManager
      * and uses the given Configuration.
      *
      * @static
-     * @param \Doctrine\MongoDB\Connection|null $conn
-     * @param Configuration|null $config
-     * @param \Doctrine\Common\EventManager|null $eventManager
+     * @param  \Doctrine\MongoDB\Connection|null  $conn
+     * @param  Configuration|null                 $config
+     * @param  \Doctrine\Common\EventManager|null $eventManager
      * @return DocumentManager
      */
     public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
@@ -285,7 +284,7 @@ class DocumentManager implements ObjectManager
     /**
      * Returns the metadata for a class.
      *
-     * @param string $className The class name.
+     * @param  string                                      $className The class name.
      * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      * @internal Performance-sensitive method.
      */
@@ -297,7 +296,7 @@ class DocumentManager implements ObjectManager
     /**
      * Returns the MongoDB instance for a class.
      *
-     * @param string $className The class name.
+     * @param  string                     $className The class name.
      * @return \Doctrine\MongoDB\Database
      */
     public function getDocumentDatabase($className)
@@ -310,6 +309,7 @@ class DocumentManager implements ObjectManager
         $db = $db ? $db : $this->config->getDefaultDB();
         $db = $db ? $db : 'doctrine';
         $this->documentDatabases[$className] = $this->connection->selectDatabase($db);
+
         return $this->documentDatabases[$className];
     }
 
@@ -326,7 +326,7 @@ class DocumentManager implements ObjectManager
     /**
      * Returns the MongoCollection instance for a class.
      *
-     * @param string $className The class name.
+     * @param  string                       $className The class name.
      * @return \Doctrine\MongoDB\Collection
      */
     public function getDocumentCollection($className)
@@ -334,7 +334,7 @@ class DocumentManager implements ObjectManager
         $metadata = $this->metadataFactory->getMetadataFor($className);
         $collection = $metadata->getCollection();
 
-        if ( ! $collection) {
+        if (! $collection) {
             throw MongoDBException::documentNotMappedToCollection($className);
         }
 
@@ -350,6 +350,7 @@ class DocumentManager implements ObjectManager
         if (isset($metadata->slaveOkay)) {
             $collection->setSlaveOkay($metadata->slaveOkay);
         }
+
         return $this->documentCollections[$className];
     }
 
@@ -366,7 +367,7 @@ class DocumentManager implements ObjectManager
     /**
      * Create a new Query instance for a class.
      *
-     * @param string $documentName The document class name.
+     * @param  string        $documentName The document class name.
      * @return Query\Builder
      */
     public function createQueryBuilder($documentName = null)
@@ -383,7 +384,8 @@ class DocumentManager implements ObjectManager
      * NOTE: The persist operation always considers documents that are not yet known to
      * this DocumentManager as NEW. Do not pass detached documents to the persist operation.
      *
-     * @param object $document The instance to make managed and persistent.
+     * @param  object          $document The instance to make managed and persistent.
+     * @return DocumentManager
      */
     public function persist($document)
     {
@@ -392,6 +394,8 @@ class DocumentManager implements ObjectManager
         }
         $this->errorIfClosed();
         $this->unitOfWork->persist($document);
+
+        return $this;
     }
 
     /**
@@ -400,7 +404,8 @@ class DocumentManager implements ObjectManager
      * A removed document will be removed from the database at or before transaction commit
      * or as a result of the flush operation.
      *
-     * @param object $document The document instance to remove.
+     * @param  object          $document The document instance to remove.
+     * @return DocumentManager
      */
     public function remove($document)
     {
@@ -409,13 +414,16 @@ class DocumentManager implements ObjectManager
         }
         $this->errorIfClosed();
         $this->unitOfWork->remove($document);
+
+        return $this;
     }
 
     /**
      * Refreshes the persistent state of a document from the database,
      * overriding any local changes that have not yet been persisted.
      *
-     * @param object $document The document to refresh.
+     * @param  object          $document The document to refresh.
+     * @return DocumentManager
      */
     public function refresh($document)
     {
@@ -424,6 +432,8 @@ class DocumentManager implements ObjectManager
         }
         $this->errorIfClosed();
         $this->unitOfWork->refresh($document);
+
+        return $this;
     }
 
     /**
@@ -433,7 +443,8 @@ class DocumentManager implements ObjectManager
      * Documents which previously referenced the detached document will continue to
      * reference it.
      *
-     * @param object $document The document to detach.
+     * @param  object          $document The document to detach.
+     * @return DocumentManager
      */
     public function detach($document)
     {
@@ -441,6 +452,8 @@ class DocumentManager implements ObjectManager
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->unitOfWork->detach($document);
+
+        return $this;
     }
 
     /**
@@ -448,7 +461,7 @@ class DocumentManager implements ObjectManager
      * of this DocumentManager and returns the managed copy of the document.
      * The document passed to merge will not become associated/managed with this DocumentManager.
      *
-     * @param object $document The detached document to merge into the persistence context.
+     * @param  object $document The detached document to merge into the persistence context.
      * @return object The managed copy of the document.
      */
     public function merge($document)
@@ -457,17 +470,19 @@ class DocumentManager implements ObjectManager
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
+
         return $this->unitOfWork->merge($document);
     }
 
     /**
      * Acquire a lock on the given document.
      *
-     * @param object $document
-     * @param int $lockMode
-     * @param int $lockVersion
+     * @param  object          $document
+     * @param  int             $lockMode
+     * @param  int             $lockVersion
      * @throws LockException
      * @throws LockException
+     * @return DocumentManager
      */
     public function lock($document, $lockMode, $lockVersion = null)
     {
@@ -475,12 +490,15 @@ class DocumentManager implements ObjectManager
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->unitOfWork->lock($document, $lockMode, $lockVersion);
+
+        return $this;
     }
 
     /**
      * Releases a lock on the given document.
      *
-     * @param object $document
+     * @param  object          $document
+     * @return DocumentManager
      */
     public function unlock($document)
     {
@@ -488,13 +506,15 @@ class DocumentManager implements ObjectManager
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->unitOfWork->unlock($document);
+
+        return $this;
     }
 
     /**
      * Gets the repository for a document class.
      *
-     * @param string $documentName  The name of the Document.
-     * @return DocumentRepository  The repository.
+     * @param  string             $documentName The name of the Document.
+     * @return DocumentRepository The repository.
      */
     public function getRepository($documentName)
     {
@@ -521,8 +541,9 @@ class DocumentManager implements ObjectManager
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
      *
-     * @param object $document
-     * @param array $options Array of options to be used with batchInsert(), update() and remove()
+     * @param  object          $document
+     * @param  array           $options  Array of options to be used with batchInsert(), update() and remove()
+     * @return DocumentManager
      */
     public function flush($document = null, array $options = array())
     {
@@ -531,6 +552,8 @@ class DocumentManager implements ObjectManager
         }
         $this->errorIfClosed();
         $this->unitOfWork->commit($document, $options);
+
+        return $this;
     }
 
     /**
@@ -541,9 +564,9 @@ class DocumentManager implements ObjectManager
      * has its identifier populated. Otherwise a proxy is returned that automatically
      * loads itself on first access.
      *
-     * @param string $documentName
-     * @param string|object $identifier
-     * @return mixed|object The document reference.
+     * @param  string        $documentName
+     * @param  string|object $identifier
+     * @return mixed|object  The document reference.
      */
     public function getReference($documentName, $identifier)
     {
@@ -575,8 +598,8 @@ class DocumentManager implements ObjectManager
      * never be visible to the application (especially not event listeners) as it will
      * never be loaded in the first place.
      *
-     * @param string $documentName The name of the document type.
-     * @param mixed $identifier The document identifier.
+     * @param  string $documentName The name of the document type.
+     * @param  mixed  $identifier   The document identifier.
      * @return object The (partial) document reference.
      */
     public function getPartialReference($documentName, $identifier)
@@ -599,10 +622,10 @@ class DocumentManager implements ObjectManager
      *
      * This is just a convenient shortcut for getRepository($documentName)->find($id).
      *
-     * @param string $documentName
-     * @param mixed $identifier
-     * @param int $lockMode
-     * @param int $lockVersion
+     * @param  string $documentName
+     * @param  mixed  $identifier
+     * @param  int    $lockMode
+     * @param  int    $lockVersion
      * @return object $document
      */
     public function find($documentName, $identifier, $lockMode = LockMode::NONE, $lockVersion = null)
@@ -614,7 +637,8 @@ class DocumentManager implements ObjectManager
      * Clears the DocumentManager. All entities that are currently managed
      * by this DocumentManager become detached.
      *
-     * @param string $documentName
+     * @param  string          $documentName
+     * @return DocumentManager
      */
     public function clear($documentName = null)
     {
@@ -624,23 +648,28 @@ class DocumentManager implements ObjectManager
             //TODO
             throw new MongoDBException("DocumentManager#clear(\$documentName) not yet implemented.");
         }
+
+        return $this;
     }
 
     /**
      * Closes the DocumentManager. All documents that are currently managed
      * by this DocumentManager become detached. The DocumentManager may no longer
      * be used after it is closed.
+     * @return DocumentManager
      */
     public function close()
     {
         $this->clear();
         $this->closed = true;
+
+        return $this;
     }
 
     /**
      * Determines whether a document instance is managed in this DocumentManager.
      *
-     * @param object $document
+     * @param  object  $document
      * @return boolean TRUE if this DocumentManager currently manages the given document, FALSE otherwise.
      */
     public function contains($document)
@@ -648,6 +677,7 @@ class DocumentManager implements ObjectManager
         if (!is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
+
         return $this->unitOfWork->isScheduledForInsert($document) ||
                $this->unitOfWork->isInIdentityMap($document) &&
                ! $this->unitOfWork->isScheduledForDelete($document);
@@ -668,6 +698,7 @@ class DocumentManager implements ObjectManager
         $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
         if (is_array($value) && isset($value[$discriminatorField])) {
             $discriminatorValue = $value[$discriminatorField];
+
             return isset($mapping['discriminatorMap'][$discriminatorValue]) ? $mapping['discriminatorMap'][$discriminatorValue] : $discriminatorValue;
         } else {
             $class = $this->getClassMetadata($mapping['targetDocument']);
@@ -679,13 +710,14 @@ class DocumentManager implements ObjectManager
                 }
             }
         }
+
         return $mapping['targetDocument'];
     }
 
     /**
      * Returns a DBRef array for the supplied document.
      *
-     * @param mixed $document A document object
+     * @param mixed $document         A document object
      * @param array $referenceMapping Mapping for the field the references the document
      *
      * @return array A DBRef array
