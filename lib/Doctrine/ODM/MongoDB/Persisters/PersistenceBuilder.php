@@ -403,13 +403,13 @@ class PersistenceBuilder
             $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
         }
 
+        if ($class->hasDiscriminator()) {
+            $embeddedDocumentValue[$class->discriminatorField['name']] = $class->discriminatorValue;
+        }
+
         // Fix so that we can force empty embedded document to store itself as a hash instead of an array
         if (empty($embeddedDocumentValue)) {
             return (object) $embeddedDocumentValue;
-        }
-
-        if ($class->hasDiscriminator()) {
-            $embeddedDocumentValue[$class->discriminatorField['name']] = $class->discriminatorValue;
         }
 
         return $embeddedDocumentValue;
