@@ -404,9 +404,27 @@ class:
      */
     class MyType extends Type
     {
+        /**
+         * Important note: This function is only called when your custom type
+         * is used as an identifier. For other cases, `closureToPHP` will be
+         * called instead.
+         *
+         * @param The database value
+         * @return The value after being changed to a PHP value
+         */
         public function convertToPHPValue($value)
         {
-            // This is executed when the value is read from the database. Make your conversions here.
+            $newValue = // your logic to convert $value to it's PHP value
+            
+            return $newValue;
+        }
+
+        public function closureToPHP()
+        {
+            // Return the content of a closure (as text) that will receive
+            // $value and has to put the result of the conversion in a $result variable eg:
+            return '$return = new \DateTime($value);';
+
         }
     
         public function convertToDatabaseValue($value)
