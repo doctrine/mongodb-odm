@@ -395,10 +395,9 @@ class:
     <?php
 
     namespace My\Project\Types;
-    
-    use Doctrine\DBAL\Types\Type;
-    use Doctrine\DBAL\Platforms\AbstractPlatform;
-    
+
+    use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+
     /**
      * My custom datatype.
      */
