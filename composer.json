@@ -20,5 +20,10 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-0": { "Doctrine\\ODM\\MongoDB": "lib/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
     }
 }
