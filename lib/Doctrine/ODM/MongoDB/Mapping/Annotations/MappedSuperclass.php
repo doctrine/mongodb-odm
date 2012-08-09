@@ -20,4 +20,6 @@
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 /** @Annotation */
-final class MappedSuperclass extends AbstractDocument {}
+final class MappedSuperclass extends AbstractDocument
+{
+}

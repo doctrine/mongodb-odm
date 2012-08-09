@@ -21,11 +21,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
 
-/**
- *
- * @license MIT
- * @link    www.doctrine-project.com
- */
 abstract class AbstractDocument extends Annotation
 {
 }
