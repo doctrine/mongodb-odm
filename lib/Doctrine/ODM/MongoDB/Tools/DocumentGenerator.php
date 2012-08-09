@@ -19,8 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tools;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
-    Doctrine\Common\Util\Inflector;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\Common\Util\Inflector;
 
 /**
  * Generic class used to generate PHP5 document classes from ClassMetadataInfo instances

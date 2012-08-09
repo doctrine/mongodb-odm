@@ -19,27 +19,27 @@
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
-use Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\Common\EventManager,
-    Doctrine\ODM\MongoDB\UnitOfWork,
-    Doctrine\ODM\MongoDB\Hydrator\HydratorFactory,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mapping\Types\Type,
-    Doctrine\Common\Collections\Collection,
-    Doctrine\ODM\MongoDB\Events,
-    Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs,
-    Doctrine\ODM\MongoDB\MongoDBException,
-    Doctrine\ODM\MongoDB\LockException,
-    Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\ODM\MongoDB\Query\Query,
-    Doctrine\MongoDB\ArrayIterator,
-    Doctrine\ODM\MongoDB\Proxy\Proxy,
-    Doctrine\ODM\MongoDB\LockMode,
-    Doctrine\ODM\MongoDB\Cursor,
-    Doctrine\ODM\MongoDB\LoggableCursor,
-    Doctrine\MongoDB\Cursor as BaseCursor,
-    Doctrine\MongoDB\Iterator,
-    Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\MongoDB\ArrayIterator;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\LockMode;
+use Doctrine\ODM\MongoDB\Cursor;
+use Doctrine\ODM\MongoDB\LoggableCursor;
+use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\Iterator;
+use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
 
 /**
  * The DocumentPersister is responsible for persisting documents.

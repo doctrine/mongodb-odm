@@ -2,20 +2,19 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use DateTime,
-    Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 
-use Documents\BlogPost,
-    Documents\User;
+use Documents\BlogPost;
+use Documents\User;
 
 class ReferenceRepositoryMethodTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testOneToOne()
     {
-        $date1 = new DateTime();
+        $date1 = new \DateTime();
         $date1->setTimestamp(strtotime('-20 seconds'));
 
-        $date2 = new DateTime();
+        $date2 = new \DateTime();
         $date2->setTimestamp(strtotime('-10 seconds'));
 
         $blogPost = new \Documents\BlogPost('Test');

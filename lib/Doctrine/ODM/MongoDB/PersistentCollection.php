@@ -19,10 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\Collections\Collection as BaseCollection,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Proxy\Proxy,
-    Closure;
+use Doctrine\Common\Collections\Collection as BaseCollection;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -411,7 +410,7 @@ class PersistentCollection implements BaseCollection
     /**
      * {@inheritdoc}
      */
-    public function exists(Closure $p)
+    public function exists(\Closure $p)
     {
         $this->initialize();
         return $this->coll->exists($p);
@@ -503,7 +502,7 @@ class PersistentCollection implements BaseCollection
     /**
      * {@inheritdoc}
      */
-    public function map(Closure $func)
+    public function map(\Closure $func)
     {
         $this->initialize();
         return $this->coll->map($func);
@@ -512,7 +511,7 @@ class PersistentCollection implements BaseCollection
     /**
      * {@inheritdoc}
      */
-    public function filter(Closure $p)
+    public function filter(\Closure $p)
     {
         $this->initialize();
         return $this->coll->filter($p);
@@ -521,7 +520,7 @@ class PersistentCollection implements BaseCollection
     /**
      * {@inheritdoc}
      */
-    public function forAll(Closure $p)
+    public function forAll(\Closure $p)
     {
         $this->initialize();
         return $this->coll->forAll($p);
@@ -530,7 +529,7 @@ class PersistentCollection implements BaseCollection
     /**
      * {@inheritdoc}
      */
-    public function partition(Closure $p)
+    public function partition(\Closure $p)
     {
         $this->initialize();
         return $this->coll->partition($p);

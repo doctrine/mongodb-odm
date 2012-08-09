@@ -21,9 +21,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console;
 
 /**
  * Command to query mongodb and inspect the outputted results from your document classes.

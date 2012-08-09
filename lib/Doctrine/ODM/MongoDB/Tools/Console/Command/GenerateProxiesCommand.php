@@ -21,10 +21,10 @@
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console,
-    Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console;
+use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
 
 /**
  * Command to (re)generate the proxy classes used by doctrine.

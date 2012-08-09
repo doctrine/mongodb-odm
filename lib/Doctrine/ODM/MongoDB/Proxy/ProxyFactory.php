@@ -19,8 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Proxy;
 
-use Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * This factory is used to create proxy objects for documents at runtime.

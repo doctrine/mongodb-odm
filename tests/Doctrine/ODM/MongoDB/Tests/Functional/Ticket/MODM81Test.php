@@ -2,8 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\Events,
-    Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Events;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest

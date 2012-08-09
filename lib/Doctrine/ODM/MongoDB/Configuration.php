@@ -19,9 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
-    Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
-    Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver;
+use Doctrine\Common\Cache\Cache;
 
 /**
  * Configuration class for the DocumentManager. When setting up your DocumentManager

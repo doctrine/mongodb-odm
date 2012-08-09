@@ -21,12 +21,12 @@
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console,
-    Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter,
-    Doctrine\ODM\MongoDB\Tools\DocumentGenerator,
-    Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console;
+use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
+use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
+use Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory;
 
 /**
  * Command to generate document classes and method stubs from your mapping information.

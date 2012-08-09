@@ -19,11 +19,11 @@
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
-use Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder,
-    Doctrine\ODM\MongoDB\UnitOfWork,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * The CollectionPersister is responsible for persisting collections of embedded documents

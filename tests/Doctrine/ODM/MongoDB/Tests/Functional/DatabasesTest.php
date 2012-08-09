@@ -2,20 +2,20 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\Common\ClassLoader,
-    Doctrine\Common\Cache\ApcCache,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\Configuration,
-    Doctrine\ODM\MongoDB\Mapping\Annotations as ODM,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\MongoDB\Connection,
-    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
-    Documents\Ecommerce\ConfigurableProduct,
-    Documents\Ecommerce\StockItem,
-    Documents\Ecommerce\Currency,
-    Documents\Ecommerce\Money,
-    Documents\Ecommerce\Option;
+use Doctrine\Common\ClassLoader;
+use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\MongoDB\Connection;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Documents\Ecommerce\ConfigurableProduct;
+use Documents\Ecommerce\StockItem;
+use Documents\Ecommerce\Currency;
+use Documents\Ecommerce\Money;
+use Documents\Ecommerce\Option;
 
 class DatabasesTest extends \PHPUnit_Framework_TestCase
 {

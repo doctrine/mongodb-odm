@@ -19,15 +19,15 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\Common\Annotations\AnnotationRegistry,
-    Doctrine\Common\Annotations\Reader,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver,
-    Doctrine\ODM\MongoDB\Events,
-    Doctrine\ODM\MongoDB\Mapping\Annotations as ODM,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
-    Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.

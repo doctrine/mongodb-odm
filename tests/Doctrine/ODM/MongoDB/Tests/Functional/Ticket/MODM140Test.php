@@ -4,10 +4,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-use Doctrine\Common\Collections\ArrayCollection,
-    Documents\Functional\EmbeddedTestLevel0,
-    Documents\Functional\EmbeddedTestLevel1,
-    Documents\Functional\EmbeddedTestLevel2;
+use Doctrine\Common\Collections\ArrayCollection;
+use Documents\Functional\EmbeddedTestLevel0;
+use Documents\Functional\EmbeddedTestLevel1;
+use Documents\Functional\EmbeddedTestLevel2;
 
 class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

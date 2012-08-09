@@ -2,20 +2,20 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\Common\ClassLoader,
-    Doctrine\Common\Cache\ApcCache,
-    Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\Configuration,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mongo,
-    Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver,
-    Documents\Account,
-    Documents\Address,
-    Documents\Group,
-    Documents\Phonenumber,
-    Documents\Profile,
-    Documents\File,
-    Documents\User;
+use Doctrine\Common\ClassLoader;
+use Doctrine\Common\Cache\ApcCache;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mongo;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Documents\Account;
+use Documents\Address;
+use Documents\Group;
+use Documents\Phonenumber;
+use Documents\Profile;
+use Documents\File;
+use Documents\User;
 
 class PersistingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

@@ -21,22 +21,22 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\EventManager,
-    Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Proxy\Proxy,
-    Doctrine\ODM\MongoDB\Mapping\Types\Type,
-    Doctrine\ODM\MongoDB\Event\LifecycleEventArgs,
-    Doctrine\ODM\MongoDB\Event\PreLoadEventArgs,
-    Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder,
-    Doctrine\Common\Collections\Collection,
-    Doctrine\Common\NotifyPropertyChanged,
-    Doctrine\Common\PropertyChangedListener,
-    Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\MongoDB\GridFSFile,
-    Doctrine\ODM\MongoDB\Query\Query,
-    Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\PropertyChangedListener;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\MongoDB\GridFSFile;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an

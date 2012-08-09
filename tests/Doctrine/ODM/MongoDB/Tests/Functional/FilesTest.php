@@ -2,8 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\File,
-    Documents\Profile;
+use Documents\File;
+use Documents\Profile;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest

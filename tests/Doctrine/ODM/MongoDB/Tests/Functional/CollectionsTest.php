@@ -2,8 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Bars\Bar,
-    Documents\Bars\Location;
+use Documents\Bars\Bar;
+use Documents\Bars\Location;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest

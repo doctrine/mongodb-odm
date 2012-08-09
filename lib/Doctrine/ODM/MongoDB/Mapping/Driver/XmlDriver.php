@@ -21,8 +21,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
-    SimpleXmlElement;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -276,7 +275,7 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addIndex(ClassMetadataInfo $class, SimpleXmlElement $xmlIndex)
+    private function addIndex(ClassMetadataInfo $class, \SimpleXmlElement $xmlIndex)
     {
         $attributes = $xmlIndex->attributes();
         $options = array();

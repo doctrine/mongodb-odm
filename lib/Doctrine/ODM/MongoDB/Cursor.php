@@ -19,7 +19,6 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use MongoCursor;
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Connection;
 use Doctrine\MongoDB\Cursor as BaseCursor;

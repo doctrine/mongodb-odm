@@ -19,17 +19,17 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory,
-    Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver,
-    Doctrine\MongoDB\Connection,
-    Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
-    Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\EventManager,
-    Doctrine\ODM\MongoDB\Hydrator\HydratorFactory,
-    Doctrine\Common\Persistence\ObjectManager,
-    Doctrine\ODM\MongoDB\Query\FilterCollection;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver;
+use Doctrine\MongoDB\Connection;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ODM\MongoDB\Query\FilterCollection;
 
 /**
  * The DocumentManager class is the central access point for managing the

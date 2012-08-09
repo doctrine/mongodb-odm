@@ -19,9 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\Common\EventArgs,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
-    Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Common\EventArgs;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Class that holds event arguments for a loadMetadata event.
