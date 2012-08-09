@@ -890,23 +890,30 @@ class DocumentPersister
 
             $mapping = $metadata->fieldMappings[$e[0]];
             $e[0] = $mapping['name'];
+            $fieldName = $e[0] . '.' .$e[1];
             if ($e[1] != '$') {
                 $fieldName = $e[0] . '.' .$e[1];
+                $objectProperty = $e[1];
+                $objectPropertyPrefix = '';
+                $fieldHasCollectionItemPointer = false;
             }
             else {
                 $fieldName = $e[0] . '.' .$e[1] . '.' .$e[2];
+                $objectProperty = $e[2];
+                $objectPropertyPrefix = $e[1] . '.';
+                $fieldHasCollectionItemPointer = true;
             }
 
             if (isset($mapping['targetDocument'])) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-                if ($targetClass->hasField($e[1])) {
-                    if ($targetClass->identifier === $e[1]) {
-                        $targetMapping = $targetClass->getFieldMapping($e[1]);
-                        $e[1] = $targetMapping['name'];
+                if ($targetClass->hasField($objectProperty)) {
+                    if ($targetClass->identifier === $objectProperty) {
+                        $targetMapping = $targetClass->getFieldMapping($objectProperty);
+                        $objectProperty = $targetMapping['name'];
                         if (isset($mapping['reference']) && $mapping['reference']) {
-                            $fieldName =  $mapping['simple'] ? $e[0] . '.' .$e[1] : $e[0] . '.$id';
+                            $fieldName =  $mapping['simple'] ? $e[0] . '.' .$objectPropertyPrefix . $objectProperty : $e[0] . '.$id';
                         } else {
-                            $fieldName = $e[0] . '.' .$e[1];
+                            $fieldName = $e[0] . '.' .$objectPropertyPrefix . $objectProperty;
                         }
                         if ($prepareValue === true) {
                             if (is_array($value)) {
@@ -926,11 +933,14 @@ class DocumentPersister
                         }
 
                     } else {
-                        $targetMapping = $targetClass->getFieldMapping($e[1]);
-                        $e[1] = $targetMapping['name'];
-                        $fieldName =  $e[0] . '.' . $e[1];
+                        $targetMapping = $targetClass->getFieldMapping($objectProperty);
+                        $objectProperty = $targetMapping['name'];
+                        $fieldName =  $e[0] . '.' . $objectPropertyPrefix . $objectProperty;
 
-                        if (count($e) > 2) {
+                        if (count($e) > 2 + $fieldHasCollectionItemPointer ? 1 : 0) {
+                            if ($fieldHasCollectionItemPointer) {
+                                unset($e[2]);
+                            }
                             unset($e[0], $e[1]);
                             $key = implode('.', $e);
 
