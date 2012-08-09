@@ -25,8 +25,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 /**
  * EagerCursor extends the default Doctrine\MongoDB\EagerCursor implementation.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */

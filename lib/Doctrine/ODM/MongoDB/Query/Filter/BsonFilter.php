@@ -28,7 +28,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
  * Handles the setting and escaping of parameters.
  *
  * @author Tim Roediger <superdweebie@gmail.com>
- * @abstract
  */
 abstract class BsonFilter
 {

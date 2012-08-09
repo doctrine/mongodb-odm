@@ -35,7 +35,6 @@ use Doctrine\ODM\MongoDB\LoggableCursor;
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
  * and to hydrate the raw arrays of data to Doctrine document objects.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */

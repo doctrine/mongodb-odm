@@ -1,7 +1,5 @@
 <?php
 /*
- * THIS SOFTWARE IS PROVIDED BY THE <?php
-/*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -43,7 +41,6 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>

@@ -28,9 +28,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
  * load some mapping information and use it to do things like generate code
  * from the mapping information.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
- * @since   2.0
+ * @since   1.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>

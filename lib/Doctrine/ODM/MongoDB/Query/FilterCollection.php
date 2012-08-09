@@ -24,10 +24,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
 
 /**
-* Collection class for all the query filters.
-*
-* @author Tim Roediger <superdweebie@gmail.com>
-*/
+ * Collection class for all the query filters.
+ *
+ * @author Tim Roediger <superdweebie@gmail.com>
+ */
 class FilterCollection
 {
     /**

@@ -28,8 +28,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 /**
  * LoggableCursor adds logging to the default ODM cursor.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>

@@ -33,8 +33,6 @@ use Doctrine\ODM\MongoDB\Events;
  * metadata mapping informations of a class which describes how a class should be mapped
  * to a document database.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>

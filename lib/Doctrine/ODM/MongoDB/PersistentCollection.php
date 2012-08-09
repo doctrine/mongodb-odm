@@ -26,7 +26,6 @@ use Doctrine\ODM\MongoDB\Proxy\Proxy;
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>

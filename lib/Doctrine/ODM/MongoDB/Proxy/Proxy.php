@@ -24,8 +24,7 @@ use Doctrine\Common\Persistence\Proxy as BaseProxy;
 /**
  * Document Proxy interface.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @since       2.0
+ * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>

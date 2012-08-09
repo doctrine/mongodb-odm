@@ -24,8 +24,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 /**
  * Class that holds event arguments for a preInsert/preUpdate event.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>

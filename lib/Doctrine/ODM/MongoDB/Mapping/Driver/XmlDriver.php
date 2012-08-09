@@ -26,8 +26,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
