@@ -845,7 +845,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
-        $isNewParentDocument = in_array($parentDocument,$this->documentInsertions,true);
+        $isNewParentDocument = isset($this->documentInsertions[spl_object_hash($parentDocument)]);
         $class = $this->dm->getClassMetadata(get_class($parentDocument));
         $topOrExistingDocument = (!$isNewParentDocument || !$class->isEmbeddedDocument);
 
