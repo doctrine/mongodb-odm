@@ -454,7 +454,7 @@ own notification when a query is unindexed:
     <?php
 
     $query = $qb->getQuery();
-    if ($query->isIndexed()) {
+    if (!$query->isIndexed()) {
         $notifier->addError('Cannot execute queries that are not indexed.');
     }
 
