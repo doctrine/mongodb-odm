@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="926fc04d-4bc7-4bee-b7e0-96c2d0b861f8" name="Default" comment="" />
+    <list default="true" id="926fc04d-4bc7-4bee-b7e0-96c2d0b861f8" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+    </list>
     <ignored path="mongodb-odm.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -25,7 +27,7 @@
       <file leaf-file-name="UnitOfWork.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/UnitOfWork.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="457" column="0" selection-start="14474" selection-end="14474" vertical-scroll-proportion="0.0">
+            <state line="457" column="0" selection-start="14481" selection-end="14481" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -34,7 +36,7 @@
       <file leaf-file-name="PersistentCollection.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/PersistentCollection.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="293" column="48" selection-start="8073" selection-end="8073" vertical-scroll-proportion="0.0">
+            <state line="293" column="7" selection-start="7982" selection-end="7982" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -52,7 +54,7 @@
       <file leaf-file-name="CollectionPersisterTest.php" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/Doctrine/ODM/MongoDB/Tests/Functional/CollectionPersisterTest.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="158" column="64" selection-start="7754" selection-end="7754" vertical-scroll-proportion="0.026690392">
+            <state line="158" column="62" selection-start="7754" selection-end="7754" vertical-scroll-proportion="0.017381229">
               <folding />
             </state>
           </provider>
@@ -70,7 +72,7 @@
       <file leaf-file-name="DocumentManager.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/DocumentManager.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="523" column="0" selection-start="16338" selection-end="16338" vertical-scroll-proportion="0.0">
+            <state line="523" column="0" selection-start="16134" selection-end="16134" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -79,7 +81,7 @@
       <file leaf-file-name="CollectionPersister.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/Persisters/CollectionPersister.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="168" column="49" selection-start="6484" selection-end="6484" vertical-scroll-proportion="0.0">
+            <state line="168" column="49" selection-start="6491" selection-end="6491" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -88,7 +90,7 @@
       <file leaf-file-name="PersistenceBuilder.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/Persisters/PersistenceBuilder.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="342" column="20" selection-start="14197" selection-end="14197" vertical-scroll-proportion="0.0">
+            <state line="342" column="20" selection-start="14310" selection-end="14310" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -106,7 +108,7 @@
       <file leaf-file-name="Collection.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vendor/doctrine/mongodb/lib/Doctrine/MongoDB/Collection.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="209" column="85" selection-start="6203" selection-end="6203" vertical-scroll-proportion="0.0">
+            <state line="209" column="56" selection-start="6203" selection-end="6203" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -137,8 +139,8 @@
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="php 5.3" />
   <component name="ProjectFrameBounds">
     <option name="y" value="24" />
-    <option name="width" value="1366" />
-    <option name="height" value="744" />
+    <option name="width" value="1920" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -166,6 +168,16 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -196,16 +208,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="tests" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -286,15 +288,15 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="24" width="1366" height="744" extended-state="6" />
+    <frame x="0" y="24" width="1920" height="1056" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3279743" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928678" sideWeight="0.6706349" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32905984" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Regex Tester" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32905984" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36688313" sideWeight="0.625" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25872535" sideWeight="0.67202574" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2614728" sideWeight="0.67202574" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2633833" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19978632" sideWeight="0.33226496" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27730194" sideWeight="0.49839744" order="9" side_tool="true" content_ui="tabs" />
@@ -303,8 +305,9 @@
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32936507" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.7636656" sideWeight="0.49786323" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.7636656" sideWeight="0.49786323" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3279743" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24946581" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -390,45 +393,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tests/Doctrine/ODM/MongoDB/Tests/Functional/CollectionsTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="65" selection-start="652" selection-end="652" vertical-scroll-proportion="0.3469163" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/bootstrap.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="49" selection-start="574" selection-end="574" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/com/jetbrains/php/lang/psi/stubs/data/Core_c.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="309" column="12" selection-start="9679" selection-end="9679" vertical-scroll-proportion="5.854651" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Doctrine/ODM/MongoDB/Tests/Functional/FilesTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="0" selection-start="643" selection-end="643" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Documents/File.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="0" selection-start="455" selection-end="455" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/DocumentRepository.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="126" column="0" selection-start="4016" selection-end="4016" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/doctrine/mongodb/lib/Doctrine/MongoDB/Cursor.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="186" column="34" selection-start="5733" selection-end="5733" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/composer.lock">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
@@ -463,24 +427,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/UnitOfWork.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="457" column="0" selection-start="14474" selection-end="14474" vertical-scroll-proportion="0.0" />
+        <state line="457" column="0" selection-start="14481" selection-end="14481" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/PersistentCollection.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="293" column="48" selection-start="8073" selection-end="8073" vertical-scroll-proportion="0.0" />
+        <state line="293" column="7" selection-start="7982" selection-end="7982" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/com/jetbrains/php/lang/psi/stubs/data/mongo.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="482" column="26" selection-start="16082" selection-end="16088" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Doctrine/ODM/MongoDB/Tests/Functional/CollectionPersisterTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="158" column="64" selection-start="7754" selection-end="7754" vertical-scroll-proportion="0.026690392">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file:///usr/share/php/PHPUnit/Framework/TestCase.php">
@@ -490,19 +451,23 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/DocumentManager.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="523" column="0" selection-start="16338" selection-end="16338" vertical-scroll-proportion="0.0" />
+        <state line="523" column="0" selection-start="16134" selection-end="16134" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/Persisters/CollectionPersister.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="168" column="49" selection-start="6484" selection-end="6484" vertical-scroll-proportion="0.0">
+        <state line="168" column="49" selection-start="6491" selection-end="6491" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/Doctrine/ODM/MongoDB/Persisters/PersistenceBuilder.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="342" column="20" selection-start="14197" selection-end="14197" vertical-scroll-proportion="0.0" />
+        <state line="342" column="20" selection-start="14310" selection-end="14310" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/com/jetbrains/php/lang/psi/stubs/data/standard_8.php">
@@ -512,7 +477,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/vendor/doctrine/mongodb/lib/Doctrine/MongoDB/Collection.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="209" column="85" selection-start="6203" selection-end="6203" vertical-scroll-proportion="0.0" />
+        <state line="209" column="56" selection-start="6203" selection-end="6203" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Doctrine/ODM/MongoDB/Tests/Functional/CollectionPersisterTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="158" column="62" selection-start="7754" selection-end="7754" vertical-scroll-proportion="0.017381229">
+          <folding />
+        </state>
       </provider>
     </entry>
   </component>
