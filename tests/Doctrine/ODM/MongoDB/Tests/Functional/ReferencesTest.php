@@ -2,13 +2,13 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Address,
-    Documents\Profile,
-    Documents\Phonenumber,
-    Documents\Account,
-    Documents\Group,
-    Documents\User,
-    Doctrine\ODM\MongoDB\PersistentCollection;
+use Documents\Address;
+use Documents\Profile;
+use Documents\Phonenumber;
+use Documents\Account;
+use Documents\Group;
+use Documents\User;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 
 class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

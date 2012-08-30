@@ -2,34 +2,34 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\User,
-    Documents\Account,
-    Documents\Phonenumber,
-    Documents\Employee,
-    Documents\Manager,
-    Documents\Address,
-    Documents\Group,
-    Documents\Project,
-    Documents\Agent,
-    Documents\Server,
-    Documents\GuestServer,
-    Documents\Functional\AlsoLoad,
-    Documents\Functional\EmbeddedTestLevel0,
-    Documents\Functional\EmbeddedTestLevel0b,
-    Documents\Functional\EmbeddedTestLevel1,
-    Documents\Functional\EmbeddedTestLevel2,
-    Documents\Functional\FavoritesUser,
-    Documents\Functional\NotAnnotatedDocument,
-    Documents\Functional\NotSaved,
-    Documents\Functional\NullFieldValues,
-    Documents\Functional\PreUpdateTestProduct,
-    Documents\Functional\PreUpdateTestSellable,
-    Documents\Functional\PreUpdateTestSeller,
-    Documents\Functional\SameCollection1,
-    Documents\Functional\SameCollection2,
-    Documents\Functional\SimpleEmbedAndReference,
-    Documents\Album,
-    Documents\Song;
+use Documents\User;
+use Documents\Account;
+use Documents\Phonenumber;
+use Documents\Employee;
+use Documents\Manager;
+use Documents\Address;
+use Documents\Group;
+use Documents\Project;
+use Documents\Agent;
+use Documents\Server;
+use Documents\GuestServer;
+use Documents\Functional\AlsoLoad;
+use Documents\Functional\EmbeddedTestLevel0;
+use Documents\Functional\EmbeddedTestLevel0b;
+use Documents\Functional\EmbeddedTestLevel1;
+use Documents\Functional\EmbeddedTestLevel2;
+use Documents\Functional\FavoritesUser;
+use Documents\Functional\NotAnnotatedDocument;
+use Documents\Functional\NotSaved;
+use Documents\Functional\NullFieldValues;
+use Documents\Functional\PreUpdateTestProduct;
+use Documents\Functional\PreUpdateTestSellable;
+use Documents\Functional\PreUpdateTestSeller;
+use Documents\Functional\SameCollection1;
+use Documents\Functional\SameCollection2;
+use Documents\Functional\SimpleEmbedAndReference;
+use Documents\Album;
+use Documents\Song;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest

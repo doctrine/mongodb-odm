@@ -22,8 +22,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
 /**
  * The Timestamp type.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -32,6 +30,10 @@ class TimestampType  extends Type
 {
     public function convertToDatabaseValue($value)
     {
+        if ($value instanceof \MongoTimestamp) {
+            return $value;
+        }
+
         return $value !== null ? new \MongoTimestamp($value) : null;
     }
 

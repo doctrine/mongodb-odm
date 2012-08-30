@@ -2,14 +2,14 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Article,
-    Documents\Account,
-    Documents\Address,
-    Documents\Group,
-    Documents\Phonenumber,
-    Documents\Profile,
-    Documents\File,
-    Documents\User;
+use Documents\Article;
+use Documents\Account;
+use Documents\Address;
+use Documents\Group;
+use Documents\Phonenumber;
+use Documents\Profile;
+use Documents\File;
+use Documents\User;
 
 class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -128,12 +128,6 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->where("function() { return this.username == 'boo' }");
-        $query = $qb->getQuery();
-        $user = $query->getSingleResult();
-        $this->assertEquals('boo', $user->getUsername());
-
-        $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->reduce("function() { return this.username == 'boo' }");
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertEquals('boo', $user->getUsername());

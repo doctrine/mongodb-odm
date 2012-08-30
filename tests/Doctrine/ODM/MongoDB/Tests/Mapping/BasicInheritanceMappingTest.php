@@ -18,7 +18,7 @@ class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException Doctrine\ODM\MongoDB\MongoDBException
+     * @expectedException Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function testGetMetadataForTransientClassThrowsException()
     {

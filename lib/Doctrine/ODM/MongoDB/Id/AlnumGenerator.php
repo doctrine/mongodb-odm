@@ -27,13 +27,13 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * It extends IncrementGenerator in order to ensure uniqueness even with short strings.
  *
  * "Awkward safe mode" avoids combinations that results in 'dirty' words by removing
- * the vouwels from chars index
+ * the vowels from chars index
  *
  * A minimum identifier length can be enforced by setting a numeric value to the "pad" option
  * (with only 6 chars you will have more than 56 billion unique id's, 15 billion in 'awkward safe mode')
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
+ * The character set used for ID generation can be explicitly set with the "chars" option (e.g. base36, etc.)
+ *
  * @since       1.0
  * @author      Frederik Eychenié <feychenie@gmail.com>
  */
@@ -48,13 +48,24 @@ class AlnumGenerator extends IncrementGenerator
 
     protected $awkwardSafeChars = '0123456789BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz';
 
-    public function setPad($pad){
+    public function setPad($pad)
+    {
         $this->pad = intval($pad);
     }
 
     public function setAwkwardSafeMode($awkwardSafeMode = false)
     {
         $this->awkwardSafeMode = $awkwardSafeMode;
+    }
+
+    /*
+     * Set the character set used for ID generation
+     *
+     * @param string $chars ID character set
+     */
+    public function setChars($chars)
+    {
+        $this->chars = $chars;
     }
 
     /** @inheritDoc */

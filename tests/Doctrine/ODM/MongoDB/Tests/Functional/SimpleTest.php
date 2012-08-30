@@ -2,8 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Bars\Bar,
-    Documents\Bars\Location;
+use Documents\Bars\Bar;
+use Documents\Bars\Location;
 
 class SimpleTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

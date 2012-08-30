@@ -19,8 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use Doctrine\ODM\MongoDB\MongoDBException,
-    Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\LockException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -36,8 +35,6 @@ use Doctrine\ODM\MongoDB\MongoDBException,
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -195,6 +192,7 @@ class ClassMetadata extends ClassMetadataInfo
         if ($this->prototype === null) {
             $this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
         }
+
         return clone $this->prototype;
     }
 }

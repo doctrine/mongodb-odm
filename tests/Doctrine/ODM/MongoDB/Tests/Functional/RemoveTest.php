@@ -2,13 +2,13 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Account,
-    Documents\Address,
-    Documents\Group,
-    Documents\Phonenumber,
-    Documents\Profile,
-    Documents\File,
-    Documents\User;
+use Documents\Account;
+use Documents\Address;
+use Documents\Group;
+use Documents\Phonenumber;
+use Documents\Profile;
+use Documents\File;
+use Documents\User;
 
 class RemoveTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

@@ -18,18 +18,16 @@
  */
 namespace Doctrine\ODM\MongoDB\Persisters;
 
-use Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\ODM\MongoDB\UnitOfWork,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mapping\Types\Type;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Types\Type;
 
 /**
  * PersistenceBuilder builds the queries used by the persisters to update and insert
  * documents when a DocumentManager is flushed. It uses the changeset information in the
  * UnitOfWork to build queries using atomic operators like $set, $unset, etc.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
@@ -371,8 +369,11 @@ class PersistenceBuilder
 
                 /** @EmbedMany */
                 } elseif (isset($mapping['association']) && $mapping['association'] == ClassMetadata::EMBED_MANY) {
-                    // do nothing for embedded many
-                    // CollectionPersister will take care of this
+                    if ($mapping['strategy'] !== 'set') {
+                        foreach ($rawValue as $key => $item) {
+                            $value[$key] = $this->prepareEmbeddedDocumentValue($mapping, $item);
+                        }
+                    }
 
                 /** @ReferenceOne */
                 } elseif (isset($mapping['association']) && $mapping['association'] == ClassMetadata::REFERENCE_ONE) {
@@ -393,20 +394,20 @@ class PersistenceBuilder
             $embeddedDocumentValue[$mapping['name']] = $value;
         }
 
-        // Store a discriminator value if the embedded document is not mapped explicitely to a targetDocument
+        // Store a discriminator value if the embedded document is not mapped explicitly to a targetDocument
         if ( ! isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_name';
             $discriminatorValue = isset($embeddedMapping['discriminatorMap']) ? array_search($class->getName(), $embeddedMapping['discriminatorMap']) : $class->getName();
             $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
         }
 
+        if ($class->hasDiscriminator()) {
+            $embeddedDocumentValue[$class->discriminatorField['name']] = $class->discriminatorValue;
+        }
+
         // Fix so that we can force empty embedded document to store itself as a hash instead of an array
         if (empty($embeddedDocumentValue)) {
             return (object) $embeddedDocumentValue;
-        }
-
-        if ($class->hasDiscriminator()) {
-            $embeddedDocumentValue[$class->discriminatorField['name']] = $class->discriminatorValue;
         }
 
         return $embeddedDocumentValue;

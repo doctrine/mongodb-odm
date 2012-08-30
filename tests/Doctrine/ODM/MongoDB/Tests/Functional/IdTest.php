@@ -28,6 +28,29 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame($check2, $check3);
     }
 
+    public function testAlnumIdChars()
+    {
+        $user = new AlnumCharsUser('Jonathan H. Wage');
+        $this->dm->persist($user);
+        $user = new AlnumCharsUser('Kathrine R. Cage');
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->dm->clear();
+        $check1 = $this->dm->getRepository(__NAMESPACE__.'\AlnumCharsUser')->findOneBy(array('id' => 'x'));
+        $this->assertNotNull($check1);
+
+        $check2 = $this->dm->createQueryBuilder(__NAMESPACE__.'\AlnumCharsUser')
+            ->field('id')->equals('x')->getQuery()->getSingleResult();
+        $this->assertNotNull($check2);
+        $this->assertSame($check1, $check2);
+
+        $check3 = $this->dm->createQueryBuilder(__NAMESPACE__.'\AlnumCharsUser')
+            ->field('name')->equals('Kathrine R. Cage')->getQuery()->getSingleResult();
+        $this->assertNotNull($check3);
+        $this->assertSame($check2, $check3);
+    }
+
     public function testCollectionId()
     {
         $user1 = new CollectionIdUser('Jonathan H. Wage');
@@ -178,5 +201,20 @@ class EmbeddedCollectionId
     public function getName()
     {
         return $this->name;
+    }
+}
+
+/** @ODM\Document */
+class AlnumCharsUser
+{
+    /** @ODM\Id(strategy="alnum", options={"chars"="zyxwvutsrqponmlkjihgfedcba"}) */
+    public $id;
+
+    /** @ODM\String(name="t") */
+    public $name;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
     }
 }

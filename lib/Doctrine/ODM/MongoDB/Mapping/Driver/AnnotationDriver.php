@@ -19,59 +19,30 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\Common\Annotations\AnnotationRegistry,
-    Doctrine\Common\Annotations\Reader,
-    Doctrine\ODM\MongoDB\Events,
-    Doctrine\ODM\MongoDB\Mapping\Annotations as ODM,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo,
-    Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class AnnotationDriver implements Driver
+class AnnotationDriver extends AbstractAnnotationDriver
 {
-    /**
-     * Document annotation classes, ordered by precedence.
-     */
-    static private $documentAnnotationClasses = array(
-        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\Document',
-        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\MappedSuperclass',
-        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\EmbeddedDocument',
+    protected $entityAnnotationClasses = array(
+        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\Document' => 1,
+        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\MappedSuperclass' => 2,
+        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\EmbeddedDocument' => 3,
     );
-
-    /**
-     * The annotation reader.
-     *
-     * @var Reader
-     */
-    private $reader;
-
-    /**
-     * The paths where to look for mapping files.
-     *
-     * @var array
-     */
-    private $paths = array();
-
-    /**
-     * The file extension of mapping documents.
-     *
-     * @var string
-     */
-    private $fileExtension = '.php';
-
-    /**
-     * @param array
-     */
-    private $classNames;
 
     /**
      * Registers annotation classes to the common registry.
@@ -84,60 +55,16 @@ class AnnotationDriver implements Driver
     }
 
     /**
-     * Initializes a new AnnotationDriver that uses the given Reader for reading
-     * docblock annotations.
-     *
-     * @param $reader Reader The annotation reader to use.
-     * @param string|array $paths One or multiple paths where mapping classes can be found.
-     */
-    public function __construct(Reader $reader, $paths = null)
-    {
-        $this->reader = $reader;
-        if ($paths) {
-            $this->addPaths((array) $paths);
-        }
-    }
-
-    /**
-     * Append lookup paths to metadata driver.
-     *
-     * @param array $paths
-     */
-    public function addPaths(array $paths)
-    {
-        $this->paths = array_unique(array_merge($this->paths, $paths));
-    }
-
-    /**
-     * Retrieve the defined metadata lookup paths.
-     *
-     * @return array
-     */
-    public function getPaths()
-    {
-        return $this->paths;
-    }
-
-    /**
-     * Retrieve the current annotation reader
-     *
-     * @return AnnotationReader
-     */
-    public function getReader()
-    {
-        return $this->reader;
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $class)
+    public function loadMetadataForClass($className, ClassMetadata $class)
     {
+        /** @var $class ClassMetadataInfo */
         $reflClass = $class->getReflectionClass();
 
         $documentAnnots = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annot) {
-            foreach (self::$documentAnnotationClasses as $i => $annotClass) {
+            foreach ($this->entityAnnotationClasses as $annotClass => $i) {
                 if ($annot instanceof $annotClass) {
                     $documentAnnots[$i] = $annot;
                     continue 2;
@@ -167,7 +94,7 @@ class AnnotationDriver implements Driver
         }
 
         if (!$documentAnnots) {
-            throw MongoDBException::classIsNotAValidDocument($className);
+            throw MappingException::classIsNotAValidDocument($className);
         }
 
         // find the winning document annotation
@@ -278,7 +205,7 @@ class AnnotationDriver implements Driver
     {
         $keys = array_merge($keys, $index->keys);
         $options = array();
-        $allowed = array('name', 'dropDups', 'background', 'safe', 'unique', 'sparse');
+        $allowed = array('name', 'dropDups', 'background', 'safe', 'unique', 'sparse', 'expireAfterSeconds');
         foreach ($allowed as $name) {
             if (isset($index->$name)) {
                 $options[$name] = $index->$name;
@@ -286,80 +213,6 @@ class AnnotationDriver implements Driver
         }
         $options = array_merge($options, $index->options);
         $class->addIndex($keys, $options);
-    }
-
-    /**
-     * Whether the class with the specified name is transient. Only non-transient
-     * classes, that is entities and mapped superclasses, should have their metadata loaded.
-     * A class is non-transient if it is annotated with either (at)Entity or
-     * (at)MappedSuperclass in the class doc block.
-     *
-     * @param string $className
-     * @return boolean
-     */
-    public function isTransient($className)
-    {
-        $classAnnotations = $this->reader->getClassAnnotations(new \ReflectionClass($className));
-
-        foreach ($classAnnotations as $annot) {
-            if ($annot instanceof ODM\AbstractDocument) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getAllClassNames()
-    {
-        if ($this->classNames !== null) {
-            return $this->classNames;
-        }
-
-        if ( ! $this->paths) {
-            throw MongoDBException::pathRequired();
-        }
-
-        $classes = array();
-        $includedFiles = array();
-
-        foreach ($this->paths as $path) {
-            if ( ! is_dir($path)) {
-                throw MongoDBException::fileMappingDriversRequireConfiguredDirectoryPath();
-            }
-
-            $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path),
-                \RecursiveIteratorIterator::LEAVES_ONLY
-            );
-
-            foreach ($iterator as $file) {
-                if (($fileName = $file->getBasename($this->fileExtension)) == $file->getBasename()) {
-                    continue;
-                }
-
-                $sourceFile = realpath($file->getPathName());
-                require_once $sourceFile;
-                $includedFiles[] = $sourceFile;
-            }
-        }
-
-        $declared = get_declared_classes();
-
-        foreach ($declared as $className) {
-            $rc = new \ReflectionClass($className);
-            $sourceFile = $rc->getFileName();
-            if (in_array($sourceFile, $includedFiles) && ! $this->isTransient($className)) {
-                $classes[] = $className;
-            }
-        }
-
-        $this->classNames = $classes;
-
-        return $classes;
     }
 
     /**
