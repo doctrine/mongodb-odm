@@ -241,6 +241,28 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 $class->setIdGenerator($alnumGenerator);
                 break;
+            case ClassMetadata::GENERATOR_TYPE_CUSTOM:
+                if(empty($idGenOptions['class'])) {
+                    throw MappingException::missingIdGeneratorClass($class->name);
+                }
+                
+                $customGenerator = new $idGenOptions['class'];
+                unset($idGenOptions['class']);
+                if(!$customGenerator instanceof \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator) {
+                    throw MappingException::classIsNotAValidGenerator(get_class($customGenerator));
+                }
+                
+                $methods = get_class_methods($customGenerator);
+                foreach($idGenOptions as $name => $value) {
+                    $method = 'set' . ucfirst($name);
+                    if(!in_array($method, $methods)) {
+                        throw MappingException::missingGeneratorSetter(get_class($customGenerator), $name);
+                    }
+                    
+                    $customGenerator->$method($value);
+                }
+                $class->setIdGenerator($customGenerator);
+                break;
             case ClassMetadata::GENERATOR_TYPE_NONE;
                 break;
             default:
