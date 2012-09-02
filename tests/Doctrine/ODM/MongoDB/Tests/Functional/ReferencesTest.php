@@ -150,6 +150,8 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertTrue($groups instanceof PersistentCollection);
         $this->assertTrue($groups[0]->getId() !== '');
+
+        $this->assertTrue($groups[0]->getName() == 'Group 2');
         $this->assertTrue($groups[1]->getId() !== '');
         $this->dm->clear();
 
