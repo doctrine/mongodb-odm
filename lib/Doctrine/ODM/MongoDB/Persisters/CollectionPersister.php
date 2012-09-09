@@ -125,7 +125,9 @@ class CollectionPersister
         if ($deleteDiff) {
             list($propertyPath, $parent) = $this->getPathAndParent($coll);
             $query = array($this->cmd.'unset' => array());
+            $isAssocArray = false;
             foreach ($deleteDiff as $key => $document) {
+                $isAssocArray = !$isAssocArray && !is_int($key);
                 $query[$this->cmd.'unset'][$propertyPath.'.'.$key] = true;
             }
             $this->executeQuery($parent, $query, $options);
@@ -139,7 +141,7 @@ class CollectionPersister
              * http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset
              */
             $mapping = $coll->getMapping();
-            if ($mapping['strategy'] !== 'set') {
+            if ($mapping['strategy'] !== 'set' || !$isAssocArray) {
                 $this->executeQuery($parent, array($this->cmd.'pull' => array($propertyPath => null)), $options);
             }
         }
@@ -166,8 +168,12 @@ class CollectionPersister
                         $documentUpdates = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
                     }
 
-                    foreach ($documentUpdates as $currFieldName => $currFieldValue) {
-                        $setData[$propertyPath. '.' .$key . '.' . $currFieldName] = $currFieldValue;
+                    if (is_int($key)) {
+                        $setData[$propertyPath][] = $documentUpdates;
+                    } else {
+                        foreach ($documentUpdates as $currFieldName => $currFieldValue) {
+                            $setData[$propertyPath. '.' .$key . '.' . $currFieldName] = $currFieldValue;
+                        }
                     }
                 }
 
