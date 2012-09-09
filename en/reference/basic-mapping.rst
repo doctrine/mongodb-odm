@@ -148,24 +148,24 @@ Doctrine Mapping Types
 A Doctrine Mapping Type defines the mapping between a PHP type and
 an MongoDB type. You can even write your own custom mapping types.
 
-Here is a quick overview of the built-in mapping types and what objects should be used with PHP:
+Here is a quick overview of the built-in mapping types:
 
 -  ``bin_data_custom``
 -  ``bin_data_func``
 -  ``bin_data_md5``
 -  ``bin_data``
 -  ``bin_data_uuid``
--  ``boolean``: ``boolean``
--  ``date``: ``\DateTime``
+-  ``boolean``
+-  ``date``
 -  ``file``
--  ``float``: ``float``
+-  ``float``
 -  ``hash``
--  ``id``: ``integer``
--  ``int``: ``integer``
+-  ``id``
+-  ``int``
 -  ``key``
--  ``string``: ``string``
--  ``timestamp``: ``integer``
--  ``increment``: ``integer``
+-  ``string``
+-  ``timestamp``
+-  ``increment``
 
 You can read more about the available MongoDB types on `php.net <http://us.php.net/manual/en/mongo.types.php>`_.
 
@@ -174,6 +174,21 @@ You can read more about the available MongoDB types on `php.net <http://us.php.n
     The Doctrine mapping types are used to convert the local PHP types to the MongoDB types
     when persisting so that your domain is not bound to MongoDB specific types. For example a
     DateTime instance is converted to MongoDate when you persist your documents.
+    
+Doctrine maps some of the built-in mapping types to certain PHP types when reading from MongoDB.
+It is best pratice to use this types in your models to prevent problems when converting. 
+
+This list shows some of the not obviouse mappings:
+
+-  ``bin_data_custom``: Wrappes into a \MongoBinData as custom
+-  ``bin_data_func``: Wrappes the value into a \MongoBinData as function
+-  ``bin_data_md5``: Wrappes the value into a \MongoBinData as md5
+-  ``bin_data``: Wrappes the value into a \MongoBinData as byte array
+-  ``bin_data_uuid``: Wrappes the value into a \MongoBinData as uuid
+-  ``date``: Wrappes the value into a \MongoDate as uuid
+-  ``id``: Wrappes the value into a \MongoId
+-  ``timestamp``: Wrappes the value into a \MongoTimestamp
+-  ``increment``: Typecasts to integer
 
 Property Mapping
 ----------------
