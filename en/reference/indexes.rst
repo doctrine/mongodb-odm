@@ -60,6 +60,11 @@ You can customize the index with some additional options:
    index creation succeeded. The driver will throw a
    MongoCursorException if index creation failed.
 -
+   **expireAfterSeconds** - If you specify this option then the associated 
+   document will be automatically removed when the provided time (in seconds) 
+   has passed. This option is bound to a number of limitations, which 
+   are documented at http://docs.mongodb.org/manual/tutorial/expire-data/.
+-
    **order** - The order of the index (asc or desc).
 -
    **unique** - Create a unique index.
