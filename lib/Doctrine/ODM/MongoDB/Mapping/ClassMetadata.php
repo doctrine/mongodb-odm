@@ -112,7 +112,8 @@ class ClassMetadata extends ClassMetadataInfo
             'generatorType',
             'generatorOptions',
             'idGenerator',
-            'indexes'
+            'indexes',
+            'distance'
         );
 
         // The rest of the metadata is only serialized if necessary.
