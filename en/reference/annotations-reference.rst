@@ -646,12 +646,6 @@ property:
     /** @String @UniqueIndex(safe="true") */
     private $username;
 
-@Int
-----
-
-Alias of @Field, with "type" attribute set to
-"int"
-
 @InheritanceType
 ----------------
 
@@ -689,6 +683,12 @@ Examples:
     {
         // ...
     }
+
+@Int
+----
+
+Alias of @Field, with "type" attribute set to
+"int"
 
 @Key
 ----
@@ -729,27 +729,6 @@ they exist but never saved.
 
     /** @NotSaved */
     public $field;
-
-@PreLoad
---------
-
-Marks a method on the document to be called as a @PreLoad event.
-
-.. code-block:: php
-
-    <?php
-
-    /** @Document */
-    class Article
-    {
-        // ...
-    
-        /** @PreLoad */
-        public function preLoad(array &$data)
-        {
-            // ...
-        }
-    }
 
 @PostLoad
 ---------
@@ -831,6 +810,27 @@ Marks a method on the document to be called as a @PostUpdate event.
     
         /** @PostUpdate */
         public function postUpdate()
+        {
+            // ...
+        }
+    }
+
+@PreLoad
+--------
+
+Marks a method on the document to be called as a @PreLoad event.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Document */
+    class Article
+    {
+        // ...
+    
+        /** @PreLoad */
+        public function preLoad(array &$data)
         {
             // ...
         }
@@ -956,42 +956,6 @@ Example:
      */
     private $cart;
 
-@String
--------
-
-Defines that the annotated instance variable holds a string.
-
-.. code-block:: php
-
-    <?php
-
-    /** @String */
-    private $username;
-
-@Timestamp
-----------
-
-Defines that the annotated instance variable holds a timestamp.
-
-.. code-block:: php
-
-    <?php
-
-    /** @Timestamp */
-    private $created;
-
-@UniqueIndex
-------------
-
-Defines a unique index on the given document.
-
-.. code-block:: php
-
-    <?php
-
-    /** @String @UniqueIndex */
-    private $email;
-
 @ReferenceOne
 -------------
 
@@ -1044,3 +1008,40 @@ Example:
      * )
      */
     private $cart;
+
+@String
+-------
+
+Defines that the annotated instance variable holds a string.
+
+.. code-block:: php
+
+    <?php
+
+    /** @String */
+    private $username;
+
+@Timestamp
+----------
+
+Defines that the annotated instance variable holds a timestamp.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Timestamp */
+    private $created;
+
+@UniqueIndex
+------------
+
+Defines a unique index on the given document.
+
+.. code-block:: php
+
+    <?php
+
+    /** @String @UniqueIndex */
+    private $email;
+
