@@ -112,8 +112,7 @@ class ClassMetadata extends ClassMetadataInfo
             'generatorType',
             'generatorOptions',
             'idGenerator',
-            'indexes',
-            'distance'
+            'indexes'
         );
 
         // The rest of the metadata is only serialized if necessary.
@@ -157,6 +156,10 @@ class ClassMetadata extends ClassMetadataInfo
 
         if ($this->slaveOkay) {
             $serialized[] = 'slaveOkay';
+        }
+
+        if ($this->distance) {
+            $serialized[] = 'distance';
         }
 
         return $serialized;
