@@ -2088,7 +2088,8 @@ class UnitOfWork implements PropertyChangedListener
                 $this->removeFromIdentityMap($document);
                 unset($this->documentInsertions[$oid], $this->documentUpdates[$oid],
                         $this->documentDeletions[$oid], $this->documentIdentifiers[$oid],
-                        $this->documentStates[$oid], $this->originalDocumentData[$oid]);
+                        $this->documentStates[$oid], $this->originalDocumentData[$oid],
+                        $this->parentAssociations[$oid]);
                 break;
             case self::STATE_NEW:
             case self::STATE_DETACHED:
