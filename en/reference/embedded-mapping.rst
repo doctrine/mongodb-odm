@@ -40,7 +40,7 @@ Embed a single document:
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\User">
-                <embed-one fieldName="address" targetDocument="Address" />
+                <embed-one field="address" target-document="Address" />
           </document>
         </doctrine-mongo-mapping>
 
@@ -88,7 +88,7 @@ Embed many documents:
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\User">
-                <embed-many fieldName="phonenumbers" targetDocument="Phonenumber" />
+                <embed-many field="phonenumbers" target-document="Phonenumber" />
           </document>
         </doctrine-mongo-mapping>
 
@@ -125,7 +125,7 @@ document you can simply omit the ``targetDocument`` option:
 
     .. code-block:: xml
 
-        <embed-many fieldName="tasks" />
+        <embed-many field="tasks" />
 
     .. code-block:: yaml
 
@@ -167,8 +167,8 @@ qualified class name with each embedded document:
 
         <embed-many fieldName="tasks">
             <discriminator-map>
-                <discriminator-mapping name="download" class="DownloadTask" />
-                <discriminator-mapping name="build" class="BuildTask" />
+                <discriminator-mapping value="download" class="DownloadTask" />
+                <discriminator-mapping value="build" class="BuildTask" />
             </discriminator-map>
         </embed-many>
 
