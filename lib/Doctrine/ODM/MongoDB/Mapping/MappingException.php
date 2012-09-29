@@ -98,4 +98,19 @@ class MappingException extends BaseMappingException
     {
         return new self("The identifier $fieldName is missing for a query of " . $className);
     }
+    
+    public static function missingIdGeneratorClass($className)
+    {
+        return new self("The class-option for the custom ID generator is missing in class $className.");
+    }
+    
+    public static function classIsNotAValidGenerator($className)
+    {
+        return new self("The class $className if not a valid ID generator of type AbstractIdGenerator.");
+    }
+    
+    public static function missingGeneratorSetter($className, $optionName)
+    {
+        return new self("The class $className is missing a setter for the option $optionName.");
+    }
 }

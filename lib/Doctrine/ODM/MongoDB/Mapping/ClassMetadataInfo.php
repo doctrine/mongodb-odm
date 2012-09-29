@@ -67,10 +67,20 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     const GENERATOR_TYPE_ALNUM = 4;
 
     /**
+     * CUSTOM means Doctrine expect a class parameter. It will then try to initiate that class
+     * and pass other options to the generator. It will throw an Exception if the class 
+     * does not exist or if an option was passed for that there is not setter in the new
+     * generator class.
+     * 
+     * The class  will have to be a subtype of AbstractIdGenerator.
+     */
+    const GENERATOR_TYPE_CUSTOM = 5;
+
+    /**
      * NONE means Doctrine will not generate any id for us and you are responsible for manually
      * assigning an id.
      */
-    const GENERATOR_TYPE_NONE = 5;
+    const GENERATOR_TYPE_NONE = 6;
 
 
     const REFERENCE_ONE  = 1;
