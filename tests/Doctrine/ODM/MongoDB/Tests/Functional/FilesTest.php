@@ -51,6 +51,27 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('These are the bytes...', $image->getFile()->getBytes());
     }
 
+    public function testFileReferences()
+    {
+        $image = new TestFile();
+        $image->name = 'Test';
+        $image->theFile = __DIR__ . '/file.txt';
+
+        $profile = new Profile();
+
+        $image->profiles[] = $profile;
+
+        $this->dm->persist($profile);
+        $this->dm->persist($image);
+        $this->dm->flush();
+
+        $check = $this->dm->getDocumentCollection(get_class($image))->findOne();
+        $this->assertFalse(isset($check['$pushAll']));
+        $this->assertTrue(isset($check['profiles']));
+        $this->assertEquals(1, count($check['profiles']));
+        $this->assertEquals($profile->getProfileId(), (string) $check['profiles'][0]['$id']);
+    }
+
     public function testCreateFileWithMongoGridFSFileObject()
     {
         $file = new \Doctrine\MongoDB\GridFSFile(__DIR__ . '/file.txt');
@@ -137,4 +158,7 @@ class TestFile
 
     /** @ODM\File */
     public $theFile;
+
+    /** @ODM\ReferenceMany(targetDocument="Documents\Profile") */
+    public $profiles = array();
 }
