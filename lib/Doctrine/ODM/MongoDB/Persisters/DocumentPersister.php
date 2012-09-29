@@ -715,8 +715,12 @@ class DocumentPersister
             $qb->slaveOkay(true);
         }
         $documents = $qb->getQuery()->execute()->toArray();
-        foreach ($documents as $document) {
+        foreach ($documents as $key => $document) {
+          if ($mapping['strategy'] === 'set') {
+            $collection->set($key, $document);
+          } else {
             $collection->add($document);
+          }
         }
     }
 
