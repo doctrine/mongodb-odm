@@ -158,6 +158,10 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'slaveOkay';
         }
 
+        if ($this->distance) {
+            $serialized[] = 'distance';
+        }
+
         return $serialized;
     }
 

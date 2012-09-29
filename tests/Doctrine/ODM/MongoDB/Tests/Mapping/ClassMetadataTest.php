@@ -29,6 +29,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->setDiscriminatorField(array('name' => 'disc'));
         $cm->mapOneEmbedded(array('fieldName' => 'phonenumbers', 'targetDocument' => 'Bar'));
         $cm->setFile('customFileProperty');
+        $cm->setDistance('customDistanceProperty');
         $cm->setSlaveOkay(true);
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
         $this->assertEquals(1, count($cm->fieldMappings));
@@ -49,6 +50,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
         $this->assertEquals(1, count($cm->fieldMappings));
         $this->assertEquals('customFileProperty', $cm->file);
+        $this->assertEquals('customDistanceProperty', $cm->distance);
         $this->assertTrue($cm->slaveOkay);
         $mapping = $cm->getFieldMapping('phonenumbers');
         $this->assertEquals('Documents\Bar', $mapping['targetDocument']);
