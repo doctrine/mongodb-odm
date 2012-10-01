@@ -172,23 +172,22 @@ You can read more about the available MongoDB types on `php.net <http://us.php.n
 .. note::
 
     The Doctrine mapping types are used to convert the local PHP types to the MongoDB types
-    when persisting so that your domain is not bound to MongoDB specific types. For example a
-    DateTime instance is converted to MongoDate when you persist your documents.
-    
-Doctrine maps some of the built-in mapping types to certain PHP types when reading from MongoDB.
-It is best pratice to use this types in your models to prevent problems when converting. 
+    when persisting so that your domain is not bound to MongoDB-specific types. For example a
+    DateTime instance may be converted to MongoDate when you persist your documents, and vice
+    versa during hydration.
 
-This list shows some of the not obviouse mappings:
+Generally, the name of each built-in mapping type hints as to how the value will be converted.
+This list explains some of the less obvious mapping types:
 
--  ``bin_data_custom``: Wrappes into a \MongoBinData as custom
--  ``bin_data_func``: Wrappes the value into a \MongoBinData as function
--  ``bin_data_md5``: Wrappes the value into a \MongoBinData as md5
--  ``bin_data``: Wrappes the value into a \MongoBinData as byte array
--  ``bin_data_uuid``: Wrappes the value into a \MongoBinData as uuid
--  ``date``: Wrappes the value into a \MongoDate as uuid
--  ``id``: Wrappes the value into a \MongoId
--  ``timestamp``: Wrappes the value into a \MongoTimestamp
--  ``increment``: Typecasts to integer
+-  ``bin_data_custom``: string to MongoBinData instance with a "custom" type
+-  ``bin_data_func``: string to MongoBinData instance with a "function" type
+-  ``bin_data_md5``: string to MongoBinData instance with a "md5" type
+-  ``bin_data``: string to MongoBinData instance with a "byte array" type
+-  ``bin_data_uuid``: string to MongoBinData instance with a "uuid" type
+-  ``date``: DateTime to MongoDate
+-  ``id``: string to MongoId by default, but other formats are possible
+-  ``timestamp``: string to MongoTimestamp
+-  ``increment``: integer in both PHP and MongoDB
 
 Property Mapping
 ----------------
