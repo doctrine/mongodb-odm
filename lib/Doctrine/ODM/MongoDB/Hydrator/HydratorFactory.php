@@ -268,7 +268,7 @@ EOF
         \$className = \$mapping['targetDocument'];
         \$targetClass = \$this->dm->getClassMetadata(\$mapping['targetDocument']);
         \$mappedByMapping = \$targetClass->fieldMappings[\$mapping['mappedBy']];
-        \$mappedByFieldName = isset(\$mappedByMapping['simple']) && \$mappedByMapping['simple'] ? \$mapping['mappedBy'] : \$mapping['mappedBy'].'.id';
+        \$mappedByFieldName = isset(\$mappedByMapping['simple']) && \$mappedByMapping['simple'] ? \$mapping['mappedBy'] : \$mapping['mappedBy'].'.\$id';
         \$criteria = array_merge(
             array(\$mappedByFieldName => \$data['_id']),
             isset(\$this->class->fieldMappings['%2\$s']['criteria']) ? \$this->class->fieldMappings['%2\$s']['criteria'] : array() 
