@@ -54,7 +54,6 @@ class UuidGenerator extends AbstractIdGenerator
      */
     public function getSalt()
     {
-        if (!isset($this->salt)) $this->setSalt(php_uname('n'));
         return $this->salt;
     }
 
@@ -76,12 +75,8 @@ class UuidGenerator extends AbstractIdGenerator
      */
     public function generate(DocumentManager $dm, $document)
     {
-        if (!$this->salt) {
-            throw new \Exception('Guid Generator requires a salt to be provided.');
-        }
-
         $guid = $this->generateV4();
-        return $this->generateV5($guid, $this->salt);
+        return $this->generateV5($guid, $this->salt ?: php_uname('n'));
     }
 
     /**
