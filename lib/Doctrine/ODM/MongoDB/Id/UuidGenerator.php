@@ -54,6 +54,7 @@ class UuidGenerator extends AbstractIdGenerator
      */
     public function getSalt()
     {
+        if (!isset($this->salt)) $this->setSalt(php_uname('n'));
         return $this->salt;
     }
 
