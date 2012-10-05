@@ -1,7 +1,5 @@
 <?php
 /*
- * THIS SOFTWARE IS PROVIDED BY THE <?php
-/*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -21,29 +19,28 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\EventManager,
-    Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Proxy\Proxy,
-    Doctrine\ODM\MongoDB\Mapping\Types\Type,
-    Doctrine\ODM\MongoDB\Event\LifecycleEventArgs,
-    Doctrine\ODM\MongoDB\Event\PreLoadEventArgs,
-    Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder,
-    Doctrine\Common\Collections\Collection,
-    Doctrine\Common\NotifyPropertyChanged,
-    Doctrine\Common\PropertyChangedListener,
-    Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\MongoDB\GridFSFile,
-    Doctrine\ODM\MongoDB\Query\Query,
-    Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\PropertyChangedListener;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\MongoDB\GridFSFile;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -248,7 +245,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Array of parent associations between embedded documents
      *
-     * @todo We might need to clean up this array in clear(), doDetch(), etc.
+     * @todo We might need to clean up this array in clear(), doDetach(), etc.
      * @var array
      */
     private $parentAssociations = array();
@@ -744,9 +741,15 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // skip equivalent DateTime values
-                if (($orgValue instanceof \DateTime || $actualValue instanceof \DateTime) && $orgValue == $actualValue) {
-                    continue;
+                // skip equivalent date values
+                if ($class->fieldMappings[$propName]['type'] === 'date') {
+                    $dateType = Type::getType('date');
+                    $dbOrgValue = $dateType->convertToDatabaseValue($orgValue);
+                    $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
+
+                    if ($dbOrgValue instanceof \MongoDate && $dbActualValue instanceof \MongoDate && $dbOrgValue == $dbActualValue) {
+                        continue;
+                    }
                 }
 
                 // regular field
@@ -793,7 +796,7 @@ class UnitOfWork implements PropertyChangedListener
                             break;
                         }
                     }
-                 }
+                }
             }
         }
     }
@@ -848,13 +851,16 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
-        if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide']) {
-            $owner = $value->getOwner();
-            $className = get_class($owner);
-            $class = $this->dm->getClassMetadata($className);
+        $isNewParentDocument = isset($this->documentInsertions[spl_object_hash($parentDocument)]);
+        $class = $this->dm->getClassMetadata(get_class($parentDocument));
+        $topOrExistingDocument = (!$isNewParentDocument || !$class->isEmbeddedDocument);
+
+        if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide'] && ($topOrExistingDocument || $mapping['strategy'] === 'set')) {
             if (!in_array($value, $this->collectionUpdates, true)) {
                 $this->collectionUpdates[] = $value;
             }
+            $this->visitedCollections[] = $value;
+        } else if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide']) {
             $this->visitedCollections[] = $value;
         }
 
@@ -1244,7 +1250,7 @@ class UnitOfWork implements PropertyChangedListener
         $calc = $this->getCommitOrderCalculator();
 
         // See if there are any new classes in the changeset, that are not in the
-        // commit order graph yet (dont have a node).
+        // commit order graph yet (don't have a node).
         // We have to inspect changeSet to be able to correctly build dependencies.
         // It is not possible to use IdentityMap here because post inserted ids
         // are not yet available.
@@ -1960,7 +1966,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($class->isVersioned) {
                 $managedCopyVersion = $class->reflFields[$class->versionField]->getValue($managedCopy);
                 $documentVersion = $class->reflFields[$class->versionField]->getValue($document);
-                // Throw exception if versions dont match.
+                // Throw exception if versions don't match.
                 if ($managedCopyVersion != $documentVersion) {
                     throw LockException::lockFailedVersionMissmatch($documentVersion, $managedCopyVersion);
                 }
@@ -2088,7 +2094,8 @@ class UnitOfWork implements PropertyChangedListener
                 $this->removeFromIdentityMap($document);
                 unset($this->documentInsertions[$oid], $this->documentUpdates[$oid],
                         $this->documentDeletions[$oid], $this->documentIdentifiers[$oid],
-                        $this->documentStates[$oid], $this->originalDocumentData[$oid]);
+                        $this->documentStates[$oid], $this->originalDocumentData[$oid],
+                        $this->parentAssociations[$oid]);
                 break;
             case self::STATE_NEW:
             case self::STATE_DETACHED:
@@ -2545,7 +2552,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Initializes (loads) an uninitialized persistent collection of a document.
      *
-     * @param PeristentCollection $collection The collection to initialize.
+     * @param PersistentCollection $collection The collection to initialize.
      */
     public function loadCollection(PersistentCollection $collection)
     {

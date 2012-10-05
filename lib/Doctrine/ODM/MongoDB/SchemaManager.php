@@ -21,7 +21,6 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use InvalidArgumentException;
 
 class SchemaManager
 {
@@ -59,7 +58,107 @@ class SchemaManager
         }
     }
 
-    public function  getDocumentIndexes($documentName)
+    /**
+     * Ensure indexes are created for all documents that can be loaded with the
+     * metadata factory and delete the indexes that exist in MongoDB but not the
+     * document metadata.
+     */
+    public function updateIndexes()
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+                continue;
+            }
+            $this->updateDocumentIndexes($class->name);
+        }
+    }
+
+    /**
+     * Ensure the given document's indexes are updated.
+     *
+     * @param string $documentName
+     */
+    public function updateDocumentIndexes($documentName)
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            throw new \InvalidArgumentException('Cannot update document indexes for mapped super classes or embedded documents.');
+        }
+
+        if ($documentIndexes = $this->getDocumentIndexes($documentName)) {
+
+            $collection = $this->dm->getDocumentCollection($documentName);
+            $mongoIndexes = $collection->getIndexInfo();
+
+            /* Determine which Mongo indexes should be deleted. Exclude the ID
+             * index and those that are equivalent to any in the class metadata.
+             */
+            $self = $this;
+            $mongoIndexes = array_filter($mongoIndexes, function($mongoIndex) use ($documentIndexes, $self) {
+                if ('_id_' === $mongoIndex['name']) {
+                    return false;
+                }
+
+                foreach ($documentIndexes as $documentIndex) {
+                    if ($self->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            // Delete indexes that do not exist in class metadata
+            foreach ($mongoIndexes as $mongoIndex) {
+                if (isset($mongoIndex['name'])) {
+                    /* Note: MongoCollection::deleteIndex() cannot delete
+                     * custom-named indexes, so use the deleteIndexes command.
+                     */
+                    $collection->getDatabase()->command(array(
+                        'deleteIndexes' => $collection->getName(),
+                        'index' => $mongoIndex['name'],
+                    ));
+                }
+            }
+
+            $this->ensureDocumentIndexes($documentName);
+        }
+    }
+
+    /**
+     * Returns all indexes - indexed by documentName
+     *
+     * @param bool $raw As MongoDB returns them (or as ODM stores them)
+     * @return array
+     */
+    public function getAllIndexes($raw = true)
+    {
+        $all = array();
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+                continue;
+            }
+            if ($collection = $this->dm->getDocumentCollection($class->name)) {
+                $indexes = $collection->getIndexInfo();
+                if ($raw) {
+                    $all[$class->name] = $indexes;
+                } else {
+                    $odmIndexes = array();
+                    foreach ($indexes as $rawIndex) {
+                        if ($rawIndex['name'] === '_id_') {
+                            continue;
+                        }
+                        $odmIndexes[] = $this->rawIndexToDocumentIndex($rawIndex);
+                    }
+                    $all[$class->name] = $odmIndexes;
+                }
+            }
+        }
+
+        return $all;
+    }
+
+    public function getDocumentIndexes($documentName)
     {
         $visited = array();
         return $this->doGetDocumentIndexes($documentName, $visited);
@@ -135,15 +234,15 @@ class SchemaManager
     }
 
     /**
-     * Ensure the given documents indexes are created.
+     * Ensure the given document's indexes are created.
      *
-     * @param string $documentName The document name to ensure the indexes for.
+     * @param string $documentName
      */
     public function ensureDocumentIndexes($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new InvalidArgumentException('Cannot create document indexes for mapped super classes or embedded documents.');
+            throw new \InvalidArgumentException('Cannot create document indexes for mapped super classes or embedded documents.');
         }
         if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
@@ -171,15 +270,15 @@ class SchemaManager
     }
 
     /**
-     * Delete the given documents indexes.
+     * Delete the given document's indexes.
      *
-     * @param string $documentName The document name to delete the indexes for.
+     * @param string $documentName
      */
     public function deleteDocumentIndexes($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
+            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
         }
         $this->dm->getDocumentCollection($documentName)->deleteIndexes();
     }
@@ -206,7 +305,7 @@ class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new InvalidArgumentException('Cannot create document collection for mapped super classes or embedded documents.');
+            throw new \InvalidArgumentException('Cannot create document collection for mapped super classes or embedded documents.');
         }
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
@@ -238,7 +337,7 @@ class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
+            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
         }
         $this->dm->getDocumentDatabase($documentName)->dropCollection(
             $class->getCollection()
@@ -267,7 +366,7 @@ class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new InvalidArgumentException('Cannot drop document database for mapped super classes or embedded documents.');
+            throw new \InvalidArgumentException('Cannot drop document database for mapped super classes or embedded documents.');
         }
         $this->dm->getDocumentDatabase($documentName)->drop();
     }
@@ -294,8 +393,62 @@ class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
+            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
         }
         $this->dm->getDocumentDatabase($documentName)->execute("function() { return true; }");
+    }
+
+    /**
+     * Determine if an index returned by MongoCollection::getIndexInfo() can be
+     * considered equivalent to an index in class metadata.
+     *
+     * Indexes are considered different if:
+     *
+     *   (a) Key/direction pairs differ or are not in the same order
+     *   (b) Sparse or unique options differ
+     *   (c) Mongo index is unique without dropDups and mapped index is unique
+     *       with dropDups
+     *   (d) Geospatial options differ (bits, max, min)
+     *
+     * Regarding (c), the inverse case is not a reason to delete and
+     * recreate the index, since dropDups only affects creation of
+     * the unique index. Additionally, the background option is only
+     * relevant to index creation and is not considered.
+     */
+    public function isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)
+    {
+        $documentIndexOptions = $documentIndex['options'];
+
+        if ($mongoIndex['key'] !== $documentIndex['keys']) {
+            return false;
+        }
+
+        if (empty($mongoIndex['sparse']) xor empty($documentIndexOptions['sparse'])) {
+            return false;
+        }
+
+        if (empty($mongoIndex['unique']) xor empty($documentIndexOptions['unique'])) {
+            return false;
+        }
+
+        if (!empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
+            !empty($documentIndexOptions['unique']) && !empty($documentIndexOptions)) {
+
+            return false;
+        }
+
+        foreach (array('bits', 'max', 'min') as $option) {
+            if (isset($mongoIndex[$option]) xor isset($documentIndexOptions[$option])) {
+                return false;
+            }
+
+            if (isset($mongoIndex[$option]) && isset($documentIndexOptions[$option]) &&
+                $mongoIndex[$option] !== $documentIndexOptions[$option]) {
+
+                return false;
+            }
+        }
+
+        return true;
     }
 }

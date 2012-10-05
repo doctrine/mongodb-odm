@@ -19,31 +19,36 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class YamlDriver extends AbstractFileDriver
+class YamlDriver extends FileDriver
 {
-    /**
-     * The file extension of mapping documents.
-     *
-     * @var string
-     */
-    protected $fileExtension = '.dcm.yml';
+    const DEFAULT_FILE_EXTENSION = '.dcm.yml';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $class)
+    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
+        parent::__construct($locator, $fileExtension);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function loadMetadataForClass($className, ClassMetadata $class)
+    {
+        /* @var $class ClassMetadataInfo */
         $element = $this->getElement($className);
         if ( ! $element) {
             return;
@@ -230,8 +235,11 @@ class YamlDriver extends AbstractFileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function loadMappingFile($file)
     {
-        return \Symfony\Component\Yaml\Yaml::parse($file);
+        return Yaml::parse($file);
     }
 }

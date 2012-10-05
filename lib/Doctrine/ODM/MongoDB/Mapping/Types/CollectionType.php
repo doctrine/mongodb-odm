@@ -22,8 +22,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
 /**
  * The Collection type.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>

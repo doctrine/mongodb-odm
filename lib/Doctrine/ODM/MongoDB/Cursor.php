@@ -19,7 +19,6 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use MongoCursor;
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Connection;
 use Doctrine\MongoDB\Cursor as BaseCursor;
@@ -31,8 +30,6 @@ use Doctrine\ODM\MongoDB\Query\Query;
  * data returned to be mapped Doctrine document class instances. To disable the hydration
  * use hydrate(false) and the Cursor will give you normal document arrays instance of objects.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -147,7 +144,7 @@ class Cursor extends BaseCursor
     /**
      * Sets whether to refresh the documents data if it already exists in the identity map.
      *
-     * @param boeolan $bool
+     * @param boolean $bool
      */
     public function refresh($bool = true)
     {

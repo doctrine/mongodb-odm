@@ -2,17 +2,17 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
-use Doctrine\ODM\MongoDB\Proxy\ProxyFactory,
-    Doctrine\MongoDB\Connection,
-    Doctrine\ODM\MongoDB\Configuration,
-    Doctrine\Common\EventManager,
-    Doctrine\ODM\MongoDB\UnitOfWork,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\SchemaManager,
-    Doctrine\MongoDB\Collection,
-    Doctrine\MongoDB\Database;
-    
+use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
+use Doctrine\MongoDB\Connection;
+use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\SchemaManager;
+use Doctrine\MongoDB\Collection;
+use Doctrine\MongoDB\Database;
+
 class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
 {
     private $uowMock;

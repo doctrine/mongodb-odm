@@ -23,8 +23,6 @@ namespace Doctrine\ODM\MongoDB\Internal;
  * The CommitOrderCalculator is used by the UnitOfWork to sort out the
  * correct order in which changes to documents need to be persisted.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>

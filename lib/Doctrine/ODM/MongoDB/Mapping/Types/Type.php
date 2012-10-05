@@ -19,13 +19,11 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Types;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
  * The Type interface.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -130,7 +128,7 @@ abstract class Type
     /**
      * Get a Type instance based on the type of the passed php variable.
      *
-     * @param mixed $variable 
+     * @param mixed $variable
      * @return Doctrine\ODM\MongoDB\Mapping\Types\Type $type
      * @throws InvalidArgumentException
      */
@@ -167,12 +165,12 @@ abstract class Type
      * @static
      * @param string $name Name of the type. This should correspond to what getName() returns.
      * @param string $className The class name of the custom type.
-     * @throws MongoDBException
+     * @throws MappingException
      */
     public static function addType($name, $className)
     {
         if (isset(self::$typesMap[$name])) {
-            throw MongoDBException::typeExists($name);
+            throw MappingException::typeExists($name);
         }
 
         self::$typesMap[$name] = $className;
@@ -196,12 +194,12 @@ abstract class Type
      * @static
      * @param string $name
      * @param string $className
-     * @throws MongoDBException
+     * @throws MappingException
      */
     public static function overrideType($name, $className)
     {
         if ( ! isset(self::$typesMap[$name])) {
-            throw MongoDBException::typeNotFound($name);
+            throw MappingException::typeNotFound($name);
         }
 
         self::$typesMap[$name] = $className;

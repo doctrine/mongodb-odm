@@ -35,8 +35,6 @@ use Doctrine\ODM\MongoDB\Proxy\Proxy;
  * The HydratorFactory class is responsible for instantiating a correct hydrator
  * type based on document's ClassMetadata
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */

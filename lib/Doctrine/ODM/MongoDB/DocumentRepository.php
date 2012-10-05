@@ -17,10 +17,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
  * An DocumentRepository serves as a repository for documents with generic as well as
@@ -29,8 +29,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
  * This class is designed for inheritance and users can subclass this class to
  * write their own repositories with business-specific methods to locate documents.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -53,7 +51,7 @@ class DocumentRepository implements ObjectRepository
     protected $uow;
 
     /**
-     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @var \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     protected $class;
 
@@ -62,7 +60,7 @@ class DocumentRepository implements ObjectRepository
      *
      * @param DocumentManager $dm The DocumentManager to use.
      * @param UnitOfWork $uow The UnitOfWork to use.
-     * @param ClassMetadata $classMetadata The class descriptor.
+     * @param Mapping\ClassMetadata $classMetadata The class descriptor.
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow, Mapping\ClassMetadata $class)
     {
@@ -108,12 +106,12 @@ class DocumentRepository implements ObjectRepository
             list($identifierFieldName) = $this->class->getIdentifierFieldNames();
 
             if (!isset($id[$identifierFieldName])) {
-                throw MongoDBException::missingIdentifierField($this->documentName, $identifierFieldName);
+                throw MappingException::missingIdentifierField($this->documentName, $identifierFieldName);
             }
 
             $id = $id[$identifierFieldName];
         }
-        
+
         // Check identity map first
         if ($document = $this->uow->tryGetById($id, $this->class->rootDocumentName)) {
             if ($lockMode != LockMode::NONE) {

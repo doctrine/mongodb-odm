@@ -2,9 +2,12 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
-class MetadataDriverMock implements \Doctrine\ODM\MongoDB\Mapping\Driver\Driver
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+
+class MetadataDriverMock implements MappingDriver
 {
-    public function loadMetadataForClass($className, \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         return;
     }

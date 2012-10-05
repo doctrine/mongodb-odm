@@ -10,8 +10,6 @@ class EmbeddedReferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testReferencedDocumentInsideEmbeddedDocument()
     {
-        $this->markTestSkipped();
-
         /* PARENT DOCUMENT */
         $offer = new Offer('My Offer');
         /* END PARENT DOCUMENT */

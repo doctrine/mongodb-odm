@@ -2,13 +2,13 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Account,
-    Documents\Address,
-    Documents\Group,
-    Documents\Phonenumber,
-    Documents\Profile,
-    Documents\File,
-    Documents\User;
+use Documents\Account;
+use Documents\Address;
+use Documents\Group;
+use Documents\Phonenumber;
+use Documents\Profile;
+use Documents\File;
+use Documents\User;
 
 class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -32,19 +32,31 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('09/01/1985', $user->getCreatedAt()->format('m/d/Y'));
     }
 
-    public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame()
+    /**
+     * @dataProvider provideEquivalentDates
+     */
+    public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame($oldValue, $newValue)
     {
         $user = new User();
-        $user->setCreatedAt(new \DateTime('1985-09-01 00:00:00'));
+        $user->setCreatedAt($oldValue);
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->findOneBy(array());
-        $user->setCreatedAt(new \DateTime('1985-09-01 00:00:00'));
+        $user->setCreatedAt($newValue);
         $this->dm->getUnitOfWork()->computeChangeSets();
         $changeset = $this->dm->getUnitOfWork()->getDocumentChangeset($user);
         $this->assertEmpty($changeset);
+    }
+
+    public function provideEquivalentDates()
+    {
+        return array(
+            array(new \DateTime('1985-09-01 00:00:00'), new \DateTime('1985-09-01 00:00:00')),
+            array(new \DateTime('2012-07-11T14:55:14-04:00'), new \DateTime('2012-07-11T19:55:14+01:00')),
+            array(new \DateTime('@1342033881'), new \MongoDate(1342033881)),
+        );
     }
 
     public function testDateInstanceValueChangeDoesCauseUpdateIfValueIsTheSame()

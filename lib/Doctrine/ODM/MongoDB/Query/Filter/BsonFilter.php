@@ -28,7 +28,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
  * Handles the setting and escaping of parameters.
  *
  * @author Tim Roediger <superdweebie@gmail.com>
- * @abstract
  */
 abstract class BsonFilter
 {
@@ -88,7 +87,7 @@ abstract class BsonFilter
     }
 
     /**
-     * Gets the critera part to add to a query.
+     * Gets the criteria part to add to a query.
      *
      * @return array The criteria array, if there is available, empty array otherwise
      */

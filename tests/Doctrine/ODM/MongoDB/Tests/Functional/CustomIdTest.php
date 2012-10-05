@@ -2,9 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Account,
-    Documents\CustomUser,
-    Documents\User;
+use Documents\Account;
+use Documents\CustomUser;
+use Documents\User;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>

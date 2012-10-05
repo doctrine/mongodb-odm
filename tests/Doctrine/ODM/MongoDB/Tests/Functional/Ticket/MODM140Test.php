@@ -4,18 +4,16 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-use Doctrine\Common\Collections\ArrayCollection,
-    Documents\Functional\EmbeddedTestLevel0,
-    Documents\Functional\EmbeddedTestLevel1,
-    Documents\Functional\EmbeddedTestLevel2;
+use Doctrine\Common\Collections\ArrayCollection;
+use Documents\Functional\EmbeddedTestLevel0;
+use Documents\Functional\EmbeddedTestLevel1;
+use Documents\Functional\EmbeddedTestLevel2;
 
 class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
 
     public function testInsertingNestedEmbeddedCollections()
     {
-        $this->markTestSkipped();
-
         $category = new Category;
         $category->name = "My Category";
 
@@ -47,7 +45,6 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testInsertingEmbeddedCollectionWithRefMany()
     {
-        $this->markTestSkipped();
         $comment = new Comment();
 
         $post = new Post();
@@ -62,8 +59,8 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneByName('My Category');
-        $this->assertEquals(1, $count($category->posts->count()));
-        $this->assertEquals(1, $count($category->posts->get(0)->comments->count()));
+        $this->assertEquals(1, $category->posts->count());
+        $this->assertEquals(1, $category->posts->get(0)->comments->count());
     }
 
     public function testAddingAnotherEmbeddedDocument()
@@ -122,7 +119,7 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 	
 }
 
-/** @ODM\Document(collection="tests", db="tests") */
+/** @ODM\Document */
 class Category 
 {
 	/** @ODM\Id */
@@ -173,7 +170,7 @@ class PostVersion
 	
 }
 
-/** @ODM\Document(collection="comments", db="tests") */
+/** @ODM\Document */
 class Comment
 {
 	/** @ODM\Id */

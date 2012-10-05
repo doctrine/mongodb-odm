@@ -19,32 +19,31 @@
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
-use Doctrine\ODM\MongoDB\DocumentManager,
-    Doctrine\Common\EventManager,
-    Doctrine\ODM\MongoDB\UnitOfWork,
-    Doctrine\ODM\MongoDB\Hydrator\HydratorFactory,
-    Doctrine\ODM\MongoDB\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Mapping\Types\Type,
-    Doctrine\Common\Collections\Collection,
-    Doctrine\ODM\MongoDB\Events,
-    Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs,
-    Doctrine\ODM\MongoDB\MongoDBException,
-    Doctrine\ODM\MongoDB\LockException,
-    Doctrine\ODM\MongoDB\PersistentCollection,
-    Doctrine\ODM\MongoDB\Query\Query,
-    Doctrine\MongoDB\ArrayIterator,
-    Doctrine\ODM\MongoDB\Proxy\Proxy,
-    Doctrine\ODM\MongoDB\LockMode,
-    Doctrine\ODM\MongoDB\Cursor,
-    Doctrine\ODM\MongoDB\LoggableCursor,
-    Doctrine\MongoDB\Cursor as BaseCursor,
-    Doctrine\MongoDB\Iterator,
-    Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\MongoDB\ArrayIterator;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\LockMode;
+use Doctrine\ODM\MongoDB\Cursor;
+use Doctrine\ODM\MongoDB\LoggableCursor;
+use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\Iterator;
+use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Bulat Shakirzyanov <bulat@theopenskyproject.com>
@@ -101,7 +100,7 @@ class DocumentPersister
     private $collection;
 
     /**
-     * Array of quered inserts for the persister to insert.
+     * Array of queued inserts for the persister to insert.
      *
      * @var array
      */
@@ -516,10 +515,10 @@ class DocumentPersister
      */
     public function primeCollection(Iterator $collection, $fieldName, $primer, array $hints = array())
     {
+        $collection = $collection->toArray();
         if (!count($collection)) {
             return;
         }
-        $collection = $collection->toArray();
         $collectionMetaData = $this->dm->getClassMetaData(get_class(current($collection)));
 
         $fieldMapping = $collectionMetaData->fieldMappings[$fieldName];
@@ -588,7 +587,6 @@ class DocumentPersister
                 break;
 
             case ClassMetadata::REFERENCE_MANY:
-                $mapping = $collection->getMapping();
                 if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
                     $this->loadReferenceManyWithRepositoryMethod($collection);
                 } else {
@@ -641,6 +639,9 @@ class DocumentPersister
                 $mongoId = $reference[$cmd . 'id'];
             }
             $id = (string) $mongoId;
+            if (!$id) {
+                continue;
+            }
             $reference = $this->dm->getReference($className, $id);
             if ($mapping['strategy'] === 'set') {
                 $collection->set($key, $reference);
@@ -714,8 +715,12 @@ class DocumentPersister
             $qb->slaveOkay(true);
         }
         $documents = $qb->getQuery()->execute()->toArray();
-        foreach ($documents as $document) {
+        foreach ($documents as $key => $document) {
+          if ($mapping['strategy'] === 'set') {
+            $collection->set($key, $document);
+          } else {
             $collection->add($document);
+          }
         }
     }
 
@@ -723,13 +728,13 @@ class DocumentPersister
     {
         $mapping = $collection->getMapping();
         $cursor = $this->dm->getRepository($mapping['targetDocument'])->$mapping['repositoryMethod']($collection->getOwner());
-        if ($mapping['sort']) {
+        if (isset($mapping['sort']) && $mapping['sort']) {
             $cursor->sort($mapping['sort']);
         }
-        if ($mapping['limit']) {
+        if (isset($mapping['limit']) && $mapping['limit']) {
             $cursor->limit($mapping['limit']);
         }
-        if ($mapping['skip']) {
+        if (isset($mapping['skip']) && $mapping['skip']) {
             $cursor->skip($mapping['skip']);
         }
         if (isset($hints[Query::HINT_SLAVE_OKAY])) {
@@ -781,6 +786,9 @@ class DocumentPersister
         if (is_scalar($query) || $query instanceof \MongoId) {
             $query = array('_id' => $query);
         }
+        if ($query === null) {
+            $query = array();
+        }
         $query = array_merge($query, $this->dm->getFilterCollection()->getFilterCriteria($this->class));
 
         if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
@@ -804,7 +812,7 @@ class DocumentPersister
     /**
      * Prepares a new object array by converting the portable Doctrine types to the types mongodb expects.
      *
-     * @param string|array newObjy
+     * @param string|array newObj
      * @return array $newQuery
      */
     public function prepareNewObj($newObj)
@@ -888,6 +896,7 @@ class DocumentPersister
 
             $mapping = $metadata->fieldMappings[$e[0]];
             $e[0] = $mapping['name'];
+            $fieldName = $e[0] . '.' .$e[1];
 
             if (isset($mapping['targetDocument'])) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
@@ -937,6 +946,8 @@ class DocumentPersister
                         }
                     }
                 }
+            } elseif ($mapping['type'] === 'hash') {
+                $fieldName = implode('.', $e);
             }
 
         // Process all non identifier fields

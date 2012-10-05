@@ -2,21 +2,21 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Address,
-    Documents\Profile,
-    Documents\Phonenumber,
-    Documents\Account,
-    Documents\Group,
-    Documents\User,
-    Documents\Functional\EmbeddedTestLevel0,
-    Documents\Functional\EmbeddedTestLevel0b,
-    Documents\Functional\EmbeddedTestLevel1,
-    Documents\Functional\EmbeddedTestLevel2,
-    Documents\Functional\NotSaved,
-    Documents\Functional\NotSavedEmbedded,
-    Documents\Functional\VirtualHost,
-    Documents\Functional\VirtualHostDirective,
-    Doctrine\ODM\MongoDB\PersistentCollection;
+use Documents\Address;
+use Documents\Profile;
+use Documents\Phonenumber;
+use Documents\Account;
+use Documents\Group;
+use Documents\User;
+use Documents\Functional\EmbeddedTestLevel0;
+use Documents\Functional\EmbeddedTestLevel0b;
+use Documents\Functional\EmbeddedTestLevel1;
+use Documents\Functional\EmbeddedTestLevel2;
+use Documents\Functional\NotSaved;
+use Documents\Functional\NotSavedEmbedded;
+use Documents\Functional\VirtualHost;
+use Documents\Functional\VirtualHostDirective;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 
 class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
