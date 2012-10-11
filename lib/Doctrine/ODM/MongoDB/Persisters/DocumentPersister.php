@@ -538,7 +538,7 @@ class DocumentPersister
                             $className = $this->dm->getClassNameFromDiscriminatorValue($fieldMapping, $reference);
                             $mongoId = $reference[$cmd . 'id'];
                         }
-                        $id = (string) $mongoId;
+                        $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
                         $document = $this->uow->tryGetById($id, $className);
                         if (!$document || $document instanceof Proxy && ! $document->__isInitialized__) {
                             if ( ! isset($groupedIds[$className])) {
@@ -638,7 +638,7 @@ class DocumentPersister
                 $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
                 $mongoId = $reference[$cmd . 'id'];
             }
-            $id = (string) $mongoId;
+            $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
             if (!$id) {
                 continue;
             }
