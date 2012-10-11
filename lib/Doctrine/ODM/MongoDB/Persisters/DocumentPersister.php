@@ -988,10 +988,6 @@ class DocumentPersister
                     $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
                     $value = $targetClass->getDatabaseIdentifierValue($value);
                 }
-            } elseif ($prepareValue === true && isset($mapping['reference']) && isset($mapping['simple']) && false === $mapping['simple']) {
-                $fieldName .= '.$id';
-                $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-                $value = $targetClass->getDatabaseIdentifierValue($value);
             }
 
         // Process identifier
