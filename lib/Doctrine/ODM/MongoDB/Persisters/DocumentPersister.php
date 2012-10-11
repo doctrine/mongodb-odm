@@ -902,7 +902,7 @@ class DocumentPersister
             $e = explode('.', $fieldName);
 
             if (!isset($metadata->fieldMappings[$e[0]])) {
-                return;
+                return $value;
             }
 
             $mapping = $metadata->fieldMappings[$e[0]];
