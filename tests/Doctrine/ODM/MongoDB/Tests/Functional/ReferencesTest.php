@@ -190,4 +190,22 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('test', $groups[0]->getName());
         $this->assertEquals(1, count($groups));
     }
+
+    public function testSortReferenceManyOwningSide()
+    {
+        $user = new \Documents\User();
+        $user->addGroup(new Group('Group 1'));
+        $user->addGroup(new Group('Group 2'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->find(get_class($user), $user->getId());
+
+        $groups = $user->getSortedGroups();
+        $this->assertEquals(2, $groups->count());
+        $this->assertEquals('Group 2', $groups[0]->getName());
+        $this->assertEquals('Group 1', $groups[1]->getName());
+    }
 }

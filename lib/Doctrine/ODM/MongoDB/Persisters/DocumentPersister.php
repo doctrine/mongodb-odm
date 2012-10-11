@@ -642,12 +642,20 @@ class DocumentPersister
             if (!$id) {
                 continue;
             }
+
+            // create a reference to the class and id
             $reference = $this->dm->getReference($className, $id);
-            if ($mapping['strategy'] === 'set') {
-                $collection->set($key, $reference);
-            } else {
-                $collection->add($reference);
+
+            // no custom sort so add the references right now in the order they are embedded
+            if (!isset($mapping['sort']) || !$mapping['sort']) {
+                if ($mapping['strategy'] === 'set') {
+                    $collection->set($key, $reference);
+                } else {
+                    $collection->add($reference);
+                }
             }
+
+            // only query for the referenced object if it is not already initialized
             if ($reference instanceof Proxy && ! $reference->__isInitialized__) {
                 if ( ! isset($groupedIds[$className])) {
                     $groupedIds[$className] = array();
@@ -682,6 +690,9 @@ class DocumentPersister
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;
+                if (isset($mapping['sort']) && $mapping['sort']) {
+                    $collection->add($document);
+                }
             }
         }
     }
