@@ -41,7 +41,7 @@ class IdType extends Type
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (string) $value : null;
+        return $value instanceof \MongoId ? (string) $value : $value;
     }
 
     public function closureToMongo()
@@ -51,6 +51,6 @@ class IdType extends Type
 
     public function closureToPHP()
     {
-        return '$return = (string) $value;';
+        return '$return = $value instanceof \MongoId ? (string) $value : $value;';
     }
 }

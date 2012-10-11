@@ -1296,7 +1296,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ($document instanceof Proxy && !$document->__isInitialized()) {
             return $document->__identifier__;
         }
-        return (string) $this->reflFields[$this->identifier]->getValue($document);
+        return $this->reflFields[$this->identifier]->getValue($document);
     }
 
     /**
