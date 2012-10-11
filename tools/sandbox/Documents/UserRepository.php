@@ -1,6 +1,6 @@
 <?php
 
-namespace ;
+namespace Documents;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
