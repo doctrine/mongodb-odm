@@ -25,7 +25,7 @@ class PrePersistTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @ODM\Document */
+/** @ODM\Document @ODM\HasLifecycleCallbacks */
 class PrePersistTestDocument
 {
     public $prePersist;
