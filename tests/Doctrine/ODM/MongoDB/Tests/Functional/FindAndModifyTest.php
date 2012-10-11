@@ -38,4 +38,25 @@ class FindAndModifyTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         // Test the object was removed
         $this->assertEquals(1, $this->dm->getDocumentCollection('Documents\User')->find()->count());
     }
+
+    public function testFindAndModifyAlt()
+    {
+        $doc = new User();
+        $doc->setUsername('jwage');
+
+        $this->dm->persist($doc);
+        $this->dm->flush();
+
+        // test update findAndModify
+        $q = $this->dm->createQueryBuilder()
+            ->findAndUpdate('Documents\User')
+            ->returnNew(true)
+            ->field('username')->equals('jwage')
+            ->field('username')->set('Romain Neutron')
+            ->getQuery();
+        $result = $q->execute();
+
+        // Test the username was set
+        $this->assertEquals('Romain Neutron', $result->getUsername());
+    }
 }
