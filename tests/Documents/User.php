@@ -32,7 +32,7 @@ class User extends BaseDocument
     /** @ODM\EmbedMany(targetDocument="Phonenumber") */
     protected $phonenumbers;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}, sort={"name"="desc"}) */
     protected $groups;
 
     /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
