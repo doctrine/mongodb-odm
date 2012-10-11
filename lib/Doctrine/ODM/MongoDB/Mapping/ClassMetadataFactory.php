@@ -225,7 +225,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:
                 $uuidGenerator = new \Doctrine\ODM\MongoDB\Id\UuidGenerator($class);
-                $uuidGenerator->setSalt(isset($idGenOptions['salt']) ? $idGenOptions['salt'] : php_uname('n'));
+                isset($idGenOptions['salt']) && $uuidGenerator->setSalt($idGenOptions['salt']);
                 $class->setIdGenerator($uuidGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_ALNUM:
