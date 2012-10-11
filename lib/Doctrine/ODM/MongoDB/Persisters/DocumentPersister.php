@@ -913,8 +913,7 @@ class DocumentPersister
                 $objectProperty = $e[1];
                 $objectPropertyPrefix = '';
                 $fieldHasCollectionItemPointer = false;
-            }
-            else {
+            } else {
                 $fieldName = $e[0] . '.' .$e[1] . '.' .$e[2];
                 $objectProperty = $e[2];
                 $objectPropertyPrefix = $e[1] . '.';
