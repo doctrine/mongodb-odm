@@ -544,7 +544,7 @@ class DocumentPersister
                             if ( ! isset($groupedIds[$className])) {
                                 $groupedIds[$className] = array();
                             }
-                            $groupedIds[$className][] = $mongoId;
+                            $groupedIds[$className][$id] = $mongoId;
                         }
                     }
                 }
@@ -552,7 +552,8 @@ class DocumentPersister
                 $document = $collectionMetaData->getFieldValue($element, $fieldName);
                 if ($document && $document instanceof Proxy && ! $document->__isInitialized__) {
                     $class = $this->dm->getClassMetadata(get_class($document));
-                    $groupedIds[$class->name][] = $this->uow->getDocumentIdentifier($document);
+                    $id = $this->uow->getDocumentIdentifier($document);
+                    $groupedIds[$class->name][$id] = $id;
                 }
             }
         }
@@ -660,7 +661,7 @@ class DocumentPersister
                 if ( ! isset($groupedIds[$className])) {
                     $groupedIds[$className] = array();
                 }
-                $groupedIds[$className][] = $mongoId;
+                $groupedIds[$className][$id] = $mongoId;
             }
         }
         foreach ($groupedIds as $className => $ids) {
