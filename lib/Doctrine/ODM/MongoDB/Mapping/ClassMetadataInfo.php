@@ -994,6 +994,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             }
         }
         unset($mapping['cascade']);
+        if (isset($mapping['type']) && $mapping['type'] === 'file') {
+            $mapping['file'] = true;
+        }
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
             $mapping['name'] = 'file';
