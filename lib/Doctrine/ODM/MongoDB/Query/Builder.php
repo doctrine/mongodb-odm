@@ -155,6 +155,12 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         return parent::findAndUpdate();
     }
 
+    public function returnNew($bool = true)
+    {
+        $this->refresh(true);
+        return parent::returnNew($bool);
+    }
+
     /**
      * @param string $documentName
      * @return Builder
