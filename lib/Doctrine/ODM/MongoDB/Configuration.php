@@ -67,6 +67,16 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     }
 
     /**
+     * Retrieves the list of registered document namespace aliases.
+     *
+     * @return array
+     */
+    public function getDocumentNamespaces()
+    {
+        return $this->attributes['documentNamespaces'];
+    }
+
+    /**
      * Set the document alias map
      *
      * @param array $documentAliasMap
