@@ -40,5 +40,5 @@ interface DocumentInitializerInterface
      * 
      * @param The new prototype instance.
      */
-    abstract public function initialize($instance);
+    public function initialize($instance);
 }
