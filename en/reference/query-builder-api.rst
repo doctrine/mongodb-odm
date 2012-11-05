@@ -302,6 +302,7 @@ The conditional operators in Mongo are available to limit the returned results t
 * ``type($type)``
 * ``all($values)``
 * ``mod($mod)``
+* ``addOr($expr)``
 
 Query for active administrator users:
 
@@ -463,6 +464,19 @@ in the Mongo docs.
 Read more about the
 `$mod operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod>`_ in the Mongo docs.
 
+Query for users who have subscribed or are in a trial.
+
+.. code-block:: php
+
+    <?php
+
+    $qb = $dm->createQueryBuilder('User')
+    $qb->addOr($qb->expr()->field('subscriber')->equals(true));
+    $qb->addOr($qb->expr()->field('inTrial')->equals(true));
+    
+Read more about the 
+`$or operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24or>`_ in the Mongo docs.
+    
 Update Queries
 ~~~~~~~~~~~~~~
 
