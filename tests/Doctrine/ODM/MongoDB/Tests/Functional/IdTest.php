@@ -126,6 +126,51 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Id\UuidGenerator', $class->idGenerator);
         $this->assertEquals('test', $class->idGenerator->getSalt());
     }
+
+    /**
+     * @dataProvider provideEqualButNotIdenticalIds
+     */
+    public function testEqualButNotIdenticalIds($user1Id, $user2Id)
+    {
+        $this->assertEquals($user1Id, $user2Id);
+        $this->assertNotSame($user1Id, $user2Id);
+
+        $user1 = new CustomIdUser(sprintf('User1 with %s ID', gettype($user1Id)));
+        $user1->id = $user1Id;
+
+        $user2 = new CustomIdUser(sprintf('User2 with %s ID', gettype($user2Id)));
+        $user2->id = $user2Id;
+
+        $this->dm->persist($user1);
+        $this->dm->persist($user2);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $this->assertSame($user1->id, $user1Id);
+        $this->assertSame($user2->id, $user2Id);
+
+        $user1 = $this->dm->find(__NAMESPACE__.'\CustomIdUser', $user1Id);
+        $user2 = $this->dm->find(__NAMESPACE__.'\CustomIdUser', $user2Id);
+
+        $this->assertNotSame($user1, $user2);
+        $this->assertSame($user1->id, $user1Id);
+        $this->assertSame($user2->id, $user2Id);
+    }
+
+    public function provideEqualButNotIdenticalIds()
+    {
+        /* MongoDB allows comparisons between different numeric types, so we
+         * cannot test integer and floating point values (e.g. 123 and 123.0).
+         *
+         * See: http://docs.mongodb.org/manual/faq/developers/#what-is-the-compare-order-for-bson-types
+         */
+        return array(
+            array('123', 123),
+            array('123', 123.0),
+            array(null, ''),
+            array(null, 0),
+        );
+    }
 }
 
 /** @ODM\Document */
@@ -211,6 +256,21 @@ class AlnumCharsUser
     public $id;
 
     /** @ODM\String(name="t") */
+    public $name;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+}
+
+/** @ODM\Document */
+class CustomIdUser
+{
+    /** @ODM\Id(strategy="none",nullable=true) */
+    public $id;
+
+    /** @ODM\String */
     public $name;
 
     public function __construct($name)
