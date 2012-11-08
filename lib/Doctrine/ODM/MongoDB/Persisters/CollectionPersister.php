@@ -125,7 +125,7 @@ class CollectionPersister
             $query = array($this->cmd.'unset' => array());
             $isAssocArray = false;
             foreach ($deleteDiff as $key => $document) {
-                $isAssocArray = !$isAssocArray && !is_int($key);
+                $isAssocArray |= !is_int($key);
                 $query[$this->cmd.'unset'][$propertyPath.'.'.$key] = true;
             }
             $this->executeQuery($parent, $query, $options);
