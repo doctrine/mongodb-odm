@@ -23,7 +23,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\Common\Persistence\Proxy;
+use Doctrine\Common\Proxy\Proxy;
 
 /**
  * This factory is used to create proxy objects for documents at runtime.

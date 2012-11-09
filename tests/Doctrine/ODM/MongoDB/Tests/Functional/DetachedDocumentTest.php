@@ -6,6 +6,7 @@ use Documents\CmsUser;
 use Documents\CmsPhonenumber;
 use Documents\CmsAddress;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 
 class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -114,14 +115,14 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $address2 = $this->dm->find(get_class($address), $address->id);
-        $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $address2->user);
+        $this->assertTrue($address2->user instanceof Proxy);
         $this->assertFalse($address2->user->__isInitialized());
         $detachedAddress2 = unserialize(serialize($address2));
-        $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $detachedAddress2->user);
+        $this->assertTrue($detachedAddress2->user instanceof Proxy);
         $this->assertFalse($detachedAddress2->user->__isInitialized());
 
         $managedAddress2 = $this->dm->merge($detachedAddress2);
-        $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $managedAddress2->user);
+        $this->assertTrue($managedAddress2->user instanceof Proxy);
         $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
         $this->assertFalse($managedAddress2->user->__isInitialized());
     }
