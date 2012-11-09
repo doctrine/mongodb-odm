@@ -2169,13 +2169,17 @@ class UnitOfWork implements PropertyChangedListener
                         } elseif ( ! $assoc2['isCascadeMerge']) {
                             if ($this->getDocumentState($other) === self::STATE_DETACHED) {
                                 $targetDocument = isset($assoc2['targetDocument']) ? $assoc2['targetDocument'] : get_class($other);
+                                /* @var $targetClass \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo */
                                 $targetClass = $this->dm->getClassMetadata($targetDocument);
                                 $relatedId = $targetClass->getIdentifierObject($other);
 
                                 if ($targetClass->subClasses) {
                                     $other = $this->dm->find($targetClass->name, $relatedId);
                                 } else {
-                                    $other = $this->dm->getProxyFactory()->getProxy($assoc2['targetDocument'], $relatedId);
+                                    $other = $this
+                                        ->dm
+                                        ->getProxyFactory()
+                                        ->getProxy($assoc2['targetDocument'], array($targetClass->identifier => $id));
                                     $this->registerManaged($other, $relatedId, array());
                                 }
                             }
