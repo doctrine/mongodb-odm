@@ -114,15 +114,15 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $address2 = $this->dm->find(get_class($address), $address->id);
-        $this->assertTrue($address2->user instanceof \Doctrine\ODM\MongoDB\Proxy\Proxy);
-        $this->assertFalse($address2->user->__isInitialized__);
+        $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $address2->user);
+        $this->assertFalse($address2->user->__isInitialized());
         $detachedAddress2 = unserialize(serialize($address2));
-        $this->assertTrue($detachedAddress2->user instanceof \Doctrine\ODM\MongoDB\Proxy\Proxy);
-        $this->assertFalse($detachedAddress2->user->__isInitialized__);
+        $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $detachedAddress2->user);
+        $this->assertFalse($detachedAddress2->user->__isInitialized());
 
         $managedAddress2 = $this->dm->merge($detachedAddress2);
-        $this->assertTrue($managedAddress2->user instanceof \Doctrine\ODM\MongoDB\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $managedAddress2->user);
         $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
-        $this->assertFalse($managedAddress2->user->__isInitialized__);
+        $this->assertFalse($managedAddress2->user->__isInitialized());
     }
 }
