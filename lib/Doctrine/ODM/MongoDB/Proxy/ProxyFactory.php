@@ -85,10 +85,10 @@ class ProxyFactory
     }
 
     /**
-     * Gets a reference proxy instance for the entity of the given type and identified by
+     * Gets a reference proxy instance for the proxy of the given type and identified by
      * the given identifier.
      *
-     * @param string $className
+     * @param  string $className
      * @param  array $identifier
      * @return object
      */
@@ -170,8 +170,8 @@ class ProxyFactory
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata[] $classes The classes (ClassMetadata instances)
      *                                                                      for which to generate proxies.
      * @param string $proxyDir The target directory of the proxy classes. If not specified, the
-     *                      directory configured on the Configuration of the EntityManager used
-     *                      by this factory is used.
+     *                         directory configured on the Configuration of the DocumentManager used
+     *                         by this factory is used.
      * @return int Number of generated proxies.
      */
     public function generateProxyClasses(array $classes, $proxyDir = null)

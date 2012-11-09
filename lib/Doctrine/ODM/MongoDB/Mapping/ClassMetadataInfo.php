@@ -23,9 +23,6 @@ use InvalidArgumentException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\LockException;
 
-use InvalidArgumentException;
-use ReflectionClass;
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
  * of a document and it's references.
@@ -394,7 +391,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     public $reflClass;
 
@@ -416,7 +413,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function getReflectionClass()
     {
         if ( ! $this->reflClass) {
-            $this->reflClass = new ReflectionClass($this->name);
+            $this->reflClass = new \ReflectionClass($this->name);
         }
 
         return $this->reflClass;
@@ -444,7 +441,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * {@inheritDoc}
      *
-     * Since MongoDB only allows exactly one identifier field this will always return an array with only one value
+     * Since MongoDB only allows exactly one identifier field
+     * this will always return an array with only one value
      */
     public function getIdentifier()
     {
@@ -454,7 +452,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * {@inheritDoc}
      *
-     * Since MongoDB only allows exactly one identifier field this will always return an array with only one value
+     * Since MongoDB only allows exactly one identifier field
+     * this will always return an array with only one value
      */
     public function getIdentifierFieldNames()
     {
@@ -506,7 +505,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * lifecycle callbacks and lifecycle listeners.
      *
      * @param string $lifecycleEvent The lifecycle event.
-     * @param object $document       The Document on which the event occurred.
+     * @param object $document       The document on which the event occurred.
      * @param array  $arguments      Arguments to be passed to the callbacks
      */
     public function invokeLifecycleCallbacks($lifecycleEvent, $document, array $arguments = null)
@@ -811,13 +810,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param  string $name
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function setCollection($name)
     {
         if (is_array($name)) {
             if ( ! isset($name['name'])) {
-                throw new InvalidArgumentException('A name key is required when passing an array to setCollection()');
+                throw new \InvalidArgumentException('A name key is required when passing an array to setCollection()');
             }
             $this->collectionCapped = isset($name['capped']) ? $name['capped'] : false;
             $this->collectionSize = isset($name['size']) ? $name['size'] : 0;

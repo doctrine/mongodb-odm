@@ -172,7 +172,7 @@ class DocumentPersister
     /**
      * Gets the ClassMetadata instance of the document class this persister is used for.
      *
-     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     public function getClassMetadata()
     {
