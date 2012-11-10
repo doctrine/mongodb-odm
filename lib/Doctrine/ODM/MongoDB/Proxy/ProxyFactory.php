@@ -108,6 +108,7 @@ class ProxyFactory
         }
 
         $documentPersister = $this->uow->getDocumentPersister($className);
+        $metadata = $documentPersister->getClassMetadata();
 
         $initializer = function(Proxy $proxy) use ($documentPersister, $identifier) {
             $proxy->__setInitializer(function(){});
@@ -161,7 +162,15 @@ class ProxyFactory
             }
         };
 
-        return new $fqn($initializer, $cloner, $identifier);
+        $proxy = new $fqn($initializer, $cloner);
+
+        foreach ($metadata->getIdentifierFieldNames() as $idField) {
+            if (isset($identifier[$idField])) {
+                $metadata->setFieldValue($proxy, $idField, $identifier[$idField]);
+            }
+        }
+
+        return $proxy;
     }
 
     /**
