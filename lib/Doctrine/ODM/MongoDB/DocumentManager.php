@@ -552,9 +552,7 @@ class DocumentManager implements ObjectManager
             return $document;
         }
 
-        $arrayIdentifier = is_array($identifier) ? $identifier : array($class->identifier => $identifier);
-
-        $document = $this->proxyFactory->getProxy($class->name, $arrayIdentifier);
+        $document = $this->proxyFactory->getProxy($class->name, $identifier);
         $this->unitOfWork->registerManaged($document, $identifier, array());
 
         return $document;

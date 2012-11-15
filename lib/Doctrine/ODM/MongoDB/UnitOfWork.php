@@ -1992,7 +1992,7 @@ class UnitOfWork implements PropertyChangedListener
                                 $targetDocument = isset($assoc2['targetDocument']) ? $assoc2['targetDocument'] : get_class($other);
                                 /* @var $targetClass \Doctrine\ODM\MongoDB\Mapping\ClassMetadata */
                                 $targetClass = $this->dm->getClassMetadata($targetDocument);
-                                $id = $targetClass->getIdentifierValues($other);
+                                $id = $targetClass->getIdentifierValue($other);
                                 $proxy = $this->dm->getProxyFactory()->getProxy($targetDocument, $id);
                                 $prop->setValue($managedCopy, $proxy);
                                 $this->registerManaged($proxy, $id, array());
