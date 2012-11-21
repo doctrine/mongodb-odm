@@ -56,6 +56,20 @@ class ClassMetadata extends ClassMetadataInfo
     private $prototype;
 
     /**
+     * The initializers which were registered for this specific class.
+     *
+     * @var array
+     */
+    protected $initializers = array();
+
+    /**
+     * The static initializers which were registered for all ClassMetadata instances.
+     *
+     * @var array
+     */
+    static protected $staticInitializers = array();
+
+            /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
      *
@@ -195,8 +209,80 @@ class ClassMetadata extends ClassMetadataInfo
     {
         if ($this->prototype === null) {
             $this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+
+            foreach(self::$staticInitializers as $initializer) {
+                $initializer->initialize($this->prototype);
+            }
+
+            foreach($this->initializers as $initializer) {
+                $initializer->initialize($this->prototype);
+            }
         }
 
         return clone $this->prototype;
+    }
+
+    /**
+     * Registers a new initializer, which will be called when the document prototype is
+     * created. This initializer will be called only for this specific class instance.
+     * If the initializer-instance had already been registered it won't be registered
+     * again.
+     *
+     * Note: The class initializers are called after the static initializers.
+     *
+     * @param DocumentInitializerInterface $initializer
+     * @return void
+     */
+    public function registerInitializer(DocumentInitializerInterface $initializer)
+    {
+        if(!in_array($initializer, $this->initializers, true)) {
+            array_push($this->initializers, $initializer);
+        }
+    }
+
+    /**
+     * Unregister an initializer which was previously registered with registerInitializer().
+     * If the initializer hadn't been registered, nothing will happen.
+     *
+     * @param DocumentInitializerInterface $initializer
+     * @return void
+     */
+    public function unregisterInitializer(DocumentInitializerInterface $initializer)
+    {
+        if(in_array($initializer, $this->initializers, true)) {
+            unset($this->initializers[array_search($initializer, $this->initializers, true)]);
+        }
+    }
+
+    /**
+     * Registers a new initializer, which will be called when the document prototype is
+     * created. This initializer for every document instance.
+     * If the initializer-instance had already been registered it won't be registered
+     * again.
+     *
+     * Note: The class initializers are called after the static initializers.
+     *
+     * @param DocumentInitializerInterface $initializer
+     * @return void
+     */
+    static public function registerStaticInitializer(DocumentInitializerInterface $initializer)
+    {
+        if(!in_array($initializer, self::$staticInitializers, true)) {
+            array_push(self::$staticInitializers, $initializer);
+        }
+    }
+
+    /**
+     * Unregister an initializer which was previously registered with registerStaticInitializer().
+     * If the initializer hadn't been registered, nothing will happen.
+     *
+     * @param DocumentInitializerInterface $initializer
+     * @return void
+     */
+    static public function unregisterStaticInitializer(DocumentInitializerInterface $initializer)
+    {
+        if(in_array($initializer, self::$staticInitializers, true)) {
+            unset(self::$staticInitializers[array_search($initializer, self::$staticInitializers, true)]);
+        }
     }
 }
