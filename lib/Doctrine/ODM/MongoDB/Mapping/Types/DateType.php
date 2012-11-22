@@ -20,7 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Mapping\Types;
 
 /**
- * The String type.
+ * The Date type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
