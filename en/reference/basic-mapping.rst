@@ -185,6 +185,7 @@ This list explains some of the less obvious mapping types:
 -  ``bin_data``: string to MongoBinData instance with a "byte array" type
 -  ``bin_data_uuid``: string to MongoBinData instance with a "uuid" type
 -  ``date``: DateTime to MongoDate
+-  ``hash``: associative array to MongoDB object
 -  ``id``: string to MongoId by default, but other formats are possible
 -  ``timestamp``: string to MongoTimestamp
 -  ``increment``: integer in both PHP and MongoDB
