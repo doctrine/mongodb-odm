@@ -171,6 +171,7 @@ class HydratorFactory
         $code = '';
 
         foreach ($class->fieldMappings as $fieldName => $mapping) {
+            $mapping['name'] = str_replace('.','\'][\'',$mapping['name']);
             if (isset($mapping['alsoLoadFields'])) {
                 foreach ($mapping['alsoLoadFields'] as $name) {
                     $code .= sprintf(<<<EOF
