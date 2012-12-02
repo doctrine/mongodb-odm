@@ -69,7 +69,7 @@ You can also remove a document and return it:
 
     <?php
 
-    $job = $dm->createrQueryBuilder('Job')
+    $job = $dm->createQueryBuilder('Job')
         ->findAndRemove()
         ->sort('priority', 'desc')
         ->getQuery()
