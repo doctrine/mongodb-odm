@@ -149,7 +149,7 @@ Example:
 Flush Options
 -------------
 
-When committings your documents you can specify an array of options to the
+When committing your documents you can specify an array of options to the
 ``flush`` method. With it you can send options to the underlying database
 like ``safe``, ``fsync``, etc.
 

@@ -66,7 +66,7 @@ variables. An instance variable must be directly accessed only from
 within the methods of the document by the document instance itself.
 Instance variables must not be accessed by clients of the document.
 The state of the document is available to clients only through the
-documentâ€™s methods, i.e. accessor methods (getter/setter methods) or
+document's methods, i.e. accessor methods (getter/setter methods) or
 other business methods.
 
 Collection-valued persistent fields and properties must be defined

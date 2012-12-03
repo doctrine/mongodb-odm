@@ -50,7 +50,7 @@ Retrieve a blog post and only select the first 10 comments:
 
     <?php
 
-    $post = $dm->createrQueryBuilder('BlogPost')
+    $post = $dm->createQueryBuilder('BlogPost')
         ->selectSlice('replies', 0, 10)
         ->getQuery()
         ->getSingleResult();
