@@ -9,6 +9,7 @@
         <field name="id" id="true" />
         <field name="username" type="string" />
         <field name="createdAt" type="date" />
+        <field name="version" type="int" version="true" />
         <field name="tags" type="collection" />
         <embed-one target-document="Documents\Address" field="address" />
         <!--<field name="profile" targetDocument="Documents\Profile" reference="true" type="one" cascade="all" />-->

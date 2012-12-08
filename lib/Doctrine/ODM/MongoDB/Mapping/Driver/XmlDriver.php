@@ -108,7 +108,7 @@ class XmlDriver extends FileDriver
                 $attributes = $field->attributes();
                 foreach ($attributes as $key => $value) {
                     $mapping[$key] = (string) $value;
-                    $booleanAttributes = array('id', 'reference', 'embed', 'unique', 'sparse', 'file', 'distance');
+                    $booleanAttributes = array('id', 'reference', 'embed', 'unique', 'sparse', 'file', 'distance', 'version');
                     if (in_array($key, $booleanAttributes)) {
                         $mapping[$key] = ('true' === $mapping[$key]) ? true : false;
                     }

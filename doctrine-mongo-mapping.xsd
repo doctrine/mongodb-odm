@@ -49,6 +49,7 @@
     <xs:attribute name="id" type="xs:boolean" default="false" />
     <xs:attribute name="name" type="xs:NMTOKEN" />
     <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
+    <xs:attribute name="version" type="xs:boolean" default="false" />
   </xs:complexType>
 
   <xs:complexType name="embed-one">

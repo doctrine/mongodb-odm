@@ -11,6 +11,9 @@ TestDocuments\User:
     createdAt:
       fieldName: createdAt
       type: date
+    version:
+      type: int
+      version: true
     tags:
       type: collection
   embedOne:
