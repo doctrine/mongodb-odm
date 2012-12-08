@@ -52,6 +52,45 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      * @depends testDocumentCollectionNameAndInheritance
      * @param ClassMetadata $class
      */
+    public function testAssociationMappings($class)
+    {
+        $this->assertEquals(6, count($class->associationMappings));
+        $this->assertTrue(isset($class->associationMappings['address']));
+        $this->assertTrue(isset($class->associationMappings['phonenumbers']));
+        $this->assertTrue(isset($class->associationMappings['groups']));
+        $this->assertTrue(isset($class->associationMappings['morePhoneNumbers']));
+        $this->assertTrue(isset($class->associationMappings['embeddedPhonenumber']));
+        $this->assertTrue(isset($class->associationMappings['otherPhonenumbers']));
+    }
+
+    /**
+     * @depends testDocumentCollectionNameAndInheritance
+     * @param ClassMetadata $class
+     */
+    public function testGetAssociationTargetClass($class)
+    {
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\Address', $class->getAssociationTargetClass('address'));
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\Group', $class->getAssociationTargetClass('groups'));
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber', $class->getAssociationTargetClass('phonenumbers'));
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber', $class->getAssociationTargetClass('morePhoneNumbers'));
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber', $class->getAssociationTargetClass('embeddedPhonenumber'));
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber', $class->getAssociationTargetClass('otherPhonenumbers'));
+    }
+
+    /**
+     * @depends testDocumentCollectionNameAndInheritance
+     * @expectedException \InvalidArgumentException
+     * @param ClassMetadata $class
+     */
+    public function testGetAssociationTargetClassThrowsExceptionWhenEmpty($class)
+    {
+        $class->getAssociationTargetClass('invalid_association');
+    }
+
+    /**
+     * @depends testDocumentCollectionNameAndInheritance
+     * @param ClassMetadata $class
+     */
     public function testStringFieldMappings($class)
     {
         $this->assertEquals('string', $class->fieldMappings['name']['type']);
