@@ -77,6 +77,23 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         ), $classMetadata->fieldMappings['createdAt']);
 
         $this->assertEquals(array(
+            'fieldName' => 'version',
+            'name' => 'version',
+            'type' => 'int',
+            'isCascadeCallbacks' => false,
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => false,
+            'version' => true,
+            'notSaved' => true
+        ), $classMetadata->fieldMappings['version']);
+
+        $this->assertEquals(array(
             'fieldName' => 'tags',
             'name' => 'tags',
             'type' => 'collection',
