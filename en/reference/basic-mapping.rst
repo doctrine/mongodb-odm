@@ -194,7 +194,7 @@ This list explains some of the less obvious mapping types:
     
     If you are using the hash type, values within the associative array are 
     passed to MongoDB directly, without being prepared. Only formats suitable for
-    the Mongo Driver should be used. If your hash contains values which are not 
+    the Mongo driver should be used. If your hash contains values which are not 
     suitable you should either use an embedded document or use formats provided
     by the MongoDB driver (e.g. ``\MongoDate`` instead of ``\DateTime``).
 
