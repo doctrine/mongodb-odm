@@ -956,7 +956,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             $mapping['name'] = $mapping['fieldName'];
         }
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
-            throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
+            //throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
         if ($this->discriminatorField['name'] === $mapping['fieldName']) {
             throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
