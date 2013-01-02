@@ -1517,6 +1517,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Registers a document in the identity map.
+     *
      * Note that documents in a hierarchy are registered with the class name of
      * the root document.
      *
@@ -1659,8 +1660,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * INTERNAL:
-     * Tries to get a document by its identifier hash. If no document is found for
-     * the given hash, FALSE is returned.
+     * Tries to get a document by its identifier hash. If no document is found
+     * for the given hash, FALSE is returned.
      *
      * @ignore
      * @param string $id
@@ -1686,7 +1687,7 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Checks whether a document is registered in the identity map of this UnitOfWork.
+     * Checks whether a document is registered in the identity map.
      *
      * @param object $document
      * @return boolean
@@ -1711,7 +1712,7 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * INTERNAL:
-     * Checks whether an identifier hash exists in the identity map.
+     * Checks whether an identifier exists in the identity map.
      *
      * @ignore
      * @param string $id
