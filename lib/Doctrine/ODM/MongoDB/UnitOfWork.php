@@ -2005,6 +2005,11 @@ class UnitOfWork implements PropertyChangedListener
                             continue;
                         }
 
+                        if (null === $mergeCol) {
+                            // consider unset properties as empty collections
+                            $mergeCol = new ArrayCollection();
+                        }
+
                         foreach ($mergeCol as $entry) {
                             $targetDocument = isset($assoc2['targetDocument']) ? $assoc2['targetDocument'] : get_class($entry);
                             $targetClass = $this->dm->getClassMetadata($targetDocument);
