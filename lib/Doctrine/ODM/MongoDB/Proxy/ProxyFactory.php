@@ -201,7 +201,7 @@ class ProxyFactory
                     return;
                 }
 
-                $properties = $proxy->__getLazyLoadedPublicProperties();
+                $properties = $proxy->__getLazyProperties();
 
                 foreach ($properties as $propertyName => $property) {
                     if (!isset($proxy->$propertyName)) {
@@ -226,7 +226,7 @@ class ProxyFactory
                     return;
                 }
 
-                $properties = $proxy->__getLazyLoadedPublicProperties();
+                $properties = $proxy->__getLazyProperties();
 
                 foreach ($properties as $propertyName => $property) {
                     if (!isset($proxy->$propertyName)) {
