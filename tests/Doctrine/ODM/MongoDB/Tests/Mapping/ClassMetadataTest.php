@@ -140,15 +140,16 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals("DoctrineGlobal_Article", $cm->subClasses[0]);
     }
 
-    public function testDuplicateFieldMappingException()
+    public function testDuplicateFieldMapping()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
         $a1 = array('reference' => true, 'type' => 'many', 'fieldName' => 'foo', 'targetDocument' => 'stdClass');
-        $a2 = array('reference' => true, 'type' => 'many', 'fieldName' => 'foo', 'targetDocument' => 'stdClass');
+        $a2 = array('type' => 'string', 'fieldName' => 'foo');
 
         $cm->mapField($a1);
-        $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
         $cm->mapField($a2);
+
+        $this->assertEquals('string', $cm->fieldMappings['foo']['type']);
     }
 
     public function testDuplicateColumnName_DiscriminatorColumn_ThrowsMappingException()
@@ -169,21 +170,21 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->mapField(array('fieldName' => 'name'));
     }
 
-    public function testDuplicateFieldAndAssocationMapping1_ThrowsException()
+    public function testDuplicateFieldAndAssocationMapping1()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
         $cm->mapField(array('fieldName' => 'name'));
-
-        $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
         $cm->mapOneEmbedded(array('fieldName' => 'name', 'targetDocument' => 'CmsUser'));
+
+        $this->assertEquals('one', $cm->fieldMappings['name']['type']);
     }
 
-    public function testDuplicateFieldAndAssocationMapping2_ThrowsException()
+    public function testDuplicateFieldAndAssocationMapping2()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
         $cm->mapOneEmbedded(array('fieldName' => 'name', 'targetDocument' => 'CmsUser'));
+        $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name', 'type' => 'string'));
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
-        $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
+        $this->assertEquals('string', $cm->fieldMappings['name']['type']);
     }
 }
