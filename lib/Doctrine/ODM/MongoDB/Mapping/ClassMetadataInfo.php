@@ -572,7 +572,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param string $discriminatorField
      *
-     * @throws MappingException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function setDiscriminatorField($discriminatorField)
     {
@@ -591,7 +591,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param array $map
      *
-     * @throws MappingException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function setDiscriminatorMap(array $map)
     {
@@ -954,7 +954,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @return array
      *
-     * @throws MappingException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function mapField(array $mapping)
     {
@@ -1526,7 +1526,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param array $mapping   The version field mapping array
      *
-     * @throws LockException
+     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function setVersionMapping(array &$mapping)
     {
@@ -1565,7 +1565,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param array $mapping   The version field mapping array
      *
-     * @throws LockException
+     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function setLockMapping(array &$mapping)
     {

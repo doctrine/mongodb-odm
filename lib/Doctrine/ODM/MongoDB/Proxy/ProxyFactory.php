@@ -25,6 +25,9 @@ use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use ReflectionProperty;
 
 /**
  * This factory is used to create proxy objects for documents at runtime.
@@ -38,7 +41,7 @@ use Doctrine\Common\Proxy\Proxy;
 class ProxyFactory
 {
     /**
-     * @var DocumentManager The DocumentManager this factory is bound to.
+     * @var \Doctrine\ODM\MongoDB\DocumentManager The DocumentManager this factory is bound to.
      */
     private $dm;
 
@@ -63,7 +66,7 @@ class ProxyFactory
     private $proxyDir;
 
     /**
-     * @var ProxyGenerator the proxy generator responsible for creating the proxy classes/files.
+     * @var \Doctrine\Common\Proxy\ProxyGenerator the proxy generator responsible for creating the proxy classes/files.
      */
     private $proxyGenerator;
 
@@ -81,7 +84,7 @@ class ProxyFactory
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>DocumentManager</tt>.
      *
-     * @param DocumentManager $dm The DocumentManager the new factory works for.
+     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm The DocumentManager the new factory works for.
      * @param string $proxyDir The directory to use for the proxy classes. It must exist.
      * @param string $proxyNs The namespace to use for the proxy classes.
      * @param boolean $autoGenerate Whether to automatically generate proxy classes.
@@ -113,6 +116,7 @@ class ProxyFactory
         $fqcn         = $definition['fqcn'];
         $reflectionId = $definition['reflectionId'];
         $proxy        = new $fqcn($definition['initializer'], $definition['cloner']);
+
         $reflectionId->setValue($proxy, $identifier);
 
         return $proxy;
@@ -138,10 +142,11 @@ class ProxyFactory
                 continue;
             }
 
-            $generator = $this->getProxyGenerator();
-
+            $generator     = $this->getProxyGenerator();
             $proxyFileName = $generator->getProxyFileName($class->getName(), $proxyDir);
+
             $generator->generateProxyClass($class, $proxyFileName);
+
             $generated += 1;
         }
 
@@ -149,7 +154,7 @@ class ProxyFactory
     }
 
     /**
-     * @param ProxyGenerator $proxyGenerator
+     * @param \Doctrine\Common\Proxy\ProxyGenerator $proxyGenerator
      */
     public function setProxyGenerator(ProxyGenerator $proxyGenerator)
     {
@@ -163,6 +168,7 @@ class ProxyFactory
     {
         if (null === $this->proxyGenerator) {
             $this->proxyGenerator = new ProxyGenerator($this->proxyDir, $this->proxyNamespace);
+
             $this->proxyGenerator->setPlaceholder('<baseProxyInterface>', 'Doctrine\ODM\MongoDB\Proxy\Proxy');
         }
 
@@ -174,12 +180,12 @@ class ProxyFactory
      */
     private function initProxyDefinitions($className)
     {
-        $fqcn = ClassUtils::generateProxyClassName($className, $this->proxyNamespace);
+        $fqcn          = ClassUtils::generateProxyClassName($className, $this->proxyNamespace);
         $classMetadata = $this->dm->getClassMetadata($className);
 
         if ( ! class_exists($fqcn, false)) {
             $generator = $this->getProxyGenerator();
-            $fileName = $generator->getProxyFileName($className);
+            $fileName  = $generator->getProxyFileName($className);
 
             if ($this->autoGenerate) {
                 $generator->generateProxyClass($classMetadata);
@@ -189,11 +195,35 @@ class ProxyFactory
         }
 
         $documentPersister = $this->uow->getDocumentPersister($className);
-        /* @var $reflectionId \ReflectionProperty */
-        $reflectionId = $classMetadata->reflFields[$classMetadata->identifier];
+        $reflectionId      = $classMetadata->reflFields[$classMetadata->identifier];
+
+        $this->definitions[$className] = array(
+            'fqcn'         => $fqcn,
+            'initializer'  => $this->createInitializer($classMetadata, $documentPersister, $reflectionId),
+            'cloner'       => $this->createCloner($classMetadata, $documentPersister, $reflectionId),
+            'reflectionId' => $reflectionId,
+        );
+    }
+
+    /**
+     * Generates a closure capable of initializing a proxy
+     *
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
+     * @param \Doctrine\ODM\MongoDB\Persisters\DocumentPersister $documentPersister
+     * @param \ReflectionProperty                                $reflectionId
+     *
+     * @return \Closure
+     *
+     * @throws \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     */
+    private function createInitializer(
+        BaseClassMetadata $classMetadata,
+        DocumentPersister $documentPersister,
+        ReflectionProperty $reflectionId
+    ) {
 
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            $initializer = function (Proxy $proxy) use ($documentPersister, $reflectionId) {
+            return function (Proxy $proxy) use ($documentPersister, $reflectionId) {
                 $proxy->__setInitializer(null);
                 $proxy->__setCloner(null);
 
@@ -204,37 +234,14 @@ class ProxyFactory
                 $properties = $proxy->__getLazyProperties();
 
                 foreach ($properties as $propertyName => $property) {
-                    if (!isset($proxy->$propertyName)) {
+                    if ( ! isset($proxy->$propertyName)) {
                         $proxy->$propertyName = $properties[$propertyName];
                     }
                 }
 
                 $proxy->__setInitialized(true);
                 $proxy->__wakeup();
-                $id = $reflectionId->getValue($proxy);
 
-                if (null === $documentPersister->load($id, $proxy)) {
-                    throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
-                }
-            };
-        } else {
-            $initializer = function (Proxy $proxy) use ($documentPersister, $reflectionId) {
-                $proxy->__setInitializer(null);
-                $proxy->__setCloner(null);
-
-                if ($proxy->__isInitialized()) {
-                    return;
-                }
-
-                $properties = $proxy->__getLazyProperties();
-
-                foreach ($properties as $propertyName => $property) {
-                    if (!isset($proxy->$propertyName)) {
-                        $proxy->$propertyName = $properties[$propertyName];
-                    }
-                }
-
-                $proxy->__setInitialized(true);
                 $id = $reflectionId->getValue($proxy);
 
                 if (null === $documentPersister->load($id, $proxy)) {
@@ -243,14 +250,57 @@ class ProxyFactory
             };
         }
 
-        $cloner = function (Proxy $proxy) use ($documentPersister, $classMetadata, $reflectionId) {
+        return function (Proxy $proxy) use ($documentPersister, $reflectionId) {
+            $proxy->__setInitializer(null);
+            $proxy->__setCloner(null);
+
+            if ($proxy->__isInitialized()) {
+                return;
+            }
+
+            $properties = $proxy->__getLazyProperties();
+
+            foreach ($properties as $propertyName => $property) {
+                if ( ! isset($proxy->$propertyName)) {
+                    $proxy->$propertyName = $properties[$propertyName];
+                }
+            }
+
+            $proxy->__setInitialized(true);
+
+            $id = $reflectionId->getValue($proxy);
+
+            if (null === $documentPersister->load($id, $proxy)) {
+                throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
+            }
+        };
+    }
+
+    /**
+     * Generates a closure capable of finalizing a cloned proxy
+     *
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
+     * @param \Doctrine\ODM\MongoDB\Persisters\DocumentPersister $documentPersister
+     * @param \ReflectionProperty                                $reflectionId
+     *
+     * @return \Closure
+     *
+     * @throws \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     */
+    private function createCloner(
+        BaseClassMetadata $classMetadata,
+        DocumentPersister $documentPersister,
+        ReflectionProperty $reflectionId
+    ) {
+        return function (Proxy $proxy) use ($documentPersister, $classMetadata, $reflectionId) {
             if ($proxy->__isInitialized()) {
                 return;
             }
 
             $proxy->__setInitialized(true);
             $proxy->__setInitializer(null);
-            $id = $reflectionId->getValue($proxy);
+
+            $id       = $reflectionId->getValue($proxy);
             $original = $documentPersister->load($id);
 
             if (null === $original) {
@@ -266,12 +316,5 @@ class ProxyFactory
                 }
             }
         };
-
-        $this->definitions[$className] = array(
-            'fqcn'                        => $fqcn,
-            'initializer'                 => $initializer,
-            'cloner'                      => $cloner,
-            'reflectionId'                => $reflectionId,
-        );
     }
 }
