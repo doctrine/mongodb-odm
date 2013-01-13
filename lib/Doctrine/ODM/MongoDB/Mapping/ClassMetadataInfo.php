@@ -1018,12 +1018,18 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             $mapping['type'] = isset($mapping['type']) ? $mapping['type'] : 'id';
             $this->identifier = $mapping['fieldName'];
             if (isset($mapping['strategy'])) {
+                $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : array();
+
                 $generatorType = constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
                 if ($generatorType !== self::GENERATOR_TYPE_AUTO) {
-                    $mapping['type'] = 'custom_id';
+                    $mapping['type'] = isset($this->generatorOptions['type'])
+                        ? $this->generatorOptions['type']
+                        : 'custom_id';
+
+                    unset($this->generatorOptions['type']);
                 }
+
                 $this->generatorType = $generatorType;
-                $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : array();
             }
         }
         if ( ! isset($mapping['nullable'])) {
