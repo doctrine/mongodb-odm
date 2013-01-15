@@ -81,7 +81,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('referenced 1', $check1->reference->getName());
         $this->assertEquals('referenced 2', $check2->reference->getName());
 
-        $check = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->find((string) $user1->id);
+        $check = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->find($user1->id);
         $this->assertNotNull($check);
 
     }
@@ -167,8 +167,8 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         return array(
             array('123', 123),
             array('123', 123.0),
-            array(null, ''),
-            array(null, 0),
+            array('', 0),
+            array('0', 0),
         );
     }
 }
