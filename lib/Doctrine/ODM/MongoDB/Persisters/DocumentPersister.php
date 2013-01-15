@@ -216,6 +216,7 @@ class DocumentPersister
                 $inserts[$oid] = $data;
             }
         }
+
         if ($inserts) {
             try {
                 $this->collection->batchInsert($inserts, $options);
@@ -622,7 +623,7 @@ class DocumentPersister
             }
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
-                $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
+                $document = $this->uow->getById($class->getPHPIdentifierValue($documentData['_id']), $class->rootDocumentName);
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;

@@ -73,7 +73,13 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * The identity map that holds references to all managed documents that have
-     * an identity. The documents are grouped by their class name.
+     * an identity.
+     *
+     * Documents are grouped by their class name, and then indexed by the
+     * serialized string of their identifier field or, for embedded documents,
+     * the SPL object hash. Serializing the identifier allows differentiation of
+     * values that may be equal (via type juggling) but not identical.
+     *
      * Since all classes in a hierarchy must share the same identifier set,
      * we always take the root class name of the hierarchy.
      *
@@ -1364,10 +1370,11 @@ class UnitOfWork implements PropertyChangedListener
          * identifier property. See GH-529 for more details.
          */
         if ( ! $class->isEmbeddedDocument &&
-            ($idValue = $class->getIdentifierValue($document)) &&
-            ($idPhpValue = $class->getPHPIdentifierValue($idValue)) &&
-            ($idDbValue = $class->getDatabaseIdentifierValue($idValue)) &&
+            null !== ($idValue = $class->getIdentifierValue($document)) &&
+            null !== ($idPhpValue = $class->getPHPIdentifierValue($idValue)) &&
+            null !== ($idDbValue = $class->getDatabaseIdentifierValue($idValue)) &&
             $idPhpValue === $class->getPHPIdentifierValue($idDbValue)) {
+
             $this->documentUpserts[$oid] = $document;
             $this->documentIdentifiers[$oid] = $idValue;
         }
@@ -1525,7 +1532,8 @@ class UnitOfWork implements PropertyChangedListener
      * Registers a document in the identity map.
      *
      * Note that documents in a hierarchy are registered with the class name of
-     * the root document.
+     * the root document. Identifiers are serialized before being used as array
+     * keys to allow differentiation of equal, but not identical, values.
      *
      * @ignore
      * @param object $document  The document to register.
@@ -1535,23 +1543,27 @@ class UnitOfWork implements PropertyChangedListener
     public function addToIdentityMap($document)
     {
         $classMetadata = $this->dm->getClassMetadata(get_class($document));
+
         if ($classMetadata->isEmbeddedDocument) {
             $id = spl_object_hash($document);
         } else {
             $id = $this->documentIdentifiers[spl_object_hash($document)];
             $id = $classMetadata->getPHPIdentifierValue($id);
         }
-        if ($id === '') {
-            throw new \InvalidArgumentException("The given document has no identity.");
-        }
+
+        $serializedId = serialize($id);
         $className = $classMetadata->rootDocumentName;
-        if (isset($this->identityMap[$className][$id])) {
+
+        if (isset($this->identityMap[$className][$serializedId])) {
             return false;
         }
-        $this->identityMap[$className][$id] = $document;
+
+        $this->identityMap[$className][$serializedId] = $document;
+
         if ($document instanceof NotifyPropertyChanged) {
             $document->addPropertyChangedListener($this);
         }
+
         return true;
     }
 
@@ -1632,17 +1644,12 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! isset($this->documentIdentifiers[$oid])) {
             return false;
         }
-        $id = $this->documentIdentifiers[$oid];
 
-        if ( ! $classMetadata->isEmbeddedDocument) {
-            $id = $classMetadata->getPHPIdentifierValue($id);
-        }
-        if ($id === '') {
-            throw new \InvalidArgumentException("The given document has no identity.");
-        }
+        $serializedId = serialize($this->documentIdentifiers[$oid]);
         $className = $classMetadata->rootDocumentName;
-        if (isset($this->identityMap[$className][$id])) {
-            unset($this->identityMap[$className][$id]);
+
+        if (isset($this->identityMap[$className][$serializedId])) {
+            unset($this->identityMap[$className][$serializedId]);
             $this->documentStates[$oid] = self::STATE_DETACHED;
             return true;
         }
@@ -1661,7 +1668,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getById($id, $rootClassName)
     {
-        return $this->identityMap[$rootClassName][$id];
+        return $this->identityMap[$rootClassName][serialize($id)];
     }
 
     /**
@@ -1676,8 +1683,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetById($id, $rootClassName)
     {
-        return isset($this->identityMap[$rootClassName][$id]) ?
-            $this->identityMap[$rootClassName][$id] : false;
+        $serializedId = serialize($id);
+
+        return isset($this->identityMap[$rootClassName][$serializedId]) ?
+            $this->identityMap[$rootClassName][$serializedId] : false;
     }
 
     /**
@@ -1701,19 +1710,15 @@ class UnitOfWork implements PropertyChangedListener
     public function isInIdentityMap($document)
     {
         $oid = spl_object_hash($document);
+
         if ( ! isset($this->documentIdentifiers[$oid])) {
             return false;
         }
-        $classMetadata = $this->dm->getClassMetadata(get_class($document));
-        $id = $this->documentIdentifiers[$oid];
-        if ( ! $classMetadata->isEmbeddedDocument) {
-            $id = $classMetadata->getPHPIdentifierValue($id);
-        }
-        if ($id === '') {
-            return false;
-        }
 
-        return isset($this->identityMap[$classMetadata->rootDocumentName][$id]);
+        $serializedId = serialize($this->documentIdentifiers[$oid]);
+        $classMetadata = $this->dm->getClassMetadata(get_class($document));
+
+        return isset($this->identityMap[$classMetadata->rootDocumentName][$serializedId]);
     }
 
     /**
@@ -1727,7 +1732,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function containsId($id, $rootClassName)
     {
-        return isset($this->identityMap[$rootClassName][$id]);
+        return isset($this->identityMap[$rootClassName][serialize($id)]);
     }
 
     /**
@@ -2570,8 +2575,10 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $id = $class->getPHPIdentifierValue($data['_id']);
-        if (isset($this->identityMap[$class->rootDocumentName][$id])) {
-            $document = $this->identityMap[$class->rootDocumentName][$id];
+        $serializedId = serialize($id);
+
+        if (isset($this->identityMap[$class->rootDocumentName][$serializedId])) {
+            $document = $this->identityMap[$class->rootDocumentName][$serializedId];
             $oid = spl_object_hash($document);
             if ($document instanceof Proxy && ! $document->__isInitialized__) {
                 $document->__isInitialized__ = true;
@@ -2591,7 +2598,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->registerManaged($document, $id, $data);
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
-            $this->identityMap[$class->rootDocumentName][$id] = $document;
+            $this->identityMap[$class->rootDocumentName][$serializedId] = $document;
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
             $this->originalDocumentData[$oid] = $data;
         }
