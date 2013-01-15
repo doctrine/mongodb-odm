@@ -135,6 +135,40 @@ class GeoSpatialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getSingleResult();
         $this->assertNotNull($city);
     }
+
+    public function testGeoNearDistanceIsNotNullForFilteredQuery()
+    {
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\City');
+
+        $city1 = new City();
+        $city1->name = 'Nashville';
+        $city1->coordinates = new Coordinates();
+        $city1->coordinates->latitude = 30;
+        $city1->coordinates->longitude = 40;
+
+        $city2 = new City();
+        $city2->name = 'Columbus';
+        $city2->coordinates = new Coordinates();
+        $city2->coordinates->latitude = 40;
+        $city2->coordinates->longitude = 30;
+
+        $this->dm->persist($city1);
+        $this->dm->persist($city2);
+        $this->dm->flush(null, array('safe' => true));
+        $this->dm->clear();
+
+        $query = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
+            ->field('coordinates')->geoNear(35, 35)
+            ->field('id')->in(array($city1->id))
+            ->getQuery();
+
+        foreach ($query as $city) {
+            $this->assertEquals($city->name, $city1->name);
+            $this->assertNotEquals($city->name, $city2->name);
+            $this->assertNotNull($city->test);
+        }
+    }
+
 }
 
 /**
