@@ -132,7 +132,11 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testEqualButNotIdenticalIds($user1Id, $user2Id)
     {
-        $this->assertEquals($user1Id, $user2Id);
+        /* Do not use assertEquals(), since the Scalar comparator tends to cast
+         * scalars of different types to strings before comparison. We actually
+         * want to check against PHP's loose equality logic here.
+         */
+        $this->assertTrue($user1Id == $user2Id);
         $this->assertNotSame($user1Id, $user2Id);
 
         $user1 = new CustomIdUser(sprintf('User1 with %s ID', gettype($user1Id)));
