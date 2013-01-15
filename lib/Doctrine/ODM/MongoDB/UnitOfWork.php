@@ -2688,12 +2688,9 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the identifier of a document.
-     * The returned value is always an array of identifier values. If the document
-     * has a composite identifier then the identifier values are in the same
-     * order as the identifier field names as returned by ClassMetadata#getIdentifierFieldNames().
      *
      * @param object $document
-     * @return array The identifier values.
+     * @return mixed The identifier value
      */
     public function getDocumentIdentifier($document)
     {
