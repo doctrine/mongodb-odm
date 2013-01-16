@@ -110,7 +110,13 @@ class YamlDriver extends FileDriver
                 if (isset($mapping['type']) && $mapping['type'] === 'collection') {
                     $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
                 }
-                $this->addFieldMapping($class, $mapping);
+                if (isset($mapping['type']) && !empty($mapping['embedded'])) {
+                    $this->addMappingFromEmbed($class, $fieldName, $mapping, $mapping['type']);
+                } elseif (isset($mapping['type']) && !empty($mapping['reference'])) {
+                    $this->addMappingFromReference($class, $fieldName, $mapping, $mapping['type']);
+                } else {
+                    $this->addFieldMapping($class, $mapping);
+                }
             }
         }
         if (isset($element['embedOne'])) {
