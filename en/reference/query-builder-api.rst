@@ -496,6 +496,23 @@ Doctrine also supports executing atomic update queries using the `Query\Builder`
 * ``pull($field, $value)``
 * ``pullAll($field, array $valueArray)``
 
+Updating multiple documents
+---------------------------
+
+By default only one document is updated. You need to pass ``true`` to the ``multiple()`` method to update all documents matched by the query.
+
+.. code-block:: php
+
+    <?php
+
+    $dm->createQueryBuilder('User')
+        ->update()
+        ->multiple(true)
+        ->field('someField')->set('newValue')
+        ->field('username')->equals('sgoettschkes')
+        ->getQuery()
+        ->execute();
+
 Modifier Operations
 -------------------
 
