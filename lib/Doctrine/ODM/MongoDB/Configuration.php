@@ -345,11 +345,20 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Add a filter to the list of possible filters.
      *
      * @param string $name The name of the filter.
-     * @param string $className The class name of the filter.
+     * @param string $string|Query\Filter\BsonFilter The class name of the filter 
+     *                                                or BsonFilter instance.
      */
-    public function addFilter($name, $className)
+    public function addFilter($name, $filter)
     {
-        $this->attributes['filters'][$name] = $className;
+        $this->attributes['filters'][$name] = $filter;
+        if (is_object($filter) && ! $filter instanceof Query\Filter\BsonFilter) {
+            throw new \InvalidArgumentException(
+                "A filter can be either a class name or an object extending \Doctrine\ODM\MongoDB\Query\Filter\BsonFilter," .
+                " instance of '" . get_class($filter) . "' given."
+            );
+        }
+
+        $this->_attributes['filters'][$name] = $filter;
     }
 
     /**
@@ -360,7 +369,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * @return string The class name of the filter, or null of it is not
      * defined.
      */
-    public function getFilterClassName($name)
+    public function getFilter($name)
     {
         return isset($this->attributes['filters'][$name])
             ? $this->attributes['filters'][$name]
