@@ -947,6 +947,7 @@ Example:
      *     strategy="set",
      *     targetDocument="Documents\Item",
      *     cascade="all",
+     *     sort={"sort_field": "asc"}
      *     discriminatorField="type",
      *     discriminatorMap={
      *         "book"="Documents\BookItem",
