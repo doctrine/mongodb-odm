@@ -733,7 +733,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // if embed-many or reference-many relationship
-                if ($class->fieldMappings[$propName]['type'] === 'many') {
+                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                     if ($orgValue instanceof PersistentCollection) {
                         $this->collectionDeletions[] = $orgValue;
@@ -742,7 +742,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // skip equivalent date values
-                if ($class->fieldMappings[$propName]['type'] === 'date') {
+                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'date') {
                     $dateType = Type::getType('date');
                     $dbOrgValue = $dateType->convertToDatabaseValue($orgValue);
                     $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
