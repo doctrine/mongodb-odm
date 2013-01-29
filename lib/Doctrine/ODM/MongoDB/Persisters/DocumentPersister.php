@@ -804,8 +804,7 @@ class DocumentPersister
         $query = array_merge($query, $this->dm->getFilterCollection()->getFilterCriteria($this->class));
 
         if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
-            $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
-            $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
+            $query[$this->class->discriminatorField['name']] = $this->class->discriminatorValue;
         }
         $newQuery = array();
         if ($query) {
@@ -1023,8 +1022,10 @@ class DocumentPersister
     {
         $discriminatorValues = array($metadata->discriminatorValue);
         foreach ($metadata->subClasses as $className) {
-            if ($key = array_search($className, $metadata->discriminatorMap)) {
+            if (($key = array_search($className, $metadata->discriminatorMap))) {
                 $discriminatorValues[] = $key;
+            } elseif ($metadata->inheritanceType == ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+                $discriminatorValues[] = $className;
             }
         }
         return $discriminatorValues;

@@ -141,7 +141,7 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if ($class->hasDiscriminator()) {
-            $insertData[$class->discriminatorField['name']] = $class->discriminatorValue;
+            $insertData[$class->discriminatorField['name']] = $class->getDiscriminatorValuesHierarchy($this->dm);
         }
 
         return $insertData;
@@ -313,7 +313,7 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if ($class->hasDiscriminator()) {
-            $updateData[$this->cmd . 'set'][$class->discriminatorField['name']] = $class->discriminatorValue;
+            $updateData[$this->cmd . 'set'][$class->discriminatorField['name']] = $class->getDiscriminatorValuesHierarchy($this->dm);
         }
 
         return $updateData;
@@ -396,13 +396,13 @@ class PersistenceBuilder
 
         // Store a discriminator value if the embedded document is not mapped explicitly to a targetDocument
         if ( ! isset($embeddedMapping['targetDocument'])) {
-            $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_name';
+            $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_hierarchy';
             $discriminatorValue = isset($embeddedMapping['discriminatorMap']) ? array_search($class->getName(), $embeddedMapping['discriminatorMap']) : $class->getName();
-            $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
+            $embeddedDocumentValue[$discriminatorField] = array($discriminatorValue);
         }
 
         if ($class->hasDiscriminator()) {
-            $embeddedDocumentValue[$class->discriminatorField['name']] = $class->discriminatorValue;
+            $embeddedDocumentValue[$class->discriminatorField['name']] = $class->getDiscriminatorValuesHierarchy($this->dm);
         }
 
         // Fix so that we can force empty embedded document to store itself as a hash instead of an array

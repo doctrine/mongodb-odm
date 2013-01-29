@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use InvalidArgumentException;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
@@ -221,7 +222,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $customRepositoryClassName;
 
     /**
-     * READ-ONLY: The names of the parent classes (ancestors).
+     * READ-ONLY: The names of the parent classes (ancestors) in order: directParent -> directParentParent -> directParentParentParent ... -> root..
      *
      * @var array
      */
@@ -334,9 +335,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * READ-ONLY: The definition of the discriminator field used in SINGLE_COLLECTION
      * inheritance mapping.
      *
-     * @var string
+     * @var array
      */
-    public $discriminatorField;
+    public $discriminatorField = array('name' => '_doctrine_class_hierarchy', 'fieldName' => '_doctrine_class_hierarchy');
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
@@ -406,6 +407,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         $this->name = $documentName;
         $this->rootDocumentName = $documentName;
+        $this->discriminatorValue = $documentName;
     }
 
     /**
@@ -575,7 +577,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Sets the discriminator field name.
      *
-     * @param string $discriminatorField
+     * @param array $discriminatorField
      * @see getDiscriminatorField()
      */
     public function setDiscriminatorField($discriminatorField)
@@ -626,6 +628,27 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         $this->discriminatorMap[$value] = $this->name;
         $this->discriminatorValue = $value;
+    }
+
+    /**
+     * Gets the class name for a given discriminator value.
+     * Defaults to the value itself, which allows to store FQCN in database.
+     *
+     * @param string $value
+     * @return string
+     */
+    public function getClassNameFromDiscriminatorMap($value)
+    {
+        return isset($this->discriminatorMap[$value])? $this->discriminatorMap[$value] : $value;
+    }
+
+    public function getDiscriminatorValuesHierarchy(DocumentManager $dm)
+    {
+        $hierarchy = array($this->discriminatorValue);
+        foreach ($this->parentClasses as $parentClass) {
+            $hierarchy[] = $dm->getClassMetadata($parentClass)->discriminatorValue;
+        }
+        return $hierarchy;
     }
 
     /**
@@ -1413,7 +1436,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function hasDiscriminator()
     {
-        return isset($this->discriminatorField) && isset($this->discriminatorValue) ? true : false;
+        return $this->inheritanceType == self::INHERITANCE_TYPE_SINGLE_COLLECTION || $this->discriminatorMap;
     }
 
     /**

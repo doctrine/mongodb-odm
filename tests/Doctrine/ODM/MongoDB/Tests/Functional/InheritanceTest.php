@@ -44,7 +44,7 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $coll = $this->dm->getDocumentCollection('Documents\SubProject');
         $document = $coll->findOne(array('name' => 'Sub Project'));
-        $this->assertEquals('sub-project', $document['type']);
+        $this->assertEquals(array('sub-project', 'project'), $document['type']);
 
         $project = new \Documents\OtherSubProject('Other Sub Project');
         $this->dm->persist($project);
@@ -52,7 +52,7 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $coll = $this->dm->getDocumentCollection('Documents\OtherSubProject');
         $document = $coll->findOne(array('name' => 'Other Sub Project'));
-        $this->assertEquals('other-sub-project', $document['type']);
+        $this->assertEquals(array('other-sub-project', 'project'), $document['type']);
 
         $this->dm->clear();
 
