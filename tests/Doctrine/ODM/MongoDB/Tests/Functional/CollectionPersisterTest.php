@@ -232,6 +232,19 @@ class CollectionPersisterTest extends BaseTest
         $this->assertEquals($comment3->comment, $check['comments']['first']['comments']['second']['comment']);
         $this->assertFalse(isset($check['comments']['second']));
     }
+
+    public function testFindBySetStrategyKey()
+    {
+        $post = new CollectionPersisterPost('Post 123');
+        $post->comments['comment123'] = new CollectionPersisterComment('Comment 123', 'thisguy');
+
+        $this->dm->persist($post);
+        $this->dm->flush(null, array('safe' => true));
+
+        $found = $this->dm->getRepository(get_class($post))->findOneBy(array('comments.comment123.by' => 'thisguy'));
+
+        $this->assertSame($post, $found);
+    }
 }
 
 /** @ODM\Document(collection="user_collection_persister_test") */

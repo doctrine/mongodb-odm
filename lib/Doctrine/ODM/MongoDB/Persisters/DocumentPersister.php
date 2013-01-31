@@ -908,7 +908,11 @@ class DocumentPersister
             $mapping = $metadata->fieldMappings[$e[0]];
             $e[0] = $mapping['name'];
             $fieldName = $e[0] . '.' .$e[1];
-            if ($e[1] != '$') {
+            if ($mapping['strategy'] === 'set' && isset($e[2])) {
+                $objectProperty = $e[2];
+                $objectPropertyPrefix = $e[1] . '.';
+                $fieldHasCollectionItemPointer = true;
+            } elseif ($e[1] != '$') {
                 $fieldName = $e[0] . '.' .$e[1];
                 $objectProperty = $e[1];
                 $objectPropertyPrefix = '';
