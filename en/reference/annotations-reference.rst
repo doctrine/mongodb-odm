@@ -302,13 +302,11 @@ This annotation is similar to @EmbedOne, but
 instead of embedding one document, it informs MongoDB to embed a
 collection of documents
 
-Required attributes:
-
--  targetDocument - A full class name of the target document.
-
 Optional attributes:
 
-- 
+-
+    targetDocument - A full class name of the target document.
+-
     discriminatorField - The field name to store the discriminator value in.
 -
     discriminatorMap - Map of discriminator values to class names.
@@ -905,12 +903,10 @@ Marks a method on the document to be called as a @PreUpdate event.
 Defines that the annotated instance variable holds a collection of
 referenced documents.
 
-Required attributes:
-
--  targetDocument - A full class name of the target document.
-
 Optional attributes:
 
+-
+    targetDocument - A full class name of the target document.
 -
     simple - Create simple references and only store a `MongoId` instead of a `DBRef`.
 -
