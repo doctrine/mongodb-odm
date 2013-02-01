@@ -92,6 +92,8 @@ class FilterCollection
                 ? $filter
                 : new $filter($this->dm);
         }
+        
+        ksort($this->enabledFilters);
 
         return $this->enabledFilters[$name];
     }

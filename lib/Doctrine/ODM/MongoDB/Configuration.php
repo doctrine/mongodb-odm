@@ -350,7 +350,8 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function addFilter($name, $filter)
     {
-        $this->attributes['filters'][$name] = $filter;
+
+        $this->attributes['filters'][$name] = $filter;   
         if (is_object($filter) && ! $filter instanceof Query\Filter\BsonFilter) {
             throw new \InvalidArgumentException(
                 "A filter can be either a class name or an object extending \Doctrine\ODM\MongoDB\Query\Filter\BsonFilter," .
@@ -358,7 +359,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
             );
         }
 
-        $this->_attributes['filters'][$name] = $filter;
+        $this->attributes['filters'][$name] = $filter;
     }
 
     /**
