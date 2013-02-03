@@ -352,12 +352,10 @@ MongoDB docs:
     general the question to ask is, "why would I not want to embed this
     object?"
 
-Required attributes:
-
--  targetDocument - A full class name of the target document.
-
 Optional attributes:
 
+- 
+    targetDocument - A full class name of the target document.
 - 
     discriminatorField - The field name to store the discriminator value in.
 -
@@ -958,12 +956,10 @@ Example:
 
 Defines an instance variable holds a related document instance.
 
-Required attributes:
-
--  targetDocument - A full class name of the target document.
-
 Optional attributes:
 
+-
+    targetDocument - A full class name of the target document.
 -
     simple - Create simple references and only store a `MongoId` instead of a `DBRef`.
 -
