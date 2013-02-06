@@ -572,8 +572,7 @@ simple example:
 By Reference
 ~~~~~~~~~~~~~~~~
 
-To query documents with ReferenceOne association to another document, use the ``references($document)``
-expression:
+To query documents with a ReferenceOne association to another document, use the ``references($document)`` expression:
 
 .. code-block:: php
 
@@ -584,8 +583,7 @@ expression:
         ->field('group')->references($group)
         ->getQuery()->execute();
 
-To find documents with ReferenceMany association which includes a certain document, use the
-``includesReferenceTo($document)`` expression:
+To find documents with a ReferenceMany association that includes a certain document, use the ``includesReferenceTo($document)`` expression:
 
 .. code-block:: php
 
