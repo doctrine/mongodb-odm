@@ -548,15 +548,15 @@ traverse and use any associations of that document as if they were
 in-memory already. Doctrine will automatically load the associated
 objects on demand through the concept of lazy-loading.
 
-By Query Objects
+By Query Builder Objects
 ~~~~~~~~~~~~~~~~
 
 The most powerful and flexible method to query for persistent
-objects is the Query object. The Query object enables you to query
+objects is the Query\Builder object. The Query\Builder object enables you to query
 for persistent objects with a fluent object oriented interface.
 
 You can create a query using
-``DocumentManager#createQuery($documentName = null)``. Here is a
+``DocumentManager#createQueryBuilder($documentName = null)``. Here is a
 simple example:
 
 .. code-block:: php
@@ -564,9 +564,34 @@ simple example:
     <?php
 
     // All users with an age between 20 and 30 (inclusive).
-    $q = $dm->createQuery('User')
+    $qb = $dm->createQueryBuilder('User')
         ->field('age')->range(20, 30);
-    $users = $q->getResult();
+    $q = $qb->getQuery()
+    $users = $q->execute();
+
+By Reference
+~~~~~~~~~~~~~~~~
+
+To query documents with a ReferenceOne association to another document, use the ``references($document)`` expression:
+
+.. code-block:: php
+
+    <?php
+
+    $group = $dm->find('Group', $id);
+    $usersWithGroup = $dm->createQueryBuilder('User')
+        ->field('group')->references($group)
+        ->getQuery()->execute();
+
+To find documents with a ReferenceMany association that includes a certain document, use the ``includesReferenceTo($document)`` expression:
+
+.. code-block:: php
+
+    <?php
+
+    $users = $dm->createQueryBuilder('User')
+        ->field('groups')->includesReferenceTo($group)
+        ->getQuery()->execute();
 
 Custom Repositories
 ~~~~~~~~~~~~~~~~~~~
@@ -598,9 +623,9 @@ in a central location.
     {
         public function getAllAdminUsers()
         {
-            return $this->createQuery()
+            return $this->createQueryBuilder()
                 ->field('status')->equals('admin')
-                ->getResult();
+                ->getQuery()->execute();
         }
     }
 
