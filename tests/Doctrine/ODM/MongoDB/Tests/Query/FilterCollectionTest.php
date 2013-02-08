@@ -20,6 +20,28 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(0, $filterCollection->getEnabledFilters());
     }
 
+    public function testHasFilter()
+    {
+        $filterCollection = $this->dm->getFilterCollection();
+
+        $this->assertTrue($filterCollection->has('testFilter'));
+        $this->assertFalse($filterCollection->has('fakeFilter'));
+    }
+
+    /**
+     * @depends testEnable
+     */
+    public function testIsEnabled()
+    {
+        $filterCollection = $this->dm->getFilterCollection();
+
+        $this->assertFalse($filterCollection->isEnabled('testFilter'));
+
+        $filterCollection->enable('testFilter');
+
+        $this->assertTrue($filterCollection->isEnabled('testFilter'));
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */
