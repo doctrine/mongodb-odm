@@ -2397,7 +2397,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Clears the UnitOfWork.
      *
-     * @param string $documentName if given, only documents of this type will get detached
+     * @param string|null $documentName if given, only documents of this type will get detached.
      */
     public function clear($documentName = null)
     {
