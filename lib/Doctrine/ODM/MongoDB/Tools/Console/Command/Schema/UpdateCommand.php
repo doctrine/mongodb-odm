@@ -26,6 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author Chris Jones <leeked@gmail.com>
+ * @author Michał Dąbrowski <dabrowski@brillante.pl>
  */
 class UpdateCommand extends AbstractCommand
 {
@@ -36,6 +37,7 @@ class UpdateCommand extends AbstractCommand
         $this
             ->setName('odm:schema:update')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
+            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Optional MongoDB cursor timeout during execution')
             ->setDescription('Update indexes for your documents')
         ;
     }
@@ -43,6 +45,12 @@ class UpdateCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $class = $input->getOption('class');
+        $timeout = $input->getOption('timeout');
+
+        if (isset($timeout)) {
+            \MongoCursor::$timeout = intval($timeout);
+        }
+
         $sm = $this->getSchemaManager();
 
         try {
