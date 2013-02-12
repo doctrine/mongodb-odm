@@ -47,14 +47,16 @@ class SchemaManager
     /**
      * Ensure indexes are created for all documents that can be loaded with the
      * metadata factory.
+     *
+     * @param integer $timeout Timeout (ms) for acknowledged index creation
      */
-    public function ensureIndexes()
+    public function ensureIndexes($timeout = null)
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
                 continue;
             }
-            $this->ensureDocumentIndexes($class->name);
+            $this->ensureDocumentIndexes($class->name, $timeout);
         }
     }
 
@@ -62,14 +64,16 @@ class SchemaManager
      * Ensure indexes are created for all documents that can be loaded with the
      * metadata factory and delete the indexes that exist in MongoDB but not the
      * document metadata.
+     *
+     * @param integer $timeout Timeout (ms) for acknowledged index creation
      */
-    public function updateIndexes()
+    public function updateIndexes($timeout = null)
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
                 continue;
             }
-            $this->updateDocumentIndexes($class->name);
+            $this->updateDocumentIndexes($class->name, $timeout);
         }
     }
 
@@ -77,8 +81,9 @@ class SchemaManager
      * Ensure the given document's indexes are updated.
      *
      * @param string $documentName
+     * @param integer $timeout Timeout (ms) for acknowledged index creation
      */
-    public function updateDocumentIndexes($documentName)
+    public function updateDocumentIndexes($documentName, $timeout = null)
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
@@ -121,7 +126,7 @@ class SchemaManager
                 }
             }
 
-            $this->ensureDocumentIndexes($documentName);
+            $this->ensureDocumentIndexes($documentName, $timeout);
         }
     }
 
@@ -237,8 +242,9 @@ class SchemaManager
      * Ensure the given document's indexes are created.
      *
      * @param string $documentName
+     * @param integer $timeout Timeout (ms) for acknowledged index creation
      */
-    public function ensureDocumentIndexes($documentName)
+    public function ensureDocumentIndexes($documentName, $timeout = null)
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
@@ -247,8 +253,12 @@ class SchemaManager
         if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
+                // TODO: Use "w" for driver versions >= 1.3.0
                 if (!isset($index['options']['safe'])) {
                     $index['options']['safe'] = true;
+                }
+                if (!isset($index['options']['timeout']) && isset($timeout)) {
+                    $index['options']['timeout'] = $timeout;
                 }
                 $collection->ensureIndex($index['keys'], $index['options']);
             }

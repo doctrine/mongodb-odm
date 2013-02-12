@@ -32,12 +32,14 @@ class UpdateCommand extends AbstractCommand
 {
     private $dropOrder = array(self::INDEX, self::COLLECTION, self::DB);
 
+    private $timeout;
+
     protected function configure()
     {
         $this
             ->setName('odm:schema:update')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
-            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Optional MongoDB cursor timeout during execution')
+            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
             ->setDescription('Update indexes for your documents')
         ;
     }
@@ -45,11 +47,9 @@ class UpdateCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $class = $input->getOption('class');
-        $timeout = $input->getOption('timeout');
 
-        if (isset($timeout)) {
-            \MongoCursor::$timeout = intval($timeout);
-        }
+        $timeout = $input->getOption('timeout');
+        $this->timeout = isset($timeout) ? (int) $timeout : null;
 
         $sm = $this->getSchemaManager();
 
@@ -68,12 +68,12 @@ class UpdateCommand extends AbstractCommand
 
     protected function processDocumentIndex(SchemaManager $sm, $document)
     {
-        $sm->updateDocumentIndexes($document);
+        $sm->updateDocumentIndexes($document, $this->timeout);
     }
 
     protected function processIndex(SchemaManager $sm)
     {
-        $sm->updateIndexes();
+        $sm->updateIndexes($this->timeout);
     }
 
     protected function processDocumentCollection(SchemaManager $sm, $document)
