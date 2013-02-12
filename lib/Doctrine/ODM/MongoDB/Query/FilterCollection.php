@@ -83,13 +83,17 @@ class FilterCollection
      */
     public function enable($name)
     {
-        if (null === $filterClass = $this->config->getFilterClassName($name)) {
+        if (null === $filter = $this->config->getFilter($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
         if (!isset($this->enabledFilters[$name])) {
-            $this->enabledFilters[$name] = new $filterClass($this->dm);
+            $this->enabledFilters[$name] = is_object($filter)
+                ? $filter
+                : new $filter($this->dm);
         }
+        
+        ksort($this->enabledFilters);
 
         return $this->enabledFilters[$name];
     }
