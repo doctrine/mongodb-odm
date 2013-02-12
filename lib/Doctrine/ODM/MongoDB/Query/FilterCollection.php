@@ -87,7 +87,7 @@ class FilterCollection
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
-        if ($this->hasFilter($name)) {
+        if (!$this->hasFilter($name)) {
             $this->enabledFilters[$name] = new $filterClass($this->dm);
         }
 
