@@ -122,7 +122,7 @@ class FilterCollection
      */
     public function getFilter($name)
     {
-        if ($this->hasFilter($name)) {
+        if (!$this->hasFilter($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
         }
         return $this->enabledFilters[$name];
