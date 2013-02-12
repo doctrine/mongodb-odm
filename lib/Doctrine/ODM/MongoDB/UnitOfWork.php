@@ -1562,61 +1562,64 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Gets the state of a document within the current unit of work.
+     * Gets the state of an entity with regard to the current unit of work.
      *
-     * NOTE: This method sees documents that are not MANAGED or REMOVED and have a
-     *       populated identifier, whether it is generated or manually assigned, as
-     *       DETACHED. This can be incorrect for manually assigned identifiers.
-     *
-     * @param object $document
-     * @param integer $assume The state to assume if the state is not yet known. This is usually
-     *                        used to avoid costly state lookups, in the worst case with a database
-     *                        lookup.
+     * @param object   $document
+     * @param int|null $assume The state to assume if the state is not yet known (not MANAGED or REMOVED).
+     *                         This parameter can be set to improve performance of document state detection
+     *                         by potentially avoiding a database lookup if the distinction between NEW and DETACHED
+     *                         is either known or does not matter for the caller of the method.
      * @return int The document state.
      */
     public function getDocumentState($document, $assume = null)
     {
         $oid = spl_object_hash($document);
-        if ( ! isset($this->documentStates[$oid])) {
-            $class = $this->dm->getClassMetadata(get_class($document));
-            if ($class->isEmbeddedDocument) {
-                return self::STATE_NEW;
-            }
-            // State can only be NEW or DETACHED, because MANAGED/REMOVED states are known.
-            // Note that you can not remember the NEW or DETACHED state in _documentStates since
-            // the UoW does not hold references to such objects and the object hash can be reused.
-            // More generally because the state may "change" between NEW/DETACHED without the UoW being aware of it.
-            if ($assume === null) {
-                $id = $class->getIdentifierValue($document);
-                if ( ! $id) {
-                    return self::STATE_NEW;
-                } else {
-                    // Check for a version field, if available, to avoid a db lookup.
-                    if ($class->isVersioned) {
-                        if ($class->reflFields[$class->versionField]->getValue($document)) {
-                            return self::STATE_DETACHED;
-                        } else {
-                            return self::STATE_NEW;
-                        }
-                    } else {
-                        // Last try before db lookup: check the identity map.
-                        if ($this->tryGetById($id, $class->rootDocumentName)) {
-                            return self::STATE_DETACHED;
-                        } else {
-                            // db lookup
-                            if ($this->getDocumentPersister(get_class($document))->exists($document)) {
-                                return self::STATE_DETACHED;
-                            } else {
-                                return self::STATE_NEW;
-                            }
-                        }
-                    }
-                }
-            } else {
-                return $assume;
-            }
+
+        if (isset($this->documentStates[$oid])) {
+            return $this->documentStates[$oid];
         }
-        return $this->documentStates[$oid];
+
+        $class = $this->dm->getClassMetadata(get_class($document));
+
+        if ($class->isEmbeddedDocument) {
+            return self::STATE_NEW;
+        }
+
+        if ($assume !== null) {
+            return $assume;
+        }
+
+        /* State can only be NEW or DETACHED, because MANAGED/REMOVED states are
+         * known. Note that you cannot remember the NEW or DETACHED state in
+         * _documentStates since the UoW does not hold references to such
+         * objects and the object hash can be reused. More generally, because
+         * the state may "change" between NEW/DETACHED without the UoW being
+         * aware of it.
+         */
+        $id = $class->getIdentifierValue($document);
+
+        if ( ! $id) {
+            return self::STATE_NEW;
+        }
+
+        // Check for a version field, if available, to avoid a DB lookup.
+        if ($class->isVersioned) {
+            return ($class->getFieldValue($document, $class->versionField))
+                ? self::STATE_DETACHED
+                : self::STATE_NEW;
+        }
+
+        // Last try before DB lookup: check the identity map.
+        if ($this->tryGetById($id, $class->rootDocumentName)) {
+            return self::STATE_DETACHED;
+        }
+
+        // DB lookup
+        if ($this->getDocumentPersister($class->name)->exists($document)) {
+            return self::STATE_DETACHED;
+        }
+
+        return self::STATE_NEW;
     }
 
     /**
