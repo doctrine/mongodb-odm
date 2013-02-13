@@ -1948,34 +1948,37 @@ class UnitOfWork implements PropertyChangedListener
      * Executes a merge operation on a document.
      *
      * @param object $document
-     * @param array $visited
-     * @throws LockException
-     * @throws \InvalidArgumentException
+     * @param array  $visited
+     *
      * @return object The managed copy of the document.
+     *
+     * @throws InvalidArgumentException If the document instance is NEW.
+     * @throws LockException If the entity uses optimistic locking through a
+     *                       version attribute and the version check against the
+     *                       managed copy fails.
      */
     private function doMerge($document, array &$visited)
     {
         $oid = spl_object_hash($document);
+
         if (isset($visited[$oid])) {
-            return; // Prevent infinite recursion
+            return $visited[$oid]; // Prevent infinite recursion
         }
 
         $visited[$oid] = $document; // mark visited
 
         $class = $this->dm->getClassMetadata(get_class($document));
 
-        // First we assume DETACHED, although it can still be NEW but we can avoid
-        // an extra db-roundtrip this way. If it is not MANAGED but has an identity,
-        // we need to fetch it from the db anyway in order to merge.
-        // MANAGED documents are ignored by the merge operation.
-        if ($this->getDocumentState($document, self::STATE_DETACHED) == self::STATE_MANAGED) {
-            $managedCopy = $document;
-        } else {
-            $id = null;
-            if ( ! $class->isEmbeddedDocument) {
-                // Try to look the entity up in the identity map.
-                $id = $class->getIdentifierValue($document);
-            }
+        /* First we assume DETACHED, although it can still be NEW but we can
+         * avoid an extra DB-roundtrip this way. If it is not MANAGED but has an
+         * identity, we need to fetch it from the db anyway in order to merge.
+         * MANAGED documents are ignored by the merge operation.
+         */
+        $managedCopy = $document;
+
+        if ($this->getDocumentState($document, self::STATE_DETACHED) !== self::STATE_MANAGED) {
+            // Try to look the entity up in the identity map.
+            $id = $class->isEmbeddedDocument ? null : $class->getIdentifierValue($document);
 
             // If there is no ID, it is actually NEW.
             if ( ! $id) {
@@ -1983,10 +1986,11 @@ class UnitOfWork implements PropertyChangedListener
                 $this->persistNew($class, $managedCopy);
             } else {
                 $managedCopy = $this->tryGetById($id, $class->rootDocumentName);
+
                 if ($managedCopy) {
-                    // We have the entity in-memory already, just make sure its not removed.
-                    if ($this->getDocumentState($managedCopy) == self::STATE_REMOVED) {
-                        throw new \InvalidArgumentException('Removed entity detected during merge.'
+                    // We have the entity in-memory already, just make sure it's not removed.
+                    if ($this->getDocumentState($managedCopy) === self::STATE_REMOVED) {
+                        throw new InvalidArgumentException('Removed entity detected during merge.'
                             . ' Can not merge with a removed entity.');
                     }
                 } else {
