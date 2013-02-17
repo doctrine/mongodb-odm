@@ -87,6 +87,12 @@ abstract class GH501BaseNode
  */
 class GH501Album extends GH501BaseNode
 {
+	/** @ODM\String */
+	public $name;
+	
+	/** @ODM\Int */
+	public $value;
+
 	public function __construct($name, $value)
 	{
 		parent::__construct($name, $value);
@@ -101,6 +107,12 @@ class GH501Album extends GH501BaseNode
  */
 class GH501Article extends GH501BaseNode
 {
+	/** @ODM\String */
+	public $name;
+	
+	/** @ODM\Int */
+	public $value;
+	
 	public function __construct($name, $value)
 	{
 		parent::__construct($name, $value);
