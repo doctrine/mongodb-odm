@@ -16,32 +16,80 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class GH501Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testPersistedAndFlushedEmbeddedDocumentInsideDocument()
+    public function testPersistedAndFlushedEmbeddedDocumentInsideDocumentWithId()
     {
         /* PARENT DOCUMENT */
-        $doc = new GH501Document('Test');
+        $doc = new GH501Document('AlbumDocId');
 		$doc->id = new \MongoId();
         /* END PARENT DOCUMENT */
 		
 		/* EMBEDDED DISCRIMINATED NODE */
-		$nodeA = new GH501Album("TestNode", 1);
-		$doc->node = $nodeA;
+		$node = new GH501Album("TestAlbum", 1);
+		$doc->node = $node;
 		/* END EMBEDDED DISCRIMINATED NODE */
 
 		// Persist and flush the node.
-		$this->dm->persist($nodeA);
+		$this->dm->persist($node);
 		$this->dm->flush();
+
+		// Now, persist and flush the object you would expect to be operating on.
+        $this->dm->persist($doc);
+        $this->dm->flush();
+
+		$doc = $this->dm->getRepository(__NAMESPACE__ . '\GH501Document')->findOneByName('AlbumDocId');
+		$this->assertEquals('AlbumDocId', $doc->name);
+		$this->assertEquals('TestAlbum', $doc->node->name);
+		$this->assertEquals('album', $doc->node->type);
+		$this->assertEquals(1, $doc->node->value);
+    }
+	
+    public function testPersistedAndFlushedEmbeddedDocumentInsideDocumentWithoutId()
+    {
+        /* PARENT DOCUMENT */
+        $doc = new GH501Document('AlbumDocNoId');
+        /* END PARENT DOCUMENT */
+		
+		/* EMBEDDED DISCRIMINATED NODE */
+		$node = new GH501Album("TestAlbum", 1);
+		$doc->node = $node;
+		/* END EMBEDDED DISCRIMINATED NODE */
+
+		// Persist and flush the node.
+		$this->dm->persist($node);
+		$this->dm->flush();
+
+		// Now, persist and flush the object you would expect to be operating on.
+        $this->dm->persist($doc);
+        $this->dm->flush();
+
+		$doc = $this->dm->getRepository(__NAMESPACE__ . '\GH501Document')->findOneByName('AlbumDocNoId');
+		$this->assertEquals('AlbumDocNoId', $doc->name);
+		$this->assertEquals('TestAlbum', $doc->node->name);
+		$this->assertEquals('album', $doc->node->type);
+		$this->assertEquals(1, $doc->node->value);
+    }
+	
+    public function testOnlyPersisTheEncompassingDocument()
+    {
+        /* PARENT DOCUMENT */
+        $doc = new GH501Document('ArticleDoc');
+        /* END PARENT DOCUMENT */
+		
+		/* EMBEDDED DISCRIMINATED NODE */
+		$node = new GH501Article("TestArticle", 37);
+		$doc->node = $node;
+		/* END EMBEDDED DISCRIMINATED NODE */
 
 		// Now, persist and flush the object you would expect to be operating on.
         $this->dm->persist($doc);
         $this->dm->flush();
 		$this->dm->clear();
 
-		$doc = $this->dm->getRepository(__NAMESPACE__ . '\GH501Document')->findOneByName('Test');
-		$this->assertEquals('Test', $doc->name);
-		$this->assertEquals('TestNode', $doc->node->name);
-		$this->assertEquals('album', $doc->node->type);
-		$this->assertEquals(1, $doc->node->value);
+		$doc = $this->dm->getRepository(__NAMESPACE__ . '\GH501Document')->findOneByName('ArticleDoc');
+		$this->assertEquals('ArticleDoc', $doc->name);
+		$this->assertEquals('TestArticle', $doc->node->name);
+		$this->assertEquals('article', $doc->node->type);
+		$this->assertEquals(37, $doc->node->value);
     }
 }
 
