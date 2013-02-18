@@ -15,15 +15,15 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testManyDeleteReference()
     {
         $user = new \Documents\User();
-        
+
         $user->addGroup(new Group('Group 1'));
         $user->addGroup(new Group('Group 2'));
-        
+
         $this->dm->persist($user);
         $this->dm->flush();
-        
+
         $this->dm->clear();
-        
+
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('id')
             ->equals($user->getId());
@@ -32,13 +32,13 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->remove($user2);
         $this->dm->flush();
-        
+
         $qb = $this->dm->createQueryBuilder('Documents\Group');
         $query = $qb->getQuery();
         $groups = $query->execute();
-        
+
         $count = $groups->count();
-        
+
         $this->assertEquals(0, $count);
     }
 
@@ -207,5 +207,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(2, $groups->count());
         $this->assertEquals('Group 2', $groups[0]->getName());
         $this->assertEquals('Group 1', $groups[1]->getName());
+
+        $groups = $user->getSortedAscGroups();
+        $this->assertEquals(2, $groups->count());
+        $this->assertEquals('Group 1', $groups[0]->getName());
+        $this->assertEquals('Group 2', $groups[1]->getName());
     }
 }
