@@ -657,7 +657,7 @@ class DocumentPersister
             }
 
             // only query for the referenced object if it is not already initialized
-            if ($reference instanceof Proxy && ! $reference->__isInitialized__) {
+            if ($reference instanceof Proxy && ! $reference->__isInitialized__ || (isset($mapping['sort']) && $mapping['sort'])) {
                 if ( ! isset($groupedIds[$className])) {
                     $groupedIds[$className] = array();
                 }

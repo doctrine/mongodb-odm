@@ -38,6 +38,9 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="desc"}) */
     protected $sortedGroups;
 
+    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="asc"}) */
+    protected $sortedAscGroups;
+
     /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
@@ -70,6 +73,7 @@ class User extends BaseDocument
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->groups = array();
         $this->sortedGroups = array();
+        $this->sortedGroupsAsc = array();
         $this->posts = array();
         $this->createdAt = new \DateTime();
     }
@@ -178,6 +182,11 @@ class User extends BaseDocument
     public function getSortedGroups()
     {
         return $this->sortedGroups;
+    }
+
+    public function getSortedAscGroups()
+    {
+        return $this->sortedAscGroups;
     }
 
     public function getGroups()
