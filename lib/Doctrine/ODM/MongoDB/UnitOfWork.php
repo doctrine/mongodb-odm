@@ -1990,9 +1990,10 @@ class UnitOfWork implements PropertyChangedListener
                                 $prop->setValue($managedCopy, $other);
                             } else {
                                 $targetDocument = isset($assoc2['targetDocument']) ? $assoc2['targetDocument'] : get_class($other);
-                                $targetClass = $this->dm->getClassMetadata($targetDocument);
-                                $id = $targetClass->getIdentifierValue($other);
-                                $proxy = $this->dm->getProxyFactory()->getProxy($targetDocument, $id);
+                                $targetClass    = $this->dm->getClassMetadata($targetDocument);
+                                $id             = $targetClass->getIdentifierValue($other);
+                                $proxy          = $this->dm->getProxyFactory()->getProxy($targetDocument, $id);
+
                                 $prop->setValue($managedCopy, $proxy);
                                 $this->registerManaged($proxy, $id, array());
                             }
