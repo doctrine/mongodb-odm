@@ -86,7 +86,8 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'setAuthor'), "DocumentGeneratorBook::setAuthor() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getAuthor'), "DocumentGeneratorBook::getAuthor() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getComments'), "DocumentGeneratorBook::getComments() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'addComments'), "DocumentGeneratorBook::addComments() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'addComment'), "DocumentGeneratorBook::addComment() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'removeComment'), "EntityGeneratorBook::removeComment() missing.");
 
         $book->setName('Jonathan H. Wage');
         $this->assertEquals('Jonathan H. Wage', $book->getName());
@@ -96,9 +97,11 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($author, $book->getAuthor());
 
         $comment = new DocumentGeneratorComment();
-        $book->addComments($comment);
+        $book->addComment($comment);
         $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $book->getComments());
         $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection(array($comment)), $book->getComments());
+        $book->removeComment($comment);
+        $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection(array()), $book->getComments());
     }
 
     public function testDocumentUpdatingWorks()

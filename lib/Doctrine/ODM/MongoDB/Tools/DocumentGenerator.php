@@ -125,6 +125,17 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 <spaces>$this-><fieldName>[] = $<variableName>;
 }';
 
+    private static $removeMethodTemplate =
+'/**
+* <description>
+*
+* @param <variableType$<variableName>
+*/
+public function <methodName>(<methodTypeHint>$<variableName>)
+{
+<spaces>$this-><fieldName>->removeElement($<variableName>);
+}';
+
     private static $lifecycleCallbackMethodTemplate =
 '<comment>
 public function <methodName>()
@@ -613,6 +624,9 @@ public function <methodName>()
                 if ($code = $this->generateDocumentStubMethod($metadata, 'add', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
                     $methods[] = $code;
                 }
+                if ($code = $this->generateDocumentStubMethod($metadata, 'remove', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
+                    $methods[] = $code;
+                }
                 if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], 'Doctrine\Common\Collections\Collection')) {
                     $methods[] = $code;
                 }
@@ -653,7 +667,7 @@ public function <methodName>()
             if ( ! isset($fieldMapping['association'])) {
                 continue;
             }
-    
+
             $lines[] = $this->generateAssociationMappingPropertyDocBlock($fieldMapping, $metadata);
             $lines[] = $this->spaces . 'protected $' . $fieldMapping['fieldName']
                      . ($fieldMapping['type'] === ClassMetadataInfo::MANY ? ' = array()' : null) . ";\n";
@@ -686,6 +700,11 @@ public function <methodName>()
     private function generateDocumentStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null)
     {
         $methodName = $type . Inflector::classify($fieldName);
+
+        // TODO: This needs actual plural -> singular conversion
+        if (in_array($type, array('add', 'remove')) && substr($methodName, -1) == 's') {
+            $methodName = substr($methodName, 0, -1);
+        }
 
         if ($this->hasMethod($methodName, $metadata)) {
             return;

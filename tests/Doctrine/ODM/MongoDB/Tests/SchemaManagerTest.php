@@ -73,6 +73,18 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes('Documents\CmsProduct');
     }
 
+    public function testEnsureDocumentIndexesWithTimeout()
+    {
+        $collection = $this->getDocumentCollection();
+        $collection->expects($this->once())
+            ->method('ensureIndex')
+            ->with($this->anything(), $this->callback(function($o) {
+                return isset($o['timeout']) && $o['timeout'] === 10000;
+            }));
+        $this->dm->setDocumentCollection('Documents\CmsArticle', $collection);
+        $this->dm->getSchemaManager()->ensureDocumentIndexes('Documents\CmsArticle', 10000);
+    }
+
     /**
      * @dataProvider getIndexedClasses
      */

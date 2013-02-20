@@ -631,6 +631,8 @@ class DocumentPersister
         $cmd = $this->cmd;
         $groupedIds = array();
 
+        $sorted = isset($mapping['sort']) && $mapping['sort'];
+
         foreach ($collection->getMongoData() as $key => $reference) {
             if (isset($mapping['simple']) && $mapping['simple']) {
                 $className = $mapping['targetDocument'];
@@ -648,7 +650,7 @@ class DocumentPersister
             $reference = $this->dm->getReference($className, $id);
 
             // no custom sort so add the references right now in the order they are embedded
-            if (!isset($mapping['sort']) || !$mapping['sort']) {
+            if ( ! $sorted) {
                 if ($mapping['strategy'] === 'set') {
                     $collection->set($key, $reference);
                 } else {
@@ -656,11 +658,8 @@ class DocumentPersister
                 }
             }
 
-            // only query for the referenced object if it is not already initialized
-            if ($reference instanceof Proxy && ! $reference->__isInitialized__) {
-                if ( ! isset($groupedIds[$className])) {
-                    $groupedIds[$className] = array();
-                }
+            // only query for the referenced object if it is not already initialized or the collection is sorted
+            if (($reference instanceof Proxy && ! $reference->__isInitialized__) || $sorted) {
                 $groupedIds[$className][$id] = $mongoId;
             }
         }
@@ -691,7 +690,7 @@ class DocumentPersister
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;
-                if (isset($mapping['sort']) && $mapping['sort']) {
+                if ($sorted) {
                     $collection->add($document);
                 }
             }
