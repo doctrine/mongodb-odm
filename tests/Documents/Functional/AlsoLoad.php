@@ -16,6 +16,12 @@ class AlsoLoad
      */
     public $foo;
 
+    /**
+     * @ODM\NotSaved
+     * @ODM\AlsoLoad({"zip", "bar"})
+     */
+    public $baz;
+
     /** @ODM\NotSaved */
     public $bar;
 

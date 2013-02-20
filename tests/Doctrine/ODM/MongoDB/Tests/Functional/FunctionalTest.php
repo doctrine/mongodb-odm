@@ -434,15 +434,41 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'foo' => 'cool'
         );
         $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
-        $this->assertNotNull($document->foo);
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('foo' => 'cool'));
+        $this->assertEquals('cool', $document->foo);
 
         $doc = array(
-            'zip' => 'test'
+            'bar' => 'bar',
+            'zip' => 'zip'
         );
         $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
-        $this->assertNotNull($document->foo);
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('zip' => 'zip'));
+        $this->assertEquals('bar', $document->foo);
+        $this->assertEquals('zip', $document->baz);
+
+        $doc = array(
+            'foo' => null,
+            'bar' => 'nice'
+        );
+        $collection->insert($doc);
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'nice'));
+        $this->assertNull($document->foo);
+
+        $doc = array(
+            'bar' => null,
+            'zip' => 'good'
+        );
+        $collection->insert($doc);
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('zip' => 'good'));
+        $this->assertNull($document->foo);
+
+        $doc = array(
+            'foo' => 'foo',
+            'bar' => 'bar'
+        );
+        $collection->insert($doc);
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('foo' => 'foo'));
+        $this->assertEquals('foo', $document->foo);
     }
 
     public function testAlsoLoadOnMethod()
