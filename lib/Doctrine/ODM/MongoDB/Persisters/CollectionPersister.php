@@ -120,28 +120,32 @@ class CollectionPersister
     private function deleteRows(PersistentCollection $coll, array $options)
     {
         $deleteDiff = $coll->getDeleteDiff();
-        if ($deleteDiff) {
-            list($propertyPath, $parent) = $this->getPathAndParent($coll);
-            $query = array($this->cmd . 'unset' => array());
-            $isAssocArray = false;
-            foreach ($deleteDiff as $key => $document) {
-                $isAssocArray |= ! is_int($key);
-                $query[$this->cmd . 'unset'][$propertyPath . '.' . $key] = true;
-            }
-            $this->executeQuery($parent, $query, $options);
 
-            /**
-             * @todo This is a hack right now because we don't have a proper way to remove
-             * an element from an array by its key. Unsetting the key results in the element
-             * being left in the array as null so we have to pull null values.
-             *
-             * "Using "$unset" with an expression like this "array.$" will result in the array item becoming null, not being removed. You can issue an update with "{$pull:{x:null}}" to remove all nulls."
-             * http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset
-             */
-            $mapping = $coll->getMapping();
-            if ($mapping['strategy'] !== 'set' || ! $isAssocArray) {
-                $this->executeQuery($parent, array($this->cmd . 'pull' => array($propertyPath => null)), $options);
-            }
+        if (empty($deleteDiff)) {
+            return;
+        }
+
+        list($propertyPath, $parent) = $this->getPathAndParent($coll);
+
+        $query = array($this->cmd . 'unset' => array());
+        $isAssocArray = false;
+
+        foreach ($deleteDiff as $key => $document) {
+            $isAssocArray |= ! is_int($key);
+            $query[$this->cmd . 'unset'][$propertyPath . '.' . $key] = true;
+        }
+
+        $this->executeQuery($parent, $query, $options);
+
+        /**
+         * @todo This is a hack right now because we don't have a proper way to
+         * remove an element from an array by its key. Unsetting the key results
+         * in the element being left in the array as null so we have to pull
+         * null values.
+         */
+        $mapping = $coll->getMapping();
+        if ($mapping['strategy'] !== 'set' || ! $isAssocArray) {
+            $this->executeQuery($parent, array($this->cmd . 'pull' => array($propertyPath => null)), $options);
         }
     }
 
@@ -153,46 +157,35 @@ class CollectionPersister
      */
     private function insertRows(PersistentCollection $coll, array $options)
     {
+        $insertDiff = $coll->getInsertDiff();
+
+        if (empty($insertDiff)) {
+            return;
+        }
+
         $mapping = $coll->getMapping();
+        $strategy = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
-        if ($mapping['strategy'] === 'set') {
-            $setData = array();
-            $insertDiff = $coll->getInsertDiff();
-            if ($insertDiff) {
-                foreach ($insertDiff as $key => $document) {
-                    if (isset($mapping['reference'])) {
-                        $documentUpdates = $this->pb->prepareReferencedDocumentValue($mapping, $document);
-                    } else {
-                        $documentUpdates = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
-                    }
 
-                    if (is_int($key)) {
-                        $setData[$propertyPath][] = $documentUpdates;
-                    } else {
-                        foreach ($documentUpdates as $currFieldName => $currFieldValue) {
-                            $setData[$propertyPath . '.' . $key . '.' . $currFieldName] = $currFieldValue;
-                        }
-                    }
-                }
+        $query = array();
 
-                $query = array($this->cmd . 'set' => $setData);
-                $this->executeQuery($parent, $query, $options);
+        foreach ($insertDiff as $key => $document) {
+            if (isset($mapping['reference'])) {
+                $documentUpdates = $this->pb->prepareReferencedDocumentValue($mapping, $document);
+            } else {
+                $documentUpdates = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
             }
-        } else {
-            $strategy = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
-            $insertDiff = $coll->getInsertDiff();
-            if ($insertDiff) {
-                $query = array($this->cmd . $strategy => array());
-                foreach ($insertDiff as $document) {
-                    if (isset($mapping['reference'])) {
-                        $query[$this->cmd . $strategy][$propertyPath][] = $this->pb->prepareReferencedDocumentValue($mapping, $document);
-                    } else {
-                        $query[$this->cmd . $strategy][$propertyPath][] = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
-                    }
+
+            if ($strategy === 'pushAll' || is_int($key)) {
+                $query[$this->cmd . $strategy][$propertyPath][] = $documentUpdates;
+            } else {
+                foreach ($documentUpdates as $currFieldName => $currFieldValue) {
+                    $query[$this->cmd . $strategy][$propertyPath . '.' .$key . '.' . $currFieldName] = $currFieldValue;
                 }
-                $this->executeQuery($parent, $query, $options);
             }
         }
+
+        $this->executeQuery($parent, $query, $options);
     }
 
     /**
