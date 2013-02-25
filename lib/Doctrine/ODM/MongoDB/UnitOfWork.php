@@ -2277,23 +2277,25 @@ class UnitOfWork implements PropertyChangedListener
     private function cascadePersist($document, array &$visited)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-        foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['embedded']) && ! $mapping['isCascadePersist']) {
+
+        foreach ($class->associationMappings as $fieldName => $mapping) {
+            if (isset($mapping['reference']) && ! $mapping['isCascadePersist']) {
                 continue;
             }
-            if (isset($mapping['embedded']) || isset($mapping['reference'])) {
-                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
-                        // Unwrap so that foreach() does not initialize
-                        $relatedDocuments = $relatedDocuments->unwrap();
-                    }
-                    foreach ($relatedDocuments as $relatedDocument) {
-                        $this->doPersist($relatedDocument, $visited);
-                    }
-                } elseif ($relatedDocuments !== null) {
-                    $this->doPersist($relatedDocuments, $visited);
+
+            $relatedDocuments = $class->reflFields[$fieldName]->getValue($document);
+
+            if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
+                if ($relatedDocuments instanceof PersistentCollection) {
+                    // Unwrap so that foreach() does not initialize
+                    $relatedDocuments = $relatedDocuments->unwrap();
                 }
+
+                foreach ($relatedDocuments as $relatedDocument) {
+                    $this->doPersist($relatedDocument, $visited);
+                }
+            } elseif ($relatedDocuments !== null) {
+                $this->doPersist($relatedDocuments, $visited);
             }
         }
     }
