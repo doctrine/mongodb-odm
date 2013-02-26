@@ -130,39 +130,6 @@ class SchemaManager
         }
     }
 
-    /**
-     * Returns all indexes - indexed by documentName
-     *
-     * @param bool $raw As MongoDB returns them (or as ODM stores them)
-     * @return array
-     */
-    public function getAllIndexes($raw = true)
-    {
-        $all = array();
-        foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-                continue;
-            }
-            if ($collection = $this->dm->getDocumentCollection($class->name)) {
-                $indexes = $collection->getIndexInfo();
-                if ($raw) {
-                    $all[$class->name] = $indexes;
-                } else {
-                    $odmIndexes = array();
-                    foreach ($indexes as $rawIndex) {
-                        if ($rawIndex['name'] === '_id_') {
-                            continue;
-                        }
-                        $odmIndexes[] = $this->rawIndexToDocumentIndex($rawIndex);
-                    }
-                    $all[$class->name] = $odmIndexes;
-                }
-            }
-        }
-
-        return $all;
-    }
-
     public function getDocumentIndexes($documentName)
     {
         $visited = array();
