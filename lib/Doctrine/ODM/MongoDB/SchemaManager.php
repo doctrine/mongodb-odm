@@ -432,7 +432,7 @@ class SchemaManager
         }
 
         if (!empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
-            !empty($documentIndexOptions['unique']) && !empty($documentIndexOptions)) {
+            !empty($documentIndexOptions['unique']) && !empty($documentIndexOptions['dropDups'])) {
 
             return false;
         }
