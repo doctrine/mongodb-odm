@@ -26,13 +26,14 @@ use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
- * The CollectionPersister is responsible for persisting collections of embedded documents
- * or referenced documents. When a PersistentCollection is scheduledForDeletion in the UnitOfWork
- * by calling PersistentCollection::clear() or is de-referenced in the domain application
- * code it results in a CollectionPersister::delete(). When a single document is removed
- * from a PersistentCollection it is removed in the call to CollectionPersister::deleteRows()
- * and new documents added to the PersistentCollection are inserted in the call to
- * CollectionPersister::insertRows().
+ * The CollectionPersister is responsible for persisting collections of embedded
+ * or referenced documents. When a PersistentCollection is scheduledForDeletion
+ * in the UnitOfWork by calling PersistentCollection::clear() or is
+ * de-referenced in the domain application code, CollectionPersister::delete()
+ * will be called. When documents within the PersistentCollection are added or
+ * removed, CollectionPersister::update() will be called, which may set the
+ * entire collection or delete/insert individual elements, depending on the
+ * mapping strategy.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
@@ -96,7 +97,8 @@ class CollectionPersister
     }
 
     /**
-     * Updates a PersistentCollection instance deleting removed rows and inserting new rows.
+     * Updates a PersistentCollection instance deleting removed rows and
+     * inserting new rows.
      *
      * @param PersistentCollection $coll
      * @param array $options
@@ -104,20 +106,69 @@ class CollectionPersister
     public function update(PersistentCollection $coll, array $options)
     {
         $mapping = $coll->getMapping();
+
         if ($mapping['isInverseSide']) {
             return; // ignore inverse side
         }
-        $this->deleteRows($coll, $options);
-        $this->insertRows($coll, $options);
+
+        switch ($mapping['strategy']) {
+            case 'set':
+            case 'setArray':
+                $this->setCollection($coll, $options);
+                break;
+
+            case 'pushAll':
+                $this->deleteElements($coll, $options);
+                $this->insertElements($coll, $options);
+                break;
+
+            default:
+                throw new \UnexpectedValueException('Unsupported collection strategy: ' . $mapping['strategy']);
+        }
     }
 
     /**
-     * Deletes removed rows from a PersistentCollection instance.
+     * Sets a PersistentCollection instance.
+     *
+     * This method is intended to be used with the "set" or "setArray"
+     * strategies. The "setArray" strategy will ensure that the collection is
+     * set as a BSON array, which means the collection elements will be
+     * reindexed numerically before storage.
      *
      * @param PersistentCollection $coll
      * @param array $options
      */
-    private function deleteRows(PersistentCollection $coll, array $options)
+    private function setCollection(PersistentCollection $coll, array $options)
+    {
+        $mapping = $coll->getMapping();
+        list($propertyPath, $parent) = $this->getPathAndParent($coll);
+
+        $pb = $this->pb;
+
+        $callback = isset($mapping['embedded'])
+            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
+            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
+
+        $setData = $coll->map($callback)->toArray();
+
+        if ($mapping['strategy'] === 'setArray') {
+            $setData = array_values($setData);
+        }
+
+        $query = array($this->cmd.'set' => array($propertyPath => $setData));
+
+        $this->executeQuery($parent, $query, $options);
+    }
+
+    /**
+     * Deletes removed elements from a PersistentCollection instance.
+     *
+     * This method is intended to be used with the "pushAll" strategy.
+     *
+     * @param PersistentCollection $coll
+     * @param array $options
+     */
+    private function deleteElements(PersistentCollection $coll, array $options)
     {
         $deleteDiff = $coll->getDeleteDiff();
 
@@ -128,10 +179,8 @@ class CollectionPersister
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
 
         $query = array($this->cmd . 'unset' => array());
-        $isAssocArray = false;
 
         foreach ($deleteDiff as $key => $document) {
-            $isAssocArray |= ! is_int($key);
             $query[$this->cmd . 'unset'][$propertyPath . '.' . $key] = true;
         }
 
@@ -143,19 +192,18 @@ class CollectionPersister
          * in the element being left in the array as null so we have to pull
          * null values.
          */
-        $mapping = $coll->getMapping();
-        if ($mapping['strategy'] !== 'set' || ! $isAssocArray) {
-            $this->executeQuery($parent, array($this->cmd . 'pull' => array($propertyPath => null)), $options);
-        }
+        $this->executeQuery($parent, array($this->cmd . 'pull' => array($propertyPath => null)), $options);
     }
 
     /**
-     * Inserts new rows for a PersistentCollection instance.
+     * Inserts new elements for a PersistentCollection instance.
+     *
+     * This method is intended to be used with the "pushAll" strategy.
      *
      * @param PersistentCollection $coll
      * @param array $options
      */
-    private function insertRows(PersistentCollection $coll, array $options)
+    private function insertElements(PersistentCollection $coll, array $options)
     {
         $insertDiff = $coll->getInsertDiff();
 
@@ -164,26 +212,15 @@ class CollectionPersister
         }
 
         $mapping = $coll->getMapping();
-        $strategy = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
 
-        $query = array();
+        $pb = $this->pb;
 
-        foreach ($insertDiff as $key => $document) {
-            if (isset($mapping['reference'])) {
-                $documentUpdates = $this->pb->prepareReferencedDocumentValue($mapping, $document);
-            } else {
-                $documentUpdates = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
-            }
+        $callback = isset($mapping['embedded'])
+            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
+            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
 
-            if ($strategy === 'pushAll' || is_int($key)) {
-                $query[$this->cmd . $strategy][$propertyPath][] = $documentUpdates;
-            } else {
-                foreach ($documentUpdates as $currFieldName => $currFieldValue) {
-                    $query[$this->cmd . $strategy][$propertyPath . '.' .$key . '.' . $currFieldName] = $currFieldValue;
-                }
-            }
-        }
+        $query = array($this->cmd . 'pushAll' => array($propertyPath => array_values(array_map($callback, $insertDiff))));
 
         $this->executeQuery($parent, $query, $options);
     }
