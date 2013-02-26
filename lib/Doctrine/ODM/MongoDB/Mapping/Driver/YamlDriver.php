@@ -150,8 +150,6 @@ class YamlDriver extends FileDriver
 
     private function addFieldMapping(ClassMetadataInfo $class, $mapping)
     {
-        $keys = null;
-
         if (isset($mapping['name'])) {
             $name = $mapping['name'];
         } elseif (isset($mapping['fieldName'])) {
@@ -160,30 +158,39 @@ class YamlDriver extends FileDriver
             throw new \InvalidArgumentException('Cannot infer a MongoDB name from the mapping');
         }
 
-        if (isset($mapping['index'])) {
-            $keys = array(
-                $name => isset($mapping['index']['order']) ? $mapping['index']['order'] : 'asc'
-            );
-        }
-        if (isset($mapping['unique'])) {
-            $keys = array(
-                $name => isset($mapping['unique']['order']) ? $mapping['unique']['order'] : 'asc'
-            );
-        }
-        if ($keys !== null) {
-            $options = array();
-            if (isset($mapping['index'])) {
-                $options = $mapping['index'];
-            } elseif (isset($mapping['unique'])) {
-                $options = $mapping['unique'];
-                $options['unique'] = true;
-            } elseif (isset($mapping['sparse'])) {
-                $options = $mapping['sparse'];
-                $options['sparse'] = true;
-            }
-            $class->addIndex($keys, $options);
-        }
         $class->mapField($mapping);
+
+        if ( ! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
+            return;
+        }
+
+        // Index this field if either "index", "unique", or "sparse" are set
+        $keys = array($name => 'asc');
+
+        if (isset($mapping['index']['order'])) {
+            $keys[$name] = $mapping['index']['order'];
+            unset($mapping['index']['order']);
+        } elseif (isset($mapping['unique']['order'])) {
+            $keys[$name] = $mapping['unique']['order'];
+            unset($mapping['unique']['order']);
+        } elseif (isset($mapping['sparse']['order'])) {
+            $keys[$name] = $mapping['sparse']['order'];
+            unset($mapping['sparse']['order']);
+        }
+
+        $options = array();
+
+        if (isset($mapping['index'])) {
+            $options = is_array($mapping['index']) ? $mapping['index'] : array();
+        } elseif (isset($mapping['unique'])) {
+            $options = is_array($mapping['unique']) ? $mapping['unique'] : array();
+            $options['unique'] = true;
+        } elseif (isset($mapping['sparse'])) {
+            $options = is_array($mapping['sparse']) ? $mapping['sparse'] : array();
+            $options['sparse'] = true;
+        }
+
+        $class->addIndex($keys, $options);
     }
 
     private function addMappingFromEmbed(ClassMetadataInfo $class, $fieldName, $embed, $type)
