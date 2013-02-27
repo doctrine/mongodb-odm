@@ -107,8 +107,25 @@ class CollectionPersister
         if ($mapping['isInverseSide']) {
             return; // ignore inverse side
         }
-        $this->deleteRows($coll, $options);
-        $this->insertRows($coll, $options);
+
+        if($mapping['strategy']==='set') {
+            list($propertyPath, $parent) = $this->getPathAndParent($coll);
+            $collArray = array();
+            foreach($coll as $key => $document) {
+                if (isset($mapping['reference'])) {
+                    $documentUpdates = $this->pb->prepareReferencedDocumentValue($mapping, $document);
+                } else {
+                    $documentUpdates = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
+                }
+                $collArray[$key] = $documentUpdates;
+            }
+            $query = array($this->cmd.'set' => array($propertyPath => $collArray));
+            $this->executeQuery($parent, $query, $options);
+        } else {
+            $this->deleteRows($coll, $options);
+            $this->insertRows($coll, $options);
+        }
+
     }
 
     /**
@@ -123,9 +140,7 @@ class CollectionPersister
         if ($deleteDiff) {
             list($propertyPath, $parent) = $this->getPathAndParent($coll);
             $query = array($this->cmd.'unset' => array());
-            $isAssocArray = false;
             foreach ($deleteDiff as $key => $document) {
-                $isAssocArray |= !is_int($key);
                 $query[$this->cmd.'unset'][$propertyPath.'.'.$key] = true;
             }
             $this->executeQuery($parent, $query, $options);
@@ -139,9 +154,7 @@ class CollectionPersister
              * http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset
              */
             $mapping = $coll->getMapping();
-            if ($mapping['strategy'] !== 'set' || !$isAssocArray) {
-                $this->executeQuery($parent, array($this->cmd.'pull' => array($propertyPath => null)), $options);
-            }
+            $this->executeQuery($parent, array($this->cmd.'pull' => array($propertyPath => null)), $options);
         }
     }
 
@@ -155,43 +168,18 @@ class CollectionPersister
     {
         $mapping = $coll->getMapping();
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
-        if ($mapping['strategy'] === 'set') {
-            $setData = array();
-            $insertDiff = $coll->getInsertDiff();
-            if ($insertDiff) {
-                foreach ($insertDiff as $key => $document) {
-                    if (isset($mapping['reference'])) {
-                        $documentUpdates = $this->pb->prepareReferencedDocumentValue($mapping, $document);
-                    } else {
-                        $documentUpdates = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
-                    }
-
-                    if (is_int($key)) {
-                        $setData[$propertyPath][] = $documentUpdates;
-                    } else {
-                        foreach ($documentUpdates as $currFieldName => $currFieldValue) {
-                            $setData[$propertyPath. '.' .$key . '.' . $currFieldName] = $currFieldValue;
-                        }
-                    }
+        $strategy = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
+        $insertDiff = $coll->getInsertDiff();
+        if ($insertDiff) {
+            $query = array($this->cmd.$strategy => array());
+            foreach ($insertDiff as $document) {
+                if (isset($mapping['reference'])) {
+                    $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareReferencedDocumentValue($mapping, $document);
+                } else {
+                    $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
                 }
-
-                $query = array($this->cmd.'set' => $setData);
-                $this->executeQuery($parent, $query, $options);
             }
-        } else {
-            $strategy = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
-            $insertDiff = $coll->getInsertDiff();
-            if ($insertDiff) {
-                $query = array($this->cmd.$strategy => array());
-                foreach ($insertDiff as $document) {
-                    if (isset($mapping['reference'])) {
-                        $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareReferencedDocumentValue($mapping, $document);
-                    } else {
-                        $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
-                    }
-                }
-                $this->executeQuery($parent, $query, $options);
-            }
+            $this->executeQuery($parent, $query, $options);
         }
     }
 
