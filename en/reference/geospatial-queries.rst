@@ -38,10 +38,10 @@ First, setup some documents like the following:
         class Coordinates
         {
             /** @Float */
-            public $latitude;
+            public $x;
     
             /** @Float */
-            public $longitude;
+            public $y;
         }
 
     .. code-block:: xml
@@ -63,15 +63,15 @@ Near Query
 ----------
 
 Now you can execute queries against these documents like the
-following. Check for the 10 nearest cities to a given latitude and
-longitude with the ``near($latitude, $longitude)`` method:
+following. Check for the 10 nearest cities to a given longitude
+and latitude with the ``near($longitude, $latitude)`` method:
 
 .. code-block:: php
 
     <?php
 
     $cities = $this->dm->createQuery('City')
-        ->field('coordinates')->near(50, 60)
+        ->field('coordinates')->near(-120, 40)
         ->execute();
 
 Distance
