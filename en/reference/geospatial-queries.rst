@@ -89,6 +89,26 @@ calculated and placed in the property annotated with
         echo $city->name.': '.$city->distance."\n";
     }
 
+GeoNear Query
+-------------
+
+You can also execute queries based on spherical geometry to
+provide accurate distances over a sphere such as our planet
+Earth. Using the ``distanceMultiplier`` method you can let
+Mongo do the distance calculation in the measurement of your
+choice. Check for the nearest cities to a given latitude and
+longitude with the ``near($latitude, $longitude)`` method:
+
+.. code-block:: php
+
+    <?php
+
+    $cities = $this->dm->createQuery('City')
+        ->field('coordinates')->geoNear(-120, 40)
+        ->spherical(true)
+        ->distanceMultiplier(6378.137) // Convert from radians with 6378.137 for km and 3963.192 miles
+        ->execute();
+
 Within Box
 ----------
 
