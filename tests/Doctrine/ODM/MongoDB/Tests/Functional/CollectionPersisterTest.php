@@ -235,15 +235,18 @@ class CollectionPersisterTest extends BaseTest
 
     public function testFindBySetStrategyKey()
     {
-        $post = new CollectionPersisterPost('Post 123');
-        $post->comments['comment123'] = new CollectionPersisterComment('Comment 123', 'thisguy');
+        $post = new CollectionPersisterPost('postA');
+        $commentA = new CollectionPersisterComment('commentA', 'userA');
+        $commentAB = new CollectionPersisterComment('commentAA', 'userB');
+
+        $post->comments['a'] = $commentA;
+        $commentA->comments['b'] = $commentAB;
 
         $this->dm->persist($post);
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
 
-        $found = $this->dm->getRepository(get_class($post))->findOneBy(array('comments.comment123.by' => 'thisguy'));
-
-        $this->assertSame($post, $found);
+        $this->assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(array('comments.a.by' => 'userA')));
+        $this->assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(array('comments.a.comments.b.by' => 'userB')));
     }
 }
 
