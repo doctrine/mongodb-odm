@@ -185,7 +185,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the proxy factory used by the DocumentManager to create document proxies.
      *
-     * @return ProxyFactory
+     * @return \Doctrine\ODM\MongoDB\Proxy\ProxyFactory
      */
     public function getProxyFactory()
     {
@@ -545,6 +545,7 @@ class DocumentManager implements ObjectManager
      */
     public function getReference($documentName, $identifier)
     {
+        /* @var $class \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo */
         $class = $this->metadataFactory->getMetadataFor($documentName);
 
         // Check identity map first, if its already in there just return it.
@@ -552,7 +553,7 @@ class DocumentManager implements ObjectManager
             return $document;
         }
 
-        $document = $this->proxyFactory->getProxy($class->name, $identifier);
+        $document = $this->proxyFactory->getProxy($class->name, array($class->identifier => $identifier));
         $this->unitOfWork->registerManaged($document, $identifier, array());
 
         return $document;
