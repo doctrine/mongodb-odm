@@ -363,6 +363,7 @@ class DocumentPersister
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = array())
     {
         $criteria = $this->prepareQuery($criteria);
+
         $cursor = $this->collection->find($criteria)->limit(1);
         if ($sort) {
             $cursor->sort($sort);
@@ -777,13 +778,14 @@ class DocumentPersister
     /**
      * Prepare a mongodb field name and convert the PHP property names to MongoDB field names.
      *
-     * @param string $key
-     * @return string $preparedKey
+     * @param string $fieldName
+     * @return string
      */
-    public function prepareFieldName($key)
+    public function prepareFieldName($fieldName)
     {
-        $this->prepareQueryElement($key, null, null, false);
-        return $key;
+        $this->prepareQueryElement($fieldName, null, null, false);
+
+        return $fieldName;
     }
 
     /**
@@ -884,30 +886,90 @@ class DocumentPersister
     }
 
     /**
-     * Prepares a query value and converts the php value to the database value if it is an identifier.
+     * Prepares a query value and converts the PHP value to the database value
+     * if it is an identifier.
+     *
      * It also handles converting $fieldName to the database name if they are different.
      *
      * @param string        $fieldName
      * @param string        $value
-     * @param ClassMetadata $metadata   Defaults to $this->class
-     * @param bool          $prepareValue Whether or not to prepare the value
+     * @param ClassMetadata $class        Defaults to $this->class
+     * @param boolean       $prepareValue Whether or not to prepare the value
      * @return mixed        $value
      */
-    private function prepareQueryElement(&$fieldName, $value = null, $metadata = null, $prepareValue = true)
+    private function prepareQueryElement(&$fieldName, $value = null, $class = null, $prepareValue = true)
     {
-        $metadata = ($metadata === null) ? $this->class : $metadata;
+        $class = isset($class) ? $class : $this->class;
 
-        // Process "association.fieldName"
-        if (strpos($fieldName, '.') !== false) {
-            $e = explode('.', $fieldName);
+        // @todo Consider inlining calls to ClassMetadataInfo methods
 
-            if (!isset($metadata->fieldMappings[$e[0]])) {
+        // Process all non-identifier fields by translating field names
+        if ($class->hasField($fieldName) && ! $class->isIdentifier($fieldName)) {
+            $mapping = $class->fieldMappings[$fieldName];
+            $fieldName = $mapping['name'];
+
+            if ( ! $prepareValue || empty($mapping['reference']) || empty($mapping['simple'])) {
                 return $value;
             }
 
-            $mapping = $metadata->fieldMappings[$e[0]];
+            // Additional preparation for one or more simple reference values
+            if ( ! is_array($value)) {
+                $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+
+                return $targetClass->getDatabaseIdentifierValue($value);
+            }
+
+            return $this->prepareSubQuery($value);
+        }
+
+        // Process identifier fields
+        if (($class->hasField($fieldName) && $class->isIdentifier($fieldName)) || $fieldName === '_id') {
+            $fieldName = '_id';
+
+            if ( ! $prepareValue) {
+                return $value;
+            }
+
+            if ( ! is_array($value)) {
+                return $class->getDatabaseIdentifierValue($value);
+            }
+
+            foreach ($value as $k => $v) {
+                // Process query operators (e.g. "$in")
+                if (isset($k[0]) && $k[0] === $this->cmd && is_array($v)) {
+                    foreach ($v as $k2 => $v2) {
+                        $value[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
+                    }
+                } else {
+                    $value[$k] = $class->getDatabaseIdentifierValue($v);
+                }
+            }
+
+            return $value;
+        }
+
+        // Process "fieldName.objectProperty" queries (on arrays or objects)
+        if (strpos($fieldName, '.') !== false) {
+            /* We can limit parsing here, since at most three segments are
+             * significant: "fieldName.objectProperty" with an optional index or
+             * key for collections stored as either BSON arrays or objects.
+             */
+            $e = explode('.', $fieldName, 4);
+
+            if ( ! isset($class->fieldMappings[$e[0]])) {
+                return $value;
+            }
+
+            $mapping = $class->fieldMappings[$e[0]];
             $e[0] = $mapping['name'];
-            $fieldName = $e[0] . '.' .$e[1];
+
+            // Hash fields will not be prepared beyond the field name
+            if ($mapping['type'] === 'hash') {
+                $fieldName = implode('.', $e);
+
+                return $value;
+            }
+
             if ($mapping['strategy'] === 'set' && isset($e[2])) {
                 $objectProperty = $e[2];
                 $objectPropertyPrefix = $e[1] . '.';
@@ -975,44 +1037,9 @@ class DocumentPersister
                         }
                     }
                 }
-            } elseif ($mapping['type'] === 'hash') {
-                $fieldName = implode('.', $e);
-            }
-
-        // Process all non identifier fields
-        // We only change the field names here to the mongodb field name used for persistence
-        } elseif ($metadata->hasField($fieldName) && ! $metadata->isIdentifier($fieldName)) {
-            $mapping = $metadata->fieldMappings[$fieldName];
-            $fieldName = $mapping['name'];
-
-            if ($prepareValue === true && isset($mapping['reference']) && isset($mapping['simple']) && $mapping['simple']) {
-                if (is_array($value)) {
-                    $value = $this->prepareSubQuery($value);
-                } else {
-                    $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-                    $value = $targetClass->getDatabaseIdentifierValue($value);
-                }
-            }
-
-        // Process identifier
-        } elseif (($metadata->hasField($fieldName) && $metadata->isIdentifier($fieldName)) || $fieldName === '_id') {
-            $fieldName = '_id';
-            if ($prepareValue === true) {
-                if (is_array($value)) {
-                    foreach ($value as $k => $v) {
-                        if ($k[0] === '$' && is_array($v)) {
-                            foreach ($v as $k2 => $v2) {
-                                $value[$k][$k2] = $metadata->getDatabaseIdentifierValue($v2);
-                            }
-                        } else {
-                            $value[$k] = $metadata->getDatabaseIdentifierValue($v);
-                        }
-                    }
-                } else {
-                    $value = $metadata->getDatabaseIdentifierValue($value);
-                }
             }
         }
+
         return $value;
     }
 
