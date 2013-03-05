@@ -285,7 +285,7 @@ class ProxyFactory
             $class->identifier === $identifier &&
             $class->hasField($identifier) &&
             (($method->getEndLine() - $method->getStartLine()) <= 4)
-            && in_array($class->fieldMappings[$identifier]['type'], array('id', 'custom_id'))
+            && in_array($class->fieldMappings[$identifier]['type'], array('id', 'int_id', 'custom_id'))
         );
 
         if ($cheapCheck) {
