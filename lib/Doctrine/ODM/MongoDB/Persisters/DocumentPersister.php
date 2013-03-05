@@ -783,7 +783,7 @@ class DocumentPersister
      */
     public function prepareFieldName($fieldName)
     {
-        $this->prepareQueryElement($fieldName, null, null, false);
+        list($fieldName) = $this->prepareQueryElement($fieldName, null, null, false);
 
         return $fieldName;
     }
@@ -814,7 +814,8 @@ class DocumentPersister
                 if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
                     $newQuery[$key] = $this->prepareSubQuery($value);
                 } else {
-                    $newQuery[$key] = $this->prepareQueryElement($key, $value, null, true);
+                    list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
+                    $newQuery[$key] = $value;
                 }
             }
             $newQuery = $this->convertTypes($newQuery);
@@ -836,7 +837,8 @@ class DocumentPersister
                 if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
                     $prepared[$key] = $this->prepareSubQuery($value);
                 } else {
-                    $prepared[$key] = $this->prepareQueryElement($key, $value, null, true);
+                    list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
+                    $prepared[$key] = $value;
                 }
             }
             $prepared = $this->convertTypes($prepared);
@@ -859,7 +861,8 @@ class DocumentPersister
                 if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
                     $newQuery[$key] = $this->prepareSubQuery($value);
                 } else {
-                    $newQuery[$key] = $this->prepareQueryElement($key, $value, null, true);
+                    list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
+                    $newQuery[$key] = $value;
                 }
             }
             $newQuery = $this->convertTypes($newQuery);
@@ -895,9 +898,9 @@ class DocumentPersister
      * @param string        $value
      * @param ClassMetadata $class        Defaults to $this->class
      * @param boolean       $prepareValue Whether or not to prepare the value
-     * @return mixed        $value
+     * @return array        Prepared field name and value
      */
-    private function prepareQueryElement(&$fieldName, $value = null, $class = null, $prepareValue = true)
+    private function prepareQueryElement($fieldName, $value = null, $class = null, $prepareValue = true)
     {
         $class = isset($class) ? $class : $this->class;
 
@@ -909,17 +912,17 @@ class DocumentPersister
             $fieldName = $mapping['name'];
 
             if ( ! $prepareValue || empty($mapping['reference']) || empty($mapping['simple'])) {
-                return $value;
+                return array($fieldName, $value);
             }
 
             // Additional preparation for one or more simple reference values
             if ( ! is_array($value)) {
                 $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
 
-                return $targetClass->getDatabaseIdentifierValue($value);
+                return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            return $this->prepareSubQuery($value);
+            return array($fieldName, $this->prepareSubQuery($value));
         }
 
         // Process identifier fields
@@ -927,11 +930,11 @@ class DocumentPersister
             $fieldName = '_id';
 
             if ( ! $prepareValue) {
-                return $value;
+                return array($fieldName, $value);
             }
 
             if ( ! is_array($value)) {
-                return $class->getDatabaseIdentifierValue($value);
+                return array($fieldName, $class->getDatabaseIdentifierValue($value));
             }
 
             foreach ($value as $k => $v) {
@@ -945,7 +948,7 @@ class DocumentPersister
                 }
             }
 
-            return $value;
+            return array($fieldName, $value);
         }
 
         // Process "fieldName.objectProperty" queries (on arrays or objects)
@@ -957,7 +960,7 @@ class DocumentPersister
             $e = explode('.', $fieldName, 4);
 
             if ( ! isset($class->fieldMappings[$e[0]])) {
-                return $value;
+                return array($fieldName, $value);
             }
 
             $mapping = $class->fieldMappings[$e[0]];
@@ -967,7 +970,7 @@ class DocumentPersister
             if ($mapping['type'] === 'hash') {
                 $fieldName = implode('.', $e);
 
-                return $value;
+                return array($fieldName, $value);
             }
 
             if ($mapping['strategy'] === 'set' && isset($e[2])) {
@@ -1028,9 +1031,9 @@ class DocumentPersister
 
                             if (isset($targetMapping['targetDocument'])) {
                                 $nextTargetClass = $this->dm->getClassMetadata($targetMapping['targetDocument']);
-                                $value = $this->prepareQueryElement($key, $value, $nextTargetClass, $prepareValue);
+                                list($key, $value) = $this->prepareQueryElement($key, $value, $nextTargetClass, $prepareValue);
                             } else {
-                                $value = $this->prepareQueryElement($key, $value, null, $prepareValue);
+                                list($key, $value) = $this->prepareQueryElement($key, $value, null, $prepareValue);
                             }
 
                             $fieldName .= '.' . $key;
@@ -1040,7 +1043,7 @@ class DocumentPersister
             }
         }
 
-        return $value;
+        return array($fieldName, $value);
     }
 
     /**
