@@ -61,9 +61,10 @@ class SchemaManager
     }
 
     /**
-     * Ensure indexes are created for all documents that can be loaded with the
-     * metadata factory and delete the indexes that exist in MongoDB but not the
-     * document metadata.
+     * Ensure indexes exist for all mapped document classes.
+     *
+     * Indexes that exist in MongoDB but not the document metadata will be
+     * deleted.
      *
      * @param integer $timeout Timeout (ms) for acknowledged index creation
      */
@@ -78,7 +79,10 @@ class SchemaManager
     }
 
     /**
-     * Ensure the given document's indexes are updated.
+     * Ensure indexes exist for the mapped document class.
+     *
+     * Indexes that exist in MongoDB but not the document metadata will be
+     * deleted.
      *
      * @param string $documentName
      * @param integer $timeout Timeout (ms) for acknowledged index creation
@@ -86,48 +90,47 @@ class SchemaManager
     public function updateDocumentIndexes($documentName, $timeout = null)
     {
         $class = $this->dm->getClassMetadata($documentName);
+
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
             throw new \InvalidArgumentException('Cannot update document indexes for mapped super classes or embedded documents.');
         }
 
-        if ($documentIndexes = $this->getDocumentIndexes($documentName)) {
+        $documentIndexes = $this->getDocumentIndexes($documentName);
+        $collection = $this->dm->getDocumentCollection($documentName);
+        $mongoIndexes = $collection->getIndexInfo();
 
-            $collection = $this->dm->getDocumentCollection($documentName);
-            $mongoIndexes = $collection->getIndexInfo();
+        /* Determine which Mongo indexes should be deleted. Exclude the ID index
+         * and those that are equivalent to any in the class metadata.
+         */
+        $self = $this;
+        $mongoIndexes = array_filter($mongoIndexes, function($mongoIndex) use ($documentIndexes, $self) {
+            if ('_id_' === $mongoIndex['name']) {
+                return false;
+            }
 
-            /* Determine which Mongo indexes should be deleted. Exclude the ID
-             * index and those that are equivalent to any in the class metadata.
-             */
-            $self = $this;
-            $mongoIndexes = array_filter($mongoIndexes, function($mongoIndex) use ($documentIndexes, $self) {
-                if ('_id_' === $mongoIndex['name']) {
+            foreach ($documentIndexes as $documentIndex) {
+                if ($self->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)) {
                     return false;
-                }
-
-                foreach ($documentIndexes as $documentIndex) {
-                    if ($self->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)) {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
-
-            // Delete indexes that do not exist in class metadata
-            foreach ($mongoIndexes as $mongoIndex) {
-                if (isset($mongoIndex['name'])) {
-                    /* Note: MongoCollection::deleteIndex() cannot delete
-                     * custom-named indexes, so use the deleteIndexes command.
-                     */
-                    $collection->getDatabase()->command(array(
-                        'deleteIndexes' => $collection->getName(),
-                        'index' => $mongoIndex['name'],
-                    ));
                 }
             }
 
-            $this->ensureDocumentIndexes($documentName, $timeout);
+            return true;
+        });
+
+        // Delete indexes that do not exist in class metadata
+        foreach ($mongoIndexes as $mongoIndex) {
+            if (isset($mongoIndex['name'])) {
+                /* Note: MongoCollection::deleteIndex() cannot delete
+                 * custom-named indexes, so use the deleteIndexes command.
+                 */
+                $collection->getDatabase()->command(array(
+                    'deleteIndexes' => $collection->getName(),
+                    'index' => $mongoIndex['name'],
+                ));
+            }
         }
+
+        $this->ensureDocumentIndexes($documentName, $timeout);
     }
 
     public function getDocumentIndexes($documentName)

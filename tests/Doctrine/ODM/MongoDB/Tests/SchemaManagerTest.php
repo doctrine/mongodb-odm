@@ -78,6 +78,53 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes('Documents\CmsArticle', 10000);
     }
 
+    public function testUpdateDocumentIndexesShouldCreateMappedIndexes()
+    {
+        $database = $this->getMockDatabase();
+        $database->expects($this->never())
+            ->method('command');
+
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())
+            ->method('getIndexInfo')
+            ->will($this->returnValue(array()));
+        $collection->expects($this->once())
+            ->method('ensureIndex');
+        $collection->expects($this->any())
+            ->method('getDatabase')
+            ->will($this->returnValue($database));
+
+        $this->dm->setDocumentCollection('Documents\CmsArticle', $collection);
+        $this->dm->getSchemaManager()->updateDocumentIndexes('Documents\CmsArticle');
+    }
+
+    public function testUpdateDocumentIndexesShouldDeleteUnmappedIndexesBeforeCreatingMappedIndexes()
+    {
+        $database = $this->getMockDatabase();
+        $database->expects($this->once())
+            ->method('command')
+            ->with($this->callback(function($c) {
+                return array_key_exists('deleteIndexes', $c);
+            }));
+
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())
+            ->method('getIndexInfo')
+            ->will($this->returnValue(array(array(
+                'v' => 1,
+                'key' => array('topic' => -1),
+                'name' => 'topic_-1'
+            ))));
+        $collection->expects($this->once())
+            ->method('ensureIndex');
+        $collection->expects($this->any())
+            ->method('getDatabase')
+            ->will($this->returnValue($database));
+
+        $this->dm->setDocumentCollection('Documents\CmsArticle', $collection);
+        $this->dm->getSchemaManager()->updateDocumentIndexes('Documents\CmsArticle');
+    }
+
     /**
      * @dataProvider provideIndexedClasses
      */
