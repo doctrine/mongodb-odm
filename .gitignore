@@ -2,11 +2,6 @@ tools/sandbox/Proxies/*
 tools/sandbox/Hydrators/*
 tests/Proxies/*
 tests/Hydrators/*
-build.properties
-build/
-logs/
-reports/
-dist/
 phpunit.xml
 vendor
 composer.lock
