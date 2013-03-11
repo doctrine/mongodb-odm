@@ -131,8 +131,6 @@ abstract class GH501BaseNode
 
 /**
  * @ODM\EmbeddedDocument
- * @ODM\DiscriminatorField(fieldName="type")
- * @ODM\DiscriminatorMap({"album"="GH501Album", "article"="GH501Article"})
  */
 class GH501Album extends GH501BaseNode
 {
@@ -153,8 +151,6 @@ class GH501Album extends GH501BaseNode
 
 /**
  * @ODM\EmbeddedDocument
- * @ODM\DiscriminatorField(fieldName="type")
- * @ODM\DiscriminatorMap({"album"="GH501Album", "article"="GH501Article"})
  */
 class GH501Article extends GH501BaseNode
 {
