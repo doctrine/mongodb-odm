@@ -25,7 +25,7 @@ Example:
     $qb = $dm->createQueryBuilder('User')
         ->eagerCursor(true);
     $query = $qb->getQuery();
-    $users = $qb->execute(); // returns instance of Doctrine\MongoDB\ODM\EagerCursor
+    $users = $query->execute(); // returns instance of Doctrine\MongoDB\ODM\EagerCursor
 
 At this point all data is loaded from the database and cursors to MongoDB
 have been closed but hydration of the data in to objects has not begun. Once
