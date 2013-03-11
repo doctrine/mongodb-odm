@@ -93,7 +93,7 @@ class GH501Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @ODM\Document(db="gh501_test",collection="test") */
+/** @ODM\Document */
 class GH501Document
 {
     /** @ODM\Id */
