@@ -26,15 +26,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class IncrementType extends Type
+class IncrementType extends IntType
 {
-    public function convertToDatabaseValue($value)
-    {
-        return $value !== null ? (integer) $value : null;
-    }
-
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? (integer) $value : null;
-    }
 }
