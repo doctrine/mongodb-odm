@@ -556,8 +556,8 @@ Example:
 @Increment
 ----------
 
-The increment type is just like a normal field except that when you
-update, it will use the $inc operator instead of $set:
+The increment type is just like an integer field except that it will be updated
+using the `$inc` operator instead of `$set`:
 
 .. code-block:: php
 
@@ -566,15 +566,15 @@ update, it will use the $inc operator instead of $set:
     class Package
     {
         // ...
-    
+
         /** @Increment */
         protected $downloads = 0;
-    
+
         public function incrementDownloads()
         {
             $this->downloads++;
         }
-    
+
         // ...
     }
 
@@ -597,8 +597,7 @@ The query sent to Mongo would be something like the following:
         )
     )
 
-It will increment the value by the difference between the new value
-and the old value.
+The field will be incremented by the difference between the new and old values.
 
 @Index
 ------
