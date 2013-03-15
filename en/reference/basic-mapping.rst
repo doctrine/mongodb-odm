@@ -253,8 +253,10 @@ You can configure custom ID strategies if you don't want to use the default Mong
 The available strategies are:
 
 - ``AUTO`` - Uses the native generated MongoId.
-- ``INCREMENT`` - Used another collection to auto increment an identifier.
-- ``UUID`` - Generates a uuid identifier.
+- ``ALNUM`` - Generates an alpha-numeric string (based on an incrementing value).
+- ``CUSTOM`` - Defers generation to a AbstractIdGenerator implementation specified in the `class` option.
+- ``INCREMENT`` - Uses another collection to auto increment an integer identifier.
+- ``UUID`` - Generates a UUID identifier.
 - ``NONE`` - Do not generate any identifier. ID must be manually set.
 
 Here is how you can configure the strategy for the different configuration formats:
