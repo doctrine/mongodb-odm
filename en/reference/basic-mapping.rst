@@ -254,7 +254,7 @@ The available strategies are:
 
 - ``AUTO`` - Uses the native generated MongoId.
 - ``ALNUM`` - Generates an alpha-numeric string (based on an incrementing value).
-- ``CUSTOM`` - Defers generation to a AbstractIdGenerator implementation specified in the `class` option.
+- ``CUSTOM`` - Defers generation to a AbstractIdGenerator implementation specified in the ``class`` option.
 - ``INCREMENT`` - Uses another collection to auto increment an integer identifier.
 - ``UUID`` - Generates a UUID identifier.
 - ``NONE`` - Do not generate any identifier. ID must be manually set.

@@ -16,7 +16,7 @@ Specify an additional mongodb field to check for and load data from it if it exi
     /** @Field @AlsoLoad("oldFieldName")*/
     private $fieldName;
 
-The above `$fieldName` will be loaded from `fieldName` if it exists and will fallback to `oldFieldName`
+The above ``$fieldName`` will be loaded from ``fieldName`` if it exists and will fallback to ``oldFieldName``
 if it does not exist.
 
 @Bin
@@ -117,7 +117,7 @@ array.
 Optional attributes:
 
 -
-    strategy - The strategy to use to persist the data. Possible values are `set` and `pushAll` and `pushAll` is the default.
+    strategy - The strategy to use to persist the data. Possible values are ``set`` and ``pushAll``; ``pushAll`` is the default.
 
 Example:
 
@@ -331,7 +331,7 @@ Example:
      */
     private $tags = array();
 
-Depending on the type of Document a value of `user` or `author` will be stored in a field named `type`
+Depending on the type of Document a value of ``user`` or ``author`` will be stored in a field named ``type``
 and will be used to properly reconstruct the right class during hydration.
 
 @EmbedOne
@@ -361,7 +361,7 @@ Optional attributes:
 -
     discriminatorMap - Map of discriminator values to class names.
 -
-    strategy - The strategy to use to persist the reference. Possible values are `set` and `pushAll` and `pushAll` is the default.
+    strategy - The strategy to use to persist the reference. Possible values are ``set`` and ``pushAll``; ``pushAll`` is the default.
 
 Example:
 
@@ -381,7 +381,7 @@ Example:
      */
     private $tags = array();
 
-Depending on the type of Document a value of `user` or `author` will be stored in a field named `type`
+Depending on the type of Document a value of ``user`` or ``author`` will be stored in a field named ``type``
 and will be used to properly reconstruct the right class during hydration.
 
 @EmbeddedDocument
@@ -557,7 +557,7 @@ Example:
 ----------
 
 The increment type is just like an integer field except that it will be updated
-using the `$inc` operator instead of `$set`:
+using the ``$inc`` operator instead of ``$set``:
 
 .. code-block:: php
 
@@ -905,7 +905,7 @@ Optional attributes:
 -
     targetDocument - A full class name of the target document.
 -
-    simple - Create simple references and only store a `MongoId` instead of a `DBRef`.
+    simple - Create simple references and only store a ``MongoId`` instead of a ``DBRef``.
 -
     cascade - Cascade Option
 - 
@@ -927,7 +927,7 @@ Optional attributes:
 -
     skip - Skip for the query that loads the reference.
 -
-    strategy - The strategy to use to persist the reference. Possible values are `set` and `pushAll` and `pushAll` is the default.
+    strategy - The strategy to use to persist the reference. Possible values are ``set`` and ``pushAll``; ``pushAll`` is the default.
 
 Example:
 
@@ -960,7 +960,7 @@ Optional attributes:
 -
     targetDocument - A full class name of the target document.
 -
-    simple - Create simple references and only store a `MongoId` instead of a `DBRef`.
+    simple - Create simple references and only store a ``MongoId`` instead of a ``DBRef``.
 -
     cascade - Cascade Option
 - 
