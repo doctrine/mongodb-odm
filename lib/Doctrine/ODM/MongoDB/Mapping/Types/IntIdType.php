@@ -25,25 +25,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Types;
  * @since       1.0
  * @author      Pavel Volokitin <pavelvolokitin@gmail.com>
  */
-class IntIdType extends Type
+class IntIdType extends IntType
 {
-    public function convertToDatabaseValue($value)
-    {
-        return $value !== null ? (integer) $value : null;
-    }
-
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? (integer) $value : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = $value;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = $value;';
-    }
 }
