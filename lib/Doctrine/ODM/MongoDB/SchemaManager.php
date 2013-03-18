@@ -399,7 +399,7 @@ class SchemaManager
     {
         $documentIndexOptions = $documentIndex['options'];
 
-        if ($mongoIndex['key'] !== $documentIndex['keys']) {
+        if ($mongoIndex['key'] != $documentIndex['keys']) {
             return false;
         }
 
