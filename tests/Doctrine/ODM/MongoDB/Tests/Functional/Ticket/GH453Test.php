@@ -149,8 +149,8 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $colSet = $colPush->map(function($v) { return clone $v; });
 
         $dm = $this->dm;
-        $colPush->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
-        $colSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
+        $colPush->map(function($v) use ($dm) { $dm->persist($v); });
+        $colSet->map(function($v) use ($dm) { $dm->persist($v); });
 
         $doc = new GH453Document();
         $doc->referenceManyPush = $colPush;
