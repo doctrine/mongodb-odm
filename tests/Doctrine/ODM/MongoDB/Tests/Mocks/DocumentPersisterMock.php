@@ -15,11 +15,6 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPer
     private $postInsertIds = array();
     private $existsCalled = false;
 
-    /**
-     * @param <type> $document
-     * @return <type>
-     * @override
-     */
     public function insert($document, array $options = array())
     {
         $this->inserts[] = $document;
@@ -50,27 +45,27 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPer
     {
         $this->existsCalled = true;
     }
-    
+
     public function delete($document, array $options = array())
     {
         $this->deletes[] = $document;
     }
-    
+
     public function getInserts()
     {
         return $this->inserts;
     }
-    
+
     public function getUpdates()
     {
         return $this->updates;
     }
-    
+
     public function getDeletes()
     {
         return $this->deletes;
     }
-    
+
     public function reset()
     {
         $this->existsCalled = false;
