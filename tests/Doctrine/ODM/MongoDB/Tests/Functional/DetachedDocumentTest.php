@@ -42,7 +42,7 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->status = 'developer';
         
         $ph1 = new CmsPhonenumber;
-        $ph1->phonenumber = 1234;
+        $ph1->phonenumber = '1234';
         $user->addPhonenumber($ph1);
 
         $this->dm->persist($user);
@@ -59,7 +59,7 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = unserialize($serialized);
         
         $ph2 = new CmsPhonenumber;
-        $ph2->phonenumber = 56789;
+        $ph2->phonenumber = '56789';
         $user->addPhonenumber($ph2);
         $this->assertEquals(2, count($user->getPhonenumbers()));
         $this->assertFalse($this->dm->contains($user));

@@ -159,14 +159,16 @@ class QueryTest extends BaseTest
 
     public function testQueryWithMultipleEmbeddedDocumentsAndReference()
     {
+        $mongoId = new \MongoId();
+
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\EmbedTest')
             ->find()
-            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals('Foo');
+            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals((string) $mongoId);
         $query = $qb->getQuery();
         $debug = $query->debug();
 
         $this->assertTrue(array_key_exists('eO.eO.e1.eO.eP.pO._id', $debug));
-        $this->assertInstanceOf('\MongoId', $debug['eO.eO.e1.eO.eP.pO._id']);
+        $this->assertEquals($mongoId, $debug['eO.eO.e1.eO.eP.pO._id']);
     }
 }
 

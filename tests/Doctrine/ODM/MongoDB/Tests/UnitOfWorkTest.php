@@ -495,9 +495,7 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 /** @ODM\Document */
 class NotifyChangedRelatedItem
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id(type="int_id") */
     private $id;
 
     /** @ODM\ReferenceOne(targetDocument="NotifyChangedDocument") */

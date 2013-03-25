@@ -10,7 +10,7 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPer
     private $inserts = array();
     private $updates = array();
     private $deletes = array();
-    private $identityColumnValueCounter = 0;
+    private $identityColumnValueCounter = 1;
     private $mockIdGeneratorType;
     private $postInsertIds = array();
     private $existsCalled = false;
@@ -74,7 +74,7 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPer
     public function reset()
     {
         $this->existsCalled = false;
-        $this->identityColumnValueCounter = 0;
+        $this->identityColumnValueCounter = 1;
         $this->inserts = array();
         $this->updates = array();
         $this->deletes = array();
