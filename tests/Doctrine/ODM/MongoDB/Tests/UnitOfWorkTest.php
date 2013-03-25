@@ -44,12 +44,36 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
     {
         $class = $this->dm->getClassMetadata('Documents\ForumUser');
         $user = new ForumUser();
-        $user->id = 1;
+        $user->id = new \MongoId();
         $this->assertFalse($this->uow->isScheduledForInsert($user));
         $this->assertFalse($this->uow->isScheduledForUpsert($user));
         $this->uow->scheduleForInsert($class, $user);
         $this->assertTrue($this->uow->isScheduledForInsert($user));
         $this->assertTrue($this->uow->isScheduledForUpsert($user));
+    }
+
+    public function testScheduleForInsertUpsertWithNonObjectIdValues()
+    {
+        $doc = new UowCustomIdDocument();
+        $doc->id = 'string';
+        $class = $this->dm->getClassMetadata(get_class($doc));
+        $this->assertFalse($this->uow->isScheduledForInsert($doc));
+        $this->assertFalse($this->uow->isScheduledForUpsert($doc));
+        $this->uow->scheduleForInsert($class, $doc);
+        $this->assertTrue($this->uow->isScheduledForInsert($doc));
+        $this->assertTrue($this->uow->isScheduledForUpsert($doc));
+    }
+
+    public function testScheduleForInsertShouldNotUpsertDocumentsWithInconsistentIdValues()
+    {
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
+        $user = new ForumUser();
+        $user->id = 1;
+        $this->assertFalse($this->uow->isScheduledForInsert($user));
+        $this->assertFalse($this->uow->isScheduledForUpsert($user));
+        $this->uow->scheduleForInsert($class, $user);
+        $this->assertTrue($this->uow->isScheduledForInsert($user));
+        $this->assertFalse($this->uow->isScheduledForUpsert($user));
     }
 
     public function testRegisterRemovedOnNewEntityIsIgnored()
@@ -510,4 +534,11 @@ class ArrayTest
     {
         $this->data = $data;
     }
+}
+
+/** @ODM\Document */
+class UowCustomIdDocument
+{
+    /** @ODM\Id(type="custom_id") */
+    public $id;
 }
