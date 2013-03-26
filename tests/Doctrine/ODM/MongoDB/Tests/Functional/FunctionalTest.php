@@ -319,6 +319,34 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(50, $user->getCount());
     }
 
+    public function testIncrementSetsNull()
+    {
+        $user = new User();
+        $user->setUsername('jon');
+        $user->setCount(10);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
+        $this->assertEquals(10, $user->getCount());
+
+        $user->incrementCount(1);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
+        $this->assertEquals(11, $user->getCount());
+
+        $user->setCount(null);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
+        $this->assertEquals(null, $user->getCount());
+    }
+
     public function testTest()
     {
         $employee = new Employee();
