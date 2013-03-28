@@ -794,7 +794,7 @@ class DocumentPersister
      */
     public function prepareQuery($query = array())
     {
-        if (is_scalar($query) || $query instanceof \MongoId) {
+        if ($isScalar = (is_scalar($query) || $query instanceof \MongoId)) {
             $query = array('_id' => $query);
         }
         if ($query === null) {
@@ -802,7 +802,7 @@ class DocumentPersister
         }
         $query = array_merge($query, $this->dm->getFilterCollection()->getFilterCriteria($this->class));
 
-        if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
+        if (! $isScalar & $this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
             $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
         }
