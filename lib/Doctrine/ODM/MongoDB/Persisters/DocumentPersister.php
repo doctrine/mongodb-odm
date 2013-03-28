@@ -728,6 +728,25 @@ class DocumentPersister
 
     private function loadReferenceManyCollectionInverseSide(PersistentCollection $collection)
     {
+        $query = $this->createReferenceManyInverseSideQuery($collection);
+        $documents = $query->execute()->toArray();
+        $mapping = $collection->getMapping();
+        foreach ($documents as $key => $document) {
+            if ($mapping['strategy'] === 'set') {
+                $collection->set($key, $document);
+            } else {
+                $collection->add($document);
+            }
+        }
+    }
+
+    /**
+     * @param PersistentCollection $collection
+     *
+     * @return Query
+     */
+    public function createReferenceManyInverseSideQuery(PersistentCollection $collection)
+    {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
@@ -756,14 +775,8 @@ class DocumentPersister
         if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
             $qb->slaveOkay(true);
         }
-        $documents = $qb->getQuery()->execute()->toArray();
-        foreach ($documents as $key => $document) {
-            if ($mapping['strategy'] === 'set') {
-                $collection->set($key, $document);
-            } else {
-                $collection->add($document);
-            }
-        }
+
+        return $qb->getQuery();
     }
 
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
