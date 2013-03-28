@@ -737,6 +737,7 @@ class DocumentPersister
 
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
     {
+        $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $cursor = $this->dm->getRepository($mapping['targetDocument'])->$mapping['repositoryMethod']($collection->getOwner());
         if (isset($mapping['sort']) && $mapping['sort']) {
