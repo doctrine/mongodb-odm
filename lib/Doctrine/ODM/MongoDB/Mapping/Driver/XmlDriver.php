@@ -113,6 +113,12 @@ class XmlDriver extends FileDriver
                         $mapping[$key] = ('true' === $mapping[$key]) ? true : false;
                     }
                 }
+                if (isset($attributes['not-saved'])) {
+                    $mapping['notSaved'] = ('true' === $attributes['not-saved']) ? true : false;
+                }
+                if (isset($attributes['also-load'])) {
+                    $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
+                }
                 $this->addFieldMapping($class, $mapping);
             }
         }
@@ -220,6 +226,12 @@ class XmlDriver extends FileDriver
                 $mapping['discriminatorMap'][(string) $attr['value']] = (string) $attr['class'];
             }
         }
+        if (isset($attributes['not-saved'])) {
+            $mapping['notSaved'] = ('true' === $attributes['not-saved']) ? true : false;
+        }
+        if (isset($attributes['also-load'])) {
+            $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
+        }
         $this->addFieldMapping($class, $mapping);
     }
 
@@ -269,6 +281,12 @@ class XmlDriver extends FileDriver
                 $attr = $criteria->attributes();
                 $mapping['criteria'][(string) $attr['field']] = (string) $attr['value'];
             }
+        }
+        if (isset($attributes['not-saved'])) {
+            $mapping['notSaved'] = ('true' === $attributes['not-saved']) ? true : false;
+        }
+        if (isset($attributes['also-load'])) {
+            $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
         }
         $this->addFieldMapping($class, $mapping);
     }
