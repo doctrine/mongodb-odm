@@ -675,6 +675,21 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, count($test));
     }
 
+    public function testSameCollectionTestFindById()
+    {
+        $test1 = new SameCollection1();
+        $test1->name = 'test1';
+        $this->dm->persist($test1);
+
+        $test2 = new SameCollection2();
+        $test2->name = 'test2';
+        $this->dm->persist($test2);
+        $this->dm->flush();
+
+        $query = $this->dm->getUnitOfWork()->getDocumentPersister('Documents\Functional\SameCollection1')->prepareQuery($test1->id);
+        $this->assertEquals(array('_id' => new \MongoId($test1->id)), $query);
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */
