@@ -477,10 +477,22 @@ class PersistentCollection implements BaseCollection
      */
     public function count()
     {
-        if ($this->mapping['isInverseSide']) {
-            $this->initialize();
+        if ($this->mapping['isInverseSide'] && !$this->initialized) {
+            $documentPersister = $this->uow->getDocumentPersister(get_class($this->owner));
+            if (isset($this->mapping['repositoryMethod']) && $this->mapping['repositoryMethod']) {
+                $count = $documentPersister
+                    ->createReferenceManyWithRepositoryMethodCursor($this)
+                    ->count();
+            } else {
+                $count = $documentPersister
+                    ->createReferenceManyInverseSideQuery($this)
+                    ->count();
+            }
+        } else {
+            $count = $this->coll->count();
         }
-        return count($this->mongoData) + $this->coll->count();
+
+        return count($this->mongoData) + $count;
     }
 
     /**
