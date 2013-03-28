@@ -176,11 +176,13 @@ class HydratorFactory
                     $code .= sprintf(<<<EOF
 
         /** @AlsoLoad("$name") */
-        if (!array_key_exists('$fieldName', \$data) && array_key_exists('$name', \$data)) {
-            \$data['$fieldName'] = \$data['$name'];
+        if (!array_key_exists('%1\$s', \$data) && array_key_exists('$name', \$data)) {
+            \$data['%1\$s'] = \$data['$name'];
         }
 
 EOF
+                    ,
+                        $mapping['name']
                     );
                 }
             }
