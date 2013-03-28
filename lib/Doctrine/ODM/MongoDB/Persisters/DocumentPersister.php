@@ -750,9 +750,24 @@ class DocumentPersister
 
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
     {
+        $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
+        $documents = $cursor->toArray();
+        foreach ($documents as $document) {
+            $collection->add($document);
+        }
+    }
+
+    /**
+     * @param PersistentCollection $collection
+     *
+     * @return Cursor
+     */
+    public function createReferenceManyWithRepositoryMethodCursor(PersistentCollection $collection)
+    {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
-        $cursor = $this->dm->getRepository($mapping['targetDocument'])->$mapping['repositoryMethod']($collection->getOwner());
+        $cursor = $this->dm->getRepository($mapping['targetDocument'])
+            ->$mapping['repositoryMethod']($collection->getOwner());
         if (isset($mapping['sort']) && $mapping['sort']) {
             $cursor->sort($mapping['sort']);
         }
@@ -765,10 +780,8 @@ class DocumentPersister
         if (isset($hints[Query::HINT_SLAVE_OKAY])) {
             $cursor->slaveOkay(true);
         }
-        $documents = $cursor->toArray();
-        foreach ($documents as $document) {
-            $collection->add($document);
-        }
+
+        return $cursor;
     }
 
     /**
