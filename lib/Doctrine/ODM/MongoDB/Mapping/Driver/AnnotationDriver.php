@@ -153,11 +153,17 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $mapping['version'] = true;
                 } elseif ($annot instanceof ODM\Lock) {
                     $mapping['lock'] = true;
+                } else // begin patch
+                 if ($annot instanceof ODM\GeneratedValue) {
+                    $mapping['strategy'] = $annot->strategy;
                 }
+                // end patch
             }
 
             if ($fieldAnnot) {
-                $mapping = array_replace($mapping, (array) $fieldAnnot);
+                // begin patch
+                $mapping = array_replace((array) $fieldAnnot, $mapping);
+                // end patch
                 $class->mapField($mapping);
             }
 

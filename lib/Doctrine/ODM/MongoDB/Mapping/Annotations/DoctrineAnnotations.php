@@ -72,3 +72,5 @@ require_once __DIR__ . '/PostRemove.php';
 require_once __DIR__ . '/PreLoad.php';
 require_once __DIR__ . '/PostLoad.php';
 require_once __DIR__ . '/PreFlush.php';
+
+require_once __DIR__ . '/GeneratedValue.php';
