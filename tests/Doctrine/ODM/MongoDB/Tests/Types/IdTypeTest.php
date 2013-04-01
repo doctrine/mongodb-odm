@@ -2,14 +2,14 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
-use Doctrine\ODM\MongoDB\Types\IdType;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 class IdTypeTest extends \PHPUnit_Framework_TestCase
 {
     public function testConvertToDatabaseValue()
     {
         $mongoId = new \MongoId();
-        $type = new IdType();
+        $type = Type::getType('id');
 
         $this->assertNull($type->convertToDatabaseValue(null), 'null is not converted');
         $this->assertSame($mongoId, $type->convertToDatabaseValue($mongoId), 'MongoId objects are not converted');
@@ -21,7 +21,7 @@ class IdTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testConvertToDatabaseValueShouldGenerateMongoIds($value)
     {
-        $type = new IdType();
+        $type = Type::getType('id');
 
         $this->assertInstanceOf('MongoId', $type->convertToDatabaseValue($value));
     }
