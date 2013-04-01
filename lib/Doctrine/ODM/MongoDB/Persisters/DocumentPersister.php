@@ -895,7 +895,7 @@ class DocumentPersister
      * It also handles converting $fieldName to the database name if they are different.
      *
      * @param string        $fieldName
-     * @param string        $value
+     * @param mixed         $value
      * @param ClassMetadata $class        Defaults to $this->class
      * @param boolean       $prepareValue Whether or not to prepare the value
      * @return array        Prepared field name and value
@@ -951,96 +951,108 @@ class DocumentPersister
             return array($fieldName, $value);
         }
 
-        // Process "fieldName.objectProperty" queries (on arrays or objects)
-        if (strpos($fieldName, '.') !== false) {
-            /* We can limit parsing here, since at most three segments are
-             * significant: "fieldName.objectProperty" with an optional index or
-             * key for collections stored as either BSON arrays or objects.
-             */
-            $e = explode('.', $fieldName, 4);
+        // No processing for unmapped, non-identifier, non-dotted field names
+        if (strpos($fieldName, '.') === false) {
+            return array($fieldName, $value);
+        }
 
-            if ( ! isset($class->fieldMappings[$e[0]])) {
+        /* Process "fieldName.objectProperty" queries (on arrays or objects).
+         *
+         * We can limit parsing here, since at most three segments are
+         * significant: "fieldName.objectProperty" with an optional index or key
+         * for collections stored as either BSON arrays or objects.
+         */
+        $e = explode('.', $fieldName, 4);
+
+        // No further processing for unmapped fields
+        if ( ! isset($class->fieldMappings[$e[0]])) {
+            return array($fieldName, $value);
+        }
+
+        $mapping = $class->fieldMappings[$e[0]];
+        $e[0] = $mapping['name'];
+
+        // Hash fields will not be prepared beyond the field name
+        if ($mapping['type'] === 'hash') {
+            $fieldName = implode('.', $e);
+
+            return array($fieldName, $value);
+        }
+
+        if ($mapping['strategy'] === 'set' && isset($e[2])) {
+            $objectProperty = $e[2];
+            $objectPropertyPrefix = $e[1] . '.';
+            $nextObjectProperty = implode('.', array_slice($e, 3));
+        } elseif ($e[1] != '$') {
+            $fieldName = $e[0] . '.' .$e[1];
+            $objectProperty = $e[1];
+            $objectPropertyPrefix = '';
+            $nextObjectProperty = implode('.', array_slice($e, 2));
+        } else {
+            $fieldName = $e[0] . '.' .$e[1] . '.' .$e[2];
+            $objectProperty = $e[2];
+            $objectPropertyPrefix = $e[1] . '.';
+            $nextObjectProperty = implode('.', array_slice($e, 3));
+        }
+
+        // No further processing for fields without a targetDocument mapping
+        if ( ! isset($mapping['targetDocument'])) {
+            return array($fieldName, $value);
+        }
+
+        $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+
+        // No further processing for unmapped targetDocument fields
+        if ( ! $targetClass->hasField($objectProperty)) {
+            return array($fieldName, $value);
+        }
+
+        $targetMapping = $targetClass->getFieldMapping($objectProperty);
+        $objectPropertyIsId = $targetClass->isIdentifier($objectProperty);
+
+        // Prepare DBRef identifiers or the mapped field's property path
+        $fieldName = ($objectPropertyIsId && !empty($mapping['reference']) && empty($mapping['simple']))
+            ? $e[0] . '.$id'
+            : $e[0] . '.' . $objectPropertyPrefix . $targetMapping['name'];
+
+        // Process targetDocument identifier fields
+        if ($objectPropertyIsId) {
+            if ( ! $prepareValue) {
                 return array($fieldName, $value);
             }
 
-            $mapping = $class->fieldMappings[$e[0]];
-            $e[0] = $mapping['name'];
-
-            // Hash fields will not be prepared beyond the field name
-            if ($mapping['type'] === 'hash') {
-                $fieldName = implode('.', $e);
-
-                return array($fieldName, $value);
+            if ( ! is_array($value)) {
+                return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            if ($mapping['strategy'] === 'set' && isset($e[2])) {
-                $objectProperty = $e[2];
-                $objectPropertyPrefix = $e[1] . '.';
-                $fieldHasCollectionItemPointer = true;
-            } elseif ($e[1] != '$') {
-                $fieldName = $e[0] . '.' .$e[1];
-                $objectProperty = $e[1];
-                $objectPropertyPrefix = '';
-                $fieldHasCollectionItemPointer = false;
+            $keys = array_keys($value);
+
+            if (isset($keys[0][0]) && $keys[0][0] === $this->cmd) {
+                foreach ($value[$keys[0]] as $k => $v) {
+                    $value[$keys[0]][$k] = $targetClass->getDatabaseIdentifierValue($v);
+                }
             } else {
-                $fieldName = $e[0] . '.' .$e[1] . '.' .$e[2];
-                $objectProperty = $e[2];
-                $objectPropertyPrefix = $e[1] . '.';
-                $fieldHasCollectionItemPointer = true;
-            }
-
-            if (isset($mapping['targetDocument'])) {
-                $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-                if ($targetClass->hasField($objectProperty)) {
-                    if ($targetClass->identifier === $objectProperty) {
-                        $targetMapping = $targetClass->getFieldMapping($objectProperty);
-                        $objectProperty = $targetMapping['name'];
-                        if (isset($mapping['reference']) && $mapping['reference']) {
-                            $fieldName =  $mapping['simple'] ? $e[0] . '.' .$objectPropertyPrefix . $objectProperty : $e[0] . '.$id';
-                        } else {
-                            $fieldName = $e[0] . '.' .$objectPropertyPrefix . $objectProperty;
-                        }
-                        if ($prepareValue === true) {
-                            if (is_array($value)) {
-                                $keys = array_keys($value);
-                                if (isset($keys[0][0]) && $keys[0][0] === $this->cmd) {
-                                    foreach ($value[$keys[0]] as $k => $v) {
-                                        $value[$keys[0]][$k] = $targetClass->getDatabaseIdentifierValue($v);
-                                    }
-                                } else {
-                                    foreach ($value as $k => $v) {
-                                        $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
-                                    }
-                                }
-                            } else {
-                                $value = $targetClass->getDatabaseIdentifierValue($value);
-                            }
-                        }
-
-                    } else {
-                        $targetMapping = $targetClass->getFieldMapping($objectProperty);
-                        $objectProperty = $targetMapping['name'];
-                        $fieldName =  $e[0] . '.' . $objectPropertyPrefix . $objectProperty;
-
-                        if (count($e) > 2 + $fieldHasCollectionItemPointer ? 1 : 0) {
-                            if ($fieldHasCollectionItemPointer) {
-                                unset($e[2]);
-                            }
-                            unset($e[0], $e[1]);
-                            $key = implode('.', $e);
-
-                            if (isset($targetMapping['targetDocument'])) {
-                                $nextTargetClass = $this->dm->getClassMetadata($targetMapping['targetDocument']);
-                                list($key, $value) = $this->prepareQueryElement($key, $value, $nextTargetClass, $prepareValue);
-                            } else {
-                                list($key, $value) = $this->prepareQueryElement($key, $value, null, $prepareValue);
-                            }
-
-                            $fieldName .= '.' . $key;
-                        }
-                    }
+                foreach ($value as $k => $v) {
+                    $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
                 }
             }
+
+            return array($fieldName, $value);
+        }
+
+        /* The property path may include a third field segment, excluding the
+         * collection item pointer. If present, this next object property must
+         * be processed recursively.
+         */
+        if ($nextObjectProperty) {
+            // Respect the targetDocument's class metadata when recursing
+            $nextTargetClass = isset($targetMapping['targetDocument'])
+                ? $this->dm->getClassMetadata($targetMapping['targetDocument'])
+                : null;
+
+            list($key, $value) = $this->prepareQueryElement($nextObjectProperty, $value, $nextTargetClass, $prepareValue);
+
+            $fieldName .= '.' . $key;
         }
 
         return array($fieldName, $value);
