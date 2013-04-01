@@ -430,7 +430,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function isIdentifier($fieldName)
     {
-        return $this->identifier === $fieldName ? true : false;
+        return $this->identifier === $fieldName;
     }
 
     /**
