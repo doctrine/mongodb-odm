@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class EagerCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -23,6 +24,24 @@ class EagerCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\EagerTestDocument');
         $qb->eagerCursor(true);
         $this->test = $qb->getQuery()->execute();
+    }
+
+    public function testEagerCursorInheritsHydrateOptionAndHints()
+    {
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\EagerTestDocument')
+            ->refresh(true)
+            ->slaveOkay(true)
+            ->hydrate(false)
+            ->eagerCursor(true);
+
+        $eagerCursor = $qb->getquery()->execute();
+        $hints = $eagerCursor->getHints();
+
+        $this->assertArrayHasKey(Query::HINT_REFRESH, $hints);
+        $this->assertTrue(true, $hints[Query::HINT_REFRESH]);
+        $this->assertArrayHasKey(Query::HINT_SLAVE_OKAY, $hints);
+        $this->assertTrue(true, $hints[Query::HINT_SLAVE_OKAY]);
+        $this->assertTrue(is_array($eagerCursor->getSingleResult()));
     }
 
     public function testEagerCursor()
