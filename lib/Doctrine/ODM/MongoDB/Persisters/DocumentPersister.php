@@ -1025,15 +1025,14 @@ class DocumentPersister
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            $keys = array_keys($value);
-
-            if (isset($keys[0][0]) && $keys[0][0] === $this->cmd) {
-                foreach ($value[$keys[0]] as $k => $v) {
-                    $value[$keys[0]][$k] = $targetClass->getDatabaseIdentifierValue($v);
-                }
-            } else {
-                foreach ($value as $k => $v) {
-                    $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
+            foreach ($value as $k => $v) {
+                // Process query operators (e.g. "$in")
+                if (isset($k[0]) && $k[0] === $this->cmd && is_array($v)) {
+                    foreach ($v as $k2 => $v2) {
+                        $value[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
+                    }
+                } else {
+                    $value[$k] = $class->getDatabaseIdentifierValue($v);
                 }
             }
 
