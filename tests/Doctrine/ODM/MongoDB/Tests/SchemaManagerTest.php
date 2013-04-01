@@ -164,23 +164,56 @@ class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testCreateDocumentCollection()
     {
         $className = 'Documents\CmsArticle';
+
         $classMetadata = $this->getMockClassMetadata($className);
+        $classMetadata->expects($this->any())
+            ->method('isFile')
+            ->will($this->returnValue(false));
         $classMetadata->expects($this->once())
-            ->method('getCollection');
+            ->method('getCollection')
+            ->will($this->returnValue('cms_articles'));
         $classMetadata->expects($this->once())
-            ->method('getCollectionCapped');
+            ->method('getCollectionCapped')
+            ->will($this->returnValue(true));
         $classMetadata->expects($this->once())
-            ->method('getCollectionSize');
+            ->method('getCollectionSize')
+            ->will($this->returnValue(1048576));
         $classMetadata->expects($this->once())
-            ->method('getCollectionMax');
+            ->method('getCollectionMax')
+            ->will($this->returnValue(32));
 
         $documentDatabase = $this->getMockDatabase();
         $documentDatabase->expects($this->once())
-            ->method('createCollection');
+            ->method('createCollection')
+            ->with('cms_articles', true, 1048576, 32);
+
         $this->dm->setDocumentDatabase($className, $documentDatabase);
-
         $this->dm->setClassMetadata($className, $classMetadata);
+        $this->dm->getSchemaManager()->createDocumentCollection($className);
+    }
 
+    public function testCreateGridFSCollection()
+    {
+        $className = 'Documents\File';
+
+        $classMetadata = $this->getMockClassMetadata($className);
+        $classMetadata->expects($this->any())
+            ->method('isFile')
+            ->will($this->returnValue(true));
+        $classMetadata->expects($this->any())
+            ->method('getCollection')
+            ->will($this->returnValue('fs'));
+
+        $documentDatabase = $this->getMockDatabase();
+        $documentDatabase->expects($this->at(0))
+            ->method('createCollection')
+            ->with('fs.files');
+        $documentDatabase->expects($this->at(1))
+            ->method('createCollection')
+            ->with('fs.chunks');
+
+        $this->dm->setDocumentDatabase($className, $documentDatabase);
+        $this->dm->setClassMetadata($className, $classMetadata);
         $this->dm->getSchemaManager()->createDocumentCollection($className);
     }
 

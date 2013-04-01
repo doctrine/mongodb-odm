@@ -284,9 +284,18 @@ class SchemaManager
     public function createDocumentCollection($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
+
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
             throw new \InvalidArgumentException('Cannot create document collection for mapped super classes or embedded documents.');
         }
+
+        if ($class->isFile()) {
+            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection() . '.files');
+            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection() . '.chunks');
+
+            return;
+        }
+
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
             $class->getCollectionCapped(),
