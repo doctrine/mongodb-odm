@@ -32,14 +32,19 @@ abstract class AbstractCommand extends Command
     const INDEX = 'index';
 
     abstract protected function processDocumentCollection(SchemaManager $sm, $document);
+
     abstract protected function processCollection(SchemaManager $sm);
+
     abstract protected function processDocumentDb(SchemaManager $sm, $document);
+
     abstract protected function processDb(SchemaManager $sm);
+
     abstract protected function processDocumentIndex(SchemaManager $sm, $document);
+
     abstract protected function processIndex(SchemaManager $sm);
 
     /**
-     * @return Doctrine\ODM\MongoDB\SchemaManager
+     * @return SchemaManager
      */
     protected function getSchemaManager()
     {
@@ -47,7 +52,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @return Doctrine\ODM\MongoDB\DocumentManager
+     * @return \Doctrine\ODM\MongoDB\DocumentManager
      */
     protected function getDocumentManager()
     {
@@ -55,7 +60,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
      */
     protected function getMetadataFactory()
     {

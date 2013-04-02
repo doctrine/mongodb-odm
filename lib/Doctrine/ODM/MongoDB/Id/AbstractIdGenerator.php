@@ -33,7 +33,8 @@ abstract class AbstractIdGenerator
     /**
      * Generates an identifier for a document.
      *
-     * @param Doctrine\ODM\MongoDB\DocumentManager $document
+     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param object $document
      * @return mixed
      */
     abstract public function generate(DocumentManager $dm, $document);

@@ -31,12 +31,12 @@ class MappingException extends BaseMappingException
 {
     public static function typeExists($name)
     {
-        return new self('Type '.$name.' already exists.');
+        return new self('Type ' . $name . ' already exists.');
     }
 
     public static function typeNotFound($name)
     {
-        return new self('Type to be overwritten '.$name.' does not exist.');
+        return new self('Type to be overwritten ' . $name . ' does not exist.');
     }
 
     public static function mappingNotFound($className, $fieldName)
@@ -46,7 +46,7 @@ class MappingException extends BaseMappingException
 
     public static function duplicateFieldMapping($document, $fieldName)
     {
-        return new self('Property "'.$fieldName.'" in "'.$document.'" was already declared, but it must be declared only once');
+        return new self('Property "' . $fieldName . '" in "' . $document . '" was already declared, but it must be declared only once');
     }
 
     /**
@@ -60,7 +60,7 @@ class MappingException extends BaseMappingException
     public static function invalidClassInDiscriminatorMap($className, $owningClass)
     {
         return new self(
-            "Document class '$className' used in the discriminator map of class '$owningClass' ".
+            "Document class '$className' used in the discriminator map of class '$owningClass' " .
             "does not exist."
         );
     }
@@ -72,7 +72,7 @@ class MappingException extends BaseMappingException
 
     public static function classIsNotAValidDocument($className)
     {
-        return new self('Class '.$className.' is not a valid document or mapped super class.');
+        return new self('Class ' . $className . ' is not a valid document or mapped super class.');
     }
 
     /**
@@ -82,33 +82,56 @@ class MappingException extends BaseMappingException
      *
      * @param string $document The document's name
      * @param \ReflectionException $previousException
+     * @return \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public static function reflectionFailure($document, \ReflectionException $previousException)
     {
         return new self('An error occurred in ' . $document, 0, $previousException);
     }
 
+    /**
+     * @param string $documentName
+     * @return MappingException
+     */
     public static function identifierRequired($documentName)
     {
         return new self("No identifier/primary key specified for Document '$documentName'."
-                . " Every Document must have an identifier/primary key.");
+            . " Every Document must have an identifier/primary key.");
     }
 
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
     public static function missingIdentifierField($className, $fieldName)
     {
         return new self("The identifier $fieldName is missing for a query of " . $className);
     }
-    
+
+    /**
+     * @param string $className
+     * @return MappingException
+     */
     public static function missingIdGeneratorClass($className)
     {
         return new self("The class-option for the custom ID generator is missing in class $className.");
     }
-    
+
+    /**
+     * @param string $className
+     * @return MappingException
+     */
     public static function classIsNotAValidGenerator($className)
     {
         return new self("The class $className if not a valid ID generator of type AbstractIdGenerator.");
     }
-    
+
+    /**
+     * @param string $className
+     * @param string $optionName
+     * @return MappingException
+     */
     public static function missingGeneratorSetter($className, $optionName)
     {
         return new self("The class $className is missing a setter for the option $optionName.");

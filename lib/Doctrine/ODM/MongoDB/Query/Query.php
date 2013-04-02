@@ -19,17 +19,17 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
+use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\Database;
+use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
 use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LoggableCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\ODM\MongoDB\EagerCursor;
-use Doctrine\ODM\MongoDB\Cursor;
-use Doctrine\MongoDB\Database;
-use Doctrine\MongoDB\Collection;
-use Doctrine\ODM\MongoDB\LoggableCursor;
 
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
@@ -85,6 +85,19 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     private $requireIndexes;
 
+    /**
+     * @param DocumentManager $dm
+     * @param ClassMetadata $class
+     * @param Database $database
+     * @param Collection $collection
+     * @param array $query
+     * @param array $options
+     * @param string $cmd
+     * @param bool $hydrate
+     * @param bool $refresh
+     * @param array $primers
+     * @param null $requireIndexes
+     */
     public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query = array(), array $options = array(), $cmd = '$', $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
     {
         parent::__construct($database, $collection, $query, $options, $cmd);
@@ -156,7 +169,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     {
         $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {
-            if (!$this->collection->isFieldIndexed($field)) {
+            if ( ! $this->collection->isFieldIndexed($field)) {
                 return false;
             }
         }
@@ -173,7 +186,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $unindexedFields = array();
         $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {
-            if (!$this->collection->isFieldIndexed($field)) {
+            if ( ! $this->collection->isFieldIndexed($field)) {
                 $unindexedFields[] = $field;
             }
         }
@@ -183,20 +196,21 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Execute the query and returns the results.
      *
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @return mixed
      */
     public function execute()
     {
         $uow = $this->dm->getUnitOfWork();
 
-        if ($this->isIndexRequired() && !$this->isIndexed()) {
+        if ($this->isIndexRequired() && ! $this->isIndexed()) {
             throw MongoDBException::queryNotIndexed($this->class->name, $this->getUnindexedFields());
         }
 
         $this->query['query'] = array_merge(
-            $this->query['query'], 
+            $this->query['query'],
             $this->dm->getFilterCollection()->getFilterCriteria($this->class)
-        );  
+        );
         $results = parent::execute();
 
         $hints = array();
@@ -254,6 +268,9 @@ class Query extends \Doctrine\MongoDB\Query\Query
         return $results;
     }
 
+    /**
+     * @return bool|null
+     */
     private function isIndexRequired()
     {
         if ($this->class->requireIndexes && $this->requireIndexes !== false) {
@@ -262,6 +279,11 @@ class Query extends \Doctrine\MongoDB\Query\Query
         return $this->requireIndexes !== null ? $this->requireIndexes : false;
     }
 
+    /**
+     * @param BaseCursor $baseCursor
+     * @param array $hints
+     * @return Cursor|LoggableCursor
+     */
     private function wrapCursor(BaseCursor $baseCursor, array $hints)
     {
         if ($baseCursor instanceof BaseLoggableCursor) {

@@ -37,9 +37,9 @@ use Doctrine\ODM\MongoDB\Query\Query;
 class Cursor extends BaseCursor
 {
     /**
-     * The Doctrine\MongoDB\Cursor this object is wrapping
+     * The \Doctrine\MongoDB\Cursor this object is wrapping
      *
-     * @var Doctrine\MongoDB\Cursor $baseCursor
+     * @var \Doctrine\MongoDB\Cursor $baseCursor
      */
     private $baseCursor;
 
@@ -60,14 +60,14 @@ class Cursor extends BaseCursor
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
-     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     * @var UnitOfWork
      */
     private $unitOfWork;
 
     /**
      * The ClassMetadata instance.
      *
-     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @var Mapping\ClassMetadata
      */
     private $class;
 
@@ -83,7 +83,7 @@ class Cursor extends BaseCursor
     /**
      * Gets the base cursor.
      *
-     * @return Doctrine\MongoDB\Cursor $baseCursor
+     * @return \Doctrine\MongoDB\Cursor $baseCursor
      */
     public function getBaseCursor()
     {
@@ -134,6 +134,7 @@ class Cursor extends BaseCursor
      * Set whether to hydrate the documents to objects or not.
      *
      * @param boolean $bool
+     * @return self
      */
     public function hydrate($bool = true)
     {
@@ -145,6 +146,7 @@ class Cursor extends BaseCursor
      * Sets whether to refresh the documents data if it already exists in the identity map.
      *
      * @param boolean $bool
+     * @return self
      */
     public function refresh($bool = true)
     {

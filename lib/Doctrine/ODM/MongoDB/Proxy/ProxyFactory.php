@@ -91,7 +91,7 @@ class ProxyFactory
     {
         $fqn = self::generateProxyClassName($className, $this->proxyNamespace);
 
-        if (! class_exists($fqn, false)) {
+        if ( ! class_exists($fqn, false)) {
             $fileName = $this->getProxyFileName($className);
             if ($this->autoGenerate) {
                 $this->generateProxyClass($this->dm->getClassMetadata($className), $fileName, self::$proxyClassTemplate);
@@ -148,9 +148,10 @@ class ProxyFactory
     /**
      * Generates a proxy class file.
      *
-     * @param $class
-     * @param $proxyClassName
-     * @param $file The path of the file to write to.
+     * @param ClassMetadata $class
+     * @param string $fileName
+     * @param string $file The path of the file to write to.
+     * @throws ProxyException
      */
     private function generateProxyClass($class, $fileName, $file)
     {
@@ -160,8 +161,11 @@ class ProxyFactory
 
         $placeholders = array(
             '<namespace>',
-            '<proxyClassName>', '<className>',
-            '<methods>', '<sleepImpl>', '<cloneImpl>'
+            '<proxyClassName>',
+            '<className>',
+            '<methods>',
+            '<sleepImpl>',
+            '<cloneImpl>'
         );
 
         $className = ltrim($class->name, '\\');
@@ -187,7 +191,7 @@ class ProxyFactory
             if (false === @mkdir($parentDirectory, 0775, true)) {
                 throw ProxyException::proxyDirectoryNotWritable();
             }
-        } else if ( ! is_writable($parentDirectory)) {
+        } elseif ( ! is_writable($parentDirectory)) {
             throw ProxyException::proxyDirectoryNotWritable();
         }
 
@@ -206,7 +210,7 @@ class ProxyFactory
 
         $methodNames = array();
         foreach ($class->reflClass->getMethods() as $method) {
-            /* @var $method ReflectionMethod */
+            /* @var $method \ReflectionMethod */
             if ($method->isConstructor() || in_array(strtolower($method->getName()), array("__sleep", "__clone")) || isset($methodNames[$method->getName()])) {
                 continue;
             }
@@ -226,13 +230,13 @@ class ProxyFactory
                         $firstParam = false;
                     } else {
                         $parameterString .= ', ';
-                        $argumentString  .= ', ';
+                        $argumentString .= ', ';
                     }
 
                     // We need to pick the type hint class too
                     if (($paramClass = $param->getClass()) !== null) {
                         $parameterString .= '\\' . $paramClass->getName() . ' ';
-                    } else if ($param->isArray()) {
+                    } elseif ($param->isArray()) {
                         $parameterString .= 'array ';
                     }
 
@@ -241,7 +245,7 @@ class ProxyFactory
                     }
 
                     $parameterString .= '$' . $param->getName();
-                    $argumentString  .= '$' . $param->getName();
+                    $argumentString .= '$' . $param->getName();
 
                     if ($param->isDefaultValueAvailable()) {
                         $parameterString .= ' = ' . var_export($param->getDefaultValue(), true);
@@ -275,7 +279,7 @@ class ProxyFactory
      * ID is interesting for the userland code (for example in views that
      * generate links to the document, but do not display anything else).
      *
-     * @param ReflectionMethod $method
+     * @param \ReflectionMethod $method
      * @param ClassMetadata $class
      * @return bool
      */
@@ -307,7 +311,7 @@ class ProxyFactory
     /**
      * Generates the code for the __sleep method for a proxy class.
      *
-     * @param $class
+     * @param ClassMetadata $class
      * @return string
      */
     private function generateSleep(ClassMetadata $class)
@@ -410,6 +414,6 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
 
     public static function generateProxyClassName($className, $proxyNamespace)
     {
-        return rtrim($proxyNamespace, '\\') . '\\'.self::MARKER.'\\' . ltrim($className, '\\');
+        return rtrim($proxyNamespace, '\\') . '\\' . self::MARKER . '\\' . ltrim($className, '\\');
     }
 }

@@ -93,7 +93,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         }
 
-        if (!$documentAnnots) {
+        if ( ! $documentAnnots) {
             throw MappingException::classIsNotAValidDocument($className);
         }
 
@@ -128,7 +128,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         foreach ($reflClass->getProperties() as $property) {
-            if ($class->isMappedSuperclass && !$property->isPrivate()) {
+            if ($class->isMappedSuperclass && ! $property->isPrivate()) {
                 continue;
             }
 

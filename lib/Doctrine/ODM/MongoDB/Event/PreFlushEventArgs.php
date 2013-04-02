@@ -30,7 +30,7 @@ namespace Doctrine\ODM\MongoDB\Event;
 class PreFlushEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
-     * @var Doctrine\ODM\MongoDB\DocumentManager
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
      */
     private $dm;
 
@@ -40,7 +40,7 @@ class PreFlushEventArgs extends \Doctrine\Common\EventArgs
     }
 
     /**
-     * @return Doctrine\ODM\MongoDB\DocumentManager
+     * @return \Doctrine\ODM\MongoDB\DocumentManager
      */
     public function getDocumentManager()
     {

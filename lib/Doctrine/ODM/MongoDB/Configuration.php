@@ -19,9 +19,10 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 /**
  * Configuration class for the DocumentManager. When setting up your DocumentManager
@@ -79,7 +80,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Set the document alias map
      *
-     * @param array $documentAliasMap
+     * @param array $documentNamespaces
      * @return void
      */
     public function setDocumentNamespaces(array $documentNamespaces)
@@ -107,9 +108,9 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function newDefaultAnnotationDriver($paths = array())
     {
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $reader = new AnnotationReader();
 
-        return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, (array) $paths);
+        return new AnnotationDriver($reader, (array)$paths);
     }
 
     /**
@@ -131,7 +132,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getMetadataCacheImpl()
     {
         return isset($this->attributes['metadataCacheImpl']) ?
-                $this->attributes['metadataCacheImpl'] : null;
+            $this->attributes['metadataCacheImpl'] : null;
     }
 
     /**
@@ -162,7 +163,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getProxyDir()
     {
         return isset($this->attributes['proxyDir']) ?
-                $this->attributes['proxyDir'] : null;
+            $this->attributes['proxyDir'] : null;
     }
 
     /**
@@ -174,7 +175,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getAutoGenerateProxyClasses()
     {
         return isset($this->attributes['autoGenerateProxyClasses']) ?
-                $this->attributes['autoGenerateProxyClasses'] : true;
+            $this->attributes['autoGenerateProxyClasses'] : true;
     }
 
     /**
@@ -196,7 +197,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getProxyNamespace()
     {
         return isset($this->attributes['proxyNamespace']) ?
-                $this->attributes['proxyNamespace'] : null;
+            $this->attributes['proxyNamespace'] : null;
     }
 
     /**
@@ -227,7 +228,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getHydratorDir()
     {
         return isset($this->attributes['hydratorDir']) ?
-                $this->attributes['hydratorDir'] : null;
+            $this->attributes['hydratorDir'] : null;
     }
 
     /**
@@ -239,7 +240,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getAutoGenerateHydratorClasses()
     {
         return isset($this->attributes['autoGenerateHydratorClasses']) ?
-                $this->attributes['autoGenerateHydratorClasses'] : true;
+            $this->attributes['autoGenerateHydratorClasses'] : true;
     }
 
     /**
@@ -261,7 +262,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getHydratorNamespace()
     {
         return isset($this->attributes['hydratorNamespace']) ?
-                $this->attributes['hydratorNamespace'] : null;
+            $this->attributes['hydratorNamespace'] : null;
     }
 
     /**
@@ -300,7 +301,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Set the class metadata factory class name.
      *
-     * @param string $cmf
+     * @param string $cmfName
      */
     public function setClassMetadataFactoryName($cmfName)
     {

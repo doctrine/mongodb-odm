@@ -19,9 +19,9 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
  * PersistenceBuilder builds the queries used by the persisters to update and insert
@@ -36,22 +36,23 @@ class PersistenceBuilder
     /**
      * The DocumentManager instance.
      *
-     * @var Doctrine\ODM\MongoDB\DocumentManager
+     * @var DocumentManager
      */
     private $dm;
 
     /**
      * The UnitOfWork instance.
      *
-     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     * @var UnitOfWork
      */
     private $uow;
 
     /**
      * Initializes a new PersistenceBuilder instance.
      *
-     * @param Doctrine\ODM\MongoDB\DocumentManager $dm
-     * @param Doctrine\ODM\MongoDB\UnitOfWork $uow
+     * @param DocumentManager $dm
+     * @param UnitOfWork $uow
+     * @param string $cmd
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow, $cmd)
     {
@@ -419,6 +420,10 @@ class PersistenceBuilder
         return $embeddedDocumentValue;
     }
 
+    /**
+     * @param object $document
+     * @return boolean
+     */
     private function isScheduledForInsert($document)
     {
         return $this->uow->isScheduledForInsert($document)

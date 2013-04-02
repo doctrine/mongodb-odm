@@ -44,7 +44,7 @@ class ClassMetadata extends ClassMetadataInfo
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var array
+     * @var \ReflectionProperty[]
      */
     public $reflFields = array();
 
@@ -73,6 +73,7 @@ class ClassMetadata extends ClassMetadataInfo
      * Map a field.
      *
      * @param array $mapping The mapping information.
+     * @return void
      */
     public function mapField(array $mapping)
     {

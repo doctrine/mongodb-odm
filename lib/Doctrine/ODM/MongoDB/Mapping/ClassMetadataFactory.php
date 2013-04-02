@@ -22,11 +22,11 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Events;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -187,6 +187,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Validates the identifier mapping.
      *
      * @param ClassMetadata $class
+     * @throws MappingException
      */
     protected function validateIdentifier($class)
     {
@@ -199,7 +200,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Creates a new ClassMetadata instance for the given class name.
      *
      * @param string $className
-     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     protected function newClassMetadataInstance($className)
     {
@@ -242,23 +243,23 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setIdGenerator($alnumGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
-                if(empty($idGenOptions['class'])) {
+                if (empty($idGenOptions['class'])) {
                     throw MappingException::missingIdGeneratorClass($class->name);
                 }
-                
+
                 $customGenerator = new $idGenOptions['class'];
                 unset($idGenOptions['class']);
-                if(!$customGenerator instanceof \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator) {
+                if ( ! $customGenerator instanceof \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator) {
                     throw MappingException::classIsNotAValidGenerator(get_class($customGenerator));
                 }
-                
+
                 $methods = get_class_methods($customGenerator);
-                foreach($idGenOptions as $name => $value) {
+                foreach ($idGenOptions as $name => $value) {
                     $method = 'set' . ucfirst($name);
-                    if(!in_array($method, $methods)) {
+                    if ( ! in_array($method, $methods)) {
                         throw MappingException::missingGeneratorSetter(get_class($customGenerator), $name);
                     }
-                    
+
                     $customGenerator->$method($value);
                 }
                 $class->setIdGenerator($customGenerator);
@@ -273,8 +274,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited fields to the subclass mapping.
      *
-     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $subClass
-     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $parentClass
+     * @param ClassMetadata $subClass
+     * @param ClassMetadata $parentClass
      */
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
@@ -295,8 +296,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited indexes to the subclass mapping.
      *
-     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $subClass
-     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $parentClass
+     * @param ClassMetadata $subClass
+     * @param ClassMetadata $parentClass
      */
     private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass)
     {

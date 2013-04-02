@@ -159,7 +159,8 @@ class FilterCollection
      * @param array $criteria
      * @return array
      */
-    public function getFilterCriteria(ClassMetadata $metaData){
+    public function getFilterCriteria(ClassMetadata $metaData)
+    {
         $criteria = array();
         foreach ($this->enabledFilters as $filter) {
             $criteria = array_merge($criteria, $filter->addFilterCriteria($metaData));
