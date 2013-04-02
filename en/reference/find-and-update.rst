@@ -30,7 +30,6 @@ For example you can update a job and return it:
         ->sort('priority', 'desc')
     
         // Update found job
-        ->update()
         ->field('started')->set(new \MongoDate())
         ->getQuery()
         ->execute();
@@ -51,7 +50,6 @@ Here is an example where we return the new updated job document:
         ->sort('priority', 'desc')
     
         // Update found job
-        ->update()
         ->field('started')->set(new \MongoDate())
         ->field('in_progress')->set(true)
         ->getQuery()
