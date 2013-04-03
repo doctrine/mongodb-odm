@@ -19,16 +19,45 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\Common\EventManager;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\MongoDB\Connection;
+use Doctrine\MongoDB\Connection;
+use Doctrine\MongoDB\Connection;
+use Doctrine\MongoDB\Connection;
+use Doctrine\MongoDB\Connection;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Mapping\Driver\PHPDriver;
-use Doctrine\MongoDB\Connection;
-use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\EventManager;
-use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
+use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
+use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
+use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
+use Doctrine\ODM\MongoDB\Query\FilterCollection;
+use Doctrine\ODM\MongoDB\Query\FilterCollection;
+use Doctrine\ODM\MongoDB\Query\FilterCollection;
+use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 
 /**
@@ -84,7 +113,7 @@ class DocumentManager implements ObjectManager
     /**
      * The event manager that is the central point of the event system.
      *
-     * @var Doctrine\Common\EventManager
+     * @var \Doctrine\Common\EventManager
      */
     private $eventManager;
 
@@ -98,7 +127,7 @@ class DocumentManager implements ObjectManager
     /**
      * SchemaManager instance
      *
-     * @var Doctrine\ODM\MongoDB\SchemaManager
+     * @var SchemaManager
      */
     private $schemaManager;
 
@@ -130,7 +159,6 @@ class DocumentManager implements ObjectManager
      */
     private $cmd;
 
-
     /**
      * Collection of query filters.
      *
@@ -146,12 +174,15 @@ class DocumentManager implements ObjectManager
      * @param Configuration|null $config
      * @param \Doctrine\Common\EventManager|null $eventManager
      */
-    protected function __construct(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
-    {
-        $this->config = $config ?: new Configuration();
-        $this->eventManager = $eventManager ?: new EventManager();
+    protected function __construct(
+        Connection $conn = null,
+        Configuration $config = null,
+        EventManager $eventManager = null
+    ) {
+        $this->config = $config ? : new Configuration();
+        $this->eventManager = $eventManager ? : new EventManager();
         $this->cmd = $this->config->getMongoCmd();
-        $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
+        $this->connection = $conn ? : new Connection(null, array(), $this->config, $this->eventManager);
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
@@ -164,21 +195,21 @@ class DocumentManager implements ObjectManager
         $hydratorDir = $this->config->getHydratorDir();
         $hydratorNs = $this->config->getHydratorNamespace();
         $this->hydratorFactory = new HydratorFactory(
-          $this,
-          $this->eventManager,
-          $hydratorDir,
-          $hydratorNs,
-          $this->config->getAutoGenerateHydratorClasses(),
-          $this->config->getMongoCmd()
+            $this,
+            $this->eventManager,
+            $hydratorDir,
+            $hydratorNs,
+            $this->config->getAutoGenerateHydratorClasses(),
+            $this->config->getMongoCmd()
         );
 
         $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory, $this->cmd);
         $this->hydratorFactory->setUnitOfWork($this->unitOfWork);
         $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory = new ProxyFactory($this,
-                $this->config->getProxyDir(),
-                $this->config->getProxyNamespace(),
-                $this->config->getAutoGenerateProxyClasses()
+            $this->config->getProxyDir(),
+            $this->config->getProxyNamespace(),
+            $this->config->getAutoGenerateProxyClasses()
         );
     }
 
@@ -202,8 +233,11 @@ class DocumentManager implements ObjectManager
      * @param \Doctrine\Common\EventManager|null $eventManager
      * @return DocumentManager
      */
-    public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
-    {
+    public static function create(
+        Connection $conn = null,
+        Configuration $config = null,
+        EventManager $eventManager = null
+    ) {
         return new DocumentManager($conn, $config, $eventManager);
     }
 
@@ -325,6 +359,7 @@ class DocumentManager implements ObjectManager
      * Returns the MongoCollection instance for a class.
      *
      * @param string $className The class name.
+     * @throws MongoDBException When the $className param is not mapped to a collection
      * @return \Doctrine\MongoDB\Collection
      */
     public function getDocumentCollection($className)
@@ -332,12 +367,12 @@ class DocumentManager implements ObjectManager
         $metadata = $this->metadataFactory->getMetadataFor($className);
         $collection = $metadata->getCollection();
 
-        if ( ! $collection) {
+        if (!$collection) {
             throw MongoDBException::documentNotMappedToCollection($className);
         }
 
         $db = $this->getDocumentDatabase($className);
-        if ( ! isset($this->documentCollections[$className])) {
+        if (!isset($this->documentCollections[$className])) {
             if ($metadata->isFile()) {
                 $this->documentCollections[$className] = $db->getGridFS($collection);
             } else {
@@ -382,6 +417,7 @@ class DocumentManager implements ObjectManager
      * this DocumentManager as NEW. Do not pass detached documents to the persist operation.
      *
      * @param object $document The instance to make managed and persistent.
+     * @throws \InvalidArgumentException When the given $document param is not an object
      */
     public function persist($document)
     {
@@ -399,6 +435,7 @@ class DocumentManager implements ObjectManager
      * or as a result of the flush operation.
      *
      * @param object $document The document instance to remove.
+     * @throws \InvalidArgumentException when the $document param is not an object
      */
     public function remove($document)
     {
@@ -414,6 +451,7 @@ class DocumentManager implements ObjectManager
      * overriding any local changes that have not yet been persisted.
      *
      * @param object $document The document to refresh.
+     * @throws \InvalidArgumentException
      */
     public function refresh($document)
     {
@@ -432,6 +470,7 @@ class DocumentManager implements ObjectManager
      * reference it.
      *
      * @param object $document The document to detach.
+     * @throws \InvalidArgumentException when the $document param is not an object
      */
     public function detach($document)
     {
@@ -447,6 +486,7 @@ class DocumentManager implements ObjectManager
      * The document passed to merge will not become associated/managed with this DocumentManager.
      *
      * @param object $document The detached document to merge into the persistence context.
+     * @throws \InvalidArgumentException if the $document param is not an object
      * @return object The managed copy of the document.
      */
     public function merge($document)
@@ -464,8 +504,7 @@ class DocumentManager implements ObjectManager
      * @param object $document
      * @param int $lockMode
      * @param int $lockVersion
-     * @throws LockException
-     * @throws LockException
+     * @throws \InvalidArgumentException
      */
     public function lock($document, $lockMode, $lockVersion = null)
     {
@@ -479,6 +518,7 @@ class DocumentManager implements ObjectManager
      * Releases a lock on the given document.
      *
      * @param object $document
+     * @throws \InvalidArgumentException if the $document param is not an object
      */
     public function unlock($document)
     {
@@ -521,6 +561,7 @@ class DocumentManager implements ObjectManager
      *
      * @param object $document
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
+     * @throws \InvalidArgumentException
      */
     public function flush($document = null, array $options = array())
     {
@@ -636,6 +677,7 @@ class DocumentManager implements ObjectManager
      * Determines whether a document instance is managed in this DocumentManager.
      *
      * @param object $document
+     * @throws \InvalidArgumentException When the $document param is not an object
      * @return boolean TRUE if this DocumentManager currently manages the given document, FALSE otherwise.
      */
     public function contains($document)
@@ -644,8 +686,8 @@ class DocumentManager implements ObjectManager
             throw new \InvalidArgumentException(gettype($document));
         }
         return $this->unitOfWork->isScheduledForInsert($document) ||
-               $this->unitOfWork->isInIdentityMap($document) &&
-               ! $this->unitOfWork->isScheduledForDelete($document);
+            $this->unitOfWork->isInIdentityMap($document) &&
+                !$this->unitOfWork->isScheduledForDelete($document);
     }
 
     /**
@@ -683,6 +725,7 @@ class DocumentManager implements ObjectManager
      * @param mixed $document A document object
      * @param array $referenceMapping Mapping for the field the references the document
      *
+     * @throws \InvalidArgumentException
      * @return array A DBRef array
      */
     public function createDBRef($document, array $referenceMapping = null)
@@ -709,9 +752,12 @@ class DocumentManager implements ObjectManager
         }
 
         // add a discriminator value if the referenced document is not mapped explicitly to a targetDocument
-        if ($referenceMapping && ! isset($referenceMapping['targetDocument'])) {
+        if ($referenceMapping && !isset($referenceMapping['targetDocument'])) {
             $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_name';
-            $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search($class->getName(), $referenceMapping['discriminatorMap']) : $class->getName();
+            $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search(
+                $class->getName(),
+                $referenceMapping['discriminatorMap']
+            ) : $class->getName();
             $dbRef[$discriminatorField] = $discriminatorValue;
         }
 

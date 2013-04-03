@@ -19,10 +19,26 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use InvalidArgumentException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use InvalidArgumentException;
+use InvalidArgumentException;
+use InvalidArgumentException;
+use InvalidArgumentException;
+use InvalidArgumentException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -84,12 +100,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     const GENERATOR_TYPE_NONE = 6;
 
 
-    const REFERENCE_ONE  = 1;
+    const REFERENCE_ONE = 1;
     const REFERENCE_MANY = 2;
-    const EMBED_ONE      = 3;
-    const EMBED_MANY     = 4;
-    const MANY           = 'many';
-    const ONE            = 'one';
+    const EMBED_ONE = 3;
+    const EMBED_MANY = 4;
+    const MANY = 'many';
+    const ONE = 'one';
 
     /* The inheritance mapping types */
     /**
@@ -265,7 +281,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
-     * @var AbstractIdGenerator
+     * @var \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator
      */
     public $idGenerator;
 
@@ -392,7 +408,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     public $reflClass;
 
@@ -411,11 +427,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Gets the ReflectionClass instance of the mapped class.
      *
-     * @return ReflectionClass
+     * @return \ReflectionClass
      */
     public function getReflectionClass()
     {
-        if ( ! $this->reflClass) {
+        if (!$this->reflClass) {
             $this->reflClass = new \ReflectionClass($this->name);
         }
         return $this->reflClass;
@@ -511,8 +527,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Dispatches the lifecycle event of the given document to the registered
      * lifecycle callbacks and lifecycle listeners.
      *
-     * @param string $event The lifecycle event.
-     * @param Document $document The Document on which the event occurred.
+     * @param $lifecycleEvent
+     * @param object $document The Document on which the event occurred.
+     * @param array $arguments
      */
     public function invokeLifecycleCallbacks($lifecycleEvent, $document, array $arguments = null)
     {
@@ -576,11 +593,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Sets the discriminator field name.
      *
      * @param string $discriminatorField
+     * @throws MappingException
      * @see getDiscriminatorField()
      */
     public function setDiscriminatorField($discriminatorField)
     {
-        if ( ! isset($discriminatorField['name']) && isset($discriminatorField['fieldName'])) {
+        if (!isset($discriminatorField['name']) && isset($discriminatorField['fieldName'])) {
             $discriminatorField['name'] = $discriminatorField['fieldName'];
         }
         if (isset($this->fieldMappings[$discriminatorField['name']])) {
@@ -594,6 +612,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
      *
      * @param array $map
+     * @throws MappingException
      */
     public function setDiscriminatorMap(array $map)
     {
@@ -605,7 +624,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             if ($this->name == $className) {
                 $this->discriminatorValue = $value;
             } else {
-                if ( ! class_exists($className)) {
+                if (!class_exists($className)) {
                     throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
                 }
                 if (is_subclass_of($className, $this->name)) {
@@ -647,22 +666,25 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function addIndex($keys, array $options = array())
     {
         $this->indexes[] = array(
-            'keys' => array_map(function($value) {
-                if ($value == 1 || $value == -1) {
-                    return (int) $value;
-                } elseif(is_string($value)) {
-                    $lower = strtolower($value);
-                    if ($lower === 'asc') {
-                        return 1;
-                    } elseif ($lower === 'desc') {
-                        return -1;
+            'keys' => array_map(
+                function ($value) {
+                    if ($value == 1 || $value == -1) {
+                        return (int)$value;
+                    } elseif (is_string($value)) {
+                        $lower = strtolower($value);
+                        if ($lower === 'asc') {
+                            return 1;
+                        } elseif ($lower === 'desc') {
+                            return -1;
+                        } else {
+                            return $value;
+                        }
                     } else {
                         return $value;
                     }
-                } else {
-                    return $value;
-                }
-            }, $keys),
+                },
+                $keys
+            ),
             'options' => $options
         );
     }
@@ -751,7 +773,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Gets a ReflectionProperty for a specific field of the mapped class.
      *
      * @param string $name
-     * @return ReflectionProperty
+     * @return \ReflectionProperty
      */
     public function getReflectionProperty($name)
     {
@@ -811,12 +833,14 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Sets the collection this Document is mapped to.
      *
-     * @param string $collection The collection name.
+     * @param $name
+     * @throws \InvalidArgumentException
+     * @internal param string $collection The collection name.
      */
     public function setCollection($name)
     {
         if (is_array($name)) {
-            if ( ! isset($name['name'])) {
+            if (!isset($name['name'])) {
                 throw new \InvalidArgumentException('A name key is required when passing an array to setCollection()');
             }
             $this->collectionCapped = isset($name['capped']) ? $name['capped'] : false;
@@ -905,7 +929,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function isFile()
     {
-        return $this->file ? true :false;
+        return $this->file ? true : false;
     }
 
     /**
@@ -952,16 +976,18 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Map a field.
      *
      * @param array $mapping The mapping information.
+     * @throws MappingException
+     * @return array
      */
     public function mapField(array $mapping)
     {
-        if ( ! isset($mapping['fieldName']) && isset($mapping['name'])) {
+        if (!isset($mapping['fieldName']) && isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
         }
-        if ( ! isset($mapping['fieldName'])) {
+        if (!isset($mapping['fieldName'])) {
             throw MappingException::missingFieldName($this->name);
         }
-        if ( ! isset($mapping['name'])) {
+        if (!isset($mapping['name'])) {
             $mapping['name'] = $mapping['fieldName'];
         }
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
@@ -970,7 +996,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ($this->discriminatorField['name'] === $mapping['fieldName']) {
             throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
-        if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
+        if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen(
+            $this->namespace
+        )
+        ) {
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
         }
 
@@ -985,7 +1014,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['cascade']) && is_string($mapping['cascade'])) {
             $mapping['cascade'] = array($mapping['cascade']);
         }
-        if (isset($mapping['cascade']) && in_array('all', (array) $mapping['cascade'])) {
+        if (isset($mapping['cascade']) && in_array('all', (array)$mapping['cascade'])) {
             unset($mapping['cascade']);
             $default = true;
         } else {
@@ -1020,7 +1049,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             if (isset($mapping['strategy'])) {
                 $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : array();
 
-                $generatorType = constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
+                $generatorType = constant(
+                    'Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($mapping['strategy'])
+                );
                 if ($generatorType !== self::GENERATOR_TYPE_AUTO) {
                     if (isset($this->generatorOptions['type'])) {
                         $mapping['type'] = $this->generatorOptions['type'];
@@ -1036,7 +1067,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 $this->generatorType = $generatorType;
             }
         }
-        if ( ! isset($mapping['nullable'])) {
+        if (!isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
         }
         if (isset($mapping['reference']) && $mapping['type'] === 'one') {
@@ -1225,7 +1256,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isSingleValuedReference($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
-                $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_ONE;
+            $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_ONE;
     }
 
     /**
@@ -1238,7 +1269,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isCollectionValuedReference($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
-                $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_MANY;
+            $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_MANY;
     }
 
     /**
@@ -1251,7 +1282,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isSingleValuedEmbed($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
-                $this->fieldMappings[$fieldName]['association'] === self::EMBED_ONE;
+            $this->fieldMappings[$fieldName]['association'] === self::EMBED_ONE;
     }
 
     /**
@@ -1264,13 +1295,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isCollectionValuedEmbed($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
-                $this->fieldMappings[$fieldName]['association'] === self::EMBED_MANY;
+            $this->fieldMappings[$fieldName]['association'] === self::EMBED_MANY;
     }
 
     /**
      * Sets the ID generator used to generate IDs for instances of this class.
      *
-     * @param AbstractIdGenerator $generator
+     * @param \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator $generator
      */
     public function setIdGenerator($generator)
     {
@@ -1346,7 +1377,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Get the document identifier object.
      *
      * @param string $document
-     * @return MongoId $id  The MongoID object.
+     * @return \MongoId $id  The MongoID object.
      */
     public function getIdentifierObject($document)
     {
@@ -1385,11 +1416,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Gets the mapping of a field.
      *
      * @param string $fieldName  The field name.
+     * @throws MappingException if the $fieldName is not found in the fieldMappings array
      * @return array  The field mapping.
      */
     public function getFieldMapping($fieldName)
     {
-        if ( ! isset($this->fieldMappings[$fieldName])) {
+        if (!isset($this->fieldMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
         return $this->fieldMappings[$fieldName];
@@ -1540,6 +1572,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * value to use depending on the column type.
      *
      * @param array $mapping   The version field mapping array
+     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function setVersionMapping(array &$mapping)
     {
@@ -1635,24 +1668,25 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Gets the type of a field.
      *
      * @param string $fieldName
-     * @return Doctrine\DBAL\Types\Type
+     * @return Types\Type
      */
     public function getTypeOfField($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]) ?
-                $this->fieldMappings[$fieldName]['type'] : null;
+            $this->fieldMappings[$fieldName]['type'] : null;
     }
 
     /**
      * Returns the target class name of the given association.
      *
      * @param string $assocName
+     * @throws \InvalidArgumentException
      * @return string
      */
     public function getAssociationTargetClass($assocName)
     {
-        if ( ! isset($this->associationMappings[$assocName])) {
-            throw new InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
+        if (!isset($this->associationMappings[$assocName])) {
+            throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
         }
 
         return $this->associationMappings[$assocName]['targetDocument'];
@@ -1660,19 +1694,21 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
     /**
      * @param string $fieldName
+     * @throws \BadMethodCallException Always throws exception.
      * @return bool
      */
     public function isAssociationInverseSide($fieldName)
     {
-        throw new \BadMethodCallException(__METHOD__.'() is not implemented yet.');
+        throw new \BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
     /**
      * @param string $fieldName
+     * @throws \BadMethodCallException Always throws exception.
      * @return string
      */
     public function getAssociationMappedByTargetField($fieldName)
     {
-        throw new \BadMethodCallException(__METHOD__.'() is not implemented yet.');
+        throw new \BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 }

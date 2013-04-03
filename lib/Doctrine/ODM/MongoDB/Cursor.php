@@ -20,9 +20,29 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\MongoDB\Collection;
+use Doctrine\MongoDB\Collection;
+use Doctrine\MongoDB\Collection;
+use Doctrine\MongoDB\Collection;
+use Doctrine\MongoDB\Collection;
+use Doctrine\MongoDB\Connection;
+use Doctrine\MongoDB\Connection;
+use Doctrine\MongoDB\Connection;
+use Doctrine\MongoDB\Connection;
 use Doctrine\MongoDB\Connection;
 use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Query\Query;
 
 /**
@@ -37,9 +57,9 @@ use Doctrine\ODM\MongoDB\Query\Query;
 class Cursor extends BaseCursor
 {
     /**
-     * The Doctrine\MongoDB\Cursor this object is wrapping
+     * The \Doctrine\MongoDB\Cursor this object is wrapping
      *
-     * @var Doctrine\MongoDB\Cursor $baseCursor
+     * @var \Doctrine\MongoDB\Cursor $baseCursor
      */
     private $baseCursor;
 
@@ -60,20 +80,28 @@ class Cursor extends BaseCursor
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
-     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     * @var UnitOfWork
      */
     private $unitOfWork;
 
     /**
      * The ClassMetadata instance.
      *
-     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @var Mapping\ClassMetadata
      */
     private $class;
 
     /** @override */
-    public function __construct(Connection $connection, Collection $collection, UnitOfWork $uow, ClassMetadata $class, BaseCursor $baseCursor, array $query = array(), array $fields = array(), $numRetries = 0)
-    {
+    public function __construct(
+        Connection $connection,
+        Collection $collection,
+        UnitOfWork $uow,
+        ClassMetadata $class,
+        BaseCursor $baseCursor,
+        array $query = array(),
+        array $fields = array(),
+        $numRetries = 0
+    ) {
         parent::__construct($connection, $collection, $baseCursor->getMongoCursor(), $query, $fields, $numRetries);
         $this->baseCursor = $baseCursor;
         $this->unitOfWork = $uow;
@@ -83,7 +111,7 @@ class Cursor extends BaseCursor
     /**
      * Gets the base cursor.
      *
-     * @return Doctrine\MongoDB\Cursor $baseCursor
+     * @return \Doctrine\MongoDB\Cursor $baseCursor
      */
     public function getBaseCursor()
     {
@@ -134,6 +162,7 @@ class Cursor extends BaseCursor
      * Set whether to hydrate the documents to objects or not.
      *
      * @param boolean $bool
+     * @return $this
      */
     public function hydrate($bool = true)
     {
@@ -145,6 +174,7 @@ class Cursor extends BaseCursor
      * Sets whether to refresh the documents data if it already exists in the identity map.
      *
      * @param boolean $bool
+     * @return $this
      */
     public function refresh($bool = true)
     {

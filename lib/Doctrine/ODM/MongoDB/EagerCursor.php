@@ -20,7 +20,19 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
+use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
+use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
+use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
+use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Query\Query;
 
 
@@ -154,6 +166,7 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
 
     /**
      * Get the current element
+     *
      * @see http://php.net/class.iterator.php
      * @return mixed|null|object
      */
@@ -169,10 +182,11 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
 
     /**
      * Get the key of the current element
+     *
      * @see http://php.net/class.iterator.php
      * @return mixed
      */
-    public function key() 
+    public function key()
     {
         $this->initialize();
         return key($this->data);
@@ -180,10 +194,11 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
 
     /**
      * Advance the pointer of the iterator
+     *
      * @see http://php.net/class.iterator.php
      * @return mixed|void
      */
-    public function next() 
+    public function next()
     {
         $this->initialize();
         return next($this->data);
@@ -224,7 +239,7 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
     /**
      * Get a result from the cursor
      *
-     * @return mixed|null|object
+     * @return mixed
      */
     public function getSingleResult()
     {

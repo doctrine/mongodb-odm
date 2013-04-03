@@ -20,6 +20,10 @@
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\LockException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -44,7 +48,7 @@ class ClassMetadata extends ClassMetadataInfo
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var array
+     * @var \ReflectionProperty[]
      */
     public $reflFields = array();
 
@@ -73,6 +77,7 @@ class ClassMetadata extends ClassMetadataInfo
      * Map a field.
      *
      * @param array $mapping The mapping information.
+     * @return void
      */
     public function mapField(array $mapping)
     {

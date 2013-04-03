@@ -20,8 +20,15 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Collections\Collection as BaseCollection;
+use Doctrine\Common\Collections\Collection as BaseCollection;
+use Doctrine\Common\Collections\Collection as BaseCollection;
+use Doctrine\Common\Collections\Collection as BaseCollection;
+use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -42,6 +49,9 @@ class PersistentCollection implements BaseCollection
 
     private $owner;
 
+    /**
+     * @var array
+     */
     private $mapping;
 
     /**
@@ -62,26 +72,27 @@ class PersistentCollection implements BaseCollection
     /**
      * The wrapped Collection instance.
      *
-     * @var Collection
+     * @var BaseCollection
      */
     private $coll;
 
     /**
      * The DocumentManager that manages the persistence of the collection.
      *
-     * @var Doctrine\ODM\MongoDB\DocumentManager
+     * @var DocumentManager
      */
     private $dm;
 
     /**
      * The UnitOfWork that manages the persistence of the collection.
      *
-     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     * @var UnitOfWork
      */
     private $uow;
 
     /**
      * Mongo command prefix
+     *
      * @var string
      */
     private $cmd;
@@ -100,18 +111,24 @@ class PersistentCollection implements BaseCollection
      */
     private $hints = array();
 
+    /**
+     * @param BaseCollection $coll
+     * @param DocumentManager $dm
+     * @param UnitOfWork $uow
+     * @param $cmd
+     */
     public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow, $cmd)
     {
         $this->coll = $coll;
-        $this->dm   = $dm;
-        $this->uow  = $uow;
-        $this->cmd  = $cmd;
+        $this->dm = $dm;
+        $this->uow = $uow;
+        $this->cmd = $cmd;
     }
 
     /**
      * Sets the document manager and unit of work (used during merge operations).
      *
-     * @param type $dm
+     * @param DocumentManager $dm
      */
     public function setDocumentManager(DocumentManager $dm)
     {
@@ -165,7 +182,7 @@ class PersistentCollection implements BaseCollection
      */
     public function initialize()
     {
-        if ( ! $this->initialized && $this->mapping) {
+        if (!$this->initialized && $this->mapping) {
             if ($this->isDirty) {
                 // Has NEW objects added through add(). Remember them.
                 $newObjects = $this->coll->toArray();
@@ -205,7 +222,8 @@ class PersistentCollection implements BaseCollection
             $this->mapping !== null &&
             $this->mapping['isOwningSide'] &&
             $this->owner &&
-            $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
+            $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()
+        ) {
             $this->uow->scheduleForDirtyCheck($this->owner);
         }
     }
@@ -237,7 +255,7 @@ class PersistentCollection implements BaseCollection
      * describes the association between the owner and the elements of the collection.
      *
      * @param object $document
-     * @param AssociationMapping $mapping
+     * @param array $mapping
      */
     public function setOwner($document, array $mapping)
     {
@@ -285,8 +303,13 @@ class PersistentCollection implements BaseCollection
      */
     public function getDeleteDiff()
     {
-        return array_udiff_assoc($this->snapshot, $this->coll->toArray(),
-                function($a, $b) {return $a === $b ? 0 : 1;});
+        return array_udiff_assoc(
+            $this->snapshot,
+            $this->coll->toArray(),
+            function ($a, $b) {
+                return $a === $b ? 0 : 1;
+            }
+        );
     }
 
     /**
@@ -297,8 +320,13 @@ class PersistentCollection implements BaseCollection
      */
     public function getInsertDiff()
     {
-        return array_udiff_assoc($this->coll->toArray(), $this->snapshot,
-                function($a, $b) {return $a === $b ? 0 : 1;});
+        return array_udiff_assoc(
+            $this->coll->toArray(),
+            $this->snapshot,
+            function ($a, $b) {
+                return $a === $b ? 0 : 1;
+            }
+        );
     }
 
     /**
@@ -388,6 +416,7 @@ class PersistentCollection implements BaseCollection
         }
         return $removed;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -610,10 +639,10 @@ class PersistentCollection implements BaseCollection
      */
     public function offsetSet($offset, $value)
     {
-        if ( ! isset($offset)) {
+        if (!isset($offset)) {
             return $this->add($value);
         }
-        return $this->set($offset, $value);
+        $this->set($offset, $value);
     }
 
     /**

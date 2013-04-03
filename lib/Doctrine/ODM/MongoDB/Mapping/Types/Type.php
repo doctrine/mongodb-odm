@@ -20,6 +20,10 @@
 namespace Doctrine\ODM\MongoDB\Mapping\Types;
 
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
  * The Type interface.
@@ -34,27 +38,27 @@ abstract class Type
      * Array of string types mapped to their type class.
      */
     private static $typesMap = array(
-        'id' => 'Doctrine\ODM\MongoDB\Mapping\Types\IdType',
-        'int_id' => 'Doctrine\ODM\MongoDB\Mapping\Types\IntIdType',
-        'custom_id' => 'Doctrine\ODM\MongoDB\Mapping\Types\CustomIdType',
-        'boolean' => 'Doctrine\ODM\MongoDB\Mapping\Types\BooleanType',
-        'int' => 'Doctrine\ODM\MongoDB\Mapping\Types\IntType',
-        'float' => 'Doctrine\ODM\MongoDB\Mapping\Types\FloatType',
-        'string' => 'Doctrine\ODM\MongoDB\Mapping\Types\StringType',
-        'date' => 'Doctrine\ODM\MongoDB\Mapping\Types\DateType',
-        'key' => 'Doctrine\ODM\MongoDB\Mapping\Types\KeyType',
-        'timestamp' => 'Doctrine\ODM\MongoDB\Mapping\Types\TimestampType',
-        'bin' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataType',
-        'bin_func' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataFuncType',
-        'bin_uuid' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataUUIDType',
-        'bin_md5' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataMD5Type',
+        'id'         => 'Doctrine\ODM\MongoDB\Mapping\Types\IdType',
+        'int_id'     => 'Doctrine\ODM\MongoDB\Mapping\Types\IntIdType',
+        'custom_id'  => 'Doctrine\ODM\MongoDB\Mapping\Types\CustomIdType',
+        'boolean'    => 'Doctrine\ODM\MongoDB\Mapping\Types\BooleanType',
+        'int'        => 'Doctrine\ODM\MongoDB\Mapping\Types\IntType',
+        'float'      => 'Doctrine\ODM\MongoDB\Mapping\Types\FloatType',
+        'string'     => 'Doctrine\ODM\MongoDB\Mapping\Types\StringType',
+        'date'       => 'Doctrine\ODM\MongoDB\Mapping\Types\DateType',
+        'key'        => 'Doctrine\ODM\MongoDB\Mapping\Types\KeyType',
+        'timestamp'  => 'Doctrine\ODM\MongoDB\Mapping\Types\TimestampType',
+        'bin'        => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataType',
+        'bin_func'   => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataFuncType',
+        'bin_uuid'   => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataUUIDType',
+        'bin_md5'    => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataMD5Type',
         'bin_custom' => 'Doctrine\ODM\MongoDB\Mapping\Types\BinDataCustomType',
-        'file' => 'Doctrine\ODM\MongoDB\Mapping\Types\FileType',
-        'hash' => 'Doctrine\ODM\MongoDB\Mapping\Types\HashType',
+        'file'       => 'Doctrine\ODM\MongoDB\Mapping\Types\FileType',
+        'hash'       => 'Doctrine\ODM\MongoDB\Mapping\Types\HashType',
         'collection' => 'Doctrine\ODM\MongoDB\Mapping\Types\CollectionType',
-        'increment' => 'Doctrine\ODM\MongoDB\Mapping\Types\IncrementType',
-        'object_id' => 'Doctrine\ODM\MongoDB\Mapping\Types\ObjectIdType',
-        'raw' => 'Doctrine\ODM\MongoDB\Mapping\Types\RawType'
+        'increment'  => 'Doctrine\ODM\MongoDB\Mapping\Types\IncrementType',
+        'object_id'  => 'Doctrine\ODM\MongoDB\Mapping\Types\ObjectIdType',
+        'raw'        => 'Doctrine\ODM\MongoDB\Mapping\Types\RawType'
     );
 
     /**
@@ -111,15 +115,15 @@ abstract class Type
      * Get a Type instance.
      *
      * @param string $type The type name.
-     * @return Doctrine\ODM\MongoDB\Mapping\Types\Type $type
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
+     * @return \Doctrine\ODM\MongoDB\Mapping\Types\Type $type
      */
     public static function getType($type)
     {
-        if ( ! isset(self::$typesMap[$type])) {
+        if (!isset(self::$typesMap[$type])) {
             throw new \InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
         }
-        if ( ! isset(self::$types[$type])) {
+        if (!isset(self::$types[$type])) {
             $className = self::$typesMap[$type];
             self::$types[$type] = new $className;
         }
@@ -130,16 +134,18 @@ abstract class Type
      * Get a Type instance based on the type of the passed php variable.
      *
      * @param mixed $variable
-     * @return Doctrine\ODM\MongoDB\Mapping\Types\Type $type
-     * @throws InvalidArgumentException
+     * @return \Doctrine\ODM\MongoDB\Mapping\Types\Type $type
+     * @throws \InvalidArgumentException
      */
     public static function getTypeFromPHPVariable($variable)
     {
         if (is_object($variable)) {
             if ($variable instanceof \DateTime) {
                 return self::getType('date');
-            } else if ($variable instanceof \MongoId) {
-                return self::getType('id');
+            } else {
+                if ($variable instanceof \MongoId) {
+                    return self::getType('id');
+                }
             }
         } else {
             $type = gettype($variable);
@@ -199,7 +205,7 @@ abstract class Type
      */
     public static function overrideType($name, $className)
     {
-        if ( ! isset(self::$typesMap[$name])) {
+        if (!isset(self::$typesMap[$name])) {
             throw MappingException::typeNotFound($name);
         }
 

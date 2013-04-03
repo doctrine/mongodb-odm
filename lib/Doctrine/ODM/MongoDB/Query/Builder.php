@@ -20,8 +20,24 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Hydrator;
+use Doctrine\ODM\MongoDB\Hydrator;
+use Doctrine\ODM\MongoDB\Hydrator;
+use Doctrine\ODM\MongoDB\Hydrator;
 use Doctrine\ODM\MongoDB\Hydrator;
 use Doctrine\ODM\MongoDB\Query\Expr;
+use Doctrine\ODM\MongoDB\Query\Expr;
+use Doctrine\ODM\MongoDB\Query\Expr;
+use Doctrine\ODM\MongoDB\Query\Expr;
+use Doctrine\ODM\MongoDB\Query\Expr;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
@@ -76,15 +92,16 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * Construct a Builder
+     *
      * @param DocumentManager $dm
-     * @param \Doctrine\MongoDB\Collection $cmd
+     * @param string $cmd
      * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
      */
     public function __construct(DocumentManager $dm, $cmd, $documentName = null)
     {
-        $this->dm   = $dm;
+        $this->dm = $dm;
         $this->expr = new Expr($dm, $cmd);
-        $this->cmd  = $cmd;
+        $this->cmd = $cmd;
         if ($documentName !== null) {
             $this->setDocumentName($documentName);
         }

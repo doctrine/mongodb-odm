@@ -20,6 +20,14 @@
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
@@ -33,7 +41,8 @@ abstract class AbstractIdGenerator
     /**
      * Generates an identifier for a document.
      *
-     * @param Doctrine\ODM\MongoDB\DocumentManager $document
+     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param $document
      * @return mixed
      */
     abstract public function generate(DocumentManager $dm, $document);
