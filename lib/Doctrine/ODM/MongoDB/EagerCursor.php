@@ -21,6 +21,8 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Query\Query;
+
 
 /**
  * EagerCursor extends the default Doctrine\MongoDB\EagerCursor implementation.
@@ -47,14 +49,14 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
-     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     * @var \Doctrine\ODM\MongoDB\UnitOfWork
      */
     private $unitOfWork;
 
     /**
      * The ClassMetadata instance.
      *
-     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @var \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     private $class;
 
@@ -112,16 +114,25 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
         return $this->hints;
     }
 
+    /**
+     * @return Cursor|object
+     */
     public function getCursor()
     {
         return $this->cursor;
     }
 
+    /**
+     * @return bool
+     */
     public function isInitialized()
     {
         return $this->initialized;
     }
 
+    /**
+     * Get the full set of data and set as initialized (because it's eager)
+     */
     public function initialize()
     {
         if ($this->initialized === false) {
@@ -130,12 +141,22 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
         $this->initialized = true;
     }
 
+    /**
+     * Rewind the iterator
+     *
+     * @see http://php.net/class.iterator.php
+     */
     public function rewind()
     {
         $this->initialize();
         reset($this->data);
     }
-  
+
+    /**
+     * Get the current element
+     * @see http://php.net/class.iterator.php
+     * @return mixed|null|object
+     */
     public function current()
     {
         $this->initialize();
@@ -146,37 +167,65 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
         return $current ? $current : null;
     }
 
+    /**
+     * Get the key of the current element
+     * @see http://php.net/class.iterator.php
+     * @return mixed
+     */
     public function key() 
     {
         $this->initialize();
         return key($this->data);
     }
-  
+
+    /**
+     * Advance the pointer of the iterator
+     * @see http://php.net/class.iterator.php
+     * @return mixed|void
+     */
     public function next() 
     {
         $this->initialize();
         return next($this->data);
     }
-  
+
+    /**
+     * @return bool
+     */
     public function valid()
     {
         $this->initialize();
         $key = key($this->data);
-        return ($key !== NULL && $key !== FALSE);
+        return ($key !== null && $key !== false);
     }
 
+    /**
+     * Get the count of objects
+     *
+     * @return int
+     */
     public function count()
     {
         $this->initialize();
         return count($this->data);
     }
 
+    /**
+     * Turn this cursor into an array
+     *
+     * @return array
+     */
     public function toArray()
     {
         $this->initialize();
         return iterator_to_array($this);
     }
 
+    /**
+     * Get a result from the cursor
+     *
+     * @return mixed|null|object
+     */
     public function getSingleResult()
     {
         $this->initialize();
@@ -187,6 +236,7 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
      * Set whether to hydrate the documents to objects or not.
      *
      * @param boolean $bool
+     * @return $this return $this for fluent interface
      */
     public function hydrate($bool = true)
     {
@@ -197,7 +247,8 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
     /**
      * Sets whether to refresh the documents data if it already exists in the identity map.
      *
-     * @param boeolan $bool
+     * @param bool $bool
+     * @return $this return $this for fluent interface
      */
     public function refresh($bool = true)
     {
