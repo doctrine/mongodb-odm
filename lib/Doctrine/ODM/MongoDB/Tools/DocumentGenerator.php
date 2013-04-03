@@ -20,14 +20,6 @@
 namespace Doctrine\ODM\MongoDB\Tools;
 
 use Doctrine\Common\Util\Inflector;
-use Doctrine\Common\Util\Inflector;
-use Doctrine\Common\Util\Inflector;
-use Doctrine\Common\Util\Inflector;
-use Doctrine\Common\Util\Inflector;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**

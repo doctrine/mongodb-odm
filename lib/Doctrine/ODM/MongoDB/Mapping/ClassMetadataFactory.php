@@ -20,44 +20,12 @@
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**

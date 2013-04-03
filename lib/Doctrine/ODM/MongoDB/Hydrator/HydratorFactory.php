@@ -20,49 +20,13 @@
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\EventManager;
-use Doctrine\Common\EventManager;
-use Doctrine\Common\EventManager;
-use Doctrine\Common\EventManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
-use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
-use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
-use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Types\Type;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
@@ -391,9 +355,8 @@ EOF
 
         $className = $class->name;
         $namespace = $this->hydratorNamespace;
-        $code = sprintf(
-            <<<EOF
-            <?php
+        $code = sprintf(<<<EOF
+<?php
 
 namespace $namespace;
 

@@ -20,24 +20,8 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Hydrator;
-use Doctrine\ODM\MongoDB\Hydrator;
-use Doctrine\ODM\MongoDB\Hydrator;
-use Doctrine\ODM\MongoDB\Hydrator;
 use Doctrine\ODM\MongoDB\Hydrator;
 use Doctrine\ODM\MongoDB\Query\Expr;
-use Doctrine\ODM\MongoDB\Query\Expr;
-use Doctrine\ODM\MongoDB\Query\Expr;
-use Doctrine\ODM\MongoDB\Query\Expr;
-use Doctrine\ODM\MongoDB\Query\Expr;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**

@@ -20,15 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\Common\EventArgs;
-use Doctrine\Common\EventArgs;
-use Doctrine\Common\EventArgs;
-use Doctrine\Common\EventArgs;
-use Doctrine\Common\EventArgs;
-use Doctrine\ODM\MongoDB\DOcumentManager;
-use Doctrine\ODM\MongoDB\DOcumentManager;
-use Doctrine\ODM\MongoDB\DOcumentManager;
-use Doctrine\ODM\MongoDB\DOcumentManager;
-use Doctrine\ODM\MongoDB\DOcumentManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Provides event arguments for the onFlush event.

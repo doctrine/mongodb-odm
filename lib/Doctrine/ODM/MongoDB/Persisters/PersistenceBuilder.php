@@ -19,24 +19,8 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Types\Type;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**

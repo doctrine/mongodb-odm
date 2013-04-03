@@ -20,10 +20,6 @@
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
-use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
-use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
-use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
-use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
 
 /**
  * Class for all exceptions related to the Doctrine MongoDB ODM

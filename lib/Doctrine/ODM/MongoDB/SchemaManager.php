@@ -20,14 +20,6 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 
 class SchemaManager

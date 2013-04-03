@@ -20,24 +20,8 @@
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\SchemaManager;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**

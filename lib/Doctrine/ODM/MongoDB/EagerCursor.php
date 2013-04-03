@@ -20,21 +20,8 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
-use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
-use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
-use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
-use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Query\Query;
-
 
 /**
  * EagerCursor extends the default Doctrine\MongoDB\EagerCursor implementation.

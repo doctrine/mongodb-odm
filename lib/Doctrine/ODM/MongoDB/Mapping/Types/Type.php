@@ -20,10 +20,6 @@
 namespace Doctrine\ODM\MongoDB\Mapping\Types;
 
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
  * The Type interface.

@@ -20,24 +20,8 @@
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use InvalidArgumentException;
-use InvalidArgumentException;
-use InvalidArgumentException;
-use InvalidArgumentException;
 use InvalidArgumentException;
 
 /**

@@ -20,29 +20,9 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\MongoDB\Collection;
-use Doctrine\MongoDB\Collection;
-use Doctrine\MongoDB\Collection;
-use Doctrine\MongoDB\Collection;
-use Doctrine\MongoDB\Collection;
-use Doctrine\MongoDB\Connection;
-use Doctrine\MongoDB\Connection;
-use Doctrine\MongoDB\Connection;
-use Doctrine\MongoDB\Connection;
 use Doctrine\MongoDB\Connection;
 use Doctrine\MongoDB\Cursor as BaseCursor;
-use Doctrine\MongoDB\Cursor as BaseCursor;
-use Doctrine\MongoDB\Cursor as BaseCursor;
-use Doctrine\MongoDB\Cursor as BaseCursor;
-use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Query\Query;
 
 /**

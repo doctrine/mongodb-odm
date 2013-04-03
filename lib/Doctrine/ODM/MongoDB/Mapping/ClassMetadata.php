@@ -20,10 +20,6 @@
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\LockException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata

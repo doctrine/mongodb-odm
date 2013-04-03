@@ -20,14 +20,6 @@
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\Common\EventArgs;
-use Doctrine\Common\EventArgs;
-use Doctrine\Common\EventArgs;
-use Doctrine\Common\EventArgs;
-use Doctrine\Common\EventArgs;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**

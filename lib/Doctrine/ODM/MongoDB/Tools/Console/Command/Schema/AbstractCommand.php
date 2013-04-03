@@ -20,14 +20,6 @@
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\SchemaManager;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\Command;
 
 /**

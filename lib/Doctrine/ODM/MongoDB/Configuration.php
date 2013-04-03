@@ -20,24 +20,8 @@
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 /**
