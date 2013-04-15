@@ -39,28 +39,28 @@ class RemoveTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testUnsetFromEmbeddedCollection()
     {
+        $userRepository = $this->dm->getRepository('Documents\User');
+
         $user = new User();
-        $user->setUsername('jon');
-        $user->addGroup(new Group('test group 1'));
-        $user->addGroup(new Group('test group 2'));
-        $user->addGroup(new Group('test group 3'));
+        $user->addGroup(new Group('group1'));
+        $user->addGroup(new Group('group2'));
+        $user->addGroup(new Group('group3'));
 
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find('Documents\User', $user->getId());
+        $this->assertCount(3, $user->getGroups());
 
-        $groups = $user->getGroups();
-        unset($groups[0]);
-        $this->assertEquals(2, count($user->getGroups()));
+        $user = $userRepository->find($user->getId());
+        $user->getGroups()->remove(0);
 
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
+        $user = $userRepository->find($user->getId());
 
-        $this->assertEquals(2, count($user->getGroups()));
+        $this->assertCount(2, $user->getGroups());
     }
 
     public function testUnsetFromReferencedCollectionWithCascade()
