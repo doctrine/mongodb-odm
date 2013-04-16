@@ -486,7 +486,7 @@ Doctrine also supports executing atomic update queries using the `Query\Builder`
 * ``set($name, $value, $atomic = true)``
 * ``setNewObj($newObj)``
 * ``inc($name, $value)``
-* ``unsetField($`field)``
+* ``unsetField($field)``
 * ``push($field, $value)``
 * ``pushAll($field, array $valueArray)``
 * ``addToSet($field, $value)``
