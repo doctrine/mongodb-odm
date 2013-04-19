@@ -35,6 +35,9 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
     protected $groups;
 
+    /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}, strategy="addToSet") */
+    protected $uniqueGroups;
+
     /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="asc"}) */
     protected $sortedAscGroups;
 
@@ -213,6 +216,21 @@ class User extends BaseDocument
             }
         }
         return false;
+    }
+
+    public function getUniqueGroups()
+    {
+        return $this->uniqueGroups;
+    }
+
+    public function setUniqueGroups($groups)
+    {
+        $this->uniqueGroups = $groups;
+    }
+
+    public function addUniqueGroup(Group $group)
+    {
+        $this->uniqueGroups[] = $group;
     }
 
     public function getHits()

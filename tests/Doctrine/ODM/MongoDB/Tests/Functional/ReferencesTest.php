@@ -191,6 +191,62 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, count($groups));
     }
 
+    public function testManyReferenceWithAddToSetStrategy()
+    {
+        $user = new \Documents\User();
+        $user->addUniqueGroup($group1 = new Group('Group 1'));
+        $user->addUniqueGroup($group1);
+        $user->addUniqueGroup(new Group('Group 2'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $groups = $user->getUniqueGroups();
+        $this->assertEquals(3, count($groups));
+
+        $this->assertTrue($groups instanceof PersistentCollection);
+        $this->assertTrue($groups[0]->getId() !== '');
+        $this->assertTrue($groups[1]->getId() !== '');
+        $this->dm->clear();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('id')
+            ->equals($user->getId());
+        $query = $qb->getQuery();
+        $user2 = $query->getSingleResult();
+        $groups = $user2->getUniqueGroups();
+        $this->assertFalse($groups->isInitialized());
+
+        $groups->count();
+        $this->assertFalse($groups->isInitialized());
+
+        $groups->isEmpty();
+        $this->assertFalse($groups->isInitialized());
+
+        $this->assertEquals(2, count($groups));
+
+        $this->assertTrue($groups instanceof PersistentCollection);
+        $this->assertTrue($groups[0] instanceof Group);
+        $this->assertTrue($groups[1] instanceof Group);
+
+        $this->assertTrue($groups->isInitialized());
+
+        unset($groups[0]);
+        $groups[1]->setName('test');
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('id')->equals($user->getId());
+        $query = $qb->getQuery();
+        $user3 = $query->getSingleResult();
+        $groups = $user3->getUniqueGroups();
+
+        $this->assertEquals('test', $groups[0]->getName());
+        $this->assertEquals(1, count($groups));
+    }
+
     public function testSortReferenceManyOwningSide()
     {
         $user = new \Documents\User();

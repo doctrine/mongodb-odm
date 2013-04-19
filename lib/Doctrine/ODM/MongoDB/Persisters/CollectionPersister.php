@@ -117,6 +117,7 @@ class CollectionPersister
                 $this->setCollection($coll, $options);
                 break;
 
+            case 'addToSet':
             case 'pushAll':
                 $this->deleteElements($coll, $options);
                 $this->insertElements($coll, $options);
@@ -163,7 +164,8 @@ class CollectionPersister
     /**
      * Deletes removed elements from a PersistentCollection instance.
      *
-     * This method is intended to be used with the "pushAll" strategy.
+     * This method is intended to be used with the "pushAll" and "addToSet"
+     * strategies.
      *
      * @param PersistentCollection $coll
      * @param array $options
@@ -198,7 +200,8 @@ class CollectionPersister
     /**
      * Inserts new elements for a PersistentCollection instance.
      *
-     * This method is intended to be used with the "pushAll" strategy.
+     * This method is intended to be used with the "pushAll" and "addToSet"
+     * strategies.
      *
      * @param PersistentCollection $coll
      * @param array $options
@@ -220,7 +223,13 @@ class CollectionPersister
             ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
             : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
 
-        $query = array($this->cmd . 'pushAll' => array($propertyPath => array_values(array_map($callback, $insertDiff))));
+        $value = array_values(array_map($callback, $insertDiff));
+
+        if ($mapping['strategy'] !== 'pushAll') {
+            $value = array($this->cmd . 'each' => $value);
+        }
+
+        $query = array($this->cmd . $mapping['strategy'] => array($propertyPath => $value));
 
         $this->executeQuery($parent, $query, $options);
     }
