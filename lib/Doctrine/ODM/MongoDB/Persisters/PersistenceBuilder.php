@@ -396,7 +396,7 @@ class PersistenceBuilder
                         })->toArray();
 
                         // Numerical reindexing may be necessary to ensure BSON array storage
-                        if ($mapping['strategy'] === 'pushAll' || $mapping['strategy'] === 'setArray') {
+                        if (in_array($mapping['strategy'], ['setArray', 'pushAll', 'addToSet'])) {
                             $value = array_values($value);
                         }
                         break;
