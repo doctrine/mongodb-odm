@@ -471,7 +471,7 @@ Query for users who have subscribed or are in a trial.
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder('User');
     $qb->addOr($qb->expr()->field('subscriber')->equals(true));
     $qb->addOr($qb->expr()->field('inTrial')->equals(true));
     
