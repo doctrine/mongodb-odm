@@ -122,25 +122,37 @@ class CollectionPersister
         $deleteDiff = $coll->getDeleteDiff();
         if ($deleteDiff) {
             list($propertyPath, $parent) = $this->getPathAndParent($coll);
-            $query = array($this->cmd.'unset' => array());
-            $isAssocArray = false;
-            foreach ($deleteDiff as $key => $document) {
-                $isAssocArray |= !is_int($key);
-                $query[$this->cmd.'unset'][$propertyPath.'.'.$key] = true;
-            }
-            $this->executeQuery($parent, $query, $options);
-
-            /**
-             * @todo This is a hack right now because we don't have a proper way to remove
-             * an element from an array by its key. Unsetting the key results in the element
-             * being left in the array as null so we have to pull null values.
-             *
-             * "Using "$unset" with an expression like this "array.$" will result in the array item becoming null, not being removed. You can issue an update with "{$pull:{x:null}}" to remove all nulls."
-             * http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset
-             */
             $mapping = $coll->getMapping();
-            if ($mapping['strategy'] !== 'set' || !$isAssocArray) {
-                $this->executeQuery($parent, array($this->cmd.'pull' => array($propertyPath => null)), $options);
+
+            // References should be deleted by value with pullAll instead of unset & pull
+            if (isset($mapping['reference']) && $mapping['reference'] && $mapping['type'] === 'many' && $mapping['strategy'] !== 'set') {
+                $query = array($this->cmd.'pullAll' => array($propertyPath => array()));
+                foreach ($deleteDiff as $document) {
+                    $query[$this->cmd.'pullAll'][$propertyPath][] = $this->pb->prepareReferencedDocumentValue($mapping, $document);
+                }
+
+                $this->executeQuery($parent, $query, $options);
+            }
+            else {
+                $query = array($this->cmd.'unset' => array());
+                $isAssocArray = false;
+                foreach ($deleteDiff as $key => $document) {
+                    $isAssocArray |= !is_int($key);
+                    $query[$this->cmd.'unset'][$propertyPath.'.'.$key] = true;
+                }
+                $this->executeQuery($parent, $query, $options);
+
+                /**
+                 * @todo This is a hack right now because we don't have a proper way to remove
+                 * an element from an array by its key. Unsetting the key results in the element
+                 * being left in the array as null so we have to pull null values.
+                 *
+                 * "Using "$unset" with an expression like this "array.$" will result in the array item becoming null, not being removed. You can issue an update with "{$pull:{x:null}}" to remove all nulls."
+                 * http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset
+                 */
+                if ($mapping['strategy'] !== 'set' || !$isAssocArray) {
+                    $this->executeQuery($parent, array($this->cmd.'pull' => array($propertyPath => null)), $options);
+                }
             }
         }
     }
