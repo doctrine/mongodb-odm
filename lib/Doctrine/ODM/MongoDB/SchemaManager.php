@@ -25,18 +25,19 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 class SchemaManager
 {
     /**
-     * @var Doctrine\ODM\MongoDB\DocumentManager
+     * @var DocumentManager
      */
     protected $dm;
 
     /**
      *
-     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     * @var ClassMetadataFactory
      */
     protected $metadataFactory;
 
     /**
-     * @param Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param DocumentManager $dm
+     * @param ClassMetadataFactory $cmf
      */
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {
@@ -86,6 +87,7 @@ class SchemaManager
      *
      * @param string $documentName
      * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @throws \InvalidArgumentException
      */
     public function updateDocumentIndexes($documentName, $timeout = null)
     {
@@ -103,19 +105,22 @@ class SchemaManager
          * and those that are equivalent to any in the class metadata.
          */
         $self = $this;
-        $mongoIndexes = array_filter($mongoIndexes, function($mongoIndex) use ($documentIndexes, $self) {
-            if ('_id_' === $mongoIndex['name']) {
-                return false;
-            }
-
-            foreach ($documentIndexes as $documentIndex) {
-                if ($self->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)) {
+        $mongoIndexes = array_filter(
+            $mongoIndexes,
+            function ($mongoIndex) use ($documentIndexes, $self) {
+                if ('_id_' === $mongoIndex['name']) {
                     return false;
                 }
-            }
 
-            return true;
-        });
+                foreach ($documentIndexes as $documentIndex) {
+                    if ($self->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        );
 
         // Delete indexes that do not exist in class metadata
         foreach ($mongoIndexes as $mongoIndex) {
@@ -123,22 +128,33 @@ class SchemaManager
                 /* Note: MongoCollection::deleteIndex() cannot delete
                  * custom-named indexes, so use the deleteIndexes command.
                  */
-                $collection->getDatabase()->command(array(
-                    'deleteIndexes' => $collection->getName(),
-                    'index' => $mongoIndex['name'],
-                ));
+                $collection->getDatabase()->command(
+                    array(
+                        'deleteIndexes' => $collection->getName(),
+                        'index'         => $mongoIndex['name'],
+                    )
+                );
             }
         }
 
         $this->ensureDocumentIndexes($documentName, $timeout);
     }
 
+    /**
+     * @param string $documentName
+     * @return array
+     */
     public function getDocumentIndexes($documentName)
     {
         $visited = array();
         return $this->doGetDocumentIndexes($documentName, $visited);
     }
 
+    /**
+     * @param string $documentName
+     * @param array $visited
+     * @return array
+     */
     private function doGetDocumentIndexes($documentName, array &$visited)
     {
         if (isset($visited[$documentName])) {
@@ -162,22 +178,28 @@ class SchemaManager
                     $indexes[] = $embeddedIndex;
                 }
 
-            } else if (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
-                foreach ($indexes as $idx => $index) {
-                    $newKeys = array();
-                    foreach ($index['keys'] as $key => $v) {
-                        if ($key == $fieldMapping['name']) {
-                            $key = $fieldMapping['simple'] ? $key : $key . '.$id';
+            } else {
+                if (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
+                    foreach ($indexes as $idx => $index) {
+                        $newKeys = array();
+                        foreach ($index['keys'] as $key => $v) {
+                            if ($key == $fieldMapping['name']) {
+                                $key = $fieldMapping['simple'] ? $key : $key . '.$id';
+                            }
+                            $newKeys[$key] = $v;
                         }
-                        $newKeys[$key] = $v;
+                        $indexes[$idx]['keys'] = $newKeys;
                     }
-                    $indexes[$idx]['keys'] = $newKeys;
                 }
             }
         }
         return $indexes;
     }
 
+    /**
+     * @param ClassMetadata $class
+     * @return array
+     */
     private function prepareIndexes(ClassMetadata $class)
     {
         $persister = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
@@ -186,7 +208,7 @@ class SchemaManager
 
         foreach ($indexes as $index) {
             $newIndex = array(
-                'keys' => array(),
+                'keys'    => array(),
                 'options' => $index['options']
             );
             foreach ($index['keys'] as $key => $value) {
@@ -213,6 +235,7 @@ class SchemaManager
      *
      * @param string $documentName
      * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @throws \InvalidArgumentException
      */
     public function ensureDocumentIndexes($documentName, $timeout = null)
     {
@@ -253,6 +276,7 @@ class SchemaManager
      * Delete the given document's indexes.
      *
      * @param string $documentName
+     * @throws \InvalidArgumentException
      */
     public function deleteDocumentIndexes($documentName)
     {
@@ -280,6 +304,7 @@ class SchemaManager
      * Create the document collection for a mapped class.
      *
      * @param string $documentName
+     * @throws \InvalidArgumentException
      */
     public function createDocumentCollection($documentName)
     {
@@ -321,6 +346,7 @@ class SchemaManager
      * Drop the document collection for a mapped class.
      *
      * @param string $documentName
+     * @throws \InvalidArgumentException
      */
     public function dropDocumentCollection($documentName)
     {
@@ -350,6 +376,7 @@ class SchemaManager
      * Drop the document database for a mapped class.
      *
      * @param string $documentName
+     * @throws \InvalidArgumentException
      */
     public function dropDocumentDatabase($documentName)
     {
@@ -377,6 +404,7 @@ class SchemaManager
      * Create the document database for a mapped class.
      *
      * @param string $documentName
+     * @throws \InvalidArgumentException
      */
     public function createDocumentDatabase($documentName)
     {
@@ -421,7 +449,8 @@ class SchemaManager
         }
 
         if (!empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
-            !empty($documentIndexOptions['unique']) && !empty($documentIndexOptions['dropDups'])) {
+            !empty($documentIndexOptions['unique']) && !empty($documentIndexOptions['dropDups'])
+        ) {
 
             return false;
         }
@@ -432,7 +461,8 @@ class SchemaManager
             }
 
             if (isset($mongoIndex[$option]) && isset($documentIndexOptions[$option]) &&
-                $mongoIndex[$option] !== $documentIndexOptions[$option]) {
+                $mongoIndex[$option] !== $documentIndexOptions[$option]
+            ) {
 
                 return false;
             }

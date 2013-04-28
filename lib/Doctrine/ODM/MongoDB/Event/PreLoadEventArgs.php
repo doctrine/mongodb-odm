@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\Common\EventArgs;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * PreLoad event arguments.
@@ -44,14 +45,22 @@ class PreLoadEventArgs extends EventArgs
      * @var array
      */
     private $data;
-    
+
+    /**
+     * @param object $document
+     * @param DocumentManager $em
+     * @param array $data
+     */
     public function __construct($document, $em, array &$data)
     {
         $this->document = $document;
         $this->dm = $em;
         $this->data = $data;
     }
-    
+
+    /**
+     * @return object
+     */
     public function getDocument()
     {
         return $this->document;

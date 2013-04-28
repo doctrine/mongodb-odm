@@ -19,17 +19,15 @@
 
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\Events;
 use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
-use Doctrine\ODM\MongoDB\PersistentCollection;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Types\Type;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
@@ -43,21 +41,21 @@ class HydratorFactory
     /**
      * The DocumentManager this factory is bound to.
      *
-     * @var Doctrine\ODM\MongoDB\DocumentManager
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
      */
     private $dm;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
-     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     * @var \Doctrine\ODM\MongoDB\UnitOfWork
      */
     private $unitOfWork;
 
     /**
      * The EventManager associated with this Hydrator
      *
-     * @var Doctrine\Common\EventManager
+     * @var \Doctrine\Common\EventManager
      */
     private $evm;
 
@@ -91,24 +89,34 @@ class HydratorFactory
 
     /**
      * Mongo command prefix
+     *
      * @var string
      */
     private $cmd;
 
+    /**
+     * @param DocumentManager $dm
+     * @param EventManager $evm
+     * @param $hydratorDir
+     * @param $hydratorNs
+     * @param $autoGenerate
+     * @param $cmd
+     * @throws HydratorException
+     */
     public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate, $cmd)
     {
-        if ( ! $hydratorDir) {
+        if (!$hydratorDir) {
             throw HydratorException::hydratorDirectoryRequired();
         }
-        if ( ! $hydratorNs) {
+        if (!$hydratorNs) {
             throw HydratorException::hydratorNamespaceRequired();
         }
-        $this->dm                = $dm;
-        $this->evm               = $evm;
-        $this->hydratorDir       = $hydratorDir;
+        $this->dm = $dm;
+        $this->evm = $evm;
+        $this->hydratorDir = $hydratorDir;
         $this->hydratorNamespace = $hydratorNs;
-        $this->autoGenerate      = $autoGenerate;
-        $this->cmd               = $cmd;
+        $this->autoGenerate = $autoGenerate;
+        $this->cmd = $cmd;
     }
 
     /**
@@ -125,7 +133,7 @@ class HydratorFactory
      * Gets the hydrator object for the given document class.
      *
      * @param string $className
-     * @return Doctrine\ODM\MongoDB\Hydrator\HydratorInterface $hydrator
+     * @return \Doctrine\ODM\MongoDB\Hydrator\HydratorInterface $hydrator
      */
     public function getHydratorFor($className)
     {
@@ -136,7 +144,7 @@ class HydratorFactory
         $fqn = $this->hydratorNamespace . '\\' . $hydratorClassName;
         $class = $this->dm->getClassMetadata($className);
 
-        if (! class_exists($fqn, false)) {
+        if (!class_exists($fqn, false)) {
             $fileName = $this->hydratorDir . DIRECTORY_SEPARATOR . $hydratorClassName . '.php';
             if ($this->autoGenerate) {
                 $this->generateHydratorClass($class, $hydratorClassName, $fileName);
@@ -157,7 +165,7 @@ class HydratorFactory
      */
     public function generateHydratorClasses(array $classes, $toDir = null)
     {
-        $hydratorDir = $toDir ?: $this->hydratorDir;
+        $hydratorDir = $toDir ? : $this->hydratorDir;
         $hydratorDir = rtrim($hydratorDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         foreach ($classes as $class) {
             $hydratorClassName = str_replace('\\', '', $class->name) . 'Hydrator';
@@ -166,6 +174,11 @@ class HydratorFactory
         }
     }
 
+    /**
+     * @param ClassMetadata $class
+     * @param string $hydratorClassName
+     * @param string $fileName
+     */
     private function generateHydratorClass(ClassMetadata $class, $hydratorClassName, $fileName)
     {
         $code = '';
@@ -173,7 +186,8 @@ class HydratorFactory
         foreach ($class->fieldMappings as $fieldName => $mapping) {
             if (isset($mapping['alsoLoadFields'])) {
                 foreach ($mapping['alsoLoadFields'] as $name) {
-                    $code .= sprintf(<<<EOF
+                    $code .= sprintf(
+                        <<<EOF
 
         /** @AlsoLoad("$name") */
         if (!array_key_exists('%1\$s', \$data) && array_key_exists('$name', \$data)) {
@@ -181,14 +195,15 @@ class HydratorFactory
         }
 
 EOF
-                    ,
+                        ,
                         $mapping['name']
                     );
                 }
             }
 
             if ($mapping['type'] === 'date') {
-                $code .= sprintf(<<<EOF
+                $code .= sprintf(
+                    <<<EOF
 
         /** @Field(type="date") */
         if (isset(\$data['%1\$s'])) {
@@ -199,15 +214,16 @@ EOF
         }
 
 EOF
-                ,
+                    ,
                     $mapping['name'],
                     $mapping['fieldName'],
                     Type::getType($mapping['type'])->closureToPHP()
                 );
 
 
-            } elseif ( ! isset($mapping['association'])) {
-                $code .= sprintf(<<<EOF
+            } elseif (!isset($mapping['association'])) {
+                $code .= sprintf(
+                    <<<EOF
 
         /** @Field(type="{$mapping['type']}") */
         if (isset(\$data['%1\$s'])) {
@@ -218,13 +234,14 @@ EOF
         }
 
 EOF
-                ,
+                    ,
                     $mapping['name'],
                     $mapping['fieldName'],
                     Type::getType($mapping['type'])->closureToPHP()
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
-                $code .= sprintf(<<<EOF
+                $code .= sprintf(
+                    <<<EOF
 
         /** @ReferenceOne */
         if (isset(\$data['%1\$s'])) {
@@ -244,13 +261,14 @@ EOF
         }
 
 EOF
-                ,
+                    ,
                     $mapping['name'],
                     $mapping['fieldName']
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isInverseSide']) {
                 if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
-                    $code .= sprintf(<<<EOF
+                    $code .= sprintf(
+                        <<<EOF
 
         \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
         \$return = \$this->dm->getRepository(\$className)->%3\$s(\$document);
@@ -258,13 +276,14 @@ EOF
         \$hydratedData['%2\$s'] = \$return;
 
 EOF
-                ,
-                    $mapping['name'],
-                    $mapping['fieldName'],
-                    $mapping['repositoryMethod']
-                );
+                        ,
+                        $mapping['name'],
+                        $mapping['fieldName'],
+                        $mapping['repositoryMethod']
+                    );
                 } else {
-                    $code .= sprintf(<<<EOF
+                    $code .= sprintf(
+                        <<<EOF
 
         \$mapping = \$this->class->fieldMappings['%2\$s'];
         \$className = \$mapping['targetDocument'];
@@ -281,13 +300,14 @@ EOF
         \$hydratedData['%2\$s'] = \$return;
 
 EOF
-                    ,
+                        ,
                         $mapping['name'],
                         $mapping['fieldName']
                     );
                 }
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY || $mapping['association'] === ClassMetadata::EMBED_MANY) {
-                $code .= sprintf(<<<EOF
+                $code .= sprintf(
+                    <<<EOF
 
         /** @Many */
         \$mongoData = isset(\$data['%1\$s']) ? \$data['%1\$s'] : null;
@@ -302,12 +322,13 @@ EOF
         \$hydratedData['%2\$s'] = \$return;
 
 EOF
-                ,
+                    ,
                     $mapping['name'],
                     $mapping['fieldName']
                 );
             } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
-                $code .= sprintf(<<<EOF
+                $code .= sprintf(
+                    <<<EOF
 
         /** @EmbedOne */
         if (isset(\$data['%1\$s'])) {
@@ -325,7 +346,7 @@ EOF
         }
 
 EOF
-                ,
+                    ,
                     $mapping['name'],
                     $mapping['fieldName']
                 );
@@ -367,8 +388,8 @@ class $hydratorClassName implements HydratorInterface
     }
 }
 EOF
-          ,
-          $code
+            ,
+            $code
         );
 
         file_put_contents($fileName, $code);

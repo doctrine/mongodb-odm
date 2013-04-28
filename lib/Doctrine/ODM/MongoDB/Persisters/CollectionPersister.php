@@ -19,18 +19,18 @@
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
-use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * The CollectionPersister is responsible for persisting collections of embedded documents
  * or referenced documents. When a PersistentCollection is scheduledForDeletion in the UnitOfWork
  * by calling PersistentCollection::clear() or is de-referenced in the domain application
  * code it results in a CollectionPersister::delete(). When a single document is removed
- * from a PersitentCollection it is removed in the call to CollectionPersister::deleteRows()
+ * from a PersistentCollection it is removed in the call to CollectionPersister::deleteRows()
  * and new documents added to the PersistentCollection are inserted in the call to
  * CollectionPersister::insertRows().
  *
@@ -44,14 +44,14 @@ class CollectionPersister
     /**
      * The DocumentManager instance.
      *
-     * @var Doctrine\ODM\MongoDB\DocumentManager
+     * @var DocumentManager
      */
     private $dm;
 
     /**
      * The PersistenceBuilder instance.
      *
-     * @var Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder
+     * @var PersistenceBuilder
      */
     private $pb;
 
@@ -63,7 +63,7 @@ class CollectionPersister
     private $cmd;
 
     /**
-     * Contructs a new CollectionPersister instance.
+     * Constructs a new CollectionPersister instance.
      *
      * @param DocumentManager $dm
      * @param PersistenceBuilder $pb
@@ -122,11 +122,11 @@ class CollectionPersister
         $deleteDiff = $coll->getDeleteDiff();
         if ($deleteDiff) {
             list($propertyPath, $parent) = $this->getPathAndParent($coll);
-            $query = array($this->cmd.'unset' => array());
+            $query = array($this->cmd . 'unset' => array());
             $isAssocArray = false;
             foreach ($deleteDiff as $key => $document) {
                 $isAssocArray |= !is_int($key);
-                $query[$this->cmd.'unset'][$propertyPath.'.'.$key] = true;
+                $query[$this->cmd . 'unset'][$propertyPath . '.' . $key] = true;
             }
             $this->executeQuery($parent, $query, $options);
 
@@ -140,7 +140,7 @@ class CollectionPersister
              */
             $mapping = $coll->getMapping();
             if ($mapping['strategy'] !== 'set' || !$isAssocArray) {
-                $this->executeQuery($parent, array($this->cmd.'pull' => array($propertyPath => null)), $options);
+                $this->executeQuery($parent, array($this->cmd . 'pull' => array($propertyPath => null)), $options);
             }
         }
     }
@@ -170,24 +170,30 @@ class CollectionPersister
                         $setData[$propertyPath][] = $documentUpdates;
                     } else {
                         foreach ($documentUpdates as $currFieldName => $currFieldValue) {
-                            $setData[$propertyPath. '.' .$key . '.' . $currFieldName] = $currFieldValue;
+                            $setData[$propertyPath . '.' . $key . '.' . $currFieldName] = $currFieldValue;
                         }
                     }
                 }
 
-                $query = array($this->cmd.'set' => $setData);
+                $query = array($this->cmd . 'set' => $setData);
                 $this->executeQuery($parent, $query, $options);
             }
         } else {
             $strategy = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
             $insertDiff = $coll->getInsertDiff();
             if ($insertDiff) {
-                $query = array($this->cmd.$strategy => array());
+                $query = array($this->cmd . $strategy => array());
                 foreach ($insertDiff as $document) {
                     if (isset($mapping['reference'])) {
-                        $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareReferencedDocumentValue($mapping, $document);
+                        $query[$this->cmd . $strategy][$propertyPath][] = $this->pb->prepareReferencedDocumentValue(
+                            $mapping,
+                            $document
+                        );
                     } else {
-                        $query[$this->cmd.$strategy][$propertyPath][] = $this->pb->prepareEmbeddedDocumentValue($mapping, $document);
+                        $query[$this->cmd . $strategy][$propertyPath][] = $this->pb->prepareEmbeddedDocumentValue(
+                            $mapping,
+                            $document
+                        );
                     }
                 }
                 $this->executeQuery($parent, $query, $options);
@@ -209,7 +215,8 @@ class CollectionPersister
 
     /**
      * Gets the parent information for a given PersistentCollection. It will retrieve the top
-     * level persistent @Document that the PersistentCollection lives in. We can use this to issue
+     * level persistent
+     * @Document that the PersistentCollection lives in. We can use this to issue
      * queries when updating a PersistentCollection that is multiple levels deep inside an
      * embedded document.
      *
@@ -236,7 +243,7 @@ class CollectionPersister
         $propertyPath = implode('.', array_reverse($fields));
         $path = $mapping['name'];
         if ($propertyPath) {
-            $path = $propertyPath.'.'.$path;
+            $path = $propertyPath . '.' . $path;
         }
         return array($path, $parent);
     }

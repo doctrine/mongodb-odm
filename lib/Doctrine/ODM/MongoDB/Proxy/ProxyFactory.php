@@ -67,10 +67,10 @@ class ProxyFactory
      */
     public function __construct(DocumentManager $dm, $proxyDir, $proxyNs, $autoGenerate = false)
     {
-        if ( ! $proxyDir) {
+        if (!$proxyDir) {
             throw ProxyException::proxyDirectoryRequired();
         }
-        if ( ! $proxyNs) {
+        if (!$proxyNs) {
             throw ProxyException::proxyNamespaceRequired();
         }
         $this->dm = $dm;
@@ -91,15 +91,19 @@ class ProxyFactory
     {
         $fqn = self::generateProxyClassName($className, $this->proxyNamespace);
 
-        if (! class_exists($fqn, false)) {
+        if (!class_exists($fqn, false)) {
             $fileName = $this->getProxyFileName($className);
             if ($this->autoGenerate) {
-                $this->generateProxyClass($this->dm->getClassMetadata($className), $fileName, self::$proxyClassTemplate);
+                $this->generateProxyClass(
+                    $this->dm->getClassMetadata($className),
+                    $fileName,
+                    self::$proxyClassTemplate
+                );
             }
             require $fileName;
         }
 
-        if ( ! $this->dm->getMetadataFactory()->hasMetadataFor($fqn)) {
+        if (!$this->dm->getMetadataFactory()->hasMetadataFor($fqn)) {
             $this->dm->getMetadataFactory()->setMetadataFor($fqn, $this->dm->getClassMetadata($className));
         }
 
@@ -118,7 +122,7 @@ class ProxyFactory
      */
     private function getProxyFileName($className, $proxyDir = null)
     {
-        $proxyDir = $proxyDir ?: $this->proxyDir;
+        $proxyDir = $proxyDir ? : $this->proxyDir;
         $proxyDir = rtrim($proxyDir, DIRECTORY_SEPARATOR);
 
         return $proxyDir . DIRECTORY_SEPARATOR . '__CG__' . str_replace('\\', '', $className) . '.php';
@@ -148,20 +152,27 @@ class ProxyFactory
     /**
      * Generates a proxy class file.
      *
-     * @param $class
-     * @param $proxyClassName
-     * @param $file The path of the file to write to.
+     * @param ClassMetadata $class
+     * @param string $fileName
+     * @param string $file The path of the file to write to.
+     * @throws ProxyException
+     * @internal param $proxyClassName
      */
     private function generateProxyClass($class, $fileName, $file)
     {
         $methods = $this->generateMethods($class);
         $sleepImpl = $this->generateSleep($class);
-        $cloneImpl = $class->reflClass->hasMethod('__clone') ? 'parent::__clone();' : ''; // hasMethod() checks case-insensitive
+        $cloneImpl = $class->reflClass->hasMethod(
+            '__clone'
+        ) ? 'parent::__clone();' : ''; // hasMethod() checks case-insensitive
 
         $placeholders = array(
             '<namespace>',
-            '<proxyClassName>', '<className>',
-            '<methods>', '<sleepImpl>', '<cloneImpl>'
+            '<proxyClassName>',
+            '<className>',
+            '<methods>',
+            '<sleepImpl>',
+            '<cloneImpl>'
         );
 
         $className = ltrim($class->name, '\\');
@@ -183,12 +194,14 @@ class ProxyFactory
 
         $parentDirectory = dirname($fileName);
 
-        if ( ! is_dir($parentDirectory)) {
+        if (!is_dir($parentDirectory)) {
             if (false === @mkdir($parentDirectory, 0775, true)) {
                 throw ProxyException::proxyDirectoryNotWritable();
             }
-        } else if ( ! is_writable($parentDirectory)) {
-            throw ProxyException::proxyDirectoryNotWritable();
+        } else {
+            if (!is_writable($parentDirectory)) {
+                throw ProxyException::proxyDirectoryNotWritable();
+            }
         }
 
         file_put_contents($fileName, $file, LOCK_EX);
@@ -206,13 +219,17 @@ class ProxyFactory
 
         $methodNames = array();
         foreach ($class->reflClass->getMethods() as $method) {
-            /* @var $method ReflectionMethod */
-            if ($method->isConstructor() || in_array(strtolower($method->getName()), array("__sleep", "__clone")) || isset($methodNames[$method->getName()])) {
+            /* @var $method \ReflectionMethod */
+            if ($method->isConstructor() || in_array(
+                strtolower($method->getName()),
+                array("__sleep", "__clone")
+            ) || isset($methodNames[$method->getName()])
+            ) {
                 continue;
             }
             $methodNames[$method->getName()] = true;
 
-            if ($method->isPublic() && ! $method->isFinal() && ! $method->isStatic()) {
+            if ($method->isPublic() && !$method->isFinal() && !$method->isStatic()) {
                 $methods .= "\n" . '    public function ';
                 if ($method->returnsReference()) {
                     $methods .= '&';
@@ -226,14 +243,16 @@ class ProxyFactory
                         $firstParam = false;
                     } else {
                         $parameterString .= ', ';
-                        $argumentString  .= ', ';
+                        $argumentString .= ', ';
                     }
 
                     // We need to pick the type hint class too
                     if (($paramClass = $param->getClass()) !== null) {
                         $parameterString .= '\\' . $paramClass->getName() . ' ';
-                    } else if ($param->isArray()) {
-                        $parameterString .= 'array ';
+                    } else {
+                        if ($param->isArray()) {
+                            $parameterString .= 'array ';
+                        }
                     }
 
                     if ($param->isPassedByReference()) {
@@ -241,7 +260,7 @@ class ProxyFactory
                     }
 
                     $parameterString .= '$' . $param->getName();
-                    $argumentString  .= '$' . $param->getName();
+                    $argumentString .= '$' . $param->getName();
 
                     if ($param->isDefaultValueAvailable()) {
                         $parameterString .= ' = ' . var_export($param->getDefaultValue(), true);
@@ -275,7 +294,7 @@ class ProxyFactory
      * ID is interesting for the userland code (for example in views that
      * generate links to the document, but do not display anything else).
      *
-     * @param ReflectionMethod $method
+     * @param \ReflectionMethod $method
      * @param ClassMetadata $class
      * @return bool
      */
@@ -284,16 +303,21 @@ class ProxyFactory
         $identifier = lcfirst(substr($method->getName(), 3));
         $cheapCheck = (
             $method->getNumberOfParameters() == 0 &&
-            substr($method->getName(), 0, 3) == "get" &&
-            $class->identifier === $identifier &&
-            $class->hasField($identifier) &&
-            (($method->getEndLine() - $method->getStartLine()) <= 4)
-            && in_array($class->fieldMappings[$identifier]['type'], array('id', 'int_id', 'custom_id'))
+                substr($method->getName(), 0, 3) == "get" &&
+                $class->identifier === $identifier &&
+                $class->hasField($identifier) &&
+                (($method->getEndLine() - $method->getStartLine()) <= 4)
+                && in_array($class->fieldMappings[$identifier]['type'], array('id', 'int_id', 'custom_id'))
         );
 
         if ($cheapCheck) {
             $code = file($method->getDeclaringClass()->getFileName());
-            $code = trim(implode(" ", array_slice($code, $method->getStartLine() - 1, $method->getEndLine() - $method->getStartLine() + 1)));
+            $code = trim(
+                implode(
+                    " ",
+                    array_slice($code, $method->getStartLine() - 1, $method->getEndLine() - $method->getStartLine() + 1)
+                )
+            );
 
             $pattern = sprintf(self::PATTERN_MATCH_ID_METHOD, $method->getName(), $identifier);
 
@@ -307,7 +331,7 @@ class ProxyFactory
     /**
      * Generates the code for the __sleep method for a proxy class.
      *
-     * @param $class
+     * @param ClassMetadata $class
      * @return string
      */
     private function generateSleep(ClassMetadata $class)
@@ -338,78 +362,78 @@ class ProxyFactory
 
     /** Proxy class code template */
     private static $proxyClassTemplate =
-'<?php
+        '<?php
 
-namespace <namespace>;
+        namespace <namespace>;
 
-use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+        use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 
-/**
- * THIS CLASS WAS GENERATED BY THE DOCTRINE ODM. DO NOT EDIT THIS FILE.
- */
-class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Proxy\Proxy
-{
-    private $__documentPersister__;
-    public $__identifier__;
-    public $__isInitialized__ = false;
-    public function __construct(DocumentPersister $documentPersister, $identifier)
-    {
-        $this->__documentPersister__ = $documentPersister;
-        $this->__identifier__ = $identifier;
-    }
-    /** @private */
-    public function __load()
-    {
-        if (!$this->__isInitialized__ && $this->__documentPersister__) {
-            $this->__isInitialized__ = true;
+        /**
+         * THIS CLASS WAS GENERATED BY THE DOCTRINE ODM. DO NOT EDIT THIS FILE.
+         */
+        class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Proxy\Proxy
+        {
+            private $__documentPersister__;
+            public $__identifier__;
+            public $__isInitialized__ = false;
+            public function __construct(DocumentPersister $documentPersister, $identifier)
+            {
+                $this->__documentPersister__ = $documentPersister;
+                $this->__identifier__ = $identifier;
+            }
+            /** @private */
+            public function __load()
+            {
+                if (!$this->__isInitialized__ && $this->__documentPersister__) {
+                    $this->__isInitialized__ = true;
 
-            if (method_exists($this, "__wakeup")) {
-                // call this after __isInitialized__to avoid infinite recursion
-                // but before loading to emulate what ClassMetadata::newInstance()
-                // provides.
-                $this->__wakeup();
+                    if (method_exists($this, "__wakeup")) {
+                        // call this after __isInitialized__to avoid infinite recursion
+                        // but before loading to emulate what ClassMetadata::newInstance()
+                        // provides.
+                        $this->__wakeup();
+                    }
+
+                    if ($this->__documentPersister__->load($this->__identifier__, $this) === null) {
+                        throw \Doctrine\ODM\MongoDB\DocumentNotFoundException::documentNotFound(get_class($this), $this->__identifier__);
+                    }
+                    unset($this->__documentPersister__, $this->__identifier__);
+                }
             }
 
-            if ($this->__documentPersister__->load($this->__identifier__, $this) === null) {
-                throw \Doctrine\ODM\MongoDB\DocumentNotFoundException::documentNotFound(get_class($this), $this->__identifier__);
+            /** @private */
+            public function __isInitialized()
+            {
+                return $this->__isInitialized__;
             }
-            unset($this->__documentPersister__, $this->__identifier__);
-        }
-    }
 
-    /** @private */
-    public function __isInitialized()
-    {
-        return $this->__isInitialized__;
-    }
+            <methods>
 
-    <methods>
-
-    public function __sleep()
-    {
-        <sleepImpl>
-    }
-
-    public function __clone()
-    {
-        if (!$this->__isInitialized__ && $this->__documentPersister__) {
-            $this->__isInitialized__ = true;
-            $class = $this->__documentPersister__->getClassMetadata();
-            $original = $this->__documentPersister__->load($this->__identifier__);
-            if ($original === null) {
-                throw \Doctrine\ODM\MongoDB\MongoDBException::documentNotFound(get_class($this), $this->__identifier__);
+            public function __sleep()
+            {
+                <sleepImpl>
             }
-            foreach ($class->reflFields AS $field => $reflProperty) {
-                $reflProperty->setValue($this, $reflProperty->getValue($original));
+
+            public function __clone()
+            {
+                if (!$this->__isInitialized__ && $this->__documentPersister__) {
+                    $this->__isInitialized__ = true;
+                    $class = $this->__documentPersister__->getClassMetadata();
+                    $original = $this->__documentPersister__->load($this->__identifier__);
+                    if ($original === null) {
+                        throw \Doctrine\ODM\MongoDB\MongoDBException::documentNotFound(get_class($this), $this->__identifier__);
+                    }
+                    foreach ($class->reflFields AS $field => $reflProperty) {
+                        $reflProperty->setValue($this, $reflProperty->getValue($original));
+                    }
+                    unset($this->__documentPersister__, $this->__identifier__);
+                }
+                <cloneImpl>
             }
-            unset($this->__documentPersister__, $this->__identifier__);
-        }
-        <cloneImpl>
-    }
-}';
+        }';
 
     public static function generateProxyClassName($className, $proxyNamespace)
     {
-        return rtrim($proxyNamespace, '\\') . '\\'.self::MARKER.'\\' . ltrim($className, '\\');
+        return rtrim($proxyNamespace, '\\') . '\\' . self::MARKER . '\\' . ltrim($className, '\\');
     }
 }

@@ -42,7 +42,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     /**
      * The ClassMetadata instance.
      *
-     * @var ClassMetadata
+     * @var \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     private $class;
 
@@ -74,11 +74,18 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     private $requireIndexes;
 
+    /**
+     * Construct a Builder
+     *
+     * @param DocumentManager $dm
+     * @param string $cmd
+     * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
+     */
     public function __construct(DocumentManager $dm, $cmd, $documentName = null)
     {
-        $this->dm   = $dm;
+        $this->dm = $dm;
         $this->expr = new Expr($dm, $cmd);
-        $this->cmd  = $cmd;
+        $this->cmd = $cmd;
         if ($documentName !== null) {
             $this->setDocumentName($documentName);
         }
@@ -104,7 +111,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      *         // do something that will prime all the associated users in one query
      *     });
      *
-     * @param Closure|boolean $primer
+     * @param \Closure|boolean $primer
      * @return Builder
      */
     public function prime($primer = true)
@@ -155,6 +162,10 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         return parent::findAndUpdate();
     }
 
+    /**
+     * @param bool $bool
+     * @return $this
+     */
     public function returnNew($bool = true)
     {
         $this->refresh(true);
@@ -225,7 +236,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Gets the Query executable.
      *
      * @param array $options
-     * @return QueryInterface $query
+     * @return Query $query
      */
     public function getQuery(array $options = array())
     {
@@ -261,9 +272,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     }
 
     /**
-     * Create a new Query\Expr instance that can be used as an expression with the QueryBuilder
+     * Create a new Expr instance that can be used as an expression with the Builder
      *
-     * @return Query\Expr $expr
+     * @return Expr $expr
      */
     public function expr()
     {
@@ -273,6 +284,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         return $expr;
     }
 
+    /**
+     * @param string[]|string $documentName an array of document names or just one.
+     */
     private function setDocumentName($documentName)
     {
         if (is_array($documentName)) {
@@ -294,6 +308,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         }
     }
 
+    /**
+     * Get Discriminator Values
+     *
+     * @param \Iterator|array $classNames
+     * @return array an array of discriminatorValues (mixed type)
+     * @throws \InvalidArgumentException if the number of found collections > 1
+     */
     private function getDiscriminatorValues($classNames)
     {
         $discriminatorValues = array();

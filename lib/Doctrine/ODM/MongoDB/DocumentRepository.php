@@ -65,9 +65,9 @@ class DocumentRepository implements ObjectRepository
     public function __construct(DocumentManager $dm, UnitOfWork $uow, Mapping\ClassMetadata $class)
     {
         $this->documentName = $class->name;
-        $this->dm           = $dm;
-        $this->uow          = $uow;
-        $this->class        = $class;
+        $this->dm = $dm;
+        $this->uow = $uow;
+        $this->class = $class;
     }
 
     /**
@@ -91,10 +91,11 @@ class DocumentRepository implements ObjectRepository
     /**
      * Finds a document by its identifier
      *
-     * @throws LockException
      * @param string|object $id The identifier
      * @param int $lockMode
      * @param int $lockVersion
+     * @throws Mapping\MappingException
+     * @throws LockException
      * @return object The document.
      */
     public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
@@ -123,17 +124,19 @@ class DocumentRepository implements ObjectRepository
 
         if ($lockMode == LockMode::NONE) {
             return $this->uow->getDocumentPersister($this->documentName)->load($id);
-        } else if ($lockMode == LockMode::OPTIMISTIC) {
-            if (!$this->class->isVersioned) {
-                throw LockException::notVersioned($this->documentName);
-            }
-            $document = $this->uow->getDocumentPersister($this->documentName)->load($id);
-
-            $this->uow->lock($document, $lockMode, $lockVersion);
-
-            return $document;
         } else {
-            return $this->uow->getDocumentPersister($this->documentName)->load($id, null, array(), $lockMode);
+            if ($lockMode == LockMode::OPTIMISTIC) {
+                if (!$this->class->isVersioned) {
+                    throw LockException::notVersioned($this->documentName);
+                }
+                $document = $this->uow->getDocumentPersister($this->documentName)->load($id);
+
+                $this->uow->lock($document, $lockMode, $lockVersion);
+
+                return $document;
+            } else {
+                return $this->uow->getDocumentPersister($this->documentName)->load($id, null, array(), $lockMode);
+            }
         }
     }
 
@@ -151,6 +154,9 @@ class DocumentRepository implements ObjectRepository
      * Finds documents by a set of criteria.
      *
      * @param array $criteria
+     * @param array $orderBy
+     * @param int|null $limit limit the number of objects returned
+     * @param int|null $offset skip into the result set by this many objects
      * @return array
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
@@ -172,10 +178,14 @@ class DocumentRepository implements ObjectRepository
     /**
      * Adds support for magic finders.
      *
-     * @return array|object The found document/documents.
-     * @throws BadMethodCallException  If the method called is an invalid find* method
+     * @param $method
+     * @param $arguments
+     * @throws MongoDBException
+     * @throws \BadMethodCallException If the method called is an invalid find* method
      *                                 or no find* method at all and therefore an invalid
      *                                 method call.
+     * @param $arguments
+     * @return array|object The found document/documents.
      */
     public function __call($method, $arguments)
     {
@@ -187,13 +197,13 @@ class DocumentRepository implements ObjectRepository
             $method = 'findOneBy';
         } else {
             throw new \BadMethodCallException(
-                "Undefined method '$method'. The method name must start with ".
-                "either findBy or findOneBy!"
+                "Undefined method '$method'. The method name must start with " .
+                    "either findBy or findOneBy!"
             );
         }
 
-        if ( ! isset($arguments[0])) {
-            throw MongoDBException::findByRequiresParameter($method.$by);
+        if (!isset($arguments[0])) {
+            throw MongoDBException::findByRequiresParameter($method . $by);
         }
 
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
@@ -201,7 +211,7 @@ class DocumentRepository implements ObjectRepository
         if ($this->class->hasField($fieldName)) {
             return $this->$method(array($fieldName => $arguments[0]));
         } else {
-            throw MongoDBException::invalidFindByCall($this->documentName, $fieldName, $method.$by);
+            throw MongoDBException::invalidFindByCall($this->documentName, $fieldName, $method . $by);
         }
     }
 

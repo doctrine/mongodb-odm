@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\Common\EventArgs;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
@@ -40,13 +41,20 @@ class LifecycleEventArgs extends EventArgs
      * @var object
      */
     private $document;
-    
-    public function __construct($document, $em)
+
+    /**
+     * @param object $document
+     * @param DocumentManager $em
+     */
+    public function __construct($document, DocumentManager $em)
     {
         $this->document = $document;
         $this->dm = $em;
     }
-    
+
+    /**
+     * @return object
+     */
     public function getDocument()
     {
         return $this->document;

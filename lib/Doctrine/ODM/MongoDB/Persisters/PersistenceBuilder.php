@@ -19,9 +19,9 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
  * PersistenceBuilder builds the queries used by the persisters to update and insert
@@ -36,22 +36,23 @@ class PersistenceBuilder
     /**
      * The DocumentManager instance.
      *
-     * @var Doctrine\ODM\MongoDB\DocumentManager
+     * @var DocumentManager
      */
     private $dm;
 
     /**
      * The UnitOfWork instance.
      *
-     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     * @var UnitOfWork
      */
     private $uow;
 
     /**
      * Initializes a new PersistenceBuilder instance.
      *
-     * @param Doctrine\ODM\MongoDB\DocumentManager $dm
-     * @param Doctrine\ODM\MongoDB\UnitOfWork $uow
+     * @param DocumentManager $dm
+     * @param UnitOfWork $uow
+     * @param $cmd
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow, $cmd)
     {
@@ -94,10 +95,10 @@ class PersistenceBuilder
             $value = null;
             if ($new !== null) {
                 // @Field, @String, @Date, etc.
-                if ( ! isset($mapping['association'])) {
+                if (!isset($mapping['association'])) {
                     $value = Type::getType($mapping['type'])->convertToDatabaseValue($new);
 
-                // @ReferenceOne
+                    // @ReferenceOne
                 } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                     if ($mapping['isInverseSide']) {
                         continue;
@@ -109,25 +110,28 @@ class PersistenceBuilder
                         // The associated document $new is not yet persisted, so we must
                         // set $new = null, in order to insert a null value and schedule an
                         // extra update on the UnitOfWork.
-                        $this->uow->scheduleExtraUpdate($document, array(
-                            $mapping['fieldName'] => array(null, $new)
-                        ));
+                        $this->uow->scheduleExtraUpdate(
+                            $document,
+                            array(
+                                $mapping['fieldName'] => array(null, $new)
+                            )
+                        );
                     } else {
                         $value = $this->prepareReferencedDocumentValue($mapping, $new);
                     }
 
-                // @EmbedOne
+                    // @EmbedOne
                 } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
                     $value = $this->prepareEmbeddedDocumentValue($mapping, $new);
 
-                // @ReferenceMany
+                    // @ReferenceMany
                 } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
                     $value = array();
                     foreach ($new as $reference) {
                         $value[] = $this->prepareReferencedDocumentValue($mapping, $reference);
                     }
 
-                // @EmbedMany
+                    // @EmbedMany
                 } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
                     $value = array();
                     foreach ($new as $reference) {
@@ -184,25 +188,30 @@ class PersistenceBuilder
                     $updateData[$this->cmd . 'inc'][$mapping['name']] = ($old - $new) * -1;
                 }
 
-            // @Field, @String, @Date, etc.
-            } elseif ( ! isset($mapping['association'])) {
+                // @Field, @String, @Date, etc.
+            } elseif (!isset($mapping['association'])) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : Type::getType(
+                        $mapping['type']
+                    )->convertToDatabaseValue($new));
                 } else {
                     $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
                 }
 
-            // @EmbedOne
+                // @EmbedOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
                 // If we have a new embedded document then lets set the whole thing
                 if ($new && $this->uow->isScheduledForInsert($new)) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue(
+                        $mapping,
+                        $new
+                    );
 
-                // If we don't have a new value then lets unset the embedded document
-                } elseif ( ! $new) {
+                    // If we don't have a new value then lets unset the embedded document
+                } elseif (!$new) {
                     $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
 
-                // Update existing embedded document
+                    // Update existing embedded document
                 } else {
                     $update = $this->prepareUpdateData($new);
                     foreach ($update as $cmd => $values) {
@@ -212,10 +221,10 @@ class PersistenceBuilder
                     }
                 }
 
-            // @EmbedMany
+                // @EmbedMany
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
                 foreach ($new as $key => $embeddedDoc) {
-                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
+                    if (!$this->uow->isScheduledForInsert($embeddedDoc)) {
                         $update = $this->prepareUpdateData($embeddedDoc);
                         foreach ($update as $cmd => $values) {
                             foreach ($values as $name => $value) {
@@ -225,15 +234,17 @@ class PersistenceBuilder
                     }
                 }
 
-            // @ReferenceOne
+                // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null(
+                        $new
+                    ) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 } else {
                     $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
                 }
 
-            // @ReferenceMany
+                // @ReferenceMany
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
                 // Do nothing right now
             }
@@ -267,22 +278,27 @@ class PersistenceBuilder
                     $updateData[$this->cmd . 'inc'][$mapping['name']] = ($old - $new) * -1;
                 }
 
-            // @Field, @String, @Date, etc.
-            } elseif ( ! isset($mapping['association'])) {
+                // @Field, @String, @Date, etc.
+            } elseif (!isset($mapping['association'])) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : Type::getType(
+                        $mapping['type']
+                    )->convertToDatabaseValue($new));
                 }
 
-            // @EmbedOne
+                // @EmbedOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
                 // If we have a new embedded document then lets set the whole thing
                 if ($new && $this->uow->isScheduledForInsert($new)) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue(
+                        $mapping,
+                        $new
+                    );
 
-                // If we don't have a new value then do nothing on upsert
-                } elseif ( ! $new) {
+                    // If we don't have a new value then do nothing on upsert
+                } elseif (!$new) {
 
-                // Update existing embedded document
+                    // Update existing embedded document
                 } else {
                     $update = $this->prepareUpsertData($new);
                     foreach ($update as $cmd => $values) {
@@ -292,10 +308,10 @@ class PersistenceBuilder
                     }
                 }
 
-            // @EmbedMany
+                // @EmbedMany
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
                 foreach ($new as $key => $embeddedDoc) {
-                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
+                    if (!$this->uow->isScheduledForInsert($embeddedDoc)) {
                         $update = $this->prepareUpsertData($embeddedDoc);
                         foreach ($update as $cmd => $values) {
                             foreach ($values as $name => $value) {
@@ -305,13 +321,15 @@ class PersistenceBuilder
                     }
                 }
 
-            // @ReferenceOne
+                // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
+                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null(
+                        $new
+                    ) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 }
 
-            // @ReferenceMany
+                // @ReferenceMany
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
                 // Do nothing right now
             }
@@ -366,14 +384,14 @@ class PersistenceBuilder
             $value = null;
             if ($rawValue !== null) {
                 /** @Field, @String, @Date, etc. */
-                if ( ! isset($mapping['association'])) {
+                if (!isset($mapping['association'])) {
                     $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
 
-                /** @EmbedOne */
+                    /** @EmbedOne */
                 } elseif (isset($mapping['association']) && $mapping['association'] == ClassMetadata::EMBED_ONE) {
                     $value = $this->prepareEmbeddedDocumentValue($mapping, $rawValue);
 
-                /** @EmbedMany */
+                    /** @EmbedMany */
                 } elseif (isset($mapping['association']) && $mapping['association'] == ClassMetadata::EMBED_MANY) {
                     if ($mapping['strategy'] !== 'set') {
                         foreach ($rawValue as $key => $item) {
@@ -381,11 +399,11 @@ class PersistenceBuilder
                         }
                     }
 
-                /** @ReferenceOne */
+                    /** @ReferenceOne */
                 } elseif (isset($mapping['association']) && $mapping['association'] == ClassMetadata::REFERENCE_ONE) {
                     $value = $this->prepareReferencedDocumentValue($mapping, $rawValue);
 
-                /** @ReferenceMany */
+                    /** @ReferenceMany */
                 } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
                     $value = array();
                     foreach ($rawValue as $reference) {
@@ -401,9 +419,12 @@ class PersistenceBuilder
         }
 
         // Store a discriminator value if the embedded document is not mapped explicitly to a targetDocument
-        if ( ! isset($embeddedMapping['targetDocument'])) {
+        if (!isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_name';
-            $discriminatorValue = isset($embeddedMapping['discriminatorMap']) ? array_search($class->getName(), $embeddedMapping['discriminatorMap']) : $class->getName();
+            $discriminatorValue = isset($embeddedMapping['discriminatorMap']) ? array_search(
+                $class->getName(),
+                $embeddedMapping['discriminatorMap']
+            ) : $class->getName();
             $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
         }
 
@@ -413,12 +434,16 @@ class PersistenceBuilder
 
         // Fix so that we can force empty embedded document to store itself as a hash instead of an array
         if (empty($embeddedDocumentValue)) {
-            return (object) $embeddedDocumentValue;
+            return (object)$embeddedDocumentValue;
         }
 
         return $embeddedDocumentValue;
     }
 
+    /**
+     * @param object $document
+     * @return bool
+     */
     private function isScheduledForInsert($document)
     {
         return $this->uow->isScheduledForInsert($document)
