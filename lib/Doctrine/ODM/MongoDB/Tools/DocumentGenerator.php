@@ -725,7 +725,7 @@ public function <methodName>()
           '<variableName>'      => Inflector::camelize($fieldName),
           '<methodName>'        => $methodName,
           '<fieldName>'         => $fieldName,
-          '<document>'          => '\\' . $this->getClassName($metadata),
+          '<document>'          => '\\' . $metadata->name,
         );
 
         $method = str_replace(
