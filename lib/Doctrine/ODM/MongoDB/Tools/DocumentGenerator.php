@@ -106,7 +106,7 @@ public function <methodName>()
  * <description>
  *
  * @param <variableType>$<variableName>
- * @return <document>
+ * @return self
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
@@ -725,7 +725,6 @@ public function <methodName>()
           '<variableName>'      => Inflector::camelize($fieldName),
           '<methodName>'        => $methodName,
           '<fieldName>'         => $fieldName,
-          '<document>'          => '\\' . $this->getClassName($metadata),
         );
 
         $method = str_replace(
