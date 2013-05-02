@@ -700,6 +700,25 @@ class DocumentPersister
 
     private function loadReferenceManyCollectionInverseSide(PersistentCollection $collection)
     {
+        $query = $this->createReferenceManyInverseSideQuery($collection);
+        $documents = $query->execute()->toArray();
+        $mapping = $collection->getMapping();
+        foreach ($documents as $key => $document) {
+            if ($mapping['strategy'] === 'set') {
+                $collection->set($key, $document);
+            } else {
+                $collection->add($document);
+            }
+        }
+    }
+
+    /**
+     * @param PersistentCollection $collection
+     *
+     * @return Query
+     */
+    public function createReferenceManyInverseSideQuery(PersistentCollection $collection)
+    {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
@@ -726,20 +745,30 @@ class DocumentPersister
         if (isset($hints[Query::HINT_SLAVE_OKAY])) {
             $qb->slaveOkay(true);
         }
-        $documents = $qb->getQuery()->execute()->toArray();
-        foreach ($documents as $key => $document) {
-          if ($mapping['strategy'] === 'set') {
-            $collection->set($key, $document);
-          } else {
-            $collection->add($document);
-          }
-        }
+
+        return $qb->getQuery();
     }
 
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
     {
+        $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
+        $documents = $cursor->toArray();
+        foreach ($documents as $document) {
+            $collection->add($document);
+        }
+    }
+
+    /**
+     * @param PersistentCollection $collection
+     *
+     * @return Cursor
+     */
+    public function createReferenceManyWithRepositoryMethodCursor(PersistentCollection $collection)
+    {
+        $hints = $collection->getHints();
         $mapping = $collection->getMapping();
-        $cursor = $this->dm->getRepository($mapping['targetDocument'])->$mapping['repositoryMethod']($collection->getOwner());
+        $cursor = $this->dm->getRepository($mapping['targetDocument'])
+            ->$mapping['repositoryMethod']($collection->getOwner());
         if (isset($mapping['sort']) && $mapping['sort']) {
             $cursor->sort($mapping['sort']);
         }
@@ -752,10 +781,8 @@ class DocumentPersister
         if (isset($hints[Query::HINT_SLAVE_OKAY])) {
             $cursor->slaveOkay(true);
         }
-        $documents = $cursor->toArray();
-        foreach ($documents as $document) {
-            $collection->add($document);
-        }
+
+        return $cursor;
     }
 
     /**
