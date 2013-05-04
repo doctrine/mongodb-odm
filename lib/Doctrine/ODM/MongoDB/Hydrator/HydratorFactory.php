@@ -176,11 +176,13 @@ class HydratorFactory
                     $code .= sprintf(<<<EOF
 
         /** @AlsoLoad("$name") */
-        if (isset(\$data['$name'])) {
-            \$data['$fieldName'] = \$data['$name'];
+        if (!array_key_exists('%1\$s', \$data) && array_key_exists('$name', \$data)) {
+            \$data['%1\$s'] = \$data['$name'];
         }
 
 EOF
+                    ,
+                        $mapping['name']
                     );
                 }
             }
@@ -271,7 +273,7 @@ EOF
         \$mappedByFieldName = isset(\$mappedByMapping['simple']) && \$mappedByMapping['simple'] ? \$mapping['mappedBy'] : \$mapping['mappedBy'].'.\$id';
         \$criteria = array_merge(
             array(\$mappedByFieldName => \$data['_id']),
-            isset(\$this->class->fieldMappings['%2\$s']['criteria']) ? \$this->class->fieldMappings['%2\$s']['criteria'] : array() 
+            isset(\$this->class->fieldMappings['%2\$s']['criteria']) ? \$this->class->fieldMappings['%2\$s']['criteria'] : array()
         );
         \$sort = isset(\$this->class->fieldMappings['%2\$s']['sort']) ? \$this->class->fieldMappings['%2\$s']['sort'] : array();
         \$return = \$this->unitOfWork->getDocumentPersister(\$className)->load(\$criteria, null, array(), 0, \$sort);

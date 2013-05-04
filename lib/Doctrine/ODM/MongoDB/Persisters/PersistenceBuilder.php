@@ -172,7 +172,13 @@ class PersistenceBuilder
 
             // @Inc
             if ($mapping['type'] === 'increment') {
-                if ($new >= $old) {
+                if ($new === null) {
+                    if ($mapping['nullable'] === true) {
+                        $updateData[$this->cmd . 'set'][$mapping['name']] = null;
+                    } else {
+                        $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
+                    }
+                } elseif ($new >= $old) {
                     $updateData[$this->cmd . 'inc'][$mapping['name']] = $new - $old;
                 } else {
                     $updateData[$this->cmd . 'inc'][$mapping['name']] = ($old - $new) * -1;

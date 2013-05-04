@@ -34,7 +34,11 @@ class IdType extends Type
             return null;
         }
         if ( ! $value instanceof \MongoId) {
-            $value = new \MongoId($value);
+            try {
+                $value = new \MongoId($value);
+            } catch (\MongoException $e) {
+                $value = new \MongoId();
+            }
         }
         return $value;
     }

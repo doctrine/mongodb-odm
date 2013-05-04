@@ -62,6 +62,9 @@ class DateType extends Type
         if ($value instanceof \MongoDate) {
             $date = new \DateTime();
             $date->setTimestamp($value->sec);
+        } elseif (is_numeric($value)) {
+            $date = new \DateTime();
+            $date->setTimestamp($value);
         } else {
             $date = new \DateTime($value);
         }
@@ -75,6 +78,6 @@ class DateType extends Type
 
     public function closureToPHP()
     {
-        return 'if ($value instanceof \MongoDate) { $date = new \DateTime(); $date->setTimestamp($value->sec); $return = $date; } else { $return = new \DateTime($value); }';
+        return 'if ($value instanceof \MongoDate) { $return = new \DateTime(); $return->setTimestamp($value->sec); } elseif (is_numeric($value)) { $return = new \DateTime(); $return->setTimestamp($value); } else { $return = new \DateTime($value); }';
     }
 }

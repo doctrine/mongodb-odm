@@ -6,6 +6,15 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AlternateUser:
     id:
       type: id
       id: true
+    username:
+      type: string
+      unique: true
+    firstName:
+      type: string
+      index: true
+    middleName:
+      type: string
+      sparse: true
     address:
       reference: true
       type: one

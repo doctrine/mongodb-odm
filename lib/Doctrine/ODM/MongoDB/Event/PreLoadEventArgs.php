@@ -72,6 +72,6 @@ class PreLoadEventArgs extends EventArgs
      */
     public function &getData()
     {
-        return $data;
+        return $this->data;
     }
 }

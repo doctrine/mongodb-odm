@@ -319,6 +319,61 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(50, $user->getCount());
     }
 
+    public function testIncrementWithFloat()
+    {
+        $user = new User();
+        $user->setUsername('jon');
+        $user->setCount(100);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
+
+        $user->incrementCount(1.337);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
+        $this->assertEquals(101.337, $user->getCount());
+
+        $user->incrementCount(9.163);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
+        $this->assertEquals(110.5, $user->getCount());
+    }
+
+    public function testIncrementSetsNull()
+    {
+        $user = new User();
+        $user->setUsername('jon');
+        $user->setCount(10);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
+        $this->assertEquals(10, $user->getCount());
+
+        $user->incrementCount(1);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
+        $this->assertEquals(11, $user->getCount());
+
+        $user->setCount(null);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
+        $this->assertEquals(null, $user->getCount());
+    }
+
     public function testTest()
     {
         $employee = new Employee();
@@ -434,15 +489,41 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'foo' => 'cool'
         );
         $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
-        $this->assertNotNull($document->foo);
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('foo' => 'cool'));
+        $this->assertEquals('cool', $document->foo);
 
         $doc = array(
-            'zip' => 'test'
+            'bar' => 'bar',
+            'zip' => 'zip'
         );
         $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
-        $this->assertNotNull($document->foo);
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('zip' => 'zip'));
+        $this->assertEquals('bar', $document->foo);
+        $this->assertEquals('zip', $document->baz);
+
+        $doc = array(
+            'foo' => null,
+            'bar' => 'nice'
+        );
+        $collection->insert($doc);
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'nice'));
+        $this->assertNull($document->foo);
+
+        $doc = array(
+            'bar' => null,
+            'zip' => 'good'
+        );
+        $collection->insert($doc);
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('zip' => 'good'));
+        $this->assertNull($document->foo);
+
+        $doc = array(
+            'foo' => 'foo',
+            'bar' => 'bar'
+        );
+        $collection->insert($doc);
+        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('foo' => 'foo'));
+        $this->assertEquals('foo', $document->foo);
     }
 
     public function testAlsoLoadOnMethod()

@@ -30,11 +30,21 @@ class IncrementType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (integer) $value : null;
+        return $value !== null ? (is_float($value) ? (float) $value : (int) $value) : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (integer) $value : null;
+        return $value !== null ? (is_float($value) ? (float) $value : (int) $value) : null;
+    }
+
+    public function closureToMongo()
+    {
+        return '$return = is_float($value) ? (float) $value : (int) $value;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = is_float($value) ? (float) $value : (int) $value;';
     }
 }
