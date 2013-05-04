@@ -36,7 +36,7 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($user instanceof \Documents\SpecialUser);
     }
 
-    public function testSingleCollectionInhertiance()
+    public function testSingleCollectionInheritance()
     {
         $subProject = new \Documents\SubProject('Sub Project');
         $this->dm->persist($subProject);
