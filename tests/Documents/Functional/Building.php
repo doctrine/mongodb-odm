@@ -5,7 +5,7 @@ namespace Documents\Functional;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @ODM\Document
+ * @ODM\Document(db="doctrine_odm_tests", collection="buildings")
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  */
 class Building

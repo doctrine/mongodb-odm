@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class House extends Building
 {
+    /** @ODM\String */
     protected $ownerName;
 
     public function setOwnerName($ownerName)
