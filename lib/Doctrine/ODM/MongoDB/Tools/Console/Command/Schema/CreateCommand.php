@@ -31,11 +31,14 @@ class CreateCommand extends AbstractCommand
 {
     private $createOrder = array(self::DB, self::COLLECTION, self::INDEX);
 
+    private $timeout;
+
     protected function configure()
     {
         $this
             ->setName('odm:schema:create')
             ->addOption('class', 'c', InputOption::VALUE_REQUIRED, 'Document class to process (default: all classes)')
+            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
             ->addOption(self::DB, null, InputOption::VALUE_NONE, 'Create databases')
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Create collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Create indexes')
@@ -55,6 +58,10 @@ class CreateCommand extends AbstractCommand
         $create = empty($create) ? $this->createOrder : $create;
 
         $class = $input->getOption('class');
+
+        $timeout = $input->getOption('timeout');
+        $this->timeout = isset($timeout) ? (int) $timeout : null;
+
         $sm = $this->getSchemaManager();
 
         foreach ($create as $option) {
@@ -98,12 +105,12 @@ class CreateCommand extends AbstractCommand
 
     protected function processDocumentIndex(SchemaManager $sm, $document)
     {
-        $sm->ensureDocumentIndexes($document);
+        $sm->ensureDocumentIndexes($document, $this->timeout);
     }
 
     protected function processIndex(SchemaManager $sm)
     {
-        $sm->ensureIndexes();
+        $sm->ensureIndexes($this->timeout);
     }
 
     protected function processDocumentProxy(SchemaManager $sm, $document)

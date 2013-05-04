@@ -1328,9 +1328,10 @@ class UnitOfWork implements PropertyChangedListener
      * Schedules an document for insertion into the database.
      * If the document already has an identifier, it will be added to the identity map.
      *
+     * @param ClassMetadata $class
      * @param object $document The document to schedule for insertion.
      */
-    public function scheduleForInsert($class, $document)
+    public function scheduleForInsert(ClassMetadata $class, $document)
     {
         $oid = spl_object_hash($document);
 
@@ -1346,7 +1347,23 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->documentInsertions[$oid] = $document;
 
-        if (!$class->isEmbeddedDocument && $idValue = $class->getIdentifierValue($document)) {
+        /* Determine if the document should be upserted. Do not upsert embedded
+         * documents or documents with a falsey identifier (this may be changed
+         * in the future to allow null and zero, which are valid in MongoDB).
+         *
+         * Additionally, ensure that the document identifier's PHP form is the
+         * same as its database form converted back to PHP. Without this check,
+         * non-ObjectId strings used with the IdType may get registered in the
+         * identity map even though ODM generates a valid MongoId for upsert.
+         * If we instead defer to insert logic, ODM will ensure the generated
+         * MongoId is registered in the identity map and set on the document's
+         * identifier property. See GH-529 for more details.
+         */
+        if (!$class->isEmbeddedDocument &&
+            ($idValue = $class->getIdentifierValue($document)) &&
+            ($idPhpValue = $class->getPHPIdentifierValue($idValue)) &&
+            ($idDbValue = $class->getDatabaseIdentifierValue($idValue)) &&
+            $idPhpValue === $class->getPHPIdentifierValue($idDbValue)) {
             $this->documentUpserts[$oid] = $document;
             $this->documentIdentifiers[$oid] = $idValue;
         }
@@ -2397,7 +2414,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Clears the UnitOfWork.
      *
-     * @param string $documentName if given, only documents of this type will get detached
+     * @param string|null $documentName if given, only documents of this type will get detached.
      */
     public function clear($documentName = null)
     {

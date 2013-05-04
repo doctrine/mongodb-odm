@@ -432,7 +432,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function isIdentifier($fieldName)
     {
-        return $this->identifier === $fieldName ? true : false;
+        return $this->identifier === $fieldName;
     }
 
     /**
@@ -1045,9 +1045,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
                 $generatorType = constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
                 if ($generatorType !== self::GENERATOR_TYPE_AUTO) {
-                    $mapping['type'] = isset($this->generatorOptions['type'])
-                        ? $this->generatorOptions['type']
-                        : 'custom_id';
+                    if (isset($this->generatorOptions['type'])) {
+                        $mapping['type'] = $this->generatorOptions['type'];
+                    } elseif ($generatorType === ClassMetadata::GENERATOR_TYPE_INCREMENT) {
+                        $mapping['type'] = 'int_id';
+                    } else {
+                        $mapping['type'] = 'custom_id';
+                    }
 
                     unset($this->generatorOptions['type']);
                 }

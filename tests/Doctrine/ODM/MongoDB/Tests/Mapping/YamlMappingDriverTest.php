@@ -36,11 +36,35 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
             }
         }
     }
+
+    public function testFieldLevelIndexSyntaxWithBooleanValues()
+    {
+        $className = __NAMESPACE__.'\AlternateUser';
+        $mappingDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
+
+        $class = new ClassMetadata($className);
+        $mappingDriver->loadMetadataForClass($className, $class);
+
+        $this->assertEquals(1, $class->indexes[0]['keys']['username']);
+        $this->assertTrue($class->indexes[0]['options']['unique']);
+        $this->assertFalse(isset($class->indexes[0]['options']['sparse']));
+
+        $this->assertEquals(1, $class->indexes[1]['keys']['firstName']);
+        $this->assertFalse(isset($class->indexes[1]['options']['unique']));
+        $this->assertFalse(isset($class->indexes[1]['options']['sparse']));
+
+        $this->assertEquals(1, $class->indexes[2]['keys']['middleName']);
+        $this->assertFalse(isset($class->indexes[2]['options']['unique']));
+        $this->assertTrue($class->indexes[2]['options']['sparse']);
+    }
 }
 
 class AlternateUser
 {
     public $id;
+    public $username;
+    public $firstName;
+    public $middleName;
     public $address;
     public $phonenumbers;
     public $embeddedPhonenumber;

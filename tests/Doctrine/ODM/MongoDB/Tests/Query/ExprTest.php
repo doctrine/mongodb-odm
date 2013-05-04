@@ -8,60 +8,63 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testInIsPrepared()
     {
-        $id = '4f28aa84acee41388900000a';
-        $ids = array($id);
+        $ids = array('4f28aa84acee41388900000a');
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('groups.id')->in($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
         $debug = $query->debug();
-        $this->assertEquals($id, (string) current($debug['groups.$id']['$in']));
+
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$in'][0]);
+        $this->assertEquals($ids[0], (string) $debug['groups.$id']['$in'][0]);
     }
 
     public function testAllIsPrepared()
     {
-        $id = '4f28aa84acee41388900000a';
-        $ids = array($id);
+        $ids = array('4f28aa84acee41388900000a');
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('groups.id')->all($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
         $debug = $query->debug();
-        $this->assertEquals($id, (string) current($debug['groups.$id']['$all']));
+
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$all'][0]);
+        $this->assertEquals($ids[0], (string) $debug['groups.$id']['$all'][0]);
     }
 
     public function testNotEqualIsPrepared()
     {
-        $id = '4f28aa84acee41388900000a';
-        $ids = array($id);
+        $ids = array('4f28aa84acee41388900000a');
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('groups.id')->notEqual($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
         $debug = $query->debug();
-        $this->assertEquals($id, (string) current($debug['groups.$id']['$ne']));
+
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne'][0]);
+        $this->assertEquals($ids[0], (string) $debug['groups.$id']['$ne'][0]);
     }
 
     public function testNotInIsPrepared()
     {
-        $id = '4f28aa84acee41388900000a';
-        $ids = array($id);
+        $ids = array('4f28aa84acee41388900000a');
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('groups.id')->notIn($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
         $debug = $query->debug();
-        $this->assertEquals($id, (string) current($debug['groups.$id']['$nin']));
+
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$nin'][0]);
+        $this->assertEquals($ids[0], (string) $debug['groups.$id']['$nin'][0]);
     }
 
     public function testAndIsPrepared()
     {
-        $id = '4f28aa84acee41388900000a';
-        $ids = array($id);
+        $ids = array('4f28aa84acee41388900000a');
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
         $qb
@@ -69,13 +72,14 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
         $debug = $query->debug();
-        $this->assertEquals($id, (string) current($debug['$and'][0]['groups.$id']['$in']));
+
+        $this->assertInstanceOf('MongoId', $debug['$and'][0]['groups.$id']['$in'][0]);
+        $this->assertEquals($ids[0], (string) $debug['$and'][0]['groups.$id']['$in'][0]);
     }
 
     public function testOrIsPrepared()
     {
-        $id = '4f28aa84acee41388900000a';
-        $ids = array($id);
+        $ids = array('4f28aa84acee41388900000a');
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
         $qb
@@ -83,7 +87,35 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
         $debug = $query->debug();
-        $this->assertEquals($id, (string) current($debug['$or'][0]['groups.$id']['$in']));
+
+        $this->assertInstanceOf('MongoId', $debug['$or'][0]['groups.$id']['$in'][0]);
+        $this->assertEquals($ids[0], (string) $debug['$or'][0]['groups.$id']['$in'][0]);
+    }
+
+    public function testMultipleQueryOperatorsArePrepared()
+    {
+        $all = array('4f28aa84acee41388900000a');
+        $in = array('4f28aa84acee41388900000b');
+        $ne = array('4f28aa84acee41388900000c');
+        $nin = array('4f28aa84acee41388900000d');
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('groups.id')->all($all)
+            ->field('groups.id')->in($in)
+            ->field('groups.id')->notEqual($ne)
+            ->field('groups.id')->notIn($nin)
+            ->select('id')->hydrate(false);
+        $query = $qb->getQuery();
+        $debug = $query->debug();
+
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$all'][0]);
+        $this->assertEquals($all[0], (string) $debug['groups.$id']['$all'][0]);
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$in'][0]);
+        $this->assertEquals($in[0], (string) $debug['groups.$id']['$in'][0]);
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne'][0]);
+        $this->assertEquals($ne[0], (string) $debug['groups.$id']['$ne'][0]);
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$nin'][0]);
+        $this->assertEquals($nin[0], (string) $debug['groups.$id']['$nin'][0]);
     }
 
     public function testPrepareNestedDocuments()

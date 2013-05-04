@@ -26,16 +26,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author Chris Jones <leeked@gmail.com>
+ * @author Michał Dąbrowski <dabrowski@brillante.pl>
  */
 class UpdateCommand extends AbstractCommand
 {
     private $dropOrder = array(self::INDEX, self::COLLECTION, self::DB);
+
+    private $timeout;
 
     protected function configure()
     {
         $this
             ->setName('odm:schema:update')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
+            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
             ->setDescription('Update indexes for your documents')
         ;
     }
@@ -43,6 +47,10 @@ class UpdateCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $class = $input->getOption('class');
+
+        $timeout = $input->getOption('timeout');
+        $this->timeout = isset($timeout) ? (int) $timeout : null;
+
         $sm = $this->getSchemaManager();
 
         try {
@@ -60,12 +68,12 @@ class UpdateCommand extends AbstractCommand
 
     protected function processDocumentIndex(SchemaManager $sm, $document)
     {
-        $sm->updateDocumentIndexes($document);
+        $sm->updateDocumentIndexes($document, $this->timeout);
     }
 
     protected function processIndex(SchemaManager $sm)
     {
-        $sm->updateIndexes();
+        $sm->updateIndexes($this->timeout);
     }
 
     protected function processDocumentCollection(SchemaManager $sm, $document)

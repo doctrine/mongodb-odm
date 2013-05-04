@@ -112,11 +112,16 @@ class ProxyFactory
      * Generate the Proxy file name
      *
      * @param string $className
+     * @param string $proxyDir
+     *
      * @return string
      */
-    private function getProxyFileName($className)
+    private function getProxyFileName($className, $proxyDir = null)
     {
-        return $this->proxyDir . DIRECTORY_SEPARATOR . '__CG__' . str_replace('\\', '', $className) . '.php';
+        $proxyDir = $proxyDir ?: $this->proxyDir;
+        $proxyDir = rtrim($proxyDir, DIRECTORY_SEPARATOR);
+
+        return $proxyDir . DIRECTORY_SEPARATOR . '__CG__' . str_replace('\\', '', $className) . '.php';
     }
 
     /**
@@ -129,15 +134,13 @@ class ProxyFactory
      */
     public function generateProxyClasses(array $classes, $toDir = null)
     {
-        $proxyDir = $toDir ?: $this->proxyDir;
-        $proxyDir = rtrim($proxyDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         foreach ($classes as $class) {
             /* @var $class ClassMetadata */
             if ($class->isMappedSuperclass) {
                 continue;
             }
 
-            $proxyFileName = $this->getProxyFileName($class->name);
+            $proxyFileName = $this->getProxyFileName($class->name, $toDir);
             $this->generateProxyClass($class, $proxyFileName, self::$proxyClassTemplate);
         }
     }
@@ -285,7 +288,7 @@ class ProxyFactory
             $class->identifier === $identifier &&
             $class->hasField($identifier) &&
             (($method->getEndLine() - $method->getStartLine()) <= 4)
-            && in_array($class->fieldMappings[$identifier]['type'], array('id', 'custom_id'))
+            && in_array($class->fieldMappings[$identifier]['type'], array('id', 'int_id', 'custom_id'))
         );
 
         if ($cheapCheck) {

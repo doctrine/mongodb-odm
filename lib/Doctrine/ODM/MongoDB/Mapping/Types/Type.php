@@ -35,6 +35,7 @@ abstract class Type
      */
     private static $typesMap = array(
         'id' => 'Doctrine\ODM\MongoDB\Mapping\Types\IdType',
+        'int_id' => 'Doctrine\ODM\MongoDB\Mapping\Types\IntIdType',
         'custom_id' => 'Doctrine\ODM\MongoDB\Mapping\Types\CustomIdType',
         'boolean' => 'Doctrine\ODM\MongoDB\Mapping\Types\BooleanType',
         'int' => 'Doctrine\ODM\MongoDB\Mapping\Types\IntType',

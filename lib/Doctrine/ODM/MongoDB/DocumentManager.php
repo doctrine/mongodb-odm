@@ -609,19 +609,16 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Clears the DocumentManager. All entities that are currently managed
-     * by this DocumentManager become detached.
+     * Clears the DocumentManager.
      *
-     * @param string $documentName
+     * All documents that are currently managed by this DocumentManager become
+     * detached.
+     *
+     * @param string|null $documentName if given, only documents of this type will get detached
      */
     public function clear($documentName = null)
     {
-        if ($documentName === null) {
-            $this->unitOfWork->clear();
-        } else {
-            //TODO
-            throw new MongoDBException("DocumentManager#clear(\$documentName) not yet implemented.");
-        }
+        $this->unitOfWork->clear($documentName);
     }
 
     /**

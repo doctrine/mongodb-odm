@@ -37,44 +37,111 @@
       <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="discriminator-field" type="odm:discriminator-field-document" minOccurs="0"/>
+      <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
+      <xs:element name="lifecycle-callbacks" type="odm:lifecycle-callbacks" minOccurs="0"/>
+      <xs:element name="indexes" type="odm:indexes" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="db" type="xs:NMTOKEN" />
-    <xs:attribute name="name" type="xs:NMTOKEN" />
+    <xs:attribute name="name" type="xs:string" />
     <xs:attribute name="collection" type="xs:NMTOKEN" />
-    <xs:attribute name="repository-class" type="xs:NMTOKEN"/>
+    <xs:attribute name="repository-class" type="xs:string"/>
     <xs:attribute name="inheritance-type" type="odm:inheritance-type"/>
+    <xs:attribute name="change-tracking-policy" type="odm:change-tracking-policy" />
+    <xs:attribute name="require-indexes" type="xs:boolean" />
+    <xs:attribute name="slave-okay" type="xs:boolean" />
   </xs:complexType>
 
   <xs:complexType name="field">
     <xs:attribute name="id" type="xs:boolean" default="false" />
     <xs:attribute name="name" type="xs:NMTOKEN" />
     <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
+    <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="unique" type="xs:boolean" />
+    <xs:attribute name="drop-dups" type="xs:boolean" />
+    <xs:attribute name="order" type="xs:NMTOKEN" />
+    <xs:attribute name="embed" type="xs:boolean" />
+    <xs:attribute name="sparse" type="xs:boolean" />
+    <xs:attribute name="file" type="xs:boolean" />
+    <xs:attribute name="distance" type="xs:boolean" />
+    <xs:attribute name="reference" type="xs:boolean" />
   </xs:complexType>
 
   <xs:complexType name="embed-one">
-    <xs:attribute name="target-document" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="target-document" type="xs:string" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
   </xs:complexType>
 
   <xs:complexType name="embed-many">
-    <xs:attribute name="target-document" type="xs:NMTOKEN" use="required" />
+    <xs:sequence>
+      <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
+      <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="target-document" type="xs:string" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
   </xs:complexType>
 
   <xs:complexType name="reference-one">
     <xs:sequence>
-      <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
+      <xs:element name="cascade" type="odm:cascade-type" minOccurs="0" />
+      <xs:element name="sort" type="odm:sort-map" minOccurs="0" />
+      <xs:element name="criteria" type="odm:criteria-map" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="target-document" type="xs:NMTOKEN" use="optional" />
+    <xs:attribute name="target-document" type="xs:string" use="optional" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="simple" type="xs:boolean" />
+    <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
+    <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
+    <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
+    <xs:attribute name="repositoryMethod" type="xs:NMTOKEN" />
   </xs:complexType>
 
   <xs:complexType name="reference-many">
     <xs:sequence>
-      <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
+      <xs:element name="cascade" type="odm:cascade-type" minOccurs="0" />
+      <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
+      <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
+      <xs:element name="sort" type="odm:sort-map" minOccurs="0" />
+      <xs:element name="criteria" type="odm:criteria-map" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="target-document" type="xs:NMTOKEN" use="optional" />
+    <xs:attribute name="target-document" type="xs:string" use="optional" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="simple" type="xs:boolean" />
+    <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
+    <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
+    <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
+    <xs:attribute name="repositoryMethod" type="xs:NMTOKEN" />
+    <xs:attribute name="limit" type="xs:integer" />
+    <xs:attribute name="skip" type="xs:integer" />
+  </xs:complexType>
+
+  <xs:complexType name="sort-type">
+    <xs:attribute name="field" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="order" type="xs:NMTOKEN" default="asc" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="sort-map">
+    <xs:sequence>
+      <xs:element name="sort" type="odm:sort-type" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="criteria-type">
+    <xs:attribute name="field" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="value" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="criteria-map">
+    <xs:sequence>
+      <xs:element name="criteria" type="odm:criteria-type" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="emptyType"/>
@@ -95,5 +162,87 @@
       <xs:enumeration value="COLLECTION_PER_CLASS"/>
     </xs:restriction>
   </xs:simpleType>
+
+  <xs:simpleType name="change-tracking-policy">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="DEFERRED_IMPLICIT" />
+      <xs:enumeration value="DEFERRED_EXPLICIT"/>
+      <xs:enumeration value="NOTIFY"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="discriminator-mapping">
+    <xs:attribute name="value" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="class" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="discriminator-map">
+    <xs:sequence>
+      <xs:element name="discriminator-mapping" type="odm:discriminator-mapping" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="discriminator-field-document">
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="discriminator-field">
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="lifecycle-callback-type">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="prePersist"/>
+      <xs:enumeration value="postPersist"/>
+      <xs:enumeration value="preUpdate"/>
+      <xs:enumeration value="postUpdate"/>
+      <xs:enumeration value="preRemove"/>
+      <xs:enumeration value="postRemove"/>
+      <xs:enumeration value="preLoad"/>
+      <xs:enumeration value="postLoad"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="lifecycle-callback">
+    <xs:attribute name="type" type="odm:lifecycle-callback-type" use="required"/>
+    <xs:attribute name="method" type="xs:NMTOKEN" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="lifecycle-callbacks">
+    <xs:sequence>
+      <xs:element name="lifecycle-callback" type="odm:lifecycle-callback" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="index-key">
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="order" type="xs:NMTOKEN" use="optional" default="asc" />
+  </xs:complexType>
+
+  <xs:complexType name="index-option">
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="value" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="index">
+    <xs:sequence>
+      <xs:element name="key" type="odm:index-key" minOccurs="1" maxOccurs="unbounded"/>
+      <xs:element name="option" type="odm:index-option" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
+    <xs:attribute name="drop-dups" type="xs:boolean" use="optional"/>
+    <xs:attribute name="background" type="xs:boolean" use="optional"/>
+    <xs:attribute name="safe" type="xs:boolean" use="optional"/>
+    <xs:attribute name="unique" type="xs:boolean" use="optional"/>
+    <xs:attribute name="sparse" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="indexes">
+    <xs:sequence>
+      <xs:element name="index" type="odm:index" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
 
 </xs:schema>

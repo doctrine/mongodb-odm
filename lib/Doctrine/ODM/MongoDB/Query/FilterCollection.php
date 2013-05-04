@@ -83,11 +83,12 @@ class FilterCollection
      */
     public function enable($name)
     {
-        if (null === $filterClass = $this->config->getFilterClassName($name)) {
+        if ( ! $this->has($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
-        if (!isset($this->enabledFilters[$name])) {
+        if ( ! $this->isEnabled($name)) {
+            $filterClass = $this->config->getFilterClassName($name);
             $this->enabledFilters[$name] = new $filterClass($this->dm);
         }
 
@@ -107,7 +108,9 @@ class FilterCollection
     {
         // Get the filter to return it
         $filter = $this->getFilter($name);
+
         unset($this->enabledFilters[$name]);
+
         return $filter;
     }
 
@@ -122,10 +125,32 @@ class FilterCollection
      */
     public function getFilter($name)
     {
-        if (!isset($this->enabledFilters[$name])) {
+        if ( ! $this->isEnabled($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
         }
         return $this->enabledFilters[$name];
+    }
+
+    /**
+     * Checks whether filter with given name is defined.
+     *
+     * @param string $name Name of the filter.
+     * @return bool true if the filter exists, false if not.
+     */
+    public function has($name)
+    {
+        return null !== $this->config->getFilterClassName($name);
+    }
+
+    /**
+     * Checks whether filter with given name is enabled.
+     *
+     * @param string $name Name of the filter
+     * @return bool
+     */
+    public function isEnabled($name)
+    {
+        return isset($this->enabledFilters[$name]);
     }
 
     /**
