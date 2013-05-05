@@ -53,49 +53,49 @@ class DocumentPersister
     /**
      * The PersistenceBuilder instance.
      *
-     * @var Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder
+     * @var \Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder
      */
     private $pb;
 
     /**
      * The DocumentManager instance.
      *
-     * @var Doctrine\ODM\MongoDB\DocumentManager
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
      */
     private $dm;
 
     /**
      * The EventManager instance
      *
-     * @var Doctrine\Common\EventManager
+     * @var \Doctrine\Common\EventManager
      */
     private $evm;
 
     /**
      * The UnitOfWork instance.
      *
-     * @var Doctrine\ODM\MongoDB\UnitOfWork
+     * @var \Doctrine\ODM\MongoDB\UnitOfWork
      */
     private $uow;
 
     /**
      * The Hydrator instance
      *
-     * @var Doctrine\ODM\MongoDB\Hydrator
+     * @var \Doctrine\ODM\MongoDB\Hydrator
      */
     private $hydrator;
 
     /**
      * The ClassMetadata instance for the document type being persisted.
      *
-     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @var \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     private $class;
 
     /**
      * The MongoCollection instance for this document.
      *
-     * @var Doctrine\ODM\MongoDB\MongoCollection
+     * @var \Doctrine\ODM\MongoDB\MongoCollection
      */
     private $collection;
 
@@ -128,12 +128,12 @@ class DocumentPersister
     /**
      * Initializes a new DocumentPersister instance.
      *
-     * @param Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder $pb
-     * @param Doctrine\ODM\MongoDB\DocumentManager $dm
-     * @param Doctrine\Common\EventManager $evm
-     * @param Doctrine\ODM\MongoDB\UnitOfWork $uow
-     * @param Doctrine\ODM\MongoDB\Hydrator\HydratorFactory $hydratorFactory
-     * @param Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
+     * @param \Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder $pb
+     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param \Doctrine\Common\EventManager $evm
+     * @param \Doctrine\ODM\MongoDB\UnitOfWork $uow
+     * @param \Doctrine\ODM\MongoDB\Hydrator\HydratorFactory $hydratorFactory
+     * @param \Doctrine\ODM\MongoDB\Mapping\ClassMetadata $class
      * @param string $cmd
      */
     public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, HydratorFactory $hydratorFactory, ClassMetadata $class, $cmd)
@@ -172,7 +172,7 @@ class DocumentPersister
     /**
      * Gets the ClassMetadata instance of the document class this persister is used for.
      *
-     * @return Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     public function getClassMetadata()
     {
@@ -409,7 +409,7 @@ class DocumentPersister
     /**
      * Wraps the supplied base cursor as an ODM one.
      *
-     * @param Doctrine\MongoDB\Cursor $cursor The base cursor
+     * @param \Doctrine\MongoDB\Cursor $cursor The base cursor
      *
      * @return Cursor An ODM cursor
      */
@@ -631,6 +631,7 @@ class DocumentPersister
         $mapping = $collection->getMapping();
         $cmd = $this->cmd;
         $groupedIds = array();
+        $keys = array();
 
         $sorted = isset($mapping['sort']) && $mapping['sort'];
 
@@ -642,25 +643,16 @@ class DocumentPersister
                 $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
                 $mongoId = $reference[$cmd . 'id'];
             }
-            $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
+            $classMetadata = $this->dm->getClassMetadata($className);
+            $id = $classMetadata->getPHPIdentifierValue($mongoId);
             if (!$id) {
                 continue;
             }
 
-            // create a reference to the class and id
-            $reference = $this->dm->getReference($className, $id);
-
-            // no custom sort so add the references right now in the order they are embedded
-            if ( ! $sorted) {
-                if ($mapping['strategy'] === 'set') {
-                    $collection->set($key, $reference);
-                } else {
-                    $collection->add($reference);
-                }
-            }
-
+            $keys[$className][$id] = $key;
+            $document = $this->uow->tryGetById($id, $classMetadata->rootDocumentName);
             // only query for the referenced object if it is not already initialized or the collection is sorted
-            if (($reference instanceof Proxy && ! $reference->__isInitialized__) || $sorted) {
+            if (!$document || $sorted) {
                 $groupedIds[$className][$id] = $mongoId;
             }
         }
@@ -687,12 +679,19 @@ class DocumentPersister
             }
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
-                $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
+                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $documentData);
+                $document = $this->dm->getReference($className, (string) $documentData['_id']);
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;
                 if ($sorted) {
                     $collection->add($document);
+                } else {
+                    if ($mapping['strategy'] === 'set') {
+                        $collection->set($keys[$className][$documentData['_id']], $document);
+                    } else {
+                        $collection->add($document);
+                    }
                 }
             }
         }

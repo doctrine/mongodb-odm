@@ -56,6 +56,9 @@ class NoDiscriminatorMapTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $visitedBuildings->add($justSomeVisitedBuilding);
         $visitedBuildings->add($livingBuilding);
 
+        $this->dm->persist($livingBuilding);
+        $this->dm->persist($justSomeVisitedBuilding);
+        $this->dm->persist($favouriteWarehouse);
         $this->dm->persist($developer);
         $this->dm->flush();
         $this->dm->clear();
@@ -63,10 +66,6 @@ class NoDiscriminatorMapTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         /** @var \Documents\Developer $developer */
         $developer = $this->dm->find('Documents\Developer', $developer->getId());
         $visitedBuildings = $developer->getVisitedBuildings();
-
-        foreach ($visitedBuildings as $building) {
-
-        }
 
         $this->assertInstanceOf('Documents\Functional\Warehouse', $visitedBuildings[0]);
         $this->assertInstanceOf('Documents\Functional\Building', $visitedBuildings[1]);
