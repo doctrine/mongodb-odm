@@ -237,10 +237,12 @@ EOF
                 \$mongoId = \$reference['\$id'];
             }
             \$targetMetadata = \$this->dm->getClassMetadata(\$className);
-            \$id = \$targetMetadata->getPHPIdentifierValue(\$mongoId);
-            \$return = \$this->dm->getReference(\$className, \$id);
-            \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
+            \$return = \$targetMetadata->getPHPIdentifierValue(\$mongoId);
+            \$document->__{$fieldName}Identifier__ = \$return;
+            \$document->__{$fieldName}ClassName__ = \$className;
             \$hydratedData['%2\$s'] = \$return;
+        } else {
+            \$document->__{$fieldName}IsInitialized__ = true;
         }
 
 EOF

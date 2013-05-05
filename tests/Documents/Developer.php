@@ -14,27 +14,27 @@ class Developer
     /**
      * @ODM\Id
      */
-    private $id;
+    protected $id;
 
     /**
      * @ODM\String
      */
-    private $name;
+    protected $name;
 
     /**
      * @ODM\ReferenceMany(targetDocument="Documents\Project", cascade="all")
      */
-    private $projects;
+    protected $projects;
 
     /**
      * @ODM\ReferenceOne(targetDocument="Documents\Functional\Building", simple=true, cascade="all")
      */
-    private $livingBuilding;
+    protected $livingBuilding;
 
     /**
      * @ODM\ReferenceMany(targetDocument="Documents\Functional\Building", simple=true, cascade="all")
      */
-    private $visitedBuildings;
+    protected $visitedBuildings;
 
     public function __construct($name, Collection $projects = null)
     {
