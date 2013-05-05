@@ -149,7 +149,8 @@ class PersistenceBuilderTest extends BaseTest
             'article' => array(
                 '$db' => 'doctrine_odm_tests',
                 '$id' => new \MongoId($article->id),
-                '$ref' => 'CmsArticle'
+                '$ref' => 'CmsArticle',
+                '_doctrine_class_hierarchy' => array('Documents\CmsArticle')
             )
         );
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
@@ -174,7 +175,8 @@ class PersistenceBuilderTest extends BaseTest
             'article' => array(
                 '$db' => 'doctrine_odm_tests',
                 '$id' => new \MongoId($article->id),
-                '$ref' => 'CmsArticle'
+                '$ref' => 'CmsArticle',
+                '_doctrine_class_hierarchy' => array('Documents\CmsArticle')
             )
         );
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
@@ -204,7 +206,8 @@ class PersistenceBuilderTest extends BaseTest
                 'article' => array(
                     '$db' => 'doctrine_odm_tests',
                     '$id' => new \MongoId($article->id),
-                    '$ref' => 'CmsArticle'
+                    '$ref' => 'CmsArticle',
+                    '_doctrine_class_hierarchy' => array('Documents\CmsArticle')
                 )
             )
         );

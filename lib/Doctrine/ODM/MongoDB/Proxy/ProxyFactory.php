@@ -105,7 +105,9 @@ class ProxyFactory
 
         $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($className);
 
-        return new $fqn($documentPersister, $identifier);
+        $proxy = new $fqn($documentPersister, $identifier, $this->dm);
+        $proxy->__unsetProperties();
+        return $proxy;
     }
 
     /**
@@ -154,14 +156,17 @@ class ProxyFactory
      */
     private function generateProxyClass($class, $fileName, $file)
     {
+        $properties = $this->generateProperties($class);
         $methods = $this->generateMethods($class);
+        $unsets = $this->generateUnsets($class);
         $sleepImpl = $this->generateSleep($class);
         $cloneImpl = $class->reflClass->hasMethod('__clone') ? 'parent::__clone();' : ''; // hasMethod() checks case-insensitive
+        $getImpl = $class->reflClass->hasMethod('__get') ? 'parent::__get();' : '';
 
         $placeholders = array(
             '<namespace>',
             '<proxyClassName>', '<className>',
-            '<methods>', '<sleepImpl>', '<cloneImpl>'
+            '<properties>', '<methods>', '<unsets>', '<sleepImpl>', '<cloneImpl>', '<getImpl>'
         );
 
         $className = ltrim($class->name, '\\');
@@ -174,7 +179,9 @@ class ProxyFactory
             $proxyClassNamespace,
             $proxyClassName,
             $className,
+            $properties,
             $methods,
+            $unsets,
             $sleepImpl,
             $cloneImpl
         );
@@ -195,6 +202,30 @@ class ProxyFactory
     }
 
     /**
+     * Generates the properties of a proxy class.
+     *
+     * @param ClassMetadata $class
+     * @return string The code of the generated properties.
+     */
+    private function generateProperties(ClassMetadata $class)
+    {
+        $properties = '';
+        $unsetProperties = array();
+
+        foreach ($class->fieldMappings as $fieldName => $fieldMapping) {
+            if ($fieldMapping['type'] == 'one' && empty($fieldMapping['embedded'])) {
+                $unsetProperties[] = $fieldName;
+                $properties .= '    public $__'.$fieldName.'Identifier__;'."\n";
+                $properties .= '    public $__'.$fieldName.'ClassName__;'."\n";
+                $properties .= '    public $__'.$fieldName.'IsInitialized__ = false;'."\n";
+            }
+        }
+
+        $properties .= '    public $__unsetProperties__ = '.var_export($unsetProperties, true).';'."\n";
+        return $properties;
+    }
+
+    /**
      * Generates the methods of a proxy class.
      *
      * @param ClassMetadata $class
@@ -206,7 +237,7 @@ class ProxyFactory
 
         $methodNames = array();
         foreach ($class->reflClass->getMethods() as $method) {
-            /* @var $method ReflectionMethod */
+            /* @var $method \ReflectionMethod */
             if ($method->isConstructor() || in_array(strtolower($method->getName()), array("__sleep", "__clone")) || isset($methodNames[$method->getName()])) {
                 continue;
             }
@@ -257,6 +288,14 @@ class ProxyFactory
                     $methods .= '            return $this->__identifier__;' . "\n";
                     $methods .= '        }' . "\n";
                 }
+//                $fieldName = lcfirst(substr($method->getName(), 3));
+//                if ($this->isReferenceOneGetter($method, $class, $fieldName)) {
+//                    $methods .= '        if (!$this->__'.$fieldName.'IsInitialized__) {' . "\n";
+//                    $methods .= '            $this->'.$fieldName.' = $this->__documentManager__->getRepository($this->__'.$fieldName.'ClassName__)->find($this->'.$fieldName.');'. "\n";
+//                    $methods .= '            $this->__documentManager__->getUnitOfWork()->setOriginalDocumentProperty($this->__identifier__, \''.$fieldName.'\', $this->'.$fieldName.');'. "\n";
+//                    $methods .= '            $this->__'.$fieldName.'IsInitialized__ = true;'. "\n";
+//                    $methods .= '        }' . "\n";
+//                }
                 $methods .= '        $this->__load();' . "\n";
                 $methods .= '        return parent::' . $method->getName() . '(' . $argumentString . ');';
                 $methods .= "\n" . '    }' . "\n";
@@ -275,7 +314,7 @@ class ProxyFactory
      * ID is interesting for the userland code (for example in views that
      * generate links to the document, but do not display anything else).
      *
-     * @param ReflectionMethod $method
+     * @param \ReflectionMethod $method
      * @param ClassMetadata $class
      * @return bool
      */
@@ -305,6 +344,44 @@ class ProxyFactory
     }
 
     /**
+    * @param \ReflectionMethod $method
+    * @param ClassMetadata $class
+    * @return bool
+    */
+    private function isReferenceOneGetter($method, $class, $fieldName)
+    {
+        return (
+            $method->getNumberOfParameters() == 0 &&
+            substr($method->getName(), 0, 3) == "get" &&
+            $class->hasField($fieldName) &&
+            (($method->getEndLine() - $method->getStartLine()) <= 4) &&
+            $class->fieldMappings[$fieldName]['type'] == 'one'
+        );
+    }
+
+    /**
+     * Generates the unsets of a proxy class.
+     *
+     * @param ClassMetadata $class
+     * @return string The code of the generated unsets.
+     */
+    private function generateUnsets(ClassMetadata $class)
+    {
+        $unsets = '';
+
+        foreach ($class->fieldMappings as $fieldName => $fieldMapping) {
+            if ($fieldMapping['type'] == 'one' && empty($fieldMapping['embedded'])) {
+                $unsets .= '            if ($this->'.$fieldName.' === null) unset($this->'.$fieldName.');'."\n";
+            }
+        }
+
+        if ($unsets) {
+            $unsets = '          // To trigger __get'."\n".$unsets;
+        }
+        return $unsets;
+    }
+
+    /**
      * Generates the code for the __sleep method for a proxy class.
      *
      * @param $class
@@ -317,20 +394,22 @@ class ProxyFactory
         if ($class->reflClass->hasMethod('__sleep')) {
             $sleepImpl .= "return array_merge(array('__isInitialized__'), parent::__sleep());";
         } else {
-            $sleepImpl .= "return array('__isInitialized__', ";
-            $first = true;
+            $sleepImpl .= "return array(";
+            $sleepFields = array('__isInitialized__');
 
             foreach ($class->getReflectionProperties() as $name => $prop) {
-                if ($first) {
-                    $first = false;
-                } else {
-                    $sleepImpl .= ', ';
-                }
-
-                $sleepImpl .= "'" . $name . "'";
+                $sleepFields[] = $name;
             }
 
-            $sleepImpl .= ');';
+            foreach ($class->fieldMappings as $fieldName => $fieldMapping) {
+                if ($fieldMapping['type'] == 'one' && empty($fieldMapping['embedded'])) {
+                    $sleepFields[] = '__'.$fieldName.'Identifier__';
+                    $sleepFields[] = '__'.$fieldName.'ClassName__';
+                    $sleepFields[] = '__'.$fieldName.'IsInitialized__';
+                }
+            }
+
+            $sleepImpl .= "'".implode('\', \'', $sleepFields)."');";
         }
 
         return $sleepImpl;
@@ -343,6 +422,7 @@ class ProxyFactory
 namespace <namespace>;
 
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * THIS CLASS WAS GENERATED BY THE DOCTRINE ODM. DO NOT EDIT THIS FILE.
@@ -351,12 +431,22 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
 {
     private $__documentPersister__;
     public $__identifier__;
+    private $__documentManager__;
     public $__isInitialized__ = false;
-    public function __construct(DocumentPersister $documentPersister, $identifier)
+<properties>
+    public function __construct(DocumentPersister $documentPersister, $identifier, DocumentManager $documentManager)
     {
         $this->__documentPersister__ = $documentPersister;
         $this->__identifier__ = $identifier;
+        $this->__documentManager__ = $documentManager;
     }
+
+    /** @private */
+    public function __unsetProperties()
+    {
+<unsets>
+    }
+
     /** @private */
     public function __load()
     {
@@ -405,6 +495,19 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
             unset($this->__documentPersister__, $this->__identifier__);
         }
         <cloneImpl>
+    }
+
+    public function __get($name)
+    {
+        if (in_array($name, $this->__unsetProperties__)) {
+            if (!$this->{\'__\'.$name.\'IsInitialized__\'}) {
+                $this->$name = $this->__documentManager__->getRepository($this->{\'__\'.$name.\'ClassName__\'})->find($this->{\'__\'.$name.\'Identifier__\'});
+                $this->__documentManager__->getUnitOfWork()->setOriginalDocumentProperty($this->__identifier__, $name, $this->$name);
+                $this->{\'__\'.$name.\'IsInitialized__\'} = true;
+                return $this->$name;
+            }
+        }
+        <getImpl>
     }
 }';
 

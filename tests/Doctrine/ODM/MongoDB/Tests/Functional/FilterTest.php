@@ -219,10 +219,9 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $tim = $this->dm->getRepository('Documents\User')->find($this->ids['tim']);
 
         $profile = $tim->getProfile();
-        try {
+        if ($profile) {
             return $profile->getFirstname();
-        } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
-            //Proxy object filtered
+        } else {
             return null;
         }
     }

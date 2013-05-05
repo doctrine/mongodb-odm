@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
@@ -16,7 +17,10 @@ use Doctrine\MongoDB\Connection;
 
 abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var DocumentManager */
     protected $dm;
+
+    /** @var UnitOfWork */
     protected $uow;
 
     public function setUp()

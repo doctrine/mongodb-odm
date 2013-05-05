@@ -37,9 +37,9 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function provideUpsertObjects()
     {
         return array(
-            array('Documents\\UserUpsert', new \MongoId('4f18f593acee41d724000005'), 'user'),
-            array('Documents\\UserUpsertIdStrategyNone', 'jwage', 'user'),
-            array('Documents\\UserUpsertChild', new \MongoId('4f18f593acee41d724000005'), 'child')
+            array('Documents\\UserUpsert', new \MongoId('4f18f593acee41d724000005'), array('user')),
+            array('Documents\\UserUpsertIdStrategyNone', 'jwage', array('user')),
+            array('Documents\\UserUpsertChild', new \MongoId('4f18f593acee41d724000005'), array('child', 'user'))
         );
     }
 
@@ -245,7 +245,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('servers', $test['server']['$ref']);
         $this->assertTrue(isset($test['server']['$id']));
         $this->assertEquals('doctrine_odm_tests', $test['server']['$db']);
-        $this->assertEquals('server_guest', $test['server']['_doctrine_class_name']);
+        $this->assertEquals(array('server_guest'), $test['server']['_doctrine_class_hierarchy']);
     }
 
     public function testCollection()
@@ -626,10 +626,10 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $test = $this->dm->getDocumentCollection('Documents\Functional\FavoritesUser')->findOne(array('name' => 'favorites'));
         $this->assertTrue(isset($test['favorites'][0]['type']));
-        $this->assertEquals('project', $test['favorites'][0]['type']);
-        $this->assertEquals('group', $test['favorites'][1]['type']);
-        $this->assertTrue(isset($test['favorite']['_doctrine_class_name']));
-        $this->assertEquals('Documents\Project', $test['favorite']['_doctrine_class_name']);
+        $this->assertEquals(array('project'), $test['favorites'][0]['type']);
+        $this->assertEquals(array('group'), $test['favorites'][1]['type']);
+        $this->assertTrue(isset($test['favorite']['_doctrine_class_hierarchy']));
+        $this->assertEquals(array('Documents\Project'), $test['favorite']['_doctrine_class_hierarchy']);
 
         $user = $this->dm->getRepository('Documents\Functional\FavoritesUser')->findOneBy(array('name' => 'favorites'));
         $favorites = $user->getFavorites();

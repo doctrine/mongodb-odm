@@ -60,7 +60,7 @@ class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $testDoc = $dm->find(__NAMESPACE__.'\MODM90TestDocument', $testDoc->id);
 
-        $this->assertEquals($testDoc->embedded->type, 'test2');
+        $this->assertEquals($testDoc->embedded->type, array('test2'));
     }
 }
 
@@ -110,6 +110,6 @@ class MODM90Test2EmbeddedDocument
     /** @ODM\String */
     public $name;
 
-    /** @ODM\String The discriminator field is a real property */
+    /** @ODM\Collection The discriminator field is a real property */
     public $type;
 }

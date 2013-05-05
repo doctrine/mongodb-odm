@@ -660,9 +660,10 @@ class DocumentManager implements ObjectManager
 
     public function getClassNameFromDiscriminatorValue(array $mapping, $value)
     {
-        $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
+        $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_hierarchy';
         if (is_array($value) && isset($value[$discriminatorField])) {
-            $discriminatorValue = $value[$discriminatorField];
+            $discriminatorValues = (array)$value[$discriminatorField]; // Array cast for BC
+            $discriminatorValue = array_shift($discriminatorValues);
             return isset($mapping['discriminatorMap'][$discriminatorValue]) ? $mapping['discriminatorMap'][$discriminatorValue] : $discriminatorValue;
         } else {
             $class = $this->getClassMetadata($mapping['targetDocument']);
@@ -670,7 +671,9 @@ class DocumentManager implements ObjectManager
             // @TODO figure out how to remove this
             if ($class->discriminatorField) {
                 if (isset($value[$class->discriminatorField['name']])) {
-                    return $class->discriminatorMap[$value[$class->discriminatorField['name']]];
+                    $discriminatorValues = (array)$value[$class->discriminatorField['name']]; // Array cast for BC
+                    $discriminatorValue = array_shift($discriminatorValues);
+                    return isset($class->discriminatorMap[$discriminatorValue])? $class->discriminatorMap[$discriminatorValue] : $discriminatorValue;
                 }
             }
         }
@@ -705,14 +708,14 @@ class DocumentManager implements ObjectManager
         );
 
         if ($class->discriminatorField) {
-            $dbRef[$class->discriminatorField['name']] = $class->discriminatorValue;
+            $dbRef[$class->discriminatorField['name']] = $class->getDiscriminatorValuesHierarchy($this);
         }
 
         // add a discriminator value if the referenced document is not mapped explicitly to a targetDocument
         if ($referenceMapping && ! isset($referenceMapping['targetDocument'])) {
-            $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_name';
+            $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_hierarchy';
             $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search($class->getName(), $referenceMapping['discriminatorMap']) : $class->getName();
-            $dbRef[$discriminatorField] = $discriminatorValue;
+            $dbRef[$discriminatorField] = array($discriminatorValue);
         }
 
         return $dbRef;

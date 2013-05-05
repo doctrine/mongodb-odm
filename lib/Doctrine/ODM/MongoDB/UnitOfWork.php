@@ -1974,7 +1974,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($managedCopy === null) {
                     // If the identifier is ASSIGNED, it is NEW, otherwise an error
                     // since the managed entity was not found.
-                    $managedCopy = $class->newInstance();
+                    $managedCopy = $this->dm->proxyFactory->getProxy($class->name, $id);
                     $class->setIdentifierValue($managedCopy, $id);
                     $this->persistNew($class, $managedCopy);
                 }
@@ -2503,8 +2503,9 @@ class UnitOfWork implements PropertyChangedListener
         // @TODO figure out how to remove this
         if ($class->discriminatorField) {
             if (isset($data[$class->discriminatorField['name']])) {
-                $type = $data[$class->discriminatorField['name']];
-                $class = $this->dm->getClassMetadata($class->discriminatorMap[$data[$class->discriminatorField['name']]]);
+                $discriminatorValues = (array)$data[$class->discriminatorField['name']]; // Array cast for BC
+                $discriminatorValue = array_shift($discriminatorValues);
+                $class = $this->dm->getClassMetadata($class->getClassNameFromDiscriminatorMap($discriminatorValue));
                 unset($data[$class->discriminatorField['name']]);
             }
         }
@@ -2527,7 +2528,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->originalDocumentData[$oid] = $data;
             }
         } else {
-            $document = $class->newInstance();
+            $document = $this->dm->proxyFactory->getProxy($class->name, $id);
             $this->registerManaged($document, $id, $data);
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
