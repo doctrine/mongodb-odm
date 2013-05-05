@@ -2528,7 +2528,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->originalDocumentData[$oid] = $data;
             }
         } else {
-            $document = $class->newInstance();
+            $document = $this->dm->proxyFactory->getProxy($class->name, $id);
             $this->registerManaged($document, $id, $data);
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
