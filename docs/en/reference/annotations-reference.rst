@@ -504,7 +504,7 @@ Examples:
     protected $country;
     
     /**
-     * @Column(type="float")
+     * @Field(type="float")
      */
     protected $height;
 
