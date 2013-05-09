@@ -362,9 +362,8 @@ Now we can configure the ODM and create our ``DocumentManager`` instance:
     $config->setHydratorDir(__DIR__ . '/cache');
     $config->setHydratorNamespace('Hydrators');
 
-    $reader = new AnnotationReader();
-    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
-    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+    AnnotationDriver::registerAnnotationClasses();
+    $config->setMetadataDriverImpl(AnnotationDriver::create('/path/to/document/classes'));
 
     $dm = DocumentManager::create(new Connection(), $config);
 
@@ -408,9 +407,8 @@ Your final bootstrap code should look like the following:
     $config->setHydratorDir(__DIR__ . '/cache');
     $config->setHydratorNamespace('Hydrators');
 
-    $reader = new AnnotationReader();
-    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
-    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+    AnnotationDriver::registerAnnotationClasses();
+    $config->setMetadataDriverImpl(AnnotationDriver::create('/path/to/document/classes'));
 
     $dm = DocumentManager::create(new Connection(), $config);
 
