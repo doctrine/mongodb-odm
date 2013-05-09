@@ -363,8 +363,9 @@ Now we can configure the ODM and create our ``DocumentManager`` instance:
     $config->setHydratorDir(__DIR__ . '/cache');
     $config->setHydratorNamespace('Hydrators');
 
-    $reader = new AnnotationReader();
-    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+    $config->setMetadataDriverImpl(AnnotationDriver::create('/path/to/document/classes'));
+
+    AnnotationDriver::registerAnnotationClasses();
 
     $dm = DocumentManager::create(new Connection(), $config);
 
@@ -408,8 +409,9 @@ Your final bootstrap code should look like the following:
     $config->setHydratorDir(__DIR__ . '/cache');
     $config->setHydratorNamespace('Hydrators');
 
-    $reader = new AnnotationReader();
-    $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
+    $config->setMetadataDriverImpl(AnnotationDriver::create('/path/to/document/classes'));
+
+    AnnotationDriver::registerAnnotationClasses();
 
     $dm = DocumentManager::create(new Connection(), $config);
 
