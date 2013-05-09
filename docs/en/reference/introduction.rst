@@ -290,6 +290,12 @@ The easiest way is to just clone it using git:
     $ git submodule init
     $ git submodule update
 
+Install dependencies with composer (replace composter.phar with the location of composer on your system)
+
+::
+
+    $ php composer.phar install
+
 Now that we have the code, we can begin our setup. First in a file named ``bootstrap.php` 
 bootstrap file you need to require the ``ClassLoader`` from the
 ``Doctrine\Common`` namespace which is included in the vendor
@@ -301,7 +307,7 @@ libraries:
 
     // doctrine-mongodb-odm-test/bootstrap.php
 
-    require 'lib/vendor/doctrine-mongodb-odm/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
+    require 'lib/vendor/doctrine-mongodb-odm/vendor/doctrine/common/lib/Doctrine/Common/ClassLoader.php';
 
 At the top of your bootstrap file, you need to tell PHP which namespaces you want to use:
 
@@ -331,11 +337,11 @@ Next we need to setup the ``ClassLoader`` instances for all of the classes we ne
     $classLoader->register();
     
     // Common Classes
-    $classLoader = new ClassLoader('Doctrine\Common', 'lib/vendor/doctrine-mongodb-odm/lib/vendor/doctrine-common/lib');
+    $classLoader = new ClassLoader('Doctrine\Common', 'lib/vendor/doctrine-mongodb-odm/vendor/doctrine/common/lib');
     $classLoader->register();
     
     // MongoDB Classes
-    $classLoader = new ClassLoader('Doctrine\MongoDB', 'lib/vendor/doctrine-mongodb-odm/lib/vendor/doctrine-mongodb/lib');
+    $classLoader = new ClassLoader('Doctrine\MongoDB', 'lib/vendor/doctrine-mongodb-odm/vendor/doctrine/mongodb/lib');
     $classLoader->register();
     
     // Document classes
@@ -370,7 +376,7 @@ Your final bootstrap code should look like the following:
 
     // doctrine-mongodb-odm-test/bootstrap.php
 
-    require 'lib/vendor/doctrine-mongodb-odm/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
+    require 'lib/vendor/doctrine-mongodb-odm/vendor/doctrine/common/lib/Doctrine/Common/ClassLoader.php';
 
     use Doctrine\Common\ClassLoader,
         Doctrine\Common\Annotations\AnnotationReader,
@@ -384,11 +390,11 @@ Your final bootstrap code should look like the following:
     $classLoader->register();
 
     // Common Classes
-    $classLoader = new ClassLoader('Doctrine\Common', 'lib/vendor/doctrine-mongodb-odm/lib/vendor/doctrine-common/lib');
+    $classLoader = new ClassLoader('Doctrine\Common', 'lib/vendor/doctrine-mongodb-odm/vendor/doctrine/common/lib');
     $classLoader->register();
 
     // MongoDB Classes
-    $classLoader = new ClassLoader('Doctrine\MongoDB', 'lib/vendor/doctrine-mongodb-odm/lib/vendor/doctrine-mongodb/lib');
+    $classLoader = new ClassLoader('Doctrine\MongoDB', 'lib/vendor/doctrine-mongodb-odm/vendor/doctrine/mongodb/lib');
     $classLoader->register();
 
     // Document classes
