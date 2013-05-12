@@ -2430,6 +2430,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->documentDeletions =
             $this->collectionUpdates =
             $this->collectionDeletions =
+            $this->persisters =
             $this->extraUpdates =
             $this->parentAssociations =
             $this->orphanRemovals = array();
