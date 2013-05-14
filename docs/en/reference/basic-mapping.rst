@@ -130,8 +130,8 @@ option as follows:
           db: my_db
           collection: users
 
-Now instances of Documents\User will be persisted into a
-collection named ``User`` in the database ``my_db``.
+Now instances of ``Documents\User`` will be persisted into a
+collection named ``users`` in the database ``my_db``.
 
 If you want to omit the db attribute you can configure the default db
 to use with the ``setDefaultDB`` method:
