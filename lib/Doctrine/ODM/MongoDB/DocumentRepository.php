@@ -124,20 +124,20 @@ class DocumentRepository implements ObjectRepository
 
         if ($lockMode == LockMode::NONE) {
             return $this->uow->getDocumentPersister($this->documentName)->load($id);
-        } else {
-            if ($lockMode == LockMode::OPTIMISTIC) {
-                if ( ! $this->class->isVersioned) {
-                    throw LockException::notVersioned($this->documentName);
-                }
-                $document = $this->uow->getDocumentPersister($this->documentName)->load($id);
-
-                $this->uow->lock($document, $lockMode, $lockVersion);
-
-                return $document;
-            } else {
-                return $this->uow->getDocumentPersister($this->documentName)->load($id, null, array(), $lockMode);
-            }
         }
+
+        if ($lockMode == LockMode::OPTIMISTIC) {
+            if (!$this->class->isVersioned) {
+                throw LockException::notVersioned($this->documentName);
+            }
+            $document = $this->uow->getDocumentPersister($this->documentName)->load($id);
+
+            $this->uow->lock($document, $lockMode, $lockVersion);
+
+            return $document;
+        }
+
+        return $this->uow->getDocumentPersister($this->documentName)->load($id, null, array(), $lockMode);
     }
 
     /**
