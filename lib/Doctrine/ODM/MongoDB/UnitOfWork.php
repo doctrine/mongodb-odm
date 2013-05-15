@@ -852,7 +852,6 @@ class UnitOfWork implements PropertyChangedListener
      * @param array $mapping
      * @param mixed $value The value of the association.
      * @throws \InvalidArgumentException
-     * @return \InvalidArgumentException|void
      */
     private function computeAssociationChanges($parentDocument, $mapping, $value)
     {
@@ -906,7 +905,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->setParentAssociation($entry, $mapping, $parentDocument, $path);
                 $this->computeChangeSet($targetClass, $entry);
             } elseif ($state == self::STATE_REMOVED) {
-                return new \InvalidArgumentException("Removed document detected during flush: "
+                throw new \InvalidArgumentException("Removed document detected during flush: "
                     . self::objToStr($entry) . ". Remove deleted documents from associations.");
             } elseif ($state == self::STATE_DETACHED) {
                 // Can actually not happen right now as we assume STATE_NEW,
