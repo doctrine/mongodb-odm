@@ -1942,13 +1942,11 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $document
      * @param array $visited
-     * @param null $prevManagedCopy
-     * @param null $assoc
      * @throws LockException
      * @throws \InvalidArgumentException
      * @return object The managed copy of the document.
      */
-    private function doMerge($document, array &$visited, $prevManagedCopy = null, $assoc = null)
+    private function doMerge($document, array &$visited)
     {
         $oid = spl_object_hash($document);
         if (isset($visited[$oid])) {
@@ -2077,19 +2075,6 @@ class UnitOfWork implements PropertyChangedListener
             }
             if ($class->isChangeTrackingDeferredExplicit()) {
                 $this->scheduleForDirtyCheck($document);
-            }
-        }
-
-        if ($prevManagedCopy !== null) {
-            $assocField = $assoc->sourceFieldName;
-            $prevClass = $this->dm->getClassMetadata(get_class($prevManagedCopy));
-            if ($assoc->isOneToOne()) {
-                $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
-            } else {
-                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->unwrap()->add($managedCopy);
-                if ($assoc->isOneToMany()) {
-                    $class->reflFields[$assoc->mappedBy]->setValue($managedCopy, $prevManagedCopy);
-                }
             }
         }
 
