@@ -25,18 +25,19 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 class SchemaManager
 {
     /**
-     * @var Doctrine\ODM\MongoDB\DocumentManager
+     * @var DocumentManager
      */
     protected $dm;
 
     /**
      *
-     * @var Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     * @var ClassMetadataFactory
      */
     protected $metadataFactory;
 
     /**
-     * @param Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param DocumentManager $dm
+     * @param ClassMetadataFactory $cmf
      */
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {
@@ -86,6 +87,7 @@ class SchemaManager
      *
      * @param string $documentName
      * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @throws \InvalidArgumentException
      */
     public function updateDocumentIndexes($documentName, $timeout = null)
     {
@@ -103,7 +105,7 @@ class SchemaManager
          * and those that are equivalent to any in the class metadata.
          */
         $self = $this;
-        $mongoIndexes = array_filter($mongoIndexes, function($mongoIndex) use ($documentIndexes, $self) {
+        $mongoIndexes = array_filter($mongoIndexes, function ($mongoIndex) use ($documentIndexes, $self) {
             if ('_id_' === $mongoIndex['name']) {
                 return false;
             }
@@ -133,12 +135,21 @@ class SchemaManager
         $this->ensureDocumentIndexes($documentName, $timeout);
     }
 
+    /**
+     * @param string $documentName
+     * @return array
+     */
     public function getDocumentIndexes($documentName)
     {
         $visited = array();
         return $this->doGetDocumentIndexes($documentName, $visited);
     }
 
+    /**
+     * @param string $documentName
+     * @param array $visited
+     * @return array
+     */
     private function doGetDocumentIndexes($documentName, array &$visited)
     {
         if (isset($visited[$documentName])) {
@@ -162,7 +173,7 @@ class SchemaManager
                     $indexes[] = $embeddedIndex;
                 }
 
-            } else if (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
+            } elseif (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
                 foreach ($indexes as $idx => $index) {
                     $newKeys = array();
                     foreach ($index['keys'] as $key => $v) {
@@ -178,6 +189,10 @@ class SchemaManager
         return $indexes;
     }
 
+    /**
+     * @param ClassMetadata $class
+     * @return array
+     */
     private function prepareIndexes(ClassMetadata $class)
     {
         $persister = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
@@ -213,6 +228,7 @@ class SchemaManager
      *
      * @param string $documentName
      * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @throws \InvalidArgumentException
      */
     public function ensureDocumentIndexes($documentName, $timeout = null)
     {
@@ -224,10 +240,10 @@ class SchemaManager
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
                 // TODO: Use "w" for driver versions >= 1.3.0
-                if (!isset($index['options']['safe'])) {
+                if ( ! isset($index['options']['safe'])) {
                     $index['options']['safe'] = true;
                 }
-                if (!isset($index['options']['timeout']) && isset($timeout)) {
+                if ( ! isset($index['options']['timeout']) && isset($timeout)) {
                     $index['options']['timeout'] = $timeout;
                 }
                 $collection->ensureIndex($index['keys'], $index['options']);
@@ -253,6 +269,7 @@ class SchemaManager
      * Delete the given document's indexes.
      *
      * @param string $documentName
+     * @throws \InvalidArgumentException
      */
     public function deleteDocumentIndexes($documentName)
     {
@@ -280,6 +297,7 @@ class SchemaManager
      * Create the document collection for a mapped class.
      *
      * @param string $documentName
+     * @throws \InvalidArgumentException
      */
     public function createDocumentCollection($documentName)
     {
@@ -321,6 +339,7 @@ class SchemaManager
      * Drop the document collection for a mapped class.
      *
      * @param string $documentName
+     * @throws \InvalidArgumentException
      */
     public function dropDocumentCollection($documentName)
     {
@@ -350,6 +369,7 @@ class SchemaManager
      * Drop the document database for a mapped class.
      *
      * @param string $documentName
+     * @throws \InvalidArgumentException
      */
     public function dropDocumentDatabase($documentName)
     {
@@ -377,6 +397,7 @@ class SchemaManager
      * Create the document database for a mapped class.
      *
      * @param string $documentName
+     * @throws \InvalidArgumentException
      */
     public function createDocumentDatabase($documentName)
     {
@@ -420,8 +441,8 @@ class SchemaManager
             return false;
         }
 
-        if (!empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
-            !empty($documentIndexOptions['unique']) && !empty($documentIndexOptions['dropDups'])) {
+        if ( ! empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
+            ! empty($documentIndexOptions['unique']) && ! empty($documentIndexOptions['dropDups'])) {
 
             return false;
         }

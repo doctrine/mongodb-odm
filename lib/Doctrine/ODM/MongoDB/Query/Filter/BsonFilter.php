@@ -80,7 +80,7 @@ abstract class BsonFilter
      */
     final public function getParameter($name)
     {
-        if (!isset($this->parameters[$name])) {
+        if ( ! isset($this->parameters[$name])) {
             throw new \InvalidArgumentException("Filter parameter '" . $name . "' is not set.");
         }
         return $this->parameters[$name];
