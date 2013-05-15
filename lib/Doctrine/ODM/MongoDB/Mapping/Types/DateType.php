@@ -73,7 +73,7 @@ class DateType extends Type
 
     public function closureToMongo()
     {
-        return 'if ($value instanceof \DateTime) { $value = $value->getTimestamp(); } else if (is_string($value)) { $value = strtotime($value); } $return = new \MongoDate($value);';
+        return 'if ($value instanceof \DateTime) { $value = $value->getTimestamp(); } elseif (is_string($value)) { $value = strtotime($value); } $return = new \MongoDate($value);';
     }
 
     public function closureToPHP()

@@ -27,6 +27,6 @@ class Phonenumber
 
     public function __toString()
     {
-        return $this->phonenumber;
+        return (string) $this->phonenumber;
     }
 }

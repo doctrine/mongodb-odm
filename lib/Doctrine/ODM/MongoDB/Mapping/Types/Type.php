@@ -111,8 +111,8 @@ abstract class Type
      * Get a Type instance.
      *
      * @param string $type The type name.
-     * @return Doctrine\ODM\MongoDB\Mapping\Types\Type $type
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
+     * @return \Doctrine\ODM\MongoDB\Mapping\Types\Type $type
      */
     public static function getType($type)
     {
@@ -130,15 +130,15 @@ abstract class Type
      * Get a Type instance based on the type of the passed php variable.
      *
      * @param mixed $variable
-     * @return Doctrine\ODM\MongoDB\Mapping\Types\Type $type
-     * @throws InvalidArgumentException
+     * @return \Doctrine\ODM\MongoDB\Mapping\Types\Type $type
+     * @throws \InvalidArgumentException
      */
     public static function getTypeFromPHPVariable($variable)
     {
         if (is_object($variable)) {
             if ($variable instanceof \DateTime) {
                 return self::getType('date');
-            } else if ($variable instanceof \MongoId) {
+            } elseif ($variable instanceof \MongoId) {
                 return self::getType('id');
             }
         } else {

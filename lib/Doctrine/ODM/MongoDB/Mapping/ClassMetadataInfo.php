@@ -19,10 +19,10 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use InvalidArgumentException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use InvalidArgumentException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -84,12 +84,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     const GENERATOR_TYPE_NONE = 6;
 
 
-    const REFERENCE_ONE  = 1;
+    const REFERENCE_ONE = 1;
     const REFERENCE_MANY = 2;
-    const EMBED_ONE      = 3;
-    const EMBED_MANY     = 4;
-    const MANY           = 'many';
-    const ONE            = 'one';
+    const EMBED_ONE = 3;
+    const EMBED_MANY = 4;
+    const MANY = 'many';
+    const ONE = 'one';
 
     /* The inheritance mapping types */
     /**
@@ -265,7 +265,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
-     * @var AbstractIdGenerator
+     * @var \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator
      */
     public $idGenerator;
 
@@ -392,7 +392,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     public $reflClass;
 
@@ -411,7 +411,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Gets the ReflectionClass instance of the mapped class.
      *
-     * @return ReflectionClass
+     * @return \ReflectionClass
      */
     public function getReflectionClass()
     {
@@ -511,8 +511,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Dispatches the lifecycle event of the given document to the registered
      * lifecycle callbacks and lifecycle listeners.
      *
-     * @param string $event The lifecycle event.
-     * @param Document $document The Document on which the event occurred.
+     * @param string $lifecycleEvent
+     * @param object $document The Document on which the event occurred.
+     * @param array $arguments
      */
     public function invokeLifecycleCallbacks($lifecycleEvent, $document, array $arguments = null)
     {
@@ -576,6 +577,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Sets the discriminator field name.
      *
      * @param string $discriminatorField
+     * @throws MappingException
      * @see getDiscriminatorField()
      */
     public function setDiscriminatorField($discriminatorField)
@@ -594,6 +596,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
      *
      * @param array $map
+     * @throws MappingException
      */
     public function setDiscriminatorMap(array $map)
     {
@@ -650,18 +653,16 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             'keys' => array_map(function($value) {
                 if ($value == 1 || $value == -1) {
                     return (int) $value;
-                } elseif(is_string($value)) {
+                }
+                if (is_string($value)) {
                     $lower = strtolower($value);
                     if ($lower === 'asc') {
                         return 1;
                     } elseif ($lower === 'desc') {
                         return -1;
-                    } else {
-                        return $value;
                     }
-                } else {
-                    return $value;
                 }
+                return $value;
             }, $keys),
             'options' => $options
         );
@@ -751,7 +752,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Gets a ReflectionProperty for a specific field of the mapped class.
      *
      * @param string $name
-     * @return ReflectionProperty
+     * @return \ReflectionProperty
      */
     public function getReflectionProperty($name)
     {
@@ -811,7 +812,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Sets the collection this Document is mapped to.
      *
-     * @param string $collection The collection name.
+     * @param array|string $name
+     * @throws \InvalidArgumentException
      */
     public function setCollection($name)
     {
@@ -905,7 +907,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function isFile()
     {
-        return $this->file ? true :false;
+        return $this->file ? true : false;
     }
 
     /**
@@ -952,6 +954,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Map a field.
      *
      * @param array $mapping The mapping information.
+     * @throws MappingException
+     * @return array
      */
     public function mapField(array $mapping)
     {
@@ -1225,7 +1229,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isSingleValuedReference($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
-                $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_ONE;
+            $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_ONE;
     }
 
     /**
@@ -1238,7 +1242,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isCollectionValuedReference($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
-                $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_MANY;
+            $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_MANY;
     }
 
     /**
@@ -1251,7 +1255,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isSingleValuedEmbed($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
-                $this->fieldMappings[$fieldName]['association'] === self::EMBED_ONE;
+            $this->fieldMappings[$fieldName]['association'] === self::EMBED_ONE;
     }
 
     /**
@@ -1264,13 +1268,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isCollectionValuedEmbed($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
-                $this->fieldMappings[$fieldName]['association'] === self::EMBED_MANY;
+            $this->fieldMappings[$fieldName]['association'] === self::EMBED_MANY;
     }
 
     /**
      * Sets the ID generator used to generate IDs for instances of this class.
      *
-     * @param AbstractIdGenerator $generator
+     * @param \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator $generator
      */
     public function setIdGenerator($generator)
     {
@@ -1321,7 +1325,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getIdentifierValue($document)
     {
-        if ($document instanceof Proxy && !$document->__isInitialized()) {
+        if ($document instanceof Proxy && ! $document->__isInitialized()) {
             return $document->__identifier__;
         }
         return $this->reflFields[$this->identifier]->getValue($document);
@@ -1346,7 +1350,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Get the document identifier object.
      *
      * @param string $document
-     * @return MongoId $id  The MongoID object.
+     * @return \MongoId $id  The MongoID object.
      */
     public function getIdentifierObject($document)
     {
@@ -1375,7 +1379,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getFieldValue($document, $field)
     {
-        if ($document instanceof Proxy && $field === $this->identifier && !$document->__isInitialized()) {
+        if ($document instanceof Proxy && $field === $this->identifier && ! $document->__isInitialized()) {
             return $document->__identifier__;
         }
         return $this->reflFields[$field]->getValue($document);
@@ -1385,6 +1389,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Gets the mapping of a field.
      *
      * @param string $fieldName  The field name.
+     * @throws MappingException if the $fieldName is not found in the fieldMappings array
      * @return array  The field mapping.
      */
     public function getFieldMapping($fieldName)
@@ -1540,6 +1545,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * value to use depending on the column type.
      *
      * @param array $mapping   The version field mapping array
+     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function setVersionMapping(array &$mapping)
     {
@@ -1635,24 +1641,25 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Gets the type of a field.
      *
      * @param string $fieldName
-     * @return Doctrine\DBAL\Types\Type
+     * @return Types\Type
      */
     public function getTypeOfField($fieldName)
     {
         return isset($this->fieldMappings[$fieldName]) ?
-                $this->fieldMappings[$fieldName]['type'] : null;
+            $this->fieldMappings[$fieldName]['type'] : null;
     }
 
     /**
      * Returns the target class name of the given association.
      *
      * @param string $assocName
+     * @throws \InvalidArgumentException
      * @return string
      */
     public function getAssociationTargetClass($assocName)
     {
         if ( ! isset($this->associationMappings[$assocName])) {
-            throw new InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
+            throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
         }
 
         return $this->associationMappings[$assocName]['targetDocument'];
@@ -1660,19 +1667,21 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
     /**
      * @param string $fieldName
+     * @throws \BadMethodCallException Always throws exception.
      * @return bool
      */
     public function isAssociationInverseSide($fieldName)
     {
-        throw new \BadMethodCallException(__METHOD__.'() is not implemented yet.');
+        throw new \BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
     /**
      * @param string $fieldName
+     * @throws \BadMethodCallException Always throws exception.
      * @return string
      */
     public function getAssociationMappedByTargetField($fieldName)
     {
-        throw new \BadMethodCallException(__METHOD__.'() is not implemented yet.');
+        throw new \BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 }
