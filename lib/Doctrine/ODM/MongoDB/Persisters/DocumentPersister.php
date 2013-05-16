@@ -23,6 +23,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\MongoDB\Iterator;
 use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
+use Doctrine\ODM\MongoDB\LoggableCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
