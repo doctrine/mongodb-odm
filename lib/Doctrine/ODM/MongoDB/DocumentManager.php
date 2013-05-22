@@ -498,6 +498,8 @@ class DocumentManager implements ObjectManager
      */
     public function getRepository($documentName)
     {
+        $documentName = ltrim($documentName, '\\');
+
         if (isset($this->repositories[$documentName])) {
             return $this->repositories[$documentName];
         }
