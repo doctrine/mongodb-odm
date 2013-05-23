@@ -427,7 +427,7 @@ class DocumentPersister
     private function wrapCursor(BaseCursor $cursor)
     {
         if ($cursor instanceof BaseLoggableCursor) {
-            return new LoggableCursor(
+            $newCursor = new LoggableCursor(
                 $this->dm->getConnection(),
                 $this->collection,
                 $this->dm->getUnitOfWork(),
@@ -438,18 +438,22 @@ class DocumentPersister
                 $this->dm->getConfiguration()->getRetryQuery(),
                 $cursor->getLoggerCallable()
             );
+        } else {
+            $newCursor = new Cursor(
+                $this->dm->getConnection(),
+                $this->collection,
+                $this->dm->getUnitOfWork(),
+                $this->class,
+                $cursor,
+                $cursor->getQuery(),
+                $cursor->getFields(),
+                $this->dm->getConfiguration()->getRetryQuery()
+            );
         }
 
-        return new Cursor(
-            $this->dm->getConnection(),
-            $this->collection,
-            $this->dm->getUnitOfWork(),
-            $this->class,
-            $cursor,
-            $cursor->getQuery(),
-            $cursor->getFields(),
-            $this->dm->getConfiguration()->getRetryQuery()
-        );
+        $newCursor->setSorts($cursor->getSorts());
+
+        return $newCursor;
     }
 
     /**
