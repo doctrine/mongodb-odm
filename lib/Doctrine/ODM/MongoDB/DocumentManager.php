@@ -284,7 +284,7 @@ class DocumentManager implements ObjectManager
      */
     public function getClassMetadata($className)
     {
-        return $this->metadataFactory->getMetadataFor($className);
+        return $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
     }
 
     /**
@@ -295,6 +295,8 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentDatabase($className)
     {
+        $className = ltrim($className, '\\');
+
         if (isset($this->documentDatabases[$className])) {
             return $this->documentDatabases[$className];
         }
@@ -325,6 +327,8 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentCollection($className)
     {
+        $className = ltrim($className, '\\');
+
         $metadata = $this->metadataFactory->getMetadataFor($className);
         $collection = $metadata->getCollection();
 
@@ -498,6 +502,8 @@ class DocumentManager implements ObjectManager
      */
     public function getRepository($documentName)
     {
+        $documentName = ltrim($documentName, '\\');
+
         if (isset($this->repositories[$documentName])) {
             return $this->repositories[$documentName];
         }
@@ -548,7 +554,7 @@ class DocumentManager implements ObjectManager
      */
     public function getReference($documentName, $identifier)
     {
-        $class = $this->metadataFactory->getMetadataFor($documentName);
+        $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
         // Check identity map first, if its already in there just return it.
         if ($document = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
@@ -582,7 +588,7 @@ class DocumentManager implements ObjectManager
      */
     public function getPartialReference($documentName, $identifier)
     {
-        $class = $this->metadataFactory->getMetadataFor($documentName);
+        $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
         // Check identity map first, if its already in there just return it.
         if ($document = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
