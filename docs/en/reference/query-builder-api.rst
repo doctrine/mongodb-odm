@@ -231,7 +231,7 @@ You can sort the results by using the ``sort()`` method:
     <?php
 
     $qb = $dm->createQueryBuilder('Article')
-        ->sort('createdAt', 'desc');
+        ->sort(array('createdAt' => 'desc'));
 
 If you want to an additional sort you can call ``sort()`` again. The calls are stacked and ordered
 in the order you call the method:
@@ -240,7 +240,7 @@ in the order you call the method:
 
     <?php
 
-    $query->sort('featured', 'desc');
+    $query->sort(array('featured' => 'desc'));
 
 Map Reduce
 ~~~~~~~~~~
