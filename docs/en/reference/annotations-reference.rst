@@ -917,7 +917,7 @@ Optional attributes:
 -
     mappedBy - The field name of the owning side. Only allowed on the inverse side.
 -
-    repositoryMethod - The name of the repository method to call to to populate this reference.
+    repositoryMethod - The name of the repository method to call to populate this reference.
 -
     sort - The default sort for the query that loads the reference.
 -
@@ -972,7 +972,7 @@ Optional attributes:
 -
     mappedBy - The field name of the owning side. Only allowed on the inverse side.
 -
-    repositoryMethod - The name of the repository method to call to to populate this reference.
+    repositoryMethod - The name of the repository method to call to populate this reference.
 -
     sort - The default sort for the query that loads the reference.
 -
