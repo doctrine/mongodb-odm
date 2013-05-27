@@ -266,8 +266,8 @@ this:
     
     )
 
-This is a simple example but it demonstrates well that you can
-transparently persist PHP objects while still utilizing the the
+This is a simple example, but it demonstrates well that you can
+transparently persist PHP objects while still utilizing the
 atomic operators for updating documents! Continue reading to learn
 how to get the Doctrine MongoDB Object Document Mapper setup and
 running!
@@ -302,7 +302,7 @@ libraries:
 
     require 'lib/vendor/doctrine-mongodb-odm/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
-At the top of your bootstrap file you need to tell PHP which namespaces you want to use:
+At the top of your bootstrap file, you need to tell PHP which namespaces you want to use:
 
 .. code-block:: php
 
