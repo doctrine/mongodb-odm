@@ -6,6 +6,16 @@ use Doctrine\ODM\MongoDB\Query\Expr;
 
 class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function testSelectIsPrepared()
+    {
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->select('id');
+        $query = $qb->getQuery();
+        $debug = $query->getQuery();
+
+        $this->assertEquals(array('_id' => 1), $debug['select']);
+    }
+
     public function testInIsPrepared()
     {
         $ids = array('4f28aa84acee41388900000a');
