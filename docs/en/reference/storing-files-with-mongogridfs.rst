@@ -70,7 +70,7 @@ MongoGridFS:
     }
 
 Notice how we annotated the $file property with @File. This is what
-tells the Document that it is is to be stored using the MongoGridFS
+tells the Document that it is to be stored using the MongoGridFS
 and the MongoGridFSFile instance is placed in the $file property
 for you to access the actual file itself.
 
