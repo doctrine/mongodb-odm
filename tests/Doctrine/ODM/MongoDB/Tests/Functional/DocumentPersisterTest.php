@@ -54,10 +54,24 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testLoadAllWithSortLimitAndSkip()
     {
         $sort = array('name' => -1);
-        $limit = 1;
-        $skip = 2;
 
-        $cursor = $this->documentPersister->loadAll(array(), $sort, $limit, $skip);
+        $cursor = $this->documentPersister->loadAll(array(), $sort, 1, 2);
+        $documents = iterator_to_array($cursor, false);
+
+        $this->assertInstanceOf($this->class, $documents[0]);
+        $this->assertEquals('b', $documents[0]->name);
+        $this->assertCount(1, $documents);
+    }
+
+    public function testLoadAllWithSortLimitAndSkipAndRecreatedCursor()
+    {
+        $sort = array('name' => -1);
+
+        $cursor = $this->documentPersister->loadAll(array(), $sort, 1, 2);
+
+        $cursor = clone $cursor;
+        $cursor->recreate();
+
         $documents = iterator_to_array($cursor, false);
 
         $this->assertInstanceOf($this->class, $documents[0]);
