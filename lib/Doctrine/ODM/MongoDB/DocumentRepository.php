@@ -153,15 +153,15 @@ class DocumentRepository implements ObjectRepository
     /**
      * Finds documents by a set of criteria.
      *
-     * @param array $criteria
-     * @param array $orderBy
-     * @param int|null $limit limit the number of objects returned
-     * @param int|null $offset skip into the result set by this many objects
-     * @return array
+     * @param array        $criteria Query criteria
+     * @param array        $sort     Sort array for Cursor::sort()
+     * @param integer|null $limit    Limit for Cursor::limit()
+     * @param integer|null $skip     Skip for Cursor::skip()
+     * @return Cursor
      */
-    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    public function findBy(array $criteria, array $sort = null, $limit = null, $skip = null)
     {
-        return $this->uow->getDocumentPersister($this->documentName)->loadAll($criteria, $orderBy, $limit, $offset);
+        return $this->uow->getDocumentPersister($this->documentName)->loadAll($criteria, $sort, $limit, $skip);
     }
 
     /**
