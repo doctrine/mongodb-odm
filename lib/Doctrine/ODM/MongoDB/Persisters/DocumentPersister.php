@@ -233,13 +233,20 @@ class DocumentPersister
             }
         }
         if ($inserts) {
-            $this->collection->batchInsert($inserts, $options);
+            try {
+                $this->collection->batchInsert($inserts, $options);
+            } catch (\MongoException $e) {
+                $this->queuedInserts = array();
+                throw $e;
+            }
 
             foreach ($inserts as $oid => $data) {
                 $document = $this->queuedInserts[$oid];
                 $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
             }
         }
+
+        $this->queuedInserts = array();
 
         if ($upserts) {
             $upsertOptions = $options;
@@ -254,8 +261,6 @@ class DocumentPersister
                 $this->collection->update($criteria, $data, $upsertOptions);
             }
         }
-
-        $this->queuedInserts = array();
 
         return $postInsertIds;
     }
