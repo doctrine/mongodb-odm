@@ -104,20 +104,6 @@ class DocumentPersister
     private $queuedInserts = array();
 
     /**
-     * Documents to be updated, used in executeReferenceUpdates() method
-     *
-     * @var array
-     */
-    private $documentsToUpdate = array();
-
-    /**
-     * Fields to update, used in executeReferenceUpdates() method
-     *
-     * @var array
-     */
-    private $fieldsToUpdate = array();
-
-    /**
      * Mongo command prefix
      *
      * @var string
