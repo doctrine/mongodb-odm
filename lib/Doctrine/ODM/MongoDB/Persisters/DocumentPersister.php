@@ -686,6 +686,7 @@ class DocumentPersister
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
             );
+            $criteria = $this->prepareQueryOrNewObj($criteria);
             $cursor = $mongoCollection->find($criteria);
             if (isset($mapping['sort'])) {
                 $cursor->sort($mapping['sort']);
@@ -723,8 +724,10 @@ class DocumentPersister
         $mappedByFieldName = isset($mappedByMapping['simple']) && $mappedByMapping['simple'] ? $mapping['mappedBy'] : $mapping['mappedBy'] . '.$id';
         $criteria = array_merge(
             array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
+            $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
             isset($mapping['criteria']) ? $mapping['criteria'] : array()
         );
+        $criteria = $this->prepareQueryOrNewObj($criteria);
         $qb = $this->dm->createQueryBuilder($mapping['targetDocument'])
             ->setQueryArray($criteria);
 
@@ -827,19 +830,8 @@ class DocumentPersister
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
             $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
         }
-        $newQuery = array();
-        if ($query) {
-            foreach ($query as $key => $value) {
-                if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
-                    $newQuery[$key] = $this->prepareSubQuery($value);
-                } else {
-                    list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
-                    $newQuery[$key] = $value;
-                }
-            }
-            $newQuery = $this->convertTypes($newQuery);
-        }
-        return $newQuery;
+
+        return $this->prepareQueryOrNewObj($query);
     }
 
     /**
@@ -850,19 +842,32 @@ class DocumentPersister
      */
     public function prepareNewObj($newObj)
     {
-        $prepared = array();
-        if ($newObj) {
-            foreach ($newObj as $key => $value) {
+        return $this->prepareQueryOrNewObj($newObj);
+    }
+
+    /**
+     * Prepares the query criteria or the new document object.
+     *
+     * @param $queryOrObj
+     *
+     * @return array
+     */
+    private function prepareQueryOrNewObj($queryOrObj)
+    {
+        $newQueryOrObj = array();
+        if ($queryOrObj) {
+            foreach ($queryOrObj as $key => $value) {
                 if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
-                    $prepared[$key] = $this->prepareSubQuery($value);
+                    $newQueryOrObj[$key] = $this->prepareSubQuery($value);
                 } else {
                     list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
-                    $prepared[$key] = $value;
+                    $newQueryOrObj[$key] = $value;
                 }
             }
-            $prepared = $this->convertTypes($prepared);
+            $newQueryOrObj = $this->convertTypes($newQueryOrObj);
         }
-        return $prepared;
+
+        return $newQueryOrObj;
     }
 
     /**
@@ -874,19 +879,7 @@ class DocumentPersister
      */
     private function prepareSubQuery($query)
     {
-        $newQuery = array();
-        if ($query) {
-            foreach ($query as $key => $value) {
-                if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
-                    $newQuery[$key] = $this->prepareSubQuery($value);
-                } else {
-                    list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
-                    $newQuery[$key] = $value;
-                }
-            }
-            $newQuery = $this->convertTypes($newQuery);
-        }
-        return $newQuery;
+        return $this->prepareQueryOrNewObj($query);
     }
 
     /**
