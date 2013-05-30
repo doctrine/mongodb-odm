@@ -357,26 +357,28 @@ class DocumentPersister
     }
 
     /**
-     * Loads an document by a list of field criteria.
+     * Finds a document by a set of criteria.
      *
-     * @param array $criteria The criteria by which to load the document.
-     * @param object $document The document to load the data into. If not specified,
-     *        a new document is created.
-     * @param array $hints Hints for document creation.
-     * @param int $lockMode
-     * @param array $sort
+     * If a scalar or MongoId is provided for $criteria, it will be used as a
+     * value for the _id field.
+     *
+     * @param mixed   $criteria Query criteria
+     * @param object  $document Document to load the data into. If not specified, a new document is created.
+     * @param array   $hints    Hints for document creation
+     * @param integer $lockMode
+     * @param array   $sort     Sort array for Cursor::sort()
      * @throws \Doctrine\ODM\MongoDB\LockException
-     * @return object The loaded and managed document instance or NULL if the document can not be found.
+     * @return object|null The loaded and managed document instance or null if no document was found
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = array())
+    public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = null)
     {
-        $criteria = $this->prepareQuery($criteria);
+        $cursor = $this->collection->find($this->prepareQuery($criteria));
 
-        $cursor = $this->collection->find($criteria)->limit(1);
-        if ($sort) {
-            $cursor->sort($sort);
+        if (null !== $sort) {
+            $cursor->sort($this->prepareSort($sort));
         }
+
         $result = $cursor->getSingleResult();
 
         if ($this->class->isLockable) {
@@ -390,53 +392,63 @@ class DocumentPersister
     }
 
     /**
-     * Loads a list of documents by a list of field criteria.
+     * Finds documents by a set of criteria.
      *
-     * @param array $criteria
-     * @param array $orderBy
-     * @param null $limit
-     * @param null $offset
-     * @return array
+     * If a scalar or MongoId is provided for $criteria, it will be used as a
+     * value for the _id field.
+     *
+     * @param array        $criteria Query criteria
+     * @param array        $sort     Sort array for Cursor::sort()
+     * @param integer|null $limit    Limit for Cursor::limit()
+     * @param integer|null $skip     Skip for Cursor::skip()
+     * @return Cursor
      */
-    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
+    public function loadAll(array $criteria = array(), array $sort = null, $limit = null, $skip = null)
     {
-        $criteria = $this->prepareQuery($criteria);
-        $cursor = $this->collection->find($criteria);
+        $baseCursor = $this->collection->find($this->prepareQuery($criteria));
+        $cursor = $this->wrapCursor($baseCursor);
 
-        if (null !== $orderBy) {
-            $cursor->sort($orderBy);
+        /* The wrapped cursor may be used if the ODM cursor becomes wrapped with
+         * an EagerCursor, so we should apply the same sort, limit, and skip
+         * options to both cursors.
+         */
+        if (null !== $sort) {
+            $baseCursor->sort($this->prepareSort($sort));
+            $cursor->sort($sort);
         }
 
         if (null !== $limit) {
+            $baseCursor->limit($limit);
             $cursor->limit($limit);
         }
 
-        if (null !== $offset) {
-            $cursor->skip($offset);
+        if (null !== $skip) {
+            $baseCursor->skip($skip);
+            $cursor->skip($skip);
         }
 
-        return $this->wrapCursor($cursor);
+        return $cursor;
     }
 
     /**
-     * Wraps the supplied base cursor as an ODM one.
+     * Wraps the supplied base cursor in the corresponding ODM class.
      *
-     * @param BaseCursor $cursor The base cursor
-     * @return Cursor An ODM cursor
+     * @param BaseCursor $cursor
+     * @return Cursor
      */
-    private function wrapCursor(BaseCursor $cursor)
+    private function wrapCursor(BaseCursor $baseCursor)
     {
-        if ($cursor instanceof BaseLoggableCursor) {
+        if ($baseCursor instanceof BaseLoggableCursor) {
             return new LoggableCursor(
                 $this->dm->getConnection(),
                 $this->collection,
                 $this->dm->getUnitOfWork(),
                 $this->class,
-                $cursor,
-                $cursor->getQuery(),
-                $cursor->getFields(),
+                $baseCursor,
+                $baseCursor->getQuery(),
+                $baseCursor->getFields(),
                 $this->dm->getConfiguration()->getRetryQuery(),
-                $cursor->getLoggerCallable()
+                $baseCursor->getLoggerCallable()
             );
         }
 
@@ -445,9 +457,9 @@ class DocumentPersister
             $this->collection,
             $this->dm->getUnitOfWork(),
             $this->class,
-            $cursor,
-            $cursor->getQuery(),
-            $cursor->getFields(),
+            $baseCursor,
+            $baseCursor->getQuery(),
+            $baseCursor->getFields(),
             $this->dm->getConfiguration()->getRetryQuery()
         );
     }
@@ -770,20 +782,21 @@ class DocumentPersister
     }
 
     /**
-     * Prepares a sort array and converts PHP property names to MongoDB field names.
+     * Prepare a sort or projection array by converting keys, which are PHP
+     * property names, to MongoDB field names.
      *
      * @param array $sort
-     * @return array $newSort
+     * @return array
      */
-    public function prepareSort($sort)
+    public function prepareSort(array $sort)
     {
-        $metadata = null;
-        $newSort = array();
+        $preparedSort = array();
+
         foreach ($sort as $key => $value) {
-            $key = $this->prepareFieldName($key);
-            $newSort[$key] = $value;
+            $preparedSort[$this->prepareFieldName($key)] = $value;
         }
-        return $newSort;
+
+        return $preparedSort;
     }
 
     /**
@@ -800,10 +813,14 @@ class DocumentPersister
     }
 
     /**
-     * Prepares a query array by converting the portable Doctrine types to the types mongodb expects.
+     * Prepares a query array by converting PHP field names and types to those
+     * used by MongoDB.
      *
-     * @param string|array $query
-     * @return array $newQuery
+     * If a scalar or MongoId is provided for $query, it will be used as a value
+     * for the _id field.
+     *
+     * @param scalar|array|\MongoId $query
+     * @return array
      */
     public function prepareQuery($query = array())
     {
