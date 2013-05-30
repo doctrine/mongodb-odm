@@ -17,25 +17,35 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Array type.
+ * Raw data type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class HashType extends Type
+class RawType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (object) $value : null;
+        return $value;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (array) $value : null;
+        return $value;
+    }
+
+    public function closureToMongo()
+    {
+        return '$return = $value;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = $value;';
     }
 }

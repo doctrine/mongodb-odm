@@ -17,34 +17,30 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Float type.
+ * The Key type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class FloatType extends Type
+class KeyType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (float) $value : null;
+        if ($value === null) {
+            return null;
+        }
+        return $value ? new \MongoMaxKey : new \MongoMinKey;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (float) $value : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = (float) $value;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = (float) $value;';
+        if ($value === null) {
+            return null;
+        }
+        return $value instanceof \MongoMaxKey ? 1 : 0;
     }
 }

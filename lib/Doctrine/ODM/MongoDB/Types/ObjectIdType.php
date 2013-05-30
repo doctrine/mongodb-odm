@@ -17,25 +17,40 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Collection type.
+ * The ObjectId type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
- * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class CollectionType extends Type
+class ObjectIdType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? array_values($value) : null;
+        if ($value === null) {
+            return null;
+        }
+        if ( ! $value instanceof \MongoId) {
+            $value = new \MongoId($value);
+        }
+        return $value;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? array_values($value) : null;
+        return $value !== null ? (string) $value : null;
+    }
+
+    public function closureToMongo()
+    {
+        return '$return = new MongoId($value);';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = (string) $value;';
     }
 }

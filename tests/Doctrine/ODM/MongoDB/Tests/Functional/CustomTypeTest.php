@@ -4,8 +4,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\Types\DateType;
-use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+use Doctrine\ODM\MongoDB\Types\DateType;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -55,7 +55,7 @@ class DateCollectionType extends Type
             throw new CustomTypeException('Array expected.');
         }
 
-        $converter = new DateType();
+        $converter = Type::getType('date');
 
         $value = array_map(function($date) use ($converter) {
             return $converter->convertToDatabaseValue($date);
@@ -75,7 +75,7 @@ class DateCollectionType extends Type
             throw new CustomTypeException('Array expected.');
         }
 
-        $converter = new DateType();
+        $converter = Type::getType('date');
 
         $value = array_map(function($date) use ($converter) {
             return $converter->convertToPHPValue($date);
@@ -84,7 +84,7 @@ class DateCollectionType extends Type
         return $value;
     }
 
-    // Note: this method is never called 
+    // Note: this method is never called
     public function closureToMongo()
     {
         return '$return = array_map(function($v) { if ($v instanceof \DateTime) { $v = $v->getTimestamp(); } else if (is_string($v)) { $v = strtotime($v); } return new \MongoDate($v); }, $value);';

@@ -17,14 +17,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Integer Id type.
+ * The BinDataMD5 type.
  *
  * @since       1.0
- * @author      Pavel Volokitin <pavelvolokitin@gmail.com>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class IntIdType extends IntType
+class BinDataMD5Type extends Type
 {
+    public function convertToDatabaseValue($value)
+    {
+        return $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;
+    }
+
+    public function convertToPHPValue($value)
+    {
+        return $value !== null ? $value->bin : null;
+    }
+
+    public function closureToMongo()
+    {
+        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = $value !== null ? $value->bin : null;';
+    }
 }
