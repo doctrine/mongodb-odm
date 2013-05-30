@@ -17,30 +17,14 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Key type.
+ * The Integer Id type.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Pavel Volokitin <pavelvolokitin@gmail.com>
  */
-class KeyType extends Type
+class IntIdType extends IntType
 {
-    public function convertToDatabaseValue($value)
-    {
-        if ($value === null) {
-            return null;
-        }
-        return $value ? new \MongoMaxKey : new \MongoMinKey;
-    }
-
-    public function convertToPHPValue($value)
-    {
-        if ($value === null) {
-            return null;
-        }
-        return $value instanceof \MongoMaxKey ? 1 : 0;
-    }
 }

@@ -17,34 +17,25 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinData type.
+ * The Array type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class BinDataType extends Type
+class HashType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? new \MongoBinData($value, \MongoBinData::BYTE_ARRAY) : null;
+        return $value !== null ? (object) $value : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? $value->bin : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::BYTE_ARRAY) : null;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = $value !== null ? $value->bin : null;';
+        return $value !== null ? (array) $value : null;
     }
 }

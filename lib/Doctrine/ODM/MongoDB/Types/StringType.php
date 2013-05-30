@@ -17,35 +17,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * Raw data type.
+ * The String type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
- * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class RawType extends Type
+class StringType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value;
+        return $value !== null ? (string) $value : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value;
+        return $value !== null ? (string) $value : null;
     }
 
     public function closureToMongo()
     {
-        return '$return = $value;';
+        return '$return = (string) $value;';
     }
 
     public function closureToPHP()
     {
-        return '$return = $value;';
+        return '$return = (string) $value;';
     }
 }

@@ -17,34 +17,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataCustom type.
+ * The Boolean type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class BinDataCustomType extends Type
+class BooleanType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? new \MongoBinData($value, \MongoBinData::CUSTOM) : null;
+        return $value !== null ? (boolean) $value : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? $value->bin : null;
+        return $value !== null ? (boolean) $value : null;
     }
 
     public function closureToMongo()
     {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::CUSTOM) : null;';
+        return '$return = (bool) $value;';
     }
 
     public function closureToPHP()
     {
-        return '$return = $value !== null ? $value->bin : null;';
+        return '$return = (bool) $value;';
     }
 }

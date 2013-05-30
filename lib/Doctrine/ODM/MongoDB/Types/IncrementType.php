@@ -17,34 +17,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The Int type.
+ * The Increment type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class IntType extends Type
+class IncrementType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (integer) $value : null;
+        return $value !== null ? (is_float($value) ? (float) $value : (int) $value) : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (integer) $value : null;
+        return $value !== null ? (is_float($value) ? (float) $value : (int) $value) : null;
     }
 
     public function closureToMongo()
     {
-        return '$return = (int) $value;';
+        return '$return = is_float($value) ? (float) $value : (int) $value;';
     }
 
     public function closureToPHP()
     {
-        return '$return = (int) $value;';
+        return '$return = is_float($value) ? (float) $value : (int) $value;';
     }
 }
