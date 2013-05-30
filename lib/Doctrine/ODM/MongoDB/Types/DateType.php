@@ -44,14 +44,10 @@ class DateType extends Type
         } elseif (is_string($value)) {
             $timestamp = strtotime($value);
         }
-        // Could not convert date to timestamp so store ISO 8601 formatted date instead
         if ($timestamp === false) {
-            $date = new \DateTime($value);
-            return $date->format('c');
-        } else {
-            $value = $timestamp;
+            throw new \InvalidArgumentException(sprintf('Could not convert %s to a date value', is_scalar($value) ? '"'.$value.'"' : gettype($value)));
         }
-        return new \MongoDate($value);
+        return new \MongoDate($timestamp);
     }
 
     public function convertToPHPValue($value)
