@@ -850,46 +850,19 @@ class DocumentPersister
         if ($queryOrObj) {
             foreach ($queryOrObj as $key => $value) {
                 if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
-                    $newQueryOrObj[$key] = $this->prepareSubQuery($value);
+                    $newQueryOrObj[$key] = $this->prepareQueryOrNewObj($value);
                 } else {
                     list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
-                    $newQueryOrObj[$key] = $value;
+                    if (is_array($value)) {
+                        $newQueryOrObj[$key] = $this->prepareQueryOrNewObj($value);
+                    } else {
+                        $newQueryOrObj[$key] = Type::convertPHPToDatabaseValue($value);
+                    }
                 }
             }
-            $newQueryOrObj = $this->convertTypes($newQueryOrObj);
         }
 
         return $newQueryOrObj;
-    }
-
-    /**
-     * Convert a subquery.
-     *
-     * @see prepareQuery()
-     * @param array $query The query to convert.
-     * @return array $newQuery The converted query.
-     */
-    private function prepareSubQuery($query)
-    {
-        return $this->prepareQueryOrNewObj($query);
-    }
-
-    /**
-     * Converts any local PHP variable types to their related MongoDB type.
-     *
-     * @param array $query
-     * @return array $query
-     */
-    private function convertTypes(array $query)
-    {
-        foreach ($query as $key => $value) {
-            if (is_array($value)) {
-                $query[$key] = $this->convertTypes($value);
-            } else {
-                $query[$key] = Type::convertPHPToDatabaseValue($value);
-            }
-        }
-        return $query;
     }
 
     /**
@@ -926,7 +899,7 @@ class DocumentPersister
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            return array($fieldName, $this->prepareSubQuery($value));
+            return array($fieldName, $this->prepareQueryOrNewObj($value));
         }
 
         // Process identifier fields
