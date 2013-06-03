@@ -367,7 +367,7 @@ class DocumentPersister
         $cursor = $this->collection->find($this->prepareQuery($criteria));
 
         if (null !== $sort) {
-            $cursor->sort($this->prepareSort($sort));
+            $cursor->sort($this->prepareSortOrProjection($sort));
         }
 
         $result = $cursor->getSingleResult();
@@ -404,7 +404,7 @@ class DocumentPersister
          * options to both cursors.
          */
         if (null !== $sort) {
-            $baseCursor->sort($this->prepareSort($sort));
+            $baseCursor->sort($this->prepareSortOrProjection($sort));
             $cursor->sort($sort);
         }
 
@@ -779,18 +779,18 @@ class DocumentPersister
      * Prepare a sort or projection array by converting keys, which are PHP
      * property names, to MongoDB field names.
      *
-     * @param array $sort
+     * @param array $fields
      * @return array
      */
-    public function prepareSort(array $sort)
+    public function prepareSortOrProjection(array $fields)
     {
-        $preparedSort = array();
+        $preparedFields = array();
 
-        foreach ($sort as $key => $value) {
-            $preparedSort[$this->prepareFieldName($key)] = $value;
+        foreach ($fields as $key => $value) {
+            $preparedFields[$this->prepareFieldName($key)] = $value;
         }
 
-        return $preparedSort;
+        return $preparedFields;
     }
 
     /**
