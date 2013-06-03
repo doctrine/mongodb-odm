@@ -249,6 +249,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         $query = $this->query;
 
         $query['query'] = $this->expr->getQuery();
+        $query['query'] = $documentPersister->addFilterToPreparedQuery($query['query']);
+        $query['query'] = $documentPersister->addDiscriminatorToPreparedQuery($query['query']);
+
         $query['newObj'] = $this->expr->getNewObj();
 
         $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);

@@ -350,8 +350,8 @@ class DocumentPersister
     /**
      * Finds a document by a set of criteria.
      *
-     * If a scalar or MongoId is provided for $criteria, it will be used as a
-     * value for the _id field.
+     * If a scalar or MongoId is provided for $criteria, it will be used to
+     * match an _id value.
      *
      * @param mixed   $criteria Query criteria
      * @param object  $document Document to load the data into. If not specified, a new document is created.
@@ -364,7 +364,15 @@ class DocumentPersister
      */
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = null)
     {
-        $cursor = $this->collection->find($this->prepareQuery($criteria));
+        if (is_scalar($criteria) || $criteria instanceof \MongoId) {
+            $criteria = array('_id' => $criteria);
+        }
+
+        $criteria = $this->prepareQueryOrNewObj($criteria);
+        $criteria = $this->addFilterToPreparedQuery($criteria);
+        $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
+
+        $cursor = $this->collection->find($criteria);
 
         if (null !== $sort) {
             $cursor->sort($this->prepareSortOrProjection($sort));
@@ -385,9 +393,6 @@ class DocumentPersister
     /**
      * Finds documents by a set of criteria.
      *
-     * If a scalar or MongoId is provided for $criteria, it will be used as a
-     * value for the _id field.
-     *
      * @param array        $criteria Query criteria
      * @param array        $sort     Sort array for Cursor::sort()
      * @param integer|null $limit    Limit for Cursor::limit()
@@ -396,7 +401,11 @@ class DocumentPersister
      */
     public function loadAll(array $criteria = array(), array $sort = null, $limit = null, $skip = null)
     {
-        $baseCursor = $this->collection->find($this->prepareQuery($criteria));
+        $criteria = $this->prepareQueryOrNewObj($criteria);
+        $criteria = $this->addFilterToPreparedQuery($criteria);
+        $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
+
+        $baseCursor = $this->collection->find($criteria);
         $cursor = $this->wrapCursor($baseCursor);
 
         /* The wrapped cursor may be used if the ODM cursor becomes wrapped with
@@ -807,70 +816,78 @@ class DocumentPersister
     }
 
     /**
-     * Prepares a query array by converting PHP field names and types to those
-     * used by MongoDB.
+     * Adds discriminator criteria to an already-prepared query.
      *
-     * If a scalar or MongoId is provided for $query, it will be used as a value
-     * for the _id field.
+     * This method should be used once for query criteria and not be used for
+     * nested expressions.
      *
-     * @param scalar|array|\MongoId $query
+     * @param array $preparedQuery
      * @return array
      */
-    public function prepareQuery($query = array())
+    public function addDiscriminatorToPreparedQuery(array $preparedQuery)
     {
-        if (is_scalar($query) || $query instanceof \MongoId) {
-            $query = array('_id' => $query);
-        }
-        if ($query === null) {
-            $query = array();
-        }
-        $query = array_merge($query, $this->dm->getFilterCollection()->getFilterCriteria($this->class));
-
-        if ($this->class->hasDiscriminator() && ! isset($query[$this->class->discriminatorField['name']])) {
+        /* If the class has a discriminator field, which is not already in the
+         * criteria, inject it now. The field/values need no preparation.
+         */
+        if ($this->class->hasDiscriminator() && ! isset($preparedQuery[$this->class->discriminatorField['name']])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
-            $query[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
+            $preparedQuery[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
         }
 
-        return $this->prepareQueryOrNewObj($query);
+        return $preparedQuery;
     }
 
     /**
-     * Prepares a new object array by converting the portable Doctrine types to the types mongodb expects.
+     * Adds filter criteria to an already-prepared query.
      *
-     * @param string|array newObj
-     * @return array $newQuery
-     */
-    public function prepareNewObj($newObj)
-    {
-        return $this->prepareQueryOrNewObj($newObj);
-    }
-
-    /**
-     * Prepares the query criteria or the new document object.
+     * This method should be used once for query criteria and not be used for
+     * nested expressions.
      *
-     * @param $queryOrObj
-     *
+     * @param array $preparedQuery
      * @return array
      */
-    private function prepareQueryOrNewObj($queryOrObj)
+    public function addFilterToPreparedQuery(array $preparedQuery)
     {
-        $newQueryOrObj = array();
-        if ($queryOrObj) {
-            foreach ($queryOrObj as $key => $value) {
-                if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
-                    $newQueryOrObj[$key] = $this->prepareQueryOrNewObj($value);
+        /* If filter criteria exists for this class, prepare it and merge the
+         * existing query over it. This makes it possible to override filter
+         * criteria.
+         *
+         * @todo Consider recursive merging in case the filter criteria and
+         * prepared query both contain top-level $and/$or operators.
+         */
+        if ($filterCriteria = $this->dm->getFilterCollection()->getFilterCriteria($this->class)) {
+            $preparedQuery = array_merge($this->prepareQueryOrNewObj($filterCriteria), $preparedQuery);
+        }
+
+        return $preparedQuery;
+    }
+
+    /**
+     * Prepares the query criteria or new document object.
+     *
+     * PHP field names and types will be converted to those used by MongoDB.
+     *
+     * @param array $query
+     * @return array
+     */
+    public function prepareQueryOrNewObj(array $query)
+    {
+        $preparedQuery = array();
+
+        foreach ($query as $key => $value) {
+            if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
+                $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
+            } else {
+                list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
+                if (is_array($value)) {
+                    $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
                 } else {
-                    list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
-                    if (is_array($value)) {
-                        $newQueryOrObj[$key] = $this->prepareQueryOrNewObj($value);
-                    } else {
-                        $newQueryOrObj[$key] = Type::convertPHPToDatabaseValue($value);
-                    }
+                    $preparedQuery[$key] = Type::convertPHPToDatabaseValue($value);
                 }
             }
         }
 
-        return $newQueryOrObj;
+        return $preparedQuery;
     }
 
     /**
