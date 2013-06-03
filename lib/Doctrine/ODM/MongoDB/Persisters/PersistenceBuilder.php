@@ -215,15 +215,19 @@ class PersistenceBuilder
 
             // @EmbedMany
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
-                foreach ($new as $key => $embeddedDoc) {
-                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
-                        $update = $this->prepareUpdateData($embeddedDoc);
-                        foreach ($update as $cmd => $values) {
-                            foreach ($values as $name => $value) {
-                                $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
+                if (null !== $new) {
+                    foreach ($new as $key => $embeddedDoc) {
+                        if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
+                            $update = $this->prepareUpdateData($embeddedDoc);
+                            foreach ($update as $cmd => $values) {
+                                foreach ($values as $name => $value) {
+                                    $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
+                                }
                             }
                         }
                     }
+                } else {
+                    $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
                 }
 
             // @ReferenceOne
