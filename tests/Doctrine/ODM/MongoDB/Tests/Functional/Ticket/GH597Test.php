@@ -58,6 +58,54 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertPostDocument($expectedDocument, $post);
     }
 
+    public function testReferenceManyGetsUnset()
+    {
+        $post = new GH597Post();
+        $this->dm->persist($post);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // default behavior on inserts already leaves out referenced documents
+        $expectedDocument = array('_id' => new \MongoId($post->getId()));
+        $this->assertPostDocument($expectedDocument, $post);
+
+        // associate post with many GH597ReferenceMany documents
+        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+
+        $referenceMany1 = new GH597ReferenceMany('one');
+        $this->dm->persist($referenceMany1);
+        $referenceMany2 = new GH597ReferenceMany('two');
+        $this->dm->persist($referenceMany2);
+
+        $post->referenceMany = new ArrayCollection(array($referenceMany1, $referenceMany2));
+        $this->dm->persist($post);
+        $this->dm->flush($post);
+        $this->dm->clear();
+
+        $expectedDocument = array(
+            '_id' => new \MongoId($post->getId()),
+            'referenceMany' => array(
+                new \MongoId($referenceMany1->getId()),
+                new \MongoId($referenceMany2->getId())
+            )
+        );
+        $this->assertPostDocument($expectedDocument, $post);
+
+        // trigger update
+        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $this->assertCount(2, $post->getReferenceMany());
+        $post->referenceMany = null;
+        $this->dm->flush($post);
+        $this->dm->clear();
+
+        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $this->assertCount(0, $post->getReferenceMany());
+
+        // make sure reference-many documents got unset
+        $expectedDocument = array('_id' => new \MongoId($post->getId()));
+        $this->assertPostDocument($expectedDocument, $post);
+    }
+
     /**
      * Asserts that raw document matches expected document.
      *
@@ -91,9 +139,13 @@ class GH597Post
     /** @ODM\EmbedMany(targetDocument="GH597Comment") */
     public $comments;
 
+    /** @ODM\ReferenceMany(targetDocument="GH597ReferenceMany", simple="true") */
+    public $referenceMany;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->referenceMany = new ArrayCollection();
     }
 
     public function getId()
@@ -104,6 +156,11 @@ class GH597Post
     public function getComments()
     {
         return $this->comments;
+    }
+
+    public function getReferenceMany()
+    {
+        return $this->referenceMany;
     }
 }
 
@@ -116,5 +173,26 @@ class GH597Comment
     public function __construct($comment)
     {
         $this->comment = $comment;
+    }
+}
+
+
+/** @ODM\Document */
+class GH597ReferenceMany
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\String() */
+    public $field;
+
+    public function __construct($field)
+    {
+        $this->field = $field;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 }
