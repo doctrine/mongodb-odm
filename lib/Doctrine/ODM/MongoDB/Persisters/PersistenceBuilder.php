@@ -215,7 +215,7 @@ class PersistenceBuilder
 
             // @EmbedMany
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
-                if ($new && count($new) > 0) {
+                if (null !== $new) {
                     foreach ($new as $key => $embeddedDoc) {
                         if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
                             $update = $this->prepareUpdateData($embeddedDoc);

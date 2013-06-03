@@ -46,7 +46,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         // trigger update
         $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
         $this->assertCount(3, $post->getComments());
-        $post->comments = new ArrayCollection();
+        $post->comments = null;
         $this->dm->flush($post);
         $this->dm->clear();
 
