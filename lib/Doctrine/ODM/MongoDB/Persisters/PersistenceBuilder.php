@@ -226,8 +226,6 @@ class PersistenceBuilder
                             }
                         }
                     }
-                } else {
-                    $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
                 }
 
             // @ReferenceOne
