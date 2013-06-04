@@ -119,13 +119,13 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     {
         return $this->dm->getUnitOfWork()
             ->getDocumentPersister($this->class->name)
-            ->prepareQuery($this->query);
+            ->prepareQueryOrNewObj($this->query);
     }
 
     public function getNewObj()
     {
         return $this->dm->getUnitOfWork()
             ->getDocumentPersister($this->class->name)
-            ->prepareNewObj($this->newObj);
+            ->prepareQueryOrNewObj($this->newObj);
     }
 }

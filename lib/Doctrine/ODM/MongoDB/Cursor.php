@@ -176,7 +176,7 @@ class Cursor extends BaseCursor
     {
         $fields = $this->unitOfWork
             ->getDocumentPersister($this->class->name)
-            ->prepareSort($fields);
+            ->prepareSortOrProjection($fields);
         $fields = parent::sort($fields);
         return $this;
     }
