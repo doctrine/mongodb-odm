@@ -172,19 +172,23 @@ class DocumentPersister
     }
 
     /**
-     * Executes all queued document insertions and returns any generated post-insert
-     * identifiers that were created as a result of the insertions.
+     * Executes all queued document insertions.
+     *
+     * Queued documents without an ID will inserted in a batch and included in
+     * the resulting array in a tuple alongside their generated ID. Queued
+     * documents with an ID will be upserted individually and omitted from the
+     * returned array.
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
-     * @param array $options Array of options to be used with batchInsert()
-     * @return array An array of any generated post-insert IDs. This will be an empty array
-     *               if the document class does not use the IDENTITY generation strategy.
+     * @param array $options Options for batchInsert() and update() driver methods
+     * @return array An array of identifier/document tuples for any documents
+     *               whose identifier was generated during the batch insertions
      */
     public function executeInserts(array $options = array())
     {
         if ( ! $this->queuedInserts) {
-            return;
+            return array();
         }
 
         $postInsertIds = array();
