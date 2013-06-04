@@ -2,114 +2,108 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH560Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    private function getDocumentManager()
-    {
-        $this->listener = new GH560EventListener();
-        $evm = $this->dm->getEventManager();
-        $events = array(
-            Events::prePersist,
-            Events::postPersist,
-            Events::preUpdate,
-            Events::postUpdate,
-            Events::preLoad,
-            Events::postLoad,
-            Events::preRemove,
-            Events::postRemove
-        );
-        $evm->addEventListener($events, $this->listener);
-        return $this->dm;
-    }
-
-    public function getDifferentIdsForDocuments() {
-        return array(
-            array('123456'),
-            array('516ee7636803faea5600090a:path10421'),
-        );
-    }
-
     /**
-     * @dataProvider getDifferentIdsForDocuments
+     * @dataProvider provideDocumentIds
      */
     public function testPersistListenersAreCalled($id)
     {
-        $dm = $this->getDocumentManager();
+        $listener = new GH560EventSubscriber(array(
+            Events::prePersist,
+            Events::postPersist,
+        ));
 
-        $test = new GH560Document();
-        $test->id = $id;
-        $test->name = 'test';
-        $dm->persist($test);
-        $dm->flush();
-        
-        $dm->clear();
+        $this->dm->getEventManager()->addEventSubscriber($listener);
+
+        $doc = new GH560Document($id, 'test');
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
 
         $called = array(
-            Events::prePersist => array('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH560Document'),
-            Events::postPersist => array('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH560Document')
+            array(Events::prePersist, __NAMESPACE__ . '\GH560Document'),
+            array(Events::postPersist, __NAMESPACE__ . '\GH560Document'),
         );
-        $this->assertEquals($called, $this->listener->called);
-        $this->listener->called = array();
+
+        $this->assertEquals($called, $listener->called);
     }
 
     /**
-     * @dataProvider getDifferentIdsForDocuments
+     * @dataProvider provideDocumentIds
      */
     public function testDocumentWithCustomIdStrategyIsSavedAndFoundFromDatabase($id)
     {
-        $dm = $this->getDocumentManager();
+        $doc = new GH560Document($id, 'test');
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
 
-        $test = new GH560Document();
-        $test->id = $id;
-        $test->name = 'test';
-        $dm->persist($test);
-        $dm->flush();
-        $dm->clear();
-        
-        $foundDocument = $dm->find(__NAMESPACE__.'\GH560Document', $id);
-        $this->assertEquals($id, $foundDocument->id);
+        $doc = $this->dm->find(__NAMESPACE__ . '\GH560Document', $id);
+        $this->assertEquals($id, $doc->id);
     }
 
     /**
-     * @dataProvider getDifferentIdsForDocuments
+     * @dataProvider provideDocumentIds
      */
     public function testUpdateListenersAreCalled($id)
     {
-        $dm = $this->getDocumentManager();
+        $listener = new GH560EventSubscriber(array(
+            Events::preUpdate,
+            Events::postUpdate,
+        ));
 
-        $test = new GH560Document();
-        $test->id   = $id;
-        $test->name = 'test';
-        $dm->persist($test);
-        $dm->flush();
-        $this->listener->called = array();
+        $this->dm->getEventManager()->addEventSubscriber($listener);
 
-        $test->name = 'id should be ' . $id;
-        $dm->flush();
+        $doc = new GH560Document($id, 'test');
+        $this->dm->persist($doc);
+        $this->dm->flush();
 
-        $dm->clear();
+        $doc->name = 'changed';
+        $this->dm->flush();
+        $this->dm->clear();
 
         $called = array(
-            Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH560Document'),
-            Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH560Document')
+            array(Events::preUpdate, __NAMESPACE__ . '\GH560Document'),
+            array(Events::postUpdate, __NAMESPACE__ . '\GH560Document'),
         );
-        $this->assertEquals($called, $this->listener->called);
-        $this->listener->called = array();
+
+        $this->assertEquals($called, $listener->called);
+    }
+
+    public function provideDocumentIds()
+    {
+        return array(
+            array(123456),
+            array('516ee7636803faea5600090a:path10421'),
+        );
     }
 }
 
-class GH560EventListener
+class GH560EventSubscriber implements EventSubscriber
 {
-    public $called = array();
+    public $called;
+    public $events;
 
-    public function __call($method, $args)
+    public function __construct(array $events)
     {
-        $document = $args[0]->getDocument();
-        $className = get_class($document);
-        $this->called[$method][] = $className;
+        $this->called = array();
+        $this->events = $events;
+    }
+
+    public function getSubscribedEvents()
+    {
+        return $this->events;
+    }
+
+    public function __call($eventName, $args)
+    {
+        $this->called[] = array($eventName, get_class($args[0]->getDocument()));
     }
 }
 
@@ -121,4 +115,10 @@ class GH560Document
 
     /** @ODM\String */
     public $name;
+
+    public function __construct($id, $name)
+    {
+        $this->id = $id;
+        $this->name = $name;
+    }
 }
