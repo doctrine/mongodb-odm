@@ -244,18 +244,19 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->hydrate = false;
         }
 
+        $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
+
         $query = $this->query;
 
         $query['query'] = $this->expr->getQuery();
+        $query['query'] = $documentPersister->addFilterToPreparedQuery($query['query']);
+        $query['query'] = $documentPersister->addDiscriminatorToPreparedQuery($query['query']);
+
         $query['newObj'] = $this->expr->getNewObj();
 
-        $query['select'] = $this->dm->getUnitOfWork()
-            ->getDocumentPersister($this->class->name)
-            ->prepareSort($query['select']);
+        $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
 
-        $query['sort'] = $this->dm->getUnitOfWork()
-            ->getDocumentPersister($this->class->name)
-            ->prepareSort($query['sort']);
+        $query['sort'] = $documentPersister->prepareSortOrProjection($query['sort']);
 
         if ($this->class->slaveOkay) {
             $query['slaveOkay'] = $this->class->slaveOkay;

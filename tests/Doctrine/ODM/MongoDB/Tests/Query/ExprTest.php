@@ -207,7 +207,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->method('getDocumentPersister')
             ->will($this->returnValue($documentPersister));
         $documentPersister->expects($this->once())
-            ->method('prepareQuery')
+            ->method('prepareQueryOrNewObj')
             ->with($expected)
             ->will($this->returnValue($expected));
         $class->expects($this->once())
@@ -248,7 +248,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->method('getDocumentPersister')
             ->will($this->returnValue($documentPersister));
         $documentPersister->expects($this->once())
-            ->method('prepareQuery')
+            ->method('prepareQueryOrNewObj')
             ->with($expected)
             ->will($this->returnValue($expected));
         $class->expects($this->once())
