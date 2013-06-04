@@ -967,54 +967,52 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all document insertions for documents of the specified type.
      *
-     * @param Mapping\ClassMetadata $class
+     * @param ClassMetadata $class
      * @param array $options Array of options to be used with batchInsert()
      */
-    private function executeInserts($class, array $options = array())
+    private function executeInserts(ClassMetadata $class, array $options = array())
     {
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
         $collection = $this->dm->getDocumentCollection($className);
 
-        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postPersist]);
-        $hasListeners = $this->evm->hasListeners(Events::postPersist);
-        if ($hasLifecycleCallbacks || $hasListeners) {
-            $documents = array();
-        }
+        $insertedDocuments = array();
 
-        $inserts = array();
         foreach ($this->documentInsertions as $oid => $document) {
             if (get_class($document) === $className) {
                 $persister->addInsert($document);
+                $insertedDocuments[] = $document;
                 unset($this->documentInsertions[$oid]);
-                if ($hasLifecycleCallbacks || $hasListeners) {
-                    $documents[] = $document;
-                }
             }
         }
 
         $postInsertIds = $persister->executeInserts($options);
 
-        if ($postInsertIds) {
-            foreach ($postInsertIds as $pair) {
-                list($id, $document) = $pair;
-                $oid = spl_object_hash($document);
-                $class->setIdentifierValue($document, $id);
-                $this->documentIdentifiers[$oid] = $id;
-                $this->documentStates[$oid] = self::STATE_MANAGED;
-                $this->originalDocumentData[$oid][$class->identifier] = $id;
-                $this->addToIdentityMap($document);
+        foreach ($postInsertIds as $idAndDocument) {
+            list($id, $document) = $idAndDocument;
+            $class->setIdentifierValue($document, $id);
 
-                if ($hasLifecycleCallbacks || $hasListeners) {
-                    if ($hasLifecycleCallbacks) {
-                        $class->invokeLifecycleCallbacks(Events::postPersist, $document);
-                    }
-                    if ($hasListeners) {
-                        $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
-                    }
-                }
-                $this->cascadePostPersist($class, $document);
+            /* Inline call to UnitOfWork::registerManager(), but only update the
+             * identifier in the original document data.
+             */
+            $oid = spl_object_hash($document);
+            $this->documentIdentifiers[$oid] = $id;
+            $this->documentStates[$oid] = self::STATE_MANAGED;
+            $this->originalDocumentData[$oid][$class->identifier] = $id;
+            $this->addToIdentityMap($document);
+        }
+
+        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postPersist]);
+        $hasListeners = $this->evm->hasListeners(Events::postPersist);
+
+        foreach ($insertedDocuments as $document) {
+            if ($hasLifecycleCallbacks) {
+                $class->invokeLifecycleCallbacks(Events::postPersist, $document);
             }
+            if ($hasListeners) {
+                $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
+            }
+            $this->cascadePostPersist($class, $document);
         }
     }
 
@@ -1027,28 +1025,39 @@ class UnitOfWork implements PropertyChangedListener
     private function cascadePostPersist(ClassMetadata $class, $document)
     {
         foreach ($class->fieldMappings as $mapping) {
-            if (isset($mapping['embedded'])) {
-                $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
-                if ($value === null) {
-                    continue;
+            if (empty($mapping['embedded'])) {
+                continue;
+            }
+
+            $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
+
+            if ($value === null) {
+                continue;
+            }
+
+            if ($mapping['type'] === 'one') {
+                $value = array($value);
+            }
+
+            if (isset($mapping['targetDocument'])) {
+                $embeddedClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+            }
+
+            foreach ($value as $embeddedDocument) {
+                if ( ! isset($mapping['targetDocument'])) {
+                    $embeddedClass = $this->dm->getClassMetadata(get_class($embeddedDocument));
                 }
-                if ($mapping['type'] === 'one') {
-                    $value = array($value);
+
+                $hasLifecycleCallbacks = isset($embeddedClass->lifecycleCallbacks[Events::postPersist]);
+                $hasListeners = $this->evm->hasListeners(Events::postPersist);
+
+                if (isset($embeddedClass->lifecycleCallbacks[Events::postPersist])) {
+                    $embeddedClass->invokeLifecycleCallbacks(Events::postPersist, $embeddedDocument);
                 }
-                foreach ($value as $entry) {
-                    $entryClass = $this->dm->getClassMetadata(get_class($entry));
-                    $hasLifecycleCallbacks = isset($entryClass->lifecycleCallbacks[Events::postPersist]);
-                    $hasListeners = $this->evm->hasListeners(Events::postPersist);
-                    if ($hasLifecycleCallbacks || $hasListeners) {
-                        if ($hasLifecycleCallbacks) {
-                            $entryClass->invokeLifecycleCallbacks(Events::postPersist, $entry);
-                        }
-                        if ($hasListeners) {
-                            $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($entry, $this->dm));
-                        }
-                    }
-                    $this->cascadePostPersist($entryClass, $entry);
+                if ($this->evm->hasListeners(Events::postPersist)) {
+                    $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($embeddedDocument, $this->dm));
                 }
+                $this->cascadePostPersist($embeddedClass, $embeddedDocument);
             }
         }
     }
