@@ -1025,28 +1025,33 @@ class UnitOfWork implements PropertyChangedListener
     private function cascadePostPersist(ClassMetadata $class, $document)
     {
         foreach ($class->fieldMappings as $mapping) {
-            if (isset($mapping['embedded'])) {
-                $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
-                if ($value === null) {
-                    continue;
+            if (empty($mapping['embedded'])) {
+                continue;
+            }
+
+            $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
+
+            if ($value === null) {
+                continue;
+            }
+
+            if ($mapping['type'] === 'one') {
+                $value = array($value);
+            }
+
+            foreach ($value as $embeddedDocument) {
+                $embeddedClass = $this->dm->getClassMetadata(get_class($embeddedDocument));
+
+                $hasLifecycleCallbacks = isset($embeddedClass->lifecycleCallbacks[Events::postPersist]);
+                $hasListeners = $this->evm->hasListeners(Events::postPersist);
+
+                if (isset($embeddedClass->lifecycleCallbacks[Events::postPersist])) {
+                    $embeddedClass->invokeLifecycleCallbacks(Events::postPersist, $embeddedDocument);
                 }
-                if ($mapping['type'] === 'one') {
-                    $value = array($value);
+                if ($this->evm->hasListeners(Events::postPersist)) {
+                    $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($embeddedDocument, $this->dm));
                 }
-                foreach ($value as $entry) {
-                    $entryClass = $this->dm->getClassMetadata(get_class($entry));
-                    $hasLifecycleCallbacks = isset($entryClass->lifecycleCallbacks[Events::postPersist]);
-                    $hasListeners = $this->evm->hasListeners(Events::postPersist);
-                    if ($hasLifecycleCallbacks || $hasListeners) {
-                        if ($hasLifecycleCallbacks) {
-                            $entryClass->invokeLifecycleCallbacks(Events::postPersist, $entry);
-                        }
-                        if ($hasListeners) {
-                            $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($entry, $this->dm));
-                        }
-                    }
-                    $this->cascadePostPersist($entryClass, $entry);
-                }
+                $this->cascadePostPersist($embeddedClass, $embeddedDocument);
             }
         }
     }
