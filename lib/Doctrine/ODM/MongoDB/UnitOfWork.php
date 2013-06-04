@@ -1039,8 +1039,14 @@ class UnitOfWork implements PropertyChangedListener
                 $value = array($value);
             }
 
+            if (isset($mapping['targetDocument'])) {
+                $embeddedClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+            }
+
             foreach ($value as $embeddedDocument) {
-                $embeddedClass = $this->dm->getClassMetadata(get_class($embeddedDocument));
+                if ( ! isset($mapping['targetDocument'])) {
+                    $embeddedClass = $this->dm->getClassMetadata(get_class($embeddedDocument));
+                }
 
                 $hasLifecycleCallbacks = isset($embeddedClass->lifecycleCallbacks[Events::postPersist]);
                 $hasListeners = $this->evm->hasListeners(Events::postPersist);
