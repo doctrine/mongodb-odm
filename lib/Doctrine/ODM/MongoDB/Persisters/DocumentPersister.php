@@ -695,7 +695,7 @@ class DocumentPersister
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
             );
-            $criteria = $this->prepareQueryOrNewObj($criteria);
+            $criteria = $this->prepareQueryOrNewObj($criteria, $class);
             $cursor = $mongoCollection->find($criteria);
             if (isset($mapping['sort'])) {
                 $cursor->sort($mapping['sort']);
@@ -870,7 +870,7 @@ class DocumentPersister
      * @param array $query
      * @return array
      */
-    public function prepareQueryOrNewObj(array $query)
+    public function prepareQueryOrNewObj(array $query, $class = null)
     {
         $preparedQuery = array();
 
@@ -878,7 +878,7 @@ class DocumentPersister
             if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
                 $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
             } else {
-                list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
+                list($key, $value) = $this->prepareQueryElement($key, $value, $class, true);
                 if (is_array($value)) {
                     $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
                 } else {
