@@ -29,7 +29,7 @@ class GH593Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user1->following->add($user2);
         $user1->following->add($user3);
-        $user2->deleted = true;
+        $user3->deleted = true;
 
         $this->dm->persist($user1);
         $this->dm->persist($user2);
@@ -51,14 +51,18 @@ class GH593Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
          */
         $this->assertCount(2, $user1following);
 
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user1following[0]);
+        $this->assertTrue($user1following[0]->__isInitialized());
         $this->assertEquals($user2->getId(), $user1following[0]->getId());
+
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user1following[1]);
+        $this->assertFalse($user1following[1]->__isInitialized());
         $this->assertEquals($user3->getId(), $user1following[1]->getId());
 
         try {
-            $user1following[0]->getDeleted();
+            $user1following[1]->__load();
             $this->fail('Expected DocumentNotFoundException for filtered Proxy object');
         } catch (DocumentNotFoundException $e) {
-            $this->assertNull($user1following[0]->getId());
         }
     }
 
@@ -117,11 +121,5 @@ class GH593User
     public function getId()
     {
         return $this->id;
-    }
-
-    // Return the "deleted" property after triggering Proxy initialization
-    public function getDeleted()
-    {
-        return $this->deleted;
     }
 }
