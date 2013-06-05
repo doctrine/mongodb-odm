@@ -71,6 +71,15 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNull($user->getName());
     }
 
+    public function testDocumentManagerIsClosedAccessor()
+    {
+        $dm = $this->getDocumentManager();
+        $this->assertTrue($dm->isOpen());
+
+        $dm->close();
+        $this->assertFalse($dm->isOpen());
+    }
+
     static public function dataMethodsAffectedByNoObjectArguments()
     {
         return array(
