@@ -699,7 +699,7 @@ class DocumentPersister
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
             );
-            $criteria = $this->prepareQueryOrNewObj($criteria);
+            $criteria = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
             $cursor = $mongoCollection->find($criteria);
             if (isset($mapping['sort'])) {
                 $cursor->sort($mapping['sort']);
@@ -740,7 +740,7 @@ class DocumentPersister
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
             isset($mapping['criteria']) ? $mapping['criteria'] : array()
         );
-        $criteria = $this->prepareQueryOrNewObj($criteria);
+        $criteria = $this->uow->getDocumentPersister($mapping['targetDocument'])->prepareQueryOrNewObj($criteria);
         $qb = $this->dm->createQueryBuilder($mapping['targetDocument'])
             ->setQueryArray($criteria);
 
