@@ -15,9 +15,9 @@ use Doctrine\MongoDB\Connection;
 /**
  * @package Doctrine\ODM\MongoDB\Tests\Functional\Ticket
  *
- * @group MODM605
+ * @group GH605
  */
-class MODM605Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH605Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private $dm2;
 
@@ -49,22 +49,22 @@ class MODM605Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testCopyDocument()
     {
-        $embeddedDocuments = array(new MODM95TestEmbeddedDocument('foo'));
+        $embeddedDocuments = array(new GH605TestEmbeddedDocument('foo'));
 
-        $testDoc = new MODM605TestDocument();
+        $testDoc = new GH605TestDocument();
         $testDoc->setEmbeddedDocuments($embeddedDocuments);
         $this->dm->persist($testDoc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $testDoc = $this->dm->find(__NAMESPACE__.'\MODM605TestDocument', $testDoc->id);
+        $testDoc = $this->dm->find(__NAMESPACE__.'\GH605TestDocument', $testDoc->id);
         $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray(), 'references has been copied correctly in db2');
 
         $this->dm2->persist($testDoc);
         $this->dm2->flush();
         $this->dm2->clear();
 
-        $testDocLoad = $this->dm2->find(__NAMESPACE__.'\MODM605TestDocument', $testDoc->id);
+        $testDocLoad = $this->dm2->find(__NAMESPACE__.'\GH605TestDocument', $testDoc->id);
         $this->assertNotNull($testDocLoad);
         $this->assertEquals($embeddedDocuments, $testDocLoad->embeddedDocuments->toArray(), 'references has been copied correctly in db2');
 
@@ -72,19 +72,19 @@ class MODM605Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $testDocLoad = $this->dm->find(__NAMESPACE__.'\MODM605TestDocument', $testDoc->id);
+        $testDocLoad = $this->dm->find(__NAMESPACE__.'\GH605TestDocument', $testDoc->id);
         $this->assertNull($testDocLoad, 'doc was removed correctly');
     }
 }
 
 /** @ODM\Document */
-class MODM605TestDocument
+class GH605TestDocument
 {
     /** @ODM\Id */
     public $id;
 
     // Note: Test case fails with default "pushAll" strategy, but "set" works
-    /** @ODM\EmbedMany(targetDocument="MODM95TestEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument="GH605TestEmbeddedDocument") */
     public $embeddedDocuments;
 
     public function __construct() {
@@ -116,7 +116,7 @@ class MODM605TestDocument
 }
 
 /** @ODM\EmbeddedDocument */
-class MODM605TestEmbeddedDocument
+class GH605TestEmbeddedDocument
 {
     /** @ODM\String */
     public $name;
