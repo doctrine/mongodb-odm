@@ -39,6 +39,11 @@ class PersistentCollection implements BaseCollection
      */
     private $snapshot = array();
 
+    /**
+     * Collection's owning entity
+     *
+     * @var object
+     */
     private $owner;
 
     /**
