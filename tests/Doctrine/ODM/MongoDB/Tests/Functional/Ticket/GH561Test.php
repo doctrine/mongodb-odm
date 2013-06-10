@@ -49,7 +49,7 @@ class GH561TestDocument
     public $id;
 
     // Note: Test case fails with default "pushAll" strategy, but "set" works
-    /** @ODM\EmbedMany(targetDocument="GH561TestEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument="GH561TestEmbeddedDocument", strategy="set") */
     public $embeddedDocuments;
 
     public function __construct() {
