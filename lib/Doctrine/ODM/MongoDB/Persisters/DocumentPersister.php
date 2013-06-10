@@ -883,11 +883,8 @@ class DocumentPersister
                 $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
             } else {
                 list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
-                if (is_array($value)) {
-                    $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
-                } else {
-                    $preparedQuery[$key] = Type::convertPHPToDatabaseValue($value);
-                }
+
+                $preparedQuery[$key] = is_array($value) ? $value : Type::convertPHPToDatabaseValue($value);
             }
         }
 
@@ -958,7 +955,7 @@ class DocumentPersister
                 }
             }
 
-            return array($fieldName, $value);
+            return array($fieldName, $this->prepareQueryOrNewObj($value));
         }
 
         // No processing for unmapped, non-identifier, non-dotted field names
@@ -1046,7 +1043,7 @@ class DocumentPersister
                 }
             }
 
-            return array($fieldName, $value);
+            return array($fieldName, $this->prepareQueryOrNewObj($value));
         }
 
         /* The property path may include a third field segment, excluding the
