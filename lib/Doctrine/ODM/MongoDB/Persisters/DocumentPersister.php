@@ -917,8 +917,12 @@ class DocumentPersister
             $mapping = $class->fieldMappings[$fieldName];
             $fieldName = $mapping['name'];
 
-            if ( ! $prepareValue || empty($mapping['reference']) || empty($mapping['simple'])) {
+            if ( ! $prepareValue || empty($mapping['embedded']) && (empty($mapping['reference']) || empty($mapping['simple']))) {
                 return array($fieldName, $value);
+            }
+
+            if ( ! empty($mapping['embedded']) && ! is_array($value)) {
+                return array($fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value));
             }
 
             // Additional preparation for one or more simple reference values
