@@ -23,13 +23,13 @@ use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\MongoDB\Iterator;
 use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
-use Doctrine\ODM\MongoDB\LoggableCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
+use Doctrine\ODM\MongoDB\LoggableCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
@@ -884,7 +884,7 @@ class DocumentPersister
             } else {
                 list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
 
-                $preparedQuery[$key] = is_array($value) ? $value : Type::convertPHPToDatabaseValue($value);
+                $preparedQuery[$key] = $this->convertPHPToDatabaseValue($value);
             }
         }
 
@@ -1062,6 +1062,27 @@ class DocumentPersister
         }
 
         return array($fieldName, $value);
+    }
+
+    /**
+     * Converts the value to the database values.
+     *
+     * @param array|mixed $value
+     *
+     * @return array|mixed
+     */
+    private function convertPHPToDatabaseValue($value)
+    {
+        if (is_array($value)) {
+            $converted = array();
+            foreach ($value as $key => $v) {
+                $converted[$key] = $this->convertPHPToDatabaseValue($v);
+            }
+
+            return $converted;
+        }
+
+        return Type::convertPHPToDatabaseValue($value);
     }
 
     /**
