@@ -188,7 +188,7 @@ This list explains some of the less obvious mapping types:
 -  ``bin_data_md5``: string to MongoBinData instance with a "md5" type
 -  ``bin_data``: string to MongoBinData instance with a "byte array" type
 -  ``bin_data_uuid``: string to MongoBinData instance with a "uuid" type
--  ``collection``: indexed array to MongoDB array
+-  ``collection``: numerically indexed array to MongoDB array
 -  ``date``: DateTime to MongoDate
 -  ``hash``: associative array to MongoDB object
 -  ``id``: string to MongoId by default, but other formats are possible
