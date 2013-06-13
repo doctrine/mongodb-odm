@@ -127,10 +127,10 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 
     private static $removeMethodTemplate =
 '/**
-* <description>
-*
-* @param <variableType$<variableName>
-*/
+ * <description>
+ *
+ * @param <variableType>$<variableName>
+ */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
 <spaces>$this-><fieldName>->removeElement($<variableName>);
