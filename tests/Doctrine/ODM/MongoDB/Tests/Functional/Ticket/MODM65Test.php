@@ -4,6 +4,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group MODM65
+ */
 class MODM65Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()

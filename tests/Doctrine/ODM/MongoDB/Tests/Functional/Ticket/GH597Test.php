@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * @author Jordan Stout <j@jrdn.org>
+ * @group GH597
  */
 class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

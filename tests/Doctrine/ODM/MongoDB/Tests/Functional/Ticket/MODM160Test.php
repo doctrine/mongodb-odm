@@ -4,6 +4,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Documents\Functional\Ticket\MODM160 as MODM160;
 
+/**
+ * @group MODM160
+ */
 class MODM160Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testEmbedManyInArrayMergeNew()

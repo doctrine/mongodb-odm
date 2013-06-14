@@ -2,6 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+/**
+ * @group MODM88
+ */
 class MODM88Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()

@@ -9,6 +9,9 @@ use Documents\Functional\EmbeddedTestLevel0;
 use Documents\Functional\EmbeddedTestLevel1;
 use Documents\Functional\EmbeddedTestLevel2;
 
+/**
+ * @group MODM140
+ */
 class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
 

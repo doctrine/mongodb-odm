@@ -7,6 +7,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group MODM67
+ */
 class MODM67Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function getDocumentManager()

@@ -6,6 +6,9 @@ use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Documents\User;
 
+/**
+ * @group MODM167
+ */
 class MODM167Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
 

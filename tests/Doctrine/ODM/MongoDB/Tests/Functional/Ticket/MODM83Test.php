@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group MODM83
+ */
 class MODM83Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function getDocumentManager()

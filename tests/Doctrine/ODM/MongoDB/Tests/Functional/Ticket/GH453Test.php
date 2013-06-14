@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group GH453
+ */
 class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testHashWithStringKeys()

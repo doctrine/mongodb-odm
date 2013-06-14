@@ -6,6 +6,9 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group MODM81
+ */
 class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**

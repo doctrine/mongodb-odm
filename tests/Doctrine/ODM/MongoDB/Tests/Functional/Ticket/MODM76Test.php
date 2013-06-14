@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group MODM76
+ */
 class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()

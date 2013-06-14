@@ -7,6 +7,9 @@ use Doctrine\ODM\MongoDB\Events;
 use Documents\Phonenumber;
 use Documents\User;
 
+/**
+ * @group MODM166
+ */
 class MODM166Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
 
