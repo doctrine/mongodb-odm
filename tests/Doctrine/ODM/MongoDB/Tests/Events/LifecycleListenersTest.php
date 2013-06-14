@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Events;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group events
+ */
 class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function getDocumentManager()

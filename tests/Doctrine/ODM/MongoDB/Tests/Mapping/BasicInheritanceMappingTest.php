@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group mapping
+ */
 class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private $factory;

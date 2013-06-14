@@ -8,6 +8,9 @@ use Doctrine\ODM\MongoDB\Tests\Mocks\ConnectionMock;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Common\EventManager;
 
+/**
+ * @group mapping
+ */
 class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testGetMetadataForSingleClass()

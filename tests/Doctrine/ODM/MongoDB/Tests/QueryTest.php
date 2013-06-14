@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\ODM\MongoDB\QueryBuilder;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group query
+ */
 class QueryTest extends BaseTest
 {
     public function testSelectAndSelectSliceOnSameField()

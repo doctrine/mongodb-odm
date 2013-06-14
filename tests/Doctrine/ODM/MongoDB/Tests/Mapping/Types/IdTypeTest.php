@@ -1,18 +1,18 @@
 <?php
 
-namespace Doctrine\ODM\MongoDB\Tests\Types;
+namespace Doctrine\ODM\MongoDB\Tests\Mapping\Types;
 
-use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Mapping\Types\IdType;
 
 /**
- * @group types
+ * @group mapping_type
  */
 class IdTypeTest extends \PHPUnit_Framework_TestCase
 {
     public function testConvertToDatabaseValue()
     {
         $mongoId = new \MongoId();
-        $type = Type::getType('id');
+        $type = new IdType();
 
         $this->assertNull($type->convertToDatabaseValue(null), 'null is not converted');
         $this->assertSame($mongoId, $type->convertToDatabaseValue($mongoId), 'MongoId objects are not converted');
@@ -24,7 +24,7 @@ class IdTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function testConvertToDatabaseValueShouldGenerateMongoIds($value)
     {
-        $type = Type::getType('id');
+        $type = new IdType();
 
         $this->assertInstanceOf('MongoId', $type->convertToDatabaseValue($value));
     }

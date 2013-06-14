@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @group mapping_driver
  */
 class YamlDriverTest extends AbstractDriverTest
 {

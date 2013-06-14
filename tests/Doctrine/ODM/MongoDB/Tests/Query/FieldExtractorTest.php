@@ -4,6 +4,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use Doctrine\ODM\MongoDB\Query\FieldExtractor;
 
+/**
+ * @group query
+ */
 class FieldExtractorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
 	/**

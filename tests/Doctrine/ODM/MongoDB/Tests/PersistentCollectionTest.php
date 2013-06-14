@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
+ * @group collection
  */
 class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
 {

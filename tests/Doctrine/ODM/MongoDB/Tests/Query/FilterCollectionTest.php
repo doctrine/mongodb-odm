@@ -2,6 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
+/**
+ * @group query
+ */
 class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testEnable()

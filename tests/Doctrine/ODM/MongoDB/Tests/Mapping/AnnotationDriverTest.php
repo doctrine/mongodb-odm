@@ -6,6 +6,9 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group mapping
+ */
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
     /**

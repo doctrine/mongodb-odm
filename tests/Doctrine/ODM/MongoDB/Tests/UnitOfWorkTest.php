@@ -16,6 +16,9 @@ use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
 use Documents\ForumUser;
 use Documents\ForumAvatar;
 
+/**
+ * @group unitofwork
+ */
 class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 {
     private $dm;

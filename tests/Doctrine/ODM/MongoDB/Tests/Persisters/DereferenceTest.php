@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
+/**
+ * @group persisters
+ */
 class DereferenceTest extends BaseTest
 {
     private $pb;

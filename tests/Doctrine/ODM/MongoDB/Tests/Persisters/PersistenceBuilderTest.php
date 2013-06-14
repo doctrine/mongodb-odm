@@ -11,6 +11,9 @@ use Documents\CmsComment;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
 
+/**
+ * @group persisters
+ */
 class PersistenceBuilderTest extends BaseTest
 {
     private $pb;

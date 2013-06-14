@@ -2,6 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Query\Filter;
 
+/**
+ * @group query_filter
+ */
 class BsonFilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**

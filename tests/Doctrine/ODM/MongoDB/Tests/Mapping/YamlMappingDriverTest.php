@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
 
+/**
+ * @group mapping
+ */
 class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
     protected function _loadDriver()

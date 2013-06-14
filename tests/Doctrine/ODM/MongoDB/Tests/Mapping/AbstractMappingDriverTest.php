@@ -7,6 +7,9 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group mapping
+ */
 abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     abstract protected function _loadDriver();

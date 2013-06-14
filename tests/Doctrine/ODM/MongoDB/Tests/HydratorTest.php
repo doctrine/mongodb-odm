@@ -4,6 +4,9 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group hydrator
+ */
 class HydratorTest extends BaseTest
 {
     public function testHydrator()

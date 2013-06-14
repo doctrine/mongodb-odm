@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Tools;
 use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
+/**
+ * @group tools
+ */
 class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private $generator;

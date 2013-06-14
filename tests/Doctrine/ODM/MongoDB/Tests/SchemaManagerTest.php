@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
+ * @group schemamanager
  */
 class SchemaManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

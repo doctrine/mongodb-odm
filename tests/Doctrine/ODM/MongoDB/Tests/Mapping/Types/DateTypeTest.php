@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Types;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
 
+/**
+ * @group mapping_type
+ */
 class DateTypeTest extends \PHPUnit_Framework_TestCase
 {
     public function testConvertToDatabaseValue()

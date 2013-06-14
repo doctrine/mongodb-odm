@@ -6,6 +6,9 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Events;
 
+/**
+ * @group mapping
+ */
 class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testClassMetadataInstanceSerialization()

@@ -4,6 +4,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group events
+ */
 class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function createUser()

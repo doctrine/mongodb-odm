@@ -10,6 +10,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * IMPORTANT: When writing tests here consider that a lot of graph constellations
  * can have many valid orderings, so you may want to build a graph that has only
  * 1 valid order to simplify your tests.
+ *
+ * @group commitorder
  */
 class CommitOrderCalculatorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

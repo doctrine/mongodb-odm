@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
+ * @group documentmanager
  */
 class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
