@@ -7,6 +7,9 @@ use Doctrine\ODM\MongoDB\Query\Query;
 use Documents\User;
 use Documents\Group;
 
+/**
+ * @group functional
+ */
 class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testSlaveOkayOnPersistentCollection()

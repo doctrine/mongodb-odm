@@ -8,6 +8,7 @@ use Documents\User;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @group functional
  */
 class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

@@ -7,6 +7,9 @@ use Documents\CmsPhonenumber;
 use Documents\CmsAddress;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
+/**
+ * @group functional
+ */
 class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testSimpleDetachMerge()

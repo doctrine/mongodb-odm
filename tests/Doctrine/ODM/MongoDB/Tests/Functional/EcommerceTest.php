@@ -16,6 +16,9 @@ use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\Money;
 use Documents\Ecommerce\Option;
 
+/**
+ * @group functional
+ */
 class EcommerceTest extends \PHPUnit_Framework_TestCase
 {
     protected $dm;

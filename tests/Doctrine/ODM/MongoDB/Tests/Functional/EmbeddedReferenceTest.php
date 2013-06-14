@@ -6,6 +6,9 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+/**
+ * @group functional
+ */
 class EmbeddedReferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testReferencedDocumentInsideEmbeddedDocument()

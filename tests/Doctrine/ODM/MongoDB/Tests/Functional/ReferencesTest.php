@@ -10,6 +10,9 @@ use Documents\Group;
 use Documents\User;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 
+/**
+ * @group functional
+ */
 class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testManyDeleteReference()

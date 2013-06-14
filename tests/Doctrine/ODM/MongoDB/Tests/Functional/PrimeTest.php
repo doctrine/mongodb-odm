@@ -4,6 +4,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+/**
+ * @group functional
+ */
 class PrimeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testPrime()

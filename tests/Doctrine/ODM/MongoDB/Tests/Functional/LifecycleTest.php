@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group functional
+ */
 class LifecycleTest extends BaseTest
 {
     public function testEventOnDoubleFlush()

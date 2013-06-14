@@ -11,6 +11,9 @@ use Documents\Profile;
 use Documents\File;
 use Documents\User;
 
+/**
+ * @group functional
+ */
 class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function setUp()

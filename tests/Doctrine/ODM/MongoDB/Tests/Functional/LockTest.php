@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group functional
+ */
 class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testOptimisticLockIntSetInitialVersion()

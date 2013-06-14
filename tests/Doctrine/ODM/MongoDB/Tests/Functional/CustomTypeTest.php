@@ -7,6 +7,9 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
 
+/**
+ * @group functional
+ */
 class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public static function setUpBeforeClass()

@@ -18,6 +18,7 @@ use Documents\Event;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
+ * @group functional
  */
 class MapReduceTest extends \PHPUnit_Framework_TestCase
 {

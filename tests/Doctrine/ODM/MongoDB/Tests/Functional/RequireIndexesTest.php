@@ -6,6 +6,9 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
+/**
+ * @group functional
+ */
 class RequireIndexesTest extends BaseTest
 {
     public function setUp()

@@ -12,6 +12,9 @@ use Documents\Group;
 use Documents\Project;
 use Documents\User;
 
+/**
+ * @group functional
+ */
 class RemoveTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testRemove()

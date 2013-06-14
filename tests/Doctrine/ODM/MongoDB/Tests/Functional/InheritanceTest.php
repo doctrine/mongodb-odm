@@ -2,6 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+/**
+ * @group functional
+ */
 class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testCollectionPerClassInheritance()

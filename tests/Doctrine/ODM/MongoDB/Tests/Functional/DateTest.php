@@ -10,6 +10,9 @@ use Documents\Profile;
 use Documents\File;
 use Documents\User;
 
+/**
+ * @group functional
+ */
 class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testDates()

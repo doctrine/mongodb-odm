@@ -7,6 +7,9 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 use Documents\BlogPost;
 use Documents\User;
 
+/**
+ * @group functional
+ */
 class ReferenceRepositoryMethodTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testOneToOne()

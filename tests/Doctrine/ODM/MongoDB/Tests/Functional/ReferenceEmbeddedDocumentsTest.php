@@ -8,6 +8,9 @@ use Documents\Issue;
 use Doctrine\Common\Collections\ArrayCollection;
 use Documents\Developer;
 
+/**
+ * @group functional
+ */
 class ReferenceEmbeddedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testSavesEmbeddedDocumentsInReferencedDocument()

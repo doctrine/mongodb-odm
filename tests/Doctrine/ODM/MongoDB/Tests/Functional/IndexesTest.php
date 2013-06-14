@@ -4,6 +4,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @group functional
+ */
 class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private function uniqueTest($class)

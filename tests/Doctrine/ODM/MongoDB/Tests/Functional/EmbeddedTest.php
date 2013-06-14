@@ -18,6 +18,9 @@ use Documents\Functional\VirtualHost;
 use Documents\Functional\VirtualHostDirective;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 
+/**
+ * @group functional
+ */
 class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testSetEmbeddedToNull()

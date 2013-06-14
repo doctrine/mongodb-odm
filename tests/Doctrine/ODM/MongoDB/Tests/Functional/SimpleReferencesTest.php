@@ -6,6 +6,9 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 
+/**
+ * @group functional
+ */
 class SimpleReferencesTest extends BaseTest
 {
     private $user;
