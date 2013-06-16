@@ -292,7 +292,7 @@ EventManager that is passed to the DocumentManager factory:
     <?php
 
     $eventManager = new EventManager();
-    $eventManager->addEventListener(array(Events::preUpdate), MyEventListener());
+    $eventManager->addEventListener(array(Events::preUpdate), new MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
     
     $documentManager = DocumentManager::create($mongo, $config, $eventManager);
@@ -304,7 +304,7 @@ DocumentManager was created:
 
     <?php
 
-    $documentManager->getEventManager()->addEventListener(array(Events::preUpdate), MyEventListener());
+    $documentManager->getEventManager()->addEventListener(array(Events::preUpdate), new MyEventListener());
     $documentManager->getEventManager()->addEventSubscriber(new MyEventSubscriber());
 
 Implementing Event Listeners
