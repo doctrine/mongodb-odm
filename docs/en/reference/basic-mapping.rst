@@ -156,16 +156,20 @@ Here is a quick overview of the built-in mapping types:
 -  ``bin_data``
 -  ``bin_data_uuid``
 -  ``boolean``
+-  ``collection``
+-  ``custom_id``
 -  ``date``
 -  ``file``
 -  ``float``
 -  ``hash``
 -  ``id``
+-  ``increment``
 -  ``int``
 -  ``key``
+-  ``object_id``
+-  ``raw_type``
 -  ``string``
 -  ``timestamp``
--  ``increment``
 
 You can read more about the available MongoDB types on `php.net <http://us.php.net/manual/en/mongo.types.php>`_.
 
@@ -184,6 +188,7 @@ This list explains some of the less obvious mapping types:
 -  ``bin_data_md5``: string to MongoBinData instance with a "md5" type
 -  ``bin_data``: string to MongoBinData instance with a "byte array" type
 -  ``bin_data_uuid``: string to MongoBinData instance with a "uuid" type
+-  ``collection``: numerically indexed array to MongoDB array
 -  ``date``: DateTime to MongoDate
 -  ``hash``: associative array to MongoDB object
 -  ``id``: string to MongoId by default, but other formats are possible
