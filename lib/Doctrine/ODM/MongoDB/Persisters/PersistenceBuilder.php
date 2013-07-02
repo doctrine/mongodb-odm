@@ -117,6 +117,12 @@ class PersistenceBuilder
                         $value = $this->prepareReferencedDocumentValue($mapping, $new);
                     }
 
+                    // Store a discriminator value if the referenced document is not mapped explicitly to a targetDocument
+                    if (isset($mapping['discriminatorField']) || isset($mapping['discriminatorMap'])) {
+                        $discriminatorField = $this->dm->getDiscriminatorField($mapping);
+                        $insertData[$discriminatorField] = $this->getDiscriminatorValue($mapping, $new);
+                    }
+
                 // @EmbedOne
                 } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
                     $value = $this->prepareEmbeddedDocumentValue($mapping, $new);
@@ -234,6 +240,16 @@ class PersistenceBuilder
                     $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 } else {
                     $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
+                }
+
+                // Update a discriminator value if the referenced document is not mapped explicitly to a targetDocument
+                if (isset($mapping['discriminatorField']) || isset($mapping['discriminatorMap'])) {
+                    $discriminatorField = $this->dm->getDiscriminatorField($mapping);
+                    if (isset($new) || $mapping['nullable'] === true) {
+                        $updateData[$this->cmd . 'set'][$discriminatorField] = (is_null($new) ? null : $this->getDiscriminatorValue($mapping, $new));
+                    } else {
+                        $updateData[$this->cmd . 'unset'][$discriminatorField] = true;
+                    }
                 }
 
             // @ReferenceMany
@@ -430,5 +446,28 @@ class PersistenceBuilder
     {
         return $this->uow->isScheduledForInsert($document)
             || $this->uow->getDocumentPersister(get_class($document))->isQueuedForInsert($document);
+    }
+
+    /**
+     * Returns discriminator value for a document.
+     *
+     * @param  array  $mapping
+     * @param  object $document
+     * @return string
+     *
+     * @throws RuntimeException If discriminator map doesn't contain an entry for document
+     */
+    private function getDiscriminatorValue(array $mapping, $document)
+    {
+        $refClassName = get_class($document);
+
+        // Do we have an entry in discriminator map for this type?
+        if (isset($mapping['discriminatorMap']) &&
+            $key = array_search($refClassName, $mapping['discriminatorMap'])
+        ) {
+            return $key;
+        }
+
+        return $refClassName;
     }
 }
