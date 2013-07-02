@@ -47,6 +47,14 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     private $class;
 
     /**
+     * The current field we are operating on.
+     *
+     * @todo Change this to private once ODM requires doctrine/mongodb 1.1+
+     * @var string
+     */
+    protected $currentField;
+
+    /**
      * Whether or not to hydrate the data to documents.
      *
      * @var boolean
@@ -101,6 +109,18 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     {
         $this->requireIndexes = $requireIndexes;
         return $this;
+    }
+
+    /**
+     * Set the current field to operate on.
+     *
+     * @param string $field
+     * @return self
+     */
+    public function field($field)
+    {
+        $this->currentField = $field;
+        return parent::field($field);
     }
 
     /**
