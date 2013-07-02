@@ -670,7 +670,7 @@ class DocumentManager implements ObjectManager
 
     public function getClassNameFromDiscriminatorValue(array $mapping, $value)
     {
-        $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
+        $discriminatorField = $this->getDiscriminatorField($mapping);
         if (is_array($value) && isset($value[$discriminatorField])) {
             $discriminatorValue = $value[$discriminatorField];
             return isset($mapping['discriminatorMap'][$discriminatorValue]) ? $mapping['discriminatorMap'][$discriminatorValue] : $discriminatorValue;
@@ -685,6 +685,11 @@ class DocumentManager implements ObjectManager
             }
         }
         return $mapping['targetDocument'];
+    }
+
+    public function getDiscriminatorField(array $mapping)
+    {
+        return isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
     }
 
     /**
