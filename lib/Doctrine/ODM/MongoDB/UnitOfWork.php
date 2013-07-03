@@ -535,7 +535,7 @@ class UnitOfWork implements PropertyChangedListener
         // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION are processed here.
         $oid = spl_object_hash($document);
 
-        if ( ! isset($this->documentInsertions[$oid]) && isset($this->documentStates[$oid])) {
+        if ( ! isset($this->documentInsertions[$oid])) {
             $this->computeChangeSet($class, $document);
         }
     }
