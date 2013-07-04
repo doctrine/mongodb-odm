@@ -488,14 +488,18 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Compute the changesets of all documents scheduled for insertion
+     * Compute changesets of all documents scheduled for insertion.
      *
-     * @return void
+     * Embedded documents will not be processed.
      */
     private function computeScheduleInsertsChangeSets()
     {
         foreach ($this->documentInsertions as $document) {
             $class = $this->dm->getClassMetadata(get_class($document));
+
+            if ($class->isEmbeddedDocument) {
+                continue;
+            }
 
             $this->computeChangeSet($class, $document);
         }
