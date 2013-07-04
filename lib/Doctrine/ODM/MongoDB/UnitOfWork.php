@@ -863,12 +863,12 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->dm->getClassMetadata(get_class($parentDocument));
         $topOrExistingDocument = ( ! $isNewParentDocument || ! $class->isEmbeddedDocument);
 
-        if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide'] && ($topOrExistingDocument || $mapping['strategy'] === 'set')) {
-            if ( ! in_array($value, $this->collectionUpdates, true)) {
-                $this->collectionUpdates[] = $value;
+        if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide']) {
+            if ($topOrExistingDocument || strncmp($mapping['strategy'], 'set', 3) === 0) {
+                if ( ! in_array($value, $this->collectionUpdates, true)) {
+                    $this->collectionUpdates[] = $value;
+                }
             }
-            $this->visitedCollections[] = $value;
-        } elseif ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide']) {
             $this->visitedCollections[] = $value;
         }
 
