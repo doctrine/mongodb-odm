@@ -978,8 +978,8 @@ class DocumentPersister
         $mapping = $class->fieldMappings[$e[0]];
         $e[0] = $mapping['name'];
 
-        // Hash fields will not be prepared beyond the field name
-        if ($mapping['type'] === 'hash') {
+        // Hash and raw fields will not be prepared beyond the field name
+        if ($mapping['type'] === Type::HASH || $mapping['type'] === Type::RAW) {
             $fieldName = implode('.', $e);
 
             return array($fieldName, $value);
