@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Tools;
 
 use Doctrine\Common\Util\Inflector;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Symfony\Component\PropertyAccess\StringUtil;
 
 /**
  * Generic class used to generate PHP5 document classes from ClassMetadataInfo instances
@@ -703,9 +704,18 @@ public function <methodName>()
     {
         $methodName = $type . Inflector::classify($fieldName);
 
-        // TODO: This needs actual plural -> singular conversion
-        if (in_array($type, array('add', 'remove')) && substr($methodName, -1) == 's') {
-            $methodName = substr($methodName, 0, -1);
+        if (in_array($type, array('add', 'remove'))) {
+            $methodNameSingulars = StringUtil::singularify($methodName);
+            $variableNameSingulars = StringUtil::singularify($fieldName);
+            /* first form is mainly the best one */
+            $methodName = (is_array($methodNameSingulars))?$methodNameSingulars[0]:$methodNameSingulars;
+            $variablename = Inflector::camelize((is_array($variableNameSingulars))?$variableNameSingulars[0]:$variableNameSingulars);
+            $description = ucfirst($type) . ' ' . $variablename;
+        }
+        else
+        {
+            $variablename = Inflector::camelize($fieldName);
+            $description = ucfirst($type) . ' ' . $fieldName;
         }
 
         if ($this->hasMethod($methodName, $metadata)) {
@@ -721,10 +731,10 @@ public function <methodName>()
         $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
 
         $replacements = array(
-            '<description>'    => ucfirst($type) . ' ' . $fieldName,
+            '<description>'    => $description,
             '<methodTypeHint>' => $methodTypeHint,
             '<variableType>'   => $variableType,
-            '<variableName>'   => Inflector::camelize($fieldName),
+            '<variableName>'   => $variablename,
             '<methodName>'     => $methodName,
             '<fieldName>'      => $fieldName,
         );
