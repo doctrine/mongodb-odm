@@ -23,80 +23,81 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
 .. code-block:: php
 
     <?php
+    use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-    /** @MappedSuperclass */
+    /** @ODM\MappedSuperclass */
     abstract class BaseEmployee
     {
-        /** @Id */
+        /** @ODM\Id */
         private $id;
     
-        /** @Increment */
+        /** @ODM\Increment */
         private $changes = 0;
     
-        /** @Collection */
+        /** @ODM\Collection */
         private $notes = array();
     
-        /** @String */
+        /** @ODM\String */
         private $name;
     
-        /** @Float */
+        /** @ODM\Float */
         private $salary;
     
-        /** @Date */
+        /** @ODM\Date */
         private $started;
     
-        /** @Date */
+        /** @ODM\Date */
         private $left;
     
-        /** @EmbedOne(targetDocument="Address") */
+        /** @ODM\EmbedOne(targetDocument="Address") */
         private $address;
     
         // ...
     }
     
-    /** @Document */
+    /** @ODM\Document */
     class Employee extends BaseEmployee
     {
-        /** @ReferenceOne(targetDocument="Documents\Manager") */
+        /** @ODM\ReferenceOne(targetDocument="Documents\Manager") */
         private $manager;
     
         // ...
     }
     
-    /** @Document */
+    /** @ODM\Document */
     class Manager extends BaseEmployee
     {
-        /** @ReferenceMany(targetDocument="Documents\Project") */
+        /** @ODM\ReferenceMany(targetDocument="Documents\Project") */
         private $projects = array();
     
         // ...
     }
     
-    /** @EmbeddedDocument */
+    /** @ODM\EmbeddedDocument */
     class Address
     {
-        /** @String */
+        /** @ODM\String */
         private $address;
     
-        /** @String */
+        /** @ODM\String */
         private $city;
     
-        /** @String */
+        /** @ODM\String */
         private $state;
     
-        /** @String */
+        /** @ODM\String */
         private $zipcode;
     
         // ...
     }
     
-    /** @Document */
+    /** @ODM\Document */
     class Project
     {
-        /** @Id */
+        /** @ODM\Id */
         private $id;
     
-        /** @String */
+        /** @ODM\String */
         private $name;
     
         public function __construct($name)
@@ -357,7 +358,6 @@ Now we can configure the ODM and create our ``DocumentManager`` instance:
     $config->setHydratorNamespace('Hydrators');
 
     $reader = new AnnotationReader();
-    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
     $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
     $dm = DocumentManager::create(new Connection(), $config);
@@ -403,7 +403,6 @@ Your final bootstrap code should look like the following:
     $config->setHydratorNamespace('Hydrators');
 
     $reader = new AnnotationReader();
-    $reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
     $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
 
     $dm = DocumentManager::create(new Connection(), $config);
