@@ -104,6 +104,79 @@ class QueryTest extends BaseTest
         $this->assertEquals(1, $query->count());
         $this->assertSame($jon, $query->getSingleResult());
     }
+    
+    public function testSorting()
+    {
+        $people = array('Alex', 'David', 'Jon', 'Kris', 'Xander');
+        $peopleDocs = array();
+        foreach ($people as $firstName){
+            $peopleDocs[$firstName] = new Person($firstName);
+        }
+        
+        // Persist in non-alphabetical order
+        $this->dm->persist($peopleDocs['David']);
+        $this->dm->persist($peopleDocs['Xander']);
+        $this->dm->persist($peopleDocs['Alex']);
+        $this->dm->persist($peopleDocs['Kris']);
+        $this->dm->persist($peopleDocs['Jon']);
+        
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb->sort('firstName', 'asc');
+
+        $query = $qb->getQuery();
+
+        // Check the number of results
+        $this->assertEquals(5, $query->count());
+        
+        // Get the cursor
+        $result = $query->execute();
+        
+        // Check the order of the results is correct
+        $count = 0;
+        foreach ($result as $person){
+            $this->assertEquals($people[$count], $person->firstName);
+            $count++;
+        }
+    }
+    
+    public function testSortingAfterRecreate()
+    {
+        $people = array('Alex', 'David', 'Jon', 'Kris', 'Xander');
+        $peopleDocs = array();
+        foreach ($people as $firstName){
+            $peopleDocs[$firstName] = new Person($firstName);
+        }
+        
+        // Persist in non-alphabetical order
+        $this->dm->persist($peopleDocs['David']);
+        $this->dm->persist($peopleDocs['Xander']);
+        $this->dm->persist($peopleDocs['Alex']);
+        $this->dm->persist($peopleDocs['Kris']);
+        $this->dm->persist($peopleDocs['Jon']);
+        
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb->sort('firstName', 'asc');
+
+        $query = $qb->getQuery();
+
+        // Check the number of results
+        $this->assertEquals(5, $query->count());
+        
+        // Get the cursor and recreate it
+        $result = $query->execute();
+        $result->recreate();
+        
+        // Check the order of the results is correct
+        $count = 0;
+        foreach ($result as $person){
+            $this->assertEquals($people[$count], $person->firstName);
+            $count++;
+        }
+    }
 
     public function testQueryIdIn()
     {
