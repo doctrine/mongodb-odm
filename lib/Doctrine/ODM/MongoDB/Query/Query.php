@@ -306,6 +306,8 @@ class Query extends \Doctrine\MongoDB\Query\Query
                 $this->dm->getConfiguration()->getRetryQuery()
             );
         }
+        // Preserve the sort
+        $cursor->sort($this->query['sort']);
         $cursor->hydrate($this->hydrate);
         $cursor->setHints($hints);
 
