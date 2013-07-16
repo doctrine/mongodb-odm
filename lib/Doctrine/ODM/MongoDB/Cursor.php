@@ -424,7 +424,7 @@ class Cursor extends BaseCursor
      */
     public function timeout($ms)
     {
-        $this->baseCursor->skip($ms);
+        $this->baseCursor->timeout($ms);
         return $this;
     }
 }
