@@ -106,7 +106,7 @@ EOT
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
-        $dm = $this->getHelper('dm')->getDocumentManager();
+        $dm = $this->getHelper('documentManager')->getDocumentManager();
         
         $cmf = new DisconnectedClassMetadataFactory();
         $cmf->setDocumentManager($dm);
