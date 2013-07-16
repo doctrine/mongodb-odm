@@ -56,7 +56,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dm = $this->getHelper('dm')->getDocumentManager();
+        $dm = $this->getHelper('documentManager')->getDocumentManager();
         $cacheDriver = $dm->getConfiguration()->getMetadataCacheImpl();
 
         if ( ! $cacheDriver) {
