@@ -26,52 +26,69 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
 
 /**
- * Cursor extends the default Doctrine\MongoDB\Cursor implementation and changes the default
- * data returned to be mapped Doctrine document class instances. To disable the hydration
- * use hydrate(false) and the Cursor will give you normal document arrays instance of objects.
+ * Wrapper for the Doctrine\MongoDB\Cursor class.
  *
- * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
+ * This class composes a Doctrine\MongoDB\Cursor instance and wraps its methods
+ * in order to return results as hydrated document class instances. Hydration
+ * behavior may be controlled with the {@link Cursor::hydrate()} method.
+ *
+ * For compatibility, this class also extends Doctrine\MongoDB\Cursor.
+ *
+ * @since  1.0
+ * @author Jonathan H. Wage <jonwage@gmail.com>
+ * @author Roman Borschel <roman@code-factory.org>
+ * @author Jeremy Mikola <jmikola@gmail.com>
  */
 class Cursor extends BaseCursor
 {
     /**
-     * The \Doctrine\MongoDB\Cursor this object is wrapping
+     * The Doctrine\MongoDB\Cursor instance being wrapped.
      *
-     * @var \Doctrine\MongoDB\Cursor $baseCursor
+     * @var BaseCursor
      */
     private $baseCursor;
 
     /**
-     * Whether or not to hydrate the data to documents.
+     * The ClassMetadata instance for the document class being queried.
+     *
+     * @var ClassMetadata
+     */
+    private $class;
+
+    /**
+     * Hints for UnitOfWork behavior.
+     *
+     * @var array
+     */
+    private $unitOfWorkHints = array();
+
+    /**
+     * Whether or not to hydrate results as document class instances.
      *
      * @var boolean
      */
     private $hydrate = true;
 
     /**
-     * Whether or not to refresh the data for documents that are already in the identity map.
-     *
-     * @var boolean
-     */
-    private $refresh = false;
-
-    /**
-     * The UnitOfWork used to coordinate object-level transactions.
+     * The UnitOfWork instance used for result hydration and preparing arguments
+     * for {@link Cursor::sort()}.
      *
      * @var UnitOfWork
      */
     private $unitOfWork;
 
     /**
-     * The ClassMetadata instance.
+     * Constructor.
      *
-     * @var Mapping\ClassMetadata
+     * @param Connection    $connection Connection used to create the wrapped Cursor
+     * @param Collection    $collection Collection used to create the wrapped Cursor
+     * @param UnitOfWork    $unitOfWork UnitOfWork for result hydration and query preparation
+     * @param ClassMetadata $class      ClassMetadata for the document being queried
+     * @param BaseCursor    $baseCursor Doctrine\MongoDB\Cursor instance being wrapped
+     * @param array         $query      Query criteria
+     * @param array         $fields     Selected fields (projection)
+     * @param integer       $numRetries Number of times to retry queries
      */
-    private $class;
-
-    /** @override */
     public function __construct(Connection $connection, Collection $collection, UnitOfWork $uow, ClassMetadata $class, BaseCursor $baseCursor, array $query = array(), array $fields = array(), $numRetries = 0)
     {
         parent::__construct($connection, $collection, $baseCursor->getMongoCursor(), $query, $fields, $numRetries);
@@ -81,9 +98,9 @@ class Cursor extends BaseCursor
     }
 
     /**
-     * Gets the base cursor.
+     * Return the wrapped Doctrine\MongoDB\Cursor instance.
      *
-     * @return \Doctrine\MongoDB\Cursor $baseCursor
+     * @return BaseCursor
      */
     public function getBaseCursor()
     {
@@ -91,93 +108,323 @@ class Cursor extends BaseCursor
     }
 
     /**
-     * Set hints to account for during reconstitution/lookup of the documents.
+     * Return the database connection for this cursor.
+     *
+     * @see \Doctrine\MongoDB\Cursor::getConnection()
+     * @return Connection
+     */
+    public function getConnection()
+    {
+        return $this->baseCursor->getConnection();
+    }
+
+    /**
+     * Return the collection for this cursor.
+     *
+     * @see \Doctrine\MongoDB\Cursor::getCollection()
+     * @return Collection
+     */
+    public function getCollection()
+    {
+        return $this->baseCursor->getCollection();
+    }
+
+    /**
+     * Return the selected fields (projection).
+     *
+     * @see \Doctrine\MongoDB\Cursor::getFields()
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->baseCursor->getFields();
+    }
+
+    /**
+     * Get hints for UnitOfWork behavior.
+     *
+     * @return array
+     */
+    public function getHints()
+    {
+        return $this->unitOfWorkHints;
+    }
+
+    /**
+     * Set hints for UnitOfWork behavior.
      *
      * @param array $hints
      */
     public function setHints(array $hints)
     {
-        $this->hints = $hints;
+        $this->unitOfWorkHints = $hints;
     }
 
     /**
-     * Get hints to account for during reconstitution/lookup of the documents.
+     * Return the query criteria.
      *
-     * @return array $hints
+     * @see \Doctrine\MongoDB\Cursor::getQuery()
+     * @return array
      */
-    public function getHints()
+    public function getQuery()
     {
-        return $this->hints;
+        return $this->baseCursor->getQuery();
     }
 
-    /** @override */
+    /**
+     * Recreates the internal MongoCursor.
+     *
+     * @see \Doctrine\MongoDB\Cursor::recreate()
+     */
+    public function recreate()
+    {
+        $this->baseCursor->recreate();
+        $this->mongoCursor = $this->baseCursor->getMongoCursor();
+    }
+
+    /**
+     * Wrapper method for MongoCursor::addOption().
+     *
+     * @see \Doctrine\MongoDB\Cursor::addOption()
+     * @see http://php.net/manual/en/mongocursor.addoption.php
+     * @param string $key
+     * @param mixed $value
+     * @return self
+     */
+    public function addOption($key, $value)
+    {
+        $this->baseCursor->addOption($key, $value);
+        return $this;
+    }
+
+    /**
+     * Wrapper method for MongoCursor::batchSize().
+     *
+     * @see \Doctrine\MongoDB\Cursor::batchSize()
+     * @see http://php.net/manual/en/mongocursor.batchsize.php
+     * @param integer $num
+     * @return self
+     */
+    public function batchSize($num)
+    {
+        $this->baseCursor->batchSize($num);
+        return $this;
+    }
+
+    /**
+     * Wrapper method for MongoCursor::current().
+     *
+     * If configured, the result may be a hydrated document class instance.
+     *
+     * @see \Doctrine\MongoDB\Cursor::current()
+     * @see http://php.net/manual/en/iterator.current.php
+     * @see http://php.net/manual/en/mongocursor.current.php
+     * @return array|object|null
+     */
     public function current()
     {
-        $current = parent::current();
-        if ($current && $this->hydrate) {
-            return $this->unitOfWork->getOrCreateDocument($this->class->name, $current, $this->hints);
+        $current = $this->baseCursor->current();
+
+        if ($current !== null && $this->hydrate) {
+            return $this->unitOfWork->getOrCreateDocument($this->class->name, $current, $this->unitOfWorkHints);
         }
-        return $current ? $current : null;
+
+        return $current;
     }
 
-    /** @override */
+    /**
+     * Wrapper method for MongoCursor::fields().
+     *
+     * @see \Doctrine\MongoDB\Cursor::fields()
+     * @see http://php.net/manual/en/mongocursor.fields.php
+     * @return self
+     */
+    public function fields(array $f)
+    {
+        $this->baseCursor->fields($f);
+        return $this;
+    }
+
+    /**
+     * Wrapper method for MongoCursor::getNext().
+     *
+     * If configured, the result may be a hydrated document class instance.
+     *
+     * @see \Doctrine\MongoDB\Cursor::getNext()
+     * @see http://php.net/manual/en/mongocursor.getnext.php
+     * @return array|object|null
+     */
     public function getNext()
     {
-        $next = parent::getNext();
-        if ($next && $this->hydrate) {
-            return $this->unitOfWork->getOrCreateDocument($this->class->name, $next, $this->hints);
+        $next = $this->baseCursor->getNext();
+
+        if ($next !== null && $this->hydrate) {
+            return $this->unitOfWork->getOrCreateDocument($this->class->name, $next, $this->unitOfWorkHints);
         }
-        return $next ? $next : null;
+
+        return $next;
     }
 
     /**
-     * Set whether to hydrate the documents to objects or not.
+     * Wrapper method for MongoCursor::hint().
+     *
+     * This method is intended for setting MongoDB query hints, which are
+     * unrelated to UnitOfWork hints.
+     *
+     * @see \Doctrine\MongoDB\Cursor::hint()
+     * @see http://php.net/manual/en/mongocursor.hint.php
+     * @param array|string $keyPattern
+     * @return self
+     */
+    public function hint(array $keyPattern)
+    {
+        $this->baseCursor->hint($keyPattern);
+        return $this;
+    }
+
+    /**
+     * Set whether or not to hydrate results as document class instances.
      *
      * @param boolean $bool
      * @return self
      */
-    public function hydrate($bool = true)
+    public function hydrate($hydrate = true)
     {
-        $this->hydrate = $bool;
+        $this->hydrate = (boolean) $hydrate;
         return $this;
     }
 
     /**
-     * Sets whether to refresh the documents data if it already exists in the identity map.
+     * Wrapper method for MongoCursor::immortal().
+     *
+     * @see \Doctrine\MongoDB\Cursor::immortal()
+     * @see http://php.net/manual/en/mongocursor.immortal.php
+     * @param boolean $liveForever
+     * @return self
+     */
+    public function immortal($liveForever = true)
+    {
+        $this->baseCursor->immortal($liveForever);
+        return $this;
+    }
+
+    /**
+     * Wrapper method for MongoCursor::limit().
+     *
+     * @see \Doctrine\MongoDB\Cursor::limit()
+     * @see http://php.net/manual/en/mongocursor.limit.php
+     * @param integer $num
+     * @return self
+     */
+    public function limit($num)
+    {
+        $this->baseCursor->limit($num);
+        return $this;
+    }
+
+    /**
+     * Set whether or not to refresh hydrated documents that are already in the
+     * identity map.
+     *
+     * This option has no effect if hydration is disabled.
      *
      * @param boolean $bool
      * @return self
      */
-    public function refresh($bool = true)
+    public function refresh($refresh = true)
     {
-        $this->refresh = $bool;
-        if ($this->refresh) {
-            $this->hints[Query::HINT_REFRESH] = true;
-        } else {
-            unset($this->hints[Query::HINT_REFRESH]);
-        }
+        $this->unitOfWorkHints[Query::HINT_REFRESH] = (boolean) $refresh;
         return $this;
     }
 
-    /** @override */
-    public function slaveOkay($okay = true)
+    /**
+     * Wrapper method for MongoCursor::skip().
+     *
+     * @see \Doctrine\MongoDB\Cursor::skip()
+     * @see http://php.net/manual/en/mongocursor.skip.php
+     * @param integer $num
+     * @return self
+     */
+    public function skip($num)
     {
-        if ($okay) {
-            $this->hints[Query::HINT_SLAVE_OKAY] = true;
-        } else {
-            unset($this->hints[Query::HINT_SLAVE_OKAY]);
-        }
-        parent::slaveOkay($okay);
+        $this->baseCursor->skip($num);
         return $this;
     }
 
-    /** @override */
+    /**
+     * Wrapper method for MongoCursor::slaveOkay().
+     *
+     * @see \Doctrine\MongoDB\Cursor::slaveOkay()
+     * @see http://php.net/manual/en/mongocursor.slaveokay.php
+     * @param boolean $ok
+     * @return self
+     */
+    public function slaveOkay($ok = true)
+    {
+        $ok = (boolean) $ok;
+        $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
+        $this->baseCursor->slaveOkay($ok);
+        return $this;
+    }
+
+    /**
+     * Wrapper method for MongoCursor::snapshot().
+     *
+     * @see \Doctrine\MongoDB\Cursor::snapshot()
+     * @see http://php.net/manual/en/mongocursor.snapshot.php
+     * @return self
+     */
+    public function snapshot()
+    {
+        $this->baseCursor->snapshot();
+        return $this;
+    }
+
+    /**
+     * Wrapper method for MongoCursor::sort().
+     *
+     * Field names will be prepared according to the document mapping.
+     *
+     * @see \Doctrine\MongoDB\Cursor::sort()
+     * @see http://php.net/manual/en/mongocursor.sort.php
+     * @param array $fields
+     * @return self
+     */
     public function sort($fields)
     {
         $fields = $this->unitOfWork
             ->getDocumentPersister($this->class->name)
             ->prepareSortOrProjection($fields);
-        $fields = parent::sort($fields);
+
+        $this->baseCursor->sort($fields);
+        return $this;
+    }
+
+    /**
+     * Wrapper method for MongoCursor::tailable().
+     *
+     * @see \Doctrine\MongoDB\Cursor::tailable()
+     * @see http://php.net/manual/en/mongocursor.tailable.php
+     * @param boolean $tail
+     * @return self
+     */
+    public function tailable($tail = true)
+    {
+        $this->baseCursor->tailable($tail);
+        return $this;
+    }
+
+    /**
+     * Wrapper method for MongoCursor::timeout().
+     *
+     * @see \Doctrine\MongoDB\Cursor::timeout()
+     * @see http://php.net/manual/en/mongocursor.timeout.php
+     * @param integer $ms
+     * @return self
+     */
+    public function timeout($ms)
+    {
+        $this->baseCursor->skip($ms);
         return $this;
     }
 }
