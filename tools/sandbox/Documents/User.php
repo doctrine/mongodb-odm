@@ -2,6 +2,7 @@
 
 namespace Documents;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document(collection="users") */
@@ -13,7 +14,7 @@ class User
     /** @ODM\String */
     private $username;
 
-    /** @ODM\Bin(type="bin_md5") */
+    /** @ODM\String */
     protected $password;
 
     /** @ODM\EmbedOne(targetDocument="Address") */
@@ -23,7 +24,12 @@ class User
     protected $account;
 
     /** @ODM\EmbedMany(targetDocument="Phonenumber") */
-    protected $phonenumbers = array();
+    protected $phonenumbers;
+
+    public function __construct()
+    {
+        $this->phonenumbers = new ArrayCollection();
+    }
 
     public function getId()
     {
@@ -47,7 +53,7 @@ class User
 
     public function checkPassword($password)
     {
-        return $this->password === md5($password) ? true : false;
+        return $this->password === md5($password);
     }
 
     public function setAddress(Address $address)
