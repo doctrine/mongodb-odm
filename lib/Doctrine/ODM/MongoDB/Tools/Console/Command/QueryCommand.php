@@ -76,7 +76,7 @@ EOT
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
-        $dm = $this->getHelper('dm')->getDocumentManager();
+        $dm = $this->getHelper('documentManager')->getDocumentManager();
         $query = json_decode($input->getArgument('query'));
         $cursor = $dm->getRepository($input->getArgument('class'))->findBy((array) $query);
         $cursor->hydrate((bool) $input->getOption('hydrate'));

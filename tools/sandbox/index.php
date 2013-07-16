@@ -1,10 +1,10 @@
 <?php
 
-require_once 'config.php';
+require_once __DIR__ . '/config.php';
 
-use Documents\User;
+use Documents\Account;
 use Documents\Address;
 use Documents\Phonenumber;
-use Documents\Account;
+use Documents\User;
 
 // Your code here...

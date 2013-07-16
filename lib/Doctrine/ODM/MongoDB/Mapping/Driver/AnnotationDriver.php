@@ -222,9 +222,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * @param Reader $reader
      * @return AnnotationDriver
      */
-    static public function create($paths = array(), Reader $reader = null)
+    public static function create($paths = array(), Reader $reader = null)
     {
-        if ($reader == null) {
+        if ($reader === null) {
             $reader = new AnnotationReader();
         }
         return new self($reader, $paths);
