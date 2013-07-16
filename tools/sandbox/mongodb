@@ -1,4 +1,4 @@
 #!/usr/bin/env php
 <?php
 
-include('mongodb.php');
+require_once __DIR__ . '/mongodb.php';
