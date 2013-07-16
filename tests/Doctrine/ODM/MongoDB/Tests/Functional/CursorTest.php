@@ -28,4 +28,33 @@ class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cursor->reset();
         $this->assertSame(array($user), $cursor->toArray(false));
     }
+
+    public function testRecreateShouldPreserveSorting()
+    {
+        $usernames = array('David', 'Xander', 'Alex', 'Kris', 'Jon');
+
+        foreach ($usernames as $username){
+            $user = new User();
+            $user->setUsername($username);
+            $this->dm->persist($user);
+        }
+
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->sort('username', 'asc');
+
+        $cursor = $qb->getQuery()->execute();
+        sort($usernames);
+
+        foreach ($usernames as $username) {
+            $this->assertEquals($username, $cursor->getNext()->getUsername());
+        }
+
+        $cursor->recreate();
+
+        foreach ($usernames as $username) {
+            $this->assertEquals($username, $cursor->getNext()->getUsername());
+        }
+    }
 }
