@@ -150,23 +150,16 @@ class Cursor extends BaseCursor
      */
     public function refresh($bool = true)
     {
-        $this->refresh = $bool;
-        if ($this->refresh) {
-            $this->hints[Query::HINT_REFRESH] = true;
-        } else {
-            unset($this->hints[Query::HINT_REFRESH]);
-        }
+        $this->refresh = (boolean) $bool;
+        $this->hints[Query::HINT_REFRESH] = $this->refresh;
         return $this;
     }
 
     /** @override */
     public function slaveOkay($okay = true)
     {
-        if ($okay) {
-            $this->hints[Query::HINT_SLAVE_OKAY] = true;
-        } else {
-            unset($this->hints[Query::HINT_SLAVE_OKAY]);
-        }
+        $okay = (boolean) $okay;
+        $this->hints[Query::HINT_SLAVE_OKAY] = $okay;
         parent::slaveOkay($okay);
         return $this;
     }

@@ -2534,7 +2534,7 @@ class UnitOfWork implements PropertyChangedListener
                     $document->addPropertyChangedListener($this);
                 }
             } else {
-                $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
+                $overrideLocalValues = ! empty($hints[Query::HINT_REFRESH]);
             }
             if ($overrideLocalValues) {
                 $data = $this->hydratorFactory->hydrate($document, $data, $hints);
