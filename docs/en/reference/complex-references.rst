@@ -47,8 +47,7 @@ Here is an example. You could setup a reference to the last 5 comments for blog 
         private $blogPost;
     }
 
-You can specify a ``mappedBy`` reference for one or many so if you wanted to you could have even a
-``$lastComment`` reference on the ``BlogPost``:
+You can also use ``mappedBy`` for referencing a single document, as in the following example:
 
 .. code-block:: php
 
@@ -63,15 +62,15 @@ You can specify a ``mappedBy`` reference for one or many so if you wanted to you
      */
     private $lastComment;
 
-Use an array of criteria to limit a references documents. Here we have a reference in ``$commentsByAdmin``
-to the comments that are by administrators:
+Use an array of criteria to limit referenced documents. In the following example, 
+``$commentsByAdmin`` will refer to comments created by administrators:
 
 .. code-block:: php
 
     <?php
     
     /**
-     * @ReferenceOne(
+     * @ReferenceMany(
      *      targetDocument="Comment",
      *      mappedBy="blogPost",
      *      criteria={"isByAdmin" : true}
@@ -107,7 +106,7 @@ Now on the ``Comment`` class you would need to have a custom repository class co
         // ...
     }
 
-And in the ``CommentRepository`` we can define the ``findSomeComments()`` method:
+And in the ``CommentRepository`` class we can define the ``findSomeComments()`` method:
 
 .. code-block:: php
 
