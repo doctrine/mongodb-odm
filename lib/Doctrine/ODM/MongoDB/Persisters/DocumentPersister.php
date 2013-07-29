@@ -560,13 +560,12 @@ class DocumentPersister
                 if ($fieldValue instanceof PersistentCollection) {
                     foreach ($fieldValue->getMongoData() as $key => $reference) {
                         if (isset($fieldMapping['simple']) && $fieldMapping['simple']) {
+                            $className = $fieldMapping['targetDocument'];
                             $mongoId = $reference;
--                            $className = $fieldMapping['targetDocument'];
                         } else {
-                            $mongoId = $reference[$cmd . 'id'];
                             $className = $this->dm->getClassNameFromDiscriminatorValue($fieldMapping, $reference);
+                            $mongoId = $reference[$cmd . 'id'];
                         }
-
                         $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
                         $document = $this->uow->tryGetById($id, $className);
                         if ( ! $document || $document instanceof Proxy && ! $document->__isInitialized__) {
@@ -664,13 +663,12 @@ class DocumentPersister
 
         foreach ($collection->getMongoData() as $key => $reference) {
             if (isset($mapping['simple']) && $mapping['simple']) {
+                $className = $mapping['targetDocument'];
                 $mongoId = $reference;
--                $className = $mapping['targetDocument'];
             } else {
-                $mongoId = $reference[$cmd . 'id'];
                 $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
+                $mongoId = $reference[$cmd . 'id'];
             }
-
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
             if ( ! $id) {
                 continue;
