@@ -561,11 +561,11 @@ class DocumentPersister
                     foreach ($fieldValue->getMongoData() as $key => $reference) {
                         if (isset($fieldMapping['simple']) && $fieldMapping['simple']) {
                             $mongoId = $reference;
+-                            $className = $fieldMapping['targetDocument'];
                         } else {
                             $mongoId = $reference[$cmd . 'id'];
+                            $className = $this->dm->getClassNameFromDiscriminatorValue($fieldMapping, $reference);
                         }
-
-                        $className = $this->dm->getClassNameFromDiscriminatorValue($fieldMapping, $reference);
 
                         $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
                         $document = $this->uow->tryGetById($id, $className);
@@ -665,11 +665,11 @@ class DocumentPersister
         foreach ($collection->getMongoData() as $key => $reference) {
             if (isset($mapping['simple']) && $mapping['simple']) {
                 $mongoId = $reference;
+-                $className = $mapping['targetDocument'];
             } else {
                 $mongoId = $reference[$cmd . 'id'];
+                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
             }
-
-            $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
 
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
             if ( ! $id) {
