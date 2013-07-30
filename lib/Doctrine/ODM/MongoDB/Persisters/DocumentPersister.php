@@ -884,7 +884,7 @@ class DocumentPersister
             } else {
                 list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
                 if (is_array($value)) {
-                    $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
+                    $preparedQuery[$key] = array_map('Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $value);
                 } else {
                     $preparedQuery[$key] = Type::convertPHPToDatabaseValue($value);
                 }
