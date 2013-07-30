@@ -917,7 +917,18 @@ class DocumentPersister
             $mapping = $class->fieldMappings[$fieldName];
             $fieldName = $mapping['name'];
 
-            if ( ! $prepareValue || empty($mapping['reference']) || empty($mapping['simple'])) {
+            if ( ! $prepareValue) {
+                return array($fieldName, $value);
+            }
+
+            // Prepare mapped, embedded objects
+            if ( ! empty($mapping['embedded']) && is_object($value) &&
+                ! $this->dm->getMetadataFactory()->isTransient(get_class($value))) {
+                return array($fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value));
+            }
+
+            // No further preparation unless we're dealing with a simple reference
+            if (empty($mapping['reference']) || empty($mapping['simple'])) {
                 return array($fieldName, $value);
             }
 
