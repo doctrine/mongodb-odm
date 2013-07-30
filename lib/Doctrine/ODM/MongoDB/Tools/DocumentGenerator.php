@@ -19,9 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tools;
 
-use Doctrine\Common\Util\Inflector;
+use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-use Symfony\Component\PropertyAccess\StringUtil;
 
 /**
  * Generic class used to generate PHP5 document classes from ClassMetadataInfo instances
@@ -705,11 +704,8 @@ public function <methodName>()
         $methodName = $type . Inflector::classify($fieldName);
 
         if (in_array($type, array('add', 'remove'))) {
-            $methodNameSingulars = StringUtil::singularify($methodName);
-            $variableNameSingulars = StringUtil::singularify($fieldName);
-            /* first form is mainly the best one */
-            $methodName = (is_array($methodNameSingulars))?$methodNameSingulars[0]:$methodNameSingulars;
-            $variablename = Inflector::camelize((is_array($variableNameSingulars))?$variableNameSingulars[0]:$variableNameSingulars);
+            $methodName = Inflector::singularize($methodName);
+            $variablename = Inflector::singularize($fieldName);
             $description = ucfirst($type) . ' ' . $variablename;
         }
         else

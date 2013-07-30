@@ -50,6 +50,10 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fieldName' => 'comments',
             'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorComment'
         ));
+        $metadata->mapManyReference(array(
+                'fieldName' => 'searches',
+                'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorSearch'
+        ));
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
@@ -88,6 +92,9 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getComments'), "DocumentGeneratorBook::getComments() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'addComment'), "DocumentGeneratorBook::addComment() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'removeComment'), "EntityGeneratorBook::removeComment() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getSearches'), "DocumentGeneratorBook::getSearches() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'addSearch'), "DocumentGeneratorBook::addSearch() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'removeSearch'), "EntityGeneratorBook::removeSearch() missing.");
 
         $book->setName('Jonathan H. Wage');
         $this->assertEquals('Jonathan H. Wage', $book->getName());
@@ -108,7 +115,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $metadata = $this->generateBookDocumentFixture();
         $metadata->mapField(array('fieldName' => 'test', 'type' => 'string'));
-        
+
         $this->generator->writeDocumentClass($metadata, $this->tmpDir);
 
         $this->assertFileExists($this->tmpDir . "/" . $this->namespace . "/DocumentGeneratorBook.php");
@@ -187,3 +194,4 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 class DocumentGeneratorAuthor {}
 class DocumentGeneratorComment {}
+class DocumentGeneratorSearch {}
