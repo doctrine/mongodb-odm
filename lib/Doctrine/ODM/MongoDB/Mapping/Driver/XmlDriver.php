@@ -161,6 +161,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($mapping['type']) && $mapping['type'] === 'collection') {
+            // Note: this strategy is not actually used
             $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
         }
         if (isset($mapping['index'])) {

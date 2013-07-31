@@ -114,18 +114,13 @@ Alias of @Field, with "type" attribute set to
 "collection". Stores and retrieves the value as numeric indexed
 array.
 
-Optional attributes:
-
--
-    strategy - The strategy to use to persist the data. Possible values are ``set`` and ``pushAll``; ``pushAll`` is the default.
-
 Example:
 
 .. code-block:: php
 
     <?php
 
-    /** @Collection(strategy="pushAll") */
+    /** @Collection */
     private $tags = array();
 
 @Date
