@@ -108,6 +108,7 @@ class YamlDriver extends FileDriver
                     $mapping['fieldName'] = $fieldName;
                 }
                 if (isset($mapping['type']) && $mapping['type'] === 'collection') {
+                    // Note: this strategy is not actually used
                     $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
                 }
                 if (isset($mapping['type']) && ! empty($mapping['embedded'])) {

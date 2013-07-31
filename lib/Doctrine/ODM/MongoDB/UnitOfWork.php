@@ -337,12 +337,11 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Gets a collection persister for a collection-valued association.
+     * Get the collection persister instance.
      *
-     * @param array $mapping
-     * @return Persisters\CollectionPersister
+     * @return \Doctrine\ODM\MongoDB\Persisters\CollectionPersister
      */
-    public function getCollectionPersister(array $mapping)
+    public function getCollectionPersister()
     {
         if ( ! isset($this->collectionPersister)) {
             $pb = $this->getPersistenceBuilder();
@@ -447,13 +446,11 @@ class UnitOfWork implements PropertyChangedListener
 
         // Collection deletions (deletions of complete collections)
         foreach ($this->collectionDeletions as $collectionToDelete) {
-            $this->getCollectionPersister($collectionToDelete->getMapping())
-                ->delete($collectionToDelete, $options);
+            $this->getCollectionPersister()->delete($collectionToDelete, $options);
         }
         // Collection updates (deleteRows, updateRows, insertRows)
         foreach ($this->collectionUpdates as $collectionToUpdate) {
-            $this->getCollectionPersister($collectionToUpdate->getMapping())
-                ->update($collectionToUpdate, $options);
+            $this->getCollectionPersister()->update($collectionToUpdate, $options);
         }
 
         // Document deletions come last and need to be in reverse commit order
@@ -488,14 +485,18 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Compute the changesets of all documents scheduled for insertion
+     * Compute changesets of all documents scheduled for insertion.
      *
-     * @return void
+     * Embedded documents will not be processed.
      */
     private function computeScheduleInsertsChangeSets()
     {
         foreach ($this->documentInsertions as $document) {
             $class = $this->dm->getClassMetadata(get_class($document));
+
+            if ($class->isEmbeddedDocument) {
+                continue;
+            }
 
             $this->computeChangeSet($class, $document);
         }
@@ -535,7 +536,7 @@ class UnitOfWork implements PropertyChangedListener
         // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION are processed here.
         $oid = spl_object_hash($document);
 
-        if ( ! isset($this->documentInsertions[$oid]) && isset($this->documentStates[$oid])) {
+        if ( ! isset($this->documentInsertions[$oid])) {
             $this->computeChangeSet($class, $document);
         }
     }
@@ -859,12 +860,12 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->dm->getClassMetadata(get_class($parentDocument));
         $topOrExistingDocument = ( ! $isNewParentDocument || ! $class->isEmbeddedDocument);
 
-        if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide'] && ($topOrExistingDocument || $mapping['strategy'] === 'set')) {
-            if ( ! in_array($value, $this->collectionUpdates, true)) {
-                $this->collectionUpdates[] = $value;
+        if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide']) {
+            if ($topOrExistingDocument || strncmp($mapping['strategy'], 'set', 3) === 0) {
+                if ( ! in_array($value, $this->collectionUpdates, true)) {
+                    $this->collectionUpdates[] = $value;
+                }
             }
-            $this->visitedCollections[] = $value;
-        } elseif ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide']) {
             $this->visitedCollections[] = $value;
         }
 
@@ -2305,23 +2306,25 @@ class UnitOfWork implements PropertyChangedListener
     private function cascadePersist($document, array &$visited)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-        foreach ($class->fieldMappings as $mapping) {
-            if ( ! isset($mapping['embedded']) && ! $mapping['isCascadePersist']) {
+
+        foreach ($class->associationMappings as $fieldName => $mapping) {
+            if (isset($mapping['reference']) && ! $mapping['isCascadePersist']) {
                 continue;
             }
-            if (isset($mapping['embedded']) || isset($mapping['reference'])) {
-                $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-                if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
-                    if ($relatedDocuments instanceof PersistentCollection) {
-                        // Unwrap so that foreach() does not initialize
-                        $relatedDocuments = $relatedDocuments->unwrap();
-                    }
-                    foreach ($relatedDocuments as $relatedDocument) {
-                        $this->doPersist($relatedDocument, $visited);
-                    }
-                } elseif ($relatedDocuments !== null) {
-                    $this->doPersist($relatedDocuments, $visited);
+
+            $relatedDocuments = $class->reflFields[$fieldName]->getValue($document);
+
+            if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
+                if ($relatedDocuments instanceof PersistentCollection) {
+                    // Unwrap so that foreach() does not initialize
+                    $relatedDocuments = $relatedDocuments->unwrap();
                 }
+
+                foreach ($relatedDocuments as $relatedDocument) {
+                    $this->doPersist($relatedDocument, $visited);
+                }
+            } elseif ($relatedDocuments !== null) {
+                $this->doPersist($relatedDocuments, $visited);
             }
         }
     }
@@ -2494,9 +2497,26 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions[] = $coll;
     }
 
+    /**
+     * Checks whether a PersistentCollection is scheduled for deletion.
+     *
+     * @param PersistentCollection $coll
+     * @return boolean
+     */
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
     {
-        return in_array($coll, $this->collectionsDeletions, true);
+        return in_array($coll, $this->collectionDeletions, true);
+    }
+
+    /**
+     * Checks whether a PersistentCollection is scheduled for update.
+     *
+     * @param PersistentCollection $coll
+     * @return boolean
+     */
+    public function isCollectionScheduledForUpdate(PersistentCollection $coll)
+    {
+        return in_array($coll, $this->collectionUpdates, true);
     }
 
     /**

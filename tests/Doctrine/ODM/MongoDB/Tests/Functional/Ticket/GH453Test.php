@@ -113,10 +113,14 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             new GH453EmbeddedDocument(),
         ));
         $colSet = $colPush->map(function($v) { return clone $v; });
+        $colSetArray = $colPush->map(function($v) { return clone $v; });
+        $colAddToSet = $colPush->map(function($v) { return clone $v; });
 
         $doc = new GH453Document();
         $doc->embedManyPush = $colPush;
         $doc->embedManySet = $colSet;
+        $doc->embedManySetArray = $colSetArray;
+        $doc->embedManyAddToSet = $colAddToSet;
 
         $this->dm->persist($doc);
         $this->dm->flush();
@@ -125,18 +129,24 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         // No need to assert the value of the embedded document structure
         $this->assertBsonArray($doc->id, 'embedManyPush');
         $this->assertBsonArray($doc->id, 'embedManySet');
+        $this->assertBsonArray($doc->id, 'embedManySetArray');
+        $this->assertBsonArray($doc->id, 'embedManyAddToSet');
 
         // Check that the value is changed properly
-        unset($colPush[1], $colSet[1]);
+        unset($colPush[1], $colSet[1], $colSetArray[1], $colAddToSet['1']);
         $doc = $this->dm->merge($doc);
         $doc->embedManyPush = $colPush;
         $doc->embedManySet = $colSet;
+        $doc->embedManySetArray = $colSetArray;
+        $doc->embedManyAddToSet = $colAddToSet;
 
         $this->dm->flush();
         $this->dm->clear();
 
         $this->assertBsonArray($doc->id, 'embedManyPush');
-        $this->assertBsonArray($doc->id, 'embedManySet');
+        $this->assertBsonObject($doc->id, 'embedManySet');
+        $this->assertBsonArray($doc->id, 'embedManySetArray');
+        $this->assertBsonArray($doc->id, 'embedManyAddToSet');
     }
 
     public function testReferenceMany()
@@ -147,14 +157,21 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             new GH453ReferencedDocument(),
         ));
         $colSet = $colPush->map(function($v) { return clone $v; });
+        $colSetArray = $colPush->map(function($v) { return clone $v; });
+        $colAddToSet = $colPush->map(function($v) { return clone $v; });
 
         $dm = $this->dm;
-        $colPush->map(function($v) use ($dm) { $dm->persist($v); });
-        $colSet->map(function($v) use ($dm) { $dm->persist($v); });
+
+        $colPush->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
+        $colSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
+        $colSetArray->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
+        $colAddToSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
 
         $doc = new GH453Document();
         $doc->referenceManyPush = $colPush;
         $doc->referenceManySet = $colSet;
+        $doc->referenceManySetArray = $colSetArray;
+        $doc->referenceManyAddToSet = $colAddToSet;
 
         $this->dm->persist($doc);
         $this->dm->flush();
@@ -163,18 +180,24 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         // No need to assert the value of the referenced document structure
         $this->assertBsonArray($doc->id, 'referenceManyPush');
         $this->assertBsonArray($doc->id, 'referenceManySet');
+        $this->assertBsonArray($doc->id, 'referenceManySetArray');
+        $this->assertBsonArray($doc->id, 'referenceManyAddToSet');
 
         // Check that the value is changed properly
-        unset($colPush[1], $colSet[1]);
+        unset($colPush[1], $colSet[1], $colSetArray[1], $colAddToSet[1]);
         $doc = $this->dm->merge($doc);
         $doc->referenceManyPush = $colPush;
         $doc->referenceManySet = $colSet;
+        $doc->referenceManySetArray = $colSetArray;
+        $doc->referenceManyAddToSet = $colAddToSet;
 
         $this->dm->flush();
         $this->dm->clear();
 
         $this->assertBsonArray($doc->id, 'referenceManyPush');
-        $this->assertBsonArray($doc->id, 'referenceManySet');
+        $this->assertBsonObject($doc->id, 'referenceManySet');
+        $this->assertBsonArray($doc->id, 'referenceManySetArray');
+        $this->assertBsonArray($doc->id, 'referenceManyAddToSet');
     }
 
     private function assertBsonArray($documentId, $fieldName)
@@ -256,11 +279,23 @@ class GH453Document
     /** @ODM\EmbedMany(strategy="set") */
     public $embedManySet;
 
+    /** @ODM\EmbedMany(strategy="setArray") */
+    public $embedManySetArray;
+
+    /** @ODM\EmbedMany(strategy="addToSet") */
+    public $embedManyAddToSet;
+
     /** @ODM\ReferenceMany(strategy="pushAll")) */
     public $referenceManyPush;
 
     /** @ODM\ReferenceMany(strategy="set") */
     public $referenceManySet;
+
+    /** @ODM\ReferenceMany(strategy="setArray") */
+    public $referenceManySetArray;
+
+    /** @ODM\ReferenceMany(strategy="addToSet") */
+    public $referenceManyAddToSet;
 }
 
 /** @ODM\EmbeddedDocument */
