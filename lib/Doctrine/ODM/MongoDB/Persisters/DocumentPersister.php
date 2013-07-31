@@ -23,13 +23,13 @@ use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\MongoDB\Iterator;
 use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
-use Doctrine\ODM\MongoDB\LoggableCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
+use Doctrine\ODM\MongoDB\LoggableCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
@@ -883,11 +883,8 @@ class DocumentPersister
                 $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
             } else {
                 list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
-                if (is_array($value)) {
-                    $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
-                } else {
-                    $preparedQuery[$key] = Type::convertPHPToDatabaseValue($value);
-                }
+
+                $preparedQuery[$key] = $this->convertPHPToDatabaseValue($value);
             }
         }
 
@@ -917,8 +914,12 @@ class DocumentPersister
             $mapping = $class->fieldMappings[$fieldName];
             $fieldName = $mapping['name'];
 
-            if ( ! $prepareValue || empty($mapping['reference']) || empty($mapping['simple'])) {
+            if ( ! $prepareValue || empty($mapping['embedded']) && (empty($mapping['reference']) || empty($mapping['simple']))) {
                 return array($fieldName, $value);
+            }
+
+            if ( ! empty($mapping['embedded']) && ! is_array($value)) {
+                return array($fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value));
             }
 
             // Additional preparation for one or more simple reference values
@@ -954,7 +955,7 @@ class DocumentPersister
                 }
             }
 
-            return array($fieldName, $value);
+            return array($fieldName, $this->prepareQueryOrNewObj($value));
         }
 
         // No processing for unmapped, non-identifier, non-dotted field names
@@ -1042,7 +1043,7 @@ class DocumentPersister
                 }
             }
 
-            return array($fieldName, $value);
+            return array($fieldName, $this->prepareQueryOrNewObj($value));
         }
 
         /* The property path may include a third field segment, excluding the
@@ -1061,6 +1062,27 @@ class DocumentPersister
         }
 
         return array($fieldName, $value);
+    }
+
+    /**
+     * Converts the value to the database values.
+     *
+     * @param array|mixed $value
+     *
+     * @return array|mixed
+     */
+    private function convertPHPToDatabaseValue($value)
+    {
+        if (is_array($value)) {
+            $converted = array();
+            foreach ($value as $key => $v) {
+                $converted[$key] = $this->convertPHPToDatabaseValue($v);
+            }
+
+            return $converted;
+        }
+
+        return Type::convertPHPToDatabaseValue($value);
     }
 
     /**
