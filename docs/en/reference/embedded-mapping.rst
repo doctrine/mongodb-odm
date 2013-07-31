@@ -52,6 +52,8 @@ Embed a single document:
             address:
               targetDocument: Address
 
+.. _embed_many:
+
 Embed Many
 ----------
 

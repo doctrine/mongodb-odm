@@ -92,6 +92,8 @@ Reference one document:
             shipping:
               targetDocument: Documents\Shipping
 
+.. _reference_many:
+
 Reference Many
 --------------
 
