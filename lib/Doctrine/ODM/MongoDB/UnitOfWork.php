@@ -337,12 +337,11 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Gets a collection persister for a collection-valued association.
+     * Get the collection persister instance.
      *
-     * @param array $mapping
-     * @return Persisters\CollectionPersister
+     * @return \Doctrine\ODM\MongoDB\Persisters\CollectionPersister
      */
-    public function getCollectionPersister(array $mapping)
+    public function getCollectionPersister()
     {
         if ( ! isset($this->collectionPersister)) {
             $pb = $this->getPersistenceBuilder();
@@ -447,13 +446,11 @@ class UnitOfWork implements PropertyChangedListener
 
         // Collection deletions (deletions of complete collections)
         foreach ($this->collectionDeletions as $collectionToDelete) {
-            $this->getCollectionPersister($collectionToDelete->getMapping())
-                ->delete($collectionToDelete, $options);
+            $this->getCollectionPersister()->delete($collectionToDelete, $options);
         }
         // Collection updates (deleteRows, updateRows, insertRows)
         foreach ($this->collectionUpdates as $collectionToUpdate) {
-            $this->getCollectionPersister($collectionToUpdate->getMapping())
-                ->update($collectionToUpdate, $options);
+            $this->getCollectionPersister()->update($collectionToUpdate, $options);
         }
 
         // Document deletions come last and need to be in reverse commit order
