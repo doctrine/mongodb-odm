@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -87,9 +88,6 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Child 2 Changed', $children[0]->getChild(0)->getName());
         $this->assertEquals('Root Changed', $category->getName());
         $this->assertEquals(2, count($category->getChildren()));
-
-        $test = $this->dm->getDocumentCollection(__NAMESPACE__.'\Category')->findOne();
-        $this->assertFalse(isset($test['children'][0]['children'][0]['children']));
     }
 
     public function testNestedReference()
@@ -201,11 +199,12 @@ class BaseCategory
     protected $name;
 
     /** @ODM\EmbedMany(targetDocument="ChildCategory") */
-    protected $children = array();
+    protected $children;
 
     public function __construct($name)
     {
         $this->name = $name;
+        $this->children = new ArrayCollection();
     }
 
     public function setName($name)
