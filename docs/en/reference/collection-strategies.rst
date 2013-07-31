@@ -15,7 +15,7 @@ strategies described on this page are implemented by the CollectionPersister
 class.
 
 ``addToSet``
-~~~~~~~~~~~~
+------------
 
 The ``addToSet`` strategy uses MongoDB's `$addToSet`_ operator to insert
 elements into the array. This strategy is useful for ensuring that duplicate
