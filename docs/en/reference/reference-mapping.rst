@@ -40,6 +40,8 @@ the persistence layer. You could even copy that class over to your
 project if you want to remove Doctrine from your project and all
 your domain classes will work the same as before.
 
+.. _reference_one:
+
 Reference One
 -------------
 
@@ -262,6 +264,8 @@ option:
         referenceMany:
           favorites:
             discriminatorField: type
+
+.. _simple_references:
 
 Simple References
 -----------------

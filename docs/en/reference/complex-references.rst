@@ -1,19 +1,30 @@
 Complex References
 ==================
 
-Sometimes you may want to access references on the inverse side of a relationship where you
-maintain the actual `MongoDbRef`_ to one or many other documents.
+Sometimes you may want to access related documents using custom criteria or from
+the inverse side of a relationship.
 
-You can create an `immutable`_ reference to one or many documents and specify how that reference
-is to be loaded. The available methods for obtaining a cursor to retrieve the references are:
+You can create an `immutable`_ reference to one or many documents and specify
+how that reference is to be loaded. The reference is immutable in that it is
+defined only in the mapping, unlike a typical reference where a `MongoDBRef`_ or
+identifier (for :ref:`simple_references`) is stored on the document itself.
 
- - ``criteria`` - The criteria used to get a cursor.
- - ``repositoryMethod`` - The repository method used to get a cursor. 
- - ``sort`` - What to sort the cursor by.
- - ``skip`` - The number of documents to skip in the cursor.
- - ``limit`` - The number of documents to limit the cursor to.
+The following options may be used for :ref:`one <reference_one>` and
+:ref:`many <reference_many>` reference mappings:
 
-Here is an example. You could setup a reference to the last 5 comments for blog posts:
+ - ``criteria`` - Query criteria to apply to the cursor.
+ - ``repositoryMethod`` - The repository method used to create the cursor.
+ - ``sort`` - Sort criteria for the cursor.
+ - ``skip`` - Skip offset to apply to the cursor.
+ - ``limit`` - Limit to apply to the cursor.
+
+Basic Example
+-------------
+
+In the following example, ``$comments`` will refer to all Comments for the
+BlogPost and ``$last5Comments`` will refer to only the last five Comments. The
+``mappedBy`` field is used to determine which Comment field should be used for
+querying by the BlogPost's ID.
 
 .. code-block:: php
 
@@ -47,12 +58,13 @@ Here is an example. You could setup a reference to the last 5 comments for blog 
         private $blogPost;
     }
 
-You can also use ``mappedBy`` for referencing a single document, as in the following example:
+You can also use ``mappedBy`` for referencing a single document, as in the
+following example:
 
 .. code-block:: php
 
     <?php
-    
+
     /**
      * @ReferenceOne(
      *      targetDocument="Comment",
@@ -62,13 +74,18 @@ You can also use ``mappedBy`` for referencing a single document, as in the follo
      */
     private $lastComment;
 
-Use an array of criteria to limit referenced documents. In the following example, 
-``$commentsByAdmin`` will refer to comments created by administrators:
+
+``criteria`` Example
+--------------------
+
+Use ``criteria`` to further match referenced documents. In the following
+example, ``$commentsByAdmin`` will refer only comments created by
+administrators:
 
 .. code-block:: php
 
     <?php
-    
+
     /**
      * @ReferenceMany(
      *      targetDocument="Comment",
@@ -78,13 +95,16 @@ Use an array of criteria to limit referenced documents. In the following example
      */
     private $commentsByAdmin;
 
-Or you can use the ``repositoryMethod`` to specify a custom method to call on the mapped repository
-class to get the reference:
+``repositoryMethod`` Example
+----------------------------
+
+Alternatively, you can use ``repositoryMethod`` to specify a custom method to
+call on the Comment repository class to populate the reference.
 
 .. code-block:: php
 
     <?php
-    
+
     /**
      * @ReferenceMany(
      *      targetDocument="Comment",
@@ -94,7 +114,7 @@ class to get the reference:
      */
     private $someComments;
 
-Now on the ``Comment`` class you would need to have a custom repository class configured:
+The ``Comment`` class will need to have a custom repository class configured:
 
 .. code-block:: php
 
@@ -106,7 +126,9 @@ Now on the ``Comment`` class you would need to have a custom repository class co
         // ...
     }
 
-And in the ``CommentRepository`` class we can define the ``findSomeComments()`` method:
+Lastly, the ``CommentRepository`` class will need a ``findSomeComments()``
+method. When this method is called to populate the reference, Doctrine will
+provide the Blogpost instance (i.e. owning document) as the first argument:
 
 .. code-block:: php
 
@@ -114,11 +136,14 @@ And in the ``CommentRepository`` class we can define the ``findSomeComments()`` 
 
     class CommentRepository extends \Doctrine\ODM\MongoDB\DocumentRepository
     {
-        public function findSomeComments()
+        /**
+         * @return \Doctrine\ODM\MongoDB\Cursor
+         */
+        public function findSomeComments(BlogPost $blogPost)
         {
-            return $this->findBy(array(/** ... */));
+            return $this->findBy(array(/* ... */));
         }
     }
 
-.. _MongoDbRef: http://php.net/MongoDbRef
+.. _MongoDBRef: http://php.net/manual/en/class.mongodbref.php
 .. _immutable: http://en.wikipedia.org/wiki/Immutable
