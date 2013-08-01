@@ -799,13 +799,14 @@ class DocumentPersister
         $mapping = $collection->getMapping();
         $cursor = $this->dm->getRepository($mapping['targetDocument'])
             ->$mapping['repositoryMethod']($collection->getOwner());
-        if (isset($mapping['sort']) && $mapping['sort']) {
+
+        if (isset($mapping['sort'])) {
             $cursor->sort($mapping['sort']);
         }
-        if (isset($mapping['limit']) && $mapping['limit']) {
+        if (isset($mapping['limit'])) {
             $cursor->limit($mapping['limit']);
         }
-        if (isset($mapping['skip']) && $mapping['skip']) {
+        if (isset($mapping['skip'])) {
             $cursor->skip($mapping['skip']);
         }
         if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
