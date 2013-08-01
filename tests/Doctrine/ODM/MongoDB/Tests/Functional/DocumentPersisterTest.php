@@ -78,6 +78,30 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('b', $documents[0]->name);
         $this->assertCount(1, $documents);
     }
+
+    /**
+     * @dataProvider getTestPrepareQueryOrNewObjData
+     */
+    public function testPrepareFieldName($fieldName, $expected)
+    {
+        $this->assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
+    }
+
+    public function getTestPrepareQueryOrNewObjData()
+    {
+        return array(
+            array('name', 'dbName'),
+            array('association', 'associationName'),
+            array('association.id', 'associationName._id'),
+            array('association.nested', 'associationName.nestedName'),
+            array('association.nested.$id', 'associationName.nestedName.$id'),
+            array('association.nested._id', 'associationName.nestedName._id'),
+            array('association.nested.id', 'associationName.nestedName._id'),
+            array('association.nested.association.nested.$id', 'associationName.nestedName.associationName.nestedName.$id'),
+            array('association.nested.association.nested.id', 'associationName.nestedName.associationName.nestedName._id'),
+            array('association.nested.association.nested.firstName', 'associationName.nestedName.associationName.nestedName.firstName'),
+        );
+    }
 }
 
 /** @ODM\Document */
@@ -88,4 +112,68 @@ class DocumentPersisterTestDocument
 
     /** @ODM\String(name="dbName") */
     public $name;
+
+    /**
+     * @ODM\EmbedOne(
+     *     targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\AbstractDocumentPersisterTestDocumentAssociation",
+     *     discriminatorField="type",
+     *     discriminatorMap={
+     *         "reference"="Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentReference",
+     *         "embed"="Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentEmbed"
+     *     },
+     *     name="associationName"
+     * )
+     */
+    public $association;
+}
+
+/**
+ * @ODM\EmbeddedDocument
+ * @ODM\InheritanceType("SINGLE_COLLECTION")
+ * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorMap({
+ *     "reference"="Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentReference",
+ *     "embed"="Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentEmbed"
+ * })
+ */
+abstract class AbstractDocumentPersisterTestDocumentAssociation
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\EmbedOne(name="nestedName") */
+    public $nested;
+
+    /**
+     * @ODM\EmbedOne(
+     *     targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\AbstractDocumentPersisterTestDocumentAssociation",
+     *     discriminatorField="type",
+     *     discriminatorMap={
+     *         "reference"="Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentReference",
+     *         "embed"="Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentEmbed"
+     *     },
+     *     name="associationName"
+     * )
+     */
+    public $association;
+}
+
+/** @ODM\EmbeddedDocument */
+class DocumentPersisterTestDocumentReference extends AbstractDocumentPersisterTestDocumentAssociation
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\ReferenceOne(name="nestedName") */
+    public $nested;
+}
+
+/** @ODM\EmbeddedDocument */
+class DocumentPersisterTestDocumentEmbed extends AbstractDocumentPersisterTestDocumentAssociation
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\EmbedOne(name="nestedName") */
+    public $nested;
 }
