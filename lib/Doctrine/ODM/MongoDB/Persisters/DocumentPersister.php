@@ -1042,6 +1042,10 @@ class DocumentPersister
 
         // No further processing for fields without a targetDocument mapping
         if ( ! isset($mapping['targetDocument'])) {
+            if ($nextObjectProperty) {
+                $fieldName .= '.'.$nextObjectProperty;
+            }
+
             return array($fieldName, $value);
         }
 
@@ -1049,6 +1053,10 @@ class DocumentPersister
 
         // No further processing for unmapped targetDocument fields
         if ( ! $targetClass->hasField($objectProperty)) {
+            if ($nextObjectProperty) {
+                $fieldName .= '.'.$nextObjectProperty;
+            }
+
             return array($fieldName, $value);
         }
 
