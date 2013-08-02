@@ -29,6 +29,7 @@ final class ReferenceOne extends AbstractField
     public $discriminatorField;
     public $discriminatorMap;
     public $cascade;
+    public $orphanRemoval;
     public $inversedBy;
     public $mappedBy;
     public $repositoryMethod;
