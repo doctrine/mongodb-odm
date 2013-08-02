@@ -1081,6 +1081,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 $mapping['isInverseSide'] = true;
                 $mapping['isOwningSide'] = false;
             }
+            if (!isset($mapping['orphanRemoval'])) {
+                $mapping['orphanRemoval'] = false;
+            }
         }
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;

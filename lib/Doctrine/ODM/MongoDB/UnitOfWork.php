@@ -695,17 +695,12 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 }
 
-                // if embed-one relationship
-                if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one') {
-                    if ($orgValue !== null) {
-                        $this->scheduleOrphanRemoval($orgValue);
-                    }
-                    $changeSet[$propName] = array($orgValue, $actualValue);
-                    continue;
-                }
-
                 // if owning side of reference-one relationship
                 if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $class->fieldMappings[$propName]['isOwningSide']) {
+                    if ($orgValue !== null && $class->fieldMappings[$propName]['orphanRemoval']) {
+                        $this->scheduleOrphanRemoval($orgValue);
+                    }
+
                     $changeSet[$propName] = array($orgValue, $actualValue);
                     continue;
                 }
