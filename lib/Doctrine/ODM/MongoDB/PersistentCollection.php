@@ -385,7 +385,10 @@ class PersistentCollection implements BaseCollection
         $removed = $this->coll->remove($key);
         if ($removed) {
             $this->changed();
-            if ($this->mapping !== null && isset($this->mapping['embedded'])) {
+            if ($this->mapping !== null &&
+                isset($this->mapping['reference']) &&
+                $this->mapping['isOwningSide'] &&
+                $this->mapping['orphanRemoval']) {
                 $this->uow->scheduleOrphanRemoval($removed);
             }
         }
@@ -402,7 +405,10 @@ class PersistentCollection implements BaseCollection
         $removed = $this->coll->removeElement($element);
         if ($removed) {
             $this->changed();
-            if ($this->mapping !== null && isset($this->mapping['embedded'])) {
+            if ($this->mapping !== null &&
+                isset($this->mapping['reference']) &&
+                $this->mapping['isOwningSide'] &&
+                $this->mapping['orphanRemoval']) {
                 $this->uow->scheduleOrphanRemoval($element);
             }
         }

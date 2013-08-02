@@ -219,6 +219,7 @@ class YamlDriver extends FileDriver
     {
         $mapping = array(
             'cascade'          => isset($reference['cascade']) ? $reference['cascade'] : null,
+            'orphanRemoval'    => isset($reference['orphanRemoval']) ? $reference['orphanRemoval'] : false,
             'type'             => $type,
             'reference'        => true,
             'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false,

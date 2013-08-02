@@ -153,6 +153,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'repositoryMethod' => null,
             'limit' => null,
             'skip' => null,
+            'orphanRemoval' => false,
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
@@ -178,6 +179,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'repositoryMethod' => null,
             'limit' => null,
             'skip' => null,
+            'orphanRemoval' => false,
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
@@ -203,6 +205,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'repositoryMethod' => null,
             'limit' => null,
             'skip' => null,
+            'orphanRemoval' => false,
         ), $classMetadata->fieldMappings['groups']);
 
         $this->assertEquals(array(
