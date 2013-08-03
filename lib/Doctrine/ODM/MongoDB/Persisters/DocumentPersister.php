@@ -241,7 +241,11 @@ class DocumentPersister
 
             foreach ($inserts as $oid => $data) {
                 $document = $this->queuedInserts[$oid];
-                $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
+
+                $idType = $this->class->fieldMappings[$this->class->identifier]['type'];
+                $postInsertId = Type::getType($idType)->convertToPHPValue($data['_id']);
+
+                $postInsertIds[] = array($postInsertId, $document);
             }
         }
 
@@ -356,7 +360,7 @@ class DocumentPersister
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         $data = $this->collection->findOne(array('_id' => $id));
-        $data = $this->hydratorFactory->hydrate($document, $data);
+        $data = $this->hydratorFactory->hydrate($class, $document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
 
@@ -649,7 +653,7 @@ class DocumentPersister
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
-                $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument);
+                $data = $this->hydratorFactory->hydrate($embeddedMetadata, $embeddedDocumentObject, $embeddedDocument);
                 $this->uow->registerManaged($embeddedDocumentObject, null, $data);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
                 if ($mapping['strategy'] === 'set') {
@@ -678,7 +682,12 @@ class DocumentPersister
                 $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
                 $mongoId = $reference[$cmd . 'id'];
             }
-            $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
+
+            $class = $this->dm->getClassMetadata($className);
+
+            $idType = $class->fieldMappings[$class->identifier]['type'];
+            $id = Type::getType($idType)->convertToPHPValue($mongoId);
+
             if ( ! $id) {
                 continue;
             }
@@ -725,7 +734,7 @@ class DocumentPersister
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
-                $data = $this->hydratorFactory->hydrate($document, $documentData);
+                $data = $this->hydratorFactory->hydrate($class, $document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;
                 if ($sorted) {
@@ -965,12 +974,6 @@ class DocumentPersister
 
             if ( ! $prepareValue) {
                 return array($fieldName, $value);
-            }
-
-            // Prepare mapped, embedded objects
-            if ( ! empty($mapping['embedded']) && is_object($value) &&
-                ! $this->dm->getMetadataFactory()->isTransient(get_class($value))) {
-                return array($fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value));
             }
 
             // No further preparation unless we're dealing with a simple reference
