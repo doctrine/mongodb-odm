@@ -701,18 +701,18 @@ public function <methodName>()
 
     private function generateDocumentStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null)
     {
-        $methodName = $type . Inflector::classify($fieldName);
 
-        if ( in_array($type, array('add', 'remove')) ) {
-            $methodName = Inflector::singularize($methodName);
-            $variablename = Inflector::singularize($fieldName);
-            $description = ucfirst($type) . ' ' . $variablename;
-        }
-        else
-        {
-            $variablename = Inflector::camelize($fieldName);
-            $description = ucfirst($type) . ' ' . $fieldName;
-        }
+        /* rewrite the field name in $reWrittenFieldName if it needs to be singularized,
+         * otherwise makes it equal to the original field name
+         * but keeps original $fieldName unchanged as it must be used as is by <fieldName> replacement.
+         */
+        $reWrittenFieldName = ( in_array($type, array('add', 'remove')) )
+                            ? Inflector::singularize($fieldName)
+                            : $fieldName;
+
+        $methodName = $type . Inflector::classify($reWrittenFieldName);
+        $variableName = Inflector::camelize($reWrittenFieldName);
+        $description = ucfirst($type) . ' ' . $variableName;
 
         if ($this->hasMethod($methodName, $metadata)) {
             return;
@@ -730,7 +730,7 @@ public function <methodName>()
             '<description>'    => $description,
             '<methodTypeHint>' => $methodTypeHint,
             '<variableType>'   => $variableType,
-            '<variableName>'   => $variablename,
+            '<variableName>'   => $variableName,
             '<methodName>'     => $methodName,
             '<fieldName>'      => $fieldName,
         );
