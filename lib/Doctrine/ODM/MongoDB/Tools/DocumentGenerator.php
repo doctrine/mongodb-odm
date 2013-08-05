@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Tools;
 
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
  * Generic class used to generate PHP5 document classes from ClassMetadataInfo instances
@@ -701,30 +702,23 @@ public function <methodName>()
 
     private function generateDocumentStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null)
     {
+        // Add/remove methods should use the singular form of the field name
+        $formattedFieldName = in_array($type, array('add', 'remove'))
+            ? Inflector::singularize($fieldName)
+            : $fieldName;
 
-        /* rewrite the field name in $reWrittenFieldName if it needs to be singularized,
-         * otherwise makes it equal to the original field name
-         * but keeps original $fieldName unchanged as it must be used as is by <fieldName> replacement.
-         */
-        $reWrittenFieldName = ( in_array($type, array('add', 'remove')) )
-                            ? Inflector::singularize($fieldName)
-                            : $fieldName;
-
-        $methodName = $type . Inflector::classify($reWrittenFieldName);
-        $variableName = Inflector::camelize($reWrittenFieldName);
-        $description = ucfirst($type) . ' ' . $variableName;
+        $methodName = $type . Inflector::classify($formattedFieldName);
+        $variableName = Inflector::camelize($formattedFieldName);
 
         if ($this->hasMethod($methodName, $metadata)) {
             return;
         }
 
-        $var = sprintf('%sMethodTemplate', $type);
-        $template = self::$$var;
+        $description = ucfirst($type) . ' ' . $variableName;
 
-        $variableType = $typeHint ? $typeHint . ' ' : null;
-
-        $types = \Doctrine\ODM\MongoDB\Types\Type::getTypesMap();
+        $types = Type::getTypesMap();
         $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
+        $variableType = $typeHint ? $typeHint . ' ' : null;
 
         $replacements = array(
             '<description>'    => $description,
@@ -735,10 +729,12 @@ public function <methodName>()
             '<fieldName>'      => $fieldName,
         );
 
+        $templateVar = sprintf('%sMethodTemplate', $type);
+
         $method = str_replace(
             array_keys($replacements),
             array_values($replacements),
-            $template
+            self::$$templateVar
         );
 
         return $this->prefixCodeWithSpaces($method);
