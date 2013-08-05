@@ -91,10 +91,10 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getAuthor'), "DocumentGeneratorBook::getAuthor() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getComments'), "DocumentGeneratorBook::getComments() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'addComment'), "DocumentGeneratorBook::addComment() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'removeComment'), "EntityGeneratorBook::removeComment() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'removeComment'), "DocumentGeneratorBook::removeComment() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getSearches'), "DocumentGeneratorBook::getSearches() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'addSearch'), "DocumentGeneratorBook::addSearch() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'removeSearch'), "EntityGeneratorBook::removeSearch() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'removeSearch'), "DocumentGeneratorBook::removeSearch() missing.");
 
         $book->setName('Jonathan H. Wage');
         $this->assertEquals('Jonathan H. Wage', $book->getName());

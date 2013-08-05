@@ -16,7 +16,7 @@
         "symfony/console": "~2.0",
         "doctrine/common": ">=2.2.0,<2.5-dev",
         "doctrine/mongodb": "1.0.*",
-        "doctrine/inflector": "1.0.*@dev"
+        "doctrine/inflector": "~1.0"
     },
     "require-dev": {
         "symfony/yaml": "~2.0"

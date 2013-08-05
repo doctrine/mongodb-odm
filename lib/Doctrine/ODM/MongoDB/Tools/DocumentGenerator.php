@@ -703,7 +703,7 @@ public function <methodName>()
     {
         $methodName = $type . Inflector::classify($fieldName);
 
-        if (in_array($type, array('add', 'remove'))) {
+        if ( in_array($type, array('add', 'remove')) ) {
             $methodName = Inflector::singularize($methodName);
             $variablename = Inflector::singularize($fieldName);
             $description = ucfirst($type) . ' ' . $variablename;
