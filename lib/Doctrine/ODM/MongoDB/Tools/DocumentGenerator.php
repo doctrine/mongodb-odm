@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tools;
 
-use Doctrine\Common\Util\Inflector;
+use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**
@@ -701,12 +701,18 @@ public function <methodName>()
 
     private function generateDocumentStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null)
     {
-        $methodName = $type . Inflector::classify($fieldName);
 
-        // TODO: This needs actual plural -> singular conversion
-        if (in_array($type, array('add', 'remove')) && substr($methodName, -1) == 's') {
-            $methodName = substr($methodName, 0, -1);
-        }
+        /* rewrite the field name in $reWrittenFieldName if it needs to be singularized,
+         * otherwise makes it equal to the original field name
+         * but keeps original $fieldName unchanged as it must be used as is by <fieldName> replacement.
+         */
+        $reWrittenFieldName = ( in_array($type, array('add', 'remove')) )
+                            ? Inflector::singularize($fieldName)
+                            : $fieldName;
+
+        $methodName = $type . Inflector::classify($reWrittenFieldName);
+        $variableName = Inflector::camelize($reWrittenFieldName);
+        $description = ucfirst($type) . ' ' . $variableName;
 
         if ($this->hasMethod($methodName, $metadata)) {
             return;
@@ -721,10 +727,10 @@ public function <methodName>()
         $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
 
         $replacements = array(
-            '<description>'    => ucfirst($type) . ' ' . $fieldName,
+            '<description>'    => $description,
             '<methodTypeHint>' => $methodTypeHint,
             '<variableType>'   => $variableType,
-            '<variableName>'   => Inflector::camelize($fieldName),
+            '<variableName>'   => $variableName,
             '<methodName>'     => $methodName,
             '<fieldName>'      => $fieldName,
         );
