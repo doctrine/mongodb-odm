@@ -742,6 +742,16 @@ class DocumentManager implements ObjectManager
     }
 
     /**
+     * Check if the Document manager is open or closed.
+     *
+     * @return bool
+     */
+    public function isOpen()
+    {
+        return ( ! $this->closed);
+    }
+
+    /**
      * Gets the filter collection.
      *
      * @return \Doctrine\ODM\MongoDB\Query\FilterCollection The active filter collection.
