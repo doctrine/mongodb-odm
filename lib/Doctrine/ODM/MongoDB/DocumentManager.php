@@ -748,7 +748,7 @@ class DocumentManager implements ObjectManager
      */
     public function isOpen()
     {
-        return (!$this->closed);
+        return ( ! $this->closed);
     }
 
     /**
