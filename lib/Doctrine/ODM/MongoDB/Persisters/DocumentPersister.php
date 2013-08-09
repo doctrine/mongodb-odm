@@ -880,15 +880,15 @@ class DocumentPersister
      */
     public function addFilterToPreparedQuery(array $preparedQuery)
     {
-        /* If filter criteria exists for this class, prepare it and merge the
-         * existing query over it. This makes it possible to override filter
-         * criteria.
+        /* If filter criteria exists for this class, prepare it and it over
+         * the existing query. This makes it impossible to override filter
+         * criteria. If you need to override a filter, then disable it.
          *
          * @todo Consider recursive merging in case the filter criteria and
          * prepared query both contain top-level $and/$or operators.
          */
         if ($filterCriteria = $this->dm->getFilterCollection()->getFilterCriteria($this->class)) {
-            $preparedQuery = array_merge($this->prepareQueryOrNewObj($filterCriteria), $preparedQuery);
+            $preparedQuery = array_merge($preparedQuery, $this->prepareQueryOrNewObj($filterCriteria));
         }
 
         return $preparedQuery;
