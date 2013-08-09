@@ -12,7 +12,6 @@ class DocumentPersisterFilterTest extends BaseTest
     {
         parent::setUp();
         $this->fc = $this->dm->getFilterCollection();
-
     }
 
     public function tearDown()
@@ -21,7 +20,7 @@ class DocumentPersisterFilterTest extends BaseTest
         parent::tearDown();
     }
 
-    public function testAddFilterToPreparedQuery()
+    public function testFilterCriteriaShouldOverridePreparedQuery()
     {
         $this->fc->enable('testFilter');
         $testFilter = $this->fc->getFilter('testFilter');
@@ -31,7 +30,7 @@ class DocumentPersisterFilterTest extends BaseTest
 
         $persister = $this->uow->getDocumentPersister('Documents\User');
 
-        $criteria = $persister->addFilterToPreparedQuery(['username' => 'Toby']);
+        $criteria = $persister->addFilterToPreparedQuery(array('username' => 'Toby'));
 
         $this->assertEquals('Tim', $criteria['username']);
     }
