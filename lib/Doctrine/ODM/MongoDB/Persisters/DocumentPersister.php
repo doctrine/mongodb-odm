@@ -694,7 +694,7 @@ class DocumentPersister
         foreach ($groupedIds as $className => $ids) {
             $class = $this->dm->getClassMetadata($className);
             $mongoCollection = $this->dm->getDocumentCollection($className);
-            $criteria = array_merge(
+            $criteria = $this->mergeCritiera(
                 array('_id' => array($cmd . 'in' => $ids)),
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
@@ -754,7 +754,7 @@ class DocumentPersister
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping = isset($targetClass->fieldMappings[$mapping['mappedBy']]) ? $targetClass->fieldMappings[$mapping['mappedBy']] : array();
         $mappedByFieldName = isset($mappedByMapping['simple']) && $mappedByMapping['simple'] ? $mapping['mappedBy'] : $mapping['mappedBy'] . '.$id';
-        $criteria = array_merge(
+        $criteria = $this->mergeCritiera(
             array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
             isset($mapping['criteria']) ? $mapping['criteria'] : array()
@@ -887,10 +887,39 @@ class DocumentPersister
          * prepared query both contain top-level $and/$or operators.
          */
         if ($filterCriteria = $this->dm->getFilterCollection()->getFilterCriteria($this->class)) {
-            $preparedQuery = array_merge($preparedQuery, $this->prepareQueryOrNewObj($filterCriteria));
+            $preparedQuery = $this->mergeCritiera($preparedQuery, $this->prepareQueryOrNewObj($filterCriteria));
         }
 
         return $preparedQuery;
+    }
+
+    /**
+     * Acts just like array_merge() on query criteria. However, multiple criteria are defined for
+     * the one field, the are merged such that the criteria will be $and ed together.
+     *
+     * @param array of arrays
+     * @return array
+     */
+    public function mergeCritiera(){
+        $listLength = func_num_args();
+        $criteriaList = func_get_args();
+
+        $return = $criteriaList[0];
+        for ($i = 1; $i < $listLength; $i++){
+            $criteria = $criteriaList[$i];
+            foreach ($criteria as $field => $value){
+                if (array_key_exists($field, $return)){
+                    if (is_array($return[$field]) && !in_array($value, $return[$field])){
+                        $return[$field][] = $value;
+                    } elseif ($return[$field] !== $value){
+                        $return[$field] = array($return[$field], $value);
+                    }
+                } else {
+                    $return[$field] = $value;
+                }
+            }
+        }
+        return $return;
     }
 
     /**
