@@ -32,7 +32,7 @@ class DocumentPersisterFilterTest extends BaseTest
 
         $criteria = $persister->addFilterToPreparedQuery(array('username' => 'Toby'));
 
-        $this->assertEquals(['Toby', 'Tim'], $criteria['username']);
+        $this->assertEquals(array('Toby', 'Tim'), $criteria['username']);
     }
 
     public function testFilterCrieriaShouldAndWithMappingCriteriaOwningSide(){
