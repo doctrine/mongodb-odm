@@ -20,7 +20,7 @@ class DocumentPersisterFilterTest extends BaseTest
         parent::tearDown();
     }
 
-    public function testFilterCriteriaShouldOverridePreparedQuery()
+    public function testFilterCriteriaShouldAndWithPreparedQuery()
     {
         $this->fc->enable('testFilter');
         $testFilter = $this->fc->getFilter('testFilter');
@@ -35,7 +35,7 @@ class DocumentPersisterFilterTest extends BaseTest
         $this->assertEquals(['Toby', 'Tim'], $criteria['username']);
     }
 
-    public function testFilterCrieriaShouldOverrideMappingCriteriaOwningSide(){
+    public function testFilterCrieriaShouldAndWithMappingCriteriaOwningSide(){
 
         //create some data to test against
         $blogPost = new \Documents\BlogPost('Roger');
