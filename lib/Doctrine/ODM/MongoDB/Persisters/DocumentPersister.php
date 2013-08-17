@@ -599,8 +599,12 @@ class DocumentPersister
                 $primer($this->dm, $className, $fieldName, $ids, $hints);
             } else {
                 $repository = $this->dm->getRepository($className);
+                $field = $fieldMapping['mappedBy'] ? $fieldMapping['mappedBy'] : $class->identifier;
+                if ($fieldMapping['mappedBy'] && !$class->fieldMappings[$fieldMapping['mappedBy']]['simple']) {
+                    $field .= '.$id';
+                }
                 $qb = $repository->createQueryBuilder()
-                    ->field($fieldMapping['mappedBy'] ? $fieldMapping['mappedBy'] : $class->identifier)->in($ids);
+                    ->field($field)->in($ids);
                 if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
                     $qb->slaveOkay(true);
                 }
