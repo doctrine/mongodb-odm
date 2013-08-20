@@ -1033,11 +1033,15 @@ class DocumentPersister
             $objectProperty = $e[1];
             $objectPropertyPrefix = '';
             $nextObjectProperty = implode('.', array_slice($e, 2));
-        } else {
+        } elseif (isset($e[2])) {
             $fieldName = $e[0] . '.' . $e[1] . '.' . $e[2];
             $objectProperty = $e[2];
             $objectPropertyPrefix = $e[1] . '.';
             $nextObjectProperty = implode('.', array_slice($e, 3));
+        } else {
+            $fieldName = $e[0] . '.' . $e[1];
+
+            return array($fieldName, $value);
         }
 
         // No further processing for fields without a targetDocument mapping

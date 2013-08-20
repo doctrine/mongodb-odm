@@ -137,13 +137,15 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('address.subAddress.subAddress.subAddress.testFieldName' => 'test'), $debug);
     }
 
-    public function testPrepareNestedCollectionDocuments()
+    public function testPreparePositionalOperator()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->field('phonenumbers.$.phonenumber')->equals('test');
-        $query = $qb->getQuery();
-        $debug = $query->debug();
-        $this->assertEquals(array('phonenumbers.$.phonenumber' => 'test'), $debug);
+            ->update()
+            ->field('phonenumbers.$.phonenumber')->equals('foo')
+            ->field('phonenumbers.$')->set(array('phonenumber' => 'bar'));
+
+        $this->assertEquals(array('phonenumbers.$.phonenumber' => 'foo'), $qb->getQueryArray());
+        $this->assertEquals(array('$set' => array('phonenumbers.$' => array('phonenumber' => 'bar'))), $qb->getNewObj());
     }
 
     public function testSortIsPrepared()
