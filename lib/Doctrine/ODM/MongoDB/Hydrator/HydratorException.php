@@ -39,8 +39,8 @@ class HydratorException extends MongoDBException
         return new self("You must configure a hydrator namespace. See docs for details");
     }
 
-    public static function hydratorDirectoryMustExist()
+    public static function hydratorDirectoryNotWritable()
     {
-        return new self("You must create a hydrator directory specified");
+        return new self("Your hydrator directory must be writable.");
     }
 }
