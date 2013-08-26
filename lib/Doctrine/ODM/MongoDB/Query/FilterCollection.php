@@ -163,7 +163,7 @@ class FilterCollection
     {
         $criteria = array();
         foreach ($this->enabledFilters as $filter) {
-            $criteria = array_merge($criteria, $filter->addFilterCriteria($metaData));
+            $criteria = CriteriaMerger::merge($criteria, $filter->addFilterCriteria($metaData));
         }
         return $criteria;
     }
