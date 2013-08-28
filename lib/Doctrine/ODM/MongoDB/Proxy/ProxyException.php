@@ -24,26 +24,26 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 /**
  * MongoDB ODM Proxy Exception
  *
- * @since       1.0
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
- * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
+ * @since  1.0
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Jonathan H. Wage <jonwage@gmail.com>
+ * @author Roman Borschel <roman@code-factory.org>
+ * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
 class ProxyException extends MongoDBException
 {
-    public static function proxyDirectoryRequired()
-    {
-        return new self("You must configure a proxy directory. See docs for details");
-    }
-
     public static function proxyDirectoryNotWritable()
     {
-        return new self("Your proxy directory must be writable.");
+        return new self('Your proxy directory must be writable.');
+    }
+
+    public static function proxyDirectoryRequired()
+    {
+        return new self('You must configure a proxy directory. See docs for details.');
     }
 
     public static function proxyNamespaceRequired()
     {
-        return new self("You must configure a proxy namespace. See docs for details");
+        return new self('You must configure a proxy namespace. See docs for details.');
     }
 }
