@@ -34,6 +34,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -694,7 +695,7 @@ class DocumentPersister
         foreach ($groupedIds as $className => $ids) {
             $class = $this->dm->getClassMetadata($className);
             $mongoCollection = $this->dm->getDocumentCollection($className);
-            $criteria = array_merge(
+            $criteria = CriteriaMerger::merge(
                 array('_id' => array($cmd . 'in' => $ids)),
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
@@ -754,7 +755,7 @@ class DocumentPersister
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping = isset($targetClass->fieldMappings[$mapping['mappedBy']]) ? $targetClass->fieldMappings[$mapping['mappedBy']] : array();
         $mappedByFieldName = isset($mappedByMapping['simple']) && $mappedByMapping['simple'] ? $mapping['mappedBy'] : $mapping['mappedBy'] . '.$id';
-        $criteria = array_merge(
+        $criteria = CriteriaMerger::merge(
             array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
             isset($mapping['criteria']) ? $mapping['criteria'] : array()
@@ -880,15 +881,14 @@ class DocumentPersister
      */
     public function addFilterToPreparedQuery(array $preparedQuery)
     {
-        /* If filter criteria exists for this class, prepare it and merge the
-         * existing query over it. This makes it possible to override filter
-         * criteria.
+        /* If filter criteria exists for this class, prepare it and merge
+         * over the existing query.
          *
          * @todo Consider recursive merging in case the filter criteria and
          * prepared query both contain top-level $and/$or operators.
          */
         if ($filterCriteria = $this->dm->getFilterCollection()->getFilterCriteria($this->class)) {
-            $preparedQuery = array_merge($this->prepareQueryOrNewObj($filterCriteria), $preparedQuery);
+            $preparedQuery = CriteriaMerger::merge($preparedQuery, $this->prepareQueryOrNewObj($filterCriteria));
         }
 
         return $preparedQuery;
