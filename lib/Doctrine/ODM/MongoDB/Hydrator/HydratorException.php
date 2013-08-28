@@ -24,23 +24,23 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 /**
  * MongoDB ODM Hydrator Exception
  *
- * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @since  1.0
+ * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class HydratorException extends MongoDBException
 {
+    public static function hydratorDirectoryNotWritable()
+    {
+        return new self('Your hydrator directory must be writable.');
+    }
+
     public static function hydratorDirectoryRequired()
     {
-        return new self("You must configure a hydrator directory. See docs for details");
+        return new self('You must configure a hydrator directory. See docs for details.');
     }
 
     public static function hydratorNamespaceRequired()
     {
-        return new self("You must configure a hydrator namespace. See docs for details");
-    }
-
-    public static function hydratorDirectoryMustExist()
-    {
-        return new self("You must create a hydrator directory specified");
+        return new self('You must configure a hydrator namespace. See docs for details');
     }
 }
