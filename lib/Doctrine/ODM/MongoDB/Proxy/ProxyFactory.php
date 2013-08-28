@@ -149,11 +149,12 @@ class ProxyFactory
      * Generates a proxy class file.
      *
      * @param ClassMetadata $class
-     * @param string $fileName
-     * @param string $file The path of the file to write to.
+     * @param string $fileName The path of the file to write to.
+     * @param string $template Code template for proxy class.
+     *
      * @throws ProxyException
      */
-    private function generateProxyClass($class, $fileName, $file)
+    private function generateProxyClass($class, $fileName, $template)
     {
         $methods = $this->generateMethods($class);
         $sleepImpl = $this->generateSleep($class);
@@ -183,19 +184,21 @@ class ProxyFactory
             $cloneImpl
         );
 
-        $file = str_replace($placeholders, $replacements, $file);
+        $code = str_replace($placeholders, $replacements, $template);
 
         $parentDirectory = dirname($fileName);
 
-        if ( ! is_dir($parentDirectory)) {
-            if (false === @mkdir($parentDirectory, 0775, true)) {
-                throw ProxyException::proxyDirectoryNotWritable();
-            }
-        } elseif ( ! is_writable($parentDirectory)) {
+        if ( ! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
             throw ProxyException::proxyDirectoryNotWritable();
         }
 
-        file_put_contents($fileName, $file, LOCK_EX);
+        if ( ! is_writable($parentDirectory)) {
+            throw ProxyException::proxyDirectoryNotWritable();
+        }
+
+        $tmpFileName = $fileName . '.' . uniqid('', true);
+        file_put_contents($tmpFileName, $code);
+        rename($tmpFileName, $fileName);
     }
 
     /**

@@ -384,7 +384,19 @@ EOF
             $code
         );
 
-        file_put_contents($fileName, $code);
+        $parentDirectory = dirname($fileName);
+
+        if ( ! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
+            throw HydratorException::hydratorDirectoryNotWritable();
+        }
+
+        if ( ! is_writable($parentDirectory)) {
+            throw HydratorException::hydratorDirectoryNotWritable();
+        }
+
+        $tmpFileName = $fileName . '.' . uniqid('', true);
+        file_put_contents($tmpFileName, $code);
+        rename($tmpFileName, $fileName);
     }
 
     /**
