@@ -87,9 +87,12 @@ abstract class BsonFilter
     }
 
     /**
-     * Gets the criteria part to add to a query.
+     * Gets the criteria array to add to a query.
      *
-     * @return array The criteria array, if there is available, empty array otherwise
+     * If there is no criteria for the class, an empty array should be returned.
+     *
+     * @param ClassMetadata $class
+     * @return array
      */
-    abstract public function addFilterCriteria(ClassMetadata $targetEntity);
+    abstract public function addFilterCriteria(ClassMetadata $class);
 }
