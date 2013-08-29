@@ -382,8 +382,8 @@ class DocumentPersister
         }
 
         $criteria = $this->prepareQueryOrNewObj($criteria);
-        $criteria = $this->addFilterToPreparedQuery($criteria);
         $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
+        $criteria = $this->addFilterToPreparedQuery($criteria);
 
         $cursor = $this->collection->find($criteria);
 
@@ -415,8 +415,8 @@ class DocumentPersister
     public function loadAll(array $criteria = array(), array $sort = null, $limit = null, $skip = null)
     {
         $criteria = $this->prepareQueryOrNewObj($criteria);
-        $criteria = $this->addFilterToPreparedQuery($criteria);
         $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
+        $criteria = $this->addFilterToPreparedQuery($criteria);
 
         $baseCursor = $this->collection->find($criteria);
         $cursor = $this->wrapCursor($baseCursor);
@@ -860,7 +860,8 @@ class DocumentPersister
      * Adds discriminator criteria to an already-prepared query.
      *
      * This method should be used once for query criteria and not be used for
-     * nested expressions.
+     * nested expressions. It should be called before
+     * {@link DocumentPerister::addFilterToPreparedQuery()}.
      *
      * @param array $preparedQuery
      * @return array
@@ -882,7 +883,8 @@ class DocumentPersister
      * Adds filter criteria to an already-prepared query.
      *
      * This method should be used once for query criteria and not be used for
-     * nested expressions.
+     * nested expressions. It should be called after
+     * {@link DocumentPerister::addDiscriminatorToPreparedQuery()}.
      *
      * @param array $preparedQuery
      * @return array
