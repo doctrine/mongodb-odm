@@ -20,40 +20,34 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 /**
- * Class responsible for merging query criteria. Simple array_merge can't be used because
- * multiple critiera on the same field would be overwritten. This class will $and multiple critiera
- * on the same field together.
+ * Utility class for merging query criteria.
  *
- * @see Doctrine\ODM\MongoDB\Query::isIndexed()
+ * This is mainly used to incorporate filter and ReferenceMany mapping criteria
+ * into a query. Each criteria array will be joined with "$and" to avoid cases
+ * where criteria might be inadvertently overridden with array_merge().
  */
 class CriteriaMerger
 {
     /**
-     * Acts just like array_merge() on query criteria. However, multiple criteria are defined for
-     * the one field, the are merged such that the criteria will be $and ed together.
+     * Combines any number of criteria arrays as clauses of an "$and" query.
      *
-     * @param array of arrays
+     * @param array $criteria,... Any number of query criteria arrays
      * @return array
      */
-    public static function merge(){
-        $listLength = func_num_args();
-        $criteriaList = func_get_args();
+    public function merge(/* array($field => $value), ... */)
+    {
+        $merged = array();
 
-        $return = $criteriaList[0];
-        for ($i = 1; $i < $listLength; $i++){
-            $criteria = $criteriaList[$i];
-            foreach ($criteria as $field => $value){
-                if (array_key_exists($field, $return)){
-                    if (is_array($return[$field]) && !in_array($value, $return[$field])){
-                        $return[$field][] = $value;
-                    } elseif ($return[$field] !== $value){
-                        $return[$field] = array($return[$field], $value);
-                    }
-                } else {
-                    $return[$field] = $value;
-                }
+        foreach (func_get_args() as $criteria) {
+            if (empty($criteria)) {
+                continue;
             }
+
+            $merged['$and'][] = $criteria;
         }
-        return $return;
+
+        return (isset($merged['$and']) && count($merged['$and']) === 1)
+            ? $merged['$and'][0]
+            : $merged;
     }
 }

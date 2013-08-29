@@ -112,6 +112,13 @@ class DocumentPersister
     private $cmd;
 
     /**
+     * The CriteriaMerger instance.
+     *
+     * @var CriteriaMerger
+     */
+    private $cm;
+
+    /**
      * Initializes a new DocumentPersister instance.
      *
      * @param PersistenceBuilder $pb
@@ -122,12 +129,13 @@ class DocumentPersister
      * @param ClassMetadata $class
      * @param string $cmd
      */
-    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, HydratorFactory $hydratorFactory, ClassMetadata $class, $cmd)
+    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, HydratorFactory $hydratorFactory, ClassMetadata $class, $cmd, CriteriaMerger $cm = null)
     {
         $this->pb = $pb;
         $this->dm = $dm;
         $this->evm = $evm;
         $this->cmd = $cmd;
+        $this->cm = $cm ?: new CriteriaMerger();
         $this->uow = $uow;
         $this->hydratorFactory = $hydratorFactory;
         $this->class = $class;
@@ -695,7 +703,7 @@ class DocumentPersister
         foreach ($groupedIds as $className => $ids) {
             $class = $this->dm->getClassMetadata($className);
             $mongoCollection = $this->dm->getDocumentCollection($className);
-            $criteria = CriteriaMerger::merge(
+            $criteria = $this->cm->merge(
                 array('_id' => array($cmd . 'in' => $ids)),
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
@@ -755,7 +763,7 @@ class DocumentPersister
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping = isset($targetClass->fieldMappings[$mapping['mappedBy']]) ? $targetClass->fieldMappings[$mapping['mappedBy']] : array();
         $mappedByFieldName = isset($mappedByMapping['simple']) && $mappedByMapping['simple'] ? $mapping['mappedBy'] : $mapping['mappedBy'] . '.$id';
-        $criteria = CriteriaMerger::merge(
+        $criteria = $this->cm->merge(
             array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
             isset($mapping['criteria']) ? $mapping['criteria'] : array()
@@ -888,7 +896,7 @@ class DocumentPersister
          * prepared query both contain top-level $and/$or operators.
          */
         if ($filterCriteria = $this->dm->getFilterCollection()->getFilterCriteria($this->class)) {
-            $preparedQuery = CriteriaMerger::merge($preparedQuery, $this->prepareQueryOrNewObj($filterCriteria));
+            $preparedQuery = $this->cm->merge($preparedQuery, $this->prepareQueryOrNewObj($filterCriteria));
         }
 
         return $preparedQuery;
