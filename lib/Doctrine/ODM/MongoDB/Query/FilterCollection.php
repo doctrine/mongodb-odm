@@ -55,10 +55,13 @@ class FilterCollection
      * Constructor.
      *
      * @param DocumentManager $dm
+     * @param CriteriaMerger  $cm
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, CriteriaMerger $cm = null)
     {
         $this->dm = $dm;
+        $this->cm = $cm ?: new CriteriaMerger();
+
         $this->config = $dm->getConfiguration();
     }
 
@@ -156,15 +159,21 @@ class FilterCollection
     /**
      * Gets enabled filter criteria.
      *
-     * @param array $criteria
+     * @param ClassMetadata $class
      * @return array
      */
-    public function getFilterCriteria(ClassMetadata $metaData)
+    public function getFilterCriteria(ClassMetadata $class)
     {
-        $criteria = array();
-        foreach ($this->enabledFilters as $filter) {
-            $criteria = array_merge($criteria, $filter->addFilterCriteria($metaData));
+        if (empty($this->enabledFilters)) {
+            return array();
         }
-        return $criteria;
+
+        return call_user_func_array(
+            array($this->cm, 'merge'),
+            array_map(
+                function($filter) use ($class) { return $filter->addFilterCriteria($class); },
+                $this->enabledFilters
+            )
+        );
     }
 }
