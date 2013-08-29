@@ -917,16 +917,24 @@ class DocumentPersister
         $preparedQuery = array();
 
         foreach ($query as $key => $value) {
+            // Recursively prepare logical query clauses
+            if (in_array($key, array($this->cmd . 'and', $this->cmd . 'or', $this->cmd . 'nor')) && is_array($value)) {
+                foreach ($value as $k2 => $v2) {
+                    $preparedQuery[$key][$k2] = $this->prepareQueryOrNewObj($v2);
+                }
+                continue;
+            }
+
             if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
                 $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
-            } else {
-                list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
-                if (is_array($value)) {
-                    $preparedQuery[$key] = array_map('Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $value);
-                } else {
-                    $preparedQuery[$key] = Type::convertPHPToDatabaseValue($value);
-                }
+                continue;
             }
+
+            list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
+
+            $preparedQuery[$key] = is_array($value)
+                ? array_map('Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $value)
+                : Type::convertPHPToDatabaseValue($value);
         }
 
         return $preparedQuery;
@@ -971,13 +979,30 @@ class DocumentPersister
             }
 
             // Additional preparation for one or more simple reference values
-            if ( ! is_array($value)) {
-                $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+            $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
 
+            if ( ! is_array($value)) {
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            return array($fieldName, $this->prepareQueryOrNewObj($value));
+            foreach ($value as $k => $v) {
+                // Ignore query operators whose arguments need no type conversion
+                if (in_array($k, array($this->cmd . 'exists', $this->cmd . 'type', $this->cmd . 'mod', $this->cmd . 'size'))) {
+                    continue;
+                }
+
+                // Process query operators whose arguments need type conversion (e.g. "$in")
+                if (isset($k[0]) && $k[0] === $this->cmd && is_array($v)) {
+                    foreach ($v as $k2 => $v2) {
+                        $value[$k][$k2] = $targetClass->getDatabaseIdentifierValue($v2);
+                    }
+                    continue;
+                }
+
+                $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
+            }
+
+            return array($fieldName, $value);
         }
 
         // Process identifier fields
@@ -993,14 +1018,20 @@ class DocumentPersister
             }
 
             foreach ($value as $k => $v) {
-                // Process query operators (e.g. "$in")
+                // Ignore query operators whose arguments need no type conversion
+                if (in_array($k, array($this->cmd . 'exists', $this->cmd . 'type', $this->cmd . 'mod', $this->cmd . 'size'))) {
+                    continue;
+                }
+
+                // Process query operators whose arguments need type conversion (e.g. "$in")
                 if (isset($k[0]) && $k[0] === $this->cmd && is_array($v)) {
                     foreach ($v as $k2 => $v2) {
                         $value[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
                     }
-                } else {
-                    $value[$k] = $class->getDatabaseIdentifierValue($v);
+                    continue;
                 }
+
+                $value[$k] = $class->getDatabaseIdentifierValue($v);
             }
 
             return array($fieldName, $value);
