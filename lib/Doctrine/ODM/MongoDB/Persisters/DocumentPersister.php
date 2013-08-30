@@ -34,6 +34,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -111,6 +112,13 @@ class DocumentPersister
     private $cmd;
 
     /**
+     * The CriteriaMerger instance.
+     *
+     * @var CriteriaMerger
+     */
+    private $cm;
+
+    /**
      * Initializes a new DocumentPersister instance.
      *
      * @param PersistenceBuilder $pb
@@ -121,12 +129,13 @@ class DocumentPersister
      * @param ClassMetadata $class
      * @param string $cmd
      */
-    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, HydratorFactory $hydratorFactory, ClassMetadata $class, $cmd)
+    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, HydratorFactory $hydratorFactory, ClassMetadata $class, $cmd, CriteriaMerger $cm = null)
     {
         $this->pb = $pb;
         $this->dm = $dm;
         $this->evm = $evm;
         $this->cmd = $cmd;
+        $this->cm = $cm ?: new CriteriaMerger();
         $this->uow = $uow;
         $this->hydratorFactory = $hydratorFactory;
         $this->class = $class;
@@ -373,8 +382,8 @@ class DocumentPersister
         }
 
         $criteria = $this->prepareQueryOrNewObj($criteria);
-        $criteria = $this->addFilterToPreparedQuery($criteria);
         $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
+        $criteria = $this->addFilterToPreparedQuery($criteria);
 
         $cursor = $this->collection->find($criteria);
 
@@ -406,8 +415,8 @@ class DocumentPersister
     public function loadAll(array $criteria = array(), array $sort = null, $limit = null, $skip = null)
     {
         $criteria = $this->prepareQueryOrNewObj($criteria);
-        $criteria = $this->addFilterToPreparedQuery($criteria);
         $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
+        $criteria = $this->addFilterToPreparedQuery($criteria);
 
         $baseCursor = $this->collection->find($criteria);
         $cursor = $this->wrapCursor($baseCursor);
@@ -694,7 +703,7 @@ class DocumentPersister
         foreach ($groupedIds as $className => $ids) {
             $class = $this->dm->getClassMetadata($className);
             $mongoCollection = $this->dm->getDocumentCollection($className);
-            $criteria = array_merge(
+            $criteria = $this->cm->merge(
                 array('_id' => array($cmd . 'in' => $ids)),
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
@@ -754,7 +763,7 @@ class DocumentPersister
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping = isset($targetClass->fieldMappings[$mapping['mappedBy']]) ? $targetClass->fieldMappings[$mapping['mappedBy']] : array();
         $mappedByFieldName = isset($mappedByMapping['simple']) && $mappedByMapping['simple'] ? $mapping['mappedBy'] : $mapping['mappedBy'] . '.$id';
-        $criteria = array_merge(
+        $criteria = $this->cm->merge(
             array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
             isset($mapping['criteria']) ? $mapping['criteria'] : array()
@@ -851,7 +860,8 @@ class DocumentPersister
      * Adds discriminator criteria to an already-prepared query.
      *
      * This method should be used once for query criteria and not be used for
-     * nested expressions.
+     * nested expressions. It should be called before
+     * {@link DocumentPerister::addFilterToPreparedQuery()}.
      *
      * @param array $preparedQuery
      * @return array
@@ -873,22 +883,22 @@ class DocumentPersister
      * Adds filter criteria to an already-prepared query.
      *
      * This method should be used once for query criteria and not be used for
-     * nested expressions.
+     * nested expressions. It should be called after
+     * {@link DocumentPerister::addDiscriminatorToPreparedQuery()}.
      *
      * @param array $preparedQuery
      * @return array
      */
     public function addFilterToPreparedQuery(array $preparedQuery)
     {
-        /* If filter criteria exists for this class, prepare it and merge the
-         * existing query over it. This makes it possible to override filter
-         * criteria.
+        /* If filter criteria exists for this class, prepare it and merge
+         * over the existing query.
          *
          * @todo Consider recursive merging in case the filter criteria and
          * prepared query both contain top-level $and/$or operators.
          */
         if ($filterCriteria = $this->dm->getFilterCollection()->getFilterCriteria($this->class)) {
-            $preparedQuery = array_merge($this->prepareQueryOrNewObj($filterCriteria), $preparedQuery);
+            $preparedQuery = $this->cm->merge($preparedQuery, $this->prepareQueryOrNewObj($filterCriteria));
         }
 
         return $preparedQuery;
@@ -907,16 +917,24 @@ class DocumentPersister
         $preparedQuery = array();
 
         foreach ($query as $key => $value) {
+            // Recursively prepare logical query clauses
+            if (in_array($key, array($this->cmd . 'and', $this->cmd . 'or', $this->cmd . 'nor')) && is_array($value)) {
+                foreach ($value as $k2 => $v2) {
+                    $preparedQuery[$key][$k2] = $this->prepareQueryOrNewObj($v2);
+                }
+                continue;
+            }
+
             if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
                 $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
-            } else {
-                list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
-                if (is_array($value)) {
-                    $preparedQuery[$key] = array_map('Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $value);
-                } else {
-                    $preparedQuery[$key] = Type::convertPHPToDatabaseValue($value);
-                }
+                continue;
             }
+
+            list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
+
+            $preparedQuery[$key] = is_array($value)
+                ? array_map('Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $value)
+                : Type::convertPHPToDatabaseValue($value);
         }
 
         return $preparedQuery;
@@ -961,13 +979,30 @@ class DocumentPersister
             }
 
             // Additional preparation for one or more simple reference values
-            if ( ! is_array($value)) {
-                $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+            $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
 
+            if ( ! is_array($value)) {
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            return array($fieldName, $this->prepareQueryOrNewObj($value));
+            foreach ($value as $k => $v) {
+                // Ignore query operators whose arguments need no type conversion
+                if (in_array($k, array($this->cmd . 'exists', $this->cmd . 'type', $this->cmd . 'mod', $this->cmd . 'size'))) {
+                    continue;
+                }
+
+                // Process query operators whose arguments need type conversion (e.g. "$in")
+                if (isset($k[0]) && $k[0] === $this->cmd && is_array($v)) {
+                    foreach ($v as $k2 => $v2) {
+                        $value[$k][$k2] = $targetClass->getDatabaseIdentifierValue($v2);
+                    }
+                    continue;
+                }
+
+                $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
+            }
+
+            return array($fieldName, $value);
         }
 
         // Process identifier fields
@@ -983,14 +1018,20 @@ class DocumentPersister
             }
 
             foreach ($value as $k => $v) {
-                // Process query operators (e.g. "$in")
+                // Ignore query operators whose arguments need no type conversion
+                if (in_array($k, array($this->cmd . 'exists', $this->cmd . 'type', $this->cmd . 'mod', $this->cmd . 'size'))) {
+                    continue;
+                }
+
+                // Process query operators whose arguments need type conversion (e.g. "$in")
                 if (isset($k[0]) && $k[0] === $this->cmd && is_array($v)) {
                     foreach ($v as $k2 => $v2) {
                         $value[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
                     }
-                } else {
-                    $value[$k] = $class->getDatabaseIdentifierValue($v);
+                    continue;
                 }
+
+                $value[$k] = $class->getDatabaseIdentifierValue($v);
             }
 
             return array($fieldName, $value);

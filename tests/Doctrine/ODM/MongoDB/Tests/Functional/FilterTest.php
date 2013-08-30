@@ -289,4 +289,25 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         sort($usernames);
         return $usernames;
     }
+
+    public function testMultipleFiltersOnSameField()
+    {
+        $this->fc->enable('testFilter');
+        $testFilter = $this->fc->getFilter('testFilter');
+        $testFilter->setParameter('class', 'Documents\User');
+        $testFilter->setParameter('field', 'username');
+        $testFilter->setParameter('value', 'Tim');
+
+        $this->fc->enable('testFilter2');
+        $testFilter2 = $this->fc->getFilter('testFilter2');
+        $testFilter2->setParameter('class', 'Documents\User');
+        $testFilter2->setParameter('field', 'username');
+        $testFilter2->setParameter('value', 'John');
+
+        /* These two filters will merge and create a query that requires the
+         * username to equal both "Tim" and "John", which is impossible for a
+         * non-array, string field. No results should be returned.
+         */
+        $this->assertCount(0, $this->getUsernamesWithFindAll());
+    }
 }

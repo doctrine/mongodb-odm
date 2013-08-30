@@ -29,13 +29,13 @@ class GH596Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $query = $query->getQuery();
 
-        $expected = array(
-            'deleted' => false,
-            '$or' => array(
+        $expected = array('$and' => array(
+            array('$or' => array(
                 array('name' => 'foo'),
                 array('name' => 'bar'),
-            ),
-        );
+            )),
+            array('deleted' => false),
+        ));
 
         $this->assertEquals($expected, $query['query']);
     }
