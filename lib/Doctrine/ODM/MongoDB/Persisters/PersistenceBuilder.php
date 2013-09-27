@@ -106,8 +106,6 @@ class PersistenceBuilder
                         continue;
                     }
 
-                    $oid = spl_object_hash($new);
-
                     if ($this->isScheduledForInsert($new)) {
                         // The associated document $new is not yet persisted, so we must
                         // set $new = null, in order to insert a null value and schedule an
@@ -158,7 +156,6 @@ class PersistenceBuilder
      */
     public function prepareUpdateData($document)
     {
-        $oid = spl_object_hash($document);
         $class = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
