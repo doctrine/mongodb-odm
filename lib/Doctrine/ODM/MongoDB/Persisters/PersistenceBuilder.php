@@ -74,14 +74,15 @@ class PersistenceBuilder
         $changeset = $this->uow->getDocumentChangeSet($document);
 
         $insertData = array();
-        foreach ($class->fieldMappings as $mapping) {
+        foreach ($changeset as $fieldName => $change) {
+            $mapping = $class->fieldMappings[$fieldName];
 
             // many collections are inserted later
             if ($mapping['type'] === ClassMetadata::MANY) {
                 continue;
             }
 
-            $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
+            $new = isset($change[1]) ? $change[1] : null;
 
             // Generate a document identifier
             if ($new === null && $class->identifier === $mapping['fieldName'] && $class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE) {
@@ -344,6 +345,15 @@ class PersistenceBuilder
         return $this->dm->createDBRef($document, $referenceMapping);
     }
 
+    public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument)
+    {
+        if ($embeddedMapping['strategy'] === 'set') {
+            return $this->doPrepareEmbeddedDocumentValue($embeddedMapping, $embeddedDocument, false);
+        }
+
+        return $this->doPrepareEmbeddedDocumentValue($embeddedMapping, $embeddedDocument, true);
+    }
+
     /**
      * Returns the embedded document to be stored in MongoDB.
      *
@@ -356,19 +366,42 @@ class PersistenceBuilder
      * @param object $embeddedDocument
      * @return array|object
      */
-    public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument)
+    private function doPrepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $fromChangeset = false)
     {
         $embeddedDocumentValue = array();
         $class = $this->dm->getClassMetadata(get_class($embeddedDocument));
 
-        foreach ($class->fieldMappings as $mapping) {
+        $changeset = $this->uow->getDocumentChangeSet($embeddedDocument);
+
+        if ($fromChangeset) {
+            $loop = $changeset;
+        } else {
+            $loop = $class->fieldMappings;
+        }
+
+        foreach ($loop as $fieldName => $v) {
+            if ($fromChangeset) {
+                $mapping = $class->fieldMappings[$fieldName];
+                $change = $v;
+            } else {
+                $mapping = $v;
+            }
+
             // Skip notSaved fields
             if ( ! empty($mapping['notSaved'])) {
                 continue;
             }
 
-            // Inline ClassMetadataInfo::getFieldValue()
-            $rawValue = $class->reflFields[$mapping['fieldName']]->getValue($embeddedDocument);
+            if ($fromChangeset) {
+                $rawValue = $change[1];
+            } else {
+                if (isset($changeset[$mapping['fieldName']])) {
+                    $rawValue = $changeset[$mapping['fieldName']][1];
+                } else {
+                    // Inline ClassMetadataInfo::getFieldValue()
+                    $rawValue = $class->reflFields[$mapping['fieldName']]->getValue($embeddedDocument);
+                }
+            }
 
             // Generate a document identifier
             if ($rawValue === null && $class->identifier === $mapping['fieldName'] && !$class->isIdGeneratorNone()) {
