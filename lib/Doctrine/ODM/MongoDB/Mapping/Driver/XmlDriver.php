@@ -112,6 +112,18 @@ class XmlDriver extends FileDriver
                         $mapping[$key] = ('true' === $mapping[$key]) ? true : false;
                     }
                 }
+                if (isset($mapping['id']) && $mapping['id'] === true && isset($mapping['strategy'])) {
+                    $mapping['options'] = array();
+                    if (isset($field->{'id-generator-option'})) {
+                        foreach ($field->{'id-generator-option'} as $generatorOptions) {
+                            $attributesGenerator = iterator_to_array($generatorOptions->attributes());
+                            if (isset($attributesGenerator['name']) && isset($attributesGenerator['value'])) {
+                                $mapping['options'][(string) $attributesGenerator['name']] = (string) $attributesGenerator['value'];
+                            }
+                        }
+                    }
+                } 
+                
                 if (isset($attributes['not-saved'])) {
                     $mapping['notSaved'] = ('true' === $attributes['not-saved']) ? true : false;
                 }

@@ -53,6 +53,9 @@
   </xs:complexType>
 
   <xs:complexType name="field">
+    <xs:sequence>
+      <xs:element name="id-generator-option" type="odm:id-generator-option" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>  
     <xs:attribute name="id" type="xs:boolean" default="false" />
     <xs:attribute name="name" type="xs:NMTOKEN" />
     <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
@@ -66,6 +69,11 @@
     <xs:attribute name="file" type="xs:boolean" />
     <xs:attribute name="distance" type="xs:boolean" />
     <xs:attribute name="reference" type="xs:boolean" />
+  </xs:complexType>
+  
+  <xs:complexType name="id-generator-option">
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
   </xs:complexType>
 
   <xs:complexType name="embed-one">
