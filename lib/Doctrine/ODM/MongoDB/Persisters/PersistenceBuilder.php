@@ -251,7 +251,6 @@ class PersistenceBuilder
      */
     public function prepareUpsertData($document)
     {
-        $oid = spl_object_hash($document);
         $class = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
