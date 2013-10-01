@@ -1373,6 +1373,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setFieldValue($document, $field, $value)
     {
+        if ($document instanceof Proxy && ! $document->__isInitialized()) {
+            //property changes to an uninitialized proxy will not be tracked or persisted,
+            //so the proxy needs to be loaded first.
+            $document->__load();
+        }
         $this->reflFields[$field]->setValue($document, $value);
     }
 
@@ -1384,8 +1389,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getFieldValue($document, $field)
     {
-        if ($document instanceof Proxy && $field === $this->identifier && ! $document->__isInitialized()) {
-            return $document->__identifier__;
+        if ($document instanceof Proxy && ! $document->__isInitialized()) {
+            if ($field === $this->identifier) {
+                return $document->__identifier__;
+            } else {
+                $document->__load();
+            }
         }
         return $this->reflFields[$field]->getValue($document);
     }
