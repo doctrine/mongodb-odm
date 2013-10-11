@@ -307,7 +307,7 @@ Optional attributes:
     discriminatorMap - Map of discriminator values to class names.
 -
     strategy - The strategy used to persist changes to the collection. Possible
-    values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll`
+    values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
     is the default. See :ref:`collection_strategies` for more information.
 
 Example:
@@ -925,7 +925,7 @@ Optional attributes:
     skip - Skip for the query that loads the reference.
 -
     strategy - The strategy used to persist changes to the collection. Possible
-    values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll`
+    values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
     is the default. See :ref:`collection_strategies` for more information.
 
 Example:
