@@ -1317,8 +1317,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setIdentifierValue($document, $id)
     {
-        $idType = $this->fieldMappings[$this->identifier]['type'];
-        $id = Type::getType($idType)->convertToPHPValue($id);
+        $id = $this->getPHPIdentifierValue($id);
         $this->reflFields[$this->identifier]->setValue($document, $id);
     }
 
