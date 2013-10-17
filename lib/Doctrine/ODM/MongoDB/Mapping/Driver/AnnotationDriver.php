@@ -151,6 +151,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $mapping['alsoLoadFields'] = (array) $annot->value;
                 } elseif ($annot instanceof ODM\Version) {
                     $mapping['version'] = true;
+                } elseif (property_exists($annot, 'options')
+                    && isset($annot->options['isShardKey'])
+                    && $annot->options['isShardKey'] == true) {
+                    $class->addShardKey($mapping['fieldName']);
                 } elseif ($annot instanceof ODM\Lock) {
                     $mapping['lock'] = true;
                 }

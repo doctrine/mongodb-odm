@@ -49,6 +49,11 @@ class MappingException extends BaseMappingException
         return new self('Property "' . $fieldName . '" in "' . $document . '" was already declared, but it must be declared only once');
     }
 
+    public static function invalidShardKeyValue($document)
+    {
+        return new self('Invalid shard key for ' . $document . '. Has to be string.');
+    }
+
     /**
      * Throws an exception that indicates that a class used in a discriminator map does not exist.
      * An example would be an outdated (maybe renamed) classname.

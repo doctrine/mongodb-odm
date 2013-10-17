@@ -42,6 +42,16 @@ class MongoDBException extends \Exception
         return new self(sprintf('Invalid document state "%s"', $state));
     }
 
+    public static function shardKeyChange($key)
+    {
+        return new self(sprintf('Shard key "%s" value cannot be changed.', $key));
+    }
+
+    public static function shardKeyMissing($key)
+    {
+        return new self(sprintf('Shard key "%s" is missing.', $key));
+    }
+
     public static function documentNotMappedToCollection($className)
     {
         return new self(sprintf('The "%s" document is not mapped to a MongoDB database collection.', $className));
