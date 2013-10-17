@@ -203,10 +203,12 @@ class DocumentPersister
         $postInsertIds = array();
         $inserts = array();
         $upserts = array();
+        $shardCriteria = array();
         foreach ($this->queuedInserts as $oid => $document) {
             $upsert = $this->uow->isScheduledForUpsert($document);
             if ($upsert) {
                 $data = $this->pb->prepareUpsertData($document);
+                $shardCriteria[$oid] = $this->getShardKeyQuery($document);
             } else {
                 $data = $this->pb->prepareInsertData($document);
             }
@@ -241,7 +243,11 @@ class DocumentPersister
 
             foreach ($inserts as $oid => $data) {
                 $document = $this->queuedInserts[$oid];
-                $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
+
+                $idType = $this->class->fieldMappings[$this->class->identifier]['type'];
+                $postInsertId = Type::getType($idType)->convertToPHPValue($data['_id']);
+
+                $postInsertIds[] = array($postInsertId, $document);
             }
         }
 
@@ -252,16 +258,33 @@ class DocumentPersister
             $upsertOptions['upsert'] = true;
             foreach ($upserts as $oid => $data) {
                 $criteria = array('_id' => $data[$this->cmd . 'set']['_id']);
+                $criteria = array_merge($criteria, $shardCriteria[$oid]);
                 unset($data[$this->cmd . 'set']['_id']);
                 // stupid php
                 if (empty($data[$this->cmd . 'set'])) {
                     $data[$this->cmd . 'set'] = new \stdClass;
                 }
+                $data = $this->stripShardKeyData($shardCriteria[$oid], $data);
                 $this->collection->update($criteria, $data, $upsertOptions);
             }
         }
 
         return $postInsertIds;
+    }
+
+    public function stripShardKeyData(array $shardCriteria, array $data)
+    {
+        if (!empty($shardCriteria)) {
+            foreach ($data as $operation => $values) {
+                $keys = array_intersect_key($values, $shardCriteria);
+                if ($keys) {
+                    foreach ($keys as $k => $one) {
+                        unset($data[$operation][$k]);
+                    }
+                }
+            }
+        }
+        return $data;
     }
 
     /**
@@ -280,6 +303,9 @@ class DocumentPersister
 
             $id = $this->class->getDatabaseIdentifierValue($id);
             $query = array('_id' => $id);
+            $shardKeys = $this->getShardKeyQuery($document);
+
+            $query = array_merge($query, $shardKeys);
 
             // Include versioning logic to set the new version value in the database
             // and to ensure the version has not changed since this document object instance
@@ -314,12 +340,55 @@ class DocumentPersister
             }
 
             unset($update[$this->cmd . 'set']['_id']);
+            $update = $this->stripShardKeyData($shardKeys, $update);
             $result = $this->collection->update($query, $update, $options);
 
             if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
                 throw LockException::lockFailed($document);
             }
         }
+    }
+
+    /**
+     * @param $document
+     * @return array
+     * @throws MongoDBException
+     */
+    public function getShardKeyQuery($document)
+    {
+        $shardKeysQueryPart = array();
+
+        $dcs = $this->uow->getDocumentChangeSet($document);
+        $data = $this->uow->getDocumentActualData($this->class, $document);
+
+        $md = $this->dm->getMetadataFactory()->getMetadataFor(get_class($document));
+        $keys = $md->shardKeys;
+
+        $fieldMappings = $this->dm->getClassMetadata(get_class($document))->fieldMappings;
+        foreach ($keys as $key) {
+            if ($key !== 'id') {
+                $queryKey = $fieldMappings[$key]['name'];
+            }
+
+            //If the document is new, we can ignore shard key value, otherwise throw exception
+            $isUpdate = $this->uow->isScheduledForUpdate($document);
+            if ($isUpdate && isset($dcs[$key]) && $dcs[$key][0] != $dcs[$key][1]) {
+                throw MongoDBException::shardKeyChange($key);
+            }
+            if (!isset($data[$key])) {
+                throw MongoDBException::shardKeyMissing($key);
+            }
+            if (preg_match('/[a-f0-9]{24}/i', $data[$key])) {
+                $data[$key] = new \MongoId($data[$key]);
+            }
+            if ($md->isIdentifier($key)) {
+                $shardKeysQueryPart['_id'] = $data[$key];
+            } else {
+                $shardKeysQueryPart[$queryKey] = $data[$key];
+            }
+
+        }
+        return $shardKeysQueryPart;
     }
 
     /**
@@ -356,7 +425,7 @@ class DocumentPersister
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         $data = $this->collection->findOne(array('_id' => $id));
-        $data = $this->hydratorFactory->hydrate($document, $data);
+        $data = $this->hydratorFactory->hydrate($class, $document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
 
@@ -649,7 +718,7 @@ class DocumentPersister
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
-                $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument);
+                $data = $this->hydratorFactory->hydrate($embeddedMetadata, $embeddedDocumentObject, $embeddedDocument);
                 $this->uow->registerManaged($embeddedDocumentObject, null, $data);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
                 if ($mapping['strategy'] === 'set') {
@@ -678,7 +747,12 @@ class DocumentPersister
                 $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
                 $mongoId = $reference[$cmd . 'id'];
             }
-            $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
+
+            $class = $this->dm->getClassMetadata($className);
+
+            $idType = $class->fieldMappings[$class->identifier]['type'];
+            $id = Type::getType($idType)->convertToPHPValue($mongoId);
+
             if ( ! $id) {
                 continue;
             }
@@ -725,7 +799,7 @@ class DocumentPersister
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
-                $data = $this->hydratorFactory->hydrate($document, $documentData);
+                $data = $this->hydratorFactory->hydrate($class, $document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;
                 if ($sorted) {
@@ -965,12 +1039,6 @@ class DocumentPersister
 
             if ( ! $prepareValue) {
                 return array($fieldName, $value);
-            }
-
-            // Prepare mapped, embedded objects
-            if ( ! empty($mapping['embedded']) && is_object($value) &&
-                ! $this->dm->getMetadataFactory()->isTransient(get_class($value))) {
-                return array($fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value));
             }
 
             // No further preparation unless we're dealing with a simple reference

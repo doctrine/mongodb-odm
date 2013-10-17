@@ -233,18 +233,18 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $ph = new \Documents\CmsPhonenumber();
         $ph->phonenumber = '12345';
 
-        $this->assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($ph));
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($class, $ph));
         $this->assertTrue($persister->isExistsCalled());
 
         $persister->reset();
 
         // if the document is already managed the exists() check should be skipped
         $this->uow->registerManaged($ph, '12345', array());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($ph));
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($class, $ph));
         $this->assertFalse($persister->isExistsCalled());
         $ph2 = new \Documents\CmsPhonenumber();
         $ph2->phonenumber = '12345';
-        $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->uow->getDocumentState($ph2));
+        $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->uow->getDocumentState($class, $ph2));
         $this->assertFalse($persister->isExistsCalled());
     }
 

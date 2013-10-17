@@ -159,10 +159,15 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public $collectionMax;
 
-    /**
-     * READ-ONLY: The field name of the document identifier.
-     */
-    public $identifier;
+	/**
+	 * READ-ONLY: The field name of the document identifier.
+	 */
+	public $identifier;
+
+	/**
+	 * The array of shard keys.
+	 */
+	public $shardKeys = array();
 
     /**
      * READ-ONLY: The field that stores a file reference and indicates the
@@ -454,6 +459,24 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         return $this->identifier;
     }
+
+	public function getShardKeys()
+	{
+		return $this->shardKeys;
+	}
+
+	public function setShardKeys(array $shardKeys)
+	{
+		$this->shardKeys = $shardKeys;
+	}
+
+	public function addShardKey($key)
+	{
+		if (!is_string($key)) {
+			throw MappingException::invalidShardKeyValue($this->reflClass->getName());
+		}
+		array_push($this->shardKeys, $key);
+	}
 
     /**
      * Get identifier field names of this class.
@@ -1317,7 +1340,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setIdentifierValue($document, $id)
     {
-        $id = $this->getPHPIdentifierValue($id);
+        $idType = $this->fieldMappings[$this->identifier]['type'];
+        $id = Type::getType($idType)->convertToPHPValue($id);
         $this->reflFields[$this->identifier]->setValue($document, $id);
     }
 
