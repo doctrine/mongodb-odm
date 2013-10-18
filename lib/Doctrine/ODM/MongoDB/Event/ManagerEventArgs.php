@@ -19,11 +19,22 @@
 
 namespace Doctrine\ODM\MongoDB\Event;
 
+use Doctrine\Common\Persistence\Event\ManagerEventArgs as BaseManagerEventArgs;
+
 /**
- * Provides event arguments for the onFlush event.
+ * Provides event arguments for the flush events.
  *
  * @since 1.0
  */
-class OnFlushEventArgs extends ManagerEventArgs
+class ManagerEventArgs extends BaseManagerEventArgs
 {
+    /**
+     * Retrieves the associated DocumentManager.
+     *
+     * @return \Doctrine\ODM\MongoDB\DocumentManager
+     */
+    public function getDocumentManager()
+    {
+        return $this->getObjectManager();
+    }
 }

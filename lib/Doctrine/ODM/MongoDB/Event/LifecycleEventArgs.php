@@ -19,52 +19,33 @@
 
 namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\Common\EventArgs;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Common\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventArgs;
 
 /**
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
  * of documents.
  *
- * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @since 1.0
  */
-class LifecycleEventArgs extends EventArgs
+class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
     /**
-     * @var DocumentManager
-     */
-    private $dm;
-
-    /**
-     * @var object
-     */
-    private $document;
-
-    /**
-     * @param object $document
-     * @param DocumentManager $dm
-     */
-    public function __construct($document, DocumentManager $dm)
-    {
-        $this->document = $document;
-        $this->dm = $dm;
-    }
-
-    /**
+     * Retrieves the associated document.
+     *
      * @return object
      */
     public function getDocument()
     {
-        return $this->document;
+        return $this->getObject();
     }
 
     /**
-     * @return DocumentManager
+     * Retrieves the associated DocumentManager.
+     *
+     * @return \Doctrine\ODM\MongoDB\DocumentManager
      */
     public function getDocumentManager()
     {
-        return $this->dm;
+        return $this->getObjectManager();
     }
 }
