@@ -1307,6 +1307,11 @@ class UnitOfWork implements PropertyChangedListener
 
             $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
 
+            // If the dependency already exists, it has already passed here.
+            if ($calc->hasDependency($targetClass, $class)) {
+                continue;
+            }
+
             if ( ! $calc->hasClass($targetClass->name)) {
                 $calc->addClass($targetClass);
             }
