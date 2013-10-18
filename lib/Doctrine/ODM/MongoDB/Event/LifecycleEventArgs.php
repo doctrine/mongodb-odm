@@ -25,13 +25,13 @@ use Doctrine\Common\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventAr
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
  * of documents.
  *
- * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @since 1.0
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
     /**
+     * Retrieves the associated document.
+     *
      * @return object
      */
     public function getDocument()
@@ -40,6 +40,8 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
     }
 
     /**
+     * Retrieves the associated DocumentManager.
+     *
      * @return \Doctrine\ODM\MongoDB\DocumentManager
      */
     public function getDocumentManager()

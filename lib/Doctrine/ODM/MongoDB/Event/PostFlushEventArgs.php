@@ -19,40 +19,11 @@
 
 namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\Common\EventArgs;
-
 /**
  * Provides event arguments for the postFlush event.
  *
- * @since       1.0
- * @author      Daniel Freudenberger <df@rebuy.de>
- * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @since 1.0
  */
-class PostFlushEventArgs extends EventArgs
+class PostFlushEventArgs extends ManagerEventArgs
 {
-    /**
-     * @var \Doctrine\ODM\MongoDB\DocumentManager
-     */
-    private $dm;
-
-    /**
-     * Constructor.
-     *
-     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
-     */
-    public function __construct(DocumentManager $dm)
-    {
-        $this->dm = $dm;
-    }
-
-    /**
-     * Retrieve associated DocumentManager.
-     *
-     * @return \Doctrine\ODM\MongoDB\DocumentManager
-     */
-    public function getDocumentManager()
-    {
-        return $this->dm;
-    }
 }
