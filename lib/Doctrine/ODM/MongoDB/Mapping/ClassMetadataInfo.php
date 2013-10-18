@@ -1350,6 +1350,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Sets the document identifier of a document.
      *
+     * The value will be converted to a PHP type before being set.
+     *
      * @param object $document
      * @param mixed $id
      */
@@ -1360,7 +1362,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Gets the document identifier.
+     * Gets the document identifier as a PHP type.
      *
      * @param object $document
      * @return mixed $id
@@ -1374,7 +1376,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Get identifier values of this document.
+     * Get identifier values of this document as a PHP type.
      *
      * Since MongoDB only allows exactly one identifier field this is a proxy
      * to {@see getIdentifierValue()} and returns an array with the identifier
@@ -1389,16 +1391,14 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Get the document identifier object.
+     * Get the document identifier object as a database type.
      *
-     * @param string $document
-     * @return \MongoId $id  The MongoID object.
+     * @param object $document
+     * @return mixed
      */
     public function getIdentifierObject($document)
     {
-        if ($id = $this->getIdentifierValue($document)) {
-            return $this->getDatabaseIdentifierValue($id);
-        }
+        return $this->getDatabaseIdentifierValue($this->getIdentifierValue($document));
     }
 
     /**

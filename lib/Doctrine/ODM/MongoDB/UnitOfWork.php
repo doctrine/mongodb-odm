@@ -1352,8 +1352,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->documentInsertions[$oid] = $document;
 
         /* Determine if the document should be upserted. Do not upsert embedded
-         * documents or documents with a falsey identifier (this may be changed
-         * in the future to allow null and zero, which are valid in MongoDB).
+         * documents or documents with a null identifier.
          *
          * Additionally, ensure that the document identifier's PHP form is the
          * same as its database form converted back to PHP. Without this check,
@@ -1596,7 +1595,7 @@ class UnitOfWork implements PropertyChangedListener
          * the state may "change" between NEW/DETACHED without the UoW being
          * aware of it.
          */
-        $id = $class->getIdentifierValue($document);
+        $id = $class->getIdentifierObject($document);
 
         if ($id === null) {
             return self::STATE_NEW;
@@ -1968,10 +1967,10 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($this->getDocumentState($document, self::STATE_DETACHED) !== self::STATE_MANAGED) {
             // Try to look the entity up in the identity map.
-            $id = $class->isEmbeddedDocument ? null : $class->getIdentifierValue($document);
+            $id = $class->isEmbeddedDocument ? null : $class->getIdentifierObject($document);
 
             // If there is no ID, it is actually NEW.
-            if ( ! $id) {
+            if ($id === null) {
                 $managedCopy = $class->newInstance();
                 $this->persistNew($class, $managedCopy);
             } else {
@@ -2025,7 +2024,7 @@ class UnitOfWork implements PropertyChangedListener
                             } else {
                                 $targetDocument = isset($assoc2['targetDocument']) ? $assoc2['targetDocument'] : get_class($other);
                                 $targetClass = $this->dm->getClassMetadata($targetDocument);
-                                $id = $targetClass->getIdentifierValue($other);
+                                $id = $targetClass->getIdentifierObject($other);
                                 $proxy = $this->dm->getProxyFactory()->getProxy($targetDocument, $id);
                                 $prop->setValue($managedCopy, $proxy);
                                 $this->registerManaged($proxy, $id, array());
@@ -2050,7 +2049,7 @@ class UnitOfWork implements PropertyChangedListener
                             if ($targetClass->isEmbeddedDocument) {
                                 $this->registerManaged($entry, null, array());
                             } else {
-                                $id = $targetClass->getIdentifierValue($entry);
+                                $id = $targetClass->getIdentifierObject($entry);
                                 $this->registerManaged($entry, $id, array());
                             }
                         }
@@ -2741,11 +2740,7 @@ class UnitOfWork implements PropertyChangedListener
     public function registerManaged($document, $id, array $data)
     {
         $oid = spl_object_hash($document);
-        if ($id === null) {
-            $this->documentIdentifiers[$oid] = $oid;
-        } else {
-            $this->documentIdentifiers[$oid] = $id;
-        }
+        $this->documentIdentifiers[$oid] = ($id !== null) ? $id : $oid;
         $this->documentStates[$oid] = self::STATE_MANAGED;
         $this->originalDocumentData[$oid] = $data;
         $this->addToIdentityMap($document);
