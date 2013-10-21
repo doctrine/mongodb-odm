@@ -183,33 +183,40 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
+        // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks'])) {
-            foreach ($reflClass->getMethods() as $method) {
-                if ($method->isPublic()) {
-                    foreach ($this->reader->getMethodAnnotations($method) as $annot) {
-                        if ($annot instanceof ODM\AlsoLoad) {
-                            foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $field) {
-                                $class->alsoLoadMethods[$field] = $method->getName();
-                            }
-                        } elseif ($annot instanceof ODM\PrePersist) {
-                            $class->addLifecycleCallback($method->getName(), Events::prePersist);
-                        } elseif ($annot instanceof ODM\PostPersist) {
-                            $class->addLifecycleCallback($method->getName(), Events::postPersist);
-                        } elseif ($annot instanceof ODM\PreUpdate) {
-                            $class->addLifecycleCallback($method->getName(), Events::preUpdate);
-                        } elseif ($annot instanceof ODM\PostUpdate) {
-                            $class->addLifecycleCallback($method->getName(), Events::postUpdate);
-                        } elseif ($annot instanceof ODM\PreRemove) {
-                            $class->addLifecycleCallback($method->getName(), Events::preRemove);
-                        } elseif ($annot instanceof ODM\PostRemove) {
-                            $class->addLifecycleCallback($method->getName(), Events::postRemove);
-                        } elseif ($annot instanceof ODM\PreLoad) {
-                            $class->addLifecycleCallback($method->getName(), Events::preLoad);
-                        } elseif ($annot instanceof ODM\PostLoad) {
-                            $class->addLifecycleCallback($method->getName(), Events::postLoad);
-                        } elseif ($annot instanceof ODM\PreFlush) {
-                            $class->addLifecycleCallback($method->getName(), Events::preFlush);
+            /** @var $method \ReflectionMethod */
+            foreach ($reflClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                /* Filter for the declaring class only. Callbacks from parent
+                 * classes will already be registered.
+                 */
+                if ($method->getDeclaringClass()->name !== $reflClass->name) {
+                    continue;
+                }
+
+                foreach ($this->reader->getMethodAnnotations($method) as $annot) {
+                    if ($annot instanceof ODM\AlsoLoad) {
+                        foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $field) {
+                            $class->alsoLoadMethods[$field] = $method->getName();
                         }
+                    } elseif ($annot instanceof ODM\PrePersist) {
+                        $class->addLifecycleCallback($method->getName(), Events::prePersist);
+                    } elseif ($annot instanceof ODM\PostPersist) {
+                        $class->addLifecycleCallback($method->getName(), Events::postPersist);
+                    } elseif ($annot instanceof ODM\PreUpdate) {
+                        $class->addLifecycleCallback($method->getName(), Events::preUpdate);
+                    } elseif ($annot instanceof ODM\PostUpdate) {
+                        $class->addLifecycleCallback($method->getName(), Events::postUpdate);
+                    } elseif ($annot instanceof ODM\PreRemove) {
+                        $class->addLifecycleCallback($method->getName(), Events::preRemove);
+                    } elseif ($annot instanceof ODM\PostRemove) {
+                        $class->addLifecycleCallback($method->getName(), Events::postRemove);
+                    } elseif ($annot instanceof ODM\PreLoad) {
+                        $class->addLifecycleCallback($method->getName(), Events::preLoad);
+                    } elseif ($annot instanceof ODM\PostLoad) {
+                        $class->addLifecycleCallback($method->getName(), Events::postLoad);
+                    } elseif ($annot instanceof ODM\PreFlush) {
+                        $class->addLifecycleCallback($method->getName(), Events::preFlush);
                     }
                 }
             }
