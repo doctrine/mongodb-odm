@@ -122,12 +122,13 @@ Now test the ``$eventSubscriber`` instance to see if the
         echo 'pre foo invoked!';
     }
 
+.. _lifecycle_events:
+
 Lifecycle Events
 ----------------
 
 The DocumentManager and UnitOfWork trigger several events during
 the life-time of their registered documents.
-
 
 - 
    preRemove - The preRemove event occurs for a given document before

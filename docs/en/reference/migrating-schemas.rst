@@ -74,7 +74,7 @@ hydration to perform some complex logic.
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Person
     {
         /** @Id */
@@ -95,11 +95,14 @@ hydration to perform some complex logic.
         }
     }
 
-The annotation is defined with a list field names. During hydration, these
-fields will be checked in order and, for each field present, the annotated
+The annotation is defined with one or a list of field names. During hydration,
+these fields will be checked in order and, for each field present, the annotated
 method will be invoked with its value as a single argument. If the ``firstName``
 and ``lastName`` fields were mapped, they would then be updated when the Person
 was persisted back to MongoDB.
+
+The :ref:`haslifecyclecallbacks` annotation must be present on the class in
+which the method is declared for the callback to be registered.
 
 Moving Fields
 -------------
@@ -156,7 +159,7 @@ Later on, you may want to migrate this data into an embedded Address document:
         }
     }
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Person
     {
         /** @Id */
@@ -194,7 +197,7 @@ Alternatively, you could defer this migration until the Person is saved:
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Person
     {
         // ...
@@ -208,6 +211,9 @@ Alternatively, you could defer this migration until the Person is saved:
             }
         }
     }
+
+The :ref:`haslifecyclecallbacks` annotation must be present on the class in
+which the method is declared for the callback to be registered.
 
 .. _`$rename`: http://docs.mongodb.org/manual/reference/operator/update/rename/
 .. _`Objectify`: http://code.google.com/p/objectify-appengine/

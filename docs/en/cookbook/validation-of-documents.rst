@@ -61,14 +61,10 @@ First Annotations:
 
         <?php
 
-        /**
-         * @Document
-         */
+        /** @Document @HasLifecycleCallbacks */
         class Order
         {
-            /**
-             * @PrePersist @PreUpdate
-             */
+            /** @PrePersist @PreUpdate */
             public function assertCustomerAllowedBuying() {}
         }
 
@@ -96,11 +92,11 @@ validation callbacks.
 .. code-block:: php
 
     <?php
+
+    /** @Document @HasLifecycleCallbacks */
     class Order
     {
-        /**
-         * @PrePersist @PreUpdate
-         */
+        /** @PrePersist @PreUpdate */
         public function validate()
         {
             if (!($this->plannedShipDate instanceof DateTime)) {
