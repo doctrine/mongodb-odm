@@ -426,7 +426,7 @@ Define the ``EventTest`` class with a ``onFlush()`` method:
     }
 
 postFlush
-~~~~~~~~
+~~~~~~~~~
 
 .. code-block:: php
 
