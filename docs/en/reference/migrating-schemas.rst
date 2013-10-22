@@ -67,8 +67,8 @@ Transforming Data
 
 You may have a situation where you want to migrate a Person's name to separate
 ``firstName`` and ``lastName`` fields. This is also possible by specifying the
-``@AlsoLoad`` annotation on a method, which will then be invoked during
-hydration to perform some complex logic.
+``@AlsoLoad`` annotation on a method, which will then be invoked immediately
+before normal hydration.
 
 .. code-block:: php
 
@@ -89,17 +89,15 @@ hydration to perform some complex logic.
         /** @AlsoLoad({"name", "fullName"}) */
         public function populateFirstAndLastName($fullName)
         {
-            $e = explode(' ', $fullName);
-            $this->firstName = $e[0];
-            $this->lastName = $e[1];
+            list($this->firstName, $this->lastName) = explode(' ', $fullName);
         }
     }
 
 The annotation is defined with one or a list of field names. During hydration,
 these fields will be checked in order and, for each field present, the annotated
-method will be invoked with its value as a single argument. If the ``firstName``
-and ``lastName`` fields were mapped, they would then be updated when the Person
-was persisted back to MongoDB.
+method will be invoked with its value as a single argument. Since the
+``firstName`` and ``lastName`` fields are mapped, they would then be updated
+when the Person was persisted back to MongoDB.
 
 The :ref:`haslifecyclecallbacks` annotation must be present on the class in
 which the method is declared for the callback to be registered.
