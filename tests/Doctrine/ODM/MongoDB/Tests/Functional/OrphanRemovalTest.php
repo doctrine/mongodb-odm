@@ -82,6 +82,115 @@ class OrphanRemovalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile2->id);
         $this->assertNotNull($check);
     }
+
+    public function testNoOrphanRemovalOnReferenceMany()
+    {
+        $profile1 = new OrphanRemovalProfile();
+        $profile2 = new OrphanRemovalProfile();
+
+        $user = new OrphanRemovalUser();
+        $user->profileManyNoOrphanRemoval[] = $profile1;
+        $user->profileManyNoOrphanRemoval[] = $profile2;
+        $this->dm->persist($user);
+        $this->dm->persist($profile1);
+        $this->dm->persist($profile2);
+        $this->dm->flush();
+
+        $user->profileManyNoOrphanRemoval->removeElement($profile1);
+        $this->dm->flush();
+
+        $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile1->id);
+        $this->assertNotNull($check);
+
+        $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile2->id);
+        $this->assertNotNull($check);
+    }
+
+    public function testOrphanRemovalOnReferenceManyUsingClear()
+    {
+        $profile1 = new OrphanRemovalProfile();
+        $profile2 = new OrphanRemovalProfile();
+
+        $user = new OrphanRemovalUser();
+        $user->profileMany[] = $profile1;
+        $user->profileMany[] = $profile2;
+        $this->dm->persist($user);
+        $this->dm->persist($profile1);
+        $this->dm->persist($profile2);
+        $this->dm->flush();
+
+        $user->profileMany->clear();
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile1->id);
+        $this->assertNull($check);
+
+        $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile2->id);
+        $this->assertNull($check);
+    }
+
+    public function testOrphanRemovalOnReferenceManyUsingClearAndAddingNewElements()
+    {
+        $profile1 = new OrphanRemovalProfile();
+        $profile2 = new OrphanRemovalProfile();
+        $profile3 = new OrphanRemovalProfile();
+
+        $user = new OrphanRemovalUser();
+        $user->profileMany[] = $profile1;
+        $user->profileMany[] = $profile2;
+        $this->dm->persist($user);
+        $this->dm->persist($profile1);
+        $this->dm->persist($profile2);
+        $this->dm->persist($profile3);
+        $this->dm->flush();
+
+        $user->profileMany->clear();
+        $user->profileMany->add($profile3);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile1->id);
+        $this->assertNull($check, 'Profile 1 should have been removed');
+
+        $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile2->id);
+        $this->assertNull($check, 'Profile 2 should have been removed');
+
+        $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile3->id);
+        $this->assertNotNull($check, 'Profile 3 should have been created');
+    }
+
+    public function testOrphanRemovalOnReferenceManyRemovingAndAddingNewElements()
+    {
+        $profile1 = new OrphanRemovalProfile();
+        $profile2 = new OrphanRemovalProfile();
+        $profile3 = new OrphanRemovalProfile();
+
+        $user = new OrphanRemovalUser();
+        $user->profileMany[] = $profile1;
+        $user->profileMany[] = $profile2;
+        $this->dm->persist($user);
+        $this->dm->persist($profile1);
+        $this->dm->persist($profile2);
+        $this->dm->persist($profile3);
+        $this->dm->flush();
+
+        $user->profileMany->removeElement($profile1);
+        $user->profileMany->add($profile3);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile1->id);
+        $this->assertNull($check, 'Profile 1 should have been removed');
+
+        $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile2->id);
+        $this->assertNotNull($check, 'Profile 2 should have been left untouched');
+
+        $check = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile')->find($profile3->id);
+        $this->assertNotNull($check, 'Profile 3 should have been created');
+    }
 }
 
 /** @ODM\Document */
@@ -96,8 +205,11 @@ class OrphanRemovalUser
     /** @ODM\ReferenceOne(targetDocument="OrphanRemovalProfile", orphanRemoval=false) */
     public $profileNoOrphanRemoval;
 
-    /** @ODM\ReferenceMany(targetDocument="OrphanRemovalProfile", orphanRemoval=true) */    
+    /** @ODM\ReferenceMany(targetDocument="OrphanRemovalProfile", orphanRemoval=true) */
     public $profileMany = array();
+
+    /** @ODM\ReferenceMany(targetDocument="OrphanRemovalProfile", orphanRemoval=false) */
+    public $profileManyNoOrphanRemoval = array();
 }
 
 /** @ODM\Document */
