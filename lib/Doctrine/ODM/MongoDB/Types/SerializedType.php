@@ -30,13 +30,19 @@ class SerializedType extends Type
         return $val;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function closureToMongo()
     {
         return '$return = \MongoBinData(serialize($value), \MongoBinData::BYTE_ARRAY);';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function closureToPHP()
     {
         return '$return = unserialize($value->bin);';
     }
-} 
+}
