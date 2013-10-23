@@ -1269,7 +1269,7 @@ class UnitOfWork implements PropertyChangedListener
         // are not yet available.
         $newNodes = array();
 
-        foreach ($documentChangeSet as $oid => $document) {
+        foreach ($documentChangeSet as $document) {
             $className = get_class($document);
 
             if ($calc->hasClass($className)) {
@@ -1284,8 +1284,40 @@ class UnitOfWork implements PropertyChangedListener
 
         // Calculate dependencies for new nodes
         while ($class = array_pop($newNodes)) {
-            $this->addDependencies($class, $calc);
+            foreach ($class->associationMappings as $assoc) {
+                if ( ! ($assoc['isOwningSide'] && isset($assoc['targetDocument']))) {
+                    continue;
+                }
+
+                $targetClass = $this->dm->getClassMetadata($assoc['targetDocument']);
+
+                if ( ! $calc->hasClass($targetClass->name)) {
+                    $calc->addClass($targetClass);
+
+                    $newNodes[] = $targetClass;
+                }
+
+                $calc->addDependency($targetClass, $class);
+
+                // If the target class has mapped subclasses, these share the same dependency.
+                if ( ! $targetClass->subClasses) {
+                    continue;
+                }
+
+                foreach ($targetClass->subClasses as $subClassName) {
+                    $targetSubClass = $this->dm->getClassMetadata($subClassName);
+
+                    if ( ! $calc->hasClass($subClassName)) {
+                        $calc->addClass($targetSubClass);
+
+                        $newNodes[] = $targetSubClass;
+                    }
+
+                    $calc->addDependency($targetSubClass, $class);
+                }
+            }
         }
+
         return $calc->getCommitOrder();
     }
 
