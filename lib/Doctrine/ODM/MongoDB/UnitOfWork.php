@@ -1322,59 +1322,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Add dependencies recursively through embedded documents. Embedded documents
-     * may have references to other documents so those need to be saved first.
-     *
-     * @param ClassMetadata $class
-     * @param CommitOrderCalculator $calc
-     */
-    private function addDependencies(ClassMetadata $class, $calc)
-    {
-        foreach ($class->fieldMappings as $mapping) {
-            $isOwningReference = isset($mapping['reference']) && $mapping['isOwningSide'];
-            $isAssociation = isset($mapping['embedded']) || $isOwningReference;
-            if ( ! $isAssociation || ! isset($mapping['targetDocument'])) {
-                continue;
-            }
-
-            $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-
-            // If the dependency already exists, it has already passed here.
-            if ($calc->hasDependency($targetClass, $class)) {
-                continue;
-            }
-
-            if ( ! $calc->hasClass($targetClass->name)) {
-                $calc->addClass($targetClass);
-            }
-
-            $calc->addDependency($targetClass, $class);
-
-            // If the target class has mapped subclasses, these share the same dependency.
-            if ( ! $targetClass->subClasses) {
-                continue;
-            }
-
-            foreach ($targetClass->subClasses as $subClassName) {
-                $targetSubClass = $this->dm->getClassMetadata($subClassName);
-
-                if ( ! $calc->hasClass($subClassName)) {
-                    $calc->addClass($targetSubClass);
-
-                    $newNodes[] = $targetSubClass;
-                }
-
-                $calc->addDependency($targetSubClass, $class);
-            }
-
-            // avoid infinite recursion
-            if ($class !== $targetClass) {
-                $this->addDependencies($targetClass, $calc);
-            }
-        }
-    }
-
-    /**
      * Schedules an document for insertion into the database.
      * If the document already has an identifier, it will be added to the identity map.
      *
