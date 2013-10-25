@@ -1269,7 +1269,7 @@ class UnitOfWork implements PropertyChangedListener
         // are not yet available.
         $newNodes = array();
 
-        foreach ($documentChangeSet as $oid => $document) {
+        foreach ($documentChangeSet as $document) {
             $className = get_class($document);
 
             if ($calc->hasClass($className)) {
@@ -1284,57 +1284,41 @@ class UnitOfWork implements PropertyChangedListener
 
         // Calculate dependencies for new nodes
         while ($class = array_pop($newNodes)) {
-            $this->addDependencies($class, $calc);
-        }
-        return $calc->getCommitOrder();
-    }
-
-    /**
-     * Add dependencies recursively through embedded documents. Embedded documents
-     * may have references to other documents so those need to be saved first.
-     *
-     * @param ClassMetadata $class
-     * @param CommitOrderCalculator $calc
-     */
-    private function addDependencies(ClassMetadata $class, $calc)
-    {
-        foreach ($class->fieldMappings as $mapping) {
-            $isOwningReference = isset($mapping['reference']) && $mapping['isOwningSide'];
-            $isAssociation = isset($mapping['embedded']) || $isOwningReference;
-            if ( ! $isAssociation || ! isset($mapping['targetDocument'])) {
-                continue;
-            }
-
-            $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-
-            if ( ! $calc->hasClass($targetClass->name)) {
-                $calc->addClass($targetClass);
-            }
-
-            $calc->addDependency($targetClass, $class);
-
-            // If the target class has mapped subclasses, these share the same dependency.
-            if ( ! $targetClass->subClasses) {
-                continue;
-            }
-
-            foreach ($targetClass->subClasses as $subClassName) {
-                $targetSubClass = $this->dm->getClassMetadata($subClassName);
-
-                if ( ! $calc->hasClass($subClassName)) {
-                    $calc->addClass($targetSubClass);
-
-                    $newNodes[] = $targetSubClass;
+            foreach ($class->associationMappings as $assoc) {
+                if ( ! ($assoc['isOwningSide'] && isset($assoc['targetDocument']))) {
+                    continue;
                 }
 
-                $calc->addDependency($targetSubClass, $class);
-            }
+                $targetClass = $this->dm->getClassMetadata($assoc['targetDocument']);
 
-            // avoid infinite recursion
-            if ($class !== $targetClass) {
-                $this->addDependencies($targetClass, $calc);
+                if ( ! $calc->hasClass($targetClass->name)) {
+                    $calc->addClass($targetClass);
+
+                    $newNodes[] = $targetClass;
+                }
+
+                $calc->addDependency($targetClass, $class);
+
+                // If the target class has mapped subclasses, these share the same dependency.
+                if ( ! $targetClass->subClasses) {
+                    continue;
+                }
+
+                foreach ($targetClass->subClasses as $subClassName) {
+                    $targetSubClass = $this->dm->getClassMetadata($subClassName);
+
+                    if ( ! $calc->hasClass($subClassName)) {
+                        $calc->addClass($targetSubClass);
+
+                        $newNodes[] = $targetSubClass;
+                    }
+
+                    $calc->addDependency($targetSubClass, $class);
+                }
             }
         }
+
+        return $calc->getCommitOrder();
     }
 
     /**
