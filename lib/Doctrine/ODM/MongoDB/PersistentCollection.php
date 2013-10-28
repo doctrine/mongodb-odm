@@ -385,10 +385,7 @@ class PersistentCollection implements BaseCollection
         $removed = $this->coll->remove($key);
         if ($removed) {
             $this->changed();
-            if ($this->mapping !== null &&
-                isset($this->mapping['reference']) &&
-                $this->mapping['isOwningSide'] &&
-                $this->mapping['orphanRemoval']) {
+            if ($this->isOrphanRemovalEnabled()) {
                 $this->uow->scheduleOrphanRemoval($removed);
             }
         }
@@ -405,10 +402,7 @@ class PersistentCollection implements BaseCollection
         $removed = $this->coll->removeElement($element);
         if ($removed) {
             $this->changed();
-            if ($this->mapping !== null &&
-                isset($this->mapping['reference']) &&
-                $this->mapping['isOwningSide'] &&
-                $this->mapping['orphanRemoval']) {
+            if ($this->isOrphanRemovalEnabled()) {
                 $this->uow->scheduleOrphanRemoval($element);
             }
         }
@@ -584,11 +578,13 @@ class PersistentCollection implements BaseCollection
         if ($this->initialized && $this->isEmpty()) {
             return;
         }
-        if ($this->mapping !== null && isset($this->mapping['embedded'])) {
+
+        if ($this->isOrphanRemovalEnabled()) {
             foreach ($this->coll as $element) {
                 $this->uow->scheduleOrphanRemoval($element);
             }
         }
+
         $this->mongoData = array();
         $this->coll->clear();
         if ($this->mapping['isOwningSide']) {
@@ -709,5 +705,30 @@ class PersistentCollection implements BaseCollection
         $this->snapshot = array();
 
         $this->changed();
+    }
+
+    /**
+     * Returns whether or not this collection has orphan removal enabled.
+     *
+     * Embedded documents are automatically considered as "orphan removal enabled" because they might have references
+     * that require to trigger cascade remove operations.
+     *
+     * @return boolean
+     */
+    private function isOrphanRemovalEnabled()
+    {
+        if ($this->mapping === null) {
+            return false;
+        }
+
+        if (isset($this->mapping['embedded'])) {
+            return true;
+        }
+
+        if (isset($this->mapping['reference']) && $this->mapping['isOwningSide'] && $this->mapping['orphanRemoval']) {
+            return true;
+        }
+
+        return false;
     }
 }
