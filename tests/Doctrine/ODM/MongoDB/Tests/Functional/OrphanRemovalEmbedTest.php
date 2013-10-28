@@ -10,9 +10,9 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**
-     * Test un-setting a embed one relationship
+     * Test unsetting an embedOne relationship
      */
-    public function testUnSettingEmbedOne()
+    public function testUnsettingEmbedOne()
     {
         $profile = new OrphanRemovalCascadeProfile();
         $address = new OrphanRemovalCascadeAddress();
@@ -32,7 +32,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * Test remove method on a embed many relationship
+     * Test Collection::remove() method on an embedMany relationship
      */
     public function testRemoveEmbedMany()
     {
@@ -51,8 +51,8 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertNotNull($this->getAddressRepository()->find($address1->id), 'Should have persist-cascaded address 1');
-        $this->assertNotNull($this->getAddressRepository()->find($address2->id), 'Should have persist-cascaded address 2');
+        $this->assertNotNull($this->getAddressRepository()->find($address1->id), 'Should have cascaded persist to address 1');
+        $this->assertNotNull($this->getAddressRepository()->find($address2->id), 'Should have cascaded persist to address 2');
 
         $user->profileMany->removeElement($profile1);
 
@@ -68,7 +68,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * Test clear method on a embed many relationship
+     * Test Collection::clear() method on an embedMany relationship
      */
     public function testClearEmbedMany()
     {
@@ -97,7 +97,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * Test clearing and adding on a embed many relationship
+     * Test clearing and adding on an embedMany relationship
      */
     public function testClearAndAddEmbedMany()
     {
@@ -139,7 +139,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     /**
      * @return \Doctrine\ODM\MongoDB\DocumentRepository
      */
-    protected function getUserRepository()
+    private function getUserRepository()
     {
         return $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalCascadeUser');
     }
@@ -147,7 +147,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     /**
      * @return \Doctrine\ODM\MongoDB\DocumentRepository
      */
-    protected function getAddressRepository()
+    private function getAddressRepository()
     {
         return $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalCascadeAddress');
     }
