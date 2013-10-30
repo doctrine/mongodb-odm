@@ -19,7 +19,11 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\Criteria\QueryBuilderExpressionVisitor;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
@@ -33,7 +37,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class DocumentRepository implements ObjectRepository
+class DocumentRepository implements ObjectRepository, Selectable
 {
     /**
      * @var string
@@ -244,5 +248,30 @@ class DocumentRepository implements ObjectRepository
     public function getClassName()
     {
         return $this->getDocumentName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function matching(Criteria $criteria)
+    {
+        $queryBuilder = $this->dm->createQueryBuilder($this->documentName);
+        $visitor      = new QueryBuilderExpressionVisitor($queryBuilder);
+
+        $expr = $visitor->dispatch($criteria->getWhereExpression());
+
+        $queryBuilder->setQueryArray($expr->getQuery())
+                     ->limit($criteria->getMaxResults())
+                     ->skip($criteria->getFirstResult());
+
+        if ($orderings = $criteria->getOrderings()) {
+            foreach ($orderings as $field => $sortOrder) {
+                $queryBuilder->sort($field, $sortOrder);
+            }
+        }
+
+        // @TODO: wrap around a specialized Collection for efficient count on large collections
+
+        return new ArrayCollection($queryBuilder->getQuery()->execute()->toArray());
     }
 }
