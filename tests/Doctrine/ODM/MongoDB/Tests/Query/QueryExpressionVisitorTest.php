@@ -38,6 +38,7 @@ class QueryExpressionVisitorTest extends BaseTest
 
         return array(
             array($builder->eq('field', 'value'), array('field' => 'value')),
+            array($builder->contains('field', 'value'), array('field' => new \MongoRegex('/value/'))),
             array($builder->gt('field', 'value'), array('field' => array('$gt' => 'value'))),
             array($builder->gte('field', 'value'), array('field' => array('$gte' => 'value'))),
             array($builder->in('field', array(1, 2)), array('field' => array('$in' => array(1, 2)))),
