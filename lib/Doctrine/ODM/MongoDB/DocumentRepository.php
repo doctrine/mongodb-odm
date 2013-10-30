@@ -23,8 +23,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\ODM\MongoDB\Criteria\QueryBuilderExpressionVisitor;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 
 /**
  * An DocumentRepository serves as a repository for documents with generic as well as
@@ -256,7 +256,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     public function matching(Criteria $criteria)
     {
         $queryBuilder = $this->dm->createQueryBuilder($this->documentName);
-        $visitor      = new QueryBuilderExpressionVisitor($queryBuilder);
+        $visitor      = new QueryExpressionVisitor($queryBuilder);
 
         $expr = $visitor->dispatch($criteria->getWhereExpression());
 
