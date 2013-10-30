@@ -251,27 +251,32 @@ class DocumentRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * {@inheritDoc}
+     * Selects all elements from a selectable that match the expression and
+     * returns a new collection containing these elements.
+     *
+     * @see Selectable::matching()
+     * @param Criteria $criteria
+     * @return Collection
      */
     public function matching(Criteria $criteria)
     {
-        $queryBuilder = $this->dm->createQueryBuilder($this->documentName);
-        $visitor      = new QueryExpressionVisitor($queryBuilder);
-
+        $visitor = new QueryExpressionVisitor($this->createQueryBuilder());
         $expr = $visitor->dispatch($criteria->getWhereExpression());
+        $queryBuilder = $this->createQueryBuilder()->setQueryArray($expr->getQuery());
 
-        $queryBuilder->setQueryArray($expr->getQuery())
-                     ->limit($criteria->getMaxResults())
-                     ->skip($criteria->getFirstResult());
+        if ($criteria->getMaxResults() !== null) {
+            $queryBuilder->limit($criteria->getMaxResults());
+        }
 
-        if ($orderings = $criteria->getOrderings()) {
-            foreach ($orderings as $field => $sortOrder) {
-                $queryBuilder->sort($field, $sortOrder);
-            }
+        if ($criteria->getFirstResult() !== null) {
+            $queryBuilder->skip($criteria->getFirstResult());
+        }
+
+        if ($criteria->getOrderings() !== null) {
+            $queryBuilder->sort($criteria->getOrderings());
         }
 
         // @TODO: wrap around a specialized Collection for efficient count on large collections
-
         return new ArrayCollection($queryBuilder->getQuery()->execute()->toArray());
     }
 }
