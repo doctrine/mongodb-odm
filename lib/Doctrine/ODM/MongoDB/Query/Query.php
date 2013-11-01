@@ -236,7 +236,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
         // GeoLocationFindQuery just returns an instance of ArrayIterator so we have to
         // iterator over it and hydrate each object.
-        if ($this->query['type'] === self::TYPE_GEO_LOCATION && $this->hydrate) {
+        if ($this->query['type'] === self::TYPE_GEO_NEAR && $this->hydrate) {
             foreach ($results as $key => $result) {
                 $document = $result['obj'];
                 if ($this->class->distance) {
