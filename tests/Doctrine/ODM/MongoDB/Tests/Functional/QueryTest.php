@@ -114,14 +114,14 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')->equals('distinct_test');
         $q = $qb->getQuery();
         $results = $q->execute();
-        $this->assertEquals(new \Doctrine\MongoDB\ArrayIterator(array(1, 2, 3)), $results);
+        $this->assertEquals(array(1, 2, 3), $results->toArray());
 
         $results = $this->dm->createQueryBuilder('Documents\User')
             ->distinct('count')
             ->field('username')->equals('distinct_test')
             ->getQuery()
             ->execute();
-        $this->assertEquals(new \Doctrine\MongoDB\ArrayIterator(array(1, 2, 3)), $results);
+        $this->assertEquals(array(1, 2, 3), $results->toArray());
     }
 
     public function testFindQuery()
@@ -253,11 +253,11 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testGroup()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->group(array(), array('count' => 0))
+            ->group(array('username' => 1), array('count' => 0))
             ->reduce('function (obj, prev) { prev.count++; }');
         $query = $qb->getQuery();
         $result = $query->execute();
-        $this->assertEquals(1, $result['retval'][0]['count']);
+        $this->assertEquals(array(array('username' => 'boo', 'count' => 1)), $result->toArray());
     }
 
     public function testUnsetField()

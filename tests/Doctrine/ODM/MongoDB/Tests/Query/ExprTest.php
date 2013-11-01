@@ -165,7 +165,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testNestedWithOperator()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->field('address.subAddress.subAddress.subAddress.test')->notIn('test');
+            ->field('address.subAddress.subAddress.subAddress.test')->notIn(array('test'));
         $query = $qb->getQuery();
         $query = $query->getQuery();
         $this->assertEquals(array('address.subAddress.subAddress.subAddress.testFieldName' => array('$nin' => array('test'))), $query['query']);
