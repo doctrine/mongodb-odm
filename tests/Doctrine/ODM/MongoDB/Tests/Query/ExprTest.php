@@ -216,7 +216,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->method('getFieldMapping')
             ->will($this->returnValue(array('targetDocument' => 'Foo')));
 
-        $expr = new Expr($dm, '$');
+        $expr = new Expr($dm);
         $expr->setClassMetadata($class);
         $expr->field('foo')->references(new \stdClass());
 
@@ -257,7 +257,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->method('getFieldMapping')
             ->will($this->returnValue(array()));
 
-        $expr = new Expr($dm, '$');
+        $expr = new Expr($dm);
         $expr->setClassMetadata($class);
         $expr->field('foo')->references(new \stdClass());
 

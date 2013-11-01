@@ -19,7 +19,7 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(true));
         $dm = $this->getMockDocumentManager();
         $uow = $this->getMockUnitOfWork();
-        $pCollection = new PersistentCollection($collection, $dm, $uow, '$');
+        $pCollection = new PersistentCollection($collection, $dm, $uow);
         $pCollection->slice($start, $limit);
     }
 

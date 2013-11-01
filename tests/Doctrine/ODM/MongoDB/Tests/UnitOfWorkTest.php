@@ -383,7 +383,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     protected function getUnitOfWork(DocumentManager $dm)
     {
-        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory(), '$');
+        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory());
     }
 
     /**
@@ -422,7 +422,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     private function getMockDocumentPersister(PersistenceBuilder $pb, ClassMetadata $class)
     {
-        return new DocumentPersisterMock($pb, $this->dm, $this->dm->getEventManager(), $this->uow, $this->dm->getHydratorFactory(), $class, '$');
+        return new DocumentPersisterMock($pb, $this->dm, $this->dm->getEventManager(), $this->uow, $this->dm->getHydratorFactory(), $class);
     }
 
     protected function getClassMetadata($class, $flag)

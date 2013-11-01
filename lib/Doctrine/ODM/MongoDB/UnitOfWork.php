@@ -251,26 +251,17 @@ class UnitOfWork implements PropertyChangedListener
     private $parentAssociations = array();
 
     /**
-     * Mongo command character
-     *
-     * @var string
-     */
-    private $cmd;
-
-    /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
      *
      * @param DocumentManager $dm
      * @param EventManager $evm
      * @param HydratorFactory $hydratorFactory
-     * @param string $cmd
      */
-    public function __construct(DocumentManager $dm, EventManager $evm, HydratorFactory $hydratorFactory, $cmd)
+    public function __construct(DocumentManager $dm, EventManager $evm, HydratorFactory $hydratorFactory)
     {
         $this->dm = $dm;
         $this->evm = $evm;
         $this->hydratorFactory = $hydratorFactory;
-        $this->cmd = $cmd;
     }
 
     /**
@@ -282,7 +273,7 @@ class UnitOfWork implements PropertyChangedListener
     public function getPersistenceBuilder()
     {
         if ( ! $this->persistenceBuilder) {
-            $this->persistenceBuilder = new PersistenceBuilder($this->dm, $this, $this->cmd);
+            $this->persistenceBuilder = new PersistenceBuilder($this->dm, $this);
         }
         return $this->persistenceBuilder;
     }
@@ -331,7 +322,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! isset($this->persisters[$documentName])) {
             $class = $this->dm->getClassMetadata($documentName);
             $pb = $this->getPersistenceBuilder();
-            $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this->evm, $this, $this->hydratorFactory, $class, $this->cmd);
+            $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this->evm, $this, $this->hydratorFactory, $class);
         }
         return $this->persisters[$documentName];
     }
@@ -345,7 +336,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         if ( ! isset($this->collectionPersister)) {
             $pb = $this->getPersistenceBuilder();
-            $this->collectionPersister = new Persisters\CollectionPersister($this->dm, $pb, $this, $this->cmd);
+            $this->collectionPersister = new Persisters\CollectionPersister($this->dm, $pb, $this);
         }
         return $this->collectionPersister;
     }
@@ -597,7 +588,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // Inject PersistentCollection
-                $coll = new PersistentCollection($value, $this->dm, $this, $this->cmd);
+                $coll = new PersistentCollection($value, $this->dm, $this);
                 $coll->setOwner($document, $mapping);
                 $coll->setDirty( ! $value->isEmpty());
                 $class->reflFields[$name]->setValue($document, $coll);
@@ -2056,7 +2047,7 @@ class UnitOfWork implements PropertyChangedListener
                             if ( ! $mergeCol instanceof Collection) {
                                 $mergeCol = new ArrayCollection($mergeCol);
                             }
-                            $mergeCol = new PersistentCollection($mergeCol, $this->dm, $this, $this->cmd);
+                            $mergeCol = new PersistentCollection($mergeCol, $this->dm, $this);
                             $mergeCol->setInitialized(true);
                         } else {
                             $mergeCol->setDocumentManager($this->dm);

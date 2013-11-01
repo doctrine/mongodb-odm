@@ -53,13 +53,11 @@ class PersistenceBuilder
      *
      * @param DocumentManager $dm
      * @param UnitOfWork $uow
-     * @param string $cmd
      */
-    public function __construct(DocumentManager $dm, UnitOfWork $uow, $cmd)
+    public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
         $this->dm = $dm;
         $this->uow = $uow;
-        $this->cmd = $cmd;
     }
 
     /**
@@ -173,33 +171,33 @@ class PersistenceBuilder
             if ($mapping['type'] === 'increment') {
                 if ($new === null) {
                     if ($mapping['nullable'] === true) {
-                        $updateData[$this->cmd . 'set'][$mapping['name']] = null;
+                        $updateData['$set'][$mapping['name']] = null;
                     } else {
-                        $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
+                        $updateData['$unset'][$mapping['name']] = true;
                     }
                 } elseif ($new >= $old) {
-                    $updateData[$this->cmd . 'inc'][$mapping['name']] = $new - $old;
+                    $updateData['$inc'][$mapping['name']] = $new - $old;
                 } else {
-                    $updateData[$this->cmd . 'inc'][$mapping['name']] = ($old - $new) * -1;
+                    $updateData['$inc'][$mapping['name']] = ($old - $new) * -1;
                 }
 
             // @Field, @String, @Date, etc.
             } elseif ( ! isset($mapping['association'])) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
+                    $updateData['$set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
                 } else {
-                    $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
+                    $updateData['$unset'][$mapping['name']] = true;
                 }
 
             // @EmbedOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
                 // If we have a new embedded document then lets set the whole thing
                 if ($new && $this->uow->isScheduledForInsert($new)) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
+                    $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
 
                 // If we don't have a new value then lets unset the embedded document
                 } elseif ( ! $new) {
-                    $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
+                    $updateData['$unset'][$mapping['name']] = true;
 
                 // Update existing embedded document
                 } else {
@@ -229,9 +227,9 @@ class PersistenceBuilder
             // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
+                    $updateData['$set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 } else {
-                    $updateData[$this->cmd . 'unset'][$mapping['name']] = true;
+                    $updateData['$unset'][$mapping['name']] = true;
                 }
 
             // @ReferenceMany
@@ -262,22 +260,22 @@ class PersistenceBuilder
             // @Inc
             if ($mapping['type'] === 'increment') {
                 if ($new >= $old) {
-                    $updateData[$this->cmd . 'inc'][$mapping['name']] = $new - $old;
+                    $updateData['$inc'][$mapping['name']] = $new - $old;
                 } else {
-                    $updateData[$this->cmd . 'inc'][$mapping['name']] = ($old - $new) * -1;
+                    $updateData['$inc'][$mapping['name']] = ($old - $new) * -1;
                 }
 
             // @Field, @String, @Date, etc.
             } elseif ( ! isset($mapping['association'])) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
+                    $updateData['$set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
                 }
 
             // @EmbedOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
                 // If we have a new embedded document then lets set the whole thing
                 if ($new && $this->uow->isScheduledForInsert($new)) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
+                    $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
 
                 // If we don't have a new value then do nothing on upsert
                 } elseif ( ! $new) {
@@ -308,7 +306,7 @@ class PersistenceBuilder
             // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData[$this->cmd . 'set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
+                    $updateData['$set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 }
 
             // @ReferenceMany
@@ -319,7 +317,7 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if ($class->hasDiscriminator()) {
-            $updateData[$this->cmd . 'set'][$class->discriminatorField['name']] = $class->discriminatorValue;
+            $updateData['$set'][$class->discriminatorField['name']] = $class->discriminatorValue;
         }
 
         return $updateData;

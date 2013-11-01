@@ -105,13 +105,6 @@ class DocumentPersister
     private $queuedInserts = array();
 
     /**
-     * Mongo command prefix
-     *
-     * @var string
-     */
-    private $cmd;
-
-    /**
      * The CriteriaMerger instance.
      *
      * @var CriteriaMerger
@@ -127,14 +120,12 @@ class DocumentPersister
      * @param UnitOfWork $uow
      * @param HydratorFactory $hydratorFactory
      * @param ClassMetadata $class
-     * @param string $cmd
      */
-    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, HydratorFactory $hydratorFactory, ClassMetadata $class, $cmd, CriteriaMerger $cm = null)
+    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, HydratorFactory $hydratorFactory, ClassMetadata $class, CriteriaMerger $cm = null)
     {
         $this->pb = $pb;
         $this->dm = $dm;
         $this->evm = $evm;
-        $this->cmd = $cmd;
         $this->cm = $cm ?: new CriteriaMerger();
         $this->uow = $uow;
         $this->hydratorFactory = $hydratorFactory;
@@ -251,11 +242,11 @@ class DocumentPersister
             $upsertOptions = $options;
             $upsertOptions['upsert'] = true;
             foreach ($upserts as $oid => $data) {
-                $criteria = array('_id' => $data[$this->cmd . 'set']['_id']);
-                unset($data[$this->cmd . 'set']['_id']);
+                $criteria = array('_id' => $data['$set']['_id']);
+                unset($data['$set']['_id']);
                 // stupid php
-                if (empty($data[$this->cmd . 'set'])) {
-                    $data[$this->cmd . 'set'] = new \stdClass;
+                if (empty($data['$set'])) {
+                    $data['$set'] = new \stdClass;
                 }
                 $this->collection->update($criteria, $data, $upsertOptions);
             }
@@ -289,12 +280,12 @@ class DocumentPersister
                 $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
                 if ($versionMapping['type'] === 'int') {
                     $nextVersion = $currentVersion + 1;
-                    $update[$this->cmd . 'inc'][$versionMapping['name']] = 1;
+                    $update['$inc'][$versionMapping['name']] = 1;
                     $query[$versionMapping['name']] = $currentVersion;
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 } elseif ($versionMapping['type'] === 'date') {
                     $nextVersion = new \DateTime();
-                    $update[$this->cmd . 'set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
+                    $update['$set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
                     $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 }
@@ -307,13 +298,13 @@ class DocumentPersister
                 $isLocked = $this->class->reflFields[$this->class->lockField]->getValue($document);
                 $lockMapping = $this->class->fieldMappings[$this->class->lockField];
                 if ($isLocked) {
-                    $update[$this->cmd . 'unset'] = array($lockMapping['name'] => true);
+                    $update['$unset'] = array($lockMapping['name'] => true);
                 } else {
-                    $query[$lockMapping['name']] = array($this->cmd . 'exists' => false);
+                    $query[$lockMapping['name']] = array('$exists' => false);
                 }
             }
 
-            unset($update[$this->cmd . 'set']['_id']);
+            unset($update['$set']['_id']);
             $result = $this->collection->update($query, $update, $options);
 
             if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
@@ -335,7 +326,7 @@ class DocumentPersister
         $query = array('_id' => $this->class->getDatabaseIdentifierValue($id));
 
         if ($this->class->isLockable) {
-            $query[$this->class->lockField] = array($this->cmd . 'exists' => false);
+            $query[$this->class->lockField] = array('$exists' => false);
             $options['safe'] = true;
         }
 
@@ -500,7 +491,7 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $criteria = array('_id' => $this->class->getDatabaseIdentifierValue($id));
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-        $this->collection->update($criteria, array($this->cmd . 'set' => array($lockMapping['name'] => $lockMode)));
+        $this->collection->update($criteria, array('$set' => array($lockMapping['name'] => $lockMode)));
         $this->class->reflFields[$this->class->lockField]->setValue($document, $lockMode);
     }
 
@@ -514,7 +505,7 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $criteria = array('_id' => $this->class->getDatabaseIdentifierValue($id));
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-        $this->collection->update($criteria, array($this->cmd . 'unset' => array($lockMapping['name'] => true)));
+        $this->collection->update($criteria, array('$unset' => array($lockMapping['name'] => true)));
         $this->class->reflFields[$this->class->lockField]->setValue($document, null);
     }
 
@@ -560,7 +551,6 @@ class DocumentPersister
 
         $fieldMapping = $collectionMetaData->fieldMappings[$fieldName];
 
-        $cmd = $this->cmd;
         $groupedIds = array();
 
         foreach ($collection as $element) {
@@ -573,7 +563,7 @@ class DocumentPersister
                             $mongoId = $reference;
                         } else {
                             $className = $this->dm->getClassNameFromDiscriminatorValue($fieldMapping, $reference);
-                            $mongoId = $reference[$cmd . 'id'];
+                            $mongoId = $reference['$id'];
                         }
                         $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
                         $document = $this->uow->tryGetById($id, $className);
@@ -665,7 +655,6 @@ class DocumentPersister
     {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
-        $cmd = $this->cmd;
         $groupedIds = array();
 
         $sorted = isset($mapping['sort']) && $mapping['sort'];
@@ -676,7 +665,7 @@ class DocumentPersister
                 $mongoId = $reference;
             } else {
                 $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
-                $mongoId = $reference[$cmd . 'id'];
+                $mongoId = $reference['$id'];
             }
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
             if ( ! $id) {
@@ -704,7 +693,7 @@ class DocumentPersister
             $class = $this->dm->getClassMetadata($className);
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $criteria = $this->cm->merge(
-                array('_id' => array($cmd . 'in' => $ids)),
+                array('_id' => array('$in' => $ids)),
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
             );
@@ -918,14 +907,14 @@ class DocumentPersister
 
         foreach ($query as $key => $value) {
             // Recursively prepare logical query clauses
-            if (in_array($key, array($this->cmd . 'and', $this->cmd . 'or', $this->cmd . 'nor')) && is_array($value)) {
+            if (in_array($key, array('$and', '$or', '$nor')) && is_array($value)) {
                 foreach ($value as $k2 => $v2) {
                     $preparedQuery[$key][$k2] = $this->prepareQueryOrNewObj($v2);
                 }
                 continue;
             }
 
-            if (isset($key[0]) && $key[0] === $this->cmd && is_array($value)) {
+            if (isset($key[0]) && $key[0] === '$' && is_array($value)) {
                 $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
                 continue;
             }
@@ -987,12 +976,12 @@ class DocumentPersister
 
             foreach ($value as $k => $v) {
                 // Ignore query operators whose arguments need no type conversion
-                if (in_array($k, array($this->cmd . 'exists', $this->cmd . 'type', $this->cmd . 'mod', $this->cmd . 'size'))) {
+                if (in_array($k, array('$exists', '$type', '$mod', '$size'))) {
                     continue;
                 }
 
                 // Process query operators whose arguments need type conversion (e.g. "$in")
-                if (isset($k[0]) && $k[0] === $this->cmd && is_array($v)) {
+                if (isset($k[0]) && $k[0] === '$' && is_array($v)) {
                     foreach ($v as $k2 => $v2) {
                         $value[$k][$k2] = $targetClass->getDatabaseIdentifierValue($v2);
                     }
@@ -1019,12 +1008,12 @@ class DocumentPersister
 
             foreach ($value as $k => $v) {
                 // Ignore query operators whose arguments need no type conversion
-                if (in_array($k, array($this->cmd . 'exists', $this->cmd . 'type', $this->cmd . 'mod', $this->cmd . 'size'))) {
+                if (in_array($k, array('$exists', '$type', '$mod', '$size'))) {
                     continue;
                 }
 
                 // Process query operators whose arguments need type conversion (e.g. "$in")
-                if (isset($k[0]) && $k[0] === $this->cmd && is_array($v)) {
+                if (isset($k[0]) && $k[0] === '$' && is_array($v)) {
                     foreach ($v as $k2 => $v2) {
                         $value[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
                     }
@@ -1125,7 +1114,7 @@ class DocumentPersister
 
             foreach ($value as $k => $v) {
                 // Process query operators (e.g. "$in")
-                if (isset($k[0]) && $k[0] === $this->cmd && is_array($v)) {
+                if (isset($k[0]) && $k[0] === '$' && is_array($v)) {
                     foreach ($v as $k2 => $v2) {
                         $value[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
                     }

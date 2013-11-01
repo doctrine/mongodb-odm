@@ -92,15 +92,14 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @param Collection $collection
      * @param array $query
      * @param array $options
-     * @param string $cmd
      * @param bool $hydrate
      * @param bool $refresh
      * @param array $primers
      * @param null $requireIndexes
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query = array(), array $options = array(), $cmd = '$', $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
     {
-        parent::__construct($database, $collection, $query, $options, $cmd);
+        parent::__construct($database, $collection, $query, $options);
         $this->dm = $dm;
         $this->class = $class;
         $this->hydrate = $hydrate;
