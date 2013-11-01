@@ -272,9 +272,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         $query['newObj'] = $this->expr->getNewObj();
 
-        $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
+        if (isset($query['select'])) {
+            $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
+        }
 
-        $query['sort'] = $documentPersister->prepareSortOrProjection($query['sort']);
+        if (isset($query['sort'])) {
+            $query['sort'] = $documentPersister->prepareSortOrProjection($query['sort']);
+        }
 
         if ($this->class->slaveOkay) {
             $query['slaveOkay'] = $this->class->slaveOkay;

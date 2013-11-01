@@ -153,7 +153,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function getFieldsInQuery()
     {
-        $extractor = new FieldExtractor($this->query['query'], $this->query['sort'], $this->cmd);
+        $query = isset($this->query['query']) ? $this->query['query'] : array();
+        $sort = isset($this->query['sort']) ? $this->query['sort'] : array();
+
+        $extractor = new FieldExtractor($query, $sort);
         return $extractor->getFields();
     }
 
@@ -210,7 +213,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         if ($this->refresh) {
             $hints[self::HINT_REFRESH] = true;
         }
-        if ($this->query['slaveOkay'] === true) {
+        if ( ! empty($this->query['slaveOkay'])) {
             $hints[self::HINT_SLAVE_OKAY] = true;
         }
 
@@ -225,7 +228,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         }
 
         // Wrap odm cursor with EagerCursor if true
-        if ($this->query['eagerCursor'] === true) {
+        if ( ! empty($this->query['eagerCursor'])) {
             $results = new EagerCursor($results, $this->dm->getUnitOfWork(), $this->class);
             $results->hydrate($this->hydrate);
             $results->setHints($hints);
