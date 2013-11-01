@@ -22,8 +22,6 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\MongoDB\Iterator;
-use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
-use Doctrine\ODM\MongoDB\LoggableCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
@@ -442,30 +440,7 @@ class DocumentPersister
      */
     private function wrapCursor(BaseCursor $baseCursor)
     {
-        if ($baseCursor instanceof BaseLoggableCursor) {
-            return new LoggableCursor(
-                $this->dm->getConnection(),
-                $this->collection,
-                $this->dm->getUnitOfWork(),
-                $this->class,
-                $baseCursor,
-                $baseCursor->getQuery(),
-                $baseCursor->getFields(),
-                $this->dm->getConfiguration()->getRetryQuery(),
-                $baseCursor->getLoggerCallable()
-            );
-        }
-
-        return new Cursor(
-            $this->dm->getConnection(),
-            $this->collection,
-            $this->dm->getUnitOfWork(),
-            $this->class,
-            $baseCursor,
-            $baseCursor->getQuery(),
-            $baseCursor->getFields(),
-            $this->dm->getConfiguration()->getRetryQuery()
-        );
+        return new Cursor($baseCursor, $this->dm->getUnitOfWork(), $this->class);
     }
 
     /**

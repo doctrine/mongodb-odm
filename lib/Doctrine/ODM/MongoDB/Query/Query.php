@@ -24,7 +24,6 @@ use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\MongoDB\Database;
 use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
-use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LoggableCursor;
@@ -88,7 +87,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * @param DocumentManager $dm
      * @param ClassMetadata $class
-     * @param Database $database
      * @param Collection $collection
      * @param array $query
      * @param array $options
@@ -97,9 +95,9 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @param array $primers
      * @param null $requireIndexes
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
     {
-        parent::__construct($database, $collection, $query, $options);
+        parent::__construct($collection, $query, $options);
         $this->dm = $dm;
         $this->class = $class;
         $this->hydrate = $hydrate;
@@ -281,30 +279,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     private function wrapCursor(BaseCursor $baseCursor, array $hints)
     {
-        if ($baseCursor instanceof BaseLoggableCursor) {
-            $cursor = new LoggableCursor(
-                $this->dm->getConnection(),
-                $this->collection,
-                $this->dm->getUnitOfWork(),
-                $this->class,
-                $baseCursor,
-                $baseCursor->getQuery(),
-                $baseCursor->getFields(),
-                $this->dm->getConfiguration()->getRetryQuery(),
-                $baseCursor->getLoggerCallable()
-            );
-        } else {
-            $cursor = new Cursor(
-                $this->dm->getConnection(),
-                $this->collection,
-                $this->dm->getUnitOfWork(),
-                $this->class,
-                $baseCursor,
-                $baseCursor->getQuery(),
-                $baseCursor->getFields(),
-                $this->dm->getConfiguration()->getRetryQuery()
-            );
-        }
+        $cursor = new Cursor($baseCursor, $this->dm->getUnitOfWork(), $this->class);
         $cursor->hydrate($this->hydrate);
         $cursor->setHints($hints);
 

@@ -80,20 +80,15 @@ class Cursor extends BaseCursor
     /**
      * Constructor.
      *
-     * @param Connection    $connection Connection used to create the wrapped Cursor
-     * @param Collection    $collection Collection used to create the wrapped Cursor
-     * @param UnitOfWork    $unitOfWork UnitOfWork for result hydration and query preparation
-     * @param ClassMetadata $class      ClassMetadata for the document being queried
-     * @param BaseCursor    $baseCursor Doctrine\MongoDB\Cursor instance being wrapped
-     * @param array         $query      Query criteria
-     * @param array         $fields     Selected fields (projection)
-     * @param integer       $numRetries Number of times to retry queries
+     * @param BaseCursor    $baseCursor  Doctrine\MongoDB\Cursor instance being wrapped
+     * @param UnitOfWork    $unitOfWork  UnitOfWork for result hydration and query preparation
+     * @param ClassMetadata $class       ClassMetadata for the document class being queried
      */
-    public function __construct(Connection $connection, Collection $collection, UnitOfWork $uow, ClassMetadata $class, BaseCursor $baseCursor, array $query = array(), array $fields = array(), $numRetries = 0)
+    public function __construct(BaseCursor $baseCursor, UnitOfWork $unitOfWork, ClassMetadata $class)
     {
-        parent::__construct($connection, $collection, $baseCursor->getMongoCursor(), $query, $fields, $numRetries);
+        parent::__construct($baseCursor->collection, $baseCursor->getMongoCursor(), $baseCursor->query, $baseCursor->fields, $baseCursor->numRetries);
         $this->baseCursor = $baseCursor;
-        $this->unitOfWork = $uow;
+        $this->unitOfWork = $unitOfWork;
         $this->class = $class;
     }
 

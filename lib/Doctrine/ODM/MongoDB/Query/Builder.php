@@ -283,7 +283,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         return new Query(
             $this->dm,
             $this->class,
-            $this->database,
             $this->collection,
             $query,
             $options,
@@ -323,7 +322,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         if ($documentName !== null) {
             $this->collection = $this->dm->getDocumentCollection($documentName);
-            $this->database = $this->collection->getDatabase();
             $this->class = $this->dm->getClassMetadata($documentName);
 
             // Expr also needs to know
