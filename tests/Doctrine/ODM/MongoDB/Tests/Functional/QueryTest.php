@@ -376,7 +376,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             )
         );
         $this->assertSame($expected, $qb->getQueryArray());
-        $this->assertSame($expected, $qb->getQuery()->debug());
+        $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
     // search for articles that have the "pet" tag in their tags collection
@@ -388,7 +388,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'tags' => 'pet'
         );
         $this->assertSame($expected, $qb->getQueryArray());
-        $this->assertSame($expected, $qb->getQuery()->debug());
+        $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
     // search for articles where tags exactly equal [pet, blue]
@@ -400,6 +400,6 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'tags' => array('pet', 'blue')
         );
         $this->assertSame($expected, $qb->getQueryArray());
-        $this->assertSame($expected, $qb->getQuery()->debug());
+        $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
 }
