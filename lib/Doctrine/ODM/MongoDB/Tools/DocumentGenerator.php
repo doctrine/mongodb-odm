@@ -736,29 +736,19 @@ public function <methodName>()
         if($typeHint && ! isset($types[$typeHint])){
             if(strpos($typeHint, ':')!==false && $this->config){
                 list($alias, $className) = explode(':', $typeHint);
-
                 $typeHint = $this->config->getDocumentNamespace($alias) . '\\' . $className;
             }
-
             $path = explode('\\',trim(str_replace('\\\\','\\', $typeHint), '\\'));
-
             $classHint = array_pop($path);
-
             if($metadata->getNamespace() == implode('\\', $path)){
                 $methodTypeHint = $classHint;
             }else{
                 $methodTypeHint = '\\' . $typeHint;
             }
-
             $methodTypeHint .= ' ';
-
         }else{
             $methodTypeHint = null;
         }
-
-        echo $metadata->getNamespace().PHP_EOL;
-
-
 
         $variableType = $typeHint ? '\\' . $typeHint . ' ' : null;
 
