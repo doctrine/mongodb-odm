@@ -975,7 +975,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ($this->discriminatorField['name'] === $mapping['fieldName']) {
             throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
-        if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
+        if (isset($mapping['targetDocument'])
+            && strpos($mapping['targetDocument'], '\\') === false
+            && strpos($mapping['targetDocument'], ':') === false
+            && strlen($this->namespace)) {
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
         }
 

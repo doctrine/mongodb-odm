@@ -612,7 +612,10 @@ public function <methodName>()
     {
         $methods = array();
 
+
+
         foreach ($metadata->fieldMappings as $fieldMapping) {
+
             if (isset($fieldMapping['id'])) {
                 if ($metadata->generatorType == ClassMetadataInfo::GENERATOR_TYPE_NONE) {
                     if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
