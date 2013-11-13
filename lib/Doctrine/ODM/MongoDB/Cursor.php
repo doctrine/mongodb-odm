@@ -56,13 +56,6 @@ class Cursor extends BaseCursor
     private $class;
 
     /**
-     * Hints for UnitOfWork behavior.
-     *
-     * @var array
-     */
-    private $unitOfWorkHints = array();
-
-    /**
      * Whether or not to hydrate results as document class instances.
      *
      * @var boolean
@@ -76,6 +69,13 @@ class Cursor extends BaseCursor
      * @var UnitOfWork
      */
     private $unitOfWork;
+
+    /**
+     * Hints for UnitOfWork behavior.
+     *
+     * @var array
+     */
+    private $unitOfWorkHints = array();
 
     /**
      * Constructor.
@@ -261,6 +261,35 @@ class Cursor extends BaseCursor
     }
 
     /**
+     * Wrapper method for MongoCursor::getReadPreference().
+     *
+     * @see \Doctrine\MongoDB\Cursor::getReadPreference()
+     * @see http://php.net/manual/en/mongocursor.getreadpreference.php
+     * @return array
+     */
+    public function getReadPreference()
+    {
+        return $this->baseCursor->getReadPreference();
+    }
+
+    /**
+     * Wrapper method for MongoCursor::setReadPreference().
+     *
+     * @see \Doctrine\MongoDB\Cursor::setReadPreference()
+     * @see http://php.net/manual/en/mongocursor.setreadpreference.php
+     * @param string $readPreference
+     * @param array  $tags
+     * @return self
+     */
+    public function setReadPreference($readPreference, array $tags = null)
+    {
+        $this->baseCursor->setReadPreference($readPreference, $tags);
+        $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE] = $readPreference;
+        $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE_TAGS] = $tags;
+        return $this;
+    }
+
+    /**
      * Wrapper method for MongoCursor::hint().
      *
      * This method is intended for setting MongoDB query hints, which are
@@ -318,12 +347,12 @@ class Cursor extends BaseCursor
     }
 
     /**
-     * Set whether or not to refresh hydrated documents that are already in the
+     * Set whether to refresh hydrated documents that are already in the
      * identity map.
      *
      * This option has no effect if hydration is disabled.
      *
-     * @param boolean $bool
+     * @param boolean $refresh
      * @return self
      */
     public function refresh($refresh = true)
@@ -357,8 +386,8 @@ class Cursor extends BaseCursor
     public function slaveOkay($ok = true)
     {
         $ok = (boolean) $ok;
-        $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
         $this->baseCursor->slaveOkay($ok);
+        $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
         return $this;
     }
 
