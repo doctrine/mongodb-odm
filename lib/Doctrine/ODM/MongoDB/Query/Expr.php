@@ -44,10 +44,10 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
      */
     private $class;
 
-    public function __construct(DocumentManager $dm, $cmd)
+    public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
-        $this->cmd = $cmd;
+        $this->cmd = '$';
     }
 
     public function setClassMetadata(ClassMetadata $class)
@@ -74,7 +74,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                 }
 
                 foreach ($keys as $key => $value) {
-                    $this->query[$this->currentField . '.' . $this->cmd . $key] = $dbRef[$this->cmd . $key];
+                    $this->query[$this->currentField . '.$' . $key] = $dbRef['$' . $key];
                 }
             }
         } else {
@@ -95,7 +95,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
             $dbRef = $this->dm->createDBRef($document, $mapping);
 
             if (isset($mapping['simple']) && $mapping['simple']) {
-                $this->query[$mapping['name']][$this->cmd . 'elemMatch'] = $dbRef;
+                $this->query[$mapping['name']]['$elemMatch'] = $dbRef;
             } else {
                 $keys = array('ref' => true, 'id' => true, 'db' => true);
 
@@ -104,12 +104,12 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                 }
 
                 foreach ($keys as $key => $value) {
-                    $this->query[$this->currentField][$this->cmd . 'elemMatch'][$this->cmd . $key] = $dbRef[$this->cmd . $key];
+                    $this->query[$this->currentField]['$elemMatch']['$' . $key] = $dbRef['$' . $key];
                 }
             }
         } else {
             $dbRef = $this->dm->createDBRef($document);
-            $this->query[$this->cmd . 'elemMatch'] = $dbRef;
+            $this->query['$elemMatch'] = $dbRef;
         }
 
         return $this;

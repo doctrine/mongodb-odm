@@ -88,22 +88,14 @@ class HydratorFactory
     private $hydrators = array();
 
     /**
-     * Mongo command prefix
-     *
-     * @var string
-     */
-    private $cmd;
-
-    /**
      * @param DocumentManager $dm
      * @param EventManager $evm
      * @param string $hydratorDir
      * @param string $hydratorNs
      * @param boolean $autoGenerate
-     * @param string $cmd
      * @throws HydratorException
      */
-    public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate, $cmd)
+    public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate)
     {
         if ( ! $hydratorDir) {
             throw HydratorException::hydratorDirectoryRequired();
@@ -116,7 +108,6 @@ class HydratorFactory
         $this->hydratorDir = $hydratorDir;
         $this->hydratorNamespace = $hydratorNs;
         $this->autoGenerate = $autoGenerate;
-        $this->cmd = $cmd;
     }
 
     /**

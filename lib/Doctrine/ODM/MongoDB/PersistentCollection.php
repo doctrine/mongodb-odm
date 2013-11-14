@@ -88,13 +88,6 @@ class PersistentCollection implements BaseCollection
     private $uow;
 
     /**
-     * Mongo command prefix
-     *
-     * @var string
-     */
-    private $cmd;
-
-    /**
      * The raw mongo data that will be used to initialize this collection.
      *
      * @var array
@@ -112,14 +105,12 @@ class PersistentCollection implements BaseCollection
      * @param BaseCollection $coll
      * @param DocumentManager $dm
      * @param UnitOfWork $uow
-     * @param string $cmd
      */
-    public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow, $cmd)
+    public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow)
     {
         $this->coll = $coll;
         $this->dm = $dm;
         $this->uow = $uow;
-        $this->cmd = $cmd;
     }
 
     /**
