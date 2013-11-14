@@ -121,13 +121,6 @@ class DocumentManager implements ObjectManager
     private $closed = false;
 
     /**
-     * Mongo command character
-     *
-     * @var string
-     */
-    private $cmd;
-
-    /**
      * Collection of query filters.
      *
      * @var \Doctrine\ODM\MongoDB\Query\FilterCollection
@@ -145,7 +138,6 @@ class DocumentManager implements ObjectManager
     protected function __construct(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null) {
         $this->config = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
-        $this->cmd = $this->config->getMongoCmd();
         $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
@@ -163,11 +155,10 @@ class DocumentManager implements ObjectManager
             $this->eventManager,
             $hydratorDir,
             $hydratorNs,
-            $this->config->getAutoGenerateHydratorClasses(),
-            $this->config->getMongoCmd()
+            $this->config->getAutoGenerateHydratorClasses()
         );
 
-        $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory, $this->cmd);
+        $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
         $this->hydratorFactory->setUnitOfWork($this->unitOfWork);
         $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory = new ProxyFactory($this,
@@ -369,7 +360,7 @@ class DocumentManager implements ObjectManager
      */
     public function createQueryBuilder($documentName = null)
     {
-        return new Query\Builder($this, $this->cmd, $documentName);
+        return new Query\Builder($this, $documentName);
     }
 
     /**
@@ -710,9 +701,9 @@ class DocumentManager implements ObjectManager
         }
 
         $dbRef = array(
-            $this->cmd . 'ref' => $class->getCollection(),
-            $this->cmd . 'id'  => $class->getDatabaseIdentifierValue($id),
-            $this->cmd . 'db'  => $this->getDocumentDatabase($className)->getName()
+            '$ref' => $class->getCollection(),
+            '$id'  => $class->getDatabaseIdentifierValue($id),
+            '$db'  => $this->getDocumentDatabase($className)->getName()
         );
 
         if ($class->discriminatorField) {

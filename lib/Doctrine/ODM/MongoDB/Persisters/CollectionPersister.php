@@ -57,26 +57,17 @@ class CollectionPersister
     private $pb;
 
     /**
-     * Mongo command prefix
-     *
-     * @var string
-     */
-    private $cmd;
-
-    /**
      * Constructs a new CollectionPersister instance.
      *
      * @param DocumentManager $dm
      * @param PersistenceBuilder $pb
      * @param UnitOfWork $uow
-     * @param string $cmd
      */
-    public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow, $cmd)
+    public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
     {
         $this->dm = $dm;
         $this->pb = $pb;
         $this->uow = $uow;
-        $this->cmd = $cmd;
     }
 
     /**
@@ -92,7 +83,7 @@ class CollectionPersister
             return; // ignore inverse side
         }
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
-        $query = array($this->cmd . 'unset' => array($propertyPath => true));
+        $query = array('$unset' => array($propertyPath => true));
         $this->executeQuery($parent, $query, $options);
     }
 
@@ -156,7 +147,7 @@ class CollectionPersister
             $setData = array_values($setData);
         }
 
-        $query = array($this->cmd.'set' => array($propertyPath => $setData));
+        $query = array('$set' => array($propertyPath => $setData));
 
         $this->executeQuery($parent, $query, $options);
     }
@@ -180,10 +171,10 @@ class CollectionPersister
 
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
 
-        $query = array($this->cmd . 'unset' => array());
+        $query = array('$unset' => array());
 
         foreach ($deleteDiff as $key => $document) {
-            $query[$this->cmd . 'unset'][$propertyPath . '.' . $key] = true;
+            $query['$unset'][$propertyPath . '.' . $key] = true;
         }
 
         $this->executeQuery($parent, $query, $options);
@@ -194,7 +185,7 @@ class CollectionPersister
          * in the element being left in the array as null so we have to pull
          * null values.
          */
-        $this->executeQuery($parent, array($this->cmd . 'pull' => array($propertyPath => null)), $options);
+        $this->executeQuery($parent, array('$pull' => array($propertyPath => null)), $options);
     }
 
     /**
@@ -226,10 +217,10 @@ class CollectionPersister
         $value = array_values(array_map($callback, $insertDiff));
 
         if ($mapping['strategy'] !== 'pushAll') {
-            $value = array($this->cmd . 'each' => $value);
+            $value = array('$each' => $value);
         }
 
-        $query = array($this->cmd . $mapping['strategy'] => array($propertyPath => $value));
+        $query = array('$' . $mapping['strategy'] => array($propertyPath => $value));
 
         $this->executeQuery($parent, $query, $options);
     }

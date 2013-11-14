@@ -86,14 +86,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Construct a Builder
      *
      * @param DocumentManager $dm
-     * @param string $cmd
      * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
      */
-    public function __construct(DocumentManager $dm, $cmd, $documentName = null)
+    public function __construct(DocumentManager $dm, $documentName = null)
     {
         $this->dm = $dm;
-        $this->expr = new Expr($dm, $cmd);
-        $this->cmd = $cmd;
+        $this->cmd  = '$';
+        $this->expr = new Expr($dm);
         if ($documentName !== null) {
             $this->setDocumentName($documentName);
         }
@@ -289,7 +288,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->collection,
             $query,
             $options,
-            $this->cmd,
             $this->hydrate,
             $this->refresh,
             $this->primers,
@@ -304,7 +302,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     public function expr()
     {
-        $expr = new Expr($this->dm, $this->cmd);
+        $expr = new Expr($this->dm);
         $expr->setClassMetadata($this->class);
 
         return $expr;
