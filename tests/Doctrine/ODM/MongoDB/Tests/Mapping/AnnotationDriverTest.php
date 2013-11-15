@@ -8,6 +8,19 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
+    public function testAnnotationDriverRespectsInheritedFieldsInformations()
+    {
+        $className = __NAMESPACE__.'\ColumnWithoutType';
+        $this->_ensureIsLoaded($className);
+
+        $className = __NAMESPACE__.'\ColumnWithoutTypeChild';
+        $this->_ensureIsLoaded($className);
+
+        $class = $this->dm->getClassMetadata($className);
+
+        $this->assertTrue($class->isInheritedField('id'));
+    }
+
     /**
      * @group DDC-268
      */
@@ -116,4 +129,11 @@ class ColumnWithoutType
 {
     /** @ODM\Id */
     public $id;
+}
+
+/**
+ * @ODM\Document
+ */
+class ColumnWithoutTypeChild extends ColumnWithoutType
+{
 }
