@@ -151,6 +151,22 @@ class EagerCursor extends BaseEagerCursor
     }
 
     /**
+     * Wrapper method for MongoCursor::setReadPreference().
+     *
+     * @see Cursor::setReadPreference()
+     * @param string $readPreference
+     * @param array  $tags
+     * @return self
+     */
+    public function setReadPreference($readPreference, array $tags = null)
+    {
+        $this->cursor->setReadPreference($readPreference, $tags);
+        $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE] = $readPreference;
+        $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE_TAGS] = $tags;
+        return $this;
+    }
+
+    /**
      * Wrapper method for MongoCursor::slaveOkay().
      *
      * @see Cursor::slaveOkay()
