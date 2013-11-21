@@ -23,7 +23,7 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->getSingleResult();
 
-        $this->assertEquals(array(), $user->getGroups()->getHints());
+        $this->assertSlaveOkayHint(false, $user->getGroups()->getHints());
 
         $this->dm->clear();
 
@@ -32,11 +32,11 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->execute();
 
-        $this->assertEquals(array(), $users->getHints());
+        $this->assertArrayNotHasKey(Query::HINT_SLAVE_OKAY, $users->getHints());
 
         $users = array_values($users->toArray());
         $user = $users[0];
-        $this->assertEquals(array(), $user->getGroups()->getHints());
+        $this->assertArrayNotHasKey(Query::HINT_SLAVE_OKAY, $user->getGroups()->getHints());
 
         $this->dm->clear();
 
@@ -46,7 +46,7 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->getSingleResult();
 
-        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $user->getGroups()->getHints());
+        $this->assertSlaveOkayHint(true, $user->getGroups()->getHints());
 
         $this->dm->clear();
 
@@ -56,11 +56,11 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->execute()
             ->slaveOkay(true);
 
-        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $users->getHints());
+        $this->assertSlaveOkayHint(true, $users->getHints());
 
         $users = array_values($users->toArray());
         $user = $users[0];
-        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $user->getGroups()->getHints());
+        $this->assertSlaveOkayHint(true, $user->getGroups()->getHints());
 
         $this->dm->clear();
 
@@ -81,7 +81,12 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->execute();
 
-        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $users->getHints());
+        $this->assertSlaveOkayHint(true, $users->getHints());
+    }
+
+    private function assertSlaveOkayHint($slaveOkay, $hints)
+    {
+        $this->assertEquals($slaveOkay, $hints[Query::HINT_SLAVE_OKAY]);
     }
 }
 
