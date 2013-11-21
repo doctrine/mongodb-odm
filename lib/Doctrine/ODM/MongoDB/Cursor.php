@@ -307,7 +307,7 @@ class Cursor extends BaseCursor
     }
 
     /**
-     * Set whether or not to hydrate results as document class instances.
+     * Set whether to hydrate results as document class instances.
      *
      * @param boolean $bool
      * @return self

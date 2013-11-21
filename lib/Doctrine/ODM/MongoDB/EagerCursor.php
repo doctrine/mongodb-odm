@@ -40,7 +40,7 @@ class EagerCursor extends BaseEagerCursor
     private $class;
 
     /**
-     * Whether or not to hydrate results as document class instances.
+     * Whether to hydrate results as document class instances.
      *
      * @var boolean
      */
@@ -111,7 +111,7 @@ class EagerCursor extends BaseEagerCursor
     }
 
     /**
-     * Set whether or not to hydrate results as document class instances.
+     * Set whether to hydrate results as document class instances.
      *
      * @see Cursor::hydrate()
      * @param boolean $hydrate
