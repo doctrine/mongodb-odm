@@ -570,6 +570,9 @@ class DocumentPersister
                 if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
                     $qb->slaveOkay(true);
                 }
+                if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+                    $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+                }
                 $query = $qb->getQuery();
                 $query->execute()->toArray();
             }
@@ -686,6 +689,9 @@ class DocumentPersister
             if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
                 $cursor->slaveOkay(true);
             }
+            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+                $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+            }
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
@@ -748,6 +754,9 @@ class DocumentPersister
         if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
             $qb->slaveOkay(true);
         }
+        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+            $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+        }
 
         return $qb->getQuery();
     }
@@ -784,6 +793,9 @@ class DocumentPersister
         }
         if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
             $cursor->slaveOkay(true);
+        }
+        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+            $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
         }
 
         return $cursor;
