@@ -150,8 +150,8 @@ class CollectionPersisterTest extends BaseTest
     private function getCollectionPersister()
     {
         $uow = $this->dm->getUnitOfWork();
-        $pb = new PersistenceBuilder($this->dm, $uow, '$');
-        return new CollectionPersister($this->dm, $pb, $uow, '$');
+        $pb = new PersistenceBuilder($this->dm, $uow);
+        return new CollectionPersister($this->dm, $pb, $uow);
     }
 
     public function testNestedEmbedManySetStrategy()

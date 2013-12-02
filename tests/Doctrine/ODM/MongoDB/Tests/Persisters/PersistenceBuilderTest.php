@@ -102,7 +102,7 @@ class PersistenceBuilderTest extends BaseTest
          * @var \Doctrine\ODM\MongoDB\Cursor $results
          */
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
         $results = $query->execute();
 
         $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $results);
@@ -281,7 +281,6 @@ class PersistenceBuilderTest extends BaseTest
          * @var \Doctrine\ODM\MongoDB\Cursor $results
          */
         $query = $qb->getQuery();
-        $debug = $query->debug();
         $results = $query->execute();
 
         $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $results);

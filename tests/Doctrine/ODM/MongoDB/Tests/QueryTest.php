@@ -145,7 +145,7 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
 
         $expectedQuery = array('phonenumbers' => array('$elemMatch' => array('lastCalledBy.$id' => new \MongoId($refId))));
-        $this->assertEquals($expectedQuery, $query->debug());
+        $this->assertEquals($expectedQuery, $query->debug('query'));
     }
 
     public function testQueryWithMultipleEmbeddedDocuments()
@@ -154,7 +154,7 @@ class QueryTest extends BaseTest
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.name')->equals('Foo');
         $query = $qb->getQuery();
-        $this->assertEquals(array('eO.eO.e1.eO.n' => 'Foo'), $query->debug());
+        $this->assertEquals(array('eO.eO.e1.eO.n' => 'Foo'), $query->debug('query'));
     }
 
     public function testQueryWithMultipleEmbeddedDocumentsAndReference()
@@ -165,7 +165,7 @@ class QueryTest extends BaseTest
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals((string) $mongoId);
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
 
         $this->assertTrue(array_key_exists('eO.eO.e1.eO.eP.pO._id', $debug));
         $this->assertEquals($mongoId, $debug['eO.eO.e1.eO.eP.pO._id']);

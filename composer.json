@@ -19,7 +19,7 @@
         "doctrine/common": "2.4.*",
         "doctrine/cache": "~1.0",
         "doctrine/inflector": "~1.0",
-        "doctrine/mongodb": "1.0.*"
+        "doctrine/mongodb": "~1.1"
     },
     "require-dev": {
         "symfony/yaml": "~2.0"

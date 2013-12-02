@@ -19,74 +19,56 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\ODM\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
 
 /**
- * EagerCursor extends the default Doctrine\MongoDB\EagerCursor implementation.
+ * EagerCursor wraps a Cursor instance and fetches all of its results upon
+ * initialization.
  *
- * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @since  1.0
+ * @author Jonathan H. Wage <jonwage@gmail.com>
  */
-class EagerCursor implements \Doctrine\MongoDB\Iterator
+class EagerCursor extends BaseEagerCursor
 {
     /**
-     * Whether or not to hydrate the data to documents.
+     * The ClassMetadata instance for the document class being queried.
+     *
+     * @var ClassMetadata
+     */
+    private $class;
+
+    /**
+     * Whether to hydrate results as document class instances.
      *
      * @var boolean
      */
     private $hydrate = true;
 
     /**
-     * Whether or not to refresh the data for documents that are already in the identity map.
+     * The UnitOfWork instance used for result hydration and preparing arguments
+     * for {@link Cursor::sort()}.
      *
-     * @var boolean
-     */
-    private $refresh = false;
-
-    /**
-     * The UnitOfWork used to coordinate object-level transactions.
-     *
-     * @var \Doctrine\ODM\MongoDB\UnitOfWork
+     * @var UnitOfWork
      */
     private $unitOfWork;
 
     /**
-     * The ClassMetadata instance.
-     *
-     * @var \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
-     */
-    private $class;
-
-    /**
-     * The array of hints for the UnitOfWork.
+     * Hints for UnitOfWork behavior.
      *
      * @var array
      */
-    private $hints = array();
+    private $unitOfWorkHints = array();
 
     /**
-     * @var object Doctrine\ODM\MongoDB\Cursor
-     */
-    private $cursor;
-
-    /**
-     * Array of data from Cursor to iterate over
+     * Constructor.
      *
-     * @var array
+     * @param Cursor        $cursor      Cursor instance being wrapped
+     * @param UnitOfWork    $unitOfWork  UnitOfWork for result hydration and query preparation
+     * @param ClassMetadata $class       ClassMetadata for the document class being queried
      */
-    private $data = array();
-
-    /**
-     * Whether or not the EagerCursor has been initialized
-     *
-     * @var bool $initialized
-     */
-    private $initialized = false;
-
-    /** @override */
-    public function __construct(BaseCursor $cursor, UnitOfWork $uow, ClassMetadata $class)
+    public function __construct(Cursor $cursor, UnitOfWork $uow, ClassMetadata $class)
     {
         $this->cursor = $cursor;
         $this->unitOfWork = $uow;
@@ -94,43 +76,55 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
     }
 
     /**
-     * Set hints to account for during reconstitution/lookup of the documents.
+     * @see \Doctrine\MongoDB\EagerCursor::current()
+     * @see http://php.net/manual/en/iterator.current.php
+     */
+    public function current()
+    {
+        $current = parent::current();
+
+        if ($current === null || ! $this->hydrate) {
+            return $current;
+        }
+
+        return $this->unitOfWork->getOrCreateDocument($this->class->name, $current, $this->unitOfWorkHints);
+    }
+
+    /**
+     * Get hints for UnitOfWork behavior.
+     *
+     * @return array
+     */
+    public function getHints()
+    {
+        return $this->unitOfWorkHints;
+    }
+
+    /**
+     * Set hints for UnitOfWork behavior.
      *
      * @param array $hints
      */
     public function setHints(array $hints)
     {
-        $this->hints = $hints;
+        $this->unitOfWorkHints = $hints;
     }
 
     /**
-     * Get hints to account for during reconstitution/lookup of the documents.
+     * Set whether to hydrate results as document class instances.
      *
-     * @return array $hints
+     * @see Cursor::hydrate()
+     * @param boolean $hydrate
+     * @return self
      */
-    public function getHints()
+    public function hydrate($hydrate = true)
     {
-        return $this->hints;
+        $this->hydrate = (boolean) $hydrate;
+        return $this;
     }
 
     /**
-     * @return Cursor
-     */
-    public function getCursor()
-    {
-        return $this->cursor;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isInitialized()
-    {
-        return $this->initialized;
-    }
-
-    /**
-     * Get the full set of data and set as initialized (because it's eager)
+     * Initialize the internal data by converting the Cursor to an array.
      */
     public function initialize()
     {
@@ -141,136 +135,59 @@ class EagerCursor implements \Doctrine\MongoDB\Iterator
     }
 
     /**
-     * Rewind the iterator
+     * Set whether to refresh hydrated documents that are already in the
+     * identity map.
      *
-     * @see http://php.net/class.iterator.php
+     * This option has no effect if hydration is disabled.
+     *
+     * @see Cursor::refresh()
+     * @param boolean $refresh
+     * @return self
      */
-    public function rewind()
+    public function refresh($refresh = true)
     {
-        $this->initialize();
-        reset($this->data);
+        $this->unitOfWorkHints[Query::HINT_REFRESH] = (boolean) $refresh;
+        return $this;
     }
 
     /**
-     * Get the current element
+     * Wrapper method for MongoCursor::setReadPreference().
      *
-     * @see http://php.net/class.iterator.php
-     * @return array|object|null
+     * @see Cursor::setReadPreference()
+     * @param string $readPreference
+     * @param array  $tags
+     * @return self
      */
-    public function current()
+    public function setReadPreference($readPreference, array $tags = null)
     {
-        $this->initialize();
-        $current = current($this->data);
-        if ($current && $this->hydrate) {
-            return $this->unitOfWork->getOrCreateDocument($this->class->name, $current, $this->hints);
-        }
-        return $current ? $current : null;
+        $this->cursor->setReadPreference($readPreference, $tags);
+        $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE] = $readPreference;
+        $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE_TAGS] = $tags;
+        return $this;
     }
 
     /**
-     * Get the key of the current element
+     * Wrapper method for MongoCursor::slaveOkay().
      *
-     * @see http://php.net/class.iterator.php
-     * @return mixed
+     * @see Cursor::slaveOkay()
+     * @param boolean $ok
+     * @return self
      */
-    public function key()
+    public function slaveOkay($ok = true)
     {
-        $this->initialize();
-        return key($this->data);
+        $ok = (boolean) $ok;
+        $this->cursor->slaveOkay($ok);
+        $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
+        return $this;
     }
 
     /**
-     * Advance the pointer of the iterator
-     *
-     * @see http://php.net/class.iterator.php
-     */
-    public function next()
-    {
-        $this->initialize();
-        return next($this->data);
-    }
-
-    /**
-     * @return bool
-     */
-    public function valid()
-    {
-        $this->initialize();
-        $key = key($this->data);
-        return ($key !== null && $key !== false);
-    }
-
-    /**
-     * Get the count of objects
-     *
-     * @return int
-     */
-    public function count()
-    {
-        $this->initialize();
-        return count($this->data);
-    }
-
-    /**
-     * Turn this cursor into an array
-     *
-     * @return array
+     * @see \Doctrine\MongoDB\EagerCursor::toArray()
+     * @see \Doctrine\MongoDB\Iterator::toArray()
      */
     public function toArray()
     {
         $this->initialize();
         return iterator_to_array($this);
-    }
-
-    /**
-     * Get a result from the cursor
-     *
-     * @return array|object|null
-     */
-    public function getSingleResult()
-    {
-        $this->initialize();
-        return $this->current();
-    }
-
-    /**
-     * Set whether to hydrate the documents to objects or not.
-     *
-     * @param boolean $bool
-     * @return self
-     */
-    public function hydrate($bool = true)
-    {
-        $this->hydrate = $bool;
-        return $this;
-    }
-
-    /**
-     * Sets whether to refresh the documents data if it already exists in the identity map.
-     *
-     * @param bool $bool
-     * @return self
-     */
-    public function refresh($bool = true)
-    {
-        $this->refresh = $bool;
-        if ($this->refresh) {
-            $this->hints[Query::HINT_REFRESH] = true;
-        } else {
-            unset($this->hints[Query::HINT_REFRESH]);
-        }
-        return $this;
-    }
-
-    /** @override */
-    public function slaveOkay($okay = true)
-    {
-        if ($okay) {
-            $this->hints[Query::HINT_SLAVE_OKAY] = true;
-        } else {
-            unset($this->hints[Query::HINT_SLAVE_OKAY]);
-        }
-        $this->cursor->slaveOkay($okay);
-        return $this;
     }
 }

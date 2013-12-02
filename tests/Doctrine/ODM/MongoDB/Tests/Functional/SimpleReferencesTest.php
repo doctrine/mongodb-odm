@@ -48,15 +48,15 @@ class SimpleReferencesTest extends BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->references($this->user);
-        $this->assertEquals(array('userId' => new \MongoId($this->user->getId())), $qb->getQuery()->debug());
+        $this->assertEquals(array('userId' => new \MongoId($this->user->getId())), $qb->getQuery()->debug('query'));
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->equals($this->user->getId());
-        $this->assertEquals(array('userId' => new \MongoId($this->user->getId())), $qb->getQuery()->debug());
+        $this->assertEquals(array('userId' => new \MongoId($this->user->getId())), $qb->getQuery()->debug('query'));
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->in(array($this->user->getId()));
-        $this->assertEquals(array('userId' => array('$in' => array(new \MongoId($this->user->getId())))), $qb->getQuery()->debug());
+        $this->assertEquals(array('userId' => array('$in' => array(new \MongoId($this->user->getId())))), $qb->getQuery()->debug('query'));
     }
 
     public function testProxy()
@@ -65,7 +65,7 @@ class SimpleReferencesTest extends BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->references($this->user);
-        $this->assertEquals(array('userId' => new \MongoId($this->user->getId())), $qb->getQuery()->debug());
+        $this->assertEquals(array('userId' => new \MongoId($this->user->getId())), $qb->getQuery()->debug('query'));
 
         $this->dm->clear();
 

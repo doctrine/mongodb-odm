@@ -24,7 +24,6 @@ use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\MongoDB\Database;
 use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
-use Doctrine\MongoDB\LoggableCursor as BaseLoggableCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LoggableCursor;
@@ -42,6 +41,8 @@ class Query extends \Doctrine\MongoDB\Query\Query
 {
     const HINT_REFRESH = 1;
     const HINT_SLAVE_OKAY = 2;
+    const HINT_READ_PREFERENCE = 3;
+    const HINT_READ_PREFERENCE_TAGS = 4;
 
     /**
      * The DocumentManager instance.
@@ -58,18 +59,11 @@ class Query extends \Doctrine\MongoDB\Query\Query
     private $class;
 
     /**
-     * Whether or not to hydrate the results in to document objects.
+     * Whether to hydrate results as document class instances.
      *
      * @var boolean
      */
     private $hydrate = true;
-
-    /**
-     * Whether or not to refresh the data for documents that are already in the identity map.
-     *
-     * @var boolean
-     */
-    private $refresh = false;
 
     /**
      * Array of primer Closure instances.
@@ -81,32 +75,49 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Whether or not to require indexes.
      *
-     * @var bool
+     * @var boolean
      */
     private $requireIndexes;
 
     /**
+     * Hints for UnitOfWork behavior.
+     *
+     * @var array
+     */
+    private $unitOfWorkHints = array();
+
+    /**
+     * Constructor.
+     *
      * @param DocumentManager $dm
      * @param ClassMetadata $class
-     * @param Database $database
      * @param Collection $collection
      * @param array $query
      * @param array $options
-     * @param string $cmd
-     * @param bool $hydrate
-     * @param bool $refresh
+     * @param boolean $hydrate
+     * @param boolean $refresh
      * @param array $primers
      * @param null $requireIndexes
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Database $database, Collection $collection, array $query = array(), array $options = array(), $cmd = '$', $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
     {
-        parent::__construct($database, $collection, $query, $options, $cmd);
+        parent::__construct($collection, $query, $options);
         $this->dm = $dm;
         $this->class = $class;
         $this->hydrate = $hydrate;
-        $this->refresh = $refresh;
         $this->primers = $primers;
         $this->requireIndexes = $requireIndexes;
+
+        $this->setRefresh($refresh);
+
+        if (isset($query['slaveOkay'])) {
+            $this->unitOfWorkHints[self::HINT_SLAVE_OKAY] = $query['slaveOkay'];
+        }
+
+        if (isset($query['readPreference'])) {
+            $this->unitOfWorkHints[self::HINT_READ_PREFERENCE] = $query['readPreference'];
+            $this->unitOfWorkHints[self::HINT_READ_PREFERENCE_TAGS] = $query['readPreferenceTags'];
+        }
     }
 
     /**
@@ -132,21 +143,24 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Sets whether or not to hydrate the documents to objects.
      *
-     * @param boolean $bool
+     * @param boolean $hydrate
      */
-    public function setHydrate($bool)
+    public function setHydrate($hydrate)
     {
-        $this->hydrate = $bool;
+        $this->hydrate = (boolean) $hydrate;
     }
 
     /**
-     * Sets whether or not to refresh the documents data if it already exists in the identity map.
+     * Set whether to refresh hydrated documents that are already in the
+     * identity map.
      *
-     * @param boolean $bool
+     * This option has no effect if hydration is disabled.
+     *
+     * @param boolean $refresh
      */
-    public function setRefresh($bool)
+    public function setRefresh($refresh)
     {
-        $this->refresh = $bool;
+        $this->unitOfWorkHints[Query::HINT_REFRESH] = (boolean) $refresh;
     }
 
     /**
@@ -156,7 +170,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function getFieldsInQuery()
     {
-        $extractor = new FieldExtractor($this->query['query'], $this->query['sort'], $this->cmd);
+        $query = isset($this->query['query']) ? $this->query['query'] : array();
+        $sort = isset($this->query['sort']) ? $this->query['sort'] : array();
+
+        $extractor = new FieldExtractor($query, $sort);
         return $extractor->getFields();
     }
 
@@ -179,7 +196,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Gets an array of the unindexed fields in this query.
      *
-     * @return array $unindexedFields
+     * @return array
      */
     public function getUnindexedFields()
     {
@@ -201,48 +218,28 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function execute()
     {
-        $uow = $this->dm->getUnitOfWork();
-
         if ($this->isIndexRequired() && ! $this->isIndexed()) {
             throw MongoDBException::queryNotIndexed($this->class->name, $this->getUnindexedFields());
         }
 
         $results = parent::execute();
 
-        $hints = array();
-        if ($this->refresh) {
-            $hints[self::HINT_REFRESH] = true;
-        }
-        if ($this->query['slaveOkay'] === true) {
-            $hints[self::HINT_SLAVE_OKAY] = true;
-        }
+        $uow = $this->dm->getUnitOfWork();
 
-        // Unwrap the BaseEagerCursor
-        if ($results instanceof BaseEagerCursor) {
-            $results = $results->getCursor();
-        }
-
-        // Convert the regular mongodb cursor to the odm cursor
-        if ($results instanceof BaseCursor) {
-            $results = $this->wrapCursor($results, $hints);
-        }
-
-        // Wrap odm cursor with EagerCursor if true
-        if ($this->query['eagerCursor'] === true) {
-            $results = new EagerCursor($results, $this->dm->getUnitOfWork(), $this->class);
-            $results->hydrate($this->hydrate);
-            $results->setHints($hints);
-        }
-
-        // GeoLocationFindQuery just returns an instance of ArrayIterator so we have to
-        // iterator over it and hydrate each object.
-        if ($this->query['type'] === self::TYPE_GEO_LOCATION && $this->hydrate) {
+        /* A geoNear command returns an ArrayIterator, where each result is an
+         * object with "dis" (computed distance) and "obj" (original document)
+         * properties. It hydration is enabled, eagerly hydrate these results.
+         *
+         * Other commands results are not handled, since their results may not
+         * resemble documents in the collection.
+         */
+        if ($this->query['type'] === self::TYPE_GEO_NEAR && $this->hydrate) {
             foreach ($results as $key => $result) {
                 $document = $result['obj'];
-                if ($this->class->distance) {
+                if ($this->class->distance !== null) {
                     $document[$this->class->distance] = $result['dis'];
                 }
-                $results[$key] = $uow->getOrCreateDocument($this->class->name, $document, $hints);
+                $results[$key] = $uow->getOrCreateDocument($this->class->name, $document, $this->unitOfWorkHints);
             }
             $results->reset();
         }
@@ -251,64 +248,63 @@ class Query extends \Doctrine\MongoDB\Query\Query
             $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
             foreach ($this->primers as $fieldName => $primer) {
                 if ($primer) {
-                    $documentPersister->primeCollection($results, $fieldName, $primer, $hints);
+                    $documentPersister->primeCollection($results, $fieldName, $primer, $this->unitOfWorkHints);
                 }
             }
         }
 
+        /* If a single document is returned from a findAndModify command and it
+         * includes the identifier field, attempt hydration.
+         */
         if ($this->hydrate && is_array($results) && isset($results['_id'])) {
             // Convert a single document array to a document object
-            $results = $uow->getOrCreateDocument($this->class->name, $results, $hints);
+            $results = $uow->getOrCreateDocument($this->class->name, $results, $this->unitOfWorkHints);
         }
 
         return $results;
     }
 
     /**
-     * @return bool|null
+     * Prepare the Cursor returned by {@link Query::execute()}.
+     *
+     * This method will wrap the base Cursor with an ODM Cursor or EagerCursor,
+     * and set the hydrate option and UnitOfWork hints. This occurs in addition
+     * to any preparation done by the base Query class.
+     *
+     * @see \Doctrine\MongoDB\Cursor::prepareCursor()
+     * @param BaseCursor $cursor
+     * @return Cursor|EagerCursor
      */
-    private function isIndexRequired()
+    protected function prepareCursor(BaseCursor $cursor)
     {
-        if ($this->class->requireIndexes && $this->requireIndexes !== false) {
-            return true;
+        $cursor = parent::prepareCursor($cursor);
+
+        // Unwrap a base EagerCursor
+        if ($cursor instanceof BaseEagerCursor) {
+            $cursor = $cursor->getCursor();
         }
-        return $this->requireIndexes !== null ? $this->requireIndexes : false;
+
+        // Convert the base Cursor into an ODM Cursor
+        $cursor = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
+
+        // Wrap ODM Cursor with EagerCursor
+        if ( ! empty($this->query['eagerCursor'])) {
+            $cursor = new EagerCursor($cursor, $this->dm->getUnitOfWork(), $this->class);
+        }
+
+        $cursor->hydrate($this->hydrate);
+        $cursor->setHints($this->unitOfWorkHints);
+
+        return $cursor;
     }
 
     /**
-     * @param BaseCursor $baseCursor
-     * @param array $hints
-     * @return Cursor|LoggableCursor
+     * Return whether queries on this document should require indexes.
+     *
+     * @return boolean
      */
-    private function wrapCursor(BaseCursor $baseCursor, array $hints)
+    private function isIndexRequired()
     {
-        if ($baseCursor instanceof BaseLoggableCursor) {
-            $cursor = new LoggableCursor(
-                $this->dm->getConnection(),
-                $this->collection,
-                $this->dm->getUnitOfWork(),
-                $this->class,
-                $baseCursor,
-                $baseCursor->getQuery(),
-                $baseCursor->getFields(),
-                $this->dm->getConfiguration()->getRetryQuery(),
-                $baseCursor->getLoggerCallable()
-            );
-        } else {
-            $cursor = new Cursor(
-                $this->dm->getConnection(),
-                $this->collection,
-                $this->dm->getUnitOfWork(),
-                $this->class,
-                $baseCursor,
-                $baseCursor->getQuery(),
-                $baseCursor->getFields(),
-                $this->dm->getConfiguration()->getRetryQuery()
-            );
-        }
-        $cursor->hydrate($this->hydrate);
-        $cursor->setHints($hints);
-
-        return $cursor;
+        return $this->requireIndexes !== null ? $this->requireIndexes : $this->class->requireIndexes;
     }
 }

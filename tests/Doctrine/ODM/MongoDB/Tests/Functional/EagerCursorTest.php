@@ -83,10 +83,11 @@ class EagerCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testRewind()
     {
         $this->test->toArray();
-        $this->assertFalse($this->test->next());
+        $this->assertNull($this->test->key());
         $this->test->rewind();
         $this->assertEquals($this->document, $this->test->current());
-        $this->assertFalse($this->test->next());
+        $this->test->next();
+        $this->assertNull($this->test->key());
     }
 }
 
