@@ -384,7 +384,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->computeChangeSets();
         } elseif (is_object($document)) {
             $this->computeSingleDocumentChangeSet($document);
-        } elseif (is_array($document)) {
+        } elseif ($document instanceof \Traversable) {
             foreach ($document as $object) {
                 $this->computeSingleDocumentChangeSet($object);
             }
