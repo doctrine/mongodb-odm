@@ -382,12 +382,12 @@ class UnitOfWork implements PropertyChangedListener
         // Compute changes done since last commit.
         if ($document === null) {
             $this->computeChangeSets();
-        } elseif (is_object($document)) {
-            $this->computeSingleDocumentChangeSet($document);
         } elseif ($document instanceof \Traversable) {
             foreach ($document as $object) {
                 $this->computeSingleDocumentChangeSet($object);
             }
+        } elseif (is_object($document)) {
+            $this->computeSingleDocumentChangeSet($document);
         }
 
         if ( ! ($this->documentInsertions ||
