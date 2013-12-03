@@ -524,7 +524,7 @@ class DocumentManager implements ObjectManager
      */
     public function flush($document = null, array $options = array())
     {
-        if (null !== $document && ! is_object($document) && ! is_array($document)) {
+        if (null !== $document && ! is_object($document) && ! $document instanceof \Traversable) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
