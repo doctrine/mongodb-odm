@@ -2,6 +2,7 @@
 
 namespace Documents;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -47,9 +48,6 @@ class User extends BaseDocument
     /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
-    /** @ODM\ReferenceMany(targetDocument="Account", cascade={"all"}) */
-    protected $accounts;
-
     /** @ODM\Int */
     protected $hits = 0;
 
@@ -73,11 +71,11 @@ class User extends BaseDocument
 
     public function __construct()
     {
-        $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groups = array();
-        $this->sortedGroups = array();
-        $this->sortedGroupsAsc = array();
-        $this->posts = array();
+        $this->phonenumbers = new ArrayCollection();
+        $this->groups = new ArrayCollection();
+        $this->sortedGroups = new ArrayCollection();
+        $this->sortedGroupsAsc = new ArrayCollection();
+        $this->posts = new ArrayCollection();
         $this->createdAt = new \DateTime();
     }
 
