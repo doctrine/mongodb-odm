@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
+use Doctrine\MongoDB\Iterator;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\EagerCursor;
@@ -103,7 +104,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $this->dm = $dm;
         $this->class = $class;
         $this->hydrate = $hydrate;
-        $this->primers = $primers;
+        $this->primers = array_filter($primers);
         $this->requireIndexes = $requireIndexes;
 
         $this->setRefresh($refresh);
@@ -246,15 +247,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
             $results->reset();
         }
 
-        if ($this->primers) {
-            $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
-            foreach ($this->primers as $fieldName => $primer) {
-                if ($primer) {
-                    $documentPersister->primeCollection($results, $fieldName, $primer, $this->unitOfWorkHints);
-                }
-            }
-        }
-
         /* If a single document is returned from a findAndModify command and it
          * includes the identifier field, attempt hydration.
          */
@@ -263,6 +255,16 @@ class Query extends \Doctrine\MongoDB\Query\Query
             is_array($results) && isset($results['_id'])) {
 
             $results = $uow->getOrCreateDocument($this->class->name, $results, $this->unitOfWorkHints);
+        }
+
+        if ( ! empty($this->primers)) {
+            $referencePrimer = new ReferencePrimer($this->dm, $uow);
+
+            foreach ($this->primers as $fieldName => $primer) {
+                $primer = is_callable($primer) ? $primer : null;
+                $documents = $results instanceof Iterator ? $results : array($results);
+                $referencePrimer->primeReferences($this->class, $documents, $fieldName, $this->unitOfWorkHints, $primer);
+            }
         }
 
         return $results;

@@ -122,18 +122,29 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     }
 
     /**
-     * Use a primer to load the current fields referenced data efficiently.
+     * Use a primer to eagerly load all references in the current field.
      *
-     *     $qb->field('user')->prime(true);
-     *     $qb->field('user')->prime(function(DocumentManager $dm) {
-     *         // do something that will prime all the associated users in one query
-     *     });
+     * If $primer is true or a callable is provided, referenced documents for
+     * this field will loaded into UnitOfWork immediately after the query is
+     * executed. This will avoid multiple queries due to lazy initialization of
+     * Proxy objects.
      *
-     * @param \Closure|boolean $primer
+     * If $primer is false, no priming will take place. That is also the default
+     * behavior.
+     *
+     * If a custom callable is used, its signature should conform to the default
+     * Closure defined in {@link ReferencePrimer::__construct()}.
+     *
+     * @param boolean|callable $primer
      * @return Builder
+     * @throws \InvalidArgumentException If $primer is not boolean or callable
      */
     public function prime($primer = true)
     {
+        if ( ! is_bool($primer) && ! is_callable($primer)) {
+            throw new \InvalidArgumentException('$primer is not a boolean or callable');
+        }
+
         $this->primers[$this->currentField] = $primer;
         return $this;
     }
