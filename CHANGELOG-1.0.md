@@ -4,14 +4,16 @@ CHANGELOG for 1.0.x
 This changelog references the relevant changes done in 1.0 minor versions.
 
 To get the diff for a specific change, go to
-https://github.com/doctrine/mongodb-odm/commit/XXX where XXX is
-the commit hash. To get the diff between two versions, go to
-https://github.com/doctrine/mongodb-odm/compare/VERSION1...VERSION2
+https://github.com/doctrine/mongodb/commit/XXX where XXX is the commit hash.
+To get the diff between two versions, go to
+https://github.com/doctrine/mongodb/compare/XXX...YYY where XXX and YYY are
+the older and newer versions, respectively.
 
 To generate a changelog summary since the last version, run
-`git log --no-merges --oneline LASTVERSION...HEAD`
+`git log --no-merges --oneline XXX...HEAD`
 
-* 1.0.0-BETA9 (2013-06-06)
+1.0.0-BETA9 (2013-06-06)
+------------------------
 
  * 26750bc: Use target class' DocumentPersister when preparing referenceMany criteria
  * bab17db: Improve regression test for #593 to check proxy state
