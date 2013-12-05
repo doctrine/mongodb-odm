@@ -21,12 +21,10 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Cursor as BaseCursor;
-use Doctrine\MongoDB\Database;
-use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\LoggableCursor;
+use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 
@@ -224,16 +222,20 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
         $results = parent::execute();
 
+        if ( ! $this->hydrate) {
+            return $results;
+        }
+
         $uow = $this->dm->getUnitOfWork();
 
         /* A geoNear command returns an ArrayIterator, where each result is an
          * object with "dis" (computed distance) and "obj" (original document)
-         * properties. It hydration is enabled, eagerly hydrate these results.
+         * properties. If hydration is enabled, eagerly hydrate these results.
          *
          * Other commands results are not handled, since their results may not
          * resemble documents in the collection.
          */
-        if ($this->query['type'] === self::TYPE_GEO_NEAR && $this->hydrate) {
+        if ($this->query['type'] === self::TYPE_GEO_NEAR) {
             foreach ($results as $key => $result) {
                 $document = $result['obj'];
                 if ($this->class->distance !== null) {
@@ -256,8 +258,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
         /* If a single document is returned from a findAndModify command and it
          * includes the identifier field, attempt hydration.
          */
-        if ($this->hydrate && is_array($results) && isset($results['_id'])) {
-            // Convert a single document array to a document object
+        if (($this->query['type'] === self::TYPE_FIND_AND_UPDATE ||
+             $this->query['type'] === self::TYPE_FIND_AND_REMOVE) &&
+            is_array($results) && isset($results['_id'])) {
+
             $results = $uow->getOrCreateDocument($this->class->name, $results, $this->unitOfWorkHints);
         }
 
