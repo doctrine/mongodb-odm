@@ -54,6 +54,8 @@ Example:
         Documents\BaseDocument:
             type: mappedSuperclass
 
+.. _single_collection_inheritance:
+
 Single Collection Inheritance
 -----------------------------
 

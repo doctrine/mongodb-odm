@@ -12,6 +12,27 @@ the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
+1.0.x-dev
+---------
+
+#### Priming References
+
+`Builder::prime()` now allows any callable to be registered, where previously
+only Closures were supported. The method will throw an InvalidArgumentException
+if the argument is not a boolean or callable. Boolean `true` may still be passed
+to utilize the default primer. Priming is now deferred until the very end of
+`Query::execute()`, so it will now apply to findAndModify command results.
+
+The signature for primer callables has changed to:
+
+```
+function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints)
+```
+
+A ClassMetadata instance (of the class to be primed) is now passed as the second
+argument instead of the class name string. The reference field name, which was
+formerly the third argument, has been removed.
+
 1.0.0-BETA9 (2013-06-06)
 ------------------------
 
