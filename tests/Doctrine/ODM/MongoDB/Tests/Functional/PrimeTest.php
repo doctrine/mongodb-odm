@@ -55,4 +55,34 @@ class PrimeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $users = $query->execute();
         $this->assertTrue($test);
     }
+
+    public function testMappedPrime()
+    {
+        $blogPost = new \Documents\BlogPost();
+        $comment1 = new \Documents\Comment('1', new \DateTime());
+        $comment2 = new \Documents\Comment('2', new \DateTime());
+
+        $blogPost->addComment($comment1);
+        $blogPost->addComment($comment2);
+
+        $this->dm->persist($comment1);
+        $this->dm->persist($comment2);
+        $this->dm->persist($blogPost);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $blogPosts = $this->dm->createQueryBuilder('Documents\BlogPost')
+            ->field('comments')->prime(true)
+            ->getQuery()->execute();
+
+        foreach ($blogPosts as $blogPost) {
+            $this->assertTrue($blogPost->comments->isInitialized());
+
+            $comments = array_map(function($el) {
+                return $el->text;
+            }, iterator_to_array($blogPost->comments));
+            $this->assertEquals(array('1', '2'), $comments);
+        }
+    }
 }

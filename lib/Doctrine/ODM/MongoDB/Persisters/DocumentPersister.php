@@ -529,7 +529,15 @@ class DocumentPersister
         $groupedIds = array();
 
         foreach ($collection as $element) {
-            if ($fieldMapping['type'] == 'many') {
+            if ($fieldMapping['mappedBy'] && $fieldMapping['type'] == 'many') {
+                $id = $collectionMetaData->getIdentifierValue($element);
+                $groupedIds[$fieldMapping['targetDocument']][$id]
+                    = $collectionMetaData->getDatabaseIdentifierValue($id);
+                $fieldValue = $collectionMetaData->getFieldValue($element, $fieldName);
+                if ($fieldValue instanceof PersistentCollection) {
+                    $fieldValue->setInitialized(true);
+                }
+            } elseif ($fieldMapping['type'] == 'many') {
                 $fieldValue = $collectionMetaData->getFieldValue($element, $fieldName);
                 if ($fieldValue instanceof PersistentCollection) {
                     foreach ($fieldValue->getMongoData() as $key => $reference) {
@@ -565,8 +573,12 @@ class DocumentPersister
                 $primer($this->dm, $className, $fieldName, $ids, $hints);
             } else {
                 $repository = $this->dm->getRepository($className);
+                $field = $fieldMapping['mappedBy'] ? $fieldMapping['mappedBy'] : $class->identifier;
+                if ($fieldMapping['mappedBy'] && !$class->fieldMappings[$fieldMapping['mappedBy']]['simple']) {
+                    $field .= '.$id';
+                }
                 $qb = $repository->createQueryBuilder()
-                    ->field($class->identifier)->in($ids);
+                    ->field($field)->in($ids);
                 if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
                     $qb->slaveOkay(true);
                 }
@@ -574,7 +586,16 @@ class DocumentPersister
                     $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
                 }
                 $query = $qb->getQuery();
-                $query->execute()->toArray();
+                $documents = $query->execute()->toArray();
+                if ($fieldMapping['mappedBy']) {
+                    foreach ($documents as $document) {
+                        $parent = $class->getFieldValue($document, $fieldMapping['mappedBy']);
+                        $fieldValue = $collectionMetaData->getFieldValue($parent, $fieldName);
+                        if ($fieldValue instanceof PersistentCollection) {
+                            $fieldValue->add($document);
+                        }
+                    }
+                }
             }
         }
     }
