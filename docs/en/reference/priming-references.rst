@@ -1,12 +1,15 @@
 Priming References
 ==================
 
-Often when using Doctrine MongoDB ODM you need to prime references in resulted documents
-to avoid making many trips to the database to get ``@ReferenceOne`` and ``@ReferenceMany``
-documents. Doctrine offers the ability to prime references and group the queries to avoid
-the infamous n+1 problem.
+Priming references allows you to consolidate database queries when working with
+:ref:`one <reference_one>` and :ref:`many <reference_many>` reference mappings.
+This is useful for avoiding the
+`n+1 problem <http://stackoverflow.com/q/97197/162228>`_ in your application.
 
-Here is an example:
+Query Builder
+-------------
+
+Consider the following abbreviated model:
 
 .. code-block:: php
 
@@ -19,8 +22,8 @@ Here is an example:
         private $accounts;
     }
 
-If you run a query to find users and you want to load each users accounts, that means one
-additional query per user.
+We would like to query for 100 users and then iterate over their referenced
+accounts.
 
 .. code-block:: php
 
@@ -31,21 +34,24 @@ additional query per user.
     $query = $qb->getQuery();
     $users = $query->execute();
 
-Iterating over the ``$users`` and getting the accounts will hit the database and load the users accounts:
-
-.. code-block:: php
-
-    <?php
-
     foreach ($users as $user) {
-        // another query to load accounts for $user
+        /* PersistentCollection::initialize() will be invoked when we begin
+         * iterating through the user's accounts. Any accounts not already
+         * managed by the unit of work will need to be queried.
+         */
         foreach ($user->getAccounts() as $account) {
-            
+            // ...
         }
     }
 
-So in this example we have 100 users so that means 1 query to load the users and 100 for all the accounts.
-We can improve this by using the ``prime()`` method:
+In this example, ODM would query the database once for the result set of users
+and then, for each user, issue a separate query to load any accounts that are
+not already being managed by the unit of work. This could result in as many as
+100 additional database queries!
+
+If we expect to iterate through all users and their accounts, we could optimize
+this process by loading all of the referenced accounts with one query. The query
+builder's ``prime()`` method allows us to do just that.
 
 .. code-block:: php
 
@@ -56,14 +62,65 @@ We can improve this by using the ``prime()`` method:
         ->limit(100);
     $query = $qb->getQuery();
 
-    // 2 larger queries are performed eagerly to fetch users and accounts
+    /* After querying for the users, ODM will collect the IDs of all referenced
+     * accounts and load them with a single additional query.
+     */
     $users = $query->execute();
 
-    // no additional queries are executed when iterating
     foreach ($users as $user) {
+        /* Accounts have already been loaded, so iterating through accounts will
+         * not query an additional query.
+         */
         foreach ($user->getAccounts() as $account) {
             
         }
     }
 
-Now we only have 2 queries instead of 101.
+In this case, priming will allow us to limit ODM to performing two database
+queries.
+
+.. note::
+
+    Priming is also compatible with :ref:`simple references <simple_references>`
+    and discriminated references (e.g. where referenced classes utilize
+    :ref:`single collection inhertiance <single_collection_inheritance>`).
+
+Primer Callback
+---------------
+
+Passing ``true`` to ``prime()`` instructs ODM to load the referenced document(s)
+on its own; however, we can also pass a custom callable (e.g. Closure instance)
+to ``prime()``, which allows more control over the priming query.
+
+As an example, we can look at the default callable, which is found in the
+``ReferencePrimer`` class.
+
+.. code-block:: php
+
+    <?php
+
+    function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
+        $qb = $dm->createQueryBuilder($class->name)
+            ->field($class->identifier)->in($ids);
+
+        if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
+            $qb->slaveOkay(true);
+        }
+
+        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+            $qb->setReadPreference(
+                $hints[Query::HINT_READ_PREFERENCE],
+                $hints[Query::HINT_READ_PREFERENCE_TAGS]
+            );
+        }
+
+        $qb->getQuery()->toArray();
+    };
+
+Firstly, the callable is passed the ``DocumentManager`` of the main query. This
+is necessary to create the query used for priming, and ensures that the results
+will become managed in the same scope. The ``ClassMetadata`` argument provides
+mapping information for the referenced class as well as its name, which is used
+to create the query builder. An array of identifiers follows, which is used to
+query for the documents to be primed. Lastly, the ``UnitOfWork`` hints from the
+original query are provided so that the priming query can apply them as well.

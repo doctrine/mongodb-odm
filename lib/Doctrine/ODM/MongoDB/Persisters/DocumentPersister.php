@@ -21,15 +21,12 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Cursor as BaseCursor;
-use Doctrine\MongoDB\Iterator;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Event\OnUpdatePreparedArgs;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
@@ -505,78 +502,6 @@ class DocumentPersister
         }
 
         return $this->uow->getOrCreateDocument($this->class->name, $result, $hints);
-    }
-
-    /**
-     * Prime a collection of documents property with an efficient single query instead of
-     * lazily loading each field with a single query.
-     *
-     * @param Iterator $collection
-     * @param string $fieldName
-     * @param \Closure|boolean $primer
-     * @param array $hints
-     */
-    public function primeCollection(Iterator $collection, $fieldName, $primer, array $hints = array())
-    {
-        $collection = $collection->toArray();
-        if ( ! count($collection)) {
-            return;
-        }
-        $collectionMetaData = $this->dm->getClassMetaData(get_class(current($collection)));
-
-        $fieldMapping = $collectionMetaData->fieldMappings[$fieldName];
-
-        $groupedIds = array();
-
-        foreach ($collection as $element) {
-            if ($fieldMapping['type'] == 'many') {
-                $fieldValue = $collectionMetaData->getFieldValue($element, $fieldName);
-                if ($fieldValue instanceof PersistentCollection) {
-                    foreach ($fieldValue->getMongoData() as $key => $reference) {
-                        if (isset($fieldMapping['simple']) && $fieldMapping['simple']) {
-                            $className = $fieldMapping['targetDocument'];
-                            $mongoId = $reference;
-                        } else {
-                            $className = $this->dm->getClassNameFromDiscriminatorValue($fieldMapping, $reference);
-                            $mongoId = $reference['$id'];
-                        }
-                        $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
-                        $document = $this->uow->tryGetById($id, $className);
-                        if ( ! $document || $document instanceof Proxy && ! $document->__isInitialized__) {
-                            if ( ! isset($groupedIds[$className])) {
-                                $groupedIds[$className] = array();
-                            }
-                            $groupedIds[$className][$id] = $mongoId;
-                        }
-                    }
-                }
-            } elseif ($fieldMapping['type'] == 'one') {
-                $document = $collectionMetaData->getFieldValue($element, $fieldName);
-                if ($document && $document instanceof Proxy && ! $document->__isInitialized__) {
-                    $class = $this->dm->getClassMetadata(get_class($document));
-                    $id = $this->uow->getDocumentIdentifier($document);
-                    $groupedIds[$class->name][$id] = $id;
-                }
-            }
-        }
-        foreach ($groupedIds as $className => $ids) {
-            $class = $this->dm->getClassMetadata($className);
-            if ($primer instanceof \Closure) {
-                $primer($this->dm, $className, $fieldName, $ids, $hints);
-            } else {
-                $repository = $this->dm->getRepository($className);
-                $qb = $repository->createQueryBuilder()
-                    ->field($class->identifier)->in($ids);
-                if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-                    $qb->slaveOkay(true);
-                }
-                if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-                    $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
-                }
-                $query = $qb->getQuery();
-                $query->execute()->toArray();
-            }
-        }
     }
 
     /**
