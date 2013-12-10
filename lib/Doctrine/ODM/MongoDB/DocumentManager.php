@@ -665,6 +665,11 @@ class DocumentManager implements ObjectManager
         if (is_array($value) && isset($value[$discriminatorField])) {
             $discriminatorValue = $value[$discriminatorField];
             return isset($mapping['discriminatorMap'][$discriminatorValue]) ? $mapping['discriminatorMap'][$discriminatorValue] : $discriminatorValue;
+        } elseif (is_object($value) && $mapping['embedded'] && is_array($mapping['discriminatorMap'])) {
+            $className = get_class($value);
+            if (in_array($className, $mapping['discriminatorMap'])) {
+                return $className;
+            }
         } else {
             $class = $this->getClassMetadata($mapping['targetDocument']);
 
