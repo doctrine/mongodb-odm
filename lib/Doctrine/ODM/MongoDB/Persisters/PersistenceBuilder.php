@@ -75,7 +75,7 @@ class PersistenceBuilder
         foreach ($class->fieldMappings as $mapping) {
 
             // many collections are inserted later
-            if ($mapping['type'] === ClassMetadata::MANY) {
+            if ($mapping['type'] === ClassMetadata::MANY && !$mapping['embedded']) {
                 continue;
             }
 
