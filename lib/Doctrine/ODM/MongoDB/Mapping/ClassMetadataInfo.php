@@ -575,20 +575,39 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Sets the discriminator field name.
+     * Sets the discriminator field.
+     *
+     * The field name is the the unmapped database field. Discriminator values
+     * are only used to discern the hydration class and are not mapped to class
+     * properties.
      *
      * @param string $discriminatorField
-     * @throws MappingException
-     * @see getDiscriminatorField()
+     * @throws MappingException If the discriminator field conflicts with the
+     *                          "name" attribute of a mapped field.
      */
     public function setDiscriminatorField($discriminatorField)
     {
-        if ( ! isset($discriminatorField['name']) && isset($discriminatorField['fieldName'])) {
-            $discriminatorField['name'] = $discriminatorField['fieldName'];
+        if ($discriminatorField === null) {
+            $this->discriminatorField = null;
+
+            return;
         }
-        if (isset($this->fieldMappings[$discriminatorField['name']])) {
-            throw MappingException::duplicateFieldMapping($this->name, $discriminatorField['name']);
+
+        // Handle array argument with name/fieldName keys for BC
+        if (is_array($discriminatorField)) {
+            if (isset($discriminatorField['name'])) {
+                $discriminatorField = $discriminatorField['name'];
+            } elseif (isset($discriminatorField['fieldName'])) {
+                $discriminatorField = $discriminatorField['fieldName'];
+            }
         }
+
+        foreach ($this->fieldMappings as $fieldMapping) {
+            if ($discriminatorField == $fieldMapping['name']) {
+                throw MappingException::discriminatorFieldConflict($this->name, $discriminatorField);
+            }
+        }
+
         $this->discriminatorField = $discriminatorField;
     }
 
@@ -972,8 +991,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
             //throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
-        if ($this->discriminatorField['name'] === $mapping['fieldName']) {
-            throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
+        if ($this->discriminatorField !== null && $this->discriminatorField == $mapping['name']) {
+            throw MappingException::discriminatorFieldConflict($this->name, $this->discriminatorField);
         }
         if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
@@ -1426,7 +1445,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function hasDiscriminator()
     {
-        return isset($this->discriminatorField) && isset($this->discriminatorValue) ? true : false;
+        return isset($this->discriminatorField, $this->discriminatorValue);
     }
 
     /**

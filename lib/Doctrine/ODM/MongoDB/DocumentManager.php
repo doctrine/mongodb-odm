@@ -670,8 +670,8 @@ class DocumentManager implements ObjectManager
 
             // @TODO figure out how to remove this
             if ($class->discriminatorField) {
-                if (isset($value[$class->discriminatorField['name']])) {
-                    return $class->discriminatorMap[$value[$class->discriminatorField['name']]];
+                if (isset($value[$class->discriminatorField])) {
+                    return $class->discriminatorMap[$value[$class->discriminatorField]];
                 }
             }
         }
@@ -706,8 +706,8 @@ class DocumentManager implements ObjectManager
             '$db'  => $this->getDocumentDatabase($className)->getName()
         );
 
-        if ($class->discriminatorField) {
-            $dbRef[$class->discriminatorField['name']] = $class->discriminatorValue;
+        if ($class->hasDiscriminator()) {
+            $dbRef[$class->discriminatorField] = $class->discriminatorValue;
         }
 
         // add a discriminator value if the referenced document is not mapped explicitly to a targetDocument

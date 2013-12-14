@@ -79,10 +79,16 @@ class YamlDriver extends FileDriver
             $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
         }
         if (isset($element['discriminatorField'])) {
-            $class->setDiscriminatorField(array_intersect_key(
-                $element['discriminatorField'],
-                array('fieldName' => 1, 'name' => 1)
-            ));
+            /* fieldName is deprecated, but fall back for BC. Also accept a
+             * string value, since discriminatorField is really just a string.
+             */
+            if (isset($element['discriminatorField']['name'])) {
+                $class->setDiscriminatorField($element['discriminatorField']['name']);
+            } elseif (isset($element['discriminatorField']['fieldName'])) {
+                $class->setDiscriminatorField($element['discriminatorField']['fieldName']);
+            } elseif (is_string($element['discriminatorField'])) {
+                $class->setDiscriminatorField($element['discriminatorField']);
+            }
         }
         if (isset($element['discriminatorMap'])) {
             $class->setDiscriminatorMap($element['discriminatorMap']);

@@ -207,10 +207,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     {
         $this->assertTrue(isset($class->discriminatorField));
         $this->assertTrue(isset($class->discriminatorMap));
-        $this->assertEquals(array(
-            'fieldName' => 'discr',
-            'name' => 'discr',
-        ), $class->discriminatorField);
+        $this->assertEquals('discr', $class->discriminatorField);
         $this->assertEquals(array(
             'default' => 'Doctrine\ODM\MongoDB\Tests\Mapping\User',
         ), $class->discriminatorMap);

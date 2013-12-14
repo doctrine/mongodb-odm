@@ -206,10 +206,7 @@ class SchemaManager
             );
             foreach ($index['keys'] as $key => $value) {
                 $key = $persister->prepareFieldName($key);
-                if (isset($class->discriminatorField) && $key === $class->discriminatorField['name']) {
-                    // The discriminator field may have its own mapping
-                    $newIndex['keys'][$class->discriminatorField['fieldName']] = $value;
-                } elseif ($class->hasField($key)) {
+                if ($class->hasField($key)) {
                     $mapping = $class->getFieldMapping($key);
                     $newIndex['keys'][$mapping['name']] = $value;
                 } else {

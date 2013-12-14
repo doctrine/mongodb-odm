@@ -37,7 +37,7 @@
       <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="discriminator-field" type="odm:discriminator-field-document" minOccurs="0"/>
+      <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="odm:lifecycle-callbacks" minOccurs="0"/>
       <xs:element name="indexes" type="odm:indexes" minOccurs="0"/>
@@ -188,11 +188,6 @@
     <xs:sequence>
       <xs:element name="discriminator-mapping" type="odm:discriminator-mapping" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="discriminator-field-document">
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" use="required"/>
-    <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="discriminator-field">

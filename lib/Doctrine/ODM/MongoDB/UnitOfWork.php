@@ -2515,10 +2515,10 @@ class UnitOfWork implements PropertyChangedListener
 
         // @TODO figure out how to remove this
         if ($class->discriminatorField) {
-            if (isset($data[$class->discriminatorField['name']])) {
-                $type = $data[$class->discriminatorField['name']];
-                $class = $this->dm->getClassMetadata($class->discriminatorMap[$data[$class->discriminatorField['name']]]);
-                unset($data[$class->discriminatorField['name']]);
+            if (isset($data[$class->discriminatorField])) {
+                $type = $data[$class->discriminatorField];
+                $class = $this->dm->getClassMetadata($class->discriminatorMap[$data[$class->discriminatorField]]);
+                unset($data[$class->discriminatorField]);
             }
         }
 

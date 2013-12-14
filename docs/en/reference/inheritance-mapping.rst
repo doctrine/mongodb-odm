@@ -76,7 +76,7 @@ Simple example:
         /**
          * @Document
          * @InheritanceType("SINGLE_COLLECTION")
-         * @DiscriminatorField(fieldName="type")
+         * @DiscriminatorField(name="type")
          * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
          */
         class Person
@@ -100,7 +100,7 @@ Simple example:
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\Person" inheritance-type="SINGLE_COLLECTION">
-            <discriminator-field name="type=" fieldName="type" />
+            <discriminator-field name="type" />
             <discriminator-map>
                 <discriminator-mapping value="person" class="Person" />
                 <discriminator-mapping value="employee" class="Employee" />    

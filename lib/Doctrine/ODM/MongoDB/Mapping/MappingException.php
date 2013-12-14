@@ -49,6 +49,11 @@ class MappingException extends BaseMappingException
         return new self('Property "' . $fieldName . '" in "' . $document . '" was already declared, but it must be declared only once');
     }
 
+    public static function discriminatorFieldConflict($document, $fieldName)
+    {
+        return new self('Discriminator field "' . $fieldName . '" in "' . $document . '" conflicts with a mapped field\'s "name" attribute.');
+    }
+
     /**
      * Throws an exception that indicates that a class used in a discriminator map does not exist.
      * An example would be an outdated (maybe renamed) classname.

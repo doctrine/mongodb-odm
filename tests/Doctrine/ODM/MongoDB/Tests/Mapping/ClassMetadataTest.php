@@ -26,7 +26,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->setSubclasses(array("One", "Two", "Three"));
         $cm->setParentClasses(array("UserParent"));
         $cm->setCustomRepositoryClass("UserRepository");
-        $cm->setDiscriminatorField(array('name' => 'disc'));
+        $cm->setDiscriminatorField('disc');
         $cm->mapOneEmbedded(array('fieldName' => 'phonenumbers', 'targetDocument' => 'Bar'));
         $cm->setFile('customFileProperty');
         $cm->setDistance('customDistanceProperty');
@@ -46,7 +46,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('Documents\One', 'Documents\Two', 'Documents\Three'), $cm->subClasses);
         $this->assertEquals(array('UserParent'), $cm->parentClasses);
         $this->assertEquals('UserRepository', $cm->customRepositoryClassName);
-        $this->assertEquals(array('name' => 'disc'), $cm->discriminatorField);
+        $this->assertEquals('disc', $cm->discriminatorField);
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
         $this->assertEquals(1, count($cm->fieldMappings));
         $this->assertEquals('customFileProperty', $cm->file);
@@ -158,13 +158,13 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->mapField(array('fieldName' => 'name'));
 
         $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
-        $cm->setDiscriminatorField(array('name' => 'name'));
+        $cm->setDiscriminatorField('name');
     }
 
     public function testDuplicateFieldName_DiscriminatorColumn2_ThrowsMappingException()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
-        $cm->setDiscriminatorField(array('name' => 'name'));
+        $cm->setDiscriminatorField('name');
 
         $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
         $cm->mapField(array('fieldName' => 'name'));

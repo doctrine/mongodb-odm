@@ -6,7 +6,7 @@
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="Doctrine\ODM\MongoDB\Tests\Mapping\User" collection="cms_users">
-        <discriminator-field fieldName="discr" />
+        <discriminator-field name="discr" />
         <discriminator-map>
             <discriminator-mapping value="default" class="Doctrine\ODM\MongoDB\Tests\Mapping\User" />
         </discriminator-map>
