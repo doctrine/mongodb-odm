@@ -84,6 +84,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     const GENERATOR_TYPE_NONE = 6;
 
+    /**
+     * Default discriminator field name.
+     *
+     * This is used for associations value for associations where a that do not define a "targetDocument" or
+     * "discriminatorField" option in their mapping.
+     */
+    const DEFAULT_DISCRIMINATOR_FIELD = '_doctrine_class_name';
 
     const REFERENCE_ONE = 1;
     const REFERENCE_MANY = 2;
@@ -1074,6 +1081,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         }
         if (isset($mapping['embedded']) && $mapping['type'] === 'many') {
             $mapping['association'] = self::EMBED_MANY;
+        }
+
+        if (isset($mapping['association']) && ! isset($mapping['targetDocument']) && ! isset($mapping['discriminatorField'])) {
+            $mapping['discriminatorField'] = self::DEFAULT_DISCRIMINATOR_FIELD;
         }
 
         /*
