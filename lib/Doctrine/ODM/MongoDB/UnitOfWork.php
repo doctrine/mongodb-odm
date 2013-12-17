@@ -730,6 +730,9 @@ class UnitOfWork implements PropertyChangedListener
                 if ($actualValue instanceof PersistentCollection) {
                     $owner = $actualValue->getOwner();
                     if ($owner === null) { // cloned
+                        if (!isset ($class->fieldMappings[$propName])) {
+                            $class->fieldMappings[$propName] = array();
+                        }
                         $actualValue->setOwner($document, $class->fieldMappings[$propName]);
                     } elseif ($owner !== $document) { // no clone, we have to fix
                         if ( ! $actualValue->isInitialized()) {
