@@ -2519,8 +2519,12 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->dm->getClassMetadata($mapping['targetDocument']);
 
-        if ($class->discriminatorField && isset($data[$class->discriminatorField])) {
-            return $class->discriminatorMap[$data[$class->discriminatorField]];
+        if (isset($class->discriminatorField, $data[$class->discriminatorField])) {
+            $discriminatorValue = $data[$class->discriminatorField];
+
+            return isset($class->discriminatorMap[$discriminatorValue])
+                ? $class->discriminatorMap[$discriminatorValue]
+                : $discriminatorValue;
         }
 
         return $mapping['targetDocument'];
@@ -2542,12 +2546,16 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->dm->getClassMetadata($className);
 
         // @TODO figure out how to remove this
-        if ($class->discriminatorField) {
-            if (isset($data[$class->discriminatorField])) {
-                $type = $data[$class->discriminatorField];
-                $class = $this->dm->getClassMetadata($class->discriminatorMap[$data[$class->discriminatorField]]);
-                unset($data[$class->discriminatorField]);
-            }
+        if (isset($class->discriminatorField, $data[$class->discriminatorField])) {
+            $discriminatorValue = $data[$class->discriminatorField];
+
+            $className = isset($class->discriminatorMap[$discriminatorValue])
+                ? $class->discriminatorMap[$discriminatorValue]
+                : $discriminatorValue;
+
+            $class = $this->dm->getClassMetadata($className);
+
+            unset($data[$class->discriminatorField]);
         }
 
         $id = $class->getPHPIdentifierValue($data['_id']);

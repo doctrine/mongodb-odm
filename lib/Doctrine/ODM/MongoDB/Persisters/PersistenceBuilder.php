@@ -426,6 +426,16 @@ class PersistenceBuilder
                 ? array_search($class->name, $embeddedMapping['discriminatorMap'])
                 : $class->name;
 
+            /* If the discriminator value was not found in the map, use the full
+             * class name. In the future, it may be preferable to throw an
+             * exception here (perhaps based on some strictness option).
+             *
+             * @see DocumentManager::createDBRef()
+             */
+            if ($discriminatorValue === false) {
+                $discriminatorValue = $class->name;
+            }
+
             $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
         }
 

@@ -700,6 +700,16 @@ class DocumentManager implements ObjectManager
                 ? array_search($class->name, $referenceMapping['discriminatorMap'])
                 : $class->name;
 
+            /* If the discriminator value was not found in the map, use the full
+             * class name. In the future, it may be preferable to throw an
+             * exception here (perhaps based on some strictness option).
+             *
+             * @see PersistenceBuilder::prepareEmbeddedDocumentValue()
+             */
+            if ($discriminatorValue === false) {
+                $discriminatorValue = $class->name;
+            }
+
             $dbRef[$discriminatorField] = $discriminatorValue;
         }
 
