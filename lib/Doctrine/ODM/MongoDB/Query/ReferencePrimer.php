@@ -179,7 +179,7 @@ class ReferencePrimer
                 $id = $reference;
             } else {
                 $id = $reference['$id'];
-                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
+                $className = $this->uow->getClassNameForAssociation($mapping, $reference);
             }
 
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($id);

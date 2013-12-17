@@ -538,7 +538,7 @@ class DocumentPersister
         $owner = $collection->getOwner();
         if ($embeddedDocuments) {
             foreach ($embeddedDocuments as $key => $embeddedDocument) {
-                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                $className = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
@@ -567,7 +567,7 @@ class DocumentPersister
                 $className = $mapping['targetDocument'];
                 $mongoId = $reference;
             } else {
-                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
+                $className = $this->uow->getClassNameForAssociation($mapping, $reference);
                 $mongoId = $reference['$id'];
             }
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);

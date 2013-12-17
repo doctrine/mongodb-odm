@@ -2499,6 +2499,34 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Gets the class name for an association (embed or reference) with respect
+     * to any discriminator value.
+     *
+     * @param array $mapping Field mapping for the association
+     * @param array $data    Data for the embedded document or reference
+     */
+    public function getClassNameForAssociation(array $mapping, array $data)
+    {
+        $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : null;
+
+        if (isset($discriminatorField, $data[$discriminatorField])) {
+            $discriminatorValue = $data[$discriminatorField];
+
+            return isset($mapping['discriminatorMap'][$discriminatorValue])
+                ? $mapping['discriminatorMap'][$discriminatorValue]
+                : $discriminatorValue;
+        }
+
+        $class = $this->dm->getClassMetadata($mapping['targetDocument']);
+
+        if ($class->discriminatorField && isset($data[$class->discriminatorField])) {
+            return $class->discriminatorMap[$data[$class->discriminatorField]];
+        }
+
+        return $mapping['targetDocument'];
+    }
+
+    /**
      * INTERNAL:
      * Creates an document. Used for reconstitution of documents during hydration.
      *
