@@ -52,13 +52,6 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertTrue(isset($indexes[0]['keys']['type']));
         $this->assertEquals(1, $indexes[0]['keys']['type']);
-
-        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\DocumentWithRenamedDiscriminatorIndex');
-        $sm = $this->dm->getSchemaManager();
-        $indexes = $sm->getDocumentIndexes($class->name);
-
-        $this->assertTrue(isset($indexes[0]['keys']['typeMongo']));
-        $this->assertEquals(1, $indexes[0]['keys']['typeMongo']);
     }
 
     public function testIndexDefinitions()
@@ -320,28 +313,13 @@ class DocumentWithEmbeddedIndexes
 
 /**
  * @ODM\Document
- * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorField("type")
+ * @ODM\Index(keys={"type"="asc"})
  */
 class DocumentWithDiscriminatorIndex
 {
     /** @ODM\Id */
     public $id;
-
-    /** ODM\String @ODM\Index */
-    public $type;
-}
-
-/**
- * @ODM\Document
- * @ODM\DiscriminatorField(fieldName="typeMongo",name="typePhp")
- */
-class DocumentWithRenamedDiscriminatorIndex
-{
-    /** @ODM\Id */
-    public $id;
-
-    /** ODM\String @ODM\Index */
-    public $typePhp;
 }
 
 /** @ODM\EmbeddedDocument */
