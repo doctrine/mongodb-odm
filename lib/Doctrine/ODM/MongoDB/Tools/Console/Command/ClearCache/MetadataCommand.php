@@ -44,7 +44,12 @@ class MetadataCommand extends Command
         $this
         ->setName('odm:clear-cache:metadata')
         ->setDescription('Clear all metadata cache of the various cache drivers.')
-        ->setDefinition(array())
+        ->setDefinition(array(
+            new InputOption(
+                'documentmanager', null, InputOption::VALUE_OPTIONAL,
+                'The name of the documentmanager to use. If none is provided, it will use odm_default.'
+            ),
+        ))
         ->setHelp(<<<EOT
 Clear all metadata cache of the various cache drivers.
 EOT

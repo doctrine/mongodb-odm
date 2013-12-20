@@ -52,6 +52,10 @@ class GenerateProxiesCommand extends Console\Command\Command
                 'dest-path', InputArgument::OPTIONAL,
                 'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.'
             ),
+            new InputOption(
+                'documentmanager', null, InputOption::VALUE_OPTIONAL,
+                'The name of the documentmanager to use. If none is provided, it will use odm_default.'
+            ),
         ))
         ->setHelp(<<<EOT
 Generates proxy classes for document classes.

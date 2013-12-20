@@ -76,7 +76,11 @@ class GenerateDocumentsCommand extends Console\Command\Command
             new InputOption(
                 'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces', 4
-            )
+            ),
+            new InputOption(
+                'documentmanager', null, InputOption::VALUE_OPTIONAL,
+                'The name of the documentmanager to use. If none is provided, it will use odm_default.'
+            ),
         ))
         ->setHelp(<<<EOT
 Generate document classes and method stubs from your mapping information.

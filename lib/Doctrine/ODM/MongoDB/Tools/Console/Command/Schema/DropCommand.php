@@ -40,7 +40,12 @@ class DropCommand extends AbstractCommand
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Drop collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Drop indexes')
             ->setDescription('Drop databases, collections and indexes for your documents')
-        ;
+            ->setDefinition(array(
+                new InputOption(
+                    'documentmanager', null, InputOption::VALUE_OPTIONAL,
+                    'The name of the documentmanager to use. If none is provided, it will use odm_default.'
+                ),
+            ));
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

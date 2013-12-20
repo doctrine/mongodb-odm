@@ -41,6 +41,12 @@ class UpdateCommand extends AbstractCommand
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
             ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
             ->setDescription('Update indexes for your documents')
+            ->setDefinition(array(
+                new InputOption(
+                    'documentmanager', null, InputOption::VALUE_OPTIONAL,
+                    'The name of the documentmanager to use. If none is provided, it will use odm_default.'
+                ),
+            ));
         ;
     }
 
