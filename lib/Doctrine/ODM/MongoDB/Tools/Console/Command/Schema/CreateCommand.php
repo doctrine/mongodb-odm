@@ -43,6 +43,12 @@ class CreateCommand extends AbstractCommand
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Create collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Create indexes')
             ->setDescription('Create databases, collections and indexes for your documents')
+            ->setDefinition(array(
+                new InputOption(
+                    'documentmanager', null, InputOption::VALUE_OPTIONAL,
+                    'The name of the documentmanager to use. If none is provided, it will use odm_default.'
+                ),
+            ));
         ;
     }
 

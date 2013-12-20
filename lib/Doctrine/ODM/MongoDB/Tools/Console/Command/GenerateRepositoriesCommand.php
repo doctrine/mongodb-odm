@@ -51,7 +51,11 @@ class GenerateRepositoriesCommand extends Console\Command\Command
             ),
             new InputArgument(
                 'dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.'
-            )
+            ),
+            new InputOption(
+                'documentmanager', null, InputOption::VALUE_OPTIONAL,
+                'The name of the documentmanager to use. If none is provided, it will use odm_default.'
+            ),
         ))
         ->setHelp(<<<EOT
 Generate repository classes from your mapping information.
