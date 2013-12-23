@@ -79,16 +79,7 @@ class YamlDriver extends FileDriver
             $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
         }
         if (isset($element['discriminatorField'])) {
-            /* fieldName is deprecated, but fall back for BC. Also accept a
-             * string value, since discriminatorField is really just a string.
-             */
-            if (isset($element['discriminatorField']['name'])) {
-                $class->setDiscriminatorField($element['discriminatorField']['name']);
-            } elseif (isset($element['discriminatorField']['fieldName'])) {
-                $class->setDiscriminatorField($element['discriminatorField']['fieldName']);
-            } elseif (is_string($element['discriminatorField'])) {
-                $class->setDiscriminatorField($element['discriminatorField']);
-            }
+            $class->setDiscriminatorField($this->parseDiscriminatorField($element['discriminatorField']));
         }
         if (isset($element['discriminatorMap'])) {
             $class->setDiscriminatorMap($element['discriminatorMap']);
@@ -213,7 +204,7 @@ class YamlDriver extends FileDriver
             $mapping['name'] = $embed['name'];
         }
         if (isset($embed['discriminatorField'])) {
-            $mapping['discriminatorField'] = $embed['discriminatorField'];
+            $mapping['discriminatorField'] = $this->parseDiscriminatorField($embed['discriminatorField']);
         }
         if (isset($embed['discriminatorMap'])) {
             $mapping['discriminatorMap'] = $embed['discriminatorMap'];
@@ -242,7 +233,7 @@ class YamlDriver extends FileDriver
             $mapping['name'] = $reference['name'];
         }
         if (isset($reference['discriminatorField'])) {
-            $mapping['discriminatorField'] = $reference['discriminatorField'];
+            $mapping['discriminatorField'] = $this->parseDiscriminatorField($reference['discriminatorField']);
         }
         if (isset($reference['discriminatorMap'])) {
             $mapping['discriminatorMap'] = $reference['discriminatorMap'];
@@ -254,6 +245,39 @@ class YamlDriver extends FileDriver
             $mapping['criteria'] = $reference['criteria'];
         }
         $this->addFieldMapping($class, $mapping);
+    }
+
+    /**
+     * Parses the class or field-level "discriminatorField" option.
+     *
+     * If the value is an array, check the "name" option before falling back to
+     * the deprecated "fieldName" option (for BC). Otherwise, the value must be
+     * a string.
+     *
+     * @param array|string $discriminatorField
+     * @return string
+     * @throws \InvalidArgumentException if the value is neither a string nor an
+     *                                   array with a "name" or "fieldName" key.
+     */
+    private function parseDiscriminatorField($discriminatorField)
+    {
+        if (is_string($discriminatorField)) {
+            return $discriminatorField;
+        }
+
+        if ( ! is_array($discriminatorField)) {
+            throw new \InvalidArgumentException('Expected array or string for discriminatorField; found: ' . gettype($discriminatorField));
+        }
+
+        if (isset($discriminatorField['name'])) {
+            return (string) $discriminatorField['name'];
+        }
+
+        if (isset($discriminatorField['fieldName'])) {
+            return (string) $discriminatorField['fieldName'];
+        }
+
+        throw new \InvalidArgumentException('Expected "name" or "fieldName" key in discriminatorField array; found neither.');
     }
 
     /**
