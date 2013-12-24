@@ -19,13 +19,13 @@ Embed a single document:
         class User
         {
             // ...
-    
+
             /** @EmbedOne(targetDocument="Address") */
             private $address;
-    
+
             // ...
         }
-    
+
         /** @EmbeddedDocument */
         class Address
         {
@@ -72,13 +72,13 @@ Embed many documents:
         class User
         {
             // ...
-    
+
             /** @EmbedMany(targetDocument="Phonenumber") */
             private $phonenumbers = array();
-    
+
             // ...
         }
-    
+
         /** @EmbeddedDocument */
         class Phonenumber
         {
@@ -124,10 +124,10 @@ you can simply omit the ``targetDocument`` option:
         class User
         {
             // ..
-    
+
             /** @EmbedMany */
             private $tasks = array();
-    
+
             // ...
         }
 
@@ -155,12 +155,12 @@ the embedded document. The field name can be customized with the
         class User
         {
             // ..
-    
+
             /**
              * @EmbedMany(discriminatorField="type")
              */
             private $tasks = array();
-    
+
             // ...
         }
 
@@ -189,7 +189,7 @@ class name in each embedded document:
         class User
         {
             // ..
-    
+
             /**
              * @EmbedMany(
              *   discriminatorMap={
@@ -199,7 +199,7 @@ class name in each embedded document:
              * )
              */
             private $tasks = array();
-    
+
             // ...
         }
 
