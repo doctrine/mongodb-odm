@@ -1,27 +1,28 @@
+.. _inheritance_mapping:
+
 Inheritance Mapping
 ===================
 
-Doctrine currently offers two supported methods of inheritance
-which are Single Collection Inheritance and Collection Per Class
-Inheritance.
+Doctrine currently offers two supported methods of inheritance:
+:ref:`single collection <single_collection_inheritance>` and
+:ref:`collection per class <collection_per_class_inheritance>` inheritance.
 
 Mapped Superclasses
 -------------------
 
-An mapped superclass is an abstract or concrete class that provides
-persistent document state and mapping information for its
-subclasses, but which is not itself a document. Typically, the
-purpose of such a mapped superclass is to define state and mapping
-information that is common to multiple document classes.
+A mapped superclass is an abstract or concrete class that provides mapping
+information for its subclasses, but is not itself a document. Typically, the
+purpose of such a mapped superclass is to define state and mapping information
+that is common to multiple document classes.
 
-Mapped superclasses, just as regular, non-mapped classes, can
-appear in the middle of an otherwise mapped inheritance hierarchy
-(through Single Collection Inheritance or Collection Per Class
-Inheritance).
+Just like non-mapped classes, mapped superclasses may appear in the middle of
+an otherwise mapped inheritance hierarchy (through
+:ref:`single collection <single_collection_inheritance>` or
+:ref:`collection per class <collection_per_class_inheritance>`) inheritance.
 
 .. note::
 
-    A mapped superclass cannot be a document and is not query able.
+    A mapped superclass cannot be a document and is not queryable.
 
 Example:
 
@@ -59,9 +60,8 @@ Example:
 Single Collection Inheritance
 -----------------------------
 
-In Single Collection Inheritance each document is stored in a
-single collection where a discriminator field is used to
-distinguish one document type from another.
+In single collection inheritance, each document is stored in a single collection
+and a discriminator field is used to distinguish one document type from another.
 
 Simple example:
 
@@ -76,7 +76,7 @@ Simple example:
         /**
          * @Document
          * @InheritanceType("SINGLE_COLLECTION")
-         * @DiscriminatorField(name="type")
+         * @DiscriminatorField("type")
          * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
          */
         class Person
@@ -103,7 +103,7 @@ Simple example:
             <discriminator-field name="type" />
             <discriminator-map>
                 <discriminator-mapping value="person" class="Person" />
-                <discriminator-mapping value="employee" class="Employee" />    
+                <discriminator-mapping value="employee" class="Employee" />
             </discriminator-map>
           </document>
         </doctrine-mongo-mapping>
@@ -122,14 +122,17 @@ Simple example:
         Documents\Person:
           type: document
           inheritanceType: SINGLE_COLLECTION
+          discriminatorMap: type
           discriminatorMap:
             person: Person
             employee: Employee
 
-The discriminator field value allows Doctrine to know what type of
-class to return by looking it up in the discriminator map. Now if
-we ask for a certain Person and it has a discriminator field value
-of employee, we would get an Employee instance back:
+The discriminator value allows Doctrine to infer the class name to instantiate
+when hydrating a document. If a discriminator map is used, the discriminator
+value will be used to look up the class name in the map.
+
+Now, if we query for a Person and its discriminator value is ``employee``, we
+would get an Employee instance back:
 
 .. code-block:: php
 
@@ -142,14 +145,16 @@ of employee, we would get an Employee instance back:
     
     $employee = $dm->find('Person', $employee->getId()); // instanceof Employee
 
-Even though we queried Person, Doctrine will know to return an
-Employee instance because of the discriminator map!
+Even though we queried for a Person, Doctrine will know to return an Employee
+instance because of the discriminator map!
+
+.. _collection_per_class_inheritance:
 
 Collection Per Class Inheritance
 --------------------------------
 
-With Collection Per Class Inheritance each document is stored in
-its own collection and contains all inherited fields:
+With collection per class inheritance, each document is stored in its own
+collection and contains all inherited fields:
 
 .. configuration-block::
 
@@ -202,5 +207,5 @@ its own collection and contains all inherited fields:
           type: document
           inheritanceType: COLLECTION_PER_CLASS
 
-In this type of inheritance a discriminator is not needed since the
-data is separated in different collections!
+A discriminator is not needed with this type of inheritance since the data is
+separated in different collections.

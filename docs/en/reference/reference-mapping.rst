@@ -53,8 +53,6 @@ Reference one document:
 
         <?php
 
-        namespace Documents;
-
         /** @Document */
         class Product
         {
@@ -107,8 +105,6 @@ Reference many documents:
 
         <?php
 
-        namespace Documents;
-
         /** @Document */
         class User
         {
@@ -151,8 +147,8 @@ Reference many documents:
 Mixing Document Types
 ---------------------
 
-If you want to store different types of documents in references you
-can simply omit the ``targetDocument`` option:
+If you want to store different types of documents in references, you can simply
+omit the ``targetDocument`` option:
 
 .. configuration-block::
 
@@ -180,12 +176,10 @@ can simply omit the ``targetDocument`` option:
         referenceMany:
             favorites: ~
 
-Now the ``$favorites`` property can store a reference to any type
-of document! The class name will be automatically added for you in
-a field named ``_doctrine_class_name``.
-
-You can also specify a discriminator map to avoid storing the fully
-qualified class name with each reference:
+Now the ``$favorites`` property can store a reference to any type of document!
+The class name will be automatically stored in a field named
+``_doctrine_class_name`` within the `DBRef`_ object. The field name can be
+customized with the ``discriminatorField`` option:
 
 .. configuration-block::
 
@@ -193,7 +187,39 @@ qualified class name with each reference:
 
         <?php
 
-        namespace Documents;
+        /** @Document */
+        class User
+        {
+            // ..
+
+            /**
+             * @ReferenceMany(discriminatorField="type")
+             */
+            private $favorites = array();
+
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <reference-many fieldName="favorites">
+            <discriminator-field name="type" />
+        </reference-many>
+
+    .. code-block:: yaml
+
+        referenceMany:
+          favorites:
+            discriminatorField: type
+
+You can also specify a discriminator map to avoid storing the fully qualified
+class name with each reference:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
 
         /** @Document */
         class User
@@ -230,49 +256,16 @@ qualified class name with each reference:
               album: Documents\Album
               song: Documents\Song
 
-If you want to store the discriminator value in a field other than
-``_doctrine_class_name`` you can use the ``discriminatorField``
-option:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-
-        /** @Document */
-        class User
-        {
-            // ..
-
-            /**
-             * @ReferenceMany(discriminatorField="type")
-             */
-            private $favorites = array();
-
-            // ...
-        }
-
-    .. code-block:: xml
-
-        <reference-many fieldName="favorites">
-            <discriminator-field name="type" />
-        </reference-many>
-
-    .. code-block:: yaml
-
-        referenceMany:
-          favorites:
-            discriminatorField: type
-
 .. _simple_references:
 
 Simple References
 -----------------
 
-By default all references are stored as a ``DBRef`` with the traditional ``$id``,
-``$db`` and ``$ref`` fields but if you want you can configure your references
-to be simple and only store a ``MongoId``.
+By default all references are stored as a `DBRef`_ object with the traditional
+``$ref``, ``$id``, and ``$db`` fields (in that order). For references to
+documents of a single collection, storing the collection and database names for
+each reference may be redundant. You can use simple references to store the
+referenced document's identifier (e.g. ``MongoId``) instead of a `DBRef`_.
 
 Example:
 
@@ -297,20 +290,19 @@ Example:
           profile:
             simple: true
 
-Now when you create a new reference to a Profile only a ``MongoId`` instance
-will be stored in the ``profile`` field.
+Now, the ``profile`` field will only store the ``MongoId`` of the referenced
+Profile document.
 
-Benefits:
-
-- Smaller amount of storage used.
-- Performance and simple indexing.
+Simple references reduce the amount of storage used, both for the document
+itself and any indexes on the reference field; however, simple references cannot
+be used with discriminators, since there is no `DBRef`_ object in which to store
+a discriminator value.
 
 Cascading Operations
 --------------------
 
-By default Doctrine will not cascade any ``UnitOfWork`` operations
-to referenced documents so if wish to have this functionality you
-must explicitly enable it:
+By default, Doctrine will not cascade any ``UnitOfWork`` operations to
+referenced documents. You must explicitly enable this functionality:
 
 .. configuration-block::
 
@@ -339,9 +331,11 @@ must explicitly enable it:
 
 The valid values are:
 
--  **all** - cascade on all operations by default.
+-  **all** - cascade all operations by default.
 -  **detach** - cascade detach operation to referenced documents.
 -  **merge** - cascade merge operation to referenced documents.
 -  **refresh** - cascade refresh operation to referenced documents.
 -  **remove** - cascade remove operation to referenced documents.
 -  **persist** - cascade persist operation to referenced documents.
+
+.. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbref

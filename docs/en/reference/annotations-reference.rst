@@ -140,16 +140,11 @@ MongoDate http://www.php.net/manual/en/class.mongodate.php.
 @DiscriminatorField
 -------------------
 
-This annotation is a required annotation for the topmost/super
-class of an inheritance hierarchy. It specifies the details of the
-field which saves the name of the class, which the document is
-actually instantiated as.
-
-Required attributes:
-
-- 
-   fieldName - The field name of the discriminator. This name is also
-   used during Array hydration as key to specify the class-name.
+This annotation is required for the top-most class in a
+:ref:`single collection inheritance <single_collection_inheritance>` hierarchy.
+It takes a string as its only argument, which specifies the database field to
+store a class name or key (if a discriminator map is used). ODM uses this field
+during hydration to select the instantiation class.
 
 Example:
 
@@ -159,22 +154,28 @@ Example:
 
     /**
      * @Document
-     * @DiscriminatorField(fieldName="type")
+     * @InheritanceType("SINGLE_COLLECTION")
+     * @DiscriminatorField("type")
      */
     class SuperUser
     {
         // ...
     }
 
+.. note::
+
+    For backwards compatibility, the discriminator field may also be specified
+    via either the ``name`` or ``fieldName`` annotation attributes.
+
 @DiscriminatorMap
 -----------------
 
-The discriminator map is a required annotation on the top-most/super
-class in an inheritance hierarchy. It takes an array as only
-argument which defines which class should be saved under which name
-in the database. Keys are the database value and values are the
-classes, either as fully- or as unqualified class names depending
-if the classes are in the namespace or not.
+This annotation is required for the top-most class in a
+:ref:`single collection inheritance <single_collection_inheritance>` hierarchy.
+It takes an array as its only argument, which maps keys to class names. The
+class names may be fully qualified or relative to the current namespace. When
+a document is persisted to the database, its class name key will be stored in
+the discriminator field instead of the fully qualified class name.
 
 .. code-block:: php
 
@@ -183,15 +184,11 @@ if the classes are in the namespace or not.
     /**
      * @Document
      * @InheritanceType("SINGLE_COLLECTION")
-     * @DiscriminatorField(fieldName="discr")
+     * @DiscriminatorField("type")
      * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
      */
     class Person
     {
-        /**
-         * @Field(type="string")
-         */
-        private $discr;
         // ...
     }
 
@@ -302,7 +299,8 @@ Optional attributes:
 -
     targetDocument - A full class name of the target document.
 -
-    discriminatorField - The field name to store the discriminator value in.
+    discriminatorField - The database field name to store the discriminator
+    value within the embedded document.
 -
     discriminatorMap - Map of discriminator values to class names.
 -
@@ -354,7 +352,8 @@ Optional attributes:
 - 
     targetDocument - A full class name of the target document.
 - 
-    discriminatorField - The field name to store the discriminator value in.
+    discriminatorField - The database field name to store the discriminator
+    value within the embedded document.
 -
     discriminatorMap - Map of discriminator values to class names.
 -
@@ -641,14 +640,9 @@ property:
 @InheritanceType
 ----------------
 
-In an inheritance hierarchy you have to use this annotation on the
-topmost/super class to define which strategy should be used for
-inheritance. Currently SINGLE\_COLLECTION and
-COLLECTION\_PER\_CLASS are supported.
-
-This annotation has always been used in conjunction with the
-@DiscriminatorMap and
-@DiscriminatorField annotations.
+This annotation must appear on the top-most class in an
+:ref:`inheritance hierarchy <inheritance_mapping>`. ``SINGLE_COLLECTION`` and
+``COLLECTION_PER_CLASS`` are currently supported.
 
 Examples:
 
@@ -659,7 +653,6 @@ Examples:
     /**
      * @Document
      * @InheritanceType("COLLECTION_PER_CLASS")
-     * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
      */
     class Person
     {
@@ -669,6 +662,7 @@ Examples:
     /**
      * @Document
      * @InheritanceType("SINGLE_COLLECTION")
+     * @DiscriminatorField("type")
      * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
      */
     class Person
@@ -902,11 +896,14 @@ Optional attributes:
 -
     targetDocument - A full class name of the target document.
 -
-    simple - Create simple references and only store a ``MongoId`` instead of a ``DBRef``.
+    simple - Create simple references and only store the referenced document's
+    identifier (e.g. ``MongoId``) instead of a `DBRef`_. Note that simple
+    references are not compatible with the discriminators.
 -
     cascade - Cascade Option
 - 
-    discriminatorField - The field name to store the discriminator value in.
+    discriminatorField - The field name to store the discriminator value within
+    the `DBRef`_ object.
 -
     discriminatorMap - Map of discriminator values to class names.
 -
@@ -959,11 +956,14 @@ Optional attributes:
 -
     targetDocument - A full class name of the target document.
 -
-    simple - Create simple references and only store a ``MongoId`` instead of a ``DBRef``.
+    simple - Create simple references and only store the referenced document's
+    identifier (e.g. ``MongoId``) instead of a `DBRef`_. Note that simple
+    references are not compatible with the discriminators.
 -
     cascade - Cascade Option
 - 
-    discriminatorField - The field name to store the discriminator value in.
+    discriminatorField - The field name to store the discriminator value within
+    the `DBRef`_ object.
 -
     discriminatorMap - Map of discriminator values to class names.
 -
@@ -1036,3 +1036,4 @@ Defines a unique index on the given document.
     /** @String @UniqueIndex */
     private $email;
 
+.. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbref
