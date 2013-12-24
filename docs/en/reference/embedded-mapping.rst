@@ -52,6 +52,9 @@ Embed a single document:
             address:
               targetDocument: Address
 
+        Address:
+          type: embeddedDocument
+          
 .. _embed_many:
 
 Embed Many
@@ -102,6 +105,9 @@ Embed many documents:
             phonenumbers:
               targetDocument: Phonenumber
 
+        Phonenumber:
+          type: embeddedDocument
+          
 Mixing Document Types
 ---------------------
 
