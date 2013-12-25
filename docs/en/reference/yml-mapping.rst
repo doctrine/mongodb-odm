@@ -143,3 +143,21 @@ of several common elements:
 
 Be aware that class-names specified in the YAML files should be
 fully qualified.
+
+Custom type for id field
+------------------------
+
+If you want to rely on a custom type for your identifier, here's the yml definition.
+
+.. code-block:: yaml
+
+    Documents\User:
+      db: documents
+      collection: user
+      customId: true
+      fields:
+        id:
+          id: true
+          type: my_custom_type
+          
+You shall not define the ``strategy: NONE``, just the ``customId: true`` and the ``type``
