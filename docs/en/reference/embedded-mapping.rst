@@ -19,13 +19,13 @@ Embed a single document:
         class User
         {
             // ...
-    
+
             /** @EmbedOne(targetDocument="Address") */
             private $address;
-    
+
             // ...
         }
-    
+
         /** @EmbeddedDocument */
         class Address
         {
@@ -72,13 +72,13 @@ Embed many documents:
         class User
         {
             // ...
-    
+
             /** @EmbedMany(targetDocument="Phonenumber") */
             private $phonenumbers = array();
-    
+
             // ...
         }
-    
+
         /** @EmbeddedDocument */
         class Phonenumber
         {
@@ -111,8 +111,8 @@ Embed many documents:
 Mixing Document Types
 ---------------------
 
-If you want to store different types of documents in an embedded
-document you can simply omit the ``targetDocument`` option:
+If you want to store different types of embedded documents in the same field,
+you can simply omit the ``targetDocument`` option:
 
 .. configuration-block::
 
@@ -124,10 +124,10 @@ document you can simply omit the ``targetDocument`` option:
         class User
         {
             // ..
-    
+
             /** @EmbedMany */
             private $tasks = array();
-    
+
             // ...
         }
 
@@ -140,12 +140,10 @@ document you can simply omit the ``targetDocument`` option:
         embedMany:
           tasks: ~
 
-Now the ``$tasks`` property can store any type of document! The
-class name will be automatically added for you in a field named
-``_doctrine_class_name``.
-
-You can also specify a discriminator map to avoid storing the fully
-qualified class name with each embedded document:
+Now the ``$tasks`` property can store any type of document! The class name will
+be automatically stored  stored in a field named ``_doctrine_class_name`` within
+the embedded document. The field name can be customized with the
+``discriminatorField`` option:
 
 .. configuration-block::
 
@@ -157,7 +155,41 @@ qualified class name with each embedded document:
         class User
         {
             // ..
-    
+
+            /**
+             * @EmbedMany(discriminatorField="type")
+             */
+            private $tasks = array();
+
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <embed-many fieldName="tasks">
+            <discriminator-field name="type" />
+        </embed-many>
+
+    .. code-block:: yaml
+
+        embedMany:
+          tasks:
+            discriminatorField: type
+
+You can also specify a discriminator map to avoid storing the fully qualified
+class name in each embedded document:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        /** @Document */
+        class User
+        {
+            // ..
+
             /**
              * @EmbedMany(
              *   discriminatorMap={
@@ -167,7 +199,7 @@ qualified class name with each embedded document:
              * )
              */
             private $tasks = array();
-    
+
             // ...
         }
 
@@ -187,41 +219,6 @@ qualified class name with each embedded document:
             discriminatorMap:
               download: DownloadTask
               build: BuildTask
-
-If you want to store the discriminator value in a field other than
-``_doctrine_class_name`` you can use the ``discriminatorField``
-option:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-
-        /** @Document */
-        class User
-        {
-            // ..
-    
-            /**
-             * @EmbedMany(discriminatorField="type")
-             */
-            private $tasks = array();
-    
-            // ...
-        }
-
-    .. code-block:: xml
-
-        <embed-many fieldName="tasks">
-            <discriminator-field name="type" />
-        </embed-many>
-
-    .. code-block:: yaml
-
-        embedMany:
-          tasks:
-            discriminatorField: type
 
 Cascading Operations
 --------------------

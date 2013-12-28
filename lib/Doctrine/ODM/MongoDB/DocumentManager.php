@@ -659,25 +659,6 @@ class DocumentManager implements ObjectManager
         return $this->config;
     }
 
-    public function getClassNameFromDiscriminatorValue(array $mapping, $value)
-    {
-        $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : '_doctrine_class_name';
-        if (is_array($value) && isset($value[$discriminatorField])) {
-            $discriminatorValue = $value[$discriminatorField];
-            return isset($mapping['discriminatorMap'][$discriminatorValue]) ? $mapping['discriminatorMap'][$discriminatorValue] : $discriminatorValue;
-        } else {
-            $class = $this->getClassMetadata($mapping['targetDocument']);
-
-            // @TODO figure out how to remove this
-            if ($class->discriminatorField) {
-                if (isset($value[$class->discriminatorField['name']])) {
-                    return $class->discriminatorMap[$value[$class->discriminatorField['name']]];
-                }
-            }
-        }
-        return $mapping['targetDocument'];
-    }
-
     /**
      * Returns a DBRef array for the supplied document.
      *
@@ -692,28 +673,43 @@ class DocumentManager implements ObjectManager
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException('Cannot create a DBRef, the document is not an object');
         }
-        $className = get_class($document);
-        $class = $this->getClassMetadata($className);
+
+        $class = $this->getClassMetadata(get_class($document));
         $id = $this->unitOfWork->getDocumentIdentifier($document);
 
-        if (isset($referenceMapping['simple']) && $referenceMapping['simple']) {
+        if ( ! empty($referenceMapping['simple'])) {
             return $class->getDatabaseIdentifierValue($id);
         }
 
         $dbRef = array(
             '$ref' => $class->getCollection(),
             '$id'  => $class->getDatabaseIdentifierValue($id),
-            '$db'  => $this->getDocumentDatabase($className)->getName()
+            '$db'  => $this->getDocumentDatabase($class->name)->getName(),
         );
 
-        if ($class->discriminatorField) {
-            $dbRef[$class->discriminatorField['name']] = $class->discriminatorValue;
+        if ($class->hasDiscriminator()) {
+            $dbRef[$class->discriminatorField] = $class->discriminatorValue;
         }
 
-        // add a discriminator value if the referenced document is not mapped explicitly to a targetDocument
-        if ($referenceMapping && ! isset($referenceMapping['targetDocument'])) {
-            $discriminatorField = isset($referenceMapping['discriminatorField']) ? $referenceMapping['discriminatorField'] : '_doctrine_class_name';
-            $discriminatorValue = isset($referenceMapping['discriminatorMap']) ? array_search($class->getName(), $referenceMapping['discriminatorMap']) : $class->getName();
+        /* Add a discriminator value if the referenced document is not mapped
+         * explicitly to a targetDocument class.
+         */
+        if ($referenceMapping !== null && ! isset($referenceMapping['targetDocument'])) {
+            $discriminatorField = $referenceMapping['discriminatorField'];
+            $discriminatorValue = isset($referenceMapping['discriminatorMap'])
+                ? array_search($class->name, $referenceMapping['discriminatorMap'])
+                : $class->name;
+
+            /* If the discriminator value was not found in the map, use the full
+             * class name. In the future, it may be preferable to throw an
+             * exception here (perhaps based on some strictness option).
+             *
+             * @see PersistenceBuilder::prepareEmbeddedDocumentValue()
+             */
+            if ($discriminatorValue === false) {
+                $discriminatorValue = $class->name;
+            }
+
             $dbRef[$discriminatorField] = $discriminatorValue;
         }
 

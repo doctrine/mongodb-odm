@@ -24,6 +24,16 @@ use Doctrine\Common\Annotations\Annotation;
 /** @Annotation */
 final class DiscriminatorField extends Annotation
 {
+    /**
+     * Available for BC, but AnnotationDriver will consider $value first.
+     */
     public $name;
+
+    /**
+     * Available for BC, but AnnotationDriver will consider $name and $value
+     * first.
+     *
+     * @deprecated
+     */
     public $fieldName;
 }

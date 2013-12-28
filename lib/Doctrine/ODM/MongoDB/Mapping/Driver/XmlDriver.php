@@ -78,10 +78,12 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot->{'discriminator-field'})) {
             $discrField = $xmlRoot->{'discriminator-field'};
-            $class->setDiscriminatorField(array(
-                'name' => isset($discrField['name']) ? (string) $discrField['name'] : null,
-                'fieldName' => (string) $discrField['fieldName'],
-            ));
+            /* XSD only allows for "name", which is consistent with association
+             * configurations, but fall back to "fieldName" for BC.
+             */
+            $class->setDiscriminatorField(
+                isset($discrField['name']) ? (string) $discrField['name'] : (string) $discrField['fieldName']
+            );
         }
         if (isset($xmlRoot->{'discriminator-map'})) {
             $map = array();

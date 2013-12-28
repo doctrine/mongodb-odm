@@ -83,7 +83,7 @@ queries.
 
     Priming is also compatible with :ref:`simple references <simple_references>`
     and discriminated references (e.g. where referenced classes utilize
-    :ref:`single collection inhertiance <single_collection_inheritance>`).
+    :ref:`single collection inheritance <single_collection_inheritance>`).
 
 Primer Callback
 ---------------

@@ -538,7 +538,7 @@ class DocumentPersister
         $owner = $collection->getOwner();
         if ($embeddedDocuments) {
             foreach ($embeddedDocuments as $key => $embeddedDocument) {
-                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $embeddedDocument);
+                $className = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
@@ -567,7 +567,7 @@ class DocumentPersister
                 $className = $mapping['targetDocument'];
                 $mongoId = $reference;
             } else {
-                $className = $this->dm->getClassNameFromDiscriminatorValue($mapping, $reference);
+                $className = $this->uow->getClassNameForAssociation($mapping, $reference);
                 $mongoId = $reference['$id'];
             }
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
@@ -772,9 +772,9 @@ class DocumentPersister
         /* If the class has a discriminator field, which is not already in the
          * criteria, inject it now. The field/values need no preparation.
          */
-        if ($this->class->hasDiscriminator() && ! isset($preparedQuery[$this->class->discriminatorField['name']])) {
+        if ($this->class->hasDiscriminator() && ! isset($preparedQuery[$this->class->discriminatorField])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
-            $preparedQuery[$this->class->discriminatorField['name']] = array('$in' => $discriminatorValues);
+            $preparedQuery[$this->class->discriminatorField] = array('$in' => $discriminatorValues);
         }
 
         return $preparedQuery;

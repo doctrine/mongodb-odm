@@ -139,7 +139,7 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if ($class->hasDiscriminator()) {
-            $insertData[$class->discriminatorField['name']] = $class->discriminatorValue;
+            $insertData[$class->discriminatorField] = $class->discriminatorValue;
         }
 
         return $insertData;
@@ -317,7 +317,7 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if ($class->hasDiscriminator()) {
-            $updateData['$set'][$class->discriminatorField['name']] = $class->discriminatorValue;
+            $updateData['$set'][$class->discriminatorField] = $class->discriminatorValue;
         }
 
         return $updateData;
@@ -417,15 +417,30 @@ class PersistenceBuilder
             $embeddedDocumentValue[$mapping['name']] = $value;
         }
 
-        // Store a discriminator value if the embedded document is not mapped explicitly to a targetDocument
+        /* Add a discriminator value if the embedded document is not mapped
+         * explicitly to a targetDocument class.
+         */
         if ( ! isset($embeddedMapping['targetDocument'])) {
-            $discriminatorField = isset($embeddedMapping['discriminatorField']) ? $embeddedMapping['discriminatorField'] : '_doctrine_class_name';
-            $discriminatorValue = isset($embeddedMapping['discriminatorMap']) ? array_search($class->getName(), $embeddedMapping['discriminatorMap']) : $class->getName();
+            $discriminatorField = $embeddedMapping['discriminatorField'];
+            $discriminatorValue = isset($embeddedMapping['discriminatorMap'])
+                ? array_search($class->name, $embeddedMapping['discriminatorMap'])
+                : $class->name;
+
+            /* If the discriminator value was not found in the map, use the full
+             * class name. In the future, it may be preferable to throw an
+             * exception here (perhaps based on some strictness option).
+             *
+             * @see DocumentManager::createDBRef()
+             */
+            if ($discriminatorValue === false) {
+                $discriminatorValue = $class->name;
+            }
+
             $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
         }
 
         if ($class->hasDiscriminator()) {
-            $embeddedDocumentValue[$class->discriminatorField['name']] = $class->discriminatorValue;
+            $embeddedDocumentValue[$class->discriminatorField] = $class->discriminatorValue;
         }
 
         // Ensure empty embedded documents are stored as BSON objects

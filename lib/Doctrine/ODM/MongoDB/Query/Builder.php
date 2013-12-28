@@ -330,7 +330,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $documentNames = $documentName;
             $documentName = $documentNames[0];
 
-            $discriminatorField = $this->dm->getClassMetadata($documentName)->discriminatorField['name'];
+            $discriminatorField = $this->dm->getClassMetadata($documentName)->discriminatorField;
             $discriminatorValues = $this->getDiscriminatorValues($documentNames);
             $this->field($discriminatorField)->in($discriminatorValues);
         }

@@ -562,24 +562,23 @@ public function <methodName>()
         return implode("\n", $lines);
     }
 
-    private function generateInheritanceAnnotation($metadata)
+    private function generateInheritanceAnnotation(ClassMetadataInfo $metadata)
     {
-        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+        if ($metadata->inheritanceType !== ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
             return '@ODM\\InheritanceType("' . $this->getInheritanceTypeString($metadata->inheritanceType) . '")';
         }
     }
 
-    private function generateDiscriminatorFieldAnnotation($metadata)
+    private function generateDiscriminatorFieldAnnotation(ClassMetadataInfo $metadata)
     {
-        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
-            $discrField = $metadata->discriminatorField;
-            return '@ODM\\DiscriminatorField(fieldName="' . $discrField['fieldName'] . '")';
+        if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+            return '@ODM\\DiscriminatorField(name="' . $metadata->discriminatorField . '")';
         }
     }
 
     private function generateDiscriminatorMapAnnotation(ClassMetadataInfo $metadata)
     {
-        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+        if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
             $inheritanceClassMap = array();
 
             foreach ($metadata->discriminatorMap as $type => $class) {
@@ -740,7 +739,7 @@ public function <methodName>()
         return $this->prefixCodeWithSpaces($method);
     }
 
-    private function generateLifecycleCallbackMethod($name, $methodName, $metadata)
+    private function generateLifecycleCallbackMethod($name, $methodName, ClassMetadataInfo $metadata)
     {
         if ($this->hasMethod($methodName, $metadata)) {
             return;
