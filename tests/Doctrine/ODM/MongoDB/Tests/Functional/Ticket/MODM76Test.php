@@ -22,7 +22,7 @@ class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @ODM\Document(db="tests", collection="tests") */
+/** @ODM\Document */
 class MODM76A
 {
     /** @ODM\Id */
@@ -76,7 +76,7 @@ class MODM76B
     }
 }
 
-/** @ODM\Document(db="tests", collection="tests2") */
+/** @ODM\Document */
 class MODM76C
 {
     /** @ODM\Id */

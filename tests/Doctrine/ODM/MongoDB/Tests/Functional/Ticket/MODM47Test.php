@@ -11,14 +11,14 @@ class MODM47Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $a = array(
             'c' => 'c value'
         );
-        $this->dm->getConnection()->modm47_test->a->insert($a);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\MODM47A')->insert($a);
 
         $a = $this->dm->find(__NAMESPACE__.'\MODM47A', $a['_id']);
         $this->assertEquals('c value', $a->b);
     }
 }
 
-/** @ODM\Document(db="modm47_test", collection="a") */
+/** @ODM\Document */
 class MODM47A
 {
     /** @ODM\Id */

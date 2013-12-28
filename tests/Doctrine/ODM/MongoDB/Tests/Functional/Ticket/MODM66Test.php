@@ -10,11 +10,11 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testTest()
     {
-        $b1 = new B('first');
-        $a = new A(array($b1));
+        $b1 = new MODM52B('first');
+        $a = new MODM52A(array($b1));
         $this->dm->persist($a);
         $this->dm->flush();
-        $b2 = new B('second');
+        $b2 = new MODM52B('second');
         $a->getB()->add($b2);
         $this->dm->flush();
 
@@ -32,11 +32,11 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testRefresh()
     {
-        $b1 = new B('first');
-        $a = new A(array($b1));
+        $b1 = new MODM52B('first');
+        $a = new MODM52A(array($b1));
         $this->dm->persist($a);
         $this->dm->flush();
-        $b2 = new B('second');
+        $b2 = new MODM52B('second');
 
         $this->dm->refresh($a);
 
@@ -56,13 +56,13 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 }
 
-/** @ODM\Document(db="tests", collection="tests") */
-class A
+/** @ODM\Document */
+class MODM52A
 {
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument="b", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument="MODM52B", cascade="all") */
     protected $b;
 
     function __construct($b)
@@ -76,8 +76,8 @@ class A
     }
 }
 
-/** @ODM\Document(db="tests", collection="tests2") */
-class B
+/** @ODM\Document */
+class MODM52B
 {
 
     /** @ODM\Id */

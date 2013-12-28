@@ -69,7 +69,7 @@ class MODM52Container
 class MODM52Embedded extends MODM52Container
 {}
 
-/** @ODM\Document(db="tests", collection="tests") */
+/** @ODM\Document */
 class MODM52Doc extends MODM52Container
 {
     /** @ODM\Id */
