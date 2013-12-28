@@ -16,23 +16,8 @@ use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
 use Documents\ForumUser;
 use Documents\ForumAvatar;
 
-class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
+class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    private $dm;
-    private $uow;
-
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->dm = DocumentManagerMock::create(new ConnectionMock());
-        $this->uow = $this->dm->getUnitOfWork();
-    }
-
-    protected function tearDown()
-    {
-        unset($this->dm, $this->uow);
-    }
-
     public function testScheduleForInsert()
     {
         $class = $this->dm->getClassMetadata('Documents\ForumUser');
@@ -277,19 +262,18 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     public function testPreUpdateTriggeredWithEmptyChangeset()
     {
-        $dm = DocumentManagerMock::create();
-        $evm = $dm->getEventManager()->addEventSubscriber(
+        $this->dm->getEventManager()->addEventSubscriber(
             new \Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock()
         );
         $user = new \Documents\ForumUser();
         $user->username = '12345';
 
-        $dm->persist($user);
-        $dm->flush();
+        $this->dm->persist($user);
+        $this->dm->flush();
 
         $user->username = '1234';
-        $dm->persist($user);
-        $dm->flush();
+        $this->dm->persist($user);
+        $this->dm->flush();
     }
 
     public function testNotSaved()
