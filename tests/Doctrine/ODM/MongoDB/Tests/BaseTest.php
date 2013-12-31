@@ -14,17 +14,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $config = new Configuration();
-
-        $config->setProxyDir(__DIR__ . '/../../../../Proxies');
-        $config->setProxyNamespace('Proxies');
-        $config->setHydratorDir(__DIR__ . '/../../../../Hydrators');
-        $config->setHydratorNamespace('Hydrators');
-        $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
-        $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/../../../../Documents'));
-
-        $config->addFilter('testFilter', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
-        $config->addFilter('testFilter2', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
+        $config = $this->getConfiguration();
 
         $conn = new Connection(DOCTRINE_MONGODB_SERVER, array(), $config);
         $this->dm = DocumentManager::create($conn, $config);
@@ -42,5 +32,22 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         foreach ($collections as $collection) {
             $collection->drop();
         }
+    }
+
+    protected function getConfiguration()
+    {
+        $config = new Configuration();
+
+        $config->setProxyDir(__DIR__ . '/../../../../Proxies');
+        $config->setProxyNamespace('Proxies');
+        $config->setHydratorDir(__DIR__ . '/../../../../Hydrators');
+        $config->setHydratorNamespace('Hydrators');
+        $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
+        $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/../../../../Documents'));
+
+        $config->addFilter('testFilter', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
+        $config->addFilter('testFilter2', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
+
+        return $config;
     }
 }

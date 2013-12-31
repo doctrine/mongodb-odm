@@ -16,24 +16,11 @@ use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\Money;
 use Documents\Ecommerce\Option;
 
-class EcommerceTest extends \PHPUnit_Framework_TestCase
+class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    protected $dm;
-
     public function setUp()
     {
-        $config = new Configuration();
-
-        $config->setProxyDir(__DIR__ . '/../../../../../Proxies');
-        $config->setProxyNamespace('Proxies');
-
-        $config->setHydratorDir(__DIR__ . '/../../../../../Hydrators');
-        $config->setHydratorNamespace('Hydrators');
-
-        $reader = new AnnotationReader();
-        $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
-
-        $this->dm = DocumentManager::create(new Connection(), $config);
+        parent::setUp();
 
         $currencies = array('USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125);
 
@@ -55,18 +42,6 @@ class EcommerceTest extends \PHPUnit_Framework_TestCase
         $this->dm->detach($product);
 
         unset($currencies, $product);
-    }
-
-    public function tearDown()
-    {
-        $documents = array(
-            'Documents\Ecommerce\ConfigurableProduct',
-            'Documents\Ecommerce\StockItem',
-            'Documents\Ecommerce\Currency',
-        );
-        foreach ($documents as $document) {
-            $this->dm->getDocumentCollection($document)->drop();
-        }
     }
 
     public function testEmbedding()
