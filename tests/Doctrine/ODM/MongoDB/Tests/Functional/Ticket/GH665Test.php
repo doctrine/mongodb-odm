@@ -1,28 +1,31 @@
 <?php
 
-namespace Doctrine\ODM\MongoDB\Tests;
-
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-class GH665Test extends BaseTest
+class GH665Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-
     public function testUseAddToSetStrategyOnEmbeddedDocument()
     {
-        $embedded = new GH665Embedded();
-        $embedded->name = 'test';
-
         $document = new GH665Document();
-        $document->embedded->add($embedded);
-        $document->embeddedset->add($embedded);
+        $document->embeddedPushAll->add(new GH665Embedded('foo'));
+        $document->embeddedAddToSet->add(new GH665Embedded('bar'));
+
         $this->dm->persist($document);
         $this->dm->flush();
+        $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH665Document')
-            ->findOne(array('embedded.name' => 'test'));
+            ->findOne(array('embeddedPushAll.name' => 'foo'));
         $this->assertNotNull($check);
+        $this->assertSame($document->id, (string) $check['_id']);
+
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH665Document')
+            ->findOne(array('embeddedAddToSet.name' => 'bar'));
+        $this->assertNotNull($check);
+        $this->assertSame($document->id, (string) $check['_id']);
 
         $persisted = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH665Document')
             ->hydrate(false)
@@ -32,20 +35,11 @@ class GH665Test extends BaseTest
 
         $expected = array(
             '_id' => $document->id,
-            'embedded' => array(
-                array('name' => 'test')
-                ),
-            'embeddedset' => array(
-                array('name' => 'test')
-                )
-            );
+            'embeddedPushAll' => array(array('name' => 'foo')),
+            'embeddedAddToSet' => array(array('name' => 'bar'))
+        );
+
         $this->assertEquals($expected, $persisted);
-
-        // the dot.notation should work.
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH665Document')
-            ->findOne(array('embeddedset.name' => 'test'));
-        $this->assertNotNull($check);
-
     }
 }
 
@@ -55,19 +49,16 @@ class GH665Document
     /** @ODM\Id */
     public $id;
 
-    /**
-      * @ODM\EmbedMany(targetDocument="GH665Embedded")
-      */
-    public $embedded;
+    /** @ODM\EmbedMany(targetDocument="GH665Embedded", strategy="pushAll") */
+    public $embeddedPushAll;
 
-    /**
-      * @ODM\EmbedMany(targetDocument="GH665Embedded",strategy="addToSet")
-      */
-    public $embeddedset;
+    /** @ODM\EmbedMany(targetDocument="GH665Embedded", strategy="addToSet") */
+    public $embeddedAddToSet;
 
-    public function __construct() {
-        $this->embedded = new ArrayCollection();
-        $this->embeddedset = new ArrayCollection();
+    public function __construct()
+    {
+        $this->embeddedPushAll = new ArrayCollection();
+        $this->embeddedAddToSet = new ArrayCollection();
     }
 }
 
@@ -76,8 +67,9 @@ class GH665Embedded
 {
     /** @ODM\String */
     public $name;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
 }
-
-
-
-?>
