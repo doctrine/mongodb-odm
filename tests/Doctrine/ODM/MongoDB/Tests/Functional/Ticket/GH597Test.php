@@ -114,19 +114,9 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     private function assertPostDocument(array $expected, GH597Post $post)
     {
-        $document = $this->getPostCollection()->findOne(array('_id' => new \MongoId($post->getId())));
+        $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH597Post');
+        $document = $collection->findOne(array('_id' => new \MongoId($post->getId())));
         $this->assertEquals($expected, $document);
-    }
-
-    /**
-     * @return \MongoCollection
-     */
-    private function getPostCollection()
-    {
-        return $this->dm
-            ->getConnection()
-            ->getMongo()
-            ->selectCollection('doctrine_odm_tests', 'GH597Post');
     }
 }
 

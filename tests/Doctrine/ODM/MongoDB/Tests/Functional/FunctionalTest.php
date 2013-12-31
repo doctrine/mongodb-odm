@@ -244,7 +244,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals('servers', $test['server']['$ref']);
         $this->assertTrue(isset($test['server']['$id']));
-        $this->assertEquals('doctrine_odm_tests', $test['server']['$db']);
+        $this->assertEquals(DOCTRINE_MONGODB_DATABASE, $test['server']['$db']);
         $this->assertEquals('server_guest', $test['server']['_doctrine_class_name']);
     }
 
