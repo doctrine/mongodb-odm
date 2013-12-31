@@ -190,7 +190,7 @@ class DocumentManager implements ObjectManager
      */
     public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
     {
-        return new DocumentManager($conn, $config, $eventManager);
+        return new static($conn, $config, $eventManager);
     }
 
     /**

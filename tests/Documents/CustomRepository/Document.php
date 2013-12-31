@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 
 /**
- * @ODM\Document(db="doctrine_odm_tests", collection="accounts", repositoryClass="Documents\CustomRepository\Repository")
+ * @ODM\Document(repositoryClass="Documents\CustomRepository\Repository")
  */
 class Document {
 	/**

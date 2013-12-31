@@ -2,11 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
@@ -14,8 +9,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testCustomRepository()
     {
-        $dm = $this->getDocumentManager();
-        $this->assertInstanceOf('Documents\CustomRepository\Repository', $dm->getRepository('Documents\CustomRepository\Document'));
+        $this->assertInstanceOf('Documents\CustomRepository\Repository', $this->dm->getRepository('Documents\CustomRepository\Document'));
     }
 
     public function testGetConnection()
@@ -73,14 +67,12 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testDocumentManagerIsClosedAccessor()
     {
-        $dm = $this->getDocumentManager();
-        $this->assertTrue($dm->isOpen());
-
-        $dm->close();
-        $this->assertFalse($dm->isOpen());
+        $this->assertTrue($this->dm->isOpen());
+        $this->dm->close();
+        $this->assertFalse($this->dm->isOpen());
     }
 
-    static public function dataMethodsAffectedByNoObjectArguments()
+    public function dataMethodsAffectedByNoObjectArguments()
     {
         return array(
             array('persist'),
@@ -96,11 +88,12 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      * @expectedException \InvalidArgumentException
      * @param string $methodName
      */
-    public function testThrowsExceptionOnNonObjectValues($methodName) {
+    public function testThrowsExceptionOnNonObjectValues($methodName)
+    {
         $this->dm->$methodName(null);
     }
 
-    static public function dataAffectedByErrorIfClosedException()
+    public function dataAffectedByErrorIfClosedException()
     {
         return array(
             array('flush'),
@@ -125,34 +118,5 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         } else {
             $this->dm->$methodName(new \stdClass());
         }
-    }
-
-    protected function getDocumentManager()
-    {
-        $config = new Configuration();
-
-        $config->setProxyDir(__DIR__ . '/../../../../Proxies');
-        $config->setProxyNamespace('Proxies');
-
-        $config->setHydratorDir(__DIR__ . '/../../../../Hydrators');
-        $config->setHydratorNamespace('Hydrators');
-
-        $config->setDefaultDB('doctrine_odm_tests');
-
-        /*
-        $config->setLoggerCallable(function(array $log) {
-            print_r($log);
-        });
-        $config->setMetadataCacheImpl(new ApcCache());
-        */
-
-        $reader = new AnnotationReader();
-        $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
-        return DocumentManager::create($this->getConnection(), $config);
-    }
-
-    protected function getConnection()
-    {
-        return $this->getMock('Doctrine\MongoDB\Connection');
     }
 }

@@ -5,7 +5,7 @@ namespace Documents\Tournament;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @ODM\Document(db="doctrine_odm_tests", collection="tournaments")
+ * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorMap({"football"="TournamentFootball","tennis": "TournamentTennis"})
  */

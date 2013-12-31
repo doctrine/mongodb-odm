@@ -21,4 +21,9 @@
             <directory suffix=".php">./lib/Doctrine/ODM/MongoDB</directory>
         </whitelist>
     </filter>
+
+    <php>
+        <const name="DOCTRINE_MONGODB_SERVER" value="mongodb://localhost:27017" />
+        <const name="DOCTRINE_MONGODB_DATABASE" value="doctrine_odm_tests" />
+    </php>
 </phpunit>
