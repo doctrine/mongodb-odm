@@ -19,8 +19,12 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 
 /**
  * An DocumentRepository serves as a repository for documents with generic as well as
@@ -33,7 +37,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class DocumentRepository implements ObjectRepository
+class DocumentRepository implements ObjectRepository, Selectable
 {
     /**
      * @var string
@@ -244,5 +248,35 @@ class DocumentRepository implements ObjectRepository
     public function getClassName()
     {
         return $this->getDocumentName();
+    }
+
+    /**
+     * Selects all elements from a selectable that match the expression and
+     * returns a new collection containing these elements.
+     *
+     * @see Selectable::matching()
+     * @param Criteria $criteria
+     * @return Collection
+     */
+    public function matching(Criteria $criteria)
+    {
+        $visitor = new QueryExpressionVisitor($this->createQueryBuilder());
+        $expr = $visitor->dispatch($criteria->getWhereExpression());
+        $queryBuilder = $this->createQueryBuilder()->setQueryArray($expr->getQuery());
+
+        if ($criteria->getMaxResults() !== null) {
+            $queryBuilder->limit($criteria->getMaxResults());
+        }
+
+        if ($criteria->getFirstResult() !== null) {
+            $queryBuilder->skip($criteria->getFirstResult());
+        }
+
+        if ($criteria->getOrderings() !== null) {
+            $queryBuilder->sort($criteria->getOrderings());
+        }
+
+        // @TODO: wrap around a specialized Collection for efficient count on large collections
+        return new ArrayCollection($queryBuilder->getQuery()->execute()->toArray());
     }
 }

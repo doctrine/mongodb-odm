@@ -15,7 +15,7 @@
         "php": ">=5.3.2",
         "symfony/console": "~2.0",
         "doctrine/annotations": "~1.0",
-        "doctrine/collections": "~1.0",
+        "doctrine/collections": "~1.1",
         "doctrine/common": "2.4.*",
         "doctrine/cache": "~1.0",
         "doctrine/inflector": "~1.0",
