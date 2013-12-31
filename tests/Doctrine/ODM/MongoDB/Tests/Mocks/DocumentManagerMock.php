@@ -93,22 +93,4 @@ class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
     {
         return isset($this->documentMetadatas[$documentName]) ? $this->documentMetadatas[$documentName] : parent::getClassMetadata($documentName);
     }
-
-    public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
-    {
-        if (is_null($config)) {
-            $config = new \Doctrine\ODM\MongoDB\Configuration();
-            $config->setProxyDir(__DIR__ . '/../Proxies');
-            $config->setProxyNamespace('Doctrine\Tests\Proxies');
-
-            $config->setHydratorDir(__DIR__ . '/../Hydrators');
-            $config->setHydratorNamespace('Doctrine\Tests\Hydrators');
-
-            $config->setMetadataDriverImpl(\Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver::create());
-        }
-        if (is_null($eventManager)) {
-            $eventManager = new \Doctrine\Common\EventManager();
-        }
-        return new DocumentManagerMock($conn, $config, $eventManager);   
-    }
 }
