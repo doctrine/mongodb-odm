@@ -54,6 +54,8 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $category->name = "My Category";
         $category->posts->add($post);
 
+        $this->dm->persist($comment);
+        $this->dm->persist($post);
         $this->dm->persist($category);
         $this->dm->flush();
         $this->dm->clear();
@@ -141,7 +143,6 @@ class Category
 /** @ODM\EmbeddedDocument */
 class Post
 {
-	
 	/** @ODM\EmbedMany(targetDocument="PostVersion") */
 	public $versions;
 	
@@ -159,7 +160,6 @@ class Post
 /** @ODM\EmbeddedDocument */
 class PostVersion
 {
-	
 	/** @ODM\String */
 	public $name;
 	
