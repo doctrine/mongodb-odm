@@ -188,14 +188,11 @@ class DocumentPersister
 
         $postInsertIds = array();
         $inserts = array();
-        $upserts = array();
         foreach ($this->queuedInserts as $oid => $document) {
             $upsert = $this->uow->isScheduledForUpsert($document);
-            if ($upsert) {
-                $data = $this->pb->prepareUpsertData($document);
-            } else {
-                $data = $this->pb->prepareInsertData($document);
-            }
+            $data = $upsert
+                ? $this->pb->prepareUpsertData($document)
+                : $this->pb->prepareInsertData($document);
 
             // Set the initial version for each insert
             if ($this->class->isVersioned) {
@@ -211,8 +208,10 @@ class DocumentPersister
                 }
             }
 
+            // upsert right away
             if ($upsert) {
-                $upserts[$oid] = $data;
+                $this->executeUpsert($data, $options);
+                unset($this->queuedInserts[$oid]);
             } else {
                 $inserts[$oid] = $data;
             }
@@ -233,21 +232,25 @@ class DocumentPersister
 
         $this->queuedInserts = array();
 
-        if ($upserts) {
-            $upsertOptions = $options;
-            $upsertOptions['upsert'] = true;
-            foreach ($upserts as $oid => $data) {
-                $criteria = array('_id' => $data['$set']['_id']);
-                unset($data['$set']['_id']);
-                // stupid php
-                if (empty($data['$set'])) {
-                    $data['$set'] = new \stdClass;
-                }
-                $this->collection->update($criteria, $data, $upsertOptions);
-            }
-        }
-
         return $postInsertIds;
+    }
+
+    /**
+     * Executes a single upsert in {@link executeInserts}
+     *
+     * @param array $data
+     * @param array $options
+     */
+    private function executeUpsert(array $data, array $options)
+    {
+        $options['upsert'] = true;
+        $criteria = array('_id' => $data['$set']['_id']);
+        unset($data['$set']['_id']);
+        // stupid php
+        if (empty($data['$set'])) {
+            $data['$set'] = new \stdClass;
+        }
+        $this->collection->update($criteria, $data, $options);
     }
 
     /**
