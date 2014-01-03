@@ -16,6 +16,9 @@ class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $a = new MODM76A(array($b), array($c1));
 
         $this->dm->persist($a);
+        $this->dm->persist($b);
+        $this->dm->persist($c1);
+        $this->dm->persist($c2);
         $this->dm->flush();
 
         $this->assertTrue($a->getId() != null);

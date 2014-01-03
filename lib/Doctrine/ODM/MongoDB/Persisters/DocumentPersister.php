@@ -198,21 +198,26 @@ class DocumentPersister
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 if ($versionMapping['type'] === 'int') {
-                    $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
-                    $data[$versionMapping['name']] = $currentVersion;
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $currentVersion);
-                } elseif ($versionMapping['type'] === 'date') {
-                    $nextVersion = new \DateTime();
-                    $data[$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
+                    $nextVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+                } elseif ($versionMapping['type'] === 'date') {
+                    $nextVersionDateTime = new \DateTime();
+                    $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
+                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
                 }
             }
 
             // upsert right away
             if ($upsert) {
+                if ($this->class->isVersioned) {
+                    $data['$set'][$versionMapping['name']] = $nextVersion;
+                }
                 $this->executeUpsert($data, $options);
                 unset($this->queuedInserts[$oid]);
             } else {
+                if ($this->class->isVersioned) {
+                    $data[$versionMapping['name']] = $nextVersion;
+                }
                 $inserts[$oid] = $data;
             }
         }

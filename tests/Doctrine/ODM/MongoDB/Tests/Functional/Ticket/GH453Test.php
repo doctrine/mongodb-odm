@@ -162,10 +162,10 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $dm = $this->dm;
 
-        $colPush->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
-        $colSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
-        $colSetArray->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
-        $colAddToSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
+        $colPush->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colSetArray->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colAddToSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
 
         $doc = new GH453Document();
         $doc->referenceManyPush = $colPush;
