@@ -564,11 +564,11 @@ class DocumentManager implements ObjectManager
      *
      * The returned reference may be a partial object if the document is not yet loaded/managed.
      * If it is a partial object it will not initialize the rest of the document state on access.
-     * Thus you can only ever safely access the identifier of an document obtained through
+     * Thus you can only ever safely access the identifier of a document obtained through
      * this method.
      *
      * The use-cases for partial references involve maintaining bidirectional associations
-     * without loading one side of the association or to update an document without loading it.
+     * without loading one side of the association or to update a document without loading it.
      * Note, however, that in the latter case the original (persistent) document data will
      * never be visible to the application (especially not event listeners) as it will
      * never be loaded in the first place.

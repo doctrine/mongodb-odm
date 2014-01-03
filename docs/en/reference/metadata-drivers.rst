@@ -82,7 +82,7 @@ implements the ``Driver`` interface:
     
         /**
          * Whether the class with the specified name should have its metadata loaded.
-         * This is only the case if it is either mapped as an Document or a
+         * This is only the case if it is either mapped as a Document or a
          * MappedSuperclass.
          *
          * @param string $className

@@ -62,7 +62,7 @@ Persistent classes
 ------------------
 
 In order to mark a class for object-relational persistence it needs
-to be designated as an document. This can be done through the
+to be designated as a document. This can be done through the
 ``@Document`` marker annotation.
 
 .. configuration-block::
@@ -206,7 +206,7 @@ This list explains some of the less obvious mapping types:
 Property Mapping
 ----------------
 
-After a class has been marked as an document it can specify
+After a class has been marked as a document it can specify
 mappings for its instance fields. Here we will only look at simple
 fields that hold scalar values like strings, numbers, etc.
 References to other objects and embedded objects are covered in the
