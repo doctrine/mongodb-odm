@@ -81,11 +81,6 @@ class PersistenceBuilder
 
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
 
-            // Generate a document identifier
-            if ($new === null && $class->identifier === $mapping['fieldName'] && $class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE) {
-                $new = $class->idGenerator->generate($this->dm, $document);
-            }
-
             // Don't store null values unless nullable === true
             if ($new === null && $mapping['nullable'] === false) {
                 continue;
@@ -103,16 +98,7 @@ class PersistenceBuilder
                         continue;
                     }
 
-                    if ($this->isScheduledForInsert($new)) {
-                        // The associated document $new is not yet persisted, so we must
-                        // set $new = null, in order to insert a null value and schedule an
-                        // extra update on the UnitOfWork.
-                        $this->uow->scheduleExtraUpdate($document, array(
-                            $mapping['fieldName'] => array(null, $new)
-                        ));
-                    } else {
-                        $value = $this->prepareReferencedDocumentValue($mapping, $new);
-                    }
+                    $value = $this->prepareReferencedDocumentValue($mapping, $new);
 
                 // @EmbedOne
                 } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
@@ -291,7 +277,7 @@ class PersistenceBuilder
                 }
 
             // @EmbedMany
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY && $new) {
                 foreach ($new as $key => $embeddedDoc) {
                     if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
                         $update = $this->prepareUpsertData($embeddedDoc);
@@ -363,12 +349,6 @@ class PersistenceBuilder
 
             // Inline ClassMetadataInfo::getFieldValue()
             $rawValue = $class->reflFields[$mapping['fieldName']]->getValue($embeddedDocument);
-
-            // Generate a document identifier
-            if ($rawValue === null && $class->identifier === $mapping['fieldName'] && !$class->isIdGeneratorNone()) {
-                $rawValue = $class->idGenerator->generate($this->dm, $embeddedDocument);
-                $class->setIdentifierValue($embeddedDocument, $rawValue);
-            }
 
             $value = null;
 
