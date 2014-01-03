@@ -36,8 +36,6 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testSerializeUnserializeModifyMerge()
     {
-        $this->markTestSkipped('Something wrong with doMerge()');
-
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
@@ -65,11 +63,17 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->addPhonenumber($ph2);
         $this->assertEquals(2, count($user->getPhonenumbers()));
         $this->assertFalse($this->dm->contains($user));
-        
+
         $this->dm->persist($ph2);
-        
+
         // Merge back in
         $user = $this->dm->merge($user); // merge cascaded to phonenumbers
+
+        $phonenumbers = $user->getPhonenumbers();
+
+        $this->assertSame($user, $phonenumbers[0]->getUser());
+        $this->assertSame($user, $phonenumbers[1]->getUser());
+
         $this->dm->flush();
         
         $this->assertTrue($this->dm->contains($user));
