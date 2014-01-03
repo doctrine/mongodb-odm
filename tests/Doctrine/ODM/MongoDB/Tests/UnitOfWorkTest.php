@@ -18,6 +18,15 @@ use Documents\ForumAvatar;
 
 class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function testIsDocumentScheduled()
+    {
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
+        $user = new ForumUser();
+        $this->assertFalse($this->uow->isDocumentScheduled($user));
+        $this->uow->scheduleForInsert($class, $user);
+        $this->assertTrue($this->uow->isDocumentScheduled($user));
+    }
+
     public function testScheduleForInsert()
     {
         $class = $this->dm->getClassMetadata('Documents\ForumUser');
