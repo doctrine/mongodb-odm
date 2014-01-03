@@ -45,7 +45,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('UserParent', $cm->rootDocumentName);
         $this->assertEquals(array('Documents\One', 'Documents\Two', 'Documents\Three'), $cm->subClasses);
         $this->assertEquals(array('UserParent'), $cm->parentClasses);
-        $this->assertEquals('UserRepository', $cm->customRepositoryClassName);
+        $this->assertEquals('Documents\UserRepository', $cm->customRepositoryClassName);
         $this->assertEquals('disc', $cm->discriminatorField);
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
         $this->assertEquals(1, count($cm->fieldMappings));
