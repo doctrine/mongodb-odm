@@ -41,7 +41,7 @@ You can setup a console command easily with the following code. You just need an
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateRepositoriesCommand(),
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateProxiesCommand(),
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateHydratorsCommand(),
-        new \Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache\MetadataCommand()
+        new \Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache\MetadataCommand(),
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\CreateCommand(),
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\DropCommand(),
     ));
