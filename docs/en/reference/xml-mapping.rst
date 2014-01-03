@@ -75,16 +75,16 @@ of several common elements:
 
     <?xml version="1.0" encoding="UTF-8"?>
     
-    <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping"
+    <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping
-                        http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
+          xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
     
         <document name="Documents\User" db="documents" collection="users">
-            <field fieldName="id" id="true" />
-            <field fieldName="username" name="login" type="string" />
-            <field fieldName="email" type="string" unique="true" order="desc" />
-            <field fieldName="createdAt" type="date" />
+            <field name="id" id="true" />
+            <field name="username" type="string" />
+            <field name="email" type="string" unique="true" order="desc" />
+            <field name="createdAt" type="date" />
             <indexes>
                 <index unique="true" dropDups="true">
                     <key name="username" order="desc">
