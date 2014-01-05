@@ -27,7 +27,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 
 /**
- * An DocumentRepository serves as a repository for documents with generic as well as
+ * A DocumentRepository serves as a repository for documents with generic as well as
  * business specific methods for retrieving documents.
  *
  * This class is designed for inheritance and users can subclass this class to

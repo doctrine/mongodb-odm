@@ -36,17 +36,17 @@ final class Events
      * The preRemove event occurs for a given document before the respective
      * DocumentManager remove operation for that document is executed.
      * 
-     * This is an document lifecycle event.
+     * This is a document lifecycle event.
      * 
      * @var string
      */
     const preRemove = 'preRemove';
 
     /**
-     * The postRemove event occurs for an document after the document has 
+     * The postRemove event occurs for a document after the document has 
      * been deleted. It will be invoked after the database delete operations.
      * 
-     * This is an document lifecycle event.
+     * This is a document lifecycle event.
      * 
      * @var string
      */
@@ -56,18 +56,18 @@ final class Events
      * The prePersist event occurs for a given document before the respective
      * DocumentManager persist operation for that document is executed.
      * 
-     * This is an document lifecycle event.
+     * This is a document lifecycle event.
      * 
      * @var string
      */
     const prePersist = 'prePersist';
 
     /**
-     * The postPersist event occurs for an document after the document has 
+     * The postPersist event occurs for a document after the document has 
      * been made persistent. It will be invoked after the database insert operations.
      * Generated primary key values are available in the postPersist event.
      * 
-     * This is an document lifecycle event.
+     * This is a document lifecycle event.
      * 
      * @var string
      */
@@ -77,7 +77,7 @@ final class Events
      * The preUpdate event occurs before the database update operations to 
      * document data. 
      * 
-     * This is an document lifecycle event.
+     * This is a document lifecycle event.
      * 
      * @var string
      */
@@ -87,7 +87,7 @@ final class Events
      * The postUpdate event occurs after the database update operations to 
      * document data. 
      * 
-     * This is an document lifecycle event.
+     * This is a document lifecycle event.
      * 
      * @var string
      */
@@ -109,7 +109,7 @@ final class Events
      * into the current DocumentManager from the database or after the refresh operation
      * has been applied to it.
      * 
-     * Note that the postLoad event occurs for an document before any associations have been
+     * Note that the postLoad event occurs for a document before any associations have been
      * initialized. Therefore it is not safe to access associations in a postLoad callback
      * or event handler.
      * 

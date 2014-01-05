@@ -526,7 +526,7 @@ methods on a repository as follows:
     // A single user by its nickname
     $user = $dm->getRepository('User')->findOneBy(array('nickname' => 'romanb'));
 
-An DocumentRepository also provides a mechanism for more concise
+A DocumentRepository also provides a mechanism for more concise
 calls through its use of ``__call``. Thus, the following two
 examples are equivalent:
 
