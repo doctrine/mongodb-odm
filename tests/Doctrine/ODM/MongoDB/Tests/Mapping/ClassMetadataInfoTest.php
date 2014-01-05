@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Documents\Album;
 
@@ -122,4 +123,22 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals('nevermind', $proxy->getName());
     }
+
+    public function testSetCustomRepositoryClass()
+    {
+        $cm = new ClassMetadataInfo('Doctrine\ODM\MongoDB\Tests\Mapping\ClassMetadataInfoTest');
+        $cm->namespace = 'Doctrine\ODM\MongoDB\Tests\Mapping';
+
+        $cm->setCustomRepositoryClass('TestCustomRepositoryClass');
+
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\TestCustomRepositoryClass', $cm->customRepositoryClassName);
+
+        $cm->setCustomRepositoryClass('Doctrine\ODM\MongoDB\Tests\Mapping\TestCustomRepositoryClass');
+
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\TestCustomRepositoryClass', $cm->customRepositoryClassName);
+    }
+}
+
+class TestCustomRepositoryClass extends DocumentRepository
+{
 }

@@ -512,6 +512,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
+        if ($repositoryClassName && strpos($repositoryClassName, '\\') === false && strlen($this->namespace)) {
+            $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
+        }
+
         $this->customRepositoryClassName = $repositoryClassName;
     }
 
