@@ -81,10 +81,10 @@ of several common elements:
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
     
         <document name="Documents\User" db="documents" collection="users">
-            <field fieldName="id" id="true" />
-            <field fieldName="username" name="login" type="string" />
-            <field fieldName="email" type="string" unique="true" order="desc" />
-            <field fieldName="createdAt" type="date" />
+            <field name="id" id="true" />
+            <field name="username" type="string" />
+            <field name="email" type="string" unique="true" order="desc" />
+            <field name="createdAt" type="date" />
             <indexes>
                 <index unique="true" dropDups="true">
                     <key name="username" order="desc">
