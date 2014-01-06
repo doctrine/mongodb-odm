@@ -1024,7 +1024,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             unset($mapping['cascade']);
             $default = true;
         } else {
-            $default = false;
+            $default = isset($mapping['embedded']) ? true : false;
         }
         $mapping['isCascadeRemove'] = $default;
         $mapping['isCascadePersist'] = $default;
