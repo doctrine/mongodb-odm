@@ -157,10 +157,29 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($class->fieldMappings['addresses']['isCascadeDetach']);
         $this->assertTrue($class->fieldMappings['addresses']['isCascadeCallbacks']);
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Cascade on Doctrine\ODM\MongoDB\Tests\Mapping\EmbedWithCascadeTest::address is not allowed.
+     */
+    public function testEmbedWithCascadeThrowsMappingException()
+    {
+        $class = new ClassMetadataInfo(__NAMESPACE__ . '\EmbedWithCascadeTest');
+        $class->mapOneEmbedded(array(
+            'fieldName' => 'address',
+            'targetDocument' => 'Documents\Address',
+            'cascade' => 'all',
+        ));
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository
 {
+}
+
+class EmbedWithCascadeTest
+{
+    public $address;
 }
 
 /** @ODM\Document */

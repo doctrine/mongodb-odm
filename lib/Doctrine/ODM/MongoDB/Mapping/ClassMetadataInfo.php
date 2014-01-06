@@ -1017,6 +1017,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             }
         }
 
+        if (isset($mapping['cascade']) && isset($mapping['embedded'])) {
+            throw MappingException::cascadeOnEmbeddedNotAllowed($this->name, $mapping['fieldName']);
+        }
+
         if (isset($mapping['cascade']) && is_string($mapping['cascade'])) {
             $mapping['cascade'] = array($mapping['cascade']);
         }
