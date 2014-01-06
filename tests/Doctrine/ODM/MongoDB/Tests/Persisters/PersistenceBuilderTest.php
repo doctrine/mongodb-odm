@@ -147,7 +147,7 @@ class PersistenceBuilderTest extends BaseTest
 
         $expectedData = array(
             'article' => array(
-                '$db' => 'doctrine_odm_tests',
+                '$db' => DOCTRINE_MONGODB_DATABASE,
                 '$id' => new \MongoId($article->id),
                 '$ref' => 'CmsArticle'
             )
@@ -172,7 +172,7 @@ class PersistenceBuilderTest extends BaseTest
 
         $expectedData = array(
             'article' => array(
-                '$db' => 'doctrine_odm_tests',
+                '$db' => DOCTRINE_MONGODB_DATABASE,
                 '$id' => new \MongoId($article->id),
                 '$ref' => 'CmsArticle'
             )
@@ -202,7 +202,7 @@ class PersistenceBuilderTest extends BaseTest
                 'topic' => 'test',
                 'text' => 'text',
                 'article' => array(
-                    '$db' => 'doctrine_odm_tests',
+                    '$db' => DOCTRINE_MONGODB_DATABASE,
                     '$id' => new \MongoId($article->id),
                     '$ref' => 'CmsArticle'
                 )

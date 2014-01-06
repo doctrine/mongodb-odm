@@ -64,7 +64,7 @@ class QueryTest extends BaseTest
         $this->assertEquals(array(
             'bestFriend.$ref' => 'people',
             'bestFriend.$id' => new \MongoId($jon->id),
-            'bestFriend.$db' => 'doctrine_odm_tests',
+            'bestFriend.$db' => DOCTRINE_MONGODB_DATABASE,
         ), $queryArray);
 
         $query = $qb->getQuery();
@@ -94,7 +94,7 @@ class QueryTest extends BaseTest
                 '$elemMatch' => array(
                     '$ref' => 'people',
                     '$id' => new \MongoId($kris->id),
-                    '$db' => 'doctrine_odm_tests',
+                    '$db' => DOCTRINE_MONGODB_DATABASE,
                 ),
             ),
         ), $queryArray);
