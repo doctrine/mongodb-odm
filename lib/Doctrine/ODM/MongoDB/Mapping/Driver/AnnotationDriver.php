@@ -135,11 +135,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         foreach ($reflClass->getProperties() as $property) {
-            if (($class->isMappedSuperclass
-                 && ! $property->isPrivate())
+            if (($class->isMappedSuperclass && ! $property->isPrivate())
                 ||
-                ($class->isInheritedField($property->name)
-                 && $property->getDeclaringClass()->name != $class->name)) {
+                ($class->isInheritedField($property->name) && $property->getDeclaringClass()->name !== $class->name)) {
                 continue;
             }
 
