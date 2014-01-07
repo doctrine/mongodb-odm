@@ -1017,6 +1017,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             }
         }
 
+        if (isset($mapping['cascade']) && isset($mapping['embedded'])) {
+            throw MappingException::cascadeOnEmbeddedNotAllowed($this->name, $mapping['fieldName']);
+        }
+
         if (isset($mapping['cascade']) && is_string($mapping['cascade'])) {
             $mapping['cascade'] = array($mapping['cascade']);
         }
@@ -1024,7 +1028,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             unset($mapping['cascade']);
             $default = true;
         } else {
-            $default = false;
+            $default = isset($mapping['embedded']) ? true : false;
         }
         $mapping['isCascadeRemove'] = $default;
         $mapping['isCascadePersist'] = $default;

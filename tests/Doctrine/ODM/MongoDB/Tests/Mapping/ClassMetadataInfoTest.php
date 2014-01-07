@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Documents\Album;
 
@@ -137,8 +138,59 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\TestCustomRepositoryClass', $cm->customRepositoryClassName);
     }
+
+    public function testEmbeddedAssociationsAlwaysCascade()
+    {
+        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\EmbeddedAssociationsCascadeTest');
+
+        $this->assertTrue($class->fieldMappings['address']['isCascadeRemove']);
+        $this->assertTrue($class->fieldMappings['address']['isCascadePersist']);
+        $this->assertTrue($class->fieldMappings['address']['isCascadeRefresh']);
+        $this->assertTrue($class->fieldMappings['address']['isCascadeMerge']);
+        $this->assertTrue($class->fieldMappings['address']['isCascadeDetach']);
+        $this->assertTrue($class->fieldMappings['address']['isCascadeCallbacks']);
+
+        $this->assertTrue($class->fieldMappings['addresses']['isCascadeRemove']);
+        $this->assertTrue($class->fieldMappings['addresses']['isCascadePersist']);
+        $this->assertTrue($class->fieldMappings['addresses']['isCascadeRefresh']);
+        $this->assertTrue($class->fieldMappings['addresses']['isCascadeMerge']);
+        $this->assertTrue($class->fieldMappings['addresses']['isCascadeDetach']);
+        $this->assertTrue($class->fieldMappings['addresses']['isCascadeCallbacks']);
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Cascade on Doctrine\ODM\MongoDB\Tests\Mapping\EmbedWithCascadeTest::address is not allowed.
+     */
+    public function testEmbedWithCascadeThrowsMappingException()
+    {
+        $class = new ClassMetadataInfo(__NAMESPACE__ . '\EmbedWithCascadeTest');
+        $class->mapOneEmbedded(array(
+            'fieldName' => 'address',
+            'targetDocument' => 'Documents\Address',
+            'cascade' => 'all',
+        ));
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository
 {
+}
+
+class EmbedWithCascadeTest
+{
+    public $address;
+}
+
+/** @ODM\Document */
+class EmbeddedAssociationsCascadeTest
+{
+    /** @ODM\Id */
+    public $id;
+ 
+    /** @ODM\EmbedOne(targetDocument="Documents\Address") */
+    public $address;
+
+    /** @ODM\EmbedOne(targetDocument="Documents\Address") */
+    public $addresses;
 }

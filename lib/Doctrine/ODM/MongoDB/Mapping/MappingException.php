@@ -141,4 +141,14 @@ class MappingException extends BaseMappingException
     {
         return new self("The class $className is missing a setter for the option $optionName.");
     }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function cascadeOnEmbeddedNotAllowed($className, $fieldName)
+    {
+        return new self("Cascade on $className::$fieldName is not allowed.");
+    }
 }
