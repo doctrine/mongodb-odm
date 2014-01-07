@@ -212,8 +212,13 @@ class DocumentPersister
                 if ($this->class->isVersioned) {
                     $data['$set'][$versionMapping['name']] = $nextVersion;
                 }
-                $this->executeUpsert($data, $options);
-                unset($this->queuedInserts[$oid]);
+
+                try {
+                    $this->executeUpsert($data, $options);
+                } catch (\MongoException $e) {
+                    unset($this->queuedInserts[$oid]);
+                    throw $e;
+                }
             } else {
                 if ($this->class->isVersioned) {
                     $data[$versionMapping['name']] = $nextVersion;
