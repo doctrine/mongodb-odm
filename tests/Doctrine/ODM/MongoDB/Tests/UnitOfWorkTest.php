@@ -117,7 +117,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(0, count($userPersister->getDeletes()));
 
         // should have an id
-        $this->assertTrue(is_numeric($user->id));
+        $this->assertNotNull($user->id);
     }
 
     /**
@@ -148,8 +148,8 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->uow->commit();
 
-        $this->assertTrue(is_numeric($user->id));
-        $this->assertTrue(is_numeric($avatar->id));
+        $this->assertNotNull($user->id);
+        $this->assertNotNull($avatar->id);
 
         $this->assertEquals(1, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
@@ -173,6 +173,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->setDocumentPersister($class->name, $itemPersister);
 
         $entity = new NotifyChangedDocument();
+        $entity->setId(1);
         $entity->setData('thedata');
 
         $this->uow->persist($entity);
@@ -191,6 +192,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->uow->getDocumentChangeSet($entity));
 
         $item = new NotifyChangedRelatedItem();
+        $item->setId(1);
         $entity->getItems()->add($item);
         $item->setOwner($entity);
 
@@ -441,7 +443,7 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 {
     private $_listeners = array();
 
-    /** @ODM\Id(type="int_id") */
+    /** @ODM\Id(type="int_id", strategy="none") */
     private $id;
 
     /** @ODM\String */
@@ -460,6 +462,11 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     public function getData()
@@ -504,7 +511,7 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 /** @ODM\Document */
 class NotifyChangedRelatedItem
 {
-    /** @ODM\Id(type="int_id") */
+    /** @ODM\Id(type="int_id", strategy="none") */
     private $id;
 
     /** @ODM\ReferenceOne(targetDocument="NotifyChangedDocument") */
@@ -513,6 +520,11 @@ class NotifyChangedRelatedItem
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     public function getOwner()

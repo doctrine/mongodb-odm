@@ -169,16 +169,13 @@ class DocumentPersister
     /**
      * Executes all queued document insertions.
      *
-     * Queued documents without an ID will inserted in a batch and included in
-     * the resulting array in a tuple alongside their generated ID. Queued
+     * Queued documents without an ID will inserted in a batch and queued
      * documents with an ID will be upserted individually and omitted from the
      * returned array.
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
      * @param array $options Options for batchInsert() and update() driver methods
-     * @return array An array of identifier/document tuples for any documents
-     *               whose identifier was generated during the batch insertions
      */
     public function executeInserts(array $options = array())
     {
@@ -186,7 +183,6 @@ class DocumentPersister
             return array();
         }
 
-        $postInsertIds = array();
         $inserts = array();
         foreach ($this->queuedInserts as $oid => $document) {
             $upsert = $this->uow->isScheduledForUpsert($document);
@@ -233,16 +229,9 @@ class DocumentPersister
                 $this->queuedInserts = array();
                 throw $e;
             }
-
-            foreach ($inserts as $oid => $data) {
-                $document = $this->queuedInserts[$oid];
-                $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
-            }
         }
 
         $this->queuedInserts = array();
-
-        return $postInsertIds;
     }
 
     /**
