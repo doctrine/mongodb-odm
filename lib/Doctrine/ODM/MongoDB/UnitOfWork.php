@@ -942,10 +942,11 @@ class UnitOfWork implements PropertyChangedListener
             $idValue = $class->getIdentifierValue($document);
 
             if (!$idValue) {
-                // figure out how to remove the string casting
-                $idValue = (string) $class->idGenerator->generate($this->dm, $document);
-                $class->setIdentifierValue($document, $idValue);
+                $idValue = $class->idGenerator->generate($this->dm, $document);
             }
+
+            $idValue = $class->getPHPIdentifierValue($class->getDatabaseIdentifierValue($idValue));
+            $class->setIdentifierValue($document, $idValue);
 
             $this->documentIdentifiers[$oid] = $idValue;
         }
@@ -977,11 +978,10 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        $postInsertIds = $persister->executeInserts($options);
+        $persister->executeInserts($options);
 
-        foreach ($postInsertIds as $idAndDocument) {
-            list($id, $document) = $idAndDocument;
-            $class->setIdentifierValue($document, $id);
+        foreach ($insertedDocuments as $document) {
+            $id = $class->getIdentifierValue($document);
 
             /* Inline call to UnitOfWork::registerManager(), but only update the
              * identifier in the original document data.
