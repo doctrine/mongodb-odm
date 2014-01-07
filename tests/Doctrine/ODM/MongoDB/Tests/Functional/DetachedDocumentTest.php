@@ -71,6 +71,7 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $phonenumbers = $user->getPhonenumbers();
 
+        $this->assertEquals(2, count($phonenumbers));
         $this->assertSame($user, $phonenumbers[0]->getUser());
         $this->assertSame($user, $phonenumbers[1]->getUser());
 
