@@ -170,8 +170,7 @@ class DocumentPersister
      * Executes all queued document insertions.
      *
      * Queued documents without an ID will inserted in a batch and queued
-     * documents with an ID will be upserted individually and omitted from the
-     * returned array.
+     * documents with an ID will be upserted individually.
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
