@@ -1934,7 +1934,9 @@ class UnitOfWork implements PropertyChangedListener
         $managedCopy = $document;
 
         if ($this->getDocumentState($document, self::STATE_DETACHED) !== self::STATE_MANAGED) {
-            // @TODO: If $document is a proxy, reset and initialize it
+            if ($document instanceof Proxy && ! $document->__isInitialized()) {
+                $document->__load();
+            }
 
             // Try to look the document up in the identity map.
             $id = $class->isEmbeddedDocument ? null : $class->getIdentifierObject($document);
@@ -1961,9 +1963,11 @@ class UnitOfWork implements PropertyChangedListener
                     $managedCopy = $class->newInstance();
                     $class->setIdentifierValue($managedCopy, $id);
                     $this->persistNew($class, $managedCopy);
+                } else {
+                    if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized__) {
+                        $managedCopy->__load();
+                    }
                 }
-
-                // @TODO: If $managedCopy is a proxy, initialize it
             }
 
             if ($class->isVersioned) {
@@ -1977,7 +1981,9 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             // Merge state of $document into existing (managed) document
-            foreach ($class->reflFields as $name => $prop) {
+            foreach ($class->reflClass->getProperties() as $prop) {
+                $name = $prop->name;
+                $prop->setAccessible(true);
                 if ( ! isset($class->associationMappings[$name])) {
                     if ( ! $class->isIdentifier($name)) {
                         $prop->setValue($managedCopy, $prop->getValue($document));
@@ -1999,9 +2005,12 @@ class UnitOfWork implements PropertyChangedListener
                                 $targetClass = $this->dm->getClassMetadata($targetDocument);
                                 $relatedId = $targetClass->getIdentifierObject($other);
 
-                                // @TODO: Use DocumentManager::find() if $targetClass has sub-classes?
-                                $other = $this->dm->getProxyFactory()->getProxy($targetDocument, $relatedId);
-                                $this->registerManaged($other, $relatedId, array());
+                                if ($targetClass->subClasses) {
+                                    $other = $this->dm->find($targetClass->name, $relatedId);
+                                } else {
+                                    $other = $this->dm->getProxyFactory()->getProxy($assoc2['targetDocument'], $relatedId);
+                                    $this->registerManaged($other, $relatedId, array());
+                                }
                             }
 
                             $prop->setValue($managedCopy, $other);
@@ -2036,7 +2045,7 @@ class UnitOfWork implements PropertyChangedListener
                             // If $managedCol differs from the merged collection, clear and set dirty
                             if ( ! $managedCol->isEmpty() && $managedCol !== $mergeCol) {
                                 $managedCol->unwrap()->clear();
-                                $managedCol->clearSnapshot(); // Sets dirty
+                                $managedCol->setDirty(true);
 
                                 if ($assoc2['isOwningSide'] && $class->isChangeTrackingNotify()) {
                                     $this->scheduleForDirtyCheck($managedCopy);
@@ -2052,32 +2061,23 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            /* If $prevManagedCopy and $assoc are provided, $managedCopy is the
-             * target of that association. Since $managedCopy has now been
-             * merged, set it on $prevManagedCopy's association.
-             *
-             * @TODO: If $managedCopy has an association to $prevManagedCopy, it
-             * is not getting set (see testSerializeUnserializeModifyMerge in
-             * DetachedDocumentTest).
-             */
-            if ($prevManagedCopy !== null) {
-                $assocField = $assoc['fieldName'];
-                $prevClass = $this->dm->getClassMetadata(get_class($prevManagedCopy));
-
-                if ($assoc['type'] === 'one') {
-                    $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
-                } else {
-                    // Add $managedCopy to $prevManagedCopy's PersistentCollection
-                    $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
-
-                    if ( ! empty($assoc['mappedBy'])) {
-                        $class->reflFields[$assoc['mappedBy']]->setValue($managedCopy, $prevManagedCopy);
-                    }
-                }
-            }
-
             if ($class->isChangeTrackingDeferredExplicit()) {
                 $this->scheduleForDirtyCheck($document);
+            }
+        }
+
+        if ($prevManagedCopy !== null) {
+            $assocField = $assoc['fieldName'];
+            $prevClass = $this->dm->getClassMetadata(get_class($prevManagedCopy));
+
+            if ($assoc['type'] === 'one') {
+                $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
+            } else {
+                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
+
+                if ($assoc['type'] === 'many' && isset($assoc['mappedBy'])) {
+                    $class->reflFields[$assoc['mappedBy']]->setValue($managedCopy, $prevManagedCopy);
+                }
             }
         }
 
