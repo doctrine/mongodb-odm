@@ -35,9 +35,6 @@ will be invoked with the first value found as its single argument.
         list($this->firstName, $this->lastName) = explode(' ', $name);
     }
 
-The `@HasLifecycleCallbacks`_ annotation must be present on the class in which
-the method is declared for the callback to be registered.
-
 For additional information on using ``@AlsoLoad``, see
 :doc:`Migrations <migrating-schemas>`.
 
@@ -547,10 +544,10 @@ Alias of @Field, with "type" attribute set to
 ----------------------
 
 This annotation must be set on the document class to instruct Doctrine to check
-for lifecycle callback annotations on public methods. Using `@AlsoLoad`_,
-`@PreFlush`_, `@PreLoad`_, `@PostLoad`_, `@PrePersist`_, `@PostPersist`_,
-`@PreRemove`_, `@PostRemove`_, `@PreUpdate`_, or `@PostUpdate`_ on methods
-without this annotation will cause Doctrine to ignore the callbacks.
+for lifecycle callback annotations on public methods. Using `@PreFlush`_,
+`@PreLoad`_, `@PostLoad`_, `@PrePersist`_, `@PostPersist`_, `@PreRemove`_,
+`@PostRemove`_, `@PreUpdate`_, or `@PostUpdate`_ on methods without this
+annotation will cause Doctrine to ignore the callbacks.
 
 .. code-block:: php
 

@@ -586,6 +586,20 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
+     * Registers a method for loading document data before field hydration.
+     *
+     * Note: A method may be registered multiple times for different fields.
+     * it will be invoked only once for the first field found.
+     *
+     * @param string       $method Method name
+     * @param array|string $fields Database field name(s)
+     */
+    public function registerAlsoLoadMethod($method, $fields)
+    {
+        $this->alsoLoadMethods[$method] = is_array($fields) ? $fields : array($fields);
+    }
+
+    /**
      * Sets the discriminator field.
      *
      * The field name is the the unmapped database field. Discriminator values

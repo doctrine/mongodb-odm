@@ -99,8 +99,8 @@ method will be invoked with its value as a single argument. Since the
 ``firstName`` and ``lastName`` fields are mapped, they would then be updated
 when the Person was persisted back to MongoDB.
 
-The :ref:`haslifecyclecallbacks` annotation must be present on the class in
-which the method is declared for the callback to be registered.
+Unlike lifecycle callbacks, the ``@AlsoLoad`` method annotation does not require
+the  :ref:`haslifecyclecallbacks` class annotation to be present.
 
 Moving Fields
 -------------
@@ -211,7 +211,7 @@ Alternatively, you could defer this migration until the Person is saved:
     }
 
 The :ref:`haslifecyclecallbacks` annotation must be present on the class in
-which the method is declared for the callback to be registered.
+which the method is declared for the lifecycle callback to be registered.
 
 .. _`$rename`: http://docs.mongodb.org/manual/reference/operator/update/rename/
 .. _`Objectify`: http://code.google.com/p/objectify-appengine/

@@ -410,11 +410,15 @@ EOF
             $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
         }
 
-        // Use the alsoLoadMethods on the document object to transform the data before hydration
+        // alsoLoadMethods may transform the document before hydration
         if (isset($metadata->alsoLoadMethods)) {
-            foreach ($metadata->alsoLoadMethods as $fieldName => $method) {
-                if (isset($data[$fieldName])) {
-                    $document->$method($data[$fieldName]);
+            foreach ($metadata->alsoLoadMethods as $method => $fieldNames) {
+                foreach ($fieldNames as $fieldName) {
+                    // Invoke the method only once for the first field we find
+                    if (array_key_exists($fieldName, $data)) {
+                        $document->$method($data[$fieldName]);
+                        continue 2;
+                    }
                 }
             }
         }
