@@ -41,7 +41,7 @@ class FieldExtractor
         $fields = array();
 
         foreach ($this->query as $k => $v) {
-            if (is_array($v) && isset($v['$elemMatch'])) {
+            if (is_array($v) && isset($v['$elemMatch']) && is_array($v['$elemMatch'])) {
                 $elemMatchFields = $this->getFieldsFromElemMatch($v['$elemMatch']);
                 foreach ($elemMatchFields as $field) {
                     $fields[] = $k.'.'.$field;
@@ -59,7 +59,7 @@ class FieldExtractor
         return $fields;
     }
 
-    private function getFieldsFromElemMatch($elemMatch)
+    private function getFieldsFromElemMatch(array $elemMatch)
     {
         $fields = array();
         foreach ($elemMatch as $fieldName => $value) {

@@ -162,10 +162,10 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $dm = $this->dm;
 
-        $colPush->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
-        $colSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
-        $colSetArray->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
-        $colAddToSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); });
+        $colPush->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colSetArray->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colAddToSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
 
         $doc = new GH453Document();
         $doc->referenceManyPush = $colPush;
@@ -185,11 +185,15 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Check that the value is changed properly
         unset($colPush[1], $colSet[1], $colSetArray[1], $colAddToSet[1]);
-        $doc = $this->dm->merge($doc);
         $doc->referenceManyPush = $colPush;
         $doc->referenceManySet = $colSet;
         $doc->referenceManySetArray = $colSetArray;
         $doc->referenceManyAddToSet = $colAddToSet;
+
+        /* Merging must be done after re-assigning the collections, as the
+         * referenced documents must be re-persisted through the merge cascade.
+         */
+        $doc = $this->dm->merge($doc);
 
         $this->dm->flush();
         $this->dm->clear();

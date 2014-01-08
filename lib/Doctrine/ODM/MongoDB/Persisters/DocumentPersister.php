@@ -169,16 +169,12 @@ class DocumentPersister
     /**
      * Executes all queued document insertions.
      *
-     * Queued documents without an ID will inserted in a batch and included in
-     * the resulting array in a tuple alongside their generated ID. Queued
-     * documents with an ID will be upserted individually and omitted from the
-     * returned array.
+     * Queued documents without an ID will inserted in a batch and queued
+     * documents with an ID will be upserted individually.
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
      * @param array $options Options for batchInsert() and update() driver methods
-     * @return array An array of identifier/document tuples for any documents
-     *               whose identifier was generated during the batch insertions
      */
     public function executeInserts(array $options = array())
     {
@@ -186,7 +182,6 @@ class DocumentPersister
             return array();
         }
 
-        $postInsertIds = array();
         $inserts = array();
         foreach ($this->queuedInserts as $oid => $document) {
             $upsert = $this->uow->isScheduledForUpsert($document);
@@ -198,21 +193,31 @@ class DocumentPersister
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 if ($versionMapping['type'] === 'int') {
-                    $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
-                    $data[$versionMapping['name']] = $currentVersion;
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $currentVersion);
-                } elseif ($versionMapping['type'] === 'date') {
-                    $nextVersion = new \DateTime();
-                    $data[$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
+                    $nextVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+                } elseif ($versionMapping['type'] === 'date') {
+                    $nextVersionDateTime = new \DateTime();
+                    $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
+                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
                 }
             }
 
             // upsert right away
             if ($upsert) {
-                $this->executeUpsert($data, $options);
-                unset($this->queuedInserts[$oid]);
+                if ($this->class->isVersioned) {
+                    $data['$set'][$versionMapping['name']] = $nextVersion;
+                }
+
+                try {
+                    $this->executeUpsert($data, $options);
+                } catch (\MongoException $e) {
+                    unset($this->queuedInserts[$oid]);
+                    throw $e;
+                }
             } else {
+                if ($this->class->isVersioned) {
+                    $data[$versionMapping['name']] = $nextVersion;
+                }
                 $inserts[$oid] = $data;
             }
         }
@@ -223,16 +228,9 @@ class DocumentPersister
                 $this->queuedInserts = array();
                 throw $e;
             }
-
-            foreach ($inserts as $oid => $data) {
-                $document = $this->queuedInserts[$oid];
-                $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
-            }
         }
 
         $this->queuedInserts = array();
-
-        return $postInsertIds;
     }
 
     /**
