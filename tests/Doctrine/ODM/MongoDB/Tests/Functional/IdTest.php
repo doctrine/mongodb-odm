@@ -193,7 +193,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Document */
 class %s
 {
-    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(type="%s", strategy="none") **/
+    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(strategy="none", options={"type"="%s"}) **/
     public $id;
 }', $shortClassName, $type);
 
@@ -223,11 +223,13 @@ class %s
         return array(
             // boolean
             array('boolean', true,  true),
+            array('boolean', 1,  true),
             array('boolean', false, false),
 
             // integer
             array('int', 0, 0),
             array('int', 1, 1),
+            array('int', '1', 1),
 
             // raw
             array('raw', 0, 0),
@@ -236,9 +238,11 @@ class %s
 
             // float
             array('float', 1.1, 1.1),
+            array('float', '1.1', 1.1),
 
             // string
             array('string', '', ''),
+            array('string', 1, '1'),
             array('string', 'test', 'test'),
 
             // custom_id
