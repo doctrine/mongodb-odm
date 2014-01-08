@@ -938,10 +938,10 @@ class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($document, $this->dm));
         }
 
-        if ($class->identifier && $class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE) {
+        if ($class->identifier) {
             $idValue = $class->getIdentifierValue($document);
 
-            if (!$idValue) {
+            if ($class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE && !$idValue) {
                 $idValue = $class->idGenerator->generate($this->dm, $document);
             }
 
