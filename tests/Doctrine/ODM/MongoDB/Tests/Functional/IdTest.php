@@ -175,6 +175,83 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('0', 0),
         );
     }
+
+    /**
+     * @dataProvider getTestIdTypesData
+     */
+    public function testIdTypes($type, $id, $expected)
+    {
+        $shortClassName = sprintf('TestIdTypes%sUser', ucfirst($type));
+        $className = sprintf(__NAMESPACE__.'\\%s', $shortClassName);
+
+        if (!class_exists($className)) {
+            $code = sprintf(
+'namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @Doctrine\ODM\MongoDB\Mapping\Annotations\Document */
+class %s
+{
+    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(type="%s", strategy="none") **/
+    public $id;
+}', $shortClassName, $type);
+
+            eval($code);
+        }
+
+        $dm = $this->createTestDocumentManager();
+
+        $object = new $className();
+        $object->id = $id;
+
+        $dm->persist($object);
+        $dm->flush();
+        $dm->clear();
+
+        $this->assertSame($expected, $object->id);
+
+        $object = $dm->find(get_class($object), $object->id);
+        $this->assertNotNull($object);
+        $this->assertSame($expected, $object->id);
+    }
+
+    public function getTestIdTypesData()
+    {
+        $mongoId = new \MongoId();
+
+        return array(
+            // boolean
+            array('boolean', true,  true),
+            array('boolean', false, false),
+
+            // integer
+            array('int', 0, 0),
+            array('int', 1, 1),
+
+            // raw
+            array('raw', 0, 0),
+            array('raw', '1', '1'),
+            array('raw', true, true),
+
+            // float
+            array('float', 1.1, 1.1),
+
+            // string
+            array('string', '', ''),
+            array('string', 'test', 'test'),
+
+            // custom_id
+            array('custom_id', 0, 0),
+            array('custom_id', '1', '1'),
+
+            // object_id
+            array('object_id', (string) $mongoId, (string) $mongoId),
+
+            // other types to support
+            // date, bin*, hash
+        );
+    }
 }
 
 /** @ODM\Document */
