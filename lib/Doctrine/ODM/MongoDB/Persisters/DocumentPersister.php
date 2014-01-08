@@ -365,6 +365,7 @@ class DocumentPersister
      */
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = null)
     {
+        // TODO: remove this
         if (is_scalar($criteria) || $criteria instanceof \MongoId) {
             $criteria = array('_id' => $criteria);
         }
