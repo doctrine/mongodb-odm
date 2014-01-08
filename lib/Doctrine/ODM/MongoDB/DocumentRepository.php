@@ -107,14 +107,13 @@ class DocumentRepository implements ObjectRepository, Selectable
         if ($id === null) {
             return;
         }
+
         if (is_array($id)) {
             list($identifierFieldName) = $this->class->getIdentifierFieldNames();
 
-            if ( ! isset($id[$identifierFieldName])) {
-                throw MappingException::missingIdentifierField($this->documentName, $identifierFieldName);
+            if (isset($id[$identifierFieldName])) {
+                $id = $id[$identifierFieldName];
             }
-
-            $id = $id[$identifierFieldName];
         }
 
         // Check identity map first
@@ -126,22 +125,24 @@ class DocumentRepository implements ObjectRepository, Selectable
             return $document; // Hit!
         }
 
+        $criteria = array('_id' => $id);
+
         if ($lockMode == LockMode::NONE) {
-            return $this->uow->getDocumentPersister($this->documentName)->load($id);
+            return $this->uow->getDocumentPersister($this->documentName)->load($criteria);
         }
 
         if ($lockMode == LockMode::OPTIMISTIC) {
             if (!$this->class->isVersioned) {
                 throw LockException::notVersioned($this->documentName);
             }
-            $document = $this->uow->getDocumentPersister($this->documentName)->load($id);
+            $document = $this->uow->getDocumentPersister($this->documentName)->load($criteria);
 
             $this->uow->lock($document, $lockMode, $lockVersion);
 
             return $document;
         }
 
-        return $this->uow->getDocumentPersister($this->documentName)->load($id, null, array(), $lockMode);
+        return $this->uow->getDocumentPersister($this->documentName)->load($criteria, null, array(), $lockMode);
     }
 
     /**

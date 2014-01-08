@@ -195,6 +195,9 @@ class %s
 {
     /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(strategy="none", options={"type"="%s"}) **/
     public $id;
+
+    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\String **/
+    public $test = "test";
 }', $shortClassName, $type);
 
             eval($code);
@@ -209,11 +212,27 @@ class %s
         $dm->flush();
         $dm->clear();
 
-        $this->assertSame($expected, $object->id);
+        if (is_object($expected)) {
+            $this->assertEquals($expected, $object->id);
+        } else {
+            $this->assertSame($expected, $object->id);
+        }
 
         $object = $dm->find(get_class($object), $object->id);
         $this->assertNotNull($object);
-        $this->assertSame($expected, $object->id);
+
+        if (is_object($expected)) {
+            $this->assertEquals($expected, $object->id);
+        } else {
+            $this->assertSame($expected, $object->id);
+        }
+
+        $object->test = 'changed';
+        $dm->flush();
+        $dm->clear();
+
+        $object = $dm->find(get_class($object), $object->id);
+        $this->assertEquals('changed', $object->test);
     }
 
     public function getTestIdTypesData()
@@ -252,8 +271,13 @@ class %s
             // object_id
             array('object_id', (string) $mongoId, (string) $mongoId),
 
+            // date
+            array('date', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d'))),
+            array('date', date('Y-m-d'), new \DateTime(date('Y-m-d'))),
+            array('date', strtotime(date('Y-m-d')), new \DateTime(date('Y-m-d'))),
+
             // other types to support
-            // date, bin*, hash
+            // bin*, hash
         );
     }
 }

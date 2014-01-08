@@ -61,6 +61,8 @@ class DateType extends Type
         } elseif (is_numeric($value)) {
             $date = new \DateTime();
             $date->setTimestamp($value);
+        } elseif ($value instanceof \DateTime) {
+            $date = $value;
         } else {
             $date = new \DateTime($value);
         }
