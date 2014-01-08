@@ -173,6 +173,38 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertArrayNotHasKey('name', $document, '"name" was not saved');
         $this->assertArrayNotHasKey('baz', $document, '"baz" was not saved');
     }
+
+    public function testMethodAlsoLoadParentInheritance()
+    {
+        $document = array(
+            'buzz' => 'buzz',
+            'test' => 'test',
+            'testOld' => 'testOld',
+            'testOlder' => 'testOlder',
+        );
+
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadChild')->insert($document);
+
+        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadChild')->findOneBy(array());
+
+        $this->assertEquals('buzz', $document->fizz, '"fizz" gets value from "buzz"');
+        $this->assertEquals('test', $document->test, '"test" is hydrated normally, since "testOldest" was missing and parent method was overridden');
+    }
+
+    public function testMethodAlsoLoadGrandparentInheritance()
+    {
+        $document = array(
+            'buzz' => 'buzz',
+            'testReallyOldest' => 'testReallyOldest',
+        );
+
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadGrandchild')->insert($document);
+
+        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadGrandchild')->findOneBy(array());
+
+        $this->assertEquals('buzz', $document->fizz, '"fizz" gets value from "buzz"');
+        $this->assertEquals('testReallyOldest', $document->test, '"test" gets value from "testReallyOldest"');
+    }
 }
 
 /** @ODM\Document */
@@ -239,6 +271,35 @@ class AlsoLoadDocument
     }
 
     /** @ODM\AlsoLoad({"testOld", "testOlder"}) */
+    public function populateTest($test)
+    {
+        $this->test = $test;
+    }
+}
+
+/** @ODM\Document */
+class AlsoLoadChild extends AlsoLoadDocument
+{
+    /** @ODM\String */
+    public $fizz;
+
+    /** @ODM\AlsoLoad("buzz") */
+    public function populateFizz($fizz)
+    {
+        $this->fizz = $fizz;
+    }
+
+    /** @ODM\AlsoLoad("testOldest") */
+    public function populateTest($test)
+    {
+        $this->test = $test;
+    }
+}
+
+/** @ODM\Document */
+class AlsoLoadGrandchild extends AlsoLoadChild
+{
+    /** @ODM\AlsoLoad("testReallyOldest") */
     public function populateTest($test)
     {
         $this->test = $test;

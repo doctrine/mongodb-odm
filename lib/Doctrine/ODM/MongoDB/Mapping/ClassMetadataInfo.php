@@ -600,6 +600,18 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
+     * Sets the AlsoLoad methods for documents of this class.
+     *
+     * Any previously registered methods are overwritten.
+     *
+     * @param array $methods
+     */
+    public function setAlsoLoadMethods(array $methods)
+    {
+        $this->alsoLoadMethods = $methods;
+    }
+
+    /**
      * Sets the discriminator field.
      *
      * The field name is the the unmapped database field. Discriminator values
