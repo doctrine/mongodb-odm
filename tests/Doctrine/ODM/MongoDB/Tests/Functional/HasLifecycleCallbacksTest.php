@@ -12,7 +12,8 @@ class HasLifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $this->assertEquals(0, $document->prePersistCount);
+        // Neither class is annotated. No callback is invoked.
+        $this->assertCount(0, $document->invoked);
     }
 
     public function testHasLifecycleCallbacksSubExtendsSuperAnnotated()
@@ -21,7 +22,11 @@ class HasLifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $this->assertEquals(1, $document->prePersistCount);
+        /* The sub-class is not annotated, so the callback in the annotated
+         * super-class is invokved.
+         */
+        $this->assertCount(1, $document->invoked);
+        $this->assertEquals('super', $document->invoked[0]);
     }
 
     public function testHasLifecycleCallbacksSubAnnotatedExtendsSuper()
@@ -30,7 +35,10 @@ class HasLifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $this->assertEquals(0, $document->prePersistCount);
+        /* The sub-class is annotated, but the method is declared in the super-
+         * class, which is not annotated. No callback is invoked.
+         */
+        $this->assertCount(0, $document->invoked);
     }
 
     public function testHasLifecycleCallbacksSubAnnotatedExtendsSuperAnnotated()
@@ -39,7 +47,11 @@ class HasLifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $this->assertEquals(1, $document->prePersistCount);
+        /* The sub-class is annotated, but it doesn't override the method, so
+         * the callback in the annotated super-class is invoked.
+         */
+        $this->assertCount(1, $document->invoked);
+        $this->assertEquals('super', $document->invoked[0]);
     }
 
     public function testHasLifecycleCallbacksSubOverrideExtendsSuper()
@@ -48,7 +60,8 @@ class HasLifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $this->assertEquals(0, $document->prePersistCount);
+        // Neither class is annotated. No callback is invoked.
+        $this->assertCount(0, $document->invoked);
     }
 
     public function testHasLifecycleCallbacksSubOverrideExtendsSuperAnnotated()
@@ -57,7 +70,11 @@ class HasLifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $this->assertEquals(1, $document->prePersistCount);
+        /* The sub-class is invoked because it overrides the method in the
+         * annotated super-class.
+         */
+        $this->assertCount(1, $document->invoked);
+        $this->assertEquals('sub', $document->invoked[0]);
     }
 
     public function testHasLifecycleCallbacksSubOverrideAnnotatedExtendsSuper()
@@ -66,7 +83,11 @@ class HasLifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $this->assertEquals(1, $document->prePersistCount);
+        /* The sub-class is invoked because it overrides the method and is
+         * annotated.
+         */
+        $this->assertCount(1, $document->invoked);
+        $this->assertEquals('sub', $document->invoked[0]);
     }
 
     public function testHasLifecycleCallbacksSubOverrideAnnotatedExtendsSuperAnnotated()
@@ -75,7 +96,12 @@ class HasLifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $this->assertEquals(2, $document->prePersistCount);
+        /* Since both classes are annotated and declare the method, the callback
+         * is registered twice and the sub-class is invoked two times.
+         */
+        $this->assertCount(2, $document->invoked);
+        $this->assertEquals('sub', $document->invoked[0]);
+        $this->assertEquals('sub', $document->invoked[1]);
     }
 }
 
@@ -85,12 +111,12 @@ abstract class HasLifecycleCallbacksSuper
     /** @ODM\Id */
     public $id;
 
-    public $prePersistCount = 0;
+    public $invoked = array();
 
     /** @ODM\PrePersist */
     public function prePersist()
     {
-        $this->prePersistCount++;
+        $this->invoked[] = 'super';
     }
 }
 
@@ -100,12 +126,12 @@ abstract class HasLifecycleCallbacksSuperAnnotated
     /** @ODM\Id */
     public $id;
 
-    public $prePersistCount = 0;
+    public $invoked = array();
 
     /** @ODM\PrePersist */
     public function prePersist()
     {
-        $this->prePersistCount++;
+        $this->invoked[] = 'super';
     }
 }
 
@@ -135,7 +161,7 @@ class HasLifecycleCallbacksSubOverrideExtendsSuper extends HasLifecycleCallbacks
     /** @ODM\PrePersist */
     public function prePersist()
     {
-        parent::prePersist();
+        $this->invoked[] = 'sub';
     }
 }
 
@@ -145,7 +171,7 @@ class HasLifecycleCallbacksSubOverrideExtendsSuperAnnotated extends HasLifecycle
     /** @ODM\PrePersist */
     public function prePersist()
     {
-        parent::prePersist();
+        $this->invoked[] = 'sub';
     }
 }
 
@@ -155,7 +181,7 @@ class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuper extends HasLifecycle
     /** @ODM\PrePersist */
     public function prePersist()
     {
-        parent::prePersist();
+        $this->invoked[] = 'sub';
     }
 }
 
@@ -165,6 +191,6 @@ class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuperAnnotated extends Has
     /** @ODM\PrePersist */
     public function prePersist()
     {
-        parent::prePersist();
+        $this->invoked[] = 'sub';
     }
 }
