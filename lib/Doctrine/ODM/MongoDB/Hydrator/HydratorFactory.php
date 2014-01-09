@@ -402,7 +402,7 @@ EOF
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners
-        if (isset($metadata->lifecycleCallbacks[Events::preLoad])) {
+        if ( ! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
             $args = array(&$data);
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
@@ -411,7 +411,7 @@ EOF
         }
 
         // alsoLoadMethods may transform the document before hydration
-        if (isset($metadata->alsoLoadMethods)) {
+        if ( ! empty($metadata->alsoLoadMethods)) {
             foreach ($metadata->alsoLoadMethods as $method => $fieldNames) {
                 foreach ($fieldNames as $fieldName) {
                     // Invoke the method only once for the first field we find
@@ -429,7 +429,7 @@ EOF
         }
 
         // Invoke the postLoad lifecycle callbacks and listeners
-        if (isset($metadata->lifecycleCallbacks[Events::postLoad])) {
+        if ( ! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
             $metadata->invokeLifecycleCallbacks(Events::postLoad, $document);
         }
         if ($this->evm->hasListeners(Events::postLoad)) {

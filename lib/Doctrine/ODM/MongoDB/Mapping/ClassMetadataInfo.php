@@ -539,14 +539,14 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Whether the class has any attached lifecycle listeners or callbacks for a lifecycle event.
+     * Checks whether the class has callbacks registered for a lifecycle event.
      *
-     * @param string $lifecycleEvent
+     * @param string $event Lifecycle event
      * @return boolean
      */
-    public function hasLifecycleCallbacks($lifecycleEvent)
+    public function hasLifecycleCallbacks($event)
     {
-        return isset($this->lifecycleCallbacks[$lifecycleEvent]);
+        return ! empty($this->lifecycleCallbacks[$event]);
     }
 
     /**

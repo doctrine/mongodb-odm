@@ -544,7 +544,7 @@ public function <methodName>()
                 $lines[] = ' * )';
             }
 
-            if ($metadata->lifecycleCallbacks) {
+            if ( ! empty($metadata->lifecycleCallbacks)) {
                 $lines[] = ' * @ODM\HasLifecycleCallbacks';
             }
 
@@ -644,21 +644,21 @@ public function <methodName>()
 
     private function generateDocumentLifecycleCallbackMethods(ClassMetadataInfo $metadata)
     {
-        if (isset($metadata->lifecycleCallbacks) && $metadata->lifecycleCallbacks) {
-            $methods = array();
-
-            foreach ($metadata->lifecycleCallbacks as $name => $callbacks) {
-                foreach ($callbacks as $callback) {
-                    if ($code = $this->generateLifecycleCallbackMethod($name, $callback, $metadata)) {
-                        $methods[] = $code;
-                    }
-                }
-            }
-
-            return implode("\n\n", $methods);
+        if (empty($metadata->lifecycleCallbacks)) {
+            return '';
         }
 
-        return "";
+        $methods = array();
+
+        foreach ($metadata->lifecycleCallbacks as $event => $callbacks) {
+            foreach ($callbacks as $callback) {
+                if ($code = $this->generateLifecycleCallbackMethod($event, $callback, $metadata)) {
+                    $methods[] = $code;
+                }
+            }
+        }
+
+        return implode("\n\n", $methods);
     }
 
     private function generateDocumentAssociationMappingProperties(ClassMetadataInfo $metadata)
