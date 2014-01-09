@@ -26,6 +26,21 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->documentPersister = $this->uow->getDocumentPersister($this->class);
     }
 
+    public function testExecuteUpsertShouldNeverReplaceDocuments()
+    {
+        $originalData = $this->dm->getDocumentCollection($this->class)->findOne();
+
+        $document = new DocumentPersisterTestDocument();
+        $document->id = $originalData['_id'];
+
+        $this->dm->persist($document);
+        $this->dm->flush();
+
+        $updatedData = $this->dm->getDocumentCollection($this->class)->findOne(array('_id' => $originalData['_id']));
+
+        $this->assertEquals($originalData, $updatedData);
+    }
+
     public function testLoadPreparesCriteriaAndSort()
     {
         $criteria = array('name' => array('$in' => array('a', 'b')));
