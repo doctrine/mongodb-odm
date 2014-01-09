@@ -36,27 +36,27 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($this->uow->isScheduledForInsert($user));
     }
 
-    public function testScheduleForInsertUpsert()
+    public function testScheduleForUpsert()
     {
         $class = $this->dm->getClassMetadata('Documents\ForumUser');
         $user = new ForumUser();
         $user->id = new \MongoId();
         $this->assertFalse($this->uow->isScheduledForInsert($user));
         $this->assertFalse($this->uow->isScheduledForUpsert($user));
-        $this->uow->scheduleForInsert($class, $user);
-        $this->assertTrue($this->uow->isScheduledForInsert($user));
+        $this->uow->scheduleForUpsert($class, $user);
+        $this->assertFalse($this->uow->isScheduledForInsert($user));
         $this->assertTrue($this->uow->isScheduledForUpsert($user));
     }
 
-    public function testScheduleForInsertUpsertWithNonObjectIdValues()
+    public function testScheduleForUpsertWithNonObjectIdValues()
     {
         $doc = new UowCustomIdDocument();
         $doc->id = 'string';
         $class = $this->dm->getClassMetadata(get_class($doc));
         $this->assertFalse($this->uow->isScheduledForInsert($doc));
         $this->assertFalse($this->uow->isScheduledForUpsert($doc));
-        $this->uow->scheduleForInsert($class, $doc);
-        $this->assertTrue($this->uow->isScheduledForInsert($doc));
+        $this->uow->scheduleForUpsert($class, $doc);
+        $this->assertFalse($this->uow->isScheduledForInsert($doc));
         $this->assertTrue($this->uow->isScheduledForUpsert($doc));
     }
 
@@ -179,7 +179,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->persist($entity);
         $this->uow->commit();
 
-        $this->assertEquals(1, count($persister->getInserts()));
+        $this->assertEquals(1, count($persister->getUpserts()));
         $this->assertTrue($this->uow->isInIdentityMap($entity));
         $this->assertFalse($this->uow->isScheduledForDirtyCheck($entity));
 
@@ -199,7 +199,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->persist($item);
         $this->uow->commit();
 
-        $this->assertEquals(1, count($itemPersister->getInserts()));
+        $this->assertEquals(1, count($itemPersister->getUpserts()));
         $this->assertTrue($this->uow->isInIdentityMap($item));
         $this->assertFalse($this->uow->isScheduledForDirtyCheck($item));
 

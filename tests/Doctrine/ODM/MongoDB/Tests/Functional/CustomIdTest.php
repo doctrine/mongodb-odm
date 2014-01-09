@@ -33,6 +33,8 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user = $this->dm->find('Documents\CustomUser', $user->getId());
 
+        $this->assertNotNull($user);
+
         $this->assertEquals('userId', $user->getId());
 
         $this->dm->clear();

@@ -100,6 +100,13 @@ class DocumentPersister
     private $queuedInserts = array();
 
     /**
+     * Array of queued inserts for the persister to insert.
+     *
+     * @var array
+     */
+    private $queuedUpserts = array();
+
+    /**
      * The CriteriaMerger instance.
      *
      * @var CriteriaMerger
@@ -142,7 +149,7 @@ class DocumentPersister
      */
     public function isQueuedForInsert($document)
     {
-        return isset($this->queuedInserts[spl_object_hash($document)]) ? true : false;
+        return isset($this->queuedInserts[spl_object_hash($document)]);
     }
 
     /**
@@ -154,6 +161,34 @@ class DocumentPersister
     public function addInsert($document)
     {
         $this->queuedInserts[spl_object_hash($document)] = $document;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUpserts()
+    {
+        return $this->queuedUpserts;
+    }
+
+    /**
+     * @param object $document
+     * @return boolean
+     */
+    public function isQueuedForUpsert($document)
+    {
+        return isset($this->queuedUpserts[spl_object_hash($document)]);
+    }
+
+    /**
+     * Adds a document to the queued upserts.
+     * The document remains queued until {@link executeUpserts} is invoked.
+     *
+     * @param object $document The document to queue for insertion.
+     */
+    public function addUpsert($document)
+    {
+        $this->queuedUpserts[spl_object_hash($document)] = $document;
     }
 
     /**
@@ -179,15 +214,12 @@ class DocumentPersister
     public function executeInserts(array $options = array())
     {
         if ( ! $this->queuedInserts) {
-            return array();
+            return;
         }
 
         $inserts = array();
         foreach ($this->queuedInserts as $oid => $document) {
-            $upsert = $this->uow->isScheduledForUpsert($document);
-            $data = $upsert
-                ? $this->pb->prepareUpsertData($document)
-                : $this->pb->prepareInsertData($document);
+            $data = $this->pb->prepareInsertData($document);
 
             // Set the initial version for each insert
             if ($this->class->isVersioned) {
@@ -200,26 +232,10 @@ class DocumentPersister
                     $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
                 }
+                $data[$versionMapping['name']] = $nextVersion;
             }
 
-            // upsert right away
-            if ($upsert) {
-                if ($this->class->isVersioned) {
-                    $data['$set'][$versionMapping['name']] = $nextVersion;
-                }
-
-                try {
-                    $this->executeUpsert($data, $options);
-                } catch (\MongoException $e) {
-                    unset($this->queuedInserts[$oid]);
-                    throw $e;
-                }
-            } else {
-                if ($this->class->isVersioned) {
-                    $data[$versionMapping['name']] = $nextVersion;
-                }
-                $inserts[$oid] = $data;
-            }
+            $inserts[$oid] = $data;
         }
 
         if ($inserts) {
@@ -232,6 +248,34 @@ class DocumentPersister
         }
 
         $this->queuedInserts = array();
+    }
+
+    /**
+     * Executes all queued document upserts.
+     *
+     * Queued documents with an ID are upserted individually.
+     *
+     * If no upserts are queued, invoking this method is a NOOP.
+     *
+     * @param array $options Options for batchInsert() and update() driver methods
+     */
+    public function executeUpserts(array $options = array())
+    {
+        if ( ! $this->queuedUpserts) {
+            return;
+        }
+
+        foreach ($this->queuedUpserts as $oid => $document) {
+            $data = $this->pb->prepareUpsertData($document);
+
+            try {
+                $this->executeUpsert($data, $options);
+                unset($this->queuedUpserts[$oid]);
+            } catch (\MongoException $e) {
+                unset($this->queuedUpserts[$oid]);
+                throw $e;
+            }
+        }
     }
 
     /**
