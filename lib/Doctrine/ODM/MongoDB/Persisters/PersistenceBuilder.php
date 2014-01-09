@@ -146,8 +146,8 @@ class PersistenceBuilder
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
-            // skip identifiers
-            if (isset($mapping['id']) && $mapping['id'] === true) {
+            // skip non embedded document identifiers
+            if ( ! $class->isEmbeddedDocument && ! empty($mapping['id'])) {
                 continue;
             }
 

@@ -414,6 +414,15 @@ class UnitOfWork implements PropertyChangedListener
         // Now we need a commit order to maintain referential integrity
         $commitOrder = $this->getCommitOrder();
 
+        if ($this->documentUpserts) {
+            foreach ($commitOrder as $class) {
+                if ($class->isEmbeddedDocument) {
+                    continue;
+                }
+                $this->executeUpserts($class, $options);
+            }
+        }
+
         if ($this->documentInsertions) {
             foreach ($commitOrder as $class) {
                 if ($class->isEmbeddedDocument) {
@@ -938,10 +947,12 @@ class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($document, $this->dm));
         }
 
+        $upsert = false;
         if ($class->identifier) {
             $idValue = $class->getIdentifierValue($document);
+            $upsert = $idValue !== null;
 
-            if ($class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE && !$idValue) {
+            if ($class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE && ! $idValue) {
                 $idValue = $class->idGenerator->generate($this->dm, $document);
             }
 
@@ -953,7 +964,11 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->documentStates[$oid] = self::STATE_MANAGED;
 
-        $this->scheduleForInsert($class, $document);
+        if ($upsert) {
+            $this->scheduleForUpsert($class, $document);
+        } else {
+            $this->scheduleForInsert($class, $document);
+        }
     }
 
     /**
@@ -1001,6 +1016,44 @@ class UnitOfWork implements PropertyChangedListener
                 $class->invokeLifecycleCallbacks(Events::postPersist, $document);
             }
             if ($hasPostPersistListeners) {
+                $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
+            }
+            $this->cascadePostPersist($class, $document);
+        }
+    }
+
+    /**
+     * Executes all document upserts for documents of the specified type.
+     *
+     * @param ClassMetadata $class
+     * @param array $options Array of options to be used with batchInsert()
+     */
+    private function executeUpserts(ClassMetadata $class, array $options = array())
+    {
+        $className = $class->name;
+        $persister = $this->getDocumentPersister($className);
+        $collection = $this->dm->getDocumentCollection($className);
+
+        $upsertedDocuments = array();
+
+        foreach ($this->documentUpserts as $oid => $document) {
+            if (get_class($document) === $className) {
+                $persister->addUpsert($document);
+                $upsertedDocuments[] = $document;
+                unset($this->documentUpserts[$oid]);
+            }
+        }
+
+        $persister->executeUpserts($options);
+
+        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postPersist]);
+        $hasListeners = $this->evm->hasListeners(Events::postPersist);
+
+        foreach ($upsertedDocuments as $document) {
+            if ($hasLifecycleCallbacks) {
+                $class->invokeLifecycleCallbacks(Events::postPersist, $document);
+            }
+            if ($hasListeners) {
                 $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
             }
             $this->cascadePostPersist($class, $document);
@@ -1322,7 +1375,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Schedules a document for insertion into the database.
-     * If the document already has an identifier, it will be added to the identity map.
+     * If the document already has an identifier, it will be added to the
+     * identity map.
      *
      * @param ClassMetadata $class
      * @param object $document The document to schedule for insertion.
@@ -1344,30 +1398,36 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->documentInsertions[$oid] = $document;
 
-        /* Determine if the document should be upserted. Do not upsert embedded
-         * documents or documents with a null identifier.
-         *
-         * Additionally, ensure that the document identifier's PHP form is the
-         * same as its database form converted back to PHP. Without this check,
-         * non-ObjectId strings used with the IdType may get registered in the
-         * identity map even though ODM generates a valid MongoId for upsert.
-         * If we instead defer to insert logic, ODM will ensure the generated
-         * MongoId is registered in the identity map and set on the document's
-         * identifier property. See GH-529 for more details.
-         */
-        if ( ! $class->isEmbeddedDocument &&
-            null !== ($idValue = $class->getIdentifierValue($document)) &&
-            null !== ($idPhpValue = $class->getPHPIdentifierValue($idValue)) &&
-            null !== ($idDbValue = $class->getDatabaseIdentifierValue($idValue)) &&
-            $idPhpValue === $class->getPHPIdentifierValue($idDbValue)) {
-
-            $this->documentUpserts[$oid] = $document;
-            $this->documentIdentifiers[$oid] = $idValue;
-        }
-
         if (isset($this->documentIdentifiers[$oid])) {
             $this->addToIdentityMap($document);
         }
+    }
+
+    /**
+     * Schedules a document for upsert into the database and adds it to the
+     * identity map
+     *
+     * @param ClassMetadata $class
+     * @param object $document The document to schedule for upsert.
+     * @throws \InvalidArgumentException
+     */
+    public function scheduleForUpsert(ClassMetadata $class, $document)
+    {
+        $oid = spl_object_hash($document);
+
+        if (isset($this->documentUpdates[$oid])) {
+            throw new \InvalidArgumentException("Dirty document can not be scheduled for upsert.");
+        }
+        if (isset($this->documentDeletions[$oid])) {
+            throw new \InvalidArgumentException("Removed document can not be scheduled for upsert.");
+        }
+        if (isset($this->documentUpserts[$oid])) {
+            throw new \InvalidArgumentException("Document can not be scheduled for upsert twice.");
+        }
+
+        $this->documentUpserts[$oid] = $document;
+        $this->documentIdentifiers[$oid] = $class->getIdentifierValue($document);
+        $this->addToIdentityMap($document);
     }
 
     /**
@@ -1408,7 +1468,7 @@ class UnitOfWork implements PropertyChangedListener
             throw new \InvalidArgumentException("Document is removed.");
         }
 
-        if ( ! isset($this->documentUpdates[$oid]) && ! isset($this->documentInsertions[$oid])) {
+        if ( ! isset($this->documentUpdates[$oid]) && ! isset($this->documentInsertions[$oid]) && ! isset($this->documentUpserts[$oid])) {
             $this->documentUpdates[$oid] = $document;
         }
     }
@@ -1487,6 +1547,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
         return isset($this->documentInsertions[$oid]) ||
+            isset($this->documentUpserts[$oid]) ||
             isset($this->documentUpdates[$oid]) ||
             isset($this->documentDeletions[$oid]);
     }
@@ -2193,7 +2254,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
-            if (! $mapping['isCascadeRefresh']) {
+            if ( ! $mapping['isCascadeRefresh']) {
                 continue;
             }
             if (isset($mapping['embedded'])) {
