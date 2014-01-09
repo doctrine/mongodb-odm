@@ -563,19 +563,21 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Adds a lifecycle callback for documents of this class.
      *
-     * Note: If the same callback is registered more than once, the old one
-     * will be overridden.
+     * If the callback is already registered, this is a NOOP.
      *
      * @param string $callback
      * @param string $event
      */
     public function addLifecycleCallback($callback, $event)
     {
-        $this->lifecycleCallbacks[$event][] = $callback;
+        if ( ! isset($this->lifecycleCallbacks[$event][$callback])) {
+            $this->lifecycleCallbacks[$event][$callback] = $callback;
+        }
     }
 
     /**
      * Sets the lifecycle callbacks for documents of this class.
+     *
      * Any previously registered callbacks are overwritten.
      *
      * @param array $callbacks

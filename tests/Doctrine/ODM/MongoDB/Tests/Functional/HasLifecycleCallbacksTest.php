@@ -97,11 +97,10 @@ class HasLifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         /* Since both classes are annotated and declare the method, the callback
-         * is registered twice and the sub-class is invoked two times.
+         * is registered twice but the sub-class should be invoked only once.
          */
-        $this->assertCount(2, $document->invoked);
+        $this->assertCount(1, $document->invoked);
         $this->assertEquals('sub', $document->invoked[0]);
-        $this->assertEquals('sub', $document->invoked[1]);
     }
 }
 

@@ -208,9 +208,15 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'orphanRemoval' => false,
         ), $classMetadata->fieldMappings['groups']);
 
-        $this->assertEquals(array(
-            'postPersist' => array('doStuffOnPostPersist', 'doOtherStuffOnPostPersist'),
-            'prePersist' => array('doStuffOnPrePersist')
+        $this->assertEquals(
+            array(
+                'postPersist' => array(
+                    'doStuffOnPostPersist' => 'doStuffOnPostPersist',
+                    'doOtherStuffOnPostPersist' => 'doOtherStuffOnPostPersist',
+                ),
+                'prePersist' => array(
+                    'doStuffOnPrePersist' => 'doStuffOnPrePersist',
+                )
             ),
             $classMetadata->lifecycleCallbacks
         );
