@@ -3,9 +3,11 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Documents\Album;
+use Documents\SpecialUser;
 
 class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -170,6 +172,19 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'targetDocument' => 'Documents\Address',
             'cascade' => 'all',
         ));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvokeLifecycleCallbacksShouldRequireExactClass()
+    {
+        $class = $this->dm->getClassMetadata('\Documents\User');
+        $document = new SpecialUser();
+
+        $this->assertInstanceOf('\Documents\User', $document);
+
+        $class->invokeLifecycleCallbacks(Events::prePersist, new SpecialUser());
     }
 }
 

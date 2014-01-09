@@ -520,16 +520,21 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Dispatches the lifecycle event of the given document to the registered
-     * lifecycle callbacks and lifecycle listeners.
+     * Dispatches the lifecycle event of the given document by invoking all
+     * registered callbacks.
      *
-     * @param string $lifecycleEvent
-     * @param object $document The Document on which the event occurred.
-     * @param array $arguments
+     * @param string $event     Lifecycle event
+     * @param object $document  Document on which the event occurred
+     * @param array  $arguments Arguments to pass to all callbacks
+     * @throws \InvalidArgumentException if document class is not this class
      */
-    public function invokeLifecycleCallbacks($lifecycleEvent, $document, array $arguments = null)
+    public function invokeLifecycleCallbacks($event, $document, array $arguments = null)
     {
-        foreach ($this->lifecycleCallbacks[$lifecycleEvent] as $callback) {
+        if (get_class($document) !== $this->name) {
+            throw new \InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
+        }
+
+        foreach ($this->lifecycleCallbacks[$event] as $callback) {
             if ($arguments !== null) {
                 call_user_func_array(array($document, $callback), $arguments);
             } else {
