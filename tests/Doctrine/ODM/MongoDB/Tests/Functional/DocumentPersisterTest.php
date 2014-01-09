@@ -103,15 +103,40 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         );
     }
 
-    public function testPrepareQueryOrNewObjWithHashId()
+    /**
+     * @dataProvider provideHashIdentifiers
+     */
+    public function testPrepareQueryOrNewObjWithHashId($id)
     {
         $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = array('_id' => array('key' => 'value'));
-        $expected = array('_id' => array('key' => 'value'));
+        $value = array('_id' => $id);
+        $expected = array('_id' => (object) $id);
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
+    /**
+     * @dataProvider provideHashIdentifiers
+     */
+    public function testPrepareQueryOrNewObjWithHashIdAndOperators($id)
+    {
+        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $value = array('_id' => array('$in' => array($id)));
+        $expected = array('_id' => array('$in' => array((object) $id)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
+    public function provideHashIdentifiers()
+    {
+        return array(
+            array(array('key' => 'value')),
+            array(array(0 => 'first', 1 => 'second')),
+        );
     }
 }
 
