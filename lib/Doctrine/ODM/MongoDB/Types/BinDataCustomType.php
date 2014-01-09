@@ -32,4 +32,19 @@ class BinDataCustomType extends BinDataType
     {
         return $value !== null ? new \MongoBinData($value, \MongoBinData::CUSTOM) : null;
     }
+
+    public function convertToPHPValue($value)
+    {
+        return $value !== null ? ($value instanceof \MongoBinData ? $value->bin : $value) : null;
+    }
+
+    public function closureToMongo()
+    {
+        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::CUSTOM) : null;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = $value !== null ? ($value instanceof \MongoBinData ? $value->bin : $value) : null;';
+    }
 }
