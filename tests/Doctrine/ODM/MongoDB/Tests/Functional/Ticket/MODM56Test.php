@@ -29,7 +29,7 @@ class MODM56Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @ODM\Document */
+/** @ODM\Document @ODM\HasLifecycleCallbacks */
 class MODM56Parent
 {
     /** @ODM\Id */

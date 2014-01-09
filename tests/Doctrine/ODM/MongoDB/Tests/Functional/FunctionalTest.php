@@ -13,7 +13,6 @@ use Documents\Project;
 use Documents\Agent;
 use Documents\Server;
 use Documents\GuestServer;
-use Documents\Functional\AlsoLoad;
 use Documents\Functional\EmbeddedTestLevel0;
 use Documents\Functional\EmbeddedTestLevel0b;
 use Documents\Functional\EmbeddedTestLevel1;
@@ -142,19 +141,6 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Child 1 Changed', $test['children'][0]['name']);
         $this->assertEquals('Child 2 Changed', $test['children'][0]['children'][0]['name']);
         $this->assertEquals('Root Changed', $test['name']);
-    }
-
-    public function testNotSaved()
-    {
-        $test = new \Documents\Functional\AlsoLoad();
-        $test->bar = 'test';
-        $test->firstName = 'Jon';
-        $this->dm->persist($test);
-        $this->dm->flush();
-
-        $test = $this->dm->getDocumentCollection('Documents\Functional\AlsoLoad')->findOne(array('firstName' => 'Jon'));
-        $this->assertEquals('Jon', $test['firstName']);
-        $this->assertFalse(isset($test['bar']));
     }
 
     public function testManyEmbedded()
@@ -472,90 +458,6 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getSingleResult();
         $this->assertNull($test['field']);
         $this->assertFalse(isset($test['transientField']));
-    }
-
-    public function testAlsoLoadOnProperty()
-    {
-        $collection = $this->dm->getDocumentCollection('Documents\Functional\AlsoLoad');
-        $collection->drop();
-        $doc = array(
-            'bar' => 'w00t'
-        );
-        $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'w00t'));
-        $this->assertEquals('w00t', $document->foo);
-
-        $doc = array(
-            'foo' => 'cool'
-        );
-        $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('foo' => 'cool'));
-        $this->assertEquals('cool', $document->foo);
-
-        $doc = array(
-            'bar' => 'bar',
-            'zip' => 'zip'
-        );
-        $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('zip' => 'zip'));
-        $this->assertEquals('bar', $document->foo);
-        $this->assertEquals('zip', $document->baz);
-
-        $doc = array(
-            'foo' => null,
-            'bar' => 'nice'
-        );
-        $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('bar' => 'nice'));
-        $this->assertNull($document->foo);
-
-        $doc = array(
-            'bar' => null,
-            'zip' => 'good'
-        );
-        $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('zip' => 'good'));
-        $this->assertNull($document->foo);
-
-        $doc = array(
-            'foo' => 'foo',
-            'bar' => 'bar'
-        );
-        $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('foo' => 'foo'));
-        $this->assertEquals('foo', $document->foo);
-    }
-
-    public function testAlsoLoadOnMethod()
-    {
-        $collection = $this->dm->getDocumentCollection('Documents\Functional\AlsoLoad');
-        $collection->drop();
-        $doc = array(
-            'name' => 'Jonathan Wage',
-            'test1' => 'test1'
-        );
-        $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('name' => 'Jonathan Wage'));
-        $this->assertEquals('Jonathan', $document->firstName);
-        $this->assertEquals('Wage', $document->lastName);
-        $this->assertEquals('test1', $document->test);
-
-        $doc = array(
-            'fullName' => 'Jonathan Wage',
-            'test2' => 'test2'
-        );
-        $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('fullName' => 'Jonathan Wage'));
-        $this->assertEquals('Jonathan', $document->firstName);
-        $this->assertEquals('Wage', $document->lastName);
-        $this->assertEquals('test2', $document->test);
-
-        $doc = array(
-            'test' => 'test'
-        );
-        $collection->insert($doc);
-        $document = $this->dm->getRepository('Documents\Functional\AlsoLoad')->findOneBy(array('test' => 'test'));
-        $this->assertEquals('test', $document->test);
     }
 
     public function testSimplerEmbedAndReference()

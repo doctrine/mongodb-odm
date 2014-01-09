@@ -140,6 +140,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setVersioned($parent->isVersioned);
             $class->setVersionField($parent->versionField);
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
+            $class->setAlsoLoadMethods($parent->alsoLoadMethods);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
             $class->setFile($parent->getFile());
             if ($parent->isMappedSuperclass) {

@@ -520,16 +520,21 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Dispatches the lifecycle event of the given document to the registered
-     * lifecycle callbacks and lifecycle listeners.
+     * Dispatches the lifecycle event of the given document by invoking all
+     * registered callbacks.
      *
-     * @param string $lifecycleEvent
-     * @param object $document The Document on which the event occurred.
-     * @param array $arguments
+     * @param string $event     Lifecycle event
+     * @param object $document  Document on which the event occurred
+     * @param array  $arguments Arguments to pass to all callbacks
+     * @throws \InvalidArgumentException if document class is not this class
      */
-    public function invokeLifecycleCallbacks($lifecycleEvent, $document, array $arguments = null)
+    public function invokeLifecycleCallbacks($event, $document, array $arguments = null)
     {
-        foreach ($this->lifecycleCallbacks[$lifecycleEvent] as $callback) {
+        if (get_class($document) !== $this->name) {
+            throw new \InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
+        }
+
+        foreach ($this->lifecycleCallbacks[$event] as $callback) {
             if ($arguments !== null) {
                 call_user_func_array(array($document, $callback), $arguments);
             } else {
@@ -539,14 +544,14 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Whether the class has any attached lifecycle listeners or callbacks for a lifecycle event.
+     * Checks whether the class has callbacks registered for a lifecycle event.
      *
-     * @param string $lifecycleEvent
+     * @param string $event Lifecycle event
      * @return boolean
      */
-    public function hasLifecycleCallbacks($lifecycleEvent)
+    public function hasLifecycleCallbacks($event)
     {
-        return isset($this->lifecycleCallbacks[$lifecycleEvent]);
+        return ! empty($this->lifecycleCallbacks[$event]);
     }
 
     /**
@@ -563,19 +568,21 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Adds a lifecycle callback for documents of this class.
      *
-     * Note: If the same callback is registered more than once, the old one
-     * will be overridden.
+     * If the callback is already registered, this is a NOOP.
      *
      * @param string $callback
      * @param string $event
      */
     public function addLifecycleCallback($callback, $event)
     {
-        $this->lifecycleCallbacks[$event][] = $callback;
+        if ( ! isset($this->lifecycleCallbacks[$event][$callback])) {
+            $this->lifecycleCallbacks[$event][$callback] = $callback;
+        }
     }
 
     /**
      * Sets the lifecycle callbacks for documents of this class.
+     *
      * Any previously registered callbacks are overwritten.
      *
      * @param array $callbacks
@@ -583,6 +590,32 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function setLifecycleCallbacks(array $callbacks)
     {
         $this->lifecycleCallbacks = $callbacks;
+    }
+
+    /**
+     * Registers a method for loading document data before field hydration.
+     *
+     * Note: A method may be registered multiple times for different fields.
+     * it will be invoked only once for the first field found.
+     *
+     * @param string       $method Method name
+     * @param array|string $fields Database field name(s)
+     */
+    public function registerAlsoLoadMethod($method, $fields)
+    {
+        $this->alsoLoadMethods[$method] = is_array($fields) ? $fields : array($fields);
+    }
+
+    /**
+     * Sets the AlsoLoad methods for documents of this class.
+     *
+     * Any previously registered methods are overwritten.
+     *
+     * @param array $methods
+     */
+    public function setAlsoLoadMethods(array $methods)
+    {
+        $this->alsoLoadMethods = $methods;
     }
 
     /**

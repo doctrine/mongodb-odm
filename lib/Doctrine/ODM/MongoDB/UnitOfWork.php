@@ -631,7 +631,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Fire PreFlush lifecycle callbacks
-        if (isset($class->lifecycleCallbacks[Events::preFlush])) {
+        if ( ! empty($class->lifecycleCallbacks[Events::preFlush])) {
             $class->invokeLifecycleCallbacks(Events::preFlush, $document);
         }
 
@@ -948,7 +948,7 @@ class UnitOfWork implements PropertyChangedListener
     private function persistNew($class, $document)
     {
         $oid = spl_object_hash($document);
-        if (isset($class->lifecycleCallbacks[Events::prePersist])) {
+        if ( ! empty($class->lifecycleCallbacks[Events::prePersist])) {
             $class->invokeLifecycleCallbacks(Events::prePersist, $document);
         }
         if ($this->evm->hasListeners(Events::prePersist)) {
@@ -998,14 +998,14 @@ class UnitOfWork implements PropertyChangedListener
             $this->addToIdentityMap($document);
         }
 
-        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postPersist]);
-        $hasListeners = $this->evm->hasListeners(Events::postPersist);
+        $hasPostPersistLifecycleCallbacks = ! empty($class->lifecycleCallbacks[Events::postPersist]);
+        $hasPostPersistListeners = $this->evm->hasListeners(Events::postPersist);
 
         foreach ($insertedDocuments as $document) {
-            if ($hasLifecycleCallbacks) {
+            if ($hasPostPersistLifecycleCallbacks) {
                 $class->invokeLifecycleCallbacks(Events::postPersist, $document);
             }
-            if ($hasListeners) {
+            if ($hasPostPersistListeners) {
                 $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
             }
             $this->cascadePostPersist($class, $document);
@@ -1020,6 +1020,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadePostPersist(ClassMetadata $class, $document)
     {
+        $hasPostPersistListeners = $this->evm->hasListeners(Events::postPersist);
+
         foreach ($class->fieldMappings as $mapping) {
             if (empty($mapping['embedded'])) {
                 continue;
@@ -1044,13 +1046,10 @@ class UnitOfWork implements PropertyChangedListener
                     $embeddedClass = $this->dm->getClassMetadata(get_class($embeddedDocument));
                 }
 
-                $hasLifecycleCallbacks = isset($embeddedClass->lifecycleCallbacks[Events::postPersist]);
-                $hasListeners = $this->evm->hasListeners(Events::postPersist);
-
-                if (isset($embeddedClass->lifecycleCallbacks[Events::postPersist])) {
+                if ( ! empty($embeddedClass->lifecycleCallbacks[Events::postPersist])) {
                     $embeddedClass->invokeLifecycleCallbacks(Events::postPersist, $embeddedDocument);
                 }
-                if ($this->evm->hasListeners(Events::postPersist)) {
+                if ($hasPostPersistListeners) {
                     $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($embeddedDocument, $this->dm));
                 }
                 $this->cascadePostPersist($embeddedClass, $embeddedDocument);
@@ -1069,9 +1068,9 @@ class UnitOfWork implements PropertyChangedListener
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
 
-        $hasPreUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::preUpdate]);
+        $hasPreUpdateLifecycleCallbacks = ! empty($class->lifecycleCallbacks[Events::preUpdate]);
         $hasPreUpdateListeners = $this->evm->hasListeners(Events::preUpdate);
-        $hasPostUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postUpdate]);
+        $hasPostUpdateLifecycleCallbacks = ! empty($class->lifecycleCallbacks[Events::postUpdate]);
         $hasPostUpdateListeners = $this->evm->hasListeners(Events::postUpdate);
 
         foreach ($this->documentUpdates as $oid => $document) {
@@ -1116,6 +1115,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadePreUpdate(ClassMetadata $class, $document)
     {
+        $hasPreUpdateListeners = $this->evm->hasListeners(Events::preUpdate);
+
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
                 $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1132,11 +1133,11 @@ class UnitOfWork implements PropertyChangedListener
                         continue;
                     }
                     if ( ! isset($this->documentInsertions[$entryOid])) {
-                        if (isset($entryClass->lifecycleCallbacks[Events::preUpdate])) {
+                        if ( ! empty($entryClass->lifecycleCallbacks[Events::preUpdate])) {
                             $entryClass->invokeLifecycleCallbacks(Events::preUpdate, $entry);
                             $this->recomputeSingleDocumentChangeSet($entryClass, $entry);
                         }
-                        if ($this->evm->hasListeners(Events::preUpdate)) {
+                        if ($hasPreUpdateListeners) {
                             $this->evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
                                 $entry, $this->dm, $this->documentChangeSets[$entryOid])
                             );
@@ -1156,6 +1157,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadePostUpdateAndPostPersist(ClassMetadata $class, $document)
     {
+        $hasPostPersistListeners = $this->evm->hasListeners(Events::postPersist);
+        $hasPostUpdateListeners = $this->evm->hasListeners(Events::postUpdate);
+
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
                 $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1172,18 +1176,18 @@ class UnitOfWork implements PropertyChangedListener
                         continue;
                     }
                     if (isset($this->documentInsertions[$entryOid])) {
-                        if (isset($entryClass->lifecycleCallbacks[Events::postPersist])) {
+                        if ( ! empty($entryClass->lifecycleCallbacks[Events::postPersist])) {
                             $entryClass->invokeLifecycleCallbacks(Events::postPersist, $entry);
                         }
-                        if ($this->evm->hasListeners(Events::postPersist)) {
+                        if ($hasPostPersistListeners) {
                             $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($entry, $this->dm));
                         }
                     } else {
-                        if (isset($entryClass->lifecycleCallbacks[Events::postUpdate])) {
+                        if ( ! empty($entryClass->lifecycleCallbacks[Events::postUpdate])) {
                             $entryClass->invokeLifecycleCallbacks(Events::postUpdate, $entry);
                             $this->recomputeSingleDocumentChangeSet($entryClass, $entry);
                         }
-                        if ($this->evm->hasListeners(Events::postUpdate)) {
+                        if ($hasPostUpdateListeners) {
                             $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($entry, $this->dm));
                         }
                     }
@@ -1201,8 +1205,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeDeletions(ClassMetadata $class, array $options = array())
     {
-        $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postRemove]);
-        $hasListeners = $this->evm->hasListeners(Events::postRemove);
+        $hasPostRemoveLifecycleCallbacks = ! empty($class->lifecycleCallbacks[Events::postRemove]);
+        $hasPostRemoveListeners = $this->evm->hasListeners(Events::postRemove);
 
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
@@ -1233,10 +1237,10 @@ class UnitOfWork implements PropertyChangedListener
                 // is obtained by a new document because the old one went out of scope.
                 $this->documentStates[$oid] = self::STATE_NEW;
 
-                if ($hasLifecycleCallbacks) {
+                if ($hasPostRemoveLifecycleCallbacks) {
                     $class->invokeLifecycleCallbacks(Events::postRemove, $document);
                 }
-                if ($hasListeners) {
+                if ($hasPostRemoveListeners) {
                     $this->evm->dispatchEvent(Events::postRemove, new LifecycleEventArgs($document, $this->dm));
                 }
                 $this->cascadePostRemove($class, $document);
@@ -1833,7 +1837,7 @@ class UnitOfWork implements PropertyChangedListener
                 // nothing to do
                 break;
             case self::STATE_MANAGED:
-                if (isset($class->lifecycleCallbacks[Events::preRemove])) {
+                if ( ! empty($class->lifecycleCallbacks[Events::preRemove])) {
                     $class->invokeLifecycleCallbacks(Events::preRemove, $document);
                 }
                 if ($this->evm->hasListeners(Events::preRemove)) {
@@ -1859,6 +1863,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadePreRemove(ClassMetadata $class, $document)
     {
+        $hasPreRemoveListeners = $this->evm->hasListeners(Events::preRemove);
+
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
                 $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1870,10 +1876,10 @@ class UnitOfWork implements PropertyChangedListener
                 }
                 foreach ($value as $entry) {
                     $entryClass = $this->dm->getClassMetadata(get_class($entry));
-                    if (isset($entryClass->lifecycleCallbacks[Events::preRemove])) {
+                    if ( ! empty($entryClass->lifecycleCallbacks[Events::preRemove])) {
                         $entryClass->invokeLifecycleCallbacks(Events::preRemove, $entry);
                     }
-                    if ($this->evm->hasListeners(Events::preRemove)) {
+                    if ($hasPreRemoveListeners) {
                         $this->evm->dispatchEvent(Events::preRemove, new LifecycleEventArgs($entry, $this->dm));
                     }
                     $this->cascadePreRemove($entryClass, $entry);
@@ -1890,6 +1896,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadePostRemove(ClassMetadata $class, $document)
     {
+        $hasPostRemoveListeners = $this->evm->hasListeners(Events::postRemove);
+
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
                 $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -1901,10 +1909,10 @@ class UnitOfWork implements PropertyChangedListener
                 }
                 foreach ($value as $entry) {
                     $entryClass = $this->dm->getClassMetadata(get_class($entry));
-                    if (isset($entryClass->lifecycleCallbacks[Events::postRemove])) {
+                    if ( ! empty($entryClass->lifecycleCallbacks[Events::postRemove])) {
                         $entryClass->invokeLifecycleCallbacks(Events::postRemove, $entry);
                     }
-                    if ($this->evm->hasListeners(Events::postRemove)) {
+                    if ($hasPostRemoveListeners) {
                         $this->evm->dispatchEvent(Events::postRemove, new LifecycleEventArgs($entry, $this->dm));
                     }
                     $this->cascadePostRemove($entryClass, $entry);
@@ -2596,6 +2604,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadePreLoad(ClassMetadata $class, $document, $data)
     {
+        $hasPreLoadListeners = $this->evm->hasListeners(Events::preLoad);
+
         foreach ($class->fieldMappings as $mapping) {
             if (isset($mapping['embedded'])) {
                 $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -2607,11 +2617,11 @@ class UnitOfWork implements PropertyChangedListener
                 }
                 foreach ($value as $entry) {
                     $entryClass = $this->dm->getClassMetadata(get_class($entry));
-                    if (isset($entryClass->lifecycleCallbacks[Events::preLoad])) {
+                    if ( ! empty($entryClass->lifecycleCallbacks[Events::preLoad])) {
                         $args = array(&$data);
                         $entryClass->invokeLifecycleCallbacks(Events::preLoad, $entry, $args);
                     }
-                    if ($this->evm->hasListeners(Events::preLoad)) {
+                    if ($hasPreLoadListeners) {
                         $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($entry, $this->dm, $data[$mapping['name']]));
                     }
                     $this->cascadePreLoad($entryClass, $entry, $data[$mapping['name']]);

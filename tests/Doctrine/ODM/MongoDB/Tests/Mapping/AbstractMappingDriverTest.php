@@ -145,8 +145,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     public function testLifecycleCallbacks($class)
     {
         $this->assertEquals(count($class->lifecycleCallbacks), 2);
-        $this->assertEquals($class->lifecycleCallbacks['prePersist'][0], 'doStuffOnPrePersist');
-        $this->assertEquals($class->lifecycleCallbacks['postPersist'][0], 'doStuffOnPostPersist');
+        $this->assertEquals($class->lifecycleCallbacks['prePersist']['doStuffOnPrePersist'], 'doStuffOnPrePersist');
+        $this->assertEquals($class->lifecycleCallbacks['postPersist']['doStuffOnPostPersist'], 'doStuffOnPostPersist');
 
         return $class;
     }
@@ -158,7 +158,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     public function testLifecycleCallbacksSupportMultipleMethodNames($class)
     {
         $this->assertEquals(count($class->lifecycleCallbacks['prePersist']), 2);
-        $this->assertEquals($class->lifecycleCallbacks['prePersist'][1], 'doOtherStuffOnPrePersistToo');
+        $this->assertEquals($class->lifecycleCallbacks['prePersist']['doOtherStuffOnPrePersistToo'], 'doOtherStuffOnPrePersistToo');
 
         return $class;
     }
@@ -283,6 +283,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
  * @ODM\Document(collection="cms_users")
  * @ODM\DiscriminatorField(fieldName="discr")
  * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\User"})
+ * @ODM\HasLifecycleCallbacks
  */
 class User
 {

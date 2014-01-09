@@ -4,7 +4,7 @@ namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+/** @ODM\EmbeddedDocument @ODM\HasLifecycleCallbacks */
 class EmbeddedTestLevel1
 {
     /** @ODM\String */

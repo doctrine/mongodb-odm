@@ -402,7 +402,7 @@ EOF
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners
-        if (isset($metadata->lifecycleCallbacks[Events::preLoad])) {
+        if ( ! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
             $args = array(&$data);
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
@@ -410,11 +410,15 @@ EOF
             $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
         }
 
-        // Use the alsoLoadMethods on the document object to transform the data before hydration
-        if (isset($metadata->alsoLoadMethods)) {
-            foreach ($metadata->alsoLoadMethods as $fieldName => $method) {
-                if (isset($data[$fieldName])) {
-                    $document->$method($data[$fieldName]);
+        // alsoLoadMethods may transform the document before hydration
+        if ( ! empty($metadata->alsoLoadMethods)) {
+            foreach ($metadata->alsoLoadMethods as $method => $fieldNames) {
+                foreach ($fieldNames as $fieldName) {
+                    // Invoke the method only once for the first field we find
+                    if (array_key_exists($fieldName, $data)) {
+                        $document->$method($data[$fieldName]);
+                        continue 2;
+                    }
                 }
             }
         }
@@ -425,7 +429,7 @@ EOF
         }
 
         // Invoke the postLoad lifecycle callbacks and listeners
-        if (isset($metadata->lifecycleCallbacks[Events::postLoad])) {
+        if ( ! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
             $metadata->invokeLifecycleCallbacks(Events::postLoad, $document);
         }
         if ($this->evm->hasListeners(Events::postLoad)) {
