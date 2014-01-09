@@ -179,9 +179,9 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     /**
      * @dataProvider getTestIdTypesData
      */
-    public function testIdTypes($type, $id, $expected)
+    public function testIdTypesAndStrategies($type, $strategy, $id = null, $expected = null, $expectedMongoType = null)
     {
-        $shortClassName = sprintf('TestIdTypes%sUser', ucfirst($type));
+        $shortClassName = sprintf('TestIdTypes%s%sUser', ucfirst($type), ucfirst($strategy));
         $className = sprintf(__NAMESPACE__.'\\%s', $shortClassName);
 
         if (!class_exists($className)) {
@@ -193,12 +193,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Document */
 class %s
 {
-    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(strategy="none", options={"type"="%s"}) **/
+    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(strategy="%s", options={"type"="%s"}) **/
     public $id;
 
     /** @Doctrine\ODM\MongoDB\Mapping\Annotations\String **/
     public $test = "test";
-}', $shortClassName, $type);
+}', $shortClassName, $strategy, $type);
 
             eval($code);
         }
@@ -212,19 +212,30 @@ class %s
         $dm->flush();
         $dm->clear();
 
-        if (is_object($expected)) {
-            $this->assertEquals($expected, $object->id);
-        } else {
-            $this->assertSame($expected, $object->id);
+        $this->assertNotNull($object->id);
+
+        if ($expectedMongoType !== null) {
+            $check = $dm->getDocumentCollection(get_class($object))->findOne(array());
+            $this->assertEquals($expectedMongoType, is_object($check['_id']) ? get_class($check['_id']) : gettype($check['_id']));
+        }
+
+        if ($expected !== null) {
+            if (is_object($expected)) {
+                $this->assertEquals($expected, $object->id);
+            } else {
+                $this->assertSame($expected, $object->id);
+            }
         }
 
         $object = $dm->find(get_class($object), $object->id);
         $this->assertNotNull($object);
 
-        if (is_object($expected)) {
-            $this->assertEquals($expected, $object->id);
-        } else {
-            $this->assertSame($expected, $object->id);
+        if ($expected !== null) {
+            if (is_object($expected)) {
+                $this->assertEquals($expected, $object->id);
+            } else {
+                $this->assertSame($expected, $object->id);
+            }
         }
 
         $object->test = 'changed';
@@ -241,40 +252,52 @@ class %s
 
         return array(
             // boolean
-            array('boolean', true,  true),
-            array('boolean', 1,  true),
-            array('boolean', false, false),
+            array('boolean', 'none', true,  true, 'boolean'),
+            array('boolean', 'none', 1,  true, 'boolean'),
+            array('boolean', 'none', false, false, 'boolean'),
 
             // integer
-            array('int', 0, 0),
-            array('int', 1, 1),
-            array('int', '1', 1),
+            array('int', 'none', 0, 0, 'integer'),
+            array('int', 'none', 1, 1, 'integer'),
+            array('int', 'none', '1', 1, 'integer'),
+            array('int', 'increment', null, 1, 'integer'),
 
             // raw
-            array('raw', 0, 0),
-            array('raw', '1', '1'),
-            array('raw', true, true),
+            array('raw', 'none', 0, 0, 'integer'),
+            array('raw', 'none', '1', '1', 'string'),
+            array('raw', 'none', true, true, 'boolean'),
+            array('raw', 'increment', null, 1, 'integer'),
 
             // float
-            array('float', 1.1, 1.1),
-            array('float', '1.1', 1.1),
+            array('float', 'none', 1.1, 1.1, 'double'),
+            array('float', 'none', '1.1', 1.1, 'double'),
 
             // string
-            array('string', '', ''),
-            array('string', 1, '1'),
-            array('string', 'test', 'test'),
+            array('string', 'none', '', '', 'string'),
+            array('string', 'none', 1, '1', 'string'),
+            array('string', 'none', 'test', 'test', 'string'),
+            array('string', 'increment', null, '1', 'string'),
 
             // custom_id
-            array('custom_id', 0, 0),
-            array('custom_id', '1', '1'),
+            array('custom_id', 'none', 0, 0, 'integer'),
+            array('custom_id', 'none', '1', '1', 'string'),
+            array('custom_id', 'increment', null, 1, 'integer'),
 
             // object_id
-            array('object_id', (string) $mongoId, (string) $mongoId),
+            array('object_id', 'none', (string) $mongoId, (string) $mongoId, 'MongoId'),
 
             // date
-            array('date', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d'))),
-            array('date', date('Y-m-d'), new \DateTime(date('Y-m-d'))),
-            array('date', strtotime(date('Y-m-d')), new \DateTime(date('Y-m-d'))),
+            array('date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), 'MongoDate'),
+            array('date', 'none', date('Y-m-d'), new \DateTime(date('Y-m-d')), 'MongoDate'),
+            array('date', 'none', strtotime(date('Y-m-d')), new \DateTime(date('Y-m-d')), 'MongoDate'),
+
+            // bin
+            array('bin', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
+            array('bin', 'uuid', null, null, 'MongoBinData'),
+            array('bin_func', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
+            array('bin_uuid', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
+            array('bin_md5', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
+            array('bin_custom', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
 
             // other types to support
             // bin*, hash

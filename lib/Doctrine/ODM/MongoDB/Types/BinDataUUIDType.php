@@ -26,25 +26,10 @@ namespace Doctrine\ODM\MongoDB\Types;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class BinDataUUIDType extends Type
+class BinDataUUIDType extends BinDataType
 {
     public function convertToDatabaseValue($value)
     {
         return $value !== null ? new \MongoBinData($value, \MongoBinData::UUID) : null;
-    }
-
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? $value->bin : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::UUID) : null;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = $value !== null ? $value->bin : null;';
     }
 }
