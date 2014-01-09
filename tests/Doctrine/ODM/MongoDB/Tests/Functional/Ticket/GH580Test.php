@@ -15,7 +15,7 @@ class GH580Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $repository = $this->dm->getRepository($class);
 
-        $this->assertEquals(0, $repository->findAll()->count());
+        $this->assertCount(0, $repository->findAll());
 
         // Create, persist and flush initial object
         $doc1 = new GH580Document();
@@ -54,7 +54,7 @@ class GH580Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         /* Repository should contain one object, but may contain two if the
          * DocumentPersister was not cleaned up.
          */
-        $this->assertEquals(1, $repository->findAll()->count());
+        $this->assertCount(1, $repository->findAll());
     }
 }
 
