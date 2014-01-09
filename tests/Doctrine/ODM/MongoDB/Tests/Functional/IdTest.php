@@ -278,6 +278,9 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('bin_uuid', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
             array('bin_md5', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
             array('bin_custom', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
+
+            // hash
+            array('hash', 'none', array('key' => 'value'), array('key' => 'value'), 'array'),
         );
     }
 

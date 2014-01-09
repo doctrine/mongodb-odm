@@ -80,14 +80,14 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @dataProvider getTestPrepareQueryOrNewObjData
+     * @dataProvider getTestPrepareFieldNameData
      */
     public function testPrepareFieldName($fieldName, $expected)
     {
         $this->assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
     }
 
-    public function getTestPrepareQueryOrNewObjData()
+    public function getTestPrepareFieldNameData()
     {
         return array(
             array('name', 'dbName'),
@@ -101,6 +101,17 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('association.nested.association.nested.id', 'associationName.nestedName.associationName.nestedName._id'),
             array('association.nested.association.nested.firstName', 'associationName.nestedName.associationName.nestedName.firstName'),
         );
+    }
+
+    public function testPrepareQueryOrNewObjWithHashId()
+    {
+        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $value = array('_id' => array('key' => 'value'));
+        $expected = array('_id' => array('key' => 'value'));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 }
 
@@ -176,4 +187,12 @@ class DocumentPersisterTestDocumentEmbed extends AbstractDocumentPersisterTestDo
 
     /** @ODM\EmbedOne(name="nestedName") */
     public $nested;
+}
+
+
+/** @ODM\Document */
+class DocumentPersisterTestHashIdDocument
+{
+    /** @ODM\Id(strategy="none", options={"type"="hash"}) */
+    public $id;
 }
