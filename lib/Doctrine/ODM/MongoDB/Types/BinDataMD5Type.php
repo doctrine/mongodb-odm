@@ -26,10 +26,25 @@ namespace Doctrine\ODM\MongoDB\Types;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class BinDataMD5Type extends BinDataType
+class BinDataMD5Type extends Type
 {
     public function convertToDatabaseValue($value)
     {
         return $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;
+    }
+
+    public function convertToPHPValue($value)
+    {
+        return $value !== null ? ($value instanceof \MongoBinData ? $value->bin : $value) : null;
+    }
+
+    public function closureToMongo()
+    {
+        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;';
+    }
+
+    public function closureToPHP()
+    {
+        return '$return = $value !== null ? ($value instanceof \MongoBinData ? $value->bin : $value) : null;';
     }
 }

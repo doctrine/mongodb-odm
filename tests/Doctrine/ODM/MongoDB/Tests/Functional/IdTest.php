@@ -177,31 +177,11 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @dataProvider getTestIdTypesData
+     * @dataProvider getTestIdTypesAndStrategiesData
      */
     public function testIdTypesAndStrategies($type, $strategy, $id = null, $expected = null, $expectedMongoType = null)
     {
-        $shortClassName = sprintf('TestIdTypes%s%sUser', ucfirst($type), ucfirst($strategy));
-        $className = sprintf(__NAMESPACE__.'\\%s', $shortClassName);
-
-        if (!class_exists($className)) {
-            $code = sprintf(
-'namespace Doctrine\ODM\MongoDB\Tests\Functional;
-
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-
-/** @Doctrine\ODM\MongoDB\Mapping\Annotations\Document */
-class %s
-{
-    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(strategy="%s", options={"type"="%s"}) **/
-    public $id;
-
-    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\String **/
-    public $test = "test";
-}', $shortClassName, $strategy, $type);
-
-            eval($code);
-        }
+        $className = $this->createIdTestClass($type, $strategy);
 
         $dm = $this->createTestDocumentManager();
 
@@ -246,7 +226,7 @@ class %s
         $this->assertEquals('changed', $object->test);
     }
 
-    public function getTestIdTypesData()
+    public function getTestIdTypesAndStrategiesData()
     {
         $mongoId = new \MongoId();
 
@@ -298,10 +278,67 @@ class %s
             array('bin_uuid', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
             array('bin_md5', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
             array('bin_custom', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
-
-            // other types to support
-            // bin*, hash
         );
+    }
+
+    /**
+     * @dataProvider getTestBinIdsData
+     */
+    public function testBinIds($type, $expectedMongoBinDataType)
+    {
+        $className = $this->createIdTestClass($type, 'none');
+
+        $dm = $this->createTestDocumentManager();
+
+        $object = new $className();
+        $object->id = 'ABRWTIFGPEeSFf69fISAOA==';
+
+        $dm->persist($object);
+        $dm->flush();
+        $dm->clear();
+
+        $check = $dm->getDocumentCollection(get_class($object))->findOne(array());
+
+        $this->assertEquals('MongoBinData', get_class($check['_id']));
+        $this->assertEquals($expectedMongoBinDataType, $check['_id']->type);
+    }
+
+    public function getTestBinIdsData()
+    {
+        return array(
+            array('bin', \MongoBinData::BYTE_ARRAY),
+            array('bin_func', \MongoBinData::FUNC),
+            array('bin_uuid', \MongoBinData::UUID),
+            array('bin_md5', \MongoBinData::MD5),
+            array('bin_custom', \MongoBinData::CUSTOM),
+        );
+    }
+
+    private function createIdTestClass($type, $strategy)
+    {
+        $shortClassName = sprintf('TestIdTypes%s%sUser', ucfirst($type), ucfirst($strategy));
+        $className = sprintf(__NAMESPACE__.'\\%s', $shortClassName);
+
+        if (!class_exists($className)) {
+            $code = sprintf(
+'namespace Doctrine\ODM\MongoDB\Tests\Functional;
+
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
+/** @Doctrine\ODM\MongoDB\Mapping\Annotations\Document */
+class %s
+{
+    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(strategy="%s", options={"type"="%s"}) **/
+    public $id;
+
+    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\String **/
+    public $test = "test";
+}', $shortClassName, $strategy, $type);
+
+            eval($code);
+        }
+
+        return $className;
     }
 }
 
