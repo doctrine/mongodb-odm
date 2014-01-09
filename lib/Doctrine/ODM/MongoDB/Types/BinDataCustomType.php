@@ -26,25 +26,10 @@ namespace Doctrine\ODM\MongoDB\Types;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class BinDataCustomType extends Type
+class BinDataCustomType extends BinDataType
 {
     public function convertToDatabaseValue($value)
     {
         return $value !== null ? new \MongoBinData($value, \MongoBinData::CUSTOM) : null;
-    }
-
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? $value->bin : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::CUSTOM) : null;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = $value !== null ? $value->bin : null;';
     }
 }

@@ -35,7 +35,7 @@ class BinDataType extends Type
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? $value->bin : null;
+        return $value !== null ? ($value instanceof \MongoBinData ? $value->bin : $value) : null;
     }
 
     public function closureToMongo()
@@ -45,6 +45,6 @@ class BinDataType extends Type
 
     public function closureToPHP()
     {
-        return '$return = $value !== null ? $value->bin : null;';
+        return '$return = $value !== null ? ($value instanceof \MongoBinData ? $value->bin : $value) : null;';
     }
 }
