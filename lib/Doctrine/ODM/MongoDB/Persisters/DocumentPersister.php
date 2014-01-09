@@ -957,6 +957,11 @@ class DocumentPersister
         if (($class->hasField($fieldName) && $class->isIdentifier($fieldName)) || $fieldName === '_id') {
             $fieldName = '_id';
 
+            // how can this be done better?
+            if ($fieldName === '_id' && $class->fieldMappings[$class->identifier]['type'] === 'hash') {
+                return array($fieldName, $value);
+            }
+
             if ( ! $prepareValue) {
                 return array($fieldName, $value);
             }
