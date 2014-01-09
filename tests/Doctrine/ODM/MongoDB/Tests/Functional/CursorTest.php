@@ -14,7 +14,7 @@ class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $cursor = $this->dm->getRepository('Documents\User')->findAll();
+        $cursor = $this->uow->getDocumentPersister('Documents\User')->loadAll();
 
         $cursor->next();
         $this->assertSame($user, $cursor->current());

@@ -33,8 +33,8 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $users = $this->repository->findAll();
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Cursor', $users);
-        $this->assertEquals(1, count($users));
+        $this->assertInternalType('array', $users);
+        $this->assertCount(1, $users);
     }
 
     public function testFind()

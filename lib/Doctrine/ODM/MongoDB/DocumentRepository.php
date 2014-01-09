@@ -127,21 +127,21 @@ class DocumentRepository implements ObjectRepository, Selectable
         }
 
         if ($lockMode == LockMode::NONE) {
-            return $this->uow->getDocumentPersister($this->documentName)->load($id);
+            return $this->getDocumentPersister()->load($id);
         }
 
         if ($lockMode == LockMode::OPTIMISTIC) {
             if (!$this->class->isVersioned) {
                 throw LockException::notVersioned($this->documentName);
             }
-            $document = $this->uow->getDocumentPersister($this->documentName)->load($id);
+            $document = $this->getDocumentPersister()->load($id);
 
             $this->uow->lock($document, $lockMode, $lockVersion);
 
             return $document;
         }
 
-        return $this->uow->getDocumentPersister($this->documentName)->load($id, null, array(), $lockMode);
+        return $this->getDocumentPersister()->load($id, null, array(), $lockMode);
     }
 
     /**
@@ -161,11 +161,12 @@ class DocumentRepository implements ObjectRepository, Selectable
      * @param array        $sort     Sort array for Cursor::sort()
      * @param integer|null $limit    Limit for Cursor::limit()
      * @param integer|null $skip     Skip for Cursor::skip()
-     * @return Cursor
+     *
+     * @return array The entities.
      */
     public function findBy(array $criteria, array $sort = null, $limit = null, $skip = null)
     {
-        return $this->uow->getDocumentPersister($this->documentName)->loadAll($criteria, $sort, $limit, $skip);
+        return iterator_to_array($this->getDocumentPersister()->loadAll($criteria, $sort, $limit, $skip), false);
     }
 
     /**
@@ -176,7 +177,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      */
     public function findOneBy(array $criteria)
     {
-        return $this->uow->getDocumentPersister($this->documentName)->load($criteria);
+        return $this->getDocumentPersister()->load($criteria);
     }
 
     /**
@@ -278,5 +279,10 @@ class DocumentRepository implements ObjectRepository, Selectable
 
         // @TODO: wrap around a specialized Collection for efficient count on large collections
         return new ArrayCollection($queryBuilder->getQuery()->execute()->toArray());
+    }
+
+    protected function getDocumentPersister()
+    {
+        return $this->uow->getDocumentPersister($this->documentName);
     }
 }
