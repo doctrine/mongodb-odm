@@ -1080,10 +1080,10 @@ class DocumentPersister
                 // Process query operators (e.g. "$in")
                 if (isset($k[0]) && $k[0] === '$' && is_array($v)) {
                     foreach ($v as $k2 => $v2) {
-                        $value[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
+                        $value[$k][$k2] = $targetClass->getDatabaseIdentifierValue($v2);
                     }
                 } else {
-                    $value[$k] = $class->getDatabaseIdentifierValue($v);
+                    $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
                 }
             }
 
