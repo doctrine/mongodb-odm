@@ -106,13 +106,13 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     /**
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithHashId($id)
+    public function testPrepareQueryOrNewObjWithHashId($hashId)
     {
         $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = array('_id' => $id);
-        $expected = array('_id' => (object) $id);
+        $value = array('_id' => $hashId);
+        $expected = array('_id' => (object) $hashId);
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
@@ -120,13 +120,33 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     /**
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithHashIdAndOperators($id)
+    public function testPrepareQueryOrNewObjWithHashIdAndInOperators($hashId)
     {
         $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = array('_id' => array('$in' => array($id)));
-        $expected = array('_id' => array('$in' => array((object) $id)));
+        $value = array('_id' => array('$exists' => true));
+        $expected = array('_id' => array('$exists' => true));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('_id' => array('$elemMatch' => $hashId));
+        $expected = array('_id' => array('$elemMatch' => (object) $hashId));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('_id' => array('$in' => array($hashId)));
+        $expected = array('_id' => array('$in' => array((object) $hashId)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('_id' => array('$not' => array('$elemMatch' => $hashId)));
+        $expected = array('_id' => array('$not' => array('$elemMatch' => (object) $hashId)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('_id' => array('$not' => array('$in' => array($hashId))));
+        $expected = array('_id' => array('$not' => array('$in' => array((object) $hashId))));
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
@@ -136,7 +156,162 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         return array(
             array(array('key' => 'value')),
             array(array(0 => 'first', 1 => 'second')),
+            array(array('$ref' => 'ref', '$id' => 'id')),
         );
+    }
+
+    public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithNormalIdType()
+    {
+        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $id = new \MongoId();
+
+        $value = array('simpleRef' => (string) $id);
+        $expected = array('simpleRef' => $id);
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('simpleRef' => array('$exists' => true));
+        $expected = array('simpleRef' => array('$exists' => true));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('simpleRef' => array('$elemMatch' => (string) $id));
+        $expected = array('simpleRef' => array('$elemMatch' => $id));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('simpleRef' => array('$in' => array((string) $id)));
+        $expected = array('simpleRef' => array('$in' => array($id)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('simpleRef' => array('$not' => array('$elemMatch' => (string) $id)));
+        $expected = array('simpleRef' => array('$not' => array('$elemMatch' => $id)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('simpleRef' => array('$not' => array('$in' => array((string) $id))));
+        $expected = array('simpleRef' => array('$not' => array('$in' => array($id))));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
+    /**
+     * @dataProvider provideHashIdentifiers
+     */
+    public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithHashIdType($hashId)
+    {
+        $class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $value = array('simpleRef' => $hashId);
+        $expected = array('simpleRef' => (object) $hashId);
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('simpleRef' => array('$exists' => true));
+        $expected = array('simpleRef' => array('$exists' => true));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('simpleRef' => array('$elemMatch' => $hashId));
+        $expected = array('simpleRef' => array('$elemMatch' => (object) $hashId));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('simpleRef' => array('$in' => array($hashId)));
+        $expected = array('simpleRef' => array('$in' => array((object) $hashId)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('simpleRef' => array('$not' => array('$elemMatch' => $hashId)));
+        $expected = array('simpleRef' => array('$not' => array('$elemMatch' => (object) $hashId)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('simpleRef' => array('$not' => array('$in' => array($hashId))));
+        $expected = array('simpleRef' => array('$not' => array('$in' => array((object) $hashId))));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
+    public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithNormalIdType()
+    {
+        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $id = new \MongoId();
+
+        $value = array('complexRef.id' => (string) $id);
+        $expected = array('complexRef.$id' => $id);
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('complexRef.id' => array('$exists' => true));
+        $expected = array('complexRef.$id' => array('$exists' => true));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('complexRef.id' => array('$elemMatch' => (string) $id));
+        $expected = array('complexRef.$id' => array('$elemMatch' => $id));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('complexRef.id' => array('$in' => array((string) $id)));
+        $expected = array('complexRef.$id' => array('$in' => array($id)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('complexRef.id' => array('$not' => array('$elemMatch' => (string) $id)));
+        $expected = array('complexRef.$id' => array('$not' => array('$elemMatch' => $id)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('complexRef.id' => array('$not' => array('$in' => array((string) $id))));
+        $expected = array('complexRef.$id' => array('$not' => array('$in' => array($id))));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
+    /**
+     * @dataProvider provideHashIdentifiers
+     */
+    public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithHashIdType($hashId)
+    {
+        $class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $value = array('complexRef.id' => $hashId);
+        $expected = array('complexRef.$id' => (object) $hashId);
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('complexRef.id' => array('$exists' => true));
+        $expected = array('complexRef.$id' => array('$exists' => true));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('complexRef.id' => array('$elemMatch' => $hashId));
+        $expected = array('complexRef.$id' => array('$elemMatch' => (object) $hashId));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('complexRef.id' => array('$in' => array($hashId)));
+        $expected = array('complexRef.$id' => array('$in' => array((object) $hashId)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('complexRef.id' => array('$not' => array('$elemMatch' => $hashId)));
+        $expected = array('complexRef.$id' => array('$not' => array('$elemMatch' => (object) $hashId)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('complexRef.id' => array('$not' => array('$in' => array($hashId))));
+        $expected = array('complexRef.$id' => array('$not' => array('$in' => array((object) $hashId))));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 }
 
@@ -161,6 +336,12 @@ class DocumentPersisterTestDocument
      * )
      */
     public $association;
+
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", simple=true) */
+    public $simpleRef;
+
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument") */
+    public $complexRef;
 }
 
 /**
@@ -220,4 +401,10 @@ class DocumentPersisterTestHashIdDocument
 {
     /** @ODM\Id(strategy="none", options={"type"="hash"}) */
     public $id;
+
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", simple=true) */
+    public $simpleRef;
+
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument") */
+    public $complexRef;
 }
