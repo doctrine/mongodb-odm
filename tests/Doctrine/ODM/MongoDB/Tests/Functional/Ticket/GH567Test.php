@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
  */
-class GH67Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH567Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     protected $repository;
 
@@ -20,17 +20,19 @@ class GH67Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testRemoveSingleDocument()
     {
-
         $document = new GH567Document();
         $this->dm->persist($document);
         $this->dm->flush();
-
         $this->dm->clear();
 
-        $foundDocument = $this->repository->findAll()->getNext();
+        $foundDocument = $this->repository->find($document->id);
 
         $this->dm->remove($foundDocument);
         $this->dm->flush($foundDocument);
+        $this->dm->clear();
+
+        $foundDocument = $this->repository->find($document->id);
+        $this->assertNull($foundDocument);
     }
 }
 
