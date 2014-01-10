@@ -45,16 +45,16 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testNotEqualIsPrepared()
     {
-        $ids = array('4f28aa84acee41388900000a');
+        $id = '4f28aa84acee41388900000a';
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->field('groups.id')->notEqual($ids)
+            ->field('groups.id')->notEqual($id)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne'][0]);
-        $this->assertEquals($ids[0], (string) $debug['groups.$id']['$ne'][0]);
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne']);
+        $this->assertEquals($id, (string) $debug['groups.$id']['$ne']);
     }
 
     public function testNotInIsPrepared()
@@ -105,7 +105,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $all = array('4f28aa84acee41388900000a');
         $in = array('4f28aa84acee41388900000b');
-        $ne = array('4f28aa84acee41388900000c');
+        $ne = '4f28aa84acee41388900000c';
         $nin = array('4f28aa84acee41388900000d');
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
@@ -121,8 +121,8 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($all[0], (string) $debug['groups.$id']['$all'][0]);
         $this->assertInstanceOf('MongoId', $debug['groups.$id']['$in'][0]);
         $this->assertEquals($in[0], (string) $debug['groups.$id']['$in'][0]);
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne'][0]);
-        $this->assertEquals($ne[0], (string) $debug['groups.$id']['$ne'][0]);
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne']);
+        $this->assertEquals($ne, (string) $debug['groups.$id']['$ne']);
         $this->assertInstanceOf('MongoId', $debug['groups.$id']['$nin'][0]);
         $this->assertEquals($nin[0], (string) $debug['groups.$id']['$nin'][0]);
     }
