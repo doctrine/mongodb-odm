@@ -933,34 +933,17 @@ class DocumentPersister
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            foreach ($value as $k => $v) {
-                // Ignore query operators whose arguments need no type conversion
-                if (in_array($k, array('$exists', '$type', '$mod', '$size'))) {
-                    continue;
-                }
-
-                // Process query operators whose arguments need type conversion (e.g. "$in")
-                if (isset($k[0]) && $k[0] === '$' && is_array($v)) {
-                    foreach ($v as $k2 => $v2) {
-                        $value[$k][$k2] = $targetClass->getDatabaseIdentifierValue($v2);
-                    }
-                    continue;
-                }
-
-                $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
+            // Objects without operators or with DBRef fields can be converted immediately
+            if ( ! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
+                return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            return array($fieldName, $value);
+            return array($fieldName, $this->prepareQueryExpression($value, $targetClass));
         }
 
         // Process identifier fields
         if (($class->hasField($fieldName) && $class->isIdentifier($fieldName)) || $fieldName === '_id') {
             $fieldName = '_id';
-
-            // how can this be done better?
-            if ($fieldName === '_id' && $class->fieldMappings[$class->identifier]['type'] === 'hash') {
-                return array($fieldName, $value);
-            }
 
             if ( ! $prepareValue) {
                 return array($fieldName, $value);
@@ -970,24 +953,12 @@ class DocumentPersister
                 return array($fieldName, $class->getDatabaseIdentifierValue($value));
             }
 
-            foreach ($value as $k => $v) {
-                // Ignore query operators whose arguments need no type conversion
-                if (in_array($k, array('$exists', '$type', '$mod', '$size'))) {
-                    continue;
-                }
-
-                // Process query operators whose arguments need type conversion (e.g. "$in")
-                if (isset($k[0]) && $k[0] === '$' && is_array($v)) {
-                    foreach ($v as $k2 => $v2) {
-                        $value[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
-                    }
-                    continue;
-                }
-
-                $value[$k] = $class->getDatabaseIdentifierValue($v);
+            // Objects without operators or with DBRef fields can be converted immediately
+            if ( ! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
+                return array($fieldName, $class->getDatabaseIdentifierValue($value));
             }
 
-            return array($fieldName, $value);
+            return array($fieldName, $this->prepareQueryExpression($value, $class));
         }
 
         // No processing for unmapped, non-identifier, non-dotted field names
@@ -1076,18 +1047,12 @@ class DocumentPersister
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            foreach ($value as $k => $v) {
-                // Process query operators (e.g. "$in")
-                if (isset($k[0]) && $k[0] === '$' && is_array($v)) {
-                    foreach ($v as $k2 => $v2) {
-                        $value[$k][$k2] = $targetClass->getDatabaseIdentifierValue($v2);
-                    }
-                } else {
-                    $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
-                }
+            // Objects without operators or with DBRef fields can be converted immediately
+            if ( ! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
+                return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            return array($fieldName, $value);
+            return array($fieldName, $this->prepareQueryExpression($value, $targetClass));
         }
 
         /* The property path may include a third field segment, excluding the
@@ -1106,6 +1071,96 @@ class DocumentPersister
         }
 
         return array($fieldName, $value);
+    }
+
+    /**
+     * Prepares a query expression.
+     *
+     * @param array|object  $expression
+     * @param ClassMetadata $class
+     * @return array
+     */
+    private function prepareQueryExpression($expression, $class)
+    {
+        foreach ($expression as $k => $v) {
+            // Ignore query operators whose arguments need no type conversion
+            if (in_array($k, array('$exists', '$type', '$mod', '$size'))) {
+                continue;
+            }
+
+            // Process query operators whose argument arrays need type conversion
+            if (in_array($k, array('$in', '$nin', '$all')) && is_array($v)) {
+                foreach ($v as $k2 => $v2) {
+                    $expression[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
+                }
+                continue;
+            }
+
+            // Recursively process expressions within a $not operator
+            if ($k === '$not' && is_array($v)) {
+                $expression[$k] = $this->prepareQueryExpression($v, $class);
+                continue;
+            }
+
+            $expression[$k] = $class->getDatabaseIdentifierValue($v);
+        }
+
+        return $expression;
+    }
+
+    /**
+     * Checks whether the value has DBRef fields.
+     *
+     * This method doesn't check if the the value is a complete DBRef object,
+     * although it should return true for a DBRef. Rather, we're checking that
+     * the value has one or more fields for a DBref. In practice, this could be
+     * $elemMatch criteria for matching a DBRef.
+     *
+     * @param mixed $value
+     * @return boolean
+     */
+    private function hasDBRefFields($value)
+    {
+        if ( ! is_array($value) && ! is_object($value)) {
+            return false;
+        }
+
+        if (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+
+        foreach ($value as $key => $_) {
+            if ($key === '$ref' || $key === '$id' || $key === '$db') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks whether the value has query operators.
+     *
+     * @param mixed $value
+     * @return boolean
+     */
+    private function hasQueryOperators($value)
+    {
+        if ( ! is_array($value) && ! is_object($value)) {
+            return false;
+        }
+
+        if (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+
+        foreach ($value as $key => $_) {
+            if (isset($key[0]) && $key[0] === '$') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
