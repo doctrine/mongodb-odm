@@ -144,7 +144,7 @@ class ReferencePrimer
             if ($mapping['type'] === 'one' && $fieldValue instanceof Proxy && ! $fieldValue->__isInitialized()) {
                 $refClass = $this->dm->getClassMetadata(get_class($fieldValue));
                 $id = $this->uow->getDocumentIdentifier($fieldValue);
-                $groupedIds[$refClass->name][] = $id;
+                $groupedIds[$refClass->name][serialize($id)] = $id;
             } elseif ($mapping['type'] == 'many' && $fieldValue instanceof PersistentCollection) {
                 $this->addManyReferences($fieldValue, $groupedIds);
             }
@@ -152,7 +152,7 @@ class ReferencePrimer
 
         foreach ($groupedIds as $className => $ids) {
             $refClass = $this->dm->getClassMetadata($className);
-            call_user_func($primer, $this->dm, $refClass, array_unique($ids), $hints);
+            call_user_func($primer, $this->dm, $refClass, array_values($ids), $hints);
         }
     }
 
@@ -186,7 +186,7 @@ class ReferencePrimer
             $document = $this->uow->tryGetById($id, $className);
 
             if ( ! $document || ($document instanceof Proxy && ! $document->__isInitialized())) {
-                $groupedIds[$className][] = $id;
+                $groupedIds[$className][serialize($id)] = $id;
             }
         }
     }
