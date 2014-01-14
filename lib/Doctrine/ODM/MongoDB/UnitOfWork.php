@@ -506,13 +506,15 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeSingleDocumentChangeSet($document)
     {
-        if ($this->getDocumentState($document) !== self::STATE_MANAGED) {
-            throw new \InvalidArgumentException("Document has to be managed for single computation " . self::objToStr($document));
+        $state = $this->getDocumentState($document);
+
+        if ($state !== self::STATE_MANAGED && $state !== self::STATE_REMOVED) {
+            throw new \InvalidArgumentException("Document has to be managed or scheduled for removal for single computation " . self::objToStr($document));
         }
 
         $class = $this->dm->getClassMetadata(get_class($document));
 
-        if ($class->isChangeTrackingDeferredImplicit()) {
+        if ($state === self::STATE_MANAGED && $class->isChangeTrackingDeferredImplicit()) {
             $this->persist($document);
         }
 
@@ -527,7 +529,7 @@ class UnitOfWork implements PropertyChangedListener
         // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION are processed here.
         $oid = spl_object_hash($document);
 
-        if ( ! isset($this->documentInsertions[$oid])) {
+        if ( ! isset($this->documentInsertions[$oid]) && ! isset($this->documentDeletions[$oid]) && isset($this->documentStates[$oid])) {
             $this->computeChangeSet($class, $document);
         }
     }
