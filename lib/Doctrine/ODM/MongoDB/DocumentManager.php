@@ -548,7 +548,7 @@ class DocumentManager implements ObjectManager
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
         // Check identity map first, if its already in there just return it.
-        if ($document = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
+        if ($document = $this->unitOfWork->tryGetById($identifier, $class)) {
             return $document;
         }
 
@@ -582,7 +582,7 @@ class DocumentManager implements ObjectManager
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
         // Check identity map first, if its already in there just return it.
-        if ($document = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
+        if ($document = $this->unitOfWork->tryGetById($identifier, $class)) {
             return $document;
         }
         $document = $class->newInstance();

@@ -172,6 +172,7 @@ class ReferencePrimer
 
         if ( ! empty($mapping['simple'])) {
             $className = $mapping['targetDocument'];
+            $class = $this->dm->getClassMetadata($className);
         }
 
         foreach ($persistentCollection->getMongoData() as $reference) {
@@ -180,12 +181,13 @@ class ReferencePrimer
             } else {
                 $id = $reference['$id'];
                 $className = $this->uow->getClassNameForAssociation($mapping, $reference);
+                $class = $this->dm->getClassMetadata($className);
             }
 
-            $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($id);
-            $document = $this->uow->tryGetById($id, $className);
+            $document = $this->uow->tryGetById($id, $class);
 
             if ( ! $document || ($document instanceof Proxy && ! $document->__isInitialized())) {
+                $id = $class->getPHPIdentifierValue($id);
                 $groupedIds[$className][serialize($id)] = $id;
             }
         }

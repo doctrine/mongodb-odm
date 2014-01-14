@@ -72,13 +72,13 @@ class UnitOfWork implements PropertyChangedListener
     const STATE_REMOVED = 4;
 
     /**
-     * The identity map that holds references to all managed documents that have
-     * an identity.
+     * The identity map holds references to all managed documents.
      *
      * Documents are grouped by their class name, and then indexed by the
-     * serialized string of their identifier field or, for embedded documents,
-     * the SPL object hash. Serializing the identifier allows differentiation of
-     * values that may be equal (via type juggling) but not identical.
+     * serialized string of their database identifier field or, if the class
+     * has no identifier, the SPL object hash. Serializing the identifier allows
+     * differentiation of values that may be equal (via type juggling) but not
+     * identical.
      *
      * Since all classes in a hierarchy must share the same identifier set,
      * we always take the root class name of the hierarchy.
@@ -125,8 +125,10 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Map of documents that are scheduled for dirty checking at commit time.
-     * This is only used for documents with a change tracking policy of DEFERRED_EXPLICIT.
-     * Keys are object ids (spl_object_hash).
+     *
+     * Documents are grouped by their class name, and then indexed by their SPL
+     * object hash. This is only used for documents with a change tracking
+     * policy of DEFERRED_EXPLICIT.
      *
      * @var array
      * @todo rename: scheduledForSynchronization
@@ -1487,8 +1489,8 @@ class UnitOfWork implements PropertyChangedListener
 
     public function isScheduledForDirtyCheck($document)
     {
-        $rootDocumentName = $this->dm->getClassMetadata(get_class($document))->rootDocumentName;
-        return isset($this->scheduledForDirtyCheck[$rootDocumentName][spl_object_hash($document)]);
+        $class = $this->dm->getClassMetadata(get_class($document));
+        return isset($this->scheduledForDirtyCheck[$class->name][spl_object_hash($document)]);
     }
 
     /**
@@ -1566,23 +1568,20 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function addToIdentityMap($document)
     {
-        $classMetadata = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata(get_class($document));
 
-        if ($classMetadata->isEmbeddedDocument) {
+        if ( ! $class->identifier) {
             $id = spl_object_hash($document);
         } else {
             $id = $this->documentIdentifiers[spl_object_hash($document)];
-            $id = $classMetadata->getPHPIdentifierValue($id);
+            $id = serialize($class->getDatabaseIdentifierValue($id));
         }
 
-        $serializedId = serialize($id);
-        $className = $classMetadata->rootDocumentName;
-
-        if (isset($this->identityMap[$className][$serializedId])) {
+        if (isset($this->identityMap[$class->name][$id])) {
             return false;
         }
 
-        $this->identityMap[$className][$serializedId] = $document;
+        $this->identityMap[$class->name][$id] = $document;
 
         if ($document instanceof NotifyPropertyChanged) {
             $document->addPropertyChangedListener($this);
@@ -1640,7 +1639,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Last try before DB lookup: check the identity map.
-        if ($this->tryGetById($id, $class->rootDocumentName)) {
+        if ($this->tryGetById($id, $class)) {
             return self::STATE_DETACHED;
         }
 
@@ -1665,18 +1664,23 @@ class UnitOfWork implements PropertyChangedListener
     public function removeFromIdentityMap($document)
     {
         $oid = spl_object_hash($document);
-        $classMetadata = $this->dm->getClassMetadata(get_class($document));
 
         // Check if id is registered first
         if ( ! isset($this->documentIdentifiers[$oid])) {
             return false;
         }
 
-        $serializedId = serialize($this->documentIdentifiers[$oid]);
-        $className = $classMetadata->rootDocumentName;
+        $class = $this->dm->getClassMetadata(get_class($document));
 
-        if (isset($this->identityMap[$className][$serializedId])) {
-            unset($this->identityMap[$className][$serializedId]);
+        if ( ! $class->identifier) {
+            $id = spl_object_hash($document);
+        } else {
+            $id = $this->documentIdentifiers[spl_object_hash($document)];
+            $id = serialize($class->getDatabaseIdentifierValue($id));
+        }
+
+        if (isset($this->identityMap[$class->name][$id])) {
+            unset($this->identityMap[$class->name][$id]);
             $this->documentStates[$oid] = self::STATE_DETACHED;
             return true;
         }
@@ -1689,13 +1693,20 @@ class UnitOfWork implements PropertyChangedListener
      * Gets a document in the identity map by its identifier hash.
      *
      * @ignore
-     * @param string $id
-     * @param string $rootClassName
+     * @param mixed         $id    Document identifier
+     * @param ClassMetadata $class Document class
      * @return object
+     * @throws InvalidArgumentException if the class does not have an identifier
      */
-    public function getById($id, $rootClassName)
+    public function getById($id, ClassMetadata $class)
     {
-        return $this->identityMap[$rootClassName][serialize($id)];
+        if ( ! $class->identifier) {
+            throw new \InvalidArgumentException(sprintf('Class "%s" does not have an identifier', $class->name));
+        }
+
+        $serializedId = serialize($class->getDatabaseIdentifierValue($id));
+
+        return $this->identityMap[$class->name][$serializedId];
     }
 
     /**
@@ -1704,16 +1715,21 @@ class UnitOfWork implements PropertyChangedListener
      * for the given hash, FALSE is returned.
      *
      * @ignore
-     * @param string $id
-     * @param string $rootClassName
+     * @param mixed         $id    Document identifier
+     * @param ClassMetadata $class Document class
      * @return mixed The found document or FALSE.
+     * @throws InvalidArgumentException if the class does not have an identifier
      */
-    public function tryGetById($id, $rootClassName)
+    public function tryGetById($id, ClassMetadata $class)
     {
-        $serializedId = serialize($id);
+        if ( ! $class->identifier) {
+            throw new \InvalidArgumentException(sprintf('Class "%s" does not have an identifier', $class->name));
+        }
 
-        return isset($this->identityMap[$rootClassName][$serializedId]) ?
-            $this->identityMap[$rootClassName][$serializedId] : false;
+        $serializedId = serialize($class->getDatabaseIdentifierValue($id));
+
+        return isset($this->identityMap[$class->name][$serializedId]) ?
+            $this->identityMap[$class->name][$serializedId] : false;
     }
 
     /**
@@ -1724,8 +1740,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function scheduleForDirtyCheck($document)
     {
-        $rootClassName = $this->dm->getClassMetadata(get_class($document))->rootDocumentName;
-        $this->scheduledForDirtyCheck[$rootClassName][spl_object_hash($document)] = $document;
+        $class = $this->dm->getClassMetadata(get_class($document));
+        $this->scheduledForDirtyCheck[$class->name][spl_object_hash($document)] = $document;
     }
 
     /**
@@ -1742,10 +1758,16 @@ class UnitOfWork implements PropertyChangedListener
             return false;
         }
 
-        $serializedId = serialize($this->documentIdentifiers[$oid]);
-        $classMetadata = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata(get_class($document));
 
-        return isset($this->identityMap[$classMetadata->rootDocumentName][$serializedId]);
+        if ( ! $class->identifier) {
+            $id = spl_object_hash($document);
+        } else {
+            $id = $this->documentIdentifiers[spl_object_hash($document)];
+            $id = serialize($class->getDatabaseIdentifierValue($id));
+        }
+
+        return isset($this->identityMap[$class->name][$id]);
     }
 
     /**
@@ -2016,7 +2038,7 @@ class UnitOfWork implements PropertyChangedListener
                 $managedCopy = $class->newInstance();
                 $this->persistNew($class, $managedCopy);
             } else {
-                $managedCopy = $this->tryGetById($id, $class->rootDocumentName);
+                $managedCopy = $this->tryGetById($id, $class);
 
                 if ($managedCopy) {
                     // We have the document in memory already, just make sure it is not removed.
@@ -2650,11 +2672,11 @@ class UnitOfWork implements PropertyChangedListener
             unset($data[$class->discriminatorField]);
         }
 
-        $id = $class->getPHPIdentifierValue($data['_id']);
+        $id = $class->getDatabaseIdentifierValue($data['_id']);
         $serializedId = serialize($id);
 
-        if (isset($this->identityMap[$class->rootDocumentName][$serializedId])) {
-            $document = $this->identityMap[$class->rootDocumentName][$serializedId];
+        if (isset($this->identityMap[$class->name][$serializedId])) {
+            $document = $this->identityMap[$class->name][$serializedId];
             $oid = spl_object_hash($document);
             if ($document instanceof Proxy && ! $document->__isInitialized__) {
                 $document->__isInitialized__ = true;
@@ -2674,7 +2696,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->registerManaged($document, $id, $data);
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
-            $this->identityMap[$class->rootDocumentName][$serializedId] = $document;
+            $this->identityMap[$class->name][$serializedId] = $document;
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
             $this->originalDocumentData[$oid] = $data;
         }
@@ -2822,7 +2844,14 @@ class UnitOfWork implements PropertyChangedListener
     public function registerManaged($document, $id, array $data)
     {
         $oid = spl_object_hash($document);
-        $this->documentIdentifiers[$oid] = ($id !== null) ? $id : $oid;
+        $class = $this->dm->getClassMetadata(get_class($document));
+
+        if ( ! $class->identifier) {
+            $this->documentIdentifiers[$oid] = $oid;
+        } else {
+            $this->documentIdentifiers[$oid] = $class->getPHPIdentifierValue($id);
+        }
+
         $this->documentStates[$oid] = self::STATE_MANAGED;
         $this->originalDocumentData[$oid] = $data;
         $this->addToIdentityMap($document);
@@ -2860,7 +2889,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Update changeset and mark document for synchronization
         $this->documentChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
-        if ( ! isset($this->scheduledForDirtyCheck[$class->rootDocumentName][$oid])) {
+        if ( ! isset($this->scheduledForDirtyCheck[$class->name][$oid])) {
             $this->scheduleForDirtyCheck($document);
         }
     }

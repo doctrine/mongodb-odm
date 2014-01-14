@@ -666,7 +666,7 @@ class DocumentPersister
             }
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
-                $document = $this->uow->getById($class->getPHPIdentifierValue($documentData['_id']), $class->rootDocumentName);
+                $document = $this->uow->getById($documentData['_id'], $class);
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;
