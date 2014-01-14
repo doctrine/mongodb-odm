@@ -183,19 +183,17 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $className = $this->createIdTestClass($type, $strategy);
 
-        $dm = $this->createTestDocumentManager();
-
         $object = new $className();
         $object->id = $id;
 
-        $dm->persist($object);
-        $dm->flush();
-        $dm->clear();
+        $this->dm->persist($object);
+        $this->dm->flush();
+        $this->dm->clear();
 
         $this->assertNotNull($object->id);
 
         if ($expectedMongoType !== null) {
-            $check = $dm->getDocumentCollection(get_class($object))->findOne(array());
+            $check = $this->dm->getDocumentCollection(get_class($object))->findOne(array());
             $this->assertEquals($expectedMongoType, is_object($check['_id']) ? get_class($check['_id']) : gettype($check['_id']));
         }
 
@@ -203,7 +201,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->assertEquals($expected, $object->id);
         }
 
-        $object = $dm->find(get_class($object), $object->id);
+        $object = $this->dm->find(get_class($object), $object->id);
         $this->assertNotNull($object);
 
         if ($expected !== null) {
@@ -211,10 +209,10 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         }
 
         $object->test = 'changed';
-        $dm->flush();
-        $dm->clear();
+        $this->dm->flush();
+        $this->dm->clear();
 
-        $object = $dm->find(get_class($object), $object->id);
+        $object = $this->dm->find(get_class($object), $object->id);
         $this->assertEquals('changed', $object->test);
     }
 
@@ -281,16 +279,14 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $className = $this->createIdTestClass($type, 'none');
 
-        $dm = $this->createTestDocumentManager();
-
         $object = new $className();
         $object->id = 'ABRWTIFGPEeSFf69fISAOA==';
 
-        $dm->persist($object);
-        $dm->flush();
-        $dm->clear();
+        $this->dm->persist($object);
+        $this->dm->flush();
+        $this->dm->clear();
 
-        $check = $dm->getDocumentCollection(get_class($object))->findOne(array());
+        $check = $this->dm->getDocumentCollection(get_class($object))->findOne(array());
 
         $this->assertEquals('MongoBinData', get_class($check['_id']));
         $this->assertEquals($expectedMongoBinDataType, $check['_id']->type);
