@@ -28,9 +28,29 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class BinDataType extends Type
 {
+    /**
+     * MongoBinData type
+     *
+     * @var integer
+     * @see http://php.net/manual/en/mongobindata.construct.php
+     */
+    protected $binDataType = \MongoBinData::BYTE_ARRAY;
+
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? new \MongoBinData($value, \MongoBinData::BYTE_ARRAY) : null;
+        if ($value === null) {
+            return null;
+        }
+
+        if ( ! $value instanceof \MongoBinData) {
+            return new \MongoBinData($value, $this->binDataType);
+        }
+
+        if ($value->type !== $this->binDataType) {
+            return new \MongoBinData($value->bin, $this->binDataType);
+        }
+
+        return $value;
     }
 
     public function convertToPHPValue($value)
@@ -40,7 +60,7 @@ class BinDataType extends Type
 
     public function closureToMongo()
     {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::BYTE_ARRAY) : null;';
+        return sprintf('$return = $value !== null ? new \MongoBinData($value, %d) : null;', $this->binDataType);
     }
 
     public function closureToPHP()
