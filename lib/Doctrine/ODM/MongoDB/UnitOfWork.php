@@ -2837,6 +2837,13 @@ class UnitOfWork implements PropertyChangedListener
      * INTERNAL:
      * Registers a document as managed.
      *
+     * TODO: This method assumes that $id is a valid PHP identifier for the
+     * document class. If the class expects its database identifier to be a
+     * MongoId, and an incompatible $id is registered (e.g. an integer), the
+     * document identifiers map will become inconsistent with the identity map.
+     * In the future, we may want to round-trip $id through a PHP and database
+     * conversion and throw an exception if it's inconsistent.
+     *
      * @param object $document The document.
      * @param array $id The identifier values.
      * @param array $data The original document data.
