@@ -590,7 +590,9 @@ class DocumentPersister
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
                 $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument);
-                $this->uow->registerManaged($embeddedDocumentObject, null, $data);
+                $id = $embeddedMetadata->identifier ? $data[$embeddedMetadata->identifier] : null;
+
+                $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
                 if ($mapping['strategy'] === 'set') {
                     $collection->set($key, $embeddedDocumentObject);

@@ -321,7 +321,9 @@ EOF
             \$return = \$embeddedMetadata->newInstance();
 
             \$embeddedData = \$this->dm->getHydratorFactory()->hydrate(\$return, \$embeddedDocument, \$hints);
-            \$this->unitOfWork->registerManaged(\$return, null, \$embeddedData);
+            \$embeddedId = \$embeddedMetadata->identifier ? \$embeddedData[\$embeddedMetadata->identifier] : null;
+
+            \$this->unitOfWork->registerManaged(\$return, \$embeddedId, \$embeddedData);
             \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
 
             \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
