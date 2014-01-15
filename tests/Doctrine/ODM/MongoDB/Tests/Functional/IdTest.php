@@ -295,13 +295,20 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function getTestBinIdsData()
     {
+        /* In driver versions before 1.2.11, the custom binary data type is
+         * incorrectly returned as -128.
+         *
+         * See: https://jira.mongodb.org/browse/PHP-408
+         */
+        $expectedBinCustom = version_compare(phpversion('mongo'), '1.2.11', '<') ? -128 : \MongoBinData::CUSTOM;
+
         return array(
             array('bin', 0),
             array('bin_func', \MongoBinData::FUNC),
             array('bin_bytearray', \MongoBinData::BYTE_ARRAY),
             array('bin_uuid', \MongoBinData::UUID),
             array('bin_md5', \MongoBinData::MD5),
-            array('bin_custom', \MongoBinData::CUSTOM),
+            array('bin_custom', $expectedBinCustom),
         );
     }
 
