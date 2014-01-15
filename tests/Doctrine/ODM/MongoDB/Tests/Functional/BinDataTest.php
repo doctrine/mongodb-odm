@@ -30,9 +30,7 @@ class BinDataTest extends BaseTest
          *
          * See: https://jira.mongodb.org/browse/PHP-408
          */
-        $expectedBinCustom = (-1 === version_compare('1.2.10', \Mongo::VERSION))
-            ? \MongoBinData::CUSTOM
-            : -128;
+        $expectedBinCustom = version_compare(phpversion('mongo'), '1.2.11', '<') ? -128 : \MongoBinData::CUSTOM;
 
         return array(
             array('bin', 'test', 0),
