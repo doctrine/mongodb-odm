@@ -31,10 +31,15 @@ class BinDataType extends Type
     /**
      * MongoBinData type
      *
+     * The default subtype for BSON binary values is 0, but we cannot use a
+     * constant here because it is not available in all versions of the PHP
+     * driver.
+     *
      * @var integer
      * @see http://php.net/manual/en/mongobindata.construct.php
+     * @see http://bsonspec.org/#/specification
      */
-    protected $binDataType = \MongoBinData::BYTE_ARRAY;
+    protected $binDataType = 0;
 
     public function convertToDatabaseValue($value)
     {
