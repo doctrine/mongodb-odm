@@ -263,6 +263,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('bin', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
             array('bin', 'uuid', null, null, 'MongoBinData'),
             array('bin_func', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
+            array('bin_bytearray', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
             array('bin_uuid', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
             array('bin_md5', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
             array('bin_custom', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
@@ -295,8 +296,9 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function getTestBinIdsData()
     {
         return array(
-            array('bin', \MongoBinData::BYTE_ARRAY),
+            array('bin', 0),
             array('bin_func', \MongoBinData::FUNC),
+            array('bin_bytearray', \MongoBinData::BYTE_ARRAY),
             array('bin_uuid', \MongoBinData::UUID),
             array('bin_md5', \MongoBinData::MD5),
             array('bin_custom', \MongoBinData::CUSTOM),
