@@ -723,6 +723,9 @@ class UnitOfWork implements PropertyChangedListener
                 if ($actualValue instanceof PersistentCollection) {
                     $owner = $actualValue->getOwner();
                     if ($owner === null) { // cloned
+                        if (!isset ($class->fieldMappings[$propName])) {
+                            $class->fieldMappings[$propName] = array();
+                        }
                         $actualValue->setOwner($document, $class->fieldMappings[$propName]);
                     } elseif ($owner !== $document) { // no clone, we have to fix
                         if ( ! $actualValue->isInitialized()) {
@@ -1547,6 +1550,11 @@ class UnitOfWork implements PropertyChangedListener
         if (isset($this->identityMap[$className][$id])) {
             return false;
         }
+
+        if ($id instanceof \MongoId) {
+            $id = $id->__toString();
+        }
+
         $this->identityMap[$className][$id] = $document;
         if ($document instanceof NotifyPropertyChanged) {
             $document->addPropertyChangedListener($this);
@@ -1660,6 +1668,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getById($id, $rootClassName)
     {
+        if ($id instanceof \MongoId) {
+            $id = $id->__toString();
+        }
+
         return $this->identityMap[$rootClassName][$id];
     }
 
@@ -1675,6 +1687,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetById($id, $rootClassName)
     {
+        if ($id instanceof \MongoId) {
+            $id = $id->__toString();
+        }
+
         return isset($this->identityMap[$rootClassName][$id]) ?
             $this->identityMap[$rootClassName][$id] : false;
     }
@@ -1726,6 +1742,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function containsId($id, $rootClassName)
     {
+        if ($id instanceof \MongoId) {
+            $id = $id->__toString();
+        }
+
         return isset($this->identityMap[$rootClassName][$id]);
     }
 
