@@ -108,6 +108,9 @@ class DocumentRepository implements ObjectRepository, Selectable
             return;
         }
 
+        /* TODO: What if the ID object has a field with the same name as the
+         * class' mapped identifier field name?
+         */
         if (is_array($id)) {
             list($identifierFieldName) = $this->class->getIdentifierFieldNames();
 
