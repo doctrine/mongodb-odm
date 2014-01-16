@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Documents\Album;
 use Documents\SpecialUser;
+use Documents\User;
 
 class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -184,7 +185,22 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertInstanceOf('\Documents\User', $document);
 
-        $class->invokeLifecycleCallbacks(Events::prePersist, new SpecialUser());
+        $class->invokeLifecycleCallbacks(Events::prePersist, $document);
+    }
+
+    public function testInvokeLifecycleCallbacksShouldAllowProxyOfExactClass()
+    {
+        $document = new User();
+        $this->dm->persist($document);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $class = $this->dm->getClassMetadata('\Documents\User');
+        $proxy = $this->dm->getReference('\Documents\User', $document->getId());
+
+        $this->assertInstanceOf('\Documents\User', $proxy);
+
+        $class->invokeLifecycleCallbacks(Events::prePersist, $proxy);
     }
 }
 

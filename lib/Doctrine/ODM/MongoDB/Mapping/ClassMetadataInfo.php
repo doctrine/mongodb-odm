@@ -526,12 +526,15 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * @param string $event     Lifecycle event
      * @param object $document  Document on which the event occurred
      * @param array  $arguments Arguments to pass to all callbacks
-     * @throws \InvalidArgumentException if document class is not this class
+     * @throws \InvalidArgumentException if document class is not this class or
+     *                                   a Proxy of this class
      */
     public function invokeLifecycleCallbacks($event, $document, array $arguments = null)
     {
-        if (get_class($document) !== $this->name) {
-            throw new \InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
+        $class = $document instanceof Proxy ? get_parent_class($document) : get_class($document);
+
+        if ($class !== $this->name) {
+            throw new \InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, $class));
         }
 
         foreach ($this->lifecycleCallbacks[$event] as $callback) {

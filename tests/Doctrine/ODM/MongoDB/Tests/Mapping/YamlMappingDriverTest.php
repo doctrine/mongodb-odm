@@ -18,7 +18,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testAlternateRelationshipMappingSyntaxShouldSetDefaults()
     {
-        $className = __NAMESPACE__.'\AlternateUser';
+        $className = __NAMESPACE__.'\AbstractMappingDriverAlternateUser';
         $mappingDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
 
         $class = new ClassMetadata($className);
@@ -39,7 +39,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testFieldLevelIndexSyntaxWithBooleanValues()
     {
-        $className = __NAMESPACE__.'\AlternateUser';
+        $className = __NAMESPACE__.'\AbstractMappingDriverAlternateUser';
         $mappingDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
 
         $class = new ClassMetadata($className);
@@ -59,7 +59,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     }
 }
 
-class AlternateUser
+class AbstractMappingDriverAlternateUser
 {
     public $id;
     public $username;

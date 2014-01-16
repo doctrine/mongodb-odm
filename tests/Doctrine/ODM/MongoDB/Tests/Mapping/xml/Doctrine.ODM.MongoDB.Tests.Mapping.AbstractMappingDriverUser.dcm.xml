@@ -5,10 +5,10 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <document name="Doctrine\ODM\MongoDB\Tests\Mapping\User" collection="cms_users">
+    <document name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" collection="cms_users">
         <discriminator-field name="discr" />
         <discriminator-map>
-            <discriminator-mapping value="default" class="Doctrine\ODM\MongoDB\Tests\Mapping\User" />
+            <discriminator-mapping value="default" class="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" />
         </discriminator-map>
         <field fieldName="id" id="true" />
         <field fieldName="name" name="username" type="string" />
