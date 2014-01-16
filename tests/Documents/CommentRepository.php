@@ -9,7 +9,7 @@ class CommentRepository extends DocumentRepository
 {
     public function findOneComment()
     {
-        return $this->findBy(array())
+        return $this->getDocumentPersister()->loadAll()
             ->sort(array('date' => 'desc'))
             ->limit(1)
             ->getSingleResult();
@@ -17,6 +17,6 @@ class CommentRepository extends DocumentRepository
 
     public function findManyComments()
     {
-        return $this->findBy(array());
+        return $this->getDocumentPersister()->loadAll();
     }
 }
