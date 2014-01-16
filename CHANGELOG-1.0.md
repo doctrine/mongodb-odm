@@ -15,6 +15,15 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
+#### DocumentRepository findAll() and findBy()
+
+The `findAll()` and `findBy()` methods in DocumentRepository previously returned
+a Cursor object, which was not compatible with the ObjectRepository interface in
+Doctrine Common. This has been changed in #752, so these methods now return a
+numerically indexed array. The change also affects the magic repository methods,
+which utilize `findBy()` internally. If users require a Cursor, they should
+utilize the query builder or a custom repository method.
+
 #### Lifecycle Callbacks and AlsoLoad
 
 The `@HasLifecycleCallbacks` class annotation is now required for lifecycle
