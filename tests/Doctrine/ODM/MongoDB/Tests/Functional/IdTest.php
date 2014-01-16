@@ -200,22 +200,14 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         }
 
         if ($expected !== null) {
-            if (is_object($expected)) {
-                $this->assertEquals($expected, $object->id);
-            } else {
-                $this->assertSame($expected, $object->id);
-            }
+            $this->assertEquals($expected, $object->id);
         }
 
         $object = $dm->find(get_class($object), $object->id);
         $this->assertNotNull($object);
 
         if ($expected !== null) {
-            if (is_object($expected)) {
-                $this->assertEquals($expected, $object->id);
-            } else {
-                $this->assertSame($expected, $object->id);
-            }
+            $this->assertEquals($expected, $object->id);
         }
 
         $object->test = 'changed';
@@ -268,8 +260,6 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
             // date
             array('date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), 'MongoDate'),
-            array('date', 'none', date('Y-m-d'), new \DateTime(date('Y-m-d')), 'MongoDate'),
-            array('date', 'none', strtotime(date('Y-m-d')), new \DateTime(date('Y-m-d')), 'MongoDate'),
 
             // bin
             array('bin', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
