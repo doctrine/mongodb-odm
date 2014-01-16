@@ -100,6 +100,13 @@ class DocumentPersister
     private $queuedInserts = array();
 
     /**
+     * Array of queued inserts for the persister to insert.
+     *
+     * @var array
+     */
+    private $queuedUpserts = array();
+
+    /**
      * The CriteriaMerger instance.
      *
      * @var CriteriaMerger
@@ -142,7 +149,7 @@ class DocumentPersister
      */
     public function isQueuedForInsert($document)
     {
-        return isset($this->queuedInserts[spl_object_hash($document)]) ? true : false;
+        return isset($this->queuedInserts[spl_object_hash($document)]);
     }
 
     /**
@@ -154,6 +161,34 @@ class DocumentPersister
     public function addInsert($document)
     {
         $this->queuedInserts[spl_object_hash($document)] = $document;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUpserts()
+    {
+        return $this->queuedUpserts;
+    }
+
+    /**
+     * @param object $document
+     * @return boolean
+     */
+    public function isQueuedForUpsert($document)
+    {
+        return isset($this->queuedUpserts[spl_object_hash($document)]);
+    }
+
+    /**
+     * Adds a document to the queued upserts.
+     * The document remains queued until {@link executeUpserts} is invoked.
+     *
+     * @param object $document The document to queue for insertion.
+     */
+    public function addUpsert($document)
+    {
+        $this->queuedUpserts[spl_object_hash($document)] = $document;
     }
 
     /**
@@ -169,53 +204,40 @@ class DocumentPersister
     /**
      * Executes all queued document insertions.
      *
-     * Queued documents without an ID will inserted in a batch and included in
-     * the resulting array in a tuple alongside their generated ID. Queued
-     * documents with an ID will be upserted individually and omitted from the
-     * returned array.
+     * Queued documents without an ID will inserted in a batch and queued
+     * documents with an ID will be upserted individually.
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
      * @param array $options Options for batchInsert() and update() driver methods
-     * @return array An array of identifier/document tuples for any documents
-     *               whose identifier was generated during the batch insertions
      */
     public function executeInserts(array $options = array())
     {
         if ( ! $this->queuedInserts) {
-            return array();
+            return;
         }
 
-        $postInsertIds = array();
         $inserts = array();
         foreach ($this->queuedInserts as $oid => $document) {
-            $upsert = $this->uow->isScheduledForUpsert($document);
-            $data = $upsert
-                ? $this->pb->prepareUpsertData($document)
-                : $this->pb->prepareInsertData($document);
+            $data = $this->pb->prepareInsertData($document);
 
             // Set the initial version for each insert
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 if ($versionMapping['type'] === 'int') {
-                    $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
-                    $data[$versionMapping['name']] = $currentVersion;
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $currentVersion);
-                } elseif ($versionMapping['type'] === 'date') {
-                    $nextVersion = new \DateTime();
-                    $data[$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
+                    $nextVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+                } elseif ($versionMapping['type'] === 'date') {
+                    $nextVersionDateTime = new \DateTime();
+                    $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
+                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
                 }
+                $data[$versionMapping['name']] = $nextVersion;
             }
 
-            // upsert right away
-            if ($upsert) {
-                $this->executeUpsert($data, $options);
-                unset($this->queuedInserts[$oid]);
-            } else {
-                $inserts[$oid] = $data;
-            }
+            $inserts[$oid] = $data;
         }
+
         if ($inserts) {
             try {
                 $this->collection->batchInsert($inserts, $options);
@@ -223,16 +245,37 @@ class DocumentPersister
                 $this->queuedInserts = array();
                 throw $e;
             }
-
-            foreach ($inserts as $oid => $data) {
-                $document = $this->queuedInserts[$oid];
-                $postInsertIds[] = array($this->class->getPHPIdentifierValue($data['_id']), $document);
-            }
         }
 
         $this->queuedInserts = array();
+    }
 
-        return $postInsertIds;
+    /**
+     * Executes all queued document upserts.
+     *
+     * Queued documents with an ID are upserted individually.
+     *
+     * If no upserts are queued, invoking this method is a NOOP.
+     *
+     * @param array $options Options for batchInsert() and update() driver methods
+     */
+    public function executeUpserts(array $options = array())
+    {
+        if ( ! $this->queuedUpserts) {
+            return;
+        }
+
+        foreach ($this->queuedUpserts as $oid => $document) {
+            $data = $this->pb->prepareUpsertData($document);
+
+            try {
+                $this->executeUpsert($data, $options);
+                unset($this->queuedUpserts[$oid]);
+            } catch (\MongoException $e) {
+                unset($this->queuedUpserts[$oid]);
+                throw $e;
+            }
+        }
     }
 
     /**
@@ -366,6 +409,7 @@ class DocumentPersister
      */
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = null)
     {
+        // TODO: remove this
         if (is_scalar($criteria) || $criteria instanceof \MongoId) {
             $criteria = array('_id' => $criteria);
         }
@@ -546,7 +590,9 @@ class DocumentPersister
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
                 $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument);
-                $this->uow->registerManaged($embeddedDocumentObject, null, $data);
+                $id = $embeddedMetadata->identifier ? $data[$embeddedMetadata->identifier] : null;
+
+                $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
                 if ($mapping['strategy'] === 'set') {
                     $collection->set($key, $embeddedDocumentObject);
@@ -622,7 +668,7 @@ class DocumentPersister
             }
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
-                $document = $this->uow->getById((string) $documentData['_id'], $class->rootDocumentName);
+                $document = $this->uow->getById($documentData['_id'], $class);
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;
@@ -889,24 +935,12 @@ class DocumentPersister
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            foreach ($value as $k => $v) {
-                // Ignore query operators whose arguments need no type conversion
-                if (in_array($k, array('$exists', '$type', '$mod', '$size'))) {
-                    continue;
-                }
-
-                // Process query operators whose arguments need type conversion (e.g. "$in")
-                if (isset($k[0]) && $k[0] === '$' && is_array($v)) {
-                    foreach ($v as $k2 => $v2) {
-                        $value[$k][$k2] = $targetClass->getDatabaseIdentifierValue($v2);
-                    }
-                    continue;
-                }
-
-                $value[$k] = $targetClass->getDatabaseIdentifierValue($v);
+            // Objects without operators or with DBRef fields can be converted immediately
+            if ( ! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
+                return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            return array($fieldName, $value);
+            return array($fieldName, $this->prepareQueryExpression($value, $targetClass));
         }
 
         // Process identifier fields
@@ -921,24 +955,12 @@ class DocumentPersister
                 return array($fieldName, $class->getDatabaseIdentifierValue($value));
             }
 
-            foreach ($value as $k => $v) {
-                // Ignore query operators whose arguments need no type conversion
-                if (in_array($k, array('$exists', '$type', '$mod', '$size'))) {
-                    continue;
-                }
-
-                // Process query operators whose arguments need type conversion (e.g. "$in")
-                if (isset($k[0]) && $k[0] === '$' && is_array($v)) {
-                    foreach ($v as $k2 => $v2) {
-                        $value[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
-                    }
-                    continue;
-                }
-
-                $value[$k] = $class->getDatabaseIdentifierValue($v);
+            // Objects without operators or with DBRef fields can be converted immediately
+            if ( ! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
+                return array($fieldName, $class->getDatabaseIdentifierValue($value));
             }
 
-            return array($fieldName, $value);
+            return array($fieldName, $this->prepareQueryExpression($value, $class));
         }
 
         // No processing for unmapped, non-identifier, non-dotted field names
@@ -1027,18 +1049,12 @@ class DocumentPersister
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            foreach ($value as $k => $v) {
-                // Process query operators (e.g. "$in")
-                if (isset($k[0]) && $k[0] === '$' && is_array($v)) {
-                    foreach ($v as $k2 => $v2) {
-                        $value[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
-                    }
-                } else {
-                    $value[$k] = $class->getDatabaseIdentifierValue($v);
-                }
+            // Objects without operators or with DBRef fields can be converted immediately
+            if ( ! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
+                return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
-            return array($fieldName, $value);
+            return array($fieldName, $this->prepareQueryExpression($value, $targetClass));
         }
 
         /* The property path may include a third field segment, excluding the
@@ -1057,6 +1073,96 @@ class DocumentPersister
         }
 
         return array($fieldName, $value);
+    }
+
+    /**
+     * Prepares a query expression.
+     *
+     * @param array|object  $expression
+     * @param ClassMetadata $class
+     * @return array
+     */
+    private function prepareQueryExpression($expression, $class)
+    {
+        foreach ($expression as $k => $v) {
+            // Ignore query operators whose arguments need no type conversion
+            if (in_array($k, array('$exists', '$type', '$mod', '$size'))) {
+                continue;
+            }
+
+            // Process query operators whose argument arrays need type conversion
+            if (in_array($k, array('$in', '$nin', '$all')) && is_array($v)) {
+                foreach ($v as $k2 => $v2) {
+                    $expression[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
+                }
+                continue;
+            }
+
+            // Recursively process expressions within a $not operator
+            if ($k === '$not' && is_array($v)) {
+                $expression[$k] = $this->prepareQueryExpression($v, $class);
+                continue;
+            }
+
+            $expression[$k] = $class->getDatabaseIdentifierValue($v);
+        }
+
+        return $expression;
+    }
+
+    /**
+     * Checks whether the value has DBRef fields.
+     *
+     * This method doesn't check if the the value is a complete DBRef object,
+     * although it should return true for a DBRef. Rather, we're checking that
+     * the value has one or more fields for a DBref. In practice, this could be
+     * $elemMatch criteria for matching a DBRef.
+     *
+     * @param mixed $value
+     * @return boolean
+     */
+    private function hasDBRefFields($value)
+    {
+        if ( ! is_array($value) && ! is_object($value)) {
+            return false;
+        }
+
+        if (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+
+        foreach ($value as $key => $_) {
+            if ($key === '$ref' || $key === '$id' || $key === '$db') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks whether the value has query operators.
+     *
+     * @param mixed $value
+     * @return boolean
+     */
+    private function hasQueryOperators($value)
+    {
+        if ( ! is_array($value) && ! is_object($value)) {
+            return false;
+        }
+
+        if (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+
+        foreach ($value as $key => $_) {
+            if (isset($key[0]) && $key[0] === '$') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

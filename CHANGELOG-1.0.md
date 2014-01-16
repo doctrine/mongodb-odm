@@ -38,6 +38,14 @@ will only be invoked once for the first field found. This is consistent with how
 `@AlsoLoad` works for properties. Previously, the method might be invoked
 multiple times.
 
+#### MongoBinData subtype change for BinDataType
+
+BinDataType (type `bin`) now defaults to `0` for its MongoBinData subtype. The
+various binary type classes have all been refactored to extend BinDataType.
+BinDataType's previous subtype, `2`, is available via the BinDataByteArrayType
+class (type `bin_bytearray`); however, users should note that subtype `2` is
+deprecated in the [BSON specification](http://bsonspec.org/#/specification).
+
 #### Priming References
 
 `Builder::prime()` now allows any callable to be registered, where previously

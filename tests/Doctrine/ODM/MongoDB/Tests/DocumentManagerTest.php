@@ -59,9 +59,10 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     
     public function testGetPartialReference()
     {
-        $user = $this->dm->getPartialReference('Documents\CmsUser', 42);
+        $id = new \MongoId();
+        $user = $this->dm->getPartialReference('Documents\CmsUser', $id);
         $this->assertTrue($this->dm->contains($user));
-        $this->assertEquals(42, $user->id);
+        $this->assertEquals($id, $user->id);
         $this->assertNull($user->getName());
     }
 

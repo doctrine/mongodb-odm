@@ -107,18 +107,20 @@ class DocumentRepository implements ObjectRepository, Selectable
         if ($id === null) {
             return;
         }
+
+        /* TODO: What if the ID object has a field with the same name as the
+         * class' mapped identifier field name?
+         */
         if (is_array($id)) {
             list($identifierFieldName) = $this->class->getIdentifierFieldNames();
 
-            if ( ! isset($id[$identifierFieldName])) {
-                throw MappingException::missingIdentifierField($this->documentName, $identifierFieldName);
+            if (isset($id[$identifierFieldName])) {
+                $id = $id[$identifierFieldName];
             }
-
-            $id = $id[$identifierFieldName];
         }
 
         // Check identity map first
-        if ($document = $this->uow->tryGetById($id, $this->class->rootDocumentName)) {
+        if ($document = $this->uow->tryGetById($id, $this->class)) {
             if ($lockMode != LockMode::NONE) {
                 $this->dm->lock($document, $lockMode, $lockVersion);
             }
@@ -126,22 +128,24 @@ class DocumentRepository implements ObjectRepository, Selectable
             return $document; // Hit!
         }
 
+        $criteria = array('_id' => $id);
+
         if ($lockMode == LockMode::NONE) {
-            return $this->getDocumentPersister()->load($id);
+            return $this->getDocumentPersister()->load($criteria);
         }
 
         if ($lockMode == LockMode::OPTIMISTIC) {
             if (!$this->class->isVersioned) {
                 throw LockException::notVersioned($this->documentName);
             }
-            $document = $this->getDocumentPersister()->load($id);
+            $document = $this->getDocumentPersister()->load($criteria);
 
             $this->uow->lock($document, $lockMode, $lockVersion);
 
             return $document;
         }
 
-        return $this->getDocumentPersister()->load($id, null, array(), $lockMode);
+        return $this->getDocumentPersister()->load($criteria, null, array(), $lockMode);
     }
 
     /**

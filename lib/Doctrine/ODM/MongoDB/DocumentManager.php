@@ -548,7 +548,7 @@ class DocumentManager implements ObjectManager
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
         // Check identity map first, if its already in there just return it.
-        if ($document = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
+        if ($document = $this->unitOfWork->tryGetById($identifier, $class)) {
             return $document;
         }
 
@@ -582,7 +582,7 @@ class DocumentManager implements ObjectManager
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
         // Check identity map first, if its already in there just return it.
-        if ($document = $this->unitOfWork->tryGetById($identifier, $class->rootDocumentName)) {
+        if ($document = $this->unitOfWork->tryGetById($identifier, $class)) {
             return $document;
         }
         $document = $class->newInstance();
@@ -676,6 +676,12 @@ class DocumentManager implements ObjectManager
 
         $class = $this->getClassMetadata(get_class($document));
         $id = $this->unitOfWork->getDocumentIdentifier($document);
+
+        if (!$id) {
+            throw new \RuntimeException(
+                sprintf('Cannot create a DBRef without an identifier. UnitOfWork::getDocumentIdentifier() did not return an identifier for class %s', $class->name)
+            );
+        }
 
         if ( ! empty($referenceMapping['simple'])) {
             return $class->getDatabaseIdentifierValue($id);

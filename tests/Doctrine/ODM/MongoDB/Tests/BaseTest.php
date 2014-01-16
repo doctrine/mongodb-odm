@@ -14,10 +14,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $config = $this->getConfiguration();
-
-        $conn = new Connection(DOCTRINE_MONGODB_SERVER, array(), $config);
-        $this->dm = DocumentManager::create($conn, $config);
+        $this->dm = $this->createTestDocumentManager();
         $this->uow = $this->dm->getUnitOfWork();
     }
 
@@ -49,5 +46,13 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config->addFilter('testFilter2', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
 
         return $config;
+    }
+
+    protected function createTestDocumentManager()
+    {
+        $config = $this->getConfiguration();
+        $conn = new Connection(DOCTRINE_MONGODB_SERVER, array(), $config);
+
+        return DocumentManager::create($conn, $config);
     }
 }

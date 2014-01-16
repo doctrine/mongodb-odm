@@ -20,13 +20,13 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataCustom type.
+ * The BinDataByteArray type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class BinDataCustomType extends BinDataType
+class BinDataByteArrayType extends BinDataType
 {
-    protected $binDataType = \MongoBinData::CUSTOM;
+    protected $binDataType = \MongoBinData::BYTE_ARRAY;
 }

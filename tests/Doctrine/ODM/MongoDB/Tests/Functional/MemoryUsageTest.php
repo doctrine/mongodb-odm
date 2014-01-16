@@ -20,7 +20,7 @@ class MemoryUsageTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $ph1 = new CmsPhonenumber();
             $ph1->phonenumber = '12345';
             $ph2 = new CmsPhonenumber();
-            $ph2->phonenumber = '12345';
+            $ph2->phonenumber = '12346';
 
             $user = new CmsUser();
             $user->username = 'jwage';

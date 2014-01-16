@@ -8,6 +8,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
 {
     private $inserts = array();
+    private $upserts = array();
     private $updates = array();
     private $deletes = array();
     private $identityColumnValueCounter = 1;
@@ -31,9 +32,20 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPer
         return $id;
     }
 
+    public function addUpsert($document)
+    {
+        $this->upserts[] = $document;
+        $id = $this->identityColumnValueCounter++;
+        $this->postInsertIds[$id] = array($id, $document);
+        return $id;
+    }
+
     public function executeInserts(array $options = array())
     {
-        return $this->postInsertIds;
+    }
+
+    public function executeUpserts(array $options = array())
+    {
     }
 
     public function update($document, array $options = array())
@@ -54,6 +66,11 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPer
     public function getInserts()
     {
         return $this->inserts;
+    }
+
+    public function getUpserts()
+    {
+        return $this->upserts;
     }
 
     public function getUpdates()

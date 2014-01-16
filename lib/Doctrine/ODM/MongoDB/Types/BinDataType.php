@@ -28,23 +28,48 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class BinDataType extends Type
 {
+    /**
+     * MongoBinData type
+     *
+     * The default subtype for BSON binary values is 0, but we cannot use a
+     * constant here because it is not available in all versions of the PHP
+     * driver.
+     *
+     * @var integer
+     * @see http://php.net/manual/en/mongobindata.construct.php
+     * @see http://bsonspec.org/#/specification
+     */
+    protected $binDataType = 0;
+
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? new \MongoBinData($value, \MongoBinData::BYTE_ARRAY) : null;
+        if ($value === null) {
+            return null;
+        }
+
+        if ( ! $value instanceof \MongoBinData) {
+            return new \MongoBinData($value, $this->binDataType);
+        }
+
+        if ($value->type !== $this->binDataType) {
+            return new \MongoBinData($value->bin, $this->binDataType);
+        }
+
+        return $value;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? $value->bin : null;
+        return $value !== null ? ($value instanceof \MongoBinData ? $value->bin : $value) : null;
     }
 
     public function closureToMongo()
     {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::BYTE_ARRAY) : null;';
+        return sprintf('$return = $value !== null ? new \MongoBinData($value, %d) : null;', $this->binDataType);
     }
 
     public function closureToPHP()
     {
-        return '$return = $value !== null ? $value->bin : null;';
+        return '$return = $value !== null ? ($value instanceof \MongoBinData ? $value->bin : $value) : null;';
     }
 }

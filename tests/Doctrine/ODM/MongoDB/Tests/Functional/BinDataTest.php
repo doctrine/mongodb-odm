@@ -30,15 +30,14 @@ class BinDataTest extends BaseTest
          *
          * See: https://jira.mongodb.org/browse/PHP-408
          */
-        $expectedBinCustom = (-1 === version_compare('1.2.10', \Mongo::VERSION))
-            ? \MongoBinData::CUSTOM
-            : -128;
+        $expectedBinCustom = version_compare(phpversion('mongo'), '1.2.11', '<') ? -128 : \MongoBinData::CUSTOM;
 
         return array(
-            array('bin', 'test', \MongoBinData::BYTE_ARRAY),
+            array('bin', 'test', 0),
             array('binFunc', 'test', \MongoBinData::FUNC),
-            array('BinUUID', 'test', \MongoBinData::UUID),
-            array('binMd5', 'test', \MongoBinData::MD5),
+            array('binByteArray', 'test', \MongoBinData::BYTE_ARRAY),
+            array('binUUID', 'test', \MongoBinData::UUID),
+            array('binMD5', 'test', \MongoBinData::MD5),
             array('binCustom', 'test', $expectedBinCustom),
         );
     }
@@ -56,11 +55,14 @@ class BinDataTestUser
     /** @ODM\Bin(type="bin_func") */
     public $binFunc;
 
+    /** @ODM\Bin(type="bin_bytearray") */
+    public $binByteArray;
+
     /** @ODM\Bin(type="bin_uuid") */
-    public $BinUUID;
+    public $binUUID;
 
     /** @ODM\Bin(type="bin_md5") */
-    public $binMd5;
+    public $binMD5;
 
     /** @ODM\Bin(type="bin_custom") */
     public $binCustom;

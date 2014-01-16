@@ -31,7 +31,7 @@ class GH529Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc = $this->dm->getRepository(get_class($doc))->findOneBy(array());
 
         $this->assertNotNull($doc);
         $this->assertNotEquals('foo', $doc->id);

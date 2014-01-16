@@ -129,6 +129,9 @@ class RequireIndexesTest extends BaseTest
     public function testGetFieldsInQueryWithReferences()
     {
         $reference = new DoesNotRequireIndexesDocument();
+        $reference->id = (string) new \MongoId();
+        $this->dm->persist($reference);
+
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument');
         $qb->field('reference')->references($reference);
         $qb->field('simpleReference')->references($reference);
@@ -139,6 +142,9 @@ class RequireIndexesTest extends BaseTest
     public function testGetFieldsInQueryWithIncludesReferences()
     {
         $reference = new DoesNotRequireIndexesDocument();
+        $reference->id = (string) new \MongoId();
+        $this->dm->persist($reference);
+
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument');
         $qb->field('reference')->includesReferenceTo($reference);
         $qb->field('simpleReference')->includesReferenceTo($reference);

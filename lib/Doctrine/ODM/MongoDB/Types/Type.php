@@ -42,6 +42,7 @@ abstract class Type
     const TIMESTAMP = 'timestamp';
     const BINDATA = 'bin';
     const BINDATAFUNC = 'bin_func';
+    const BINDATABYTEARRAY = 'bin_bytearray';
     const BINDATAUUID = 'bin_uuid';
     const BINDATAMD5 = 'bin_md5';
     const BINDATACUSTOM = 'bin_custom';
@@ -69,6 +70,7 @@ abstract class Type
         self::TIMESTAMP => 'Doctrine\ODM\MongoDB\Types\TimestampType',
         self::BINDATA => 'Doctrine\ODM\MongoDB\Types\BinDataType',
         self::BINDATAFUNC => 'Doctrine\ODM\MongoDB\Types\BinDataFuncType',
+        self::BINDATABYTEARRAY => 'Doctrine\ODM\MongoDB\Types\BinDataByteArrayType',
         self::BINDATAUUID => 'Doctrine\ODM\MongoDB\Types\BinDataUUIDType',
         self::BINDATAMD5 => 'Doctrine\ODM\MongoDB\Types\BinDataMD5Type',
         self::BINDATACUSTOM => 'Doctrine\ODM\MongoDB\Types\BinDataCustomType',
