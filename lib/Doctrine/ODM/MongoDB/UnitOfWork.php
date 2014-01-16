@@ -952,10 +952,9 @@ class UnitOfWork implements PropertyChangedListener
 
             if ($class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE && ! $idValue) {
                 $idValue = $class->idGenerator->generate($this->dm, $document);
+                $idValue = $class->getPHPIdentifierValue($class->getDatabaseIdentifierValue($idValue));
+                $class->setIdentifierValue($document, $idValue);
             }
-
-            $idValue = $class->getPHPIdentifierValue($class->getDatabaseIdentifierValue($idValue));
-            $class->setIdentifierValue($document, $idValue);
 
             $this->documentIdentifiers[$oid] = $idValue;
         }
