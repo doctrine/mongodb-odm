@@ -147,7 +147,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Finds all documents in the repository.
      *
-     * @return array The entities.
+     * @return Cursor
      */
     public function findAll()
     {
