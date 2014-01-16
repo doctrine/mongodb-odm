@@ -1,5 +1,5 @@
 # This tests alternate syntax for defining embed/reference relations
-Doctrine\ODM\MongoDB\Tests\Mapping\AlternateUser:
+Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverAlternateUser:
   type: document
   collection: cms_alternate_users
   fields:

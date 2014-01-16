@@ -13,7 +13,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     public function testLoadMapping()
     {
-        $className = __NAMESPACE__.'\User';
+        $className = __NAMESPACE__.'\AbstractMappingDriverUser';
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata($className);
@@ -209,7 +209,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
         $this->assertTrue(isset($class->discriminatorMap));
         $this->assertEquals('discr', $class->discriminatorField);
         $this->assertEquals(array(
-            'default' => 'Doctrine\ODM\MongoDB\Tests\Mapping\User',
+            'default' => 'Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser',
         ), $class->discriminatorMap);
 
         return $class;
@@ -282,10 +282,10 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 /**
  * @ODM\Document(collection="cms_users")
  * @ODM\DiscriminatorField(fieldName="discr")
- * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\User"})
+ * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser"})
  * @ODM\HasLifecycleCallbacks
  */
-class User
+class AbstractMappingDriverUser
 {
     /**
      * @ODM\Id

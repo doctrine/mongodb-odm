@@ -1,10 +1,10 @@
-Doctrine\ODM\MongoDB\Tests\Mapping\User:
+Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
   type: document
   collection: cms_users
   discriminatorField:
     fieldName: discr
   discriminatorMap:
-    default: Doctrine\ODM\MongoDB\Tests\Mapping\User
+    default: Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser
   fields:
     id:
       type: id
