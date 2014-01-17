@@ -177,13 +177,24 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     /**
      * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Expected document class "Documents\User"; found: "stdClass"
      */
-    public function testInvokeLifecycleCallbacksShouldRequireExactClass()
+    public function testInvokeLifecycleCallbacksShouldRequireInstanceOfClass()
     {
         $class = $this->dm->getClassMetadata('\Documents\User');
-        $document = new SpecialUser();
+        $document = new \stdClass();
 
-        $this->assertInstanceOf('\Documents\User', $document);
+        $this->assertInstanceOf('\stdClass', $document);
+
+        $class->invokeLifecycleCallbacks(Events::prePersist, $document);
+    }
+
+    public function testInvokeLifecycleCallbacksAllowsInstanceOfClass()
+    {
+        $class = $this->dm->getClassMetadata('\Documents\User');
+        $document = new Specialuser();
+
+        $this->assertInstanceOf('\Documents\SpecialUser', $document);
 
         $class->invokeLifecycleCallbacks(Events::prePersist, $document);
     }
