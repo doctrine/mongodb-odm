@@ -170,7 +170,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      */
     public function findBy(array $criteria, array $sort = null, $limit = null, $skip = null)
     {
-        return iterator_to_array($this->getDocumentPersister()->loadAll($criteria, $sort, $limit, $skip), false);
+        return $this->getDocumentPersister()->loadAll($criteria, $sort, $limit, $skip)->toArray(false);
     }
 
     /**
