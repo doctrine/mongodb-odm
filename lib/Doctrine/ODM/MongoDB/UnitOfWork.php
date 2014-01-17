@@ -977,7 +977,7 @@ class UnitOfWork implements PropertyChangedListener
         $upsert = false;
         if ($class->identifier) {
             $idValue = $class->getIdentifierValue($document);
-            $upsert = $idValue !== null;
+            $upsert = !$class->isEmbeddedDocument && $idValue !== null;
 
             if ($class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null) {
                 $idValue = $class->idGenerator->generate($this->dm, $document);
