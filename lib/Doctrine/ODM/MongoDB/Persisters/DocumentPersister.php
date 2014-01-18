@@ -410,7 +410,7 @@ class DocumentPersister
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = null)
     {
         // TODO: remove this
-        if (is_scalar($criteria) || $criteria instanceof \MongoId) {
+        if ($criteria === null || is_scalar($criteria) || $criteria instanceof \MongoId) {
             $criteria = array('_id' => $criteria);
         }
 
@@ -622,9 +622,6 @@ class DocumentPersister
                 $mongoId = $reference['$id'];
             }
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
-            if ( ! $id) {
-                continue;
-            }
 
             // create a reference to the class and id
             $reference = $this->dm->getReference($className, $id);

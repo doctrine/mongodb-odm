@@ -269,4 +269,69 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Group 2', $groups[0]->getName());
         $this->assertEquals('Group 1', $groups[1]->getName());
     }
+
+    /**
+     * Fixes: Argument 1 passed to Doctrine\ODM\MongoDB\Persisters\DocumentPersister::prepareQueryOrNewObj() must be an array, null given
+     *
+     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     * @expectedExceptionMessage The "Proxies\__CG__\Documents\Profile" document with identifier "" could not be found.
+     */
+    public function testReferenceOneWithNullId()
+    {
+        $profile = new Profile();
+        $user = new User();
+        $user->setProfile($profile);
+
+        $this->dm->persist($profile);
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $collection = $this->dm->getDocumentCollection(get_class($user));
+
+        $collection->update(
+            array('_id' => new \MongoId($user->getId())),
+            array('$set' => array(
+                'profile.$id' => null,
+            ))
+        );
+
+        $user = $this->dm->find(get_class($user), $user->getId());
+        $profile = $user->getProfile();
+        $profile->__load();
+    }
+
+    /**
+     * Fixes: Argument 1 passed to Doctrine\ODM\MongoDB\Persisters\DocumentPersister::prepareQueryOrNewObj() must be an array, null given
+     *
+     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     * @expectedExceptionMessage The "Proxies\__CG__\Documents\Group" document with identifier "" could not be found.
+     */
+    public function testReferenceManyWithNullId()
+    {
+        $user = new User();
+        $user->addGroup(new Group('Group'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $collection = $this->dm->getDocumentCollection(get_class($user));
+
+        $collection->update(
+            array('_id' => new \MongoId($user->getId())),
+            array('$set' => array(
+                'groups.0.$id' => null,
+            ))
+        );
+
+        $user = $this->dm->find(get_class($user), $user->getId());
+        $groups = $user->getGroups();
+
+        $this->assertEquals(1, count($groups));
+
+        foreach ($groups as $group) {
+            $group->__load();
+        }
+    }
 }
