@@ -157,6 +157,13 @@ class UnitOfWork implements PropertyChangedListener
     private $documentUpserts = array();
 
     /**
+     * Any pending extra updates that have been scheduled by persisters.
+     *
+     * @var array
+     */
+    private $extraUpdates = array();
+
+    /**
      * A list of all pending document deletions.
      *
      * @var array
@@ -440,6 +447,11 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
+        // Extra updates that were requested by persisters.
+        if ($this->extraUpdates) {
+            $this->executeExtraUpdates($options);
+        }
+
         // Collection deletions (deletions of complete collections)
         foreach ($this->collectionDeletions as $collectionToDelete) {
             $this->getCollectionPersister()->delete($collectionToDelete, $options);
@@ -471,6 +483,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->documentUpserts =
         $this->documentUpdates =
         $this->documentDeletions =
+        $this->extraUpdates =
         $this->documentChangeSets =
         $this->collectionUpdates =
         $this->collectionDeletions =
@@ -535,6 +548,18 @@ class UnitOfWork implements PropertyChangedListener
 
         if ( ! isset($this->documentInsertions[$oid]) && ! isset($this->documentDeletions[$oid]) && isset($this->documentStates[$oid])) {
             $this->computeChangeSet($class, $document);
+        }
+    }
+
+    /**
+     * Executes reference updates
+     */
+    private function executeExtraUpdates(array $options)
+    {
+        foreach ($this->extraUpdates as $oid => $update) {
+            list ($document, $changeset) = $update;
+            $this->documentChangeSets[$oid] = $changeset;
+            $this->getDocumentPersister(get_class($document))->update($document, $options);
         }
     }
 
@@ -1475,6 +1500,28 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * INTERNAL:
+     * Schedules an extra update that will be executed immediately after the
+     * regular document updates within the currently running commit cycle.
+     *
+     * Extra updates for documents are stored as (document, changeset) tuples.
+     *
+     * @ignore
+     * @param object $document The document for which to schedule an extra update.
+     * @param array $changeset The changeset of the document (what to update).
+     */
+    public function scheduleExtraUpdate($document, array $changeset)
+    {
+        $oid = spl_object_hash($document);
+        if (isset($this->extraUpdates[$oid])) {
+            list($ignored, $changeset2) = $this->extraUpdates[$oid];
+            $this->extraUpdates[$oid] = array($document, $changeset + $changeset2);
+        } else {
+            $this->extraUpdates[$oid] = array($document, $changeset);
+        }
+    }
+
+    /**
      * Checks whether a document is registered as dirty in the unit of work.
      * Note: Is not very useful currently as dirty documents are only registered
      * at commit time.
@@ -1591,7 +1638,7 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Gets the state of an entity with regard to the current unit of work.
+     * Gets the state of a document with regard to the current unit of work.
      *
      * @param object   $document
      * @param int|null $assume The state to assume if the state is not yet known (not MANAGED or REMOVED).
@@ -2537,8 +2584,10 @@ class UnitOfWork implements PropertyChangedListener
             $this->documentStates =
             $this->scheduledForDirtyCheck =
             $this->documentInsertions =
+            $this->documentUpserts =
             $this->documentUpdates =
             $this->documentDeletions =
+            $this->extraUpdates =
             $this->collectionUpdates =
             $this->collectionDeletions =
             $this->parentAssociations =
