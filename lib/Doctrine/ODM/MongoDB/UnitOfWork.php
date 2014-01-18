@@ -2902,7 +2902,7 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($document);
         $class = $this->dm->getClassMetadata(get_class($document));
 
-        if ( ! $class->identifier) {
+        if ( ! $class->identifier || $id === null) {
             $this->documentIdentifiers[$oid] = $oid;
         } else {
             $this->documentIdentifiers[$oid] = $class->getPHPIdentifierValue($id);
