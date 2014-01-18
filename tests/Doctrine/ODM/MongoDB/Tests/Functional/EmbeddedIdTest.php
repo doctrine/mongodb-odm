@@ -27,6 +27,18 @@ class EmbeddedIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($id, $test->id);
     }
 
+    public function testEmbedOneDocumentWithMissingIdentifier()
+    {
+        $user = new EmbeddedIdTestUser();
+        $user->embedOne = new DefaultIdStrategyNoneEmbeddedDocument();
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->find(get_class($user), $user->id);
+    }
+
     public function testEmbedManyDocumentWithMissingIdentifier()
     {
         $user = new EmbeddedIdTestUser();
@@ -48,6 +60,9 @@ class EmbeddedIdTestUser
 {
     /** @ODM\Id */
     public $id;
+
+    /** @ODM\EmbedOne(targetDocument="DefaultIdEmbeddedDocument") */
+    public $embedOne;
 
     /** @ODM\EmbedMany(targetDocument="DefaultIdEmbeddedDocument") */
     public $embedMany = array();
