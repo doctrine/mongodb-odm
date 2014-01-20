@@ -371,6 +371,22 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         );
     }
 
+    public function testScheduleExtraUpdate()
+    {
+        $document = new ScheduleExtraUpdateTest();
+        $document->id = (string) new \MongoId();
+
+        $this->dm->persist($document);
+
+        $this->uow->scheduleExtraUpdate($document, array('test' => array(null, 'test')));
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->find(get_class($document), $document->id);
+        $this->assertEquals('test', $document->test);
+    }
+
     protected function getDocumentManager()
     {
         return new \Stubs\DocumentManager();
@@ -558,4 +574,14 @@ class UowCustomIdDocument
 {
     /** @ODM\Id(type="custom_id") */
     public $id;
+}
+
+/** @ODM\Document */
+class ScheduleExtraUpdateTest
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\String */
+    public $test;
 }
