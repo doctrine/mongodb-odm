@@ -186,7 +186,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * READ-ONLY: Whether or not reads for this class are okay to read from a slave.
      */
-    public $slaveOkay = false;
+    public $slaveOkay;
 
     /**
      * READ-ONLY: The array of indexes for the document collection.
