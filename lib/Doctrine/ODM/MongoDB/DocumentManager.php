@@ -93,6 +93,13 @@ class DocumentManager implements ObjectManager
     private $hydratorFactory;
 
     /**
+     * The Proxy factory instance.
+     *
+     * @var ProxyFactory
+     */
+    private $proxyFactory;
+
+    /**
      * SchemaManager instance
      *
      * @var SchemaManager
