@@ -977,7 +977,7 @@ class UnitOfWork implements PropertyChangedListener
         $upsert = false;
         if ($class->identifier) {
             $idValue = $class->getIdentifierValue($document);
-            $upsert = $idValue !== null;
+            $upsert = !$class->isEmbeddedDocument && $idValue !== null;
 
             if ($class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null) {
                 $idValue = $class->idGenerator->generate($this->dm, $document);
@@ -2902,7 +2902,7 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($document);
         $class = $this->dm->getClassMetadata(get_class($document));
 
-        if ( ! $class->identifier) {
+        if ( ! $class->identifier || $id === null) {
             $this->documentIdentifiers[$oid] = $oid;
         } else {
             $this->documentIdentifiers[$oid] = $class->getPHPIdentifierValue($id);

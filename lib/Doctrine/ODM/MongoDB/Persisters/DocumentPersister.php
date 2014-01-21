@@ -410,7 +410,7 @@ class DocumentPersister
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = null)
     {
         // TODO: remove this
-        if (is_scalar($criteria) || $criteria instanceof \MongoId) {
+        if ($criteria === null || is_scalar($criteria) || $criteria instanceof \MongoId) {
             $criteria = array('_id' => $criteria);
         }
 
@@ -590,7 +590,9 @@ class DocumentPersister
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
                 $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument);
-                $id = $embeddedMetadata->identifier ? $data[$embeddedMetadata->identifier] : null;
+                $id = $embeddedMetadata->identifier && isset($data[$embeddedMetadata->identifier])
+                    ? $data[$embeddedMetadata->identifier]
+                    : null;
 
                 $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
@@ -620,9 +622,6 @@ class DocumentPersister
                 $mongoId = $reference['$id'];
             }
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
-            if ( ! $id) {
-                continue;
-            }
 
             // create a reference to the class and id
             $reference = $this->dm->getReference($className, $id);
