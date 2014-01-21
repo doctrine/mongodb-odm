@@ -511,6 +511,24 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Compute changesets of all documents scheduled for upsert.
+     *
+     * Embedded documents will not be processed.
+     */
+    private function computeScheduleUpsertsChangeSets()
+    {
+        foreach ($this->documentUpserts as $document) {
+            $class = $this->dm->getClassMetadata(get_class($document));
+
+            if ($class->isEmbeddedDocument) {
+                continue;
+            }
+
+            $this->computeChangeSet($class, $document);
+        }
+    }
+
+    /**
      * Only flush the given document according to a ruleset that keeps the UoW consistent.
      *
      * 1. All documents scheduled for insertion, (orphan) removals and changes in collections are processed as well!
@@ -535,18 +553,23 @@ class UnitOfWork implements PropertyChangedListener
             $this->persist($document);
         }
 
-        // Compute changes for INSERTed documents first. This must always happen even in this case.
+        // Compute changes for INSERTed and UPSERTed documents first. This must always happen even in this case.
         $this->computeScheduleInsertsChangeSets();
+        $this->computeScheduleUpsertsChangeSets();
 
         // Ignore uninitialized proxy objects
         if ($document instanceof Proxy && ! $document->__isInitialized__) {
             return;
         }
 
-        // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION are processed here.
+        // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION, UPSERT OR DELETION are processed here.
         $oid = spl_object_hash($document);
 
-        if ( ! isset($this->documentInsertions[$oid]) && ! isset($this->documentDeletions[$oid]) && isset($this->documentStates[$oid])) {
+        if ( ! isset($this->documentInsertions[$oid])
+            && ! isset($this->documentUpserts[$oid])
+            && ! isset($this->documentDeletions[$oid])
+            && isset($this->documentStates[$oid])
+        ) {
             $this->computeChangeSet($class, $document);
         }
     }
@@ -828,6 +851,7 @@ class UnitOfWork implements PropertyChangedListener
     public function computeChangeSets()
     {
         $this->computeScheduleInsertsChangeSets();
+        $this->computeScheduleUpsertsChangeSets();
 
         // Compute changes for other MANAGED documents. Change tracking policies take effect here.
         foreach ($this->identityMap as $className => $documents) {
@@ -852,9 +876,13 @@ class UnitOfWork implements PropertyChangedListener
                 if (/* $document is readOnly || */ $document instanceof Proxy && ! $document->__isInitialized__) {
                     continue;
                 }
-                // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION are processed here.
+                // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION, UPSERT OR DELETION are processed here.
                 $oid = spl_object_hash($document);
-                if ( ! isset($this->documentInsertions[$oid]) && isset($this->documentStates[$oid])) {
+                if ( ! isset($this->documentInsertions[$oid])
+                    && ! isset($this->documentUpserts[$oid])
+                    && ! isset($this->documentDeletions[$oid])
+                    && isset($this->documentStates[$oid])
+                ) {
                     $this->computeChangeSet($class, $document);
                 }
             }

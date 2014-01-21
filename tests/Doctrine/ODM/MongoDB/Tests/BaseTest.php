@@ -40,12 +40,17 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config->setHydratorDir(__DIR__ . '/../../../../Hydrators');
         $config->setHydratorNamespace('Hydrators');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
-        $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/../../../../Documents'));
+        $config->setMetadataDriverImpl($this->createMetadataDriverImpl());
 
         $config->addFilter('testFilter', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
         $config->addFilter('testFilter2', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
 
         return $config;
+    }
+
+    protected function createMetadataDriverImpl()
+    {
+        return AnnotationDriver::create(__DIR__ . '/../../../../Documents');
     }
 
     protected function createTestDocumentManager()
