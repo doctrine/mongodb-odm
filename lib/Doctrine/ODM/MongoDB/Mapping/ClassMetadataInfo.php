@@ -699,11 +699,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Sets whether or not reads for this class are okay to read from a slave.
      *
-     * @param bool $slaveOkay
+     * @param boolean $slaveOkay
      */
     public function setSlaveOkay($slaveOkay)
     {
-        $this->slaveOkay = $slaveOkay;
+        $this->slaveOkay = (boolean) $slaveOkay;
     }
 
     /**
