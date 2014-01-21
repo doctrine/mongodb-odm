@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ConnectionMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;

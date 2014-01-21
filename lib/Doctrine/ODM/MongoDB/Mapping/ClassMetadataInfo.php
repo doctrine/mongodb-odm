@@ -186,7 +186,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * READ-ONLY: Whether or not reads for this class are okay to read from a slave.
      */
-    public $slaveOkay = false;
+    public $slaveOkay;
 
     /**
      * READ-ONLY: The array of indexes for the document collection.
@@ -697,13 +697,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Sets whether or not reads for this class are okay to read from a slave.
+     * Sets the slaveOkay option applied to collections for this class.
      *
-     * @param bool $slaveOkay
+     * @param boolean|null $slaveOkay
      */
     public function setSlaveOkay($slaveOkay)
     {
-        $this->slaveOkay = $slaveOkay;
+        $this->slaveOkay = $slaveOkay === null ? null : (boolean) $slaveOkay;
     }
 
     /**

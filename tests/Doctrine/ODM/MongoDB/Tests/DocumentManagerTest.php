@@ -2,6 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
@@ -119,5 +122,70 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         } else {
             $this->dm->$methodName(new \stdClass());
         }
+    }
+
+    public function testGetDocumentCollectionAppliesClassMetadataSlaveOkay()
+    {
+        $cm1 = new ClassMetadataInfo('a');
+        $cm1->collection = 'a';
+
+        $cm2 = new ClassMetadataInfo('b');
+        $cm2->collection = 'b';
+        $cm2->slaveOkay = true;
+
+        $cm3 = new ClassMetadataInfo('c');
+        $cm3->collection = 'c';
+        $cm3->slaveOkay = false;
+
+        $map = array(
+            array('a', $cm1),
+            array('b', $cm2),
+            array('c', $cm3),
+        );
+
+        $metadataFactory = $this->getMockClassMetadataFactory();
+        $metadataFactory->expects($this->any())
+            ->method('getMetadataFor')
+            ->will($this->returnValueMap($map));
+
+        $coll1 = $this->getMockCollection();
+        $coll1->expects($this->never())
+            ->method('setSlaveOkay');
+
+        $coll2 = $this->getMockCollection();
+        $coll2->expects($this->once())
+            ->method('setSlaveOkay')
+            ->with(true);
+
+        $coll3 = $this->getMockCollection();
+        $coll3->expects($this->once())
+            ->method('setSlaveOkay')
+            ->with(false);
+
+        $dm = new DocumentManagerMock();
+        $dm->metadataFactory = $metadataFactory;
+        $dm->documentCollections = array(
+            'a' => $coll1,
+            'b' => $coll2,
+            'c' => $coll3,
+        );
+
+        $dm->getDocumentCollection('a');
+        $dm->getDocumentCollection('b');
+        $dm->getDocumentCollection('c');
+    }
+
+    private function getMockClassMetadataFactory()
+    {
+        return $this->getMockBuilder('Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    private function getMockCollection()
+    {
+        return $this->getMockBuilder('Doctrine\MongoDB\Collection')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }

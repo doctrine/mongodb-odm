@@ -93,6 +93,13 @@ class DocumentManager implements ObjectManager
     private $hydratorFactory;
 
     /**
+     * The Proxy factory instance.
+     *
+     * @var ProxyFactory
+     */
+    private $proxyFactory;
+
+    /**
      * SchemaManager instance
      *
      * @var SchemaManager
@@ -291,11 +298,13 @@ class DocumentManager implements ObjectManager
         if (isset($this->documentDatabases[$className])) {
             return $this->documentDatabases[$className];
         }
+
         $metadata = $this->metadataFactory->getMetadataFor($className);
         $db = $metadata->getDatabase();
         $db = $db ? $db : $this->config->getDefaultDB();
         $db = $db ? $db : 'doctrine';
         $this->documentDatabases[$className] = $this->connection->selectDatabase($db);
+
         return $this->documentDatabases[$className];
     }
 
@@ -321,24 +330,26 @@ class DocumentManager implements ObjectManager
         $className = ltrim($className, '\\');
 
         $metadata = $this->metadataFactory->getMetadataFor($className);
-        $collection = $metadata->getCollection();
+        $collectionName = $metadata->getCollection();
 
-        if ( ! $collection) {
+        if ( ! $collectionName) {
             throw MongoDBException::documentNotMappedToCollection($className);
         }
 
-        $db = $this->getDocumentDatabase($className);
         if ( ! isset($this->documentCollections[$className])) {
-            if ($metadata->isFile()) {
-                $this->documentCollections[$className] = $db->getGridFS($collection);
-            } else {
-                $this->documentCollections[$className] = $db->selectCollection($collection);
-            }
+            $db = $this->getDocumentDatabase($className);
+
+            $this->documentCollections[$className] = $metadata->isFile()
+                ? $db->getGridFS($collectionName)
+                : $db->selectCollection($collectionName);
         }
+
         $collection = $this->documentCollections[$className];
-        if (isset($metadata->slaveOkay)) {
+
+        if ($metadata->slaveOkay !== null) {
             $collection->setSlaveOkay($metadata->slaveOkay);
         }
+
         return $this->documentCollections[$className];
     }
 
