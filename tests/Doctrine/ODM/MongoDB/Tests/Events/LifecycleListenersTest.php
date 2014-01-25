@@ -78,7 +78,7 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
 
         $called = array(
-            Events::preRemove => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'),
+            Events::preRemove => array('Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
             Events::postRemove => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument')
         );
         $this->assertEquals($called, $this->listener->called);

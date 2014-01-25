@@ -106,6 +106,12 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('test', $check['username']);
     }
 
+    public function testInheritedAssociationMappings()
+    {
+        $class = $this->dm->getClassMetadata('Documents\UserUpsertChild');
+        $this->assertTrue(isset($class->associationMappings['groups']));
+    }
+
     public function testFlushSingleDocument()
     {
         $user1 = new \Documents\ForumUser();

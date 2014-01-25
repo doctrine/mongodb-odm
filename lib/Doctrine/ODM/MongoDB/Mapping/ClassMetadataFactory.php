@@ -136,6 +136,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setDefaultDiscriminatorValue($parent->defaultDiscriminatorValue);
             $class->setIdGeneratorType($parent->generatorType);
             $this->addInheritedFields($class, $parent);
+            $this->addInheritedRelations($class, $parent);
             $this->addInheritedIndexes($class, $parent);
             $class->setIdentifier($parent->identifier);
             $class->setVersioned($parent->isVersioned);
@@ -292,6 +293,34 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
         foreach ($parentClass->reflFields as $name => $field) {
             $subClass->reflFields[$name] = $field;
+        }
+    }
+
+
+    /**
+     * Adds inherited association mappings to the subclass mapping.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     *
+     * @return void
+     *
+     * @throws MappingException
+     */
+    private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
+    {
+        foreach ($parentClass->associationMappings as $field => $mapping) {
+            if ($parentClass->isMappedSuperclass) {
+                $mapping['sourceDocument'] = $subClass->name;
+            }
+
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+                $mapping['inherited'] = $parentClass->name;
+            }
+            if ( ! isset($mapping['declared'])) {
+                $mapping['declared'] = $parentClass->name;
+            }
+            $subClass->addInheritedAssociationMapping($mapping);
         }
     }
 
