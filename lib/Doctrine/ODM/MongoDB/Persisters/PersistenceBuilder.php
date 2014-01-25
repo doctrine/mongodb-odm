@@ -209,6 +209,7 @@ class PersistenceBuilder
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
                 // Do nothing right now
             }
+            // @ReferenceMany is handled by CollectionPersister
         }
         return $updateData;
     }
@@ -278,6 +279,7 @@ class PersistenceBuilder
                     $updateData['$set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 }
             }
+            // @EmbedMany and @ReferenceMany are handled by CollectionPersister
         }
 
         // add discriminator if the class has one
@@ -364,8 +366,8 @@ class PersistenceBuilder
                     case ClassMetadata::REFERENCE_MANY:
                         // Skip PersistentCollections already scheduled for deletion/update
                         if ( ! $includeNestedCollections && $rawValue instanceof PersistentCollection &&
-                            ($this->uow->isCollectionScheduledForDeletion($rawValue) ||
-                             $this->uow->isCollectionScheduledForUpdate($rawValue))) {
+                            ($this->uow->isCollectionScheduledForDeletion($rawValue)/* ||
+                             $this->uow->isCollectionScheduledForUpdate($rawValue)*/)) {
                             break;
                         }
 

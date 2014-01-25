@@ -16,6 +16,7 @@ use Documents\Functional\NotSaved;
 use Documents\Functional\NotSavedEmbedded;
 use Documents\Functional\VirtualHost;
 use Documents\Functional\VirtualHostDirective;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 
 class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -458,4 +459,99 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('foo', $document->embedded->name);
         $this->assertNull($document->embedded->notSaved);
     }
+
+    public function testChangeEmbedOneDocumentId()
+    {
+        $originalId = (string) new \MongoId();
+
+        $test = new ChangeEmbeddedIdTest();
+        $test->embed = new EmbeddedDocumentWithId();
+        $test->embed->id = $originalId;
+        $this->dm->persist($test);
+
+        $this->dm->flush();
+
+        $newId = (string) new \MongoId();
+
+        $test->embed->id = $newId;
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->find(get_class($test), $test->id);
+
+        $this->assertEquals($newId, $test->embed->id);
+    }
+
+    public function testChangeEmbedManyDocumentId()
+    {
+        $originalId = (string) new \MongoId();
+
+        $test = new ChangeEmbeddedIdTest();
+        $test->embedMany[] = new EmbeddedDocumentWithId();
+        $test->embedMany[0]->id = $originalId;
+        $this->dm->persist($test);
+
+        $this->dm->flush();
+
+        $newId = (string) new \MongoId();
+
+        $test->embedMany[0]->id = $newId;
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->find(get_class($test), $test->id);
+
+        $this->assertEquals($newId, $test->embedMany[0]->id);
+    }
+
+    public function testEmbeddedDocumentsWithSameIdAreNotSameInstance()
+    {
+        $originalId = (string) new \MongoId();
+
+        $test = new ChangeEmbeddedIdTest();
+        $test->embed = new EmbeddedDocumentWithId();
+        $test->embedMany[] = $test->embed;
+        $test->embedMany[] = $test->embed;
+
+        $this->dm->persist($test);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->find(get_class($test), $test->id);
+
+        $this->assertNotSame($test->embed, $test->embedMany[0]);
+        $this->assertNotSame($test->embed, $test->embedMany[1]);
+    }
+}
+
+/**
+ * @ODM\Document
+ */
+class ChangeEmbeddedIdTest
+{
+    /**
+     * @ODM\Id
+     */
+    public $id;
+
+    /**
+     * @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithId")
+     */
+    public $embed;
+
+    /**
+     * @ODM\EmbedMany(targetDocument="EmbeddedDocumentWithId")
+     */
+    public $embedMany = array();
+}
+
+/**
+ * @ODM\EmbeddedDocument
+ */
+class EmbeddedDocumentWithId
+{
+    /** @ODM\Id */
+    public $id;
 }
