@@ -2989,6 +2989,16 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Gets the currently scheduled document upserts in this UnitOfWork.
+     *
+     * @return array
+     */
+    public function getScheduledDocumentUpserts()
+    {
+        return $this->documentUpserts;
+    }
+
+    /**
      * Gets the currently scheduled document updates in this UnitOfWork.
      *
      * @return array
