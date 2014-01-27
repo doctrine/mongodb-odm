@@ -1914,16 +1914,14 @@ class UnitOfWork implements PropertyChangedListener
                     "Behavior of persist() for a detached document is not yet defined.");
                 break;
             case self::STATE_REMOVED:
-                if ( ! $class->isEmbeddedDocument) {
-                    // Document becomes managed again
-                    if ($this->isScheduledForDelete($document)) {
-                        unset($this->documentDeletions[$oid]);
-                    } else {
-                        //FIXME: There's more to think of here...
-                        $this->scheduleForInsert($class, $document);
-                    }
-                    break;
+                // Document becomes managed again
+                if ($this->isScheduledForDelete($document)) {
+                    unset($this->documentDeletions[$oid]);
+                } else {
+                    //FIXME: There's more to think of here...
+                    $this->scheduleForInsert($class, $document);
                 }
+                break;
             default:
                 throw MongoDBException::invalidDocumentState($documentState);
         }
