@@ -18,14 +18,7 @@ class GH566Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($doc1);
         $this->dm->persist($doc2);
         $this->dm->persist($doc3);
-        $this->dm->flush();
 
-        /* The referenced documents must be persisted and flushed before this
-         * step, otherwise the references will not store the generated IDs for
-         * each document. This is likely a bug, but not related to GH-566.
-         *
-         * @todo Consolidate this with the previous flush after fixing the bug.
-         */
         $embeddedDoc1 = new GH566EmbeddedDocument();
         $embeddedDoc1->sequence = 1;
         $embeddedDoc1->parent = $doc1;
