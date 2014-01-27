@@ -47,6 +47,16 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($this->uow->isScheduledForUpsert($user));
     }
 
+    public function testGetScheduledDocumentUpserts()
+    {
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
+        $user = new ForumUser();
+        $user->id = new \MongoId();
+        $this->assertEmpty($this->uow->getScheduledDocumentUpserts());
+        $this->uow->scheduleForUpsert($class, $user);
+        $this->assertEquals(array(spl_object_hash($user) => $user), $this->uow->getScheduledDocumentUpserts());
+    }
+
     public function testScheduleForEmbeddedUpsert()
     {
         $class = $this->dm->getClassMetadata('Documents\ForumUser');
