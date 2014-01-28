@@ -14,6 +14,7 @@ class HydratorTest extends BaseTest
         $this->dm->getHydratorFactory()->hydrate($user, array(
             '_id' => 1,
             'name' => 'jon',
+            'birthdate' => new \DateTime('1961-01-01'),
             'referenceOne' => array('$id' => '1'),
             'referenceMany' => array(
                 array(
@@ -31,6 +32,7 @@ class HydratorTest extends BaseTest
 
         $this->assertEquals(1, $user->id);
         $this->assertEquals('jon', $user->name);
+        $this->assertInstanceOf('DateTime', $user->birthdate);
         $this->assertInstanceOf(__NAMESPACE__.'\HydrationClosureReferenceOne', $user->referenceOne);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->referenceMany);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user->referenceMany[0]);
@@ -49,6 +51,9 @@ class HydrationClosureUser
 
     /** @ODM\String */
     public $name;
+    
+    /** @ODM\Date */
+    public $birthdate;
 
     /** @ODM\ReferenceOne(targetDocument="HydrationClosureReferenceOne") */
     public $referenceOne;
