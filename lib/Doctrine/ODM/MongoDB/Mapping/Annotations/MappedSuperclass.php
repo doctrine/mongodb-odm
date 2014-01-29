@@ -22,4 +22,5 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 /** @Annotation */
 final class MappedSuperclass extends AbstractDocument
 {
+    public $repositoryClass;
 }
