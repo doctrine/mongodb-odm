@@ -43,7 +43,7 @@ class PreLoadEventArgs extends LifecycleEventArgs
     public function __construct($document, DocumentManager $dm, array &$data)
     {
         parent::__construct($document, $dm);
-        $this->data = $data;
+        $this->data =& $data;
     }
 
     /**
