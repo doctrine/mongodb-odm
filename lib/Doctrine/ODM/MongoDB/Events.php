@@ -163,4 +163,11 @@ final class Events
      * @var string
      */
     const onClear = 'onClear';
+
+	/**
+     * The documentNotFound event occurs after the loading of a proxy document if was not found.
+     *
+     * @var string
+     */
+    const documentNotFound = 'documentNotFound';
 }
