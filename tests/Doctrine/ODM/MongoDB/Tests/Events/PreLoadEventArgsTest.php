@@ -14,10 +14,11 @@ class PreLoadEventArgsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $data = array('id' => '1234', 'name' => 'test');
 
         $eventArgs = new PreLoadEventArgs($document, $dm, $data);
+        $eventArgsData =& $eventArgs->getData();
 
-        $this->assertEquals('test', $eventArgs->getData()['name']);
+        $this->assertEquals('test', $eventArgsData['name']);
 
-        $eventArgs->getData()['name'] = 'alt name';
+        $eventArgsData['name'] = 'alt name';
 
         $this->assertEquals('alt name', $data['name']);
     }
