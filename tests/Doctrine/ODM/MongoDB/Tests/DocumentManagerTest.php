@@ -15,6 +15,16 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf('Documents\CustomRepository\Repository', $this->dm->getRepository('Documents\CustomRepository\Document'));
     }
 
+    public function testCustomRepositoryMappedsuperclass()
+    {
+        $this->assertInstanceOf('Documents\BaseCategoryRepository', $this->dm->getRepository('Documents\BaseCategory'));
+    }
+
+    public function testCustomRepositoryMappedsuperclassChild()
+    {
+        $this->assertInstanceOf('Documents\BaseCategoryRepository', $this->dm->getRepository('Documents\Category'));
+    }
+
     public function testGetConnection()
     {
         $this->assertInstanceOf('\Doctrine\MongoDB\Connection', $this->dm->getConnection());
