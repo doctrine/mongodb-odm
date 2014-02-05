@@ -66,6 +66,9 @@ class YamlDriver extends FileDriver
                 $class->setCustomRepositoryClass($element['repositoryClass']);
             }
         } elseif ($element['type'] === 'mappedSuperclass') {
+            $class->setCustomRepositoryClass(
+                isset($element['repositoryClass']) ? $element['repositoryClass'] : null
+            );
             $class->isMappedSuperclass = true;
         } elseif ($element['type'] === 'embeddedDocument') {
             $class->isEmbeddedDocument = true;
