@@ -289,11 +289,40 @@ class DocumentPersister
         $options['upsert'] = true;
         $criteria = array('_id' => $data['$set']['_id']);
         unset($data['$set']['_id']);
-        // stupid php
+
+        // Do not send an empty $set modifier
         if (empty($data['$set'])) {
-            $data['$set'] = new \stdClass;
+            unset($data['$set']);
         }
-        $this->collection->update($criteria, $data, $options);
+
+        /* If there are no modifiers remaining, we're upserting a document with 
+         * an identifier as its only field. Since a document with the identifier
+         * may already exist, the desired behavior is "insert if not exists" and
+         * NOOP otherwise. MongoDB 2.6+ does not allow empty modifiers, so $set
+         * the identifier to the same value in our criteria.
+         *
+         * This will fail for versions before MongoDB 2.6, which require an
+         * empty $set modifier. The best we can do (without attempting to check
+         * server versions in advance) is attempt the 2.6+ behavior and retry
+         * after the relevant exception.
+         *
+         * See: https://jira.mongodb.org/browse/SERVER-12266
+         */
+        if (empty($data)) {
+            $retry = true;
+            $data = array('$set' => array('_id' => $criteria['_id']));
+        }
+
+        try {
+            $this->collection->update($criteria, $data, $options);
+            return;
+        } catch (\MongoCursorException $e) {
+            if (empty($retry) || strpos($e->getMessage(), 'Mod on _id not allowed') === false) {
+                throw $e;
+            }
+        }
+
+        $this->collection->update($criteria, array('$set' => new \stdClass), $options);
     }
 
     /**
