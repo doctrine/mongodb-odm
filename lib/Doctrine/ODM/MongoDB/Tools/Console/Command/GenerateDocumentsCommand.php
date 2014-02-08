@@ -142,8 +142,8 @@ EOT
             }
 
             foreach ($metadatas as $metadata) {
-                $output->write(
-                    sprintf('Processing document "<info>%s</info>"', $metadata->name) . PHP_EOL
+                $output->writeln(
+                    sprintf('Processing document "<info>%s</info>".', $metadata->name)
                 );
             }
 
@@ -151,9 +151,9 @@ EOT
             $documentGenerator->generate($metadatas, $destPath);
 
             // Outputting information message
-            $output->write(PHP_EOL . sprintf('Document classes generated to "<info>%s</INFO>"', $destPath) . PHP_EOL);
+            $output->writeln(PHP_EOL . sprintf('Document classes generated to "<info>%s</INFO>".', $destPath));
         } else {
-            $output->write('No Metadata Classes to process.' . PHP_EOL);
+            $output->writeln('No Metadata Classes to process.');
         }
     }
 }
