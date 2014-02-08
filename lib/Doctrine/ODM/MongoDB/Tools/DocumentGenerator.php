@@ -69,7 +69,7 @@ class DocumentGenerator
     /** Whether or not to generation annotations */
     private $generateAnnotations = false;
 
-    /** Whether or not to generated sub methods */
+    /** Whether or not to generated stub methods */
     private $generateDocumentStubMethods = false;
 
     /** Whether or not to update the document class if it exists already */
