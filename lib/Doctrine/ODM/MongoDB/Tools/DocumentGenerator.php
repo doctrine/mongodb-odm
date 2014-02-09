@@ -66,10 +66,10 @@ class DocumentGenerator
     /** The class all generated documents should extend */
     private $classToExtend;
 
-    /** Whether or not to generation annotations */
+    /** Whether or not to generate annotations */
     private $generateAnnotations = false;
 
-    /** Whether or not to generated sub methods */
+    /** Whether or not to generate stub methods */
     private $generateDocumentStubMethods = false;
 
     /** Whether or not to update the document class if it exists already */
