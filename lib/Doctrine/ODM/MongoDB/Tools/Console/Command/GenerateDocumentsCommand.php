@@ -55,19 +55,19 @@ class GenerateDocumentsCommand extends Console\Command\Command
             ),
             new InputOption(
                 'generate-annotations', null, InputOption::VALUE_OPTIONAL,
-                'Flag to define if generator should generate annotation metadata on documents.', false
+                'Flag to define if the generator should generate annotation metadata on documents.', false
             ),
             new InputOption(
                 'generate-methods', null, InputOption::VALUE_OPTIONAL,
-                'Flag to define if generator should generate stub methods on documents.', true
+                'Flag to define if the generator should generate stub methods on documents.', true
             ),
             new InputOption(
                 'regenerate-documents', null, InputOption::VALUE_OPTIONAL,
-                'Flag to define if generator should regenerate document if it exists.', false
+                'Flag to define if the generator should regenerate a document if it exists.', false
             ),
             new InputOption(
                 'update-documents', null, InputOption::VALUE_OPTIONAL,
-                'Flag to define if generator should only update document if it exists.', true
+                'Flag to define if the generator should only update a document if it exists.', true
             ),
             new InputOption(
                 'extend', null, InputOption::VALUE_OPTIONAL,
@@ -75,7 +75,7 @@ class GenerateDocumentsCommand extends Console\Command\Command
             ),
             new InputOption(
                 'num-spaces', null, InputOption::VALUE_OPTIONAL,
-                'Defines the number of indentation spaces', 4
+                'Defines the number of indentation spaces.', 4
             )
         ))
         ->setHelp(<<<EOT
@@ -151,7 +151,10 @@ EOT
             $documentGenerator->generate($metadatas, $destPath);
 
             // Outputting information message
-            $output->writeln(PHP_EOL . sprintf('Document classes generated to "<info>%s</INFO>".', $destPath));
+            $output->writeln(array(
+                '',
+                sprintf('Document classes have been generated to "<info>%s</info>".', $destPath)
+            ));
         } else {
             $output->writeln('No Metadata Classes to process.');
         }
