@@ -1457,12 +1457,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getFieldValue($document, $field)
     {
-        if ($document instanceof Proxy && ! $document->__isInitialized()) {
-            if ($field === $this->identifier) {
-                return $document->__identifier__;
-            } else {
-                $document->__load();
-            }
+        if ($document instanceof Proxy && $field !== $this->identifier && ! $document->__isInitialized()) {
+            $document->__load();
         }
         
         return $this->reflFields[$field]->getValue($document);
