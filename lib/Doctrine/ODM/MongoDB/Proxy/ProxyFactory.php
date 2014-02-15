@@ -65,9 +65,9 @@ class ProxyFactory extends AbstractProxyFactory
      * @param string                                $proxyDir        The directory to use for the proxy classes. It
      *                                                               must exist.
      * @param string                                $proxyNamespace  The namespace to use for the proxy classes.
-     * @param boolean                               $autoGenerate    Whether to automatically generate proxy classes.
+     * @param integer                               $autoGenerate    Whether to automatically generate proxy classes.
      */
-    public function __construct(DocumentManager $documentManager, $proxyDir, $proxyNamespace, $autoGenerate = false)
+    public function __construct(DocumentManager $documentManager, $proxyDir, $proxyNamespace, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
         $this->metadataFactory = $documentManager->getMetadataFactory();
         $this->uow             = $documentManager->getUnitOfWork();
