@@ -2179,7 +2179,7 @@ class UnitOfWork implements PropertyChangedListener
                                     $other = $this
                                         ->dm
                                         ->getProxyFactory()
-                                        ->getProxy($assoc2['targetDocument'], array($targetClass->identifier => $id));
+                                        ->getProxy($assoc2['targetDocument'], array($targetClass->identifier => $relatedId));
                                     $this->registerManaged($other, $relatedId, array());
                                 }
                             }
