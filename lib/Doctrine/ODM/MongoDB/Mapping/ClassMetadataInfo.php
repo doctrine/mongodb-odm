@@ -1452,6 +1452,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param object $document
      * @param string $field
+     *
+     * @return mixed
      */
     public function getFieldValue($document, $field)
     {
