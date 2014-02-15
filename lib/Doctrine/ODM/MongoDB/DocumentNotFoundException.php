@@ -33,7 +33,7 @@ class DocumentNotFoundException extends MongoDBException
         $identifier = is_array($identifier) ? reset($identifier) : $identifier;
 
         return new self(sprintf(
-            'The "%s" document with identifier "%s" could not be found.', 
+            'The "%s" document with identifier %s could not be found.',
             $className, 
             json_encode($identifier)
         ));
