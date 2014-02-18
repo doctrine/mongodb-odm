@@ -1408,9 +1408,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Since MongoDB only allows exactly one identifier field this is a proxy
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
-     *
-     * @param object $document
-     * @return array
      */
     public function getIdentifierValues($object)
     {
