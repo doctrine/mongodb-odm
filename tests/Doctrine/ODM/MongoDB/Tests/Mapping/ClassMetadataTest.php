@@ -33,6 +33,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->setSlaveOkay(true);
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
         $this->assertEquals(1, count($cm->fieldMappings));
+        $this->assertEquals(1, count($cm->associationMappings));
 
         $serialized = serialize($cm);
         $cm = unserialize($serialized);
@@ -49,6 +50,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('disc', $cm->discriminatorField);
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
         $this->assertEquals(1, count($cm->fieldMappings));
+        $this->assertEquals(1, count($cm->associationMappings));
         $this->assertEquals('customFileProperty', $cm->file);
         $this->assertEquals('customDistanceProperty', $cm->distance);
         $this->assertTrue($cm->slaveOkay);
