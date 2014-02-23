@@ -104,6 +104,7 @@ class ClassMetadata extends ClassMetadataInfo
         // This metadata is always serialized/cached.
         $serialized = array(
             'fieldMappings',
+            'associationMappings',
             'identifier',
             'name',
             'namespace', // TODO: REMOVE
@@ -113,7 +114,7 @@ class ClassMetadata extends ClassMetadataInfo
             'generatorType',
             'generatorOptions',
             'idGenerator',
-            'indexes'
+            'indexes',
         );
 
         // The rest of the metadata is only serialized if necessary.
