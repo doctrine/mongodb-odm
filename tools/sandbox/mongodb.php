@@ -7,6 +7,10 @@ require __DIR__ . '/cli-config.php';
 
 $app = new Application('Doctrine MongoDB ODM', Version::VERSION);
 
+if (isset($helperSet)) {
+    $app->setHelperSet($helperSet);
+}
+
 $app->addCommands(array(
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\QueryCommand(),
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateDocumentsCommand(),
@@ -17,9 +21,5 @@ $app->addCommands(array(
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\DropCommand(),
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\UpdateCommand(),
 ));
-
-if (isset($helperSet)) {
-    $app->setHelperSet($helperSet);
-}
 
 $app->run();
