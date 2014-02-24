@@ -103,8 +103,8 @@ EOT
             $qb->limit((int) $limit);
         }
 
-        $resultSet = $qb->getQuery->toArray();
-
-        \Doctrine\Common\Util\Debug::dump($resultSet, $depth);
+        foreach ($qb->getQuery() as $result) {
+            \Doctrine\Common\Util\Debug::dump($result, $depth);
+        }
     }
 }
