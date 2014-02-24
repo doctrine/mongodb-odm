@@ -77,9 +77,9 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
-        $query = json_decode($input->getArgument('query'));
-        $cursor = $dm->getRepository($input->getArgument('class'))->findBy((array) $query);
-        $cursor->hydrate((bool) $input->getOption('hydrate'));
+        $qb = $dm->getRepository($input->getArgument('class'))->createQueryBuilder();
+        $qb->setQueryArray((array) json_decode($input->getArgument('query')));
+        $qb->hydrate((bool) $input->getOption('hydrate'));
 
         $depth = $input->getOption('depth');
 
@@ -92,7 +92,7 @@ EOT
                 throw new \LogicException("Option 'skip' must contain an integer value");
             }
 
-            $cursor->skip((int) $skip);
+            $qb->skip((int) $skip);
         }
 
         if (($limit = $input->getOption('limit')) !== null) {
@@ -100,10 +100,10 @@ EOT
                 throw new \LogicException("Option 'limit' must contain an integer value");
             }
 
-            $cursor->limit((int) $limit);
+            $qb->limit((int) $limit);
         }
 
-        $resultSet = $cursor->toArray();
+        $resultSet = $qb->getQuery->toArray();
 
         \Doctrine\Common\Util\Debug::dump($resultSet, $depth);
     }
