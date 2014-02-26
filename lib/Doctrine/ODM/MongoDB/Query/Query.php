@@ -77,6 +77,13 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @var boolean
      */
     private $requireIndexes;
+    
+    /**
+     * Whether or not to allow less efficient queries on Compond Index
+     * 
+     * @var boolean
+     */
+    private $allowLessEfficientIndexes;
 
     /**
      * Hints for UnitOfWork behavior.
@@ -97,8 +104,9 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @param boolean $refresh
      * @param array $primers
      * @param null $requireIndexes
+     * @param null $allowLessEfficientIndexes
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null, $allowLessEfficientIndexes = null)
     {
         parent::__construct($collection, $query, $options);
         $this->dm = $dm;
@@ -106,6 +114,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $this->hydrate = $hydrate;
         $this->primers = array_filter($primers);
         $this->requireIndexes = $requireIndexes;
+        $this->allowLessEfficientIndexes = $allowLessEfficientIndexes;
 
         $this->setRefresh($refresh);
 
@@ -184,12 +193,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function isIndexed()
     {
         $fields = $this->getFieldsInQuery();
-        foreach ($fields as $field) {
-            if ( ! $this->collection->isFieldIndexed($field)) {
-                return false;
-            }
-        }
-        return true;
+        return $this->collection->areFieldsIndexed($fields, $this->areLessEfficientIndexesAllowed());
     }
 
     /**
@@ -304,6 +308,16 @@ class Query extends \Doctrine\MongoDB\Query\Query
         return $cursor;
     }
 
+    /**
+     * Return whether less efficient queries on Compond Index are allowed
+     * 
+     * @return boolean
+     */
+    private function areLessEfficientIndexesAllowed()
+    {
+        return $this->allowLessEfficientIndexes !== null ? $this->allowLessEfficientIndexes : $this->class->allowLessEfficientIndexes;
+    }
+    
     /**
      * Return whether queries on this document should require indexes.
      *

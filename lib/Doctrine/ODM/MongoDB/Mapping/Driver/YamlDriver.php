@@ -94,6 +94,9 @@ class YamlDriver extends FileDriver
         if (isset($element['requireIndexes'])) {
             $class->setRequireIndexes($element['requireIndexes']);
         }
+        if (isset($element['allowLessEfficientIndexes'])) {
+            $class->setAllowLessEfficientIndexes($element['allowLessEfficientIndexes']);
+        }
         if (isset($element['slaveOkay'])) {
             $class->setSlaveOkay($element['slaveOkay']);
         }

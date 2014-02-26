@@ -12,6 +12,7 @@ class RequireIndexesTest extends BaseTest
     {
         parent::setUp();
         $this->dm->getSchemaManager()->ensureDocumentIndexes('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument');
     }
 
     public function testGetFieldsInQueryWithSimpleEquals()
@@ -173,6 +174,52 @@ class RequireIndexesTest extends BaseTest
         $query = $qb->getQuery();
         $this->assertFalse($query->isIndexed());
     }
+    
+    public function testIsCompoundIndexed()
+    {
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument')
+            ->field('indexed')->equals('test')
+            ->field('indexedInCompound')->equals('test');
+        $query = $qb->getQuery();
+        $this->assertTrue($query->isIndexed());
+    }
+    
+    public function testIsCompoundIndexedFalse()
+    {
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument')
+            ->field('indexed')->equals('test')
+            ->field('indexedInCompund')->equals('test')
+            ->field('notIndexed')->equals('test');
+        $query = $qb->getQuery();
+        $this->assertFalse($query->isIndexed());
+    }
+    
+    public function testIsCompoundIndexOrderIncorrect()
+    {
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument')
+            ->field('indexedAsWell')->equals('test')
+            ->field('indexedInCompund')->equals('test');
+        $query = $qb->getQuery();
+        $this->assertFalse($query->isIndexed());
+    }
+    
+    public function testIsCompoundIndexEfficient()
+    {
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument')
+            ->field('indexed')->equals('test')
+            ->field('indexedAsWell')->equals('test');
+        $query = $qb->getQuery();
+        $this->assertTrue($query->isIndexed());
+    }
+    
+    public function testIsCompoundIndexEfficientFalse()
+    {
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument')
+            ->field('indexed')->equals('test')
+            ->field('indexedInCompound')->equals('test');
+        $query = $qb->getQuery();
+        $this->assertFalse($query->isIndexed());
+    }
 
     /**
      * @expectedException Doctrine\ODM\MongoDB\MongoDBException
@@ -269,7 +316,7 @@ class RequireIndexesTest extends BaseTest
 }
 
 /**
- * @ODM\Document(requireIndexes=true)
+ * @ODM\Document(requireIndexes=true, indexes={ @ODM\Index(keys={"indexed"="asc", "indexedAsWell"="asc", "indexedInCompound"="asc"}) })
  */
 class RequireIndexesDocument
 {
@@ -281,6 +328,12 @@ class RequireIndexesDocument
 
     /** @ODM\String */
     public $notIndexed;
+    
+    /** @ODM\String @ODM\Index */
+    public $indexedAsWell;
+    
+    /** @ODM\String */
+    public $indexedInCompound;
 
     /** @ODM\EmbedOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesEmbeddedDocument") */
     public $embedOne;
@@ -293,6 +346,24 @@ class RequireIndexesDocument
 
     /** @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\DoesNotRequireIndexesDocument", simple=true) */
     public $simpleReference;
+}
+
+/**
+ * @ODM\Document(requireIndexes=true, allowLessEfficientIndexes=false, indexes={ @ODM\Index(keys={"indexed"="asc", "indexedAsWell"="asc", "indexedInCompound"="asc"}) })
+ */
+class RequireEfficientIndexesDocument
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\String */
+    public $indexed;
+
+    /** @ODM\String */
+    public $indexedAsWell;
+    
+    /** @ODM\String */
+    public $indexedInCompound;
 }
 
 /**

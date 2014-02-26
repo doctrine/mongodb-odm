@@ -81,6 +81,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * @var bool
      */
     private $requireIndexes;
+    
+    /**
+     * Whether or not to allow less efficient queries on Compond Index
+     * 
+     * @var bool
+     */
+    private $allowLessEfficientIndexes;
 
     /**
      * Construct a Builder
@@ -106,6 +113,18 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function requireIndexes($requireIndexes = true)
     {
         $this->requireIndexes = $requireIndexes;
+        return $this;
+    }
+    
+    /**
+     * Set whether or not to allow less efficient queries on Compond Index
+     * 
+     * @param bool $allowLessEfficientIndexes
+     * @return Builder
+     */
+    public function allowLessEfficientIndexes($allowLessEfficientIndexes = true)
+    {
+        $this->allowLessEfficientIndexes = $allowLessEfficientIndexes;
         return $this;
     }
 
@@ -304,7 +323,8 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->hydrate,
             $this->refresh,
             $this->primers,
-            $this->requireIndexes
+            $this->requireIndexes,
+            $this->allowLessEfficientIndexes
         );
     }
 

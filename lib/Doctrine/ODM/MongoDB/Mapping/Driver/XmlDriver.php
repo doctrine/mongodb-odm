@@ -103,6 +103,9 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'require-indexes'})) {
             $class->setRequireIndexes((boolean) $xmlRoot->{'require-indexes'});
         }
+        if (isset($xmlRoot->{'allow-less-efficient-indexes'})) {
+            $class->setAllowLessEfficientIndexes($xmlRoot->{'allow-less-efficient-indexes'});
+        }
         if (isset($xmlRoot->{'slave-okay'})) {
             $class->setSlaveOkay((boolean) $xmlRoot->{'slave-okay'});
         }
