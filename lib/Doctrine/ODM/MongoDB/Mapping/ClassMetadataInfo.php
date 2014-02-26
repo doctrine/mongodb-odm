@@ -199,7 +199,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $requireIndexes = false;
     
     /**
-     * READ-ONLY: Whether or not to allow less efficient queries on Compond Index
+     * READ-ONLY: Whether or not to allow less efficient queries on Compound Index
      */
     public $allowLessEfficientIndexes = true;
 
@@ -749,7 +749,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
     
     /**
-     * Set whether or not to allow less efficient queries on Compond Index
+     * Set whether or not to allow less efficient queries on Compound Index
      * 
      * @param bool $allowLessEfficientIndexes
      */

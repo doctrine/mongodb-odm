@@ -83,7 +83,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     private $requireIndexes;
     
     /**
-     * Whether or not to allow less efficient queries on Compond Index
+     * Whether or not to allow less efficient queries on Compound Index
      * 
      * @var bool
      */
@@ -117,7 +117,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     }
     
     /**
-     * Set whether or not to allow less efficient queries on Compond Index
+     * Set whether or not to allow less efficient queries on Compound Index
      * 
      * @param bool $allowLessEfficientIndexes
      * @return Builder

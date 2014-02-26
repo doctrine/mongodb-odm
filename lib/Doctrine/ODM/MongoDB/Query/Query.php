@@ -79,7 +79,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     private $requireIndexes;
     
     /**
-     * Whether or not to allow less efficient queries on Compond Index
+     * Whether or not to allow less efficient queries on Compound Index
      * 
      * @var boolean
      */
@@ -309,7 +309,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     }
 
     /**
-     * Return whether less efficient queries on Compond Index are allowed
+     * Return whether less efficient queries on Compound Index are allowed
      * 
      * @return boolean
      */
