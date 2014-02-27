@@ -304,6 +304,8 @@ The conditional operators in Mongo are available to limit the returned results t
 * ``all($values)``
 * ``mod($mod)``
 * ``addOr($expr)``
+* ``references($document)``
+* ``includesReferenceTo($document)``
 
 Query for active administrator users:
 
@@ -477,6 +479,32 @@ Query for users who have subscribed or are in a trial.
     
 Read more about the 
 `$or operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24or>`_ in the Mongo docs.
+
+Query for Articles written by particular User
+
+.. code-block:: php
+
+    <?php
+
+    // supposing we have $user fetched from database
+    $qb = $dm->createQueryBuilder('Article')
+        ->field('user')->references($user)
+
+Read more about the
+`@ReferenceOne </en/latest/reference/reference-mapping.html#reference-one>`_ in the Doctrine Reference Mapping
+
+Query for User(s) having access to particular Account
+
+.. code-block:: php
+
+    <?php
+
+    // supposing we have $account fetched from database
+    $qb = $dm->createQueryBuilder('User')
+        ->field('accounts')->includesReferenceTo($user)
+
+Read more about the
+`@ReferenceMany </en/latest/reference/reference-mapping.html#reference-many>`_ in the Doctrine Reference Mapping
     
 Update Queries
 ~~~~~~~~~~~~~~
