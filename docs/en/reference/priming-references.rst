@@ -84,6 +84,12 @@ queries.
     Priming is also compatible with :ref:`simple references <simple_references>`
     and discriminated references (e.g. where referenced classes utilize
     :ref:`single collection inheritance <single_collection_inheritance>`).
+    
+.. note::
+
+    Hydration cannot be disabled in the query builder for priming to work properly.
+    Disabling hydration will cause the DBRef to be returned for a referenced
+    document instead of the hydrated document object.
 
 Primer Callback
 ---------------
