@@ -501,7 +501,7 @@ Query for User(s) having access to particular Account
 
     // supposing we have $account fetched from database
     $qb = $dm->createQueryBuilder('User')
-        ->field('accounts')->includesReferenceTo($user)
+        ->field('accounts')->includesReferenceTo($account)
 
 Read more about the
 `@ReferenceMany </en/latest/reference/reference-mapping.html#reference-many>`_ in the Doctrine Reference Mapping
