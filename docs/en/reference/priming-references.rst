@@ -87,7 +87,7 @@ queries.
     
 .. note::
 
-    Hydration cannot be disabled in the query builder for priming to work properly.
+    Hydration must be enabled in the query builder for priming to work properly.
     Disabling hydration will cause the DBRef to be returned for a referenced
     document instead of the hydrated document object.
 
