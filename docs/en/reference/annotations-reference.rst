@@ -985,6 +985,8 @@ the method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
+.. _annotations_reference_reference_many:
+
 @ReferenceMany
 --------------
 
@@ -1045,6 +1047,8 @@ Example:
      * )
      */
     private $cart;
+
+.. _annotations_reference_reference_one:
 
 @ReferenceOne
 -------------
