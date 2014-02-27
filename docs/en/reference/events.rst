@@ -477,7 +477,7 @@ Define the ``EventTest`` class with a ``preUpdate()`` method:
             $document = $eventArgs->getDocument();
             $document->setSomething();
             $dm = $eventArgs->getDocumentManager();
-            $class = $dm->getClassMetadata();
+            $class = $dm->getClassMetadata(get_class($document));
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $document);
         }
     }
