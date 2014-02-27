@@ -491,7 +491,7 @@ Query for Articles written by particular User
         ->field('user')->references($user)
 
 Read more about the
-`@ReferenceOne </en/latest/reference/reference-mapping.html#reference-one>`_ in the Doctrine Reference Mapping
+:ref:`@ReferenceOne <reference-one>`_ in the Doctrine Reference Mapping
 
 Query for User(s) having access to particular Account
 
@@ -504,7 +504,7 @@ Query for User(s) having access to particular Account
         ->field('accounts')->includesReferenceTo($account)
 
 Read more about the
-`@ReferenceMany </en/latest/reference/reference-mapping.html#reference-many>`_ in the Doctrine Reference Mapping
+:ref:`@ReferenceMany <reference-many>`_ in the Doctrine Reference Mapping
     
 Update Queries
 ~~~~~~~~~~~~~~
