@@ -514,7 +514,7 @@ Examples:
     protected $username;
     
     /**
-     * @Field(type="string" name="origin")
+     * @Field(type="string", name="origin")
      */
     protected $country;
     
