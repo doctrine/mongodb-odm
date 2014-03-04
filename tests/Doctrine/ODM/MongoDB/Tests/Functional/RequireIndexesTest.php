@@ -240,7 +240,7 @@ class RequireIndexesTest extends BaseTest
             $query = $qb->getQuery();
             $query->execute();
         } catch (MongoDBException $e) {
-            $this->assertEquals('Cannot execute unindexed queries on Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument. Unindexed fields: notIndexed', $e->getMessage());
+            $this->assertEquals('Cannot execute unindexed queries on Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument. Used fields: notIndexed', $e->getMessage());
         }
     }
 
@@ -264,7 +264,6 @@ class RequireIndexesTest extends BaseTest
         $query = $qb->getQuery();
         $query->execute();
     }
-
 
     public function testRequireIndexesFalse()
     {
@@ -302,6 +301,31 @@ class RequireIndexesTest extends BaseTest
             ->sort('embedOne.notIndexed', 'asc');
         $query = $qb->getQuery();
         $query->execute();
+    }
+    
+    /**
+     * @expectedException Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function testRequireEfficientIndexesThrowException()
+    {
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument')
+            ->field('indexed')->equals('test')
+            ->field('indexedInCompound')->equals('test');
+        $query = $qb->getQuery();
+        $query->execute();
+    }
+    
+    public function testRequireEfficientIndexesExceptionMessage()
+    {
+        try {
+            $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument')
+                ->field('indexed')->equals('test')
+                ->field('indexedInCompound')->equals('test');
+            $query = $qb->getQuery();
+            $query->execute();
+        } catch (MongoDBException $e) {
+            $this->assertEquals('Cannot execute inefficiently indexed queries on Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument. Used fields: indexed, indexedInCompound', $e->getMessage());
+        }
     }
 
     public function testGetUnindexedFields()

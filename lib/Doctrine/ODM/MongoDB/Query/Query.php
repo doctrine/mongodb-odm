@@ -222,7 +222,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function execute()
     {
         if ($this->isIndexRequired() && ! $this->isIndexed()) {
-            throw MongoDBException::queryNotIndexed($this->class->name, $this->getUnindexedFields());
+            throw $this->getQueryNotindexedException();
         }
 
         $results = parent::execute();
@@ -316,6 +316,15 @@ class Query extends \Doctrine\MongoDB\Query\Query
     private function areLessEfficientIndexesAllowed()
     {
         return $this->allowLessEfficientIndexes !== null ? $this->allowLessEfficientIndexes : $this->class->allowLessEfficientIndexes;
+    }
+    
+    private function getQueryNotindexedException()
+    {
+        $fields = $this->getFieldsInQuery();
+        if ( ! $this->areLessEfficientIndexesAllowed()) {
+            return MongoDBException::queryNotEfficientlyIndexed($this->class->name, $fields);
+        }
+        return MongoDBException::queryNotIndexed($this->class->name, $fields);
     }
     
     /**
