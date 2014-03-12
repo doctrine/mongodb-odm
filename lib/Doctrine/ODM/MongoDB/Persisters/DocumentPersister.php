@@ -208,7 +208,7 @@ class DocumentPersister
             $upsert = $this->uow->isScheduledForUpsert($document);
             if ($upsert) {
                 $data = $this->pb->prepareUpsertData($document);
-                $shardCriteria[$oid] = $this->getShardKeyQuery($document);
+                $shardCriteria[$oid] = $this->getShardKeyQuery($document, $options);
             } else {
                 $data = $this->pb->prepareInsertData($document);
             }
@@ -303,7 +303,7 @@ class DocumentPersister
 
             $id = $this->class->getDatabaseIdentifierValue($id);
             $query = array('_id' => $id);
-            $shardKeys = $this->getShardKeyQuery($document);
+            $shardKeys = $this->getShardKeyQuery($document, $options);
 
             $query = array_merge($query, $shardKeys);
 
@@ -354,7 +354,7 @@ class DocumentPersister
      * @return array
      * @throws MongoDBException
      */
-    public function getShardKeyQuery($document)
+    public function getShardKeyQuery($document, array $options = array())
     {
         $shardKeysQueryPart = array();
 
@@ -372,7 +372,11 @@ class DocumentPersister
 
             //If the document is new, we can ignore shard key value, otherwise throw exception
             $isUpdate = $this->uow->isScheduledForUpdate($document);
-            if ($isUpdate && isset($dcs[$key]) && $dcs[$key][0] != $dcs[$key][1]) {
+            if ($isUpdate
+                && isset($dcs[$key])
+                && $dcs[$key][0] != $dcs[$key][1]
+                && (!isset($options['upsert']) || (isset($options['upsert']) && $options['upsert'] === true))
+            ) {
                 throw MongoDBException::shardKeyChange($key);
             }
             if (!isset($data[$key])) {
