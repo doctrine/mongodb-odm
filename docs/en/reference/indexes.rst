@@ -369,6 +369,66 @@ options structures manually:
             keys:
               coordinates: 2d
 
+Compound Indexes
+---------------
+
+Compound Index holds reference to multiple fields and are used when querying on or sorting by multiple fields.
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        namespace Documents;
+
+        /**
+         * @Document
+         * @Index(keys={"accountId"="asc", "username"="asc"})
+         */
+        class User
+        {
+            /** @Id */
+            public $id;
+    
+            /** @Integer */
+            public $accountId;
+    
+            /** @String */
+            public $username;
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping
+                            http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
+    
+            <document name="Documents\User">
+                <indexes>
+                    <index>
+                        <key name="accountId" order="asc" />
+                        <key name="username" order="asc" />
+                    </index>
+                </indexes>
+            </document>
+        </doctrine-mongo-mapping>
+
+    .. code-block:: yaml
+
+        Documents\User:
+          indexes:
+            usernameacctid:
+              keys:
+                accountId:
+                  order: asc
+                username:
+                  order: asc
+
+Both order of fields in index and order of indexed field itself is very important if you want to use ``requireIndexes``.
+For more informations see `Mongo docs for Compound Indexes <http://docs.mongodb.org/manual/core/index-compound/>`_
+
 Requiring Indexes
 -----------------
 
@@ -473,3 +533,180 @@ it on a per query basis:
     $qb->requireIndexes(true);
     $query = $qb->getQuery();
     $results = $query->execute();
+
+Index Efficiency
+----------------
+
+To fully benefit from Indexes feature created ones should be efficient.
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        /**
+         * @Document(requireIndexes=true)
+         * @Index(keys={"item"="asc", "location"="asc", "stock"="asc"})
+         */
+        class Product
+        {
+            /** @Id */
+            public $id;
+    
+            /** @String */
+            public $item;
+            
+            /** @String */
+            public $location;
+
+            /** @Integer */
+            public $stock;
+        }
+
+    .. code-block:: xml
+
+        // Documents.Product.dcm.xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping
+                            http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
+        
+            <document name="Documents\Product" require-indexes="true">
+                <field fieldName="id" id="true" />
+                <field fieldName="item" type="string" />
+                <field fieldName="location" type="string" />
+                <field fieldName="stock" type="integer" />
+                <indexes>
+                    <index>
+                        <key name="item" order="asc">
+                        <key name="location" order="asc">
+                        <key name="stock" order="asc">
+                    </index>
+                </indexes>
+            </document>
+        </doctrine-mongo-mapping>
+
+    .. code-block:: yaml
+
+        # Documents.Product.dcm.yml
+
+        Documents\Product:
+          requireIndexes: true
+          fields:
+            id:
+              id: true
+            item:
+              type: string
+            location:
+              type: string
+            stock:
+              type: integer
+          indexes:
+            index1:
+              keys:
+                item: asc
+                location: asc
+                stock: asc
+
+Queries supported by our Index can use following combination of fields (please note fields' order):
+
+* ``item``
+* ``item`` and ``location``
+* ``item`` and ``location`` and ``stock``
+* ``item`` and ``stock``
+
+however last index would be less efficient than one created only on ``item`` and ``stock`` fields.
+You can find more information about `Prefixes <http://docs.mongodb.org/manual/core/index-compound/>`_ in Mongo docs.
+
+If you want to avoid using "weak" indexes you can specify ``allowLessEfficientIndexes=false`` option
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        /**
+         * @Document(requireIndexes=true, allowLessEfficientIndexes=false)
+         * @Index(keys={"item"="asc", "location"="asc", "stock"="asc"})
+         */
+        class Product
+        {
+            /** @Id */
+            public $id;
+    
+            /** @String */
+            public $item;
+            
+            /** @String */
+            public $location;
+
+            /** @Integer */
+            public $stock;
+        }
+
+    .. code-block:: xml
+
+        // Documents.Product.dcm.xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping
+                            http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
+        
+            <document name="Documents\Product" require-indexes="true" allow-less-efficient-indexes="false">
+                <field fieldName="id" id="true" />
+                <field fieldName="item" type="string" />
+                <field fieldName="location" type="string" />
+                <field fieldName="stock" type="integer" />
+                <indexes>
+                    <index>
+                        <key name="item" order="asc">
+                        <key name="location" order="asc">
+                        <key name="stock" order="asc">
+                    </index>
+                </indexes>
+            </document>
+        </doctrine-mongo-mapping>
+
+    .. code-block:: yaml
+
+        # Documents.Product.dcm.yml
+
+        Documents\Product:
+          requireIndexes: true
+          allowLessEfficientIndexes: false
+          fields:
+            id:
+              id: true
+            item:
+              type: string
+            location:
+              type: string
+            stock:
+              type: integer
+          indexes:
+            index1:
+              keys:
+                item: asc
+                location: asc
+                stock: asc
+
+or you can use it from QueryBuilder level:
+
+.. code-block:: php
+
+    <?php
+
+    $qb->requireIndexes(true)
+        ->allowLessEfficientIndexes(false);
+    $query = $qb->getQuery();
+    $results = $query->execute();
+
+Please note that this option must be combined with ``requireIndexes`` to take effect
