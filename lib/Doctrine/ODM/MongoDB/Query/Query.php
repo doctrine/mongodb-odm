@@ -91,6 +91,13 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @var array
      */
     private $unitOfWorkHints = array();
+    
+    /**
+     * Last constructed FieldExtractor instance
+     * 
+     * @var FieldExtractor
+     */
+    private $fieldExtractor;
 
     /**
      * Constructor.
@@ -172,17 +179,28 @@ class Query extends \Doctrine\MongoDB\Query\Query
     }
 
     /**
+     * Returns FieldExtractor instance for this Query
+     * 
+     * @return FieldExtractor
+     */
+    public function getFieldExtractor()
+    {
+        if ($this->fieldExtractor === null) {
+            $query = isset($this->query['query']) ? $this->query['query'] : array();
+            $sort = isset($this->query['sort']) ? $this->query['sort'] : array();
+            $this->fieldExtractor = new FieldExtractor($query, $sort);
+        }
+        return $this->fieldExtractor;
+    }
+    
+    /**
      * Gets the fields involved in this query.
      *
      * @return array $fields An array of fields names used in this query.
      */
     public function getFieldsInQuery()
     {
-        $query = isset($this->query['query']) ? $this->query['query'] : array();
-        $sort = isset($this->query['sort']) ? $this->query['sort'] : array();
-
-        $extractor = new FieldExtractor($query, $sort);
-        return $extractor->getFields();
+        return $this->getFieldExtractor()->getFields();
     }
 
     /**
@@ -192,8 +210,12 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function isIndexed()
     {
-        $fields = $this->getFieldsInQuery();
-        return $this->collection->areFieldsIndexed($fields, $this->areLessEfficientIndexesAllowed());
+        $extractor = $this->getFieldExtractor();
+        $allowLessEfficient = $this->areLessEfficientIndexesAllowed();
+        if (!$this->collection->areFieldsIndexed($extractor->getFields(), $allowLessEfficient)) {
+            return false;
+        }
+        return $this->collection->areFieldsIndexedForSorting($extractor->getSortCriteria(), $allowLessEfficient);
     }
 
     /**
@@ -320,11 +342,21 @@ class Query extends \Doctrine\MongoDB\Query\Query
     
     private function getQueryNotindexedException()
     {
-        $fields = $this->getFieldsInQuery();
-        if ( ! $this->areLessEfficientIndexesAllowed()) {
-            return MongoDBException::queryNotEfficientlyIndexed($this->class->name, $fields);
+        $extractor = $this->getFieldExtractor();
+        $fields = $extractor->getFields();
+        $allowLessEfficient = $this->areLessEfficientIndexesAllowed();
+        if (!$this->collection->areFieldsIndexed($fields, $allowLessEfficient)) {
+            if (!$allowLessEfficient) {
+                return MongoDBException::queryNotEfficientlyIndexed($this->class->name, $fields);
+            }
+            return MongoDBException::queryNotIndexed($this->class->name, $fields);
         }
-        return MongoDBException::queryNotIndexed($this->class->name, $fields);
+        // if all fields are indexed then isIndexed() returned false because of sorting
+        $sort = $extractor->getSortCriteria();
+        if (!$allowLessEfficient) {
+            return MongoDBException::queryNotEfficientlyIndexedForSorting($this->class->name, $sort);
+        }
+        return MongoDBException::queryNotIndexedForSorting($this->class->name, $sort);
     }
     
     /**

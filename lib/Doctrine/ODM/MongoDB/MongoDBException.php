@@ -75,11 +75,27 @@ class MongoDBException extends \Exception
         ));
     }
     
+    public static function queryNotIndexedForSorting($className, $usedFields)
+    {
+        return new self(sprintf('There is no index capable of sorting results on %s. Used fields: %s',
+            $className,
+            json_encode($usedFields)
+        ));
+    }
+    
     public static function queryNotEfficientlyIndexed($className, $usedFields)
     {
         return new self(sprintf('Cannot execute inefficiently indexed queries on %s. Used fields: %s',
             $className,
             implode(', ', $usedFields)
+        ));
+    }
+    
+    public static function queryNotEfficientlyIndexedForSorting($className, $usedFields)
+    {
+        return new self(sprintf('There is no efficient index capable of sorting results on %s. Used fields: %s',
+            $className,
+            json_encode($usedFields)
         ));
     }
 }

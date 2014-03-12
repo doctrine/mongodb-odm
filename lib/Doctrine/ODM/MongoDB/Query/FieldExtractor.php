@@ -58,6 +58,16 @@ class FieldExtractor
         $fields = array_unique(array_merge($fields, array_keys($this->sort)));
         return $fields;
     }
+    
+    public function getSortCriteria()
+    {
+        return $this->sort;
+    }
+    
+    public function getSortFields()
+    {
+        return array_keys($this->sort);
+    }
 
     private function getFieldsFromElemMatch(array $elemMatch)
     {
