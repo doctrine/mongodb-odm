@@ -212,6 +212,8 @@ fields that hold scalar values like strings, numbers, etc.
 References to other objects and embedded objects are covered in the
 chapter "Reference Mapping".
 
+.. _basic_mapping_identifiers:
+
 Identifiers
 ~~~~~~~~~~~
 
