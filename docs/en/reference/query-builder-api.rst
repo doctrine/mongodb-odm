@@ -490,8 +490,7 @@ Query for Articles written by particular User
     $qb = $dm->createQueryBuilder('Article')
         ->field('user')->references($user)
 
-Read more about the
-:ref:`@ReferenceOne <reference-one>`_ in the Doctrine Reference Mapping
+Read more about the :ref:`@ReferenceOne <annotations_reference_reference_one>`
 
 Query for User(s) having access to particular Account
 
@@ -503,8 +502,7 @@ Query for User(s) having access to particular Account
     $qb = $dm->createQueryBuilder('User')
         ->field('accounts')->includesReferenceTo($account)
 
-Read more about the
-:ref:`@ReferenceMany <reference-many>`_ in the Doctrine Reference Mapping
+Read more about the :ref:`@ReferenceMany <annotations_reference_reference_many>`
     
 Update Queries
 ~~~~~~~~~~~~~~
