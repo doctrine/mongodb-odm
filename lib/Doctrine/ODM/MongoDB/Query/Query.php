@@ -206,16 +206,17 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Check if this query is indexed.
      *
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @return bool
      */
-    public function isIndexed()
+    public function isIndexed($boolInsteadOfException = true)
     {
-        $extractor = $this->getFieldExtractor();
-        $allowLessEfficient = $this->areLessEfficientIndexesAllowed();
-        if (!$this->collection->areFieldsIndexed($extractor->getFields(), $allowLessEfficient)) {
-            return false;
+        $indexChecker = new IndexChecker($this->collection, $this, $this->areLessEfficientIndexesAllowed());
+        $verdict = $indexChecker->isQueryIndexed();
+        if ($boolInsteadOfException) {
+            return $verdict === true;
         }
-        return $this->collection->areFieldsIndexedForSorting($extractor->getSortCriteria(), $allowLessEfficient);
+        return $verdict;
     }
 
     /**
@@ -243,8 +244,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function execute()
     {
-        if ($this->isIndexRequired() && ! $this->isIndexed()) {
-            throw $this->getQueryNotindexedException();
+        if ($this->isIndexRequired()) {
+            $verdict = $this->isIndexed(false);
+            if ($verdict !== true)
+                throw $verdict;
         }
 
         $results = parent::execute();
@@ -338,25 +341,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
     private function areLessEfficientIndexesAllowed()
     {
         return $this->allowLessEfficientIndexes !== null ? $this->allowLessEfficientIndexes : $this->class->allowLessEfficientIndexes;
-    }
-    
-    private function getQueryNotindexedException()
-    {
-        $extractor = $this->getFieldExtractor();
-        $fields = $extractor->getFields();
-        $allowLessEfficient = $this->areLessEfficientIndexesAllowed();
-        if (!$this->collection->areFieldsIndexed($fields, $allowLessEfficient)) {
-            if (!$allowLessEfficient) {
-                return MongoDBException::queryNotEfficientlyIndexed($this->class->name, $fields);
-            }
-            return MongoDBException::queryNotIndexed($this->class->name, $fields);
-        }
-        // if all fields are indexed then isIndexed() returned false because of sorting
-        $sort = $extractor->getSortCriteria();
-        if (!$allowLessEfficient) {
-            return MongoDBException::queryNotEfficientlyIndexedForSorting($this->class->name, $sort);
-        }
-        return MongoDBException::queryNotIndexedForSorting($this->class->name, $sort);
     }
     
     /**

@@ -20,8 +20,8 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 /**
- * Class responsible for extracting an array of field names that are involved in
- * a given mongodb query. Used for checking if query is indexed.
+ * Class responsible for extracting various things from a given
+ * mongodb query. Used for checking if query is indexed.
  *
  * @see Doctrine\ODM\MongoDB\Query::isIndexed()
  */
@@ -34,6 +34,27 @@ class FieldExtractor
     {
         $this->query = $query;
         $this->sort = $sort;
+    }
+    
+    public function getFieldsWithEqualityCondition()
+    {
+        $fields = array();
+        foreach ($this->query as $k => $v) {
+            if (is_array($v) && isset($v['$elemMatch']) && is_array($v['$elemMatch'])) {
+                $elemMatchFields = $this->getFieldsFromElemMatch($v['$elemMatch'], true);
+                foreach ($elemMatchFields as $field) {
+                    $fields[] = $k.'.'.$field;
+                }
+            } elseif ($this->isOperator($k, array('and', 'or'))) {
+                foreach ($v as $q) {
+                    $test = new self($q);
+                    $fields = array_merge($fields, $test->getFieldsWithEqualityCondition());
+                }
+            } elseif ($k[0] !== '$' && !is_array($v)) {
+                $fields[] = $k;
+            }
+        }
+        return array_values(array_unique($fields));
     }
 
     public function getFields()
@@ -59,7 +80,40 @@ class FieldExtractor
         return $fields;
     }
     
-    public function getSortCriteria()
+    public function getOrClauses()
+    {
+        $clauses = array();
+        foreach ($this->query as $k => $v) {
+            if ($this->isOperator($k, 'or')) {
+                foreach ($v as $q) {
+                    $test = new self($q);
+                    $foundClauses = $test->getOrClauses();
+                    if (!empty($foundClauses)) {
+                        $clauses = array_merge($clauses, $foundClauses);
+                    } else {
+                        $clauses[] = $q;
+                    }
+                }
+            } elseif ($this->isOperator($k, 'and')) {
+                foreach ($v as $q) {
+                    $test = new self($q);
+                    $foundClauses = $test->getOrClauses();
+                    if (!empty($foundClauses)) {
+                        $clauses = array_merge($clauses, $foundClauses);
+                    }
+                }
+            } elseif (is_array($v) && isset($v['$elemMatch']) && is_array($v['$elemMatch'])) {
+                $test = new self($v['$elemMatch']);
+                $foundClauses = $test->getOrClauses();
+                if (!empty($foundClauses)) {
+                    $clauses = array_merge($clauses, $foundClauses);
+                }
+            }
+        }
+        return $clauses;
+    }
+    
+    public function getSort()
     {
         return $this->sort;
     }
@@ -68,8 +122,45 @@ class FieldExtractor
     {
         return array_keys($this->sort);
     }
-
-    private function getFieldsFromElemMatch(array $elemMatch)
+    
+    public function getQuery()
+    {
+        return $this->query;
+    }
+    
+    public function getQueryWithoutOrClauses($query = null)
+    {
+        if ($query === null) {
+            $query = $this->query;
+        }
+        if (isset($query['$or'])) {
+            unset($query['$or']);
+        }
+        foreach ($query as $k => $v) {
+            if ($this->isOperator($k, 'and')) {
+                foreach ($v as $i => $q) {
+                    $query[$k][$i] = $this->getQueryWithoutOrClauses($q);
+                    if (empty($query[$k][$i])) {
+                        unset($query[$k][$i]);
+                    }
+                }
+                if (empty($query[$k])) {
+                    unset($query[$k]);
+                }
+            } elseif (is_array($v) && isset($v['$elemMatch']) && is_array($v['$elemMatch'])) {
+                $query[$k]['$elemMatch'] = $this->getQueryWithoutOrClauses($v['$elemMatch']);
+                if (empty($query[$k]['$elemMatch'])) {
+                    unset($query[$k]['$elemMatch']);
+                }
+                if (empty($query[$k])) {
+                    unset($query[$k]);
+                }
+            }
+        }
+        return $query;
+    }
+    
+    private function getFieldsFromElemMatch(array $elemMatch, $onlyEqualityConditions = false)
     {
         $fields = array();
         foreach ($elemMatch as $fieldName => $value) {
@@ -80,9 +171,13 @@ class FieldExtractor
             if ($this->isOperator($fieldName, array('and', 'or'))) {
                 foreach ($value as $q) {
                     $test = new self($q);
-                    $fields = array_merge($fields, $test->getFields());
+                    if (!$onlyEqualityConditions) {
+                        $fields = array_merge($fields, $test->getFields());
+                    } else {
+                        $fields = array_merge($fields, $test->getFieldsWithEqualityCondition());
+                    }
                 }
-            } else {
+            } elseif (!$onlyEqualityConditions || ($onlyEqualityConditions && !is_array($value))) {
                 $fields[] = $fieldName;
             }
         }
