@@ -27,7 +27,6 @@ use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
@@ -194,7 +193,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     }
     
     /**
-     * Gets the fields involved in this query.
+     * Get all fields involved in this query.
      *
      * @return array $fields An array of fields names used in this query.
      */
@@ -206,21 +205,23 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Check if this query is indexed.
      *
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @return bool
+     * @param $returnBooleanInsteadOfException method will return false when query is not indexed
+     * @return boolean|MongoException
      */
-    public function isIndexed($boolInsteadOfException = true)
+    public function isIndexed($returnBooleanInsteadOfException = true)
     {
-        $indexChecker = new IndexChecker($this->collection, $this, $this->areLessEfficientIndexesAllowed());
+        $indexChecker = new IndexChecker($this, $this->collection, $this->areLessEfficientIndexesAllowed());
         $verdict = $indexChecker->isQueryIndexed();
-        if ($boolInsteadOfException) {
-            return $verdict === true;
+        if ($returnBooleanInsteadOfException) {
+            return $verdict === true; // BC
         }
         return $verdict;
     }
 
     /**
-     * Gets an array of the unindexed fields in this query.
+     * Get an array of the unindexed fields in this query.
+     * NOTE: This method may return wrong results when Compound Index
+     * was used
      *
      * @return array
      */

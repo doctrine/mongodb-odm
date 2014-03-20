@@ -20,12 +20,11 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\MongoDB\Collection;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * Class responsible for checking if given query will use any
- * defined index
+ * index defined in collection
  * 
  * @since       1.0
  * @author      Maciej Malarz <malarzm@gmail.com>
@@ -58,11 +57,11 @@ class IndexChecker
     /**
      * Constructor
      * 
-     * @param \Doctrine\MongoDB\Collection $collection
      * @param \Doctrine\ODM\MongoDB\Query\Query $query
+     * @param \Doctrine\MongoDB\Collection $collection
      * @param boolean $allowLessEfficientIndexes
      */
-    public function __construct(Collection $collection, Query $query, $allowLessEfficientIndexes = true)
+    public function __construct(Query $query, Collection $collection, $allowLessEfficientIndexes = true)
     {
         $this->collection = $collection;
         $this->query = $query;
@@ -70,7 +69,7 @@ class IndexChecker
     }
     
     /**
-     * Checkes if given Query can use any existing Index
+     * Checks if given Query can use any existing Index
      * 
      * @return true|MongoDbException
      */
@@ -110,7 +109,7 @@ class IndexChecker
     }
     
     /**
-     * Checks if given fields are prefix of any existing index.
+     * Gets all indexes that might be suitable for given fields
      * 
      * @param array $fieldsNames
      * @param boolean $findAny will return first matched index
@@ -162,13 +161,13 @@ class IndexChecker
     }
     
     /**
-     * Checks if there is any index capable of sorting results in
-     * required order.
+     * Checks given indexes if they can be used for sorting results
+     * and returns first matched one
      * 
      * @param array $indexes
      * @param array $sort
      * @param array $prefixPrepend
-     * @return null|array()
+     * @return null|array
      */
     private function getIndexCapableOfSorting($indexes, $sort, $prefixPrepend = array())
     {

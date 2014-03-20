@@ -30,12 +30,23 @@ class FieldExtractor
     private $query;
     private $sort;
 
+    /**
+     * Constructor
+     * 
+     * @param array $query
+     * @param array $sort
+     */
     public function __construct(array $query, array $sort = array())
     {
         $this->query = $query;
         $this->sort = $sort;
     }
     
+    /**
+     * Gets all fields involved in query that run only equality check
+     * 
+     * @return array
+     */
     public function getFieldsWithEqualityCondition()
     {
         $fields = array();
@@ -57,6 +68,11 @@ class FieldExtractor
         return array_values(array_unique($fields));
     }
 
+    /**
+     * Gets all fields involved in query
+     * 
+     * @return array
+     */
     public function getFields()
     {
         $fields = array();
@@ -80,6 +96,11 @@ class FieldExtractor
         return $fields;
     }
     
+    /**
+     * Gets all $or clauses used in query
+     * 
+     * @return array
+     */
     public function getOrClauses()
     {
         $clauses = array();
@@ -113,21 +134,42 @@ class FieldExtractor
         return $clauses;
     }
     
+    /**
+     * Gets sort criteria
+     * 
+     * @return array
+     */
     public function getSort()
     {
         return $this->sort;
     }
     
+    /**
+     * Gets all fields involved in sorting
+     * 
+     * @return array
+     */
     public function getSortFields()
     {
         return array_keys($this->sort);
     }
     
+    /**
+     * Gets find criteria
+     * 
+     * @return array
+     */
     public function getQuery()
     {
         return $this->query;
     }
     
+    /**
+     * Gets find criteria withour $or clauses
+     * 
+     * @param array $query to start with
+     * @return type
+     */
     public function getQueryWithoutOrClauses($query = null)
     {
         if ($query === null) {
@@ -160,6 +202,13 @@ class FieldExtractor
         return $query;
     }
     
+    /**
+     * Gets fields involved in $elemMatch
+     * 
+     * @param array $elemMatch
+     * @param type $onlyEqualityConditions
+     * @return type
+     */
     private function getFieldsFromElemMatch(array $elemMatch, $onlyEqualityConditions = false)
     {
         $fields = array();
@@ -184,6 +233,13 @@ class FieldExtractor
         return $fields;
     }
 
+    /**
+     * Checks if given field(s) is one of given operators
+     * 
+     * @param string $fieldName
+     * @param string|array $operator
+     * @return boolean
+     */
     private function isOperator($fieldName, $operator)
     {
         if ( ! is_array($operator)) {
