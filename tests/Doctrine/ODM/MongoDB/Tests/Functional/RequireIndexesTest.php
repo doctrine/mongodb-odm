@@ -341,6 +341,33 @@ class RequireIndexesTest extends BaseTest
         $query = $qb->getQuery();
         $query->execute();
     }
+    
+    /**
+     * @expectedException Doctrine\ODM\MongoDB\MongoDBException
+     * @expectedExceptionMessage Cannot execute unindexed or clause in query on Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument. Used fields: notIndexed
+     */
+    public function testUnindexedOrClauseThrowException()
+    {
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument');
+        $qb->addOr($qb->expr()->field('indexed')->equals('test'))
+            ->addOr($qb->expr()->field('notIndexed')->equals('test'));
+        $query = $qb->getQuery();
+        $query->execute();
+    }
+    
+    /**
+     * @expectedException Doctrine\ODM\MongoDB\MongoDBException
+     * @expectedExceptionMessage Cannot execute inefficiently indexed or clause in query on Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument. Used fields: indexed, indexedInCompound
+     */
+    public function testInefficientlyIndexedOrClauseThrowException()
+    {
+        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument');
+        $qb->addOr($qb->expr()->field('indexed')->equals('test'))
+            ->addOr($qb->expr()->field('indexed')->equals('test')
+                                ->field('indexedInCompound')->equals('test'));
+        $query = $qb->getQuery();
+        $query->execute();
+    }
 
     public function testGetUnindexedFields()
     {
