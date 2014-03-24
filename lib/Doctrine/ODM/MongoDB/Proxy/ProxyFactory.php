@@ -377,7 +377,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ODM\MongoDB\Pro
                 $this->__wakeup();
             }
 
-            if ($this->__documentPersister__->load($this->__identifier__, $this) === null) {
+            if ($this->__documentPersister__->load(array("_id" => $this->__identifier__), $this) === null) {
                 throw \Doctrine\ODM\MongoDB\DocumentNotFoundException::documentNotFound(get_class($this), $this->__identifier__);
             }
             unset($this->__documentPersister__, $this->__identifier__);
