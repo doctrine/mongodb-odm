@@ -185,9 +185,9 @@ class EagerCursor extends BaseEagerCursor
      * @see \Doctrine\MongoDB\EagerCursor::toArray()
      * @see \Doctrine\MongoDB\Iterator::toArray()
      */
-    public function toArray()
+    public function toArray($useKeys = true)
     {
         $this->initialize();
-        return iterator_to_array($this);
+        return iterator_to_array($this, $useKeys);
     }
 }
