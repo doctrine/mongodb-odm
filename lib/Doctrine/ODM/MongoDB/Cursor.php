@@ -300,7 +300,7 @@ class Cursor extends BaseCursor
      * @param array|string $keyPattern
      * @return self
      */
-    public function hint(array $keyPattern)
+    public function hint($keyPattern)
     {
         $this->baseCursor->hint($keyPattern);
         return $this;
