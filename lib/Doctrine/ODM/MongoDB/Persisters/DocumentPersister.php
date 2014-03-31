@@ -666,7 +666,7 @@ class DocumentPersister
 
             // only query for the referenced object if it is not already initialized or the collection is sorted
             if (($reference instanceof Proxy && ! $reference->__isInitialized__) || $sorted) {
-                $groupedIds[$className][$id] = $mongoId;
+                $groupedIds[$className][] = $mongoId;
             }
         }
         foreach ($groupedIds as $className => $ids) {
