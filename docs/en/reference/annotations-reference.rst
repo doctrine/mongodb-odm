@@ -569,9 +569,9 @@ Alias of @Field, with "type" attribute set to
 @Id
 ---
 
-The annotated instance variable will be marked as document
-identifier. This annotation is a marker only and has no required or
-optional attributes.
+The annotated instance variable will be marked as the document identifier. The
+default behavior is to store a MongoId instance, but you may customize this via
+the :ref:`strategy <basic_mapping_identifiers>` attribute.
 
 Example:
 
