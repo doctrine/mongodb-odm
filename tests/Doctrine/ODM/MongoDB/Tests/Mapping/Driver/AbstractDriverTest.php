@@ -210,13 +210,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                'postPersist' => array(
-                    'doStuffOnPostPersist' => 'doStuffOnPostPersist',
-                    'doOtherStuffOnPostPersist' => 'doOtherStuffOnPostPersist',
-                ),
-                'prePersist' => array(
-                    'doStuffOnPrePersist' => 'doStuffOnPrePersist',
-                )
+                'postPersist' => array('doStuffOnPostPersist', 'doOtherStuffOnPostPersist'),
+                'prePersist' => array('doStuffOnPrePersist'),
             ),
             $classMetadata->lifecycleCallbacks
         );

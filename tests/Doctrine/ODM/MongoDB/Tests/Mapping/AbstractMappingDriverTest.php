@@ -144,27 +144,18 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testLifecycleCallbacks($class)
     {
-        $this->assertEquals(count($class->lifecycleCallbacks), 2);
-        $this->assertEquals($class->lifecycleCallbacks['prePersist']['doStuffOnPrePersist'], 'doStuffOnPrePersist');
-        $this->assertEquals($class->lifecycleCallbacks['postPersist']['doStuffOnPostPersist'], 'doStuffOnPostPersist');
+        $expectedLifecycleCallbacks = array(
+            'prePersist' => array('doStuffOnPrePersist'),
+            'postPersist' => array('doStuffOnPrePersist', 'doOtherStuffOnPrePersistToo'),
+        );
+
+        $this->assertEquals($expectedLifecycleCallbacks, $class->lifecycleCallbacks);
 
         return $class;
     }
 
     /**
      * @depends testLifecycleCallbacks
-     * @param ClassMetadata $class
-     */
-    public function testLifecycleCallbacksSupportMultipleMethodNames($class)
-    {
-        $this->assertEquals(count($class->lifecycleCallbacks['prePersist']), 2);
-        $this->assertEquals($class->lifecycleCallbacks['prePersist']['doOtherStuffOnPrePersistToo'], 'doOtherStuffOnPrePersistToo');
-
-        return $class;
-    }
-
-    /**
-     * @depends testLifecycleCallbacksSupportMultipleMethodNames
      * @param ClassMetadata $class
      */
     public function testCustomFieldName($class)
