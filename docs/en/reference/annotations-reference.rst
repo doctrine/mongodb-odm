@@ -570,8 +570,8 @@ Alias of @Field, with "type" attribute set to
 ---
 
 The annotated instance variable will be marked as document
-identifier. This annotation is a marker only and has no required or
-optional attributes.
+identifier. If you don’t want to use the default MongoId you may set 
+:ref:`strategy attribute <basic_mapping_identifiers>`. 
 
 Example:
 
