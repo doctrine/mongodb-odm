@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Proxy;
 
-use Doctrine\Common\Persistence\Proxy as BaseProxy;
+use Doctrine\Common\Proxy\Proxy as BaseProxy;
 
 /**
  * Document Proxy interface.

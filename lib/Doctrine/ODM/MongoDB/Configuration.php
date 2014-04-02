@@ -170,7 +170,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Gets a boolean flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
      *
-     * @return boolean
+     * @return boolean|integer
      */
     public function getAutoGenerateProxyClasses()
     {
@@ -182,7 +182,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Sets a boolean flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
      *
-     * @param boolean $bool
+     * @param boolean|int $bool Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory
      */
     public function setAutoGenerateProxyClasses($bool)
     {
