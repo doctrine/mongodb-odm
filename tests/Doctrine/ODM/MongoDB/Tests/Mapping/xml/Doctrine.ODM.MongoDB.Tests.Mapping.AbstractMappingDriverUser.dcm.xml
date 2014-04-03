@@ -17,7 +17,7 @@
         <indexes>
             <index unique="true">
                 <key name="username" order="desc" />
-                <option name="dropDups" value="true" />
+                <option name="dropDups" value="false" />
             </index>
         </indexes>
         <reference-one target-document="Address" field="address">

@@ -25,6 +25,7 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
         username: desc
       options:
         unique: true
+        dropDups: false
     index2:
       keys:
         email: desc

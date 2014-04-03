@@ -249,6 +249,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
         $this->assertTrue(isset($class->indexes[0]['keys']['username']));
         $this->assertEquals(-1, $class->indexes[0]['keys']['username']);
         $this->assertTrue(isset($class->indexes[0]['options']['unique']));
+        $this->assertEquals(true, $class->indexes[0]['options']['unique']);
+        $this->assertTrue(isset($class->indexes[0]['options']['dropDups']));
+        $this->assertEquals(false, $class->indexes[0]['options']['dropDups']);
 
         $this->assertTrue(isset($class->indexes[1]['keys']['email']));
         $this->assertEquals(-1, $class->indexes[1]['keys']['email']);
@@ -285,7 +288,7 @@ class AbstractMappingDriverUser
 
     /**
      * @ODM\String(name="username")
-     * @ODM\Index(order="desc")
+     * @ODM\UniqueIndex(order="desc", dropDups=false)
      */
     public $name;
 
@@ -426,7 +429,7 @@ class AbstractMappingDriverUser
                 'work' => 'WorkPhonenumber',
            ),
         ));
-        $metadata->addIndex(array('username' => 'desc'), array('unique' => true));
+        $metadata->addIndex(array('username' => 'desc'), array('unique' => true, 'dropDups' => false));
         $metadata->addIndex(array('email' => 'desc'), array('unique' => true, 'dropDups' => true));
         $metadata->addIndex(array('mysqlProfileId' => 'desc'), array('unique' => true, 'dropDups' => true));
     }
