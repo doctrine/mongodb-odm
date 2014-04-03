@@ -343,6 +343,8 @@ class XmlDriver extends FileDriver
                     $value = true;
                 } elseif ($value === 'false') {
                     $value = false;
+                } elseif (is_numeric($value)) {
+                    $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
                 }
                 $options[(string) $option['name']] = $value;
             }
