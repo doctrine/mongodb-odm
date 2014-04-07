@@ -235,10 +235,11 @@ class SchemaManager
         }
         if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
+            $safeOption = (version_compare(phpversion("mongo"), "1.3.0", ">="))?"w":"safe";
+
             foreach ($indexes as $index) {
-                // TODO: Use "w" for driver versions >= 1.3.0
-                if ( ! isset($index['options']['safe'])) {
-                    $index['options']['safe'] = true;
+                if ( ! isset($index['options'][$safeOption])) {
+                    $index['options'][$safeOption] = true;
                 }
                 if ( ! isset($index['options']['timeout']) && isset($timeout)) {
                     $index['options']['timeout'] = $timeout;
