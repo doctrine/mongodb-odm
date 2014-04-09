@@ -359,7 +359,6 @@ class DocumentPersister
                     $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 }
-                $options['safe'] = true;
             }
 
             // Include locking logic so that if the document object in memory is currently
@@ -397,7 +396,6 @@ class DocumentPersister
 
         if ($this->class->isLockable) {
             $query[$this->class->lockField] = array('$exists' => false);
-            $options['safe'] = true;
         }
 
         $result = $this->collection->remove($query, $options);
