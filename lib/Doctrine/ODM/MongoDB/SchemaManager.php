@@ -236,14 +236,19 @@ class SchemaManager
         if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
+                $keys = $index['keys'];
+                $options = $index['options'];
+
                 // TODO: Use "w" for driver versions >= 1.3.0
-                if ( ! isset($index['options']['safe'])) {
-                    $index['options']['safe'] = true;
+                if ( ! isset($options['safe'])) {
+                    $options['safe'] = true;
                 }
-                if ( ! isset($index['options']['timeout']) && isset($timeout)) {
-                    $index['options']['timeout'] = $timeout;
+
+                if ( ! isset($options['timeout']) && isset($timeout)) {
+                    $options['timeout'] = $timeout;
                 }
-                $collection->ensureIndex($index['keys'], $index['options']);
+
+                $collection->ensureIndex($keys, $options);
             }
         }
     }
