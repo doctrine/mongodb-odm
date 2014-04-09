@@ -17,7 +17,7 @@ class MODM56Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $childTwo = new MODM56Child('Child Two');
         $parent->children[] = $childTwo;
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
 
         $test = $this->dm->getDocumentCollection(__NAMESPACE__.'\MODM56Parent')->findOne();
 
