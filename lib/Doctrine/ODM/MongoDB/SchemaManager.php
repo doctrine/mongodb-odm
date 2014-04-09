@@ -239,9 +239,19 @@ class SchemaManager
                 $keys = $index['keys'];
                 $options = $index['options'];
 
-                // TODO: Use "w" for driver versions >= 1.3.0
-                if ( ! isset($options['safe'])) {
-                    $options['safe'] = true;
+                if ( ! isset($options['safe']) && ! isset($options['w'])) {
+                    if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
+                        $options['safe'] = true;
+                    } else {
+                        $options['w'] = 1;
+                    }
+                }
+
+                if (isset($options['safe']) && ! isset($options['w']) &&
+                    version_compare(phpversion('mongo'), '1.3.0', '>=')) {
+
+                    $options['w'] = is_bool($options['safe']) ? (integer) $options['safe'] : $options['safe'];
+                    unset($options['safe']);
                 }
 
                 if ( ! isset($options['timeout']) && isset($timeout)) {
