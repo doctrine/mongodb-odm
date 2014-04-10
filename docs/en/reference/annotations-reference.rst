@@ -211,12 +211,14 @@ the discriminator field instead of the fully qualified class name.
         // ...
     }
 
+.. _annotation_distance:
+
 @Distance
 ---------
 
-Use the @Distance annotation in combination with geospatial
-indexes and when running $near queries the property will be
-populated with a distance value.
+This annotation can be used in combination with geospatial indexes and the
+:ref:`geoNear() <geonear>` query method to populate the property with the
+calculated distance value.
 
 .. code-block:: php
 
@@ -248,15 +250,16 @@ populated with a distance value.
         public $longitude;
     }
 
-Now you can run a near() query and access the distance. Get the
-closest city to a set of coordinates:
+Now you can run a ``geoNear()`` query and access the computed distance. The
+following example would return the distance of the closest city to the query
+coordinates:
 
 .. code-block:: php
 
     <?php
 
     $city = $this->dm->createQuery('City')
-        ->field('coordinates')->near(50, 60)
+        ->geoNear(50, 60)
         ->limit(1)
         ->getQuery()
         ->getSingleResult();
