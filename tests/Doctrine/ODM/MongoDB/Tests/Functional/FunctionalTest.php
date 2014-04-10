@@ -88,7 +88,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->id = $id;
         $user->hits = 100;
         $this->dm->persist($user);
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection($className)->findOne(array('_id' => $id));
         $this->assertEquals($discriminator, $check['discriminator']);
