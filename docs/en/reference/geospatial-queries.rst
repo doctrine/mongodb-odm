@@ -74,40 +74,43 @@ and latitude with the ``near($longitude, $latitude)`` method:
         ->field('coordinates')->near(-120, 40)
         ->execute();
 
-Distance
---------
+.. _geonear:
 
-When you use the ``near()`` functionality a distance will be
-calculated and placed in the property annotated with
-``@Distance``:
+GeoNear Command
+---------------
 
-.. code-block:: php
-
-    <?php
-
-    foreach ($cities as $city) {
-        echo $city->name.': '.$city->distance."\n";
-    }
-
-GeoNear Query
--------------
-
-You can also execute queries based on spherical geometry to
-provide accurate distances over a sphere such as our planet
-Earth. Using the ``distanceMultiplier`` method you can let
-Mongo do the distance calculation in the measurement of your
-choice. Check for the nearest cities to a given latitude and
-longitude with the ``near($latitude, $longitude)`` method:
+You can also execute the `geoNear command`_ using the query builder's
+``geoNear()`` method. Additional builder methods can be used to set options for
+this command (e.g. ``distanceMultipler()``, ``maxDistance()``, ``spherical()``).
+Unlike ``near()``, which uses a query operator, ``geoNear()`` does not require
+the location field to be specified in the builder, as MongoDB will use the
+single geospatial index for the collection. Documents will be returned in order
+of nearest to farthest.
 
 .. code-block:: php
 
     <?php
 
     $cities = $this->dm->createQuery('City')
-        ->field('coordinates')->geoNear(-120, 40)
+        ->geoNear(-120, 40)
         ->spherical(true)
-        ->distanceMultiplier(6378.137) // Convert from radians with 6378.137 for km and 3963.192 miles
+        // Convert radians to kilometers (use 3963.192 for miles)
+        ->distanceMultiplier(6378.137)
         ->execute();
+
+If the model has a property mapped with :ref:`@Distance <annotation_distance>`,
+that field will be set with the calculated distance between the document and the
+query coordinates.
+
+.. code-block:: php
+
+    <?php
+
+    foreach ($cities as $city) {
+        printf("%s is %f kilometers away.\n", $city->name, $city->distance);
+    }
+
+.. _`geoNear command`: http://docs.mongodb.org/manual/reference/command/geoNear/
 
 Within Box
 ----------
