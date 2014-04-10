@@ -328,8 +328,15 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getDefaultCommitOptions()
     {
-        return isset($this->attributes['defaultCommitOptions']) ?
-            $this->attributes['defaultCommitOptions'] : array('safe' => true);
+        if (isset($this->attributes['defaultCommitOptions'])) {
+            return $this->attributes['defaultCommitOptions'];
+        }
+
+        if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
+            return array('safe' => true);
+        }
+
+        return array('w' => 1);
     }
 
     /**

@@ -236,14 +236,29 @@ class SchemaManager
         if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
-                // TODO: Use "w" for driver versions >= 1.3.0
-                if ( ! isset($index['options']['safe'])) {
-                    $index['options']['safe'] = true;
+                $keys = $index['keys'];
+                $options = $index['options'];
+
+                if ( ! isset($options['safe']) && ! isset($options['w'])) {
+                    if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
+                        $options['safe'] = true;
+                    } else {
+                        $options['w'] = 1;
+                    }
                 }
-                if ( ! isset($index['options']['timeout']) && isset($timeout)) {
-                    $index['options']['timeout'] = $timeout;
+
+                if (isset($options['safe']) && ! isset($options['w']) &&
+                    version_compare(phpversion('mongo'), '1.3.0', '>=')) {
+
+                    $options['w'] = is_bool($options['safe']) ? (integer) $options['safe'] : $options['safe'];
+                    unset($options['safe']);
                 }
-                $collection->ensureIndex($index['keys'], $index['options']);
+
+                if ( ! isset($options['timeout']) && isset($timeout)) {
+                    $options['timeout'] = $timeout;
+                }
+
+                $collection->ensureIndex($keys, $options);
             }
         }
     }

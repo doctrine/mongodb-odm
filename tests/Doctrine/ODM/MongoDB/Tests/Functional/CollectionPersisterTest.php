@@ -13,7 +13,7 @@ class CollectionPersisterTest extends BaseTest
     {
         $persister = $this->getCollectionPersister();
         $user = $this->getTestUser('jwage');
-        $persister->delete($user->phonenumbers, array('safe' => true));
+        $persister->delete($user->phonenumbers, array());
 
         $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
         $this->assertFalse(isset($user['phonenumbers']), 'Test that the phonenumbers field was deleted');
@@ -23,7 +23,7 @@ class CollectionPersisterTest extends BaseTest
     {
         $persister = $this->getCollectionPersister();
         $user = $this->getTestUser('jwage');
-        $persister->delete($user->categories, array('safe' => true));
+        $persister->delete($user->categories, array());
 
         $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
         $this->assertFalse(isset($user['categories']), 'Test that the categories field was deleted');
@@ -34,16 +34,16 @@ class CollectionPersisterTest extends BaseTest
         $persister = $this->getCollectionPersister();
         $user = $this->getTestUser('jwage');
 
-        $persister->delete($user->categories[0]->children[0]->children, array('safe' => true));
-        $persister->delete($user->categories[0]->children[1]->children, array('safe' => true));
+        $persister->delete($user->categories[0]->children[0]->children, array());
+        $persister->delete($user->categories[0]->children[1]->children, array());
 
         $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
 
         $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
         $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
 
-        $persister->delete($user->categories[0]->children, array('safe' => true));
-        $persister->delete($user->categories[1]->children, array('safe' => true));
+        $persister->delete($user->categories[0]->children, array());
+        $persister->delete($user->categories[1]->children, array());
 
         $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
 
@@ -143,7 +143,7 @@ class CollectionPersisterTest extends BaseTest
         $user->categories[0]->children[1]->children[1] = new CollectionPersisterCategory('Child of Category1_1 2');
 
         $this->dm->persist($user);
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush(null, array());
         return $user;
     }
 

@@ -60,7 +60,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $locations = $bar->getLocations();
         $locations->clear();
         $this->assertEquals(0, count($locations));
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
         $this->dm->clear();
         $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
         $locations = $bar->getLocations();
@@ -75,7 +75,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $coll = $this->dm->getDocumentCollection(__NAMESPACE__.'\CreateCollectionTest');
         $insert = array(array(1), array(2), array(3));
-        $coll->batchInsert($insert, array('safe' => true, 'fsync' => true));
+        $coll->batchInsert($insert);
 
         $data = iterator_to_array($coll->find());
         $this->assertEquals(3, count($data));
