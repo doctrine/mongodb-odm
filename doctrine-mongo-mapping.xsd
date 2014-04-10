@@ -61,14 +61,19 @@
     <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
-    <xs:attribute name="unique" type="xs:boolean" />
-    <xs:attribute name="drop-dups" type="xs:boolean" />
-    <xs:attribute name="order" type="xs:NMTOKEN" />
     <xs:attribute name="embed" type="xs:boolean" />
-    <xs:attribute name="sparse" type="xs:boolean" />
     <xs:attribute name="file" type="xs:boolean" />
     <xs:attribute name="distance" type="xs:boolean" />
     <xs:attribute name="reference" type="xs:boolean" />
+    <!-- index options -->
+    <xs:attribute name="background" type="xs:boolean" />
+    <xs:attribute name="drop-dups" type="xs:boolean" />
+    <xs:attribute name="index" type="xs:boolean" />
+    <xs:attribute name="index-name" type="xs:NMTOKEN" />
+    <xs:attribute name="order" type="xs:NMTOKEN" />
+    <xs:attribute name="safe" type="xs:boolean" />
+    <xs:attribute name="sparse" type="xs:boolean" />
+    <xs:attribute name="unique" type="xs:boolean" />
   </xs:complexType>
   
   <xs:complexType name="id-generator-option">

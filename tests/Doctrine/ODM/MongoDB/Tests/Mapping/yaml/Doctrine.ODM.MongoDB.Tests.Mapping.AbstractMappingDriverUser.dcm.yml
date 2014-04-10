@@ -19,12 +19,18 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
       unique:
         dropDups: true
         order: desc
+    createdAt:
+      type: date
+      index:
+        order: asc
+        expireAfterSeconds: 3600
   indexes:
     index1:
       keys:
         username: desc
       options:
         unique: true
+        dropDups: false
     index2:
       keys:
         email: desc
