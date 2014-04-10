@@ -14,10 +14,15 @@
         <field fieldName="name" name="username" type="string" />
         <field fieldName="email" type="string" unique="true" drop-dups="true" order="desc" />
         <field fieldName="mysqlProfileId" type="integer" unique="true" drop-dups="true" order="desc" />
+        <field fieldName="createdAt" type="date" />
         <indexes>
             <index unique="true">
                 <key name="username" order="desc" />
                 <option name="dropDups" value="false" />
+            </index>
+            <index>
+                <key name="createdAt" order="asc" />
+                <option name="expireAfterSeconds" value="3600" />
             </index>
         </indexes>
         <reference-one target-document="Address" field="address">

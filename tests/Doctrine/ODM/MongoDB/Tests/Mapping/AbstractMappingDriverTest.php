@@ -40,7 +40,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testFieldMappings($class)
     {
-        $this->assertEquals(10, count($class->fieldMappings));
+        $this->assertEquals(11, count($class->fieldMappings));
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertTrue(isset($class->fieldMappings['email']));
@@ -115,7 +115,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testAssocations($class)
     {
-        $this->assertEquals(10, count($class->fieldMappings));
+        $this->assertEquals(11, count($class->fieldMappings));
 
         return $class;
     }
@@ -246,28 +246,43 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testIndexes($class)
     {
-        $this->assertTrue(isset($class->indexes[0]['keys']['username']));
-        $this->assertEquals(-1, $class->indexes[0]['keys']['username']);
-        $this->assertTrue(isset($class->indexes[0]['options']['unique']));
-        $this->assertEquals(true, $class->indexes[0]['options']['unique']);
-        $this->assertTrue(isset($class->indexes[0]['options']['dropDups']));
-        $this->assertEquals(false, $class->indexes[0]['options']['dropDups']);
+        $indexes = $class->indexes;
 
-        $this->assertTrue(isset($class->indexes[1]['keys']['email']));
-        $this->assertEquals(-1, $class->indexes[1]['keys']['email']);
-        $this->assertTrue( ! empty($class->indexes[1]['options']));
-        $this->assertTrue(isset($class->indexes[1]['options']['unique']));
-        $this->assertEquals(true, $class->indexes[1]['options']['unique']);
-        $this->assertTrue(isset($class->indexes[1]['options']['dropDups']));
-        $this->assertEquals(true, $class->indexes[1]['options']['dropDups']);
+        /* Sort indexes by their first fieldname. This is necessary since the
+         * index registration order may differ among drivers.
+         */
+        $this->assertTrue(usort($indexes, function(array $a, array $b) {
+            return strcmp(key($a['keys']), key($b['keys']));
+        }));
 
-        $this->assertTrue(isset($class->indexes[2]['keys']['mysqlProfileId']));
-        $this->assertEquals(-1, $class->indexes[2]['keys']['mysqlProfileId']);
-        $this->assertTrue( ! empty($class->indexes[2]['options']));
-        $this->assertTrue(isset($class->indexes[2]['options']['unique']));
-        $this->assertEquals(true, $class->indexes[2]['options']['unique']);
-        $this->assertTrue(isset($class->indexes[2]['options']['dropDups']));
-        $this->assertEquals(true, $class->indexes[2]['options']['dropDups']);
+        $this->assertTrue(isset($indexes[0]['keys']['createdAt']));
+        $this->assertEquals(1, $indexes[0]['keys']['createdAt']);
+        $this->assertTrue( ! empty($indexes[0]['options']));
+        $this->assertTrue(isset($indexes[0]['options']['expireAfterSeconds']));
+        $this->assertSame(3600, $indexes[0]['options']['expireAfterSeconds']);
+
+        $this->assertTrue(isset($indexes[1]['keys']['email']));
+        $this->assertEquals(-1, $indexes[1]['keys']['email']);
+        $this->assertTrue( ! empty($indexes[1]['options']));
+        $this->assertTrue(isset($indexes[1]['options']['unique']));
+        $this->assertEquals(true, $indexes[1]['options']['unique']);
+        $this->assertTrue(isset($indexes[1]['options']['dropDups']));
+        $this->assertEquals(true, $indexes[1]['options']['dropDups']);
+
+        $this->assertTrue(isset($indexes[2]['keys']['mysqlProfileId']));
+        $this->assertEquals(-1, $indexes[2]['keys']['mysqlProfileId']);
+        $this->assertTrue( ! empty($indexes[2]['options']));
+        $this->assertTrue(isset($indexes[2]['options']['unique']));
+        $this->assertEquals(true, $indexes[2]['options']['unique']);
+        $this->assertTrue(isset($indexes[2]['options']['dropDups']));
+        $this->assertEquals(true, $indexes[2]['options']['dropDups']);
+
+        $this->assertTrue(isset($indexes[3]['keys']['username']));
+        $this->assertEquals(-1, $indexes[3]['keys']['username']);
+        $this->assertTrue(isset($indexes[3]['options']['unique']));
+        $this->assertEquals(true, $indexes[3]['options']['unique']);
+        $this->assertTrue(isset($indexes[3]['options']['dropDups']));
+        $this->assertEquals(false, $indexes[3]['options']['dropDups']);
 
         return $class;
     }
@@ -278,6 +293,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
  * @ODM\DiscriminatorField(fieldName="discr")
  * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser"})
  * @ODM\HasLifecycleCallbacks
+ * @ODM\Indexes(@ODM\Index(keys={"createdAt"="asc"},expireAfterSeconds=3600))
  */
 class AbstractMappingDriverUser
 {
@@ -333,6 +349,11 @@ class AbstractMappingDriverUser
      * @ODM\EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"})
      */
     public $otherPhonenumbers;
+
+    /**
+     * @ODM\Date
+     */
+    public $createdAt;
 
     /**
      * @ODM\PrePersist
@@ -432,5 +453,6 @@ class AbstractMappingDriverUser
         $metadata->addIndex(array('username' => 'desc'), array('unique' => true, 'dropDups' => false));
         $metadata->addIndex(array('email' => 'desc'), array('unique' => true, 'dropDups' => true));
         $metadata->addIndex(array('mysqlProfileId' => 'desc'), array('unique' => true, 'dropDups' => true));
+        $metadata->addIndex(array('createdAt' => 'asc'), array('expireAfterSeconds' => 3600));
     }
 }
