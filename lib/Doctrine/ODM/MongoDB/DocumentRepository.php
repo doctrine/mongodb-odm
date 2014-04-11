@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Countable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
@@ -37,7 +38,7 @@ use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class DocumentRepository implements ObjectRepository, Selectable
+class DocumentRepository implements Countable, ObjectRepository, Selectable
 {
     /**
      * @var string
@@ -90,6 +91,19 @@ class DocumentRepository implements ObjectRepository, Selectable
     public function clear()
     {
         $this->dm->clear($this->class->rootDocumentName);
+    }
+    
+    /**
+     * Performs count query (query is prepopulated for this document name)
+     * 
+     * @return int
+     */
+    public function count()
+    {
+        return $this->createQueryBuilder()
+                ->count()
+                ->getQuery()
+                ->execute();
     }
 
     /**
