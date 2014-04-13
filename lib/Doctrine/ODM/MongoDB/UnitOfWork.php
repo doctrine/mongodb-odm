@@ -2294,7 +2294,7 @@ class UnitOfWork implements PropertyChangedListener
                 unset($this->documentInsertions[$oid], $this->documentUpdates[$oid],
                     $this->documentDeletions[$oid], $this->documentIdentifiers[$oid],
                     $this->documentStates[$oid], $this->originalDocumentData[$oid],
-                    $this->parentAssociations[$oid]);
+                    $this->parentAssociations[$oid], $this->documentUpserts[$oid]);
                 break;
             case self::STATE_NEW:
             case self::STATE_DETACHED:
