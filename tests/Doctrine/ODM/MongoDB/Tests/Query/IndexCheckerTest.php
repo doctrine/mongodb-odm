@@ -85,6 +85,8 @@ class IndexCheckerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array($indexes, array('a' => 1, 'c' => 1), array('b'), false, true),
             array($indexes, array('a' => 1, 'b' => 1, 'c' => 1, 'd' => 1), array(), true, true),
             array($indexes, array('b' => 1, 'c' => 1, 'd' => 1), array('a'), true, true),
+            array($indexes, array('a' => 1), array('c'), true, true),
+            array($indexes, array('a' => 1), array('c'), false, true),
         );
     }
     

@@ -73,7 +73,7 @@ class IndexChecker
      * 
      * @return true|MongoDbException
      */
-    public function isQueryIndexed()
+    public function run()
     {
         // $or clausules executes in parallel and may use other index
         $orClauses = $this->query->getFieldExtractor()->getOrClauses();
@@ -204,6 +204,9 @@ class IndexChecker
             }
             if (!$this->allowLessEfficientIndexes) {
                 foreach ($matchedPositions as $i => $expected) {
+                    if ($i > $currentIndexPosition) {
+                        break; // index is ok, later $expected will come from $prefixPrepend
+                    }
                     if ($i !== $expected) {
                         continue 2; // prefix is not continuous subset
                     }

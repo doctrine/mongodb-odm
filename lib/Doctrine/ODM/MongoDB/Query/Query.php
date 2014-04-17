@@ -203,18 +203,25 @@ class Query extends \Doctrine\MongoDB\Query\Query
     }
 
     /**
-     * Check if this query is indexed.
+     * Check if this query is indexed. Kept for BC
      *
      * @param $returnBooleanInsteadOfException method will return false when query is not indexed
-     * @return boolean|MongoException
+     * @return boolean
      */
-    public function isIndexed($returnBooleanInsteadOfException = true)
+    public function isIndexed()
+    {
+        return $this->runIndexChecker() === true;
+    }
+    
+    /**
+     * Check if this query is indexed.
+     *
+     * @return true|MongoException
+     */
+    public function runIndexChecker()
     {
         $indexChecker = new IndexChecker($this, $this->collection, $this->areLessEfficientIndexesAllowed());
-        $verdict = $indexChecker->isQueryIndexed();
-        if ($returnBooleanInsteadOfException) {
-            return $verdict === true; // BC
-        }
+        $verdict = $indexChecker->run();
         return $verdict;
     }
 
@@ -246,7 +253,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function execute()
     {
         if ($this->isIndexRequired()) {
-            $verdict = $this->isIndexed(false);
+            $verdict = $this->runIndexChecker();
             if ($verdict !== true)
                 throw $verdict;
         }

@@ -168,7 +168,7 @@ class FieldExtractor
      * Gets find criteria withour $or clauses
      * 
      * @param array $query to start with
-     * @return type
+     * @return array
      */
     public function getQueryWithoutOrClauses($query = null)
     {
@@ -206,8 +206,8 @@ class FieldExtractor
      * Gets fields involved in $elemMatch
      * 
      * @param array $elemMatch
-     * @param type $onlyEqualityConditions
-     * @return type
+     * @param boolean $onlyEqualityConditions
+     * @return array
      */
     private function getFieldsFromElemMatch(array $elemMatch, $onlyEqualityConditions = false)
     {
