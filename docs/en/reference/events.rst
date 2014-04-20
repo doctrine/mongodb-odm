@@ -177,7 +177,7 @@ the life-time of their registered documents.
    its state cleared.
 
 You can access the Event constants from the ``Events`` class in the
-ORM package.
+ODM package.
 
 .. code-block:: php
 
