@@ -142,7 +142,8 @@ class DocumentManager implements ObjectManager
      * @param Configuration|null $config
      * @param \Doctrine\Common\EventManager|null $eventManager
      */
-    protected function __construct(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null) {
+    protected function __construct(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
+    {
         $this->config = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
         $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
