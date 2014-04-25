@@ -129,11 +129,15 @@ class GH861EventListener
     private function refreshHeroNbVideos(LifecycleEventArgs $eventArgs)
     {
         $document = $eventArgs->getDocument();
+        $dm = $eventArgs->getDocumentManager();
+
         if (!$document || !$document instanceof Hero) {
             return;
         }
 
         $document->setNbVideos(count($document->getVideos()));
+        $class = $dm->getClassMetadata(get_class($document));
+        $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $document);
     }
 }
 
