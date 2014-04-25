@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\MongoDB\Event\UpdateEventArgs;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -135,9 +136,13 @@ class GH861EventListener
             return;
         }
 
+        $isUpdate = $eventArgs instanceof UpdateEventArgs;
+
         $document->setNbVideos(count($document->getVideos()));
         $class = $dm->getClassMetadata(get_class($document));
-        $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $document);
+        if ($isUpdate) {
+            $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $document);
+        }
     }
 }
 
