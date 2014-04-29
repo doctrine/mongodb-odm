@@ -664,7 +664,7 @@ class DocumentPersister
 
             // only query for the referenced object if it is not already initialized or the collection is sorted
             if (($reference instanceof Proxy && ! $reference->__isInitialized__) || $sorted) {
-                $groupedIds[$className][$id] = $mongoId;
+                $groupedIds[$className][] = $mongoId;
             }
         }
         foreach ($groupedIds as $className => $ids) {
@@ -692,7 +692,7 @@ class DocumentPersister
             if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
                 $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
             }
-            $documents = $cursor->toArray();
+            $documents = $cursor->toArray(false);
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById($documentData['_id'], $class);
                 $data = $this->hydratorFactory->hydrate($document, $documentData);
@@ -708,14 +708,9 @@ class DocumentPersister
     private function loadReferenceManyCollectionInverseSide(PersistentCollection $collection)
     {
         $query = $this->createReferenceManyInverseSideQuery($collection);
-        $documents = $query->execute()->toArray();
-        $mapping = $collection->getMapping();
+        $documents = $query->execute()->toArray(false);
         foreach ($documents as $key => $document) {
-            if ($mapping['strategy'] === 'set') {
-                $collection->set($key, $document);
-            } else {
-                $collection->add($document);
-            }
+            $collection->add($document);
         }
     }
 
@@ -764,7 +759,7 @@ class DocumentPersister
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
     {
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
-        $documents = $cursor->toArray();
+        $documents = $cursor->toArray(false);
         foreach ($documents as $document) {
             $collection->add($document);
         }
