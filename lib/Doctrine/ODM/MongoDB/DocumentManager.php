@@ -675,7 +675,7 @@ class DocumentManager implements ObjectManager
      * Returns a DBRef array for the supplied document.
      *
      * @param mixed $document A document object
-     * @param array $referenceMapping Mapping for the field the references the document
+     * @param array $referenceMapping Mapping for the field that references the document
      *
      * @throws \InvalidArgumentException
      * @return array A DBRef array
