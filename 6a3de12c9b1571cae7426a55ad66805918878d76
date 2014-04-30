@@ -1,1 +1,1 @@
-Fixes doctrine/mongodb-odm#646
+Fixes https://github.com/doctrine/mongodb-odm/issues/646
