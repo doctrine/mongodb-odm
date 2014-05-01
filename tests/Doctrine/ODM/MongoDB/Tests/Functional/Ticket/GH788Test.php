@@ -89,6 +89,42 @@ class GH788Test extends BaseTest
         $this->assertEquals('unlisted', $collection[1]->name);
     }
 
+    public function testEmbedOneWithExternalDiscriminatorMap()
+    {
+        $doc = new GH788Document();
+
+        $unlisted = new GH788ExternEmbedUnlisted();
+        $unlisted->name = 'unlisted';
+        $doc->externEmbedOne = $unlisted;
+
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $doc = $this->dm->find(get_class($doc), $doc->id);
+
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788ExternEmbedUnlisted', $doc->externEmbedOne);
+        $this->assertEquals('unlisted', $doc->externEmbedOne->name);
+    }
+
+    public function testEmbedOneWithInlineDiscriminatorMap()
+    {
+        $doc = new GH788Document();
+
+        $unlisted = new GH788InlineEmbedUnlisted();
+        $unlisted->name = 'unlisted';
+        $doc->inlineEmbedOne = $unlisted;
+
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $doc = $this->dm->find(get_class($doc), $doc->id);
+
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788InlineEmbedUnlisted', $doc->inlineEmbedOne);
+        $this->assertEquals('unlisted', $doc->inlineEmbedOne->name);
+    }
+
     public function testRefManyWithExternalDiscriminatorMap()
     {
         $doc = new GH788Document();
@@ -144,6 +180,44 @@ class GH788Test extends BaseTest
         $this->assertEquals($unlisted->id, $collection[1]->id);
         $this->assertEquals('unlisted', $collection[1]->name);
     }
+
+    public function testRefOneWithExternalDiscriminatorMap()
+    {
+        $doc = new GH788Document();
+
+        $unlisted = new GH788ExternRefUnlisted();
+        $unlisted->name = 'unlisted';
+        $doc->externRefOne = $unlisted;
+
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $doc = $this->dm->find(get_class($doc), $doc->id);
+
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788ExternRefUnlisted', $doc->externRefOne);
+        $this->assertEquals($unlisted->id, $doc->externRefOne->id);
+        $this->assertEquals('unlisted', $doc->externRefOne->name);
+    }
+
+    public function testRefOneWithInlineDiscriminatorMap()
+    {
+        $doc = new GH788Document();
+
+        $unlisted = new GH788InlineRefUnlisted();
+        $unlisted->name = 'unlisted';
+        $doc->inlineRefOne = $unlisted;
+
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $doc = $this->dm->find(get_class($doc), $doc->id);
+
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788InlineRefUnlisted', $doc->inlineRefOne);
+        $this->assertEquals($unlisted->id, $doc->inlineRefOne->id);
+        $this->assertEquals('unlisted', $doc->inlineRefOne->name);
+    }
 }
 
 /** @ODM\Document */
@@ -155,8 +229,14 @@ class GH788Document
     /** @ODM\EmbedMany(targetDocument="GH788ExternEmbedListed") */
     public $externEmbedMany;
 
+    /** @ODM\EmbedOne(targetDocument="GH788ExternEmbedListed") */
+    public $externEmbedOne;
+
     /** @ODM\ReferenceMany(targetDocument="GH788ExternRefListed", cascade="all") */
     public $externRefMany;
+
+    /** @ODM\ReferenceOne(targetDocument="GH788ExternRefListed", cascade="all") */
+    public $externRefOne;
 
     /**
      * @ODM\EmbedMany(
@@ -169,6 +249,16 @@ class GH788Document
     public $inlineEmbedMany;
 
     /**
+     * @ODM\EmbedOne(
+     *   discriminatorField="type",
+     *   discriminatorMap={
+     *     "b"="GH788InlineEmbedListed"
+     *   }
+     * )
+     */
+    public $inlineEmbedOne;
+
+    /**
      * @ODM\ReferenceMany(
      *   discriminatorField="type",
      *   discriminatorMap={
@@ -178,6 +268,17 @@ class GH788Document
      * )
      */
     public $inlineRefMany;
+
+    /**
+     * @ODM\ReferenceOne(
+     *   discriminatorField="type",
+     *   discriminatorMap={
+     *     "c"="GH788InlineRefListed"
+     *   },
+     *   cascade="all"
+     * )
+     */
+    public $inlineRefOne;
 
     public function __construct()
     {
