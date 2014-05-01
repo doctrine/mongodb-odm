@@ -89,6 +89,32 @@ class GH788Test extends BaseTest
         $this->assertEquals('unlisted', $collection[1]->name);
     }
 
+    public function testEmbedManyWithNoTargetAndExternalDiscriminatorMap()
+    {
+        $doc = new GH788Document();
+
+        $listed = new GH788ExternEmbedListed();
+        $listed->name = 'listed';
+        $doc->noTargetEmbedMany[] = $listed;
+
+        $unlisted = new GH788ExternEmbedUnlisted();
+        $unlisted->name = 'unlisted';
+        $doc->noTargetEmbedMany[] = $unlisted;
+
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $collection = $doc->noTargetEmbedMany;
+
+        $this->assertCount(2, $collection);
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788ExternEmbedListed', $collection[0]);
+        $this->assertEquals('listed', $collection[0]->name);
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788ExternEmbedUnlisted', $collection[1]);
+        $this->assertEquals('unlisted', $collection[1]->name);
+    }
+
     public function testEmbedOneWithExternalDiscriminatorMap()
     {
         $doc = new GH788Document();
@@ -123,6 +149,24 @@ class GH788Test extends BaseTest
 
         $this->assertInstanceOf(__NAMESPACE__.'\GH788InlineEmbedUnlisted', $doc->inlineEmbedOne);
         $this->assertEquals('unlisted', $doc->inlineEmbedOne->name);
+    }
+
+    public function testEmbedOneWithNoTargetAndExternalDiscriminatorMap()
+    {
+        $doc = new GH788Document();
+
+        $unlisted = new GH788ExternEmbedUnlisted();
+        $unlisted->name = 'unlisted';
+        $doc->noTargetEmbedOne = $unlisted;
+
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $doc = $this->dm->find(get_class($doc), $doc->id);
+
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788ExternEmbedUnlisted', $doc->noTargetEmbedOne);
+        $this->assertEquals('unlisted', $doc->noTargetEmbedOne->name);
     }
 
     public function testRefManyWithExternalDiscriminatorMap()
@@ -181,6 +225,34 @@ class GH788Test extends BaseTest
         $this->assertEquals('unlisted', $collection[1]->name);
     }
 
+    public function testRefManyWithNoTargetAndExternalDiscriminatorMap()
+    {
+        $doc = new GH788Document();
+
+        $listed = new GH788ExternRefListed();
+        $listed->name = 'listed';
+        $doc->noTargetRefMany[] = $listed;
+
+        $unlisted = new GH788ExternRefUnlisted();
+        $unlisted->name = 'unlisted';
+        $doc->noTargetRefMany[] = $unlisted;
+
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $collection = $doc->noTargetRefMany;
+
+        $this->assertCount(2, $collection);
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788ExternRefListed', $collection[0]);
+        $this->assertEquals($listed->id, $collection[0]->id);
+        $this->assertEquals('listed', $collection[0]->name);
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788ExternRefUnlisted', $collection[1]);
+        $this->assertEquals($unlisted->id, $collection[1]->id);
+        $this->assertEquals('unlisted', $collection[1]->name);
+    }
+
     public function testRefOneWithExternalDiscriminatorMap()
     {
         $doc = new GH788Document();
@@ -217,6 +289,25 @@ class GH788Test extends BaseTest
         $this->assertInstanceOf(__NAMESPACE__.'\GH788InlineRefUnlisted', $doc->inlineRefOne);
         $this->assertEquals($unlisted->id, $doc->inlineRefOne->id);
         $this->assertEquals('unlisted', $doc->inlineRefOne->name);
+    }
+
+    public function testRefOneWithNoTargetAndExternalDiscriminatorMap()
+    {
+        $doc = new GH788Document();
+
+        $unlisted = new GH788ExternRefUnlisted();
+        $unlisted->name = 'unlisted';
+        $doc->noTargetRefOne = $unlisted;
+
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $doc = $this->dm->find(get_class($doc), $doc->id);
+
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788ExternRefUnlisted', $doc->noTargetRefOne);
+        $this->assertEquals($unlisted->id, $doc->noTargetRefOne->id);
+        $this->assertEquals('unlisted', $doc->noTargetRefOne->name);
     }
 }
 
@@ -280,12 +371,26 @@ class GH788Document
      */
     public $inlineRefOne;
 
+    /** @ODM\EmbedMany */
+    public $noTargetEmbedMany;
+
+    /** @ODM\EmbedOne */
+    public $noTargetEmbedOne;
+
+    /** @ODM\ReferenceMany(cascade="all") */
+    public $noTargetRefMany;
+
+    /** @ODM\ReferenceOne(cascade="all") */
+    public $noTargetRefOne;
+
     public function __construct()
     {
         $this->externEmbedMany = new ArrayCollection();
         $this->externRefMany = new ArrayCollection();
         $this->inlineEmbedMany = new ArrayCollection();
         $this->inlineRefMany = new ArrayCollection();
+        $this->noTargetEmbedMany = new ArrayCollection();
+        $this->noTargetRefMany = new ArrayCollection();
     }
 }
 
