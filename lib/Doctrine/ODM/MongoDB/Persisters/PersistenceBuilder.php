@@ -419,8 +419,14 @@ class PersistenceBuilder
             $embeddedDocumentValue[$discriminatorField] = $discriminatorValue;
         }
 
-        if ($class->hasDiscriminator()) {
-            $embeddedDocumentValue[$class->discriminatorField] = $class->discriminatorValue;
+        /* If the class has a discriminator (field and value), use it. A child
+         * class that is not defined in the discriminator map may only have a
+         * discriminator field and no value, so default to the full class name.
+         */
+        if (isset($class->discriminatorField)) {
+            $embeddedDocumentValue[$class->discriminatorField] = isset($class->discriminatorValue)
+                ? $class->discriminatorValue
+                : $class->name;
         }
 
         // Ensure empty embedded documents are stored as BSON objects

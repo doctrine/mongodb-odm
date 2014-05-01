@@ -675,7 +675,7 @@ class DocumentManager implements ObjectManager
      * Returns a DBRef array for the supplied document.
      *
      * @param mixed $document A document object
-     * @param array $referenceMapping Mapping for the field the references the document
+     * @param array $referenceMapping Mapping for the field that references the document
      *
      * @throws \InvalidArgumentException
      * @return array A DBRef array
@@ -705,8 +705,14 @@ class DocumentManager implements ObjectManager
             '$db'  => $this->getDocumentDatabase($class->name)->getName(),
         );
 
-        if ($class->hasDiscriminator()) {
-            $dbRef[$class->discriminatorField] = $class->discriminatorValue;
+        /* If the class has a discriminator (field and value), use it. A child
+         * class that is not defined in the discriminator map may only have a
+         * discriminator field and no value, so default to the full class name.
+         */
+        if (isset($class->discriminatorField)) {
+            $dbRef[$class->discriminatorField] = isset($class->discriminatorValue)
+                ? $class->discriminatorValue
+                : $class->name;
         }
 
         /* Add a discriminator value if the referenced document is not mapped
