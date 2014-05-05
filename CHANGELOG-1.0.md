@@ -15,6 +15,51 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
+1.0.0-BETA10 (2014-05-05)
+-------------------------
+
+All issues and pull requests in this release may be found under the
+[1.0.0-BETA10 milestone](https://github.com/doctrine/mongodb-odm/issues?milestone=2&state=closed).
+
+### Improved support for differentiating identifier types and non-scalar values
+
+ODM previously required that documents use scalar identifier values. Also, the
+identity map, which UnitOfWork uses to track managed documents, was unable to
+differentiate between numeric strings and actual numeric types. After internal
+refactoring in [#444](https://github.com/doctrine/mongodb-odm/pull/444), it
+should now be possible to use complex types such as MongoBinData and associative
+arrays (i.e. `hash` type) and the identity map should no longer confuse strings
+and numeric types. Embedded documents and references are still not supported as
+identifier values.
+
+### Classes not listed in discriminator maps
+
+When a discriminator map is used, ODM will store the object's short key instead
+of its FQCN in the discriminator field. Previously, ODM might leave that field
+blank when dealing with a class that was not defined in the map. ODM will now
+fall back to storing the FQCN in this case. This primarily affects embedded
+documents and references.
+
+### Criteria API
+
+The base DocumentRepository class now implements the Selectable interface from
+the Criteria API in Doctrine Collections 1.1. This brings some consistency with
+ORM; however, ODM's PersistentCollection class does not yet support Selectable.
+This functionality was introduced in
+[#699](https://github.com/doctrine/mongodb-odm/pull/699).
+
+#### Read preferences and Cursor refactoring
+
+ODM's Cursor class was refactored to compose the Doctrine MongoDB Cursor. It
+still extends the base class for backwards compatibility, but methods are now
+proxied rather than simply overridden. This solved a few bugs where the cursor
+states might become inconsistent.
+
+With this refactoring, ODM now has proper support for read preferences in its
+query builder and the UnitOfWork hints, which previously only supported the
+deprecated `slaveOkay` option. Much of this work was implemented in
+[#565](https://github.com/doctrine/mongodb-odm/pull/565).
+
 #### DocumentRepository findAll() and findBy()
 
 The `findAll()` and `findBy()` methods in DocumentRepository previously returned
@@ -24,7 +69,7 @@ numerically indexed array. The change also affects the magic repository methods,
 which utilize `findBy()` internally. If users require a Cursor, they should
 utilize the query builder or a custom repository method.
 
-#### Lifecycle Callbacks and AlsoLoad
+#### Lifecycle callbacks and AlsoLoad
 
 The `@HasLifecycleCallbacks` class annotation is now required for lifecycle
 annotations on methods *declared within that class* to be registered. If a
@@ -46,7 +91,7 @@ BinDataType's previous subtype, `2`, is available via the BinDataByteArrayType
 class (type `bin_bytearray`); however, users should note that subtype `2` is
 deprecated in the [BSON specification](http://bsonspec.org/#/specification).
 
-#### Priming References
+#### Priming references
 
 `Builder::prime()` now allows any callable to be registered, where previously
 only Closures were supported. The method will throw an InvalidArgumentException
