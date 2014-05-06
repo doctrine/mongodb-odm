@@ -284,7 +284,7 @@ class User extends BaseDocument
     {
         foreach ($this->posts as $key => $post) {
             if ($post->getId() === $id) {
-                unset($this->groups[$key]);
+                unset($this->posts[$key]);
                 return true;
             }
         }
