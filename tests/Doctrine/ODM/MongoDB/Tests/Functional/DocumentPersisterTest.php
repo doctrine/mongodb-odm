@@ -41,6 +41,22 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($originalData, $updatedData);
     }
 
+    public function testExistsReturnsTrueForExistentDocuments()
+    {
+        foreach (array('a', 'b', 'c', 'd') as $name) {
+            $document = $this->documentPersister->load(array('name' => $name));
+            $this->assertTrue($this->documentPersister->exists($document));
+        }
+    }
+
+    public function testExistsReturnsFalseForNonexistentDocuments()
+    {
+        $document = new DocumentPersisterTestDocument();
+        $document->id = new \MongoId();
+
+        $this->assertFalse($this->documentPersister->exists($document));
+    }
+
     public function testLoadPreparesCriteriaAndSort()
     {
         $criteria = array('name' => array('$in' => array('a', 'b')));

@@ -523,7 +523,7 @@ class DocumentPersister
     public function exists($document)
     {
         $id = $this->class->getIdentifierObject($document);
-        return (boolean) $this->collection->findOne(array(array('_id' => $id)), array('_id'));
+        return (boolean) $this->collection->findOne(array('_id' => $id), array('_id'));
     }
 
     /**
