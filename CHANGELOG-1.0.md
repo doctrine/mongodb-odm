@@ -21,7 +21,7 @@ To generate a changelog summary since the last version, run
 All issues and pull requests in this release may be found under the
 [1.0.0-BETA10 milestone](https://github.com/doctrine/mongodb-odm/issues?milestone=2&state=closed).
 
-### Improved support for differentiating identifier types and non-scalar values
+#### Improved support for differentiating identifier types and non-scalar values
 
 ODM previously required that documents use scalar identifier values. Also, the
 identity map, which UnitOfWork uses to track managed documents, was unable to
@@ -32,7 +32,7 @@ arrays (i.e. `hash` type) and the identity map should no longer confuse strings
 and numeric types. Embedded documents and references are still not supported as
 identifier values.
 
-### Classes not listed in discriminator maps
+#### Classes not listed in discriminator maps
 
 When a discriminator map is used, ODM will store the object's short key instead
 of its FQCN in the discriminator field. Previously, ODM might leave that field
@@ -40,7 +40,7 @@ blank when dealing with a class that was not defined in the map. ODM will now
 fall back to storing the FQCN in this case. This primarily affects embedded
 documents and references.
 
-### Criteria API
+#### Criteria API
 
 The base DocumentRepository class now implements the Selectable interface from
 the Criteria API in Doctrine Collections 1.1. This brings some consistency with
