@@ -75,7 +75,9 @@ The `@HasLifecycleCallbacks` class annotation is now required for lifecycle
 annotations on methods *declared within that class* to be registered. If a
 parent and child close both register the same lifecycle callback, ODM will only
 invoke it once. Previously, the same callback could be registered and invoked
-multiple times (see #427, #474, and #695).
+multiple times (see [#427](https://github.com/doctrine/mongodb-odm/pull/427),
+[#474](https://github.com/doctrine/mongodb-odm/pull/474), and
+[#695](https://github.com/doctrine/mongodb-odm/pull/695)).
 
 The `@AlsoLoad` method annotation does not require `@HasLifecycleCallbacks` on
 the class in which it is declared. If the method considers multiple fields, it
