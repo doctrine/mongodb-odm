@@ -281,7 +281,7 @@ its dependencies. The easiest way to do this is with `Composer`_:
 
 ::
 
-    $ composer require "doctrine/mongodb-odm=~1.0.0-BETA9@dev"
+    $ composer require "doctrine/mongodb-odm=~1.0.0-BETA10@dev"
 
 Once ODM and its dependencies have been downloaded, we can begin by creating a
 ``bootstrap.php`` file in our project's root directory, where Composer's
