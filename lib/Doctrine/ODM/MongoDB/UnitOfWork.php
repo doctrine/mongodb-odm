@@ -2133,6 +2133,12 @@ class UnitOfWork implements PropertyChangedListener
             $prevClass = $this->dm->getClassMetadata(get_class($prevManagedCopy));
 
             if ($assoc['type'] === 'one') {
+                $oldManagedCopy = $prevClass->reflFields[$assocField]->getValue($prevManagedCopy);
+                if (is_object($oldManagedCopy)) {
+                    // remove the current managed copy as it gets replaced with the setValue() call
+                    $subVisited = array();
+                    $this->doDetach($oldManagedCopy, $subVisited);
+                }
                 $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
             } else {
                 $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
