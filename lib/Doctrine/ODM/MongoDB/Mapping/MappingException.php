@@ -151,4 +151,14 @@ class MappingException extends BaseMappingException
     {
         return new self("Cascade on $className::$fieldName is not allowed.");
     }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function missingDiscriminatorFieldFromQueryProjection($className, $fieldName)
+    {
+        return new self("The class $className is an abstract class therefore we can not instantiate it without having the discriminator field `$fieldName` value present, may be missing from query projection.");
+    }
 }
