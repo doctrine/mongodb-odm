@@ -4,9 +4,9 @@ CHANGELOG for 1.0.x
 This changelog references the relevant changes done in 1.0 minor versions.
 
 To get the diff for a specific change, go to
-https://github.com/doctrine/mongodb/commit/XXX where XXX is the commit hash.
+https://github.com/doctrine/mongodb-odm/commit/XXX where XXX is the commit hash.
 To get the diff between two versions, go to
-https://github.com/doctrine/mongodb/compare/XXX...YYY where XXX and YYY are
+https://github.com/doctrine/mongodb-odm/compare/XXX...YYY where XXX and YYY are
 the older and newer versions, respectively.
 
 To generate a changelog summary since the last version, run
