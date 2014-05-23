@@ -57,6 +57,12 @@ class MongoDBException extends \Exception
         return new self("You need to pass a parameter to '".$methodName."'");
     }
 
+    public static function unknownDocumentField($field, $class)
+    {
+        // @todo: Have you meant: f1, f2? - that's why $class is passed
+        return new self(sprintf("Unknown field %s in %s", $field, $class->name));
+    }
+    
     public static function unknownDocumentNamespace($documentNamespaceAlias)
     {
         return new self("Unknown Document namespace alias '$documentNamespaceAlias'.");

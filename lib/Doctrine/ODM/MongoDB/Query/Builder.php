@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Hydrator;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -81,6 +82,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * @var bool
      */
     private $requireIndexes;
+    
+    /**
+     * Whether or not strict mode is enabled
+     * 
+     * @var bool
+     */
+    private $strictMode;
 
     /**
      * Construct a Builder
@@ -106,6 +114,18 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function requireIndexes($requireIndexes = true)
     {
         $this->requireIndexes = $requireIndexes;
+        return $this;
+    }
+    
+    /**
+     * Enable or disable strict mode.
+     * 
+     * @param bool $enable
+     * @return Builder
+     */
+    public function strictMode($enable = true)
+    {
+        $this->strictMode = $enable;
         return $this;
     }
 
@@ -265,6 +285,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Gets the Query executable.
      *
      * @param array $options
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @return Query $query
      */
     public function getQuery(array $options = array())
@@ -289,6 +310,10 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         if (isset($query['sort'])) {
             $query['sort'] = $documentPersister->prepareSortOrProjection($query['sort']);
+        }
+        
+        if ($this->strictMode) {
+            $this->strictModeCheck($query);
         }
 
         if ($this->class->slaveOkay) {
@@ -319,6 +344,23 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         $expr->setClassMetadata($this->class);
 
         return $expr;
+    }
+    
+    private function strictModeCheck($query)
+    {
+        $fieldExtractor = new FieldExtractor($query['query'], isset($query['sort']) ? $query['sort'] : array());
+        foreach ($fieldExtractor->getFields() as $field) {
+            $class = $this->class;
+            $path = explode('.', $field);
+            $pathCount = count($path);
+            foreach ($path as $i => $p) {
+                if (!$class->hasField($p)) {
+                    throw MongoDBException::unknownDocumentField($p, $class);
+                } elseif ($i != $pathCount-1) {
+                    $class = $this->dm->getClassMetadata($class->getAssociationTargetClass($p));
+                }
+            }
+        }
     }
 
     /**
