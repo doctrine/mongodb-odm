@@ -1056,27 +1056,25 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::cascadeOnEmbeddedNotAllowed($this->name, $mapping['fieldName']);
         }
 
-        if (isset($mapping['cascade']) && is_string($mapping['cascade'])) {
-            $mapping['cascade'] = array($mapping['cascade']);
+        $cascades = isset($mapping['cascade']) ? array_map('strtolower', (array) $mapping['cascade']) : array();
+
+        if (in_array('all', $cascades) || isset($mapping['embedded'])) {
+            $cascades = array('remove', 'persist', 'refresh', 'merge', 'detach', 'callbacks');
         }
-        if (isset($mapping['cascade']) && in_array('all', (array) $mapping['cascade'])) {
+
+        if (isset($mapping['embedded'])) {
             unset($mapping['cascade']);
-            $default = true;
-        } else {
-            $default = isset($mapping['embedded']) ? true : false;
+        } elseif (isset($mapping['cascade'])) {
+            $mapping['cascade'] = $cascades;
         }
-        $mapping['isCascadeRemove'] = $default;
-        $mapping['isCascadePersist'] = $default;
-        $mapping['isCascadeRefresh'] = $default;
-        $mapping['isCascadeMerge'] = $default;
-        $mapping['isCascadeDetach'] = $default;
-        $mapping['isCascadeCallbacks'] = $default;
-        if (isset($mapping['cascade']) && is_array($mapping['cascade'])) {
-            foreach ($mapping['cascade'] as $cascade) {
-                $mapping['isCascade' . ucfirst($cascade)] = true;
-            }
-        }
-        unset($mapping['cascade']);
+
+        $mapping['isCascadeRemove'] = in_array('remove', $cascades);
+        $mapping['isCascadePersist'] = in_array('persist', $cascades);
+        $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
+        $mapping['isCascadeMerge'] = in_array('merge', $cascades);
+        $mapping['isCascadeDetach'] = in_array('detach', $cascades);
+        $mapping['isCascadeCallbacks'] = in_array('callbacks', $cascades);
+        
         if (isset($mapping['type']) && $mapping['type'] === 'file') {
             $mapping['file'] = true;
         }
