@@ -23,6 +23,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 
 /**
  * Configuration class for the DocumentManager. When setting up your DocumentManager
@@ -373,5 +374,59 @@ class Configuration extends \Doctrine\MongoDB\Configuration
         return isset($this->attributes['filters'][$name])
             ? $this->attributes['filters'][$name]
             : null;
+    }
+
+    /**
+     * Sets default repository class.
+     *
+     * @param string $className
+     *
+     * @return void
+     *
+     * @throws MongoDBException If not is a ObjectRepository
+     */
+    public function setDefaultRepositoryClassName($className)
+    {
+        $reflectionClass = new \ReflectionClass($className);
+
+        if ( ! $reflectionClass->implementsInterface('Doctrine\Common\Persistence\ObjectRepository')) {
+            throw MongoDBException::invalidDocumentRepository($className);
+        }
+
+        $this->attributes['defaultRepositoryClassName'] = $className;
+    }
+
+    /**
+     * Get default repository class.
+     *
+     * @return string
+     */
+    public function getDefaultRepositoryClassName()
+    {
+        return isset($this->attributes['defaultRepositoryClassName'])
+            ? $this->attributes['defaultRepositoryClassName']
+            : 'Doctrine\ODM\MongoDB\DocumentRepository';
+    }
+
+    /**
+     * Set the document repository factory.
+     *
+     * @param RepositoryFactory $repositoryFactory
+     */
+    public function setRepositoryFactory(RepositoryFactory $repositoryFactory)
+    {
+        $this->attributes['repositoryFactory'] = $repositoryFactory;
+    }
+
+    /**
+     * Get the document repository factory.
+     *
+     * @return RepositoryFactory
+     */
+    public function getRepositoryFactory()
+    {
+        return isset($this->attributes['repositoryFactory'])
+            ? $this->attributes['repositoryFactory']
+            : new DefaultRepositoryFactory();
     }
 }
