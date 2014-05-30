@@ -1,11 +1,10 @@
 <?php
 
-use Doctrine\ODM\MongoDB\Version;
 use Symfony\Component\Console\Application;
 
 require __DIR__ . '/cli-config.php';
 
-$app = new Application('Doctrine MongoDB ODM', Version::VERSION);
+$app = new Application('Doctrine MongoDB ODM');
 
 if (isset($helperSet)) {
     $app->setHelperSet($helperSet);

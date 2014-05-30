@@ -32,7 +32,7 @@ You can setup a console command easily with the following code. You just need an
         $helperSet->set($helper, $name);
     }
 
-    $cli = new \Symfony\Component\Console\Application('Doctrine ODM MongoDB Command Line Interface', Doctrine\ODM\MongoDB\Version::VERSION);
+    $cli = new \Symfony\Component\Console\Application('Doctrine ODM MongoDB Command Line Interface');
     $cli->setCatchExceptions(true);
     $cli->setHelperSet($helperSet);
     $cli->addCommands(array(
