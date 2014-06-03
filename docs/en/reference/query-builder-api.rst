@@ -304,6 +304,8 @@ The conditional operators in Mongo are available to limit the returned results t
 * ``all($values)``
 * ``mod($mod)``
 * ``addOr($expr)``
+* ``references($document)``
+* ``includesReferenceTo($document)``
 
 Query for active administrator users:
 
@@ -477,7 +479,32 @@ Query for users who have subscribed or are in a trial.
     
 Read more about the 
 `$or operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24or>`_ in the Mongo docs.
-    
+
+The ``references()`` method may be used to query the owning side of a
+:ref:`@ReferenceOne <annotations_reference_reference_one>` relationship. In the
+following example, we query for all articles written by a particular user.
+
+.. code-block:: php
+
+    <?php
+
+    // Suppose $user has already been fetched from the database
+    $qb = $dm->createQueryBuilder('Article')
+        ->field('user')->references($user);
+
+The ``includesReferenceTo()`` method may be used to query the owning side of a
+:ref:`@ReferenceMany <annotations_reference_reference_many>` relationship. In
+the following example, we query for the user(s) that have access to a particular
+account.
+
+.. code-block:: php
+
+    <?php
+
+    // Suppose $account has already been fetched from the database
+    $qb = $dm->createQueryBuilder('User')
+        ->field('accounts')->includesReferenceTo($account);
+
 Update Queries
 ~~~~~~~~~~~~~~
 
