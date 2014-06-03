@@ -931,7 +931,13 @@ public function <methodName>()
 
             case ClassMetadataInfo::GENERATOR_TYPE_UUID:
                 return 'UUID';
+                
+            case ClassMetadataInfo::GENERATOR_TYPE_ALNUM:
+                return 'ALNUM';
 
+            case ClassMetadataInfo::GENERATOR_TYPE_CUSTOM:
+                return 'CUSTOM';
+                
             case ClassMetadataInfo::GENERATOR_TYPE_NONE:
                 return 'NONE';
 
