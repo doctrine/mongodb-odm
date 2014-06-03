@@ -480,30 +480,31 @@ Query for users who have subscribed or are in a trial.
 Read more about the 
 `$or operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24or>`_ in the Mongo docs.
 
-Query for Articles written by particular User
+The ``references()`` method may be used to query the owning side of a
+:ref:`@ReferenceOne <annotations_reference_reference_one>` relationship. In the
+following example, we query for all articles written by a particular user.
 
 .. code-block:: php
 
     <?php
 
-    // supposing we have $user fetched from database
+    // Suppose $user has already been fetched from the database
     $qb = $dm->createQueryBuilder('Article')
-        ->field('user')->references($user)
+        ->field('user')->references($user);
 
-Read more about the :ref:`@ReferenceOne <annotations_reference_reference_one>`
-
-Query for User(s) having access to particular Account
+The ``includesReferenceTo()`` method may be used to query the owning side of a
+:ref:`@ReferenceMany <annotations_reference_reference_many>` relationship. In
+the following example, we query for the user(s) that have access to a particular
+account.
 
 .. code-block:: php
 
     <?php
 
-    // supposing we have $account fetched from database
+    // Suppose $account has already been fetched from the database
     $qb = $dm->createQueryBuilder('User')
-        ->field('accounts')->includesReferenceTo($account)
+        ->field('accounts')->includesReferenceTo($account);
 
-Read more about the :ref:`@ReferenceMany <annotations_reference_reference_many>`
-    
 Update Queries
 ~~~~~~~~~~~~~~
 
