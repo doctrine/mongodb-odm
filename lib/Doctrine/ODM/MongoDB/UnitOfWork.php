@@ -798,14 +798,10 @@ class UnitOfWork implements PropertyChangedListener
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
             if ($changeSet) {
-                if (!isset($this->documentChangeSets[$oid])) {
-                    $this->documentChangeSets[$oid] = $changeSet;
-                }
-                if ($recompute) {
-                    $this->documentChangeSets[$oid] = $changeSet + $this->documentChangeSets[$oid];
-                } else {
-                    $this->documentChangeSets[$oid] = $changeSet;
-                }
+                $this->documentChangeSets[$oid] = ($recompute && isset($this->documentChangeSets[$oid]))
+                    ? $changeSet + $this->documentChangeSets[$oid]
+                    : $changeSet;
+
                 $this->originalDocumentData[$oid] = $actualData;
                 $this->documentUpdates[$oid] = $document;
             }

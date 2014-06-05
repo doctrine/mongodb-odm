@@ -2,30 +2,37 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH897Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testEventsFromOneClassComputeChangesetsForAnotherClass()
+    public function testRecomputeSingleDocumentChangesetForManagedDocumentWithoutChangeset()
     {
         $documentA = new GH897A();
-        $documentA->setName('Document A');
+        $documentA->name = 'a';
+        $documentB = new GH897B();
+        $documentB->name = 'b';
 
         $this->dm->persist($documentA);
+        $this->dm->persist($documentB);
         $this->dm->flush();
         $this->dm->clear();
 
-        $documentA = $this->dm->find(__NAMESPACE__.'\GH897A', $documentA->getId());
+        $documentA = $this->dm->find(__NAMESPACE__.'\GH897A', $documentA->id);
+        $documentB = $this->dm->find(__NAMESPACE__.'\GH897B', $documentB->id);
+        $documentB->refOne = $documentA;
 
-        $documentB = new GH897B($this->dm);
-        $documentB->setDocument($documentA);
+        /* Necessary to inject DocumentManager since it is not currently
+         * provided in the lifecycle event arguments.
+         */
+        $documentB->dm = $this->dm;
 
-        // Currently throws an E_NOTICE undefined index in UoW.
-        $this->dm->persist($documentB);
+        $this->dm->flush();
+        $this->dm->clear();
 
-        $this->assertSame('Document A Changed', $documentA->getName(), 'Change to Document A was not saved.');
+        $documentA = $this->dm->find(__NAMESPACE__.'\GH897A', $documentA->id);
+
+        $this->assertSame('a-changed', $documentA->name);
     }
 }
 
@@ -37,61 +44,33 @@ class GH897A
 
     /** @ODM\String */
     public $name;
-
-    // Return the identifier without triggering Proxy initialization
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
 }
 
-/** @ODM\Document */
+/** @ODM\Document @ODM\HasLifecycleCallbacks */
 class GH897B
 {
-    public function __construct($dm)
-    {
-        $this->dm = $dm;
-    }
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="GH897A") **/
-    protected $document;
+    /** @ODM\String */
+    public $name;
 
-    // Return the identifier without triggering Proxy initialization
-    public function getId()
+    /** @ODM\ReferenceOne(targetDocument="GH897A") */
+    public $refOne;
+
+    public $dm;
+
+    /** @ODM\PreFlush */
+    public function preFlush()
     {
-        return $this->id;
-    }
+        if ( ! $this->refOne instanceof GH897A) {
+            return;
+        }
 
-    public function setDocument(GH897A $document)
-    {
-        $this->document = $document;
-        return $this;
-    }
+        $documentA = $this->refOne;
+        $documentA->name .= '-changed';
 
-    /** @ODM\PrePersist **/
-    public function onPrePersist()
-    {
-
-        $documentA = $this->document;
-        $documentA->setName('Document A Changed');
-
-        $this->dm->getUnitOfWork()->recomputeSingleDocumentChangeSet(
-            $this->dm->getClassMetadata(get_class($documentA)),
-            $documentA
-        );
-
+        $class = $this->dm->getClassMetadata(get_class($documentA));
+        $this->dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $documentA);
     }
 }
