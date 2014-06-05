@@ -196,7 +196,12 @@ class ClassMetadata extends ClassMetadataInfo
     public function newInstance()
     {
         if ($this->prototype === null) {
-            $this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+            if (version_compare(PHP_VERSION, '5.4') >= 0) {
+                $rc = new \ReflectionClass($this->name);
+                $this->prototype = $rc->newInstanceWithoutConstructor();
+            } else {
+                $this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+            }
         }
 
         return clone $this->prototype;
