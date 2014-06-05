@@ -272,37 +272,6 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * Fixes: Argument 1 passed to Doctrine\ODM\MongoDB\Persisters\DocumentPersister::prepareQueryOrNewObj() must be an array, null given
-     *
-     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
-     * @expectedExceptionMessage The "Proxies\__CG__\Documents\Profile" document with identifier null could not be found.
-     */
-    public function testReferenceOneWithNullId()
-    {
-        $profile = new Profile();
-        $user = new User();
-        $user->setProfile($profile);
-
-        $this->dm->persist($profile);
-        $this->dm->persist($user);
-        $this->dm->flush();
-        $this->dm->clear();
-
-        $collection = $this->dm->getDocumentCollection(get_class($user));
-
-        $collection->update(
-            array('_id' => new \MongoId($user->getId())),
-            array('$set' => array(
-                'profile.$id' => null,
-            ))
-        );
-
-        $user = $this->dm->find(get_class($user), $user->getId());
-        $profile = $user->getProfile();
-        $profile->__load();
-    }
-
-    /**
      * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
      * @expectedExceptionMessage The "Proxies\__CG__\Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier {"identifier":2} could not be found.
      */
