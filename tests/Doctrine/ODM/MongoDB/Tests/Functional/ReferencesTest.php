@@ -299,6 +299,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test->referenceOne->__load();
     }
 
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     * @expectedExceptionMessage The "Proxies\__CG__\Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.
+     */
     public function testDocumentNotFoundExceptionWithMongoId()
     {
         $profile = new Profile();
@@ -312,7 +316,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(get_class($user));
 
-        $invalidId = new \MongoId();
+        $invalidId = new \MongoId('abcdefabcdefabcdefabcdef');
 
         $collection->update(
             array('_id' => new \MongoId($user->getId())),
@@ -320,8 +324,6 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                 'profile.$id' => $invalidId,
             ))
         );
-
-        $this->setExpectedException('Doctrine\ODM\MongoDB\DocumentNotFoundException', sprintf('The "Proxies\__CG__\Documents\Profile" document with identifier "%s" could not be found.', (string) $invalidId));
 
         $user = $this->dm->find(get_class($user), $user->getId());
         $profile = $user->getProfile();
