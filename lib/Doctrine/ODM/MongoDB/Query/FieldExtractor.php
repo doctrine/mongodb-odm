@@ -56,7 +56,7 @@ class FieldExtractor
                 foreach ($elemMatchFields as $field) {
                     $fields[] = $k.'.'.$field;
                 }
-            } elseif ($this->isOperator($k, array('and', 'or'))) {
+            } elseif (in_array($k, array('$and', '$or'))) {
                 foreach ($v as $q) {
                     $test = new self($q);
                     $fields = array_merge($fields, $test->getFieldsWithEqualityCondition());
@@ -83,7 +83,7 @@ class FieldExtractor
                 foreach ($elemMatchFields as $field) {
                     $fields[] = $k.'.'.$field;
                 }
-            } elseif ($this->isOperator($k, array('and', 'or'))) {
+            } elseif (in_array($k, array('$and', '$or'))) {
                 foreach ($v as $q) {
                     $test = new self($q);
                     $fields = array_merge($fields, $test->getFields());
@@ -105,7 +105,7 @@ class FieldExtractor
     {
         $clauses = array();
         foreach ($this->query as $k => $v) {
-            if ($this->isOperator($k, 'or')) {
+            if ($k === '$or') {
                 foreach ($v as $q) {
                     $test = new self($q);
                     $foundClauses = $test->getOrClauses();
@@ -115,7 +115,7 @@ class FieldExtractor
                         $clauses[] = $q;
                     }
                 }
-            } elseif ($this->isOperator($k, 'and')) {
+            } elseif ($k === '$and') {
                 foreach ($v as $q) {
                     $test = new self($q);
                     $foundClauses = $test->getOrClauses();
@@ -179,7 +179,7 @@ class FieldExtractor
             unset($query['$or']);
         }
         foreach ($query as $k => $v) {
-            if ($this->isOperator($k, 'and')) {
+            if ($k === '$and') {
                 foreach ($v as $i => $q) {
                     $query[$k][$i] = $this->getQueryWithoutOrClauses($q);
                     if (empty($query[$k][$i])) {
@@ -213,11 +213,11 @@ class FieldExtractor
     {
         $fields = array();
         foreach ($elemMatch as $fieldName => $value) {
-            if ($this->isOperator($fieldName, 'where')) {
+            if ($fieldName === '$where') {
                 continue;
             }
 
-            if ($this->isOperator($fieldName, array('and', 'or'))) {
+            if (in_array($fieldName, array('$and', '$or'))) {
                 foreach ($value as $q) {
                     $test = new self($q);
                     if (!$onlyEqualityConditions) {
@@ -231,25 +231,5 @@ class FieldExtractor
             }
         }
         return $fields;
-    }
-
-    /**
-     * Checks if given field(s) is one of given operators
-     * 
-     * @param string $fieldName
-     * @param string|array $operator
-     * @return boolean
-     */
-    private function isOperator($fieldName, $operator)
-    {
-        if ( ! is_array($operator)) {
-            $operator = array($operator);
-        }
-        foreach ($operator as $op) {
-            if ($fieldName === '$' . $op) {
-                return true;
-            }
-        }
-        return false;
     }
 }
