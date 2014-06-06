@@ -16,9 +16,9 @@ class IndexCheckerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     /**
      * @dataProvider provideGetIndexesIncludingFields
      */
-    public function testGetIndexesIncludingFields($fields, $allowLessEfficientIndexes, $expected)
+    public function testGetIndexesIncludingFields($fields, $expected)
     {
-        $ic = $this->getDummyIndexChecker($allowLessEfficientIndexes);
+        $ic = $this->getDummyIndexChecker();
         $rm = new \ReflectionMethod(get_class($ic), 'getIndexesIncludingFields');
         $rm->setAccessible(true);
         $result = $rm->invoke($ic, $fields, false);
@@ -32,27 +32,26 @@ class IndexCheckerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function provideGetIndexesIncludingFields()
     {
         return array(
-            array(array('_id'),                 true,   true),
-            array(array('a'),                   true,   true),
-            array(array('b'),                   true,   false),
-            array(array('e'),                   true,   false),
-            array(array('b', 'a'),              true,   true),
-            array(array('a', 'c'),              true,   true),
-            array(array('a', 'c'),              false,  false),
-            array(array('a', 'e'),              true,   false),
-            array(array('b', 'e'),              true,   false),
-            array(array('a', 'b', 'c'),         true,   true),
-            array(array('d', 'c', 'a', 'b'),    true,   true),
-            array(array('d', 'c', 'b'),         true,   false),
+            array(array('_id'),                 true),
+            array(array('a'),                   true),
+            array(array('b'),                   false),
+            array(array('e'),                   false),
+            array(array('b', 'a'),              true),
+            array(array('a', 'c'),              true),
+            array(array('a', 'e'),              false),
+            array(array('b', 'e'),              false),
+            array(array('a', 'b', 'c'),         true),
+            array(array('d', 'c', 'a', 'b'),    true),
+            array(array('d', 'c', 'b'),         false),
         );
     }
     
     /**
      * @dataProvider provideGetIndexCapableOfSorting
      */
-    public function testGetIndexCapableOfSorting($indexes, $sort, $prefixPrepend, $allowLessEfficientIndexes, $expected)
+    public function testGetIndexCapableOfSorting($indexes, $sort, $prefixPrepend, $expected)
     {
-        $ic = $this->getDummyIndexChecker($allowLessEfficientIndexes);
+        $ic = $this->getDummyIndexChecker();
         $rm = new \ReflectionMethod(get_class($ic), 'getIndexCapableOfSorting');
         $rm->setAccessible(true);
         $result = $rm->invoke($ic, $indexes, $sort, $prefixPrepend);
@@ -69,34 +68,31 @@ class IndexCheckerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('key' => array('a' => 1, 'b' => 1, 'c' => 1, 'd' => 1)),
         );
         return array(
-            array($indexes, array('a' => 1), array(), true, true),
-            array($indexes, array('a' => -1), array(), true, true),
-            array($indexes, array('b' => 1), array(), true, false),
-            array($indexes, array('b' => 1), array('a'), true, true),
-            array($indexes, array('b' => -1), array('a'), true, true),
-            array($indexes, array('e' => 1), array(), true, false),
-            array($indexes, array('a' => 1, 'b' => 1), array(), true, true),
-            array($indexes, array('a' => -1, 'b' => -1), array(), true, true),
-            array($indexes, array('a' => 1, 'b' => -1), array(), true, false),
-            array($indexes, array('a' => -1, 'b' => 1), array(), true, false),
-            array($indexes, array('b' => 1, 'a' => 1), array(), true, false),
-            array($indexes, array('a' => 1, 'c' => 1), array(), true, true),
-            array($indexes, array('a' => 1, 'c' => 1), array(), false, false),
-            array($indexes, array('a' => 1, 'c' => 1), array('b'), false, true),
-            array($indexes, array('a' => 1, 'b' => 1, 'c' => 1, 'd' => 1), array(), true, true),
-            array($indexes, array('b' => 1, 'c' => 1, 'd' => 1), array('a'), true, true),
-            array($indexes, array('a' => 1), array('c'), true, true),
-            array($indexes, array('a' => 1), array('c'), false, true),
+            array($indexes, array('a' => 1), array(), true),
+            array($indexes, array('a' => -1), array(), true),
+            array($indexes, array('b' => 1), array(), false),
+            array($indexes, array('b' => 1), array('a'), true),
+            array($indexes, array('b' => -1), array('a'), true),
+            array($indexes, array('e' => 1), array(), false),
+            array($indexes, array('a' => 1, 'b' => 1), array(), true),
+            array($indexes, array('a' => -1, 'b' => -1), array(), true),
+            array($indexes, array('a' => 1, 'b' => -1), array(), false),
+            array($indexes, array('a' => -1, 'b' => 1), array(), false),
+            array($indexes, array('b' => 1, 'a' => 1), array(), false),
+            array($indexes, array('a' => 1, 'c' => 1), array(), true),
+            array($indexes, array('a' => 1, 'b' => 1, 'c' => 1, 'd' => 1), array(), true),
+            array($indexes, array('b' => 1, 'c' => 1, 'd' => 1), array('a'), true),
+            array($indexes, array('a' => 1), array('c'), true),
         );
     }
     
-    private function getDummyIndexChecker($allowLessEfficientIndexes)
+    private function getDummyIndexChecker()
     {
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Query\Doc');
         $query = $qb->getQuery();
         $rc = new \ReflectionProperty(get_class($query), 'collection');
         $rc->setAccessible(true);
-        return new IndexChecker($query, $rc->getValue($query), $allowLessEfficientIndexes);
+        return new IndexChecker($query, $rc->getValue($query));
     }
 }
 

@@ -134,9 +134,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($documentAnnot->requireIndexes)) {
             $class->setRequireIndexes($documentAnnot->requireIndexes);
         }
-        if (isset($documentAnnot->allowLessEfficientIndexes)) {
-            $class->setAllowLessEfficientIndexes($documentAnnot->allowLessEfficientIndexes);
-        }
         if (isset($documentAnnot->slaveOkay)) {
             $class->setSlaveOkay($documentAnnot->slaveOkay);
         }

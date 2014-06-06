@@ -12,7 +12,6 @@ class RequireIndexesTest extends BaseTest
     {
         parent::setUp();
         $this->dm->getSchemaManager()->ensureDocumentIndexes('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument');
     }
 
     public function testGetFieldsInQueryWithSimpleEquals()
@@ -203,26 +202,9 @@ class RequireIndexesTest extends BaseTest
         $this->assertFalse($query->isIndexed());
     }
     
-    public function testIsCompoundIndexEfficient()
-    {
-        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument')
-            ->field('indexed')->equals('test')
-            ->field('indexedAsWell')->equals('test');
-        $query = $qb->getQuery();
-        $this->assertTrue($query->isIndexed());
-    }
-    
-    public function testIsCompoundIndexEfficientFalse()
-    {
-        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument')
-            ->field('indexed')->equals('test')
-            ->field('indexedInCompound')->equals('test');
-        $query = $qb->getQuery();
-        $this->assertFalse($query->isIndexed());
-    }
-
     /**
      * @expectedException Doctrine\ODM\MongoDB\MongoDBException
+     * @expectedExceptionMessage Cannot execute unindexed queries on Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument. Used fields: notIndexed
      */
     public function testRequireIndexesThrowsExceptionOnExecute()
     {
@@ -230,18 +212,6 @@ class RequireIndexesTest extends BaseTest
             ->field('notIndexed')->equals('test');
         $query = $qb->getQuery();
         $query->execute();
-    }
-
-    public function testRequireIndexesExceptionMessage()
-    {
-        try {
-            $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument')
-                ->field('notIndexed')->equals('test');
-            $query = $qb->getQuery();
-            $query->execute();
-        } catch (MongoDBException $e) {
-            $this->assertEquals('Cannot execute unindexed queries on Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument. Used fields: notIndexed', $e->getMessage());
-        }
     }
 
     /**
@@ -307,37 +277,11 @@ class RequireIndexesTest extends BaseTest
     
     /**
      * @expectedException Doctrine\ODM\MongoDB\MongoDBException
-     * @expectedExceptionMessage There is no efficient index capable of sorting results on Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument. Used fields: {"indexed":1,"indexedAsWell":-1}
-     */
-    public function testRequireEfficientIndexesOnSortException()
-    {
-        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument')
-            ->sort('indexed', 'asc')
-            ->sort('indexedAsWell', 'desc');
-        $query = $qb->getQuery();
-        $query->execute();
-    }
-    
-    /**
-     * @expectedException Doctrine\ODM\MongoDB\MongoDBException
      */
     public function testRequireIndexesEmbeddedOnSortThrowException()
     {
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument')
             ->sort('embedOne.notIndexed', 'asc');
-        $query = $qb->getQuery();
-        $query->execute();
-    }
-    
-    /**
-     * @expectedException Doctrine\ODM\MongoDB\MongoDBException
-     * @expectedExceptionMessage Cannot execute inefficiently indexed queries on Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument. Used fields: indexed, indexedInCompound
-     */
-    public function testRequireEfficientIndexesThrowException()
-    {
-        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument')
-            ->field('indexed')->equals('test')
-            ->field('indexedInCompound')->equals('test');
         $query = $qb->getQuery();
         $query->execute();
     }
@@ -351,20 +295,6 @@ class RequireIndexesTest extends BaseTest
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument');
         $qb->addOr($qb->expr()->field('indexed')->equals('test'))
             ->addOr($qb->expr()->field('notIndexed')->equals('test'));
-        $query = $qb->getQuery();
-        $query->execute();
-    }
-    
-    /**
-     * @expectedException Doctrine\ODM\MongoDB\MongoDBException
-     * @expectedExceptionMessage Cannot execute inefficiently indexed or clause in query on Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument. Used fields: indexed, indexedInCompound
-     */
-    public function testInefficientlyIndexedOrClauseThrowException()
-    {
-        $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireEfficientIndexesDocument');
-        $qb->addOr($qb->expr()->field('indexed')->equals('test'))
-            ->addOr($qb->expr()->field('indexed')->equals('test')
-                                ->field('indexedInCompound')->equals('test'));
         $query = $qb->getQuery();
         $query->execute();
     }
@@ -411,24 +341,6 @@ class RequireIndexesDocument
 
     /** @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\DoesNotRequireIndexesDocument", simple=true) */
     public $simpleReference;
-}
-
-/**
- * @ODM\Document(requireIndexes=true, allowLessEfficientIndexes=false, indexes={ @ODM\Index(keys={"indexed"="asc", "indexedAsWell"="asc", "indexedInCompound"="asc"}) })
- */
-class RequireEfficientIndexesDocument
-{
-    /** @ODM\Id */
-    public $id;
-
-    /** @ODM\String */
-    public $indexed;
-
-    /** @ODM\String */
-    public $indexedAsWell;
-    
-    /** @ODM\String */
-    public $indexedInCompound;
 }
 
 /**

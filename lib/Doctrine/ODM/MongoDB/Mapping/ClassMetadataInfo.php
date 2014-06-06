@@ -199,11 +199,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $requireIndexes = false;
     
     /**
-     * READ-ONLY: Whether or not to allow less efficient queries on Compound Index
-     */
-    public $allowLessEfficientIndexes = true;
-
-    /**
      * READ-ONLY: The name of the document class.
      */
     public $name;
@@ -746,16 +741,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function setRequireIndexes($requireIndexes)
     {
         $this->requireIndexes = $requireIndexes;
-    }
-    
-    /**
-     * Set whether or not to allow less efficient queries on Compound Index
-     * 
-     * @param bool $allowLessEfficientIndexes
-     */
-    public function setAllowLessEfficientIndexes($allowLessEfficientIndexes)
-    {
-        $this->allowLessEfficientIndexes = $allowLessEfficientIndexes;
     }
 
     /**

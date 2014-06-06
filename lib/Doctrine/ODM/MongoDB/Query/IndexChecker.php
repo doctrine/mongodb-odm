@@ -34,18 +34,18 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 class IndexChecker
 {
     /**
-     * Whether or not to allow less efficient queries on Compound Index
-     * 
-     * @var boolean
-     */
-    private $allowLessEfficientIndexes;
-    
-    /**
      * The Collection instance.
      *
      * @var Collection
      */
     private $collection;
+    
+    /**
+     * Indexes
+     * 
+     * @var array
+     */
+    private $indexes;
     
     /**
      * The Query instance.
@@ -59,13 +59,11 @@ class IndexChecker
      * 
      * @param \Doctrine\ODM\MongoDB\Query\Query $query
      * @param \Doctrine\MongoDB\Collection $collection
-     * @param boolean $allowLessEfficientIndexes
      */
-    public function __construct(Query $query, Collection $collection, $allowLessEfficientIndexes = true)
+    public function __construct(Query $query, Collection $collection)
     {
         $this->collection = $collection;
         $this->query = $query;
-        $this->allowLessEfficientIndexes = $allowLessEfficientIndexes;
     }
     
     /**
@@ -80,19 +78,18 @@ class IndexChecker
         foreach ($orClauses as $or) {
             $orExtractor = new FieldExtractor($or);
             if (!$this->getIndexesIncludingFields($orExtractor->getFields(), true)) {
-                if (!$this->allowLessEfficientIndexes) {
-                    return MongoDBException::orClauseNotEfficientlyIndexed($this->query->getClass()->name, $orExtractor->getFields());
-                }
                 return MongoDBException::orClauseNotIndexed($this->query->getClass()->name, $orExtractor->getFields());
             }
         }
         $queryWithourOrs = $this->query->getFieldExtractor()->getQueryWithoutOrClauses();
         $qwoExtractor = new FieldExtractor($queryWithourOrs);
-        $possibleMatches = $this->getIndexesIncludingFields($qwoExtractor->getFields());
+        $usedFields = $qwoExtractor->getFields();
+        if (empty($usedFields)) {
+            $possibleMatches = $this->getIndexes();
+        } else {
+            $possibleMatches = $this->getIndexesIncludingFields($usedFields);
+        }
         if (empty($possibleMatches)) {
-            if (!$this->allowLessEfficientIndexes) {
-                return MongoDBException::queryNotEfficientlyIndexed($this->query->getClass()->name, $qwoExtractor->getFields());
-            }
             return MongoDBException::queryNotIndexed($this->query->getClass()->name, $qwoExtractor->getFields());
         }
         $sort = $this->query->getFieldExtractor()->getSort();
@@ -100,12 +97,22 @@ class IndexChecker
             return true;
         }
         if (null === $this->getIndexCapableOfSorting($possibleMatches, $sort, $qwoExtractor->getFieldsWithEqualityCondition())) {
-            if (!$this->allowLessEfficientIndexes) {
-                return MongoDBException::queryNotEfficientlyIndexedForSorting($this->query->getClass()->name, $sort);
-            }
             return MongoDBException::queryNotIndexedForSorting($this->query->getClass()->name, $sort);
         }
         return true;
+    }
+    
+    /**
+     * Gets all indexes for queried Document
+     * 
+     * @return array
+     */
+    private function getIndexes()
+    {
+        if ($this->indexes === null) {
+            $this->indexes = $this->collection->getIndexInfo();
+        }
+        return $this->indexes;
     }
     
     /**
@@ -118,7 +125,7 @@ class IndexChecker
     private function getIndexesIncludingFields($fieldsNames, $findAny = false)
     {
         $matchingIndexes = array();
-        $indexes = $this->collection->getIndexInfo();
+        $indexes = $this->getIndexes();
         $numFields = count($fieldsNames);
         foreach ($indexes as $index) {
             // no keys or less keys are indexed than we need
@@ -139,22 +146,12 @@ class IndexChecker
                 }
             }
             sort($matchedPositions);
-            if (empty($matchedPositions) || ($this->allowLessEfficientIndexes && $matchedPositions[0] === 0)) {
+            if ($matchedPositions[0] === 0) {
                 if ($findAny) {
                     return $index;
                 } else {
                     $matchingIndexes[] = $index;
                 }
-            }
-            foreach ($matchedPositions as $i => $expected) {
-                if ($i !== $expected) {
-                    continue 2; // prefix is not continuous subset
-                }
-            }
-            if ($findAny) {
-                return $index;
-            } else {
-                $matchingIndexes[] = $index;
             }
         }
         return $matchingIndexes;
@@ -201,16 +198,6 @@ class IndexChecker
             sort($matchedPositions);
             if (!isset($matchedPositions[0]) || $matchedPositions[0] !== 0) {
                 continue; // this is not prefix
-            }
-            if (!$this->allowLessEfficientIndexes) {
-                foreach ($matchedPositions as $i => $expected) {
-                    if ($i > $currentIndexPosition) {
-                        break; // index is ok, later $expected will come from $prefixPrepend
-                    }
-                    if ($i !== $expected) {
-                        continue 2; // prefix is not continuous subset
-                    }
-                }
             }
             // Mongo can traverse index from end to beginning as well
             $reversedIndexToUse = array_map(function($order) { return -$order; }, $indexToUse);
