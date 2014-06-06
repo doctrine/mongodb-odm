@@ -21,6 +21,15 @@ To generate a changelog summary since the last version, run
 All issues and pull requests in this release may be found under the
 [1.0.0-BETA10 milestone](https://github.com/doctrine/mongodb-odm/issues?milestone=2&state=closed).
 
+#### ResolveTargetDocumentListener
+
+[#663](https://github.com/doctrine/mongodb-odm/pull/663) added a new
+ResolveTargetDocumentListener service, which allows `targetDocument` metadata to
+be resolved at runtime. This is based on a corresponding class in ORM, which has
+existed since version 2.2. This promotes loose coupling by allowing interfaces
+or abstract classes to be specified in the owning model's metadata. The service
+will then resolve those values to a concrete class upon the ODM's request.
+
 #### Improved support for differentiating identifier types and non-scalar values
 
 ODM previously required that documents use scalar identifier values. Also, the
