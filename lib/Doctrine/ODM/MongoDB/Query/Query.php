@@ -211,7 +211,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function runIndexChecker()
     {
-        $indexChecker = new IndexChecker($this, $this->collection);
+        $indexChecker = new IndexChecker($this);
         return $indexChecker->run();
     }
 

@@ -65,7 +65,7 @@ class IndexCheckerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function provideGetIndexCapableOfSorting()
     {
         $indexes = array(
-            array('key' => array('a' => 1, 'b' => 1, 'c' => 1, 'd' => 1)),
+            array('keys' => array('a' => 1, 'b' => 1, 'c' => 1, 'd' => 1)),
         );
         return array(
             array($indexes, array('a' => 1), array(), true),
@@ -89,10 +89,7 @@ class IndexCheckerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     private function getDummyIndexChecker()
     {
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Query\Doc');
-        $query = $qb->getQuery();
-        $rc = new \ReflectionProperty(get_class($query), 'collection');
-        $rc->setAccessible(true);
-        return new IndexChecker($query, $rc->getValue($query));
+        return new IndexChecker($qb->getQuery());
     }
 }
 

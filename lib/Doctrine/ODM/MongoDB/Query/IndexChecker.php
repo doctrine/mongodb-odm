@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
-use Doctrine\MongoDB\Collection;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
@@ -34,11 +34,11 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 class IndexChecker
 {
     /**
-     * The Collection instance.
+     * The ClassMetadataInfo instance.
      *
-     * @var Collection
+     * @var ClassMetadataInfo
      */
-    private $collection;
+    private $class;
     
     /**
      * Indexes
@@ -57,13 +57,12 @@ class IndexChecker
     /**
      * Constructor
      * 
-     * @param \Doctrine\ODM\MongoDB\Query\Query $query
-     * @param \Doctrine\MongoDB\Collection $collection
+     * @param Query $query
      */
-    public function __construct(Query $query, Collection $collection)
+    public function __construct(Query $query)
     {
-        $this->collection = $collection;
         $this->query = $query;
+        $this->class = $query->getClass();
     }
     
     /**
@@ -110,7 +109,12 @@ class IndexChecker
     private function getIndexes()
     {
         if ($this->indexes === null) {
-            $this->indexes = $this->collection->getIndexInfo();
+            // mongo always has index on _id => 1 and it is not
+            // included in ClassMetadataInfo::getIndexes
+            $this->indexes = array_merge(
+                array(array("keys" => array('_id' => 1))),
+                $this->class->getIndexes()
+            );
         }
         return $this->indexes;
     }
@@ -129,12 +133,12 @@ class IndexChecker
         $numFields = count($fieldsNames);
         foreach ($indexes as $index) {
             // no keys or less keys are indexed than we need
-            if (!isset($index['key']) || count($index['key']) < $numFields) {
+            if (!isset($index['keys']) || count($index['keys']) < $numFields) {
                 continue;
             }
             // array of index_field => position
             $indexFieldPositions = array(); $i = 0;
-            foreach ($index['key'] as $field => $order) {
+            foreach ($index['keys'] as $field => $order) {
                 $indexFieldPositions[$field] = $i++;
             }
             $matchedPositions = array();
@@ -171,12 +175,12 @@ class IndexChecker
         $numFields = count($sort);
         foreach ($indexes as $index) {
             // no keys or less keys are indexed than we need
-            if (!isset($index['key']) || count($index['key']) < $numFields) {
+            if (!isset($index['keys']) || count($index['keys']) < $numFields) {
                 continue;
             }
             // array of index_field => position
             $indexFieldPositions = array(); $i = 0;
-            foreach ($index['key'] as $field => $order) {
+            foreach ($index['keys'] as $field => $order) {
                 $indexFieldPositions[$field] = $i++;
             }
             $matchedPositions = array();
@@ -193,7 +197,7 @@ class IndexChecker
                 }
                 $currentIndexPosition = $indexFieldPositions[$field];
                 $matchedPositions[] = $currentIndexPosition;
-                $indexToUse[$field] = $index['key'][$field];
+                $indexToUse[$field] = $index['keys'][$field];
             }
             sort($matchedPositions);
             if (!isset($matchedPositions[0]) || $matchedPositions[0] !== 0) {
