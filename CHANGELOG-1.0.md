@@ -15,6 +15,28 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
+1.0.0-BETA11 (2014-06-06)
+-------------------------
+
+All issues and pull requests in this release may be found under the
+[1.0.0-BETA11 milestone](https://github.com/doctrine/mongodb-odm/issues?milestone=5&state=closed).
+
+#### Ensure cascade mapping option is always set
+
+ClassMetadataInfo's handling of cascade options was refactored in
+[#888](https://github.com/doctrine/mongodb-odm/pull/888) to be more consistent
+with ORM. These changes ensure that `$mapping["cascade"]` is always set, which
+is required by ResolveTargetDocumentListener.
+
+#### Use Reflection API to create document instances in PHP 5.4+
+
+PHP 5.4.29 and 5.5.13 introduced a BC-breaking change to `unserialize()`, which
+broke ODM's ability to instantiate document classes without invoking their
+constructor (used for hydration). The suggested work-around is to use
+`ReflectionClass::newInstanceWithoutConstructor()`, which is available in 5.4+.
+This change was implemented in
+[#893](https://github.com/doctrine/mongodb-odm/pull/893).
+
 1.0.0-BETA10 (2014-05-05)
 -------------------------
 
