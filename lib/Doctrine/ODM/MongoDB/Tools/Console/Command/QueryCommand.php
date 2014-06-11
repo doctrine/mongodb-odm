@@ -78,7 +78,14 @@ EOT
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         $qb = $dm->getRepository($input->getArgument('class'))->createQueryBuilder();
-        $qb->setQueryArray((array) json_decode($input->getArgument('query')));
+
+        $queryArray = json_decode($input->getArgument('query'));
+
+        if ( ! $queryArray && $input->getArgument('query') ) {
+            throw new \LogicException("invalid query!");
+        }
+
+        $qb->setQueryArray((array) $queryArray);
         $qb->hydrate((bool) $input->getOption('hydrate'));
 
         $depth = $input->getOption('depth');
