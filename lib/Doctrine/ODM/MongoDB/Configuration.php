@@ -355,9 +355,12 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * @param string $name The name of the filter.
      * @param string $className The class name of the filter.
      */
-    public function addFilter($name, $className)
+    public function addFilter($name, $className, array $parameters)
     {
-        $this->attributes['filters'][$name] = $className;
+        $this->attributes['filters'][$name] = array(
+            'className' => $className,
+            'parameters' => $parameters
+        );
     }
 
     /**
@@ -371,7 +374,22 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getFilterClassName($name)
     {
         return isset($this->attributes['filters'][$name])
-            ? $this->attributes['filters'][$name]
+            ? $this->attributes['filters'][$name]['className']
+            : null;
+    }
+
+    /**
+     * Gets the parameters for a given filter name.
+     *
+     * @param string $name The name of the filter.
+     *
+     * @return string The array containig the filter parameters, or null of it is not
+     * defined.
+     */
+    public function getFilterParameters($name)
+    {
+        return isset($this->attributes['filters'][$name])
+            ? $this->attributes['filters'][$name]['parameters']
             : null;
     }
 }
