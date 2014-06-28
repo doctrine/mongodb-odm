@@ -354,6 +354,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      *
      * @param string $name The name of the filter.
      * @param string $className The class name of the filter.
+     * @param array $parameters The parameters of the filter.
      */
     public function addFilter($name, $className, array $parameters = array())
     {
