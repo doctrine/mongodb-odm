@@ -92,7 +92,14 @@ class FilterCollection
 
         if ( ! $this->isEnabled($name)) {
             $filterClass = $this->config->getFilterClassName($name);
-            $this->enabledFilters[$name] = new $filterClass($this->dm);
+            $filterParameters = $this->config->getFilterParameters($name);
+            $filter = new $filterClass($this->dm);
+
+            foreach ($filterParameters as $param => $value) {
+                $filter->setParameter($param, $value);
+            }
+
+            $this->enabledFilters[$name] = $filter;
         }
 
         return $this->enabledFilters[$name];
