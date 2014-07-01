@@ -359,7 +359,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function addFilter($name, $className, array $parameters = array())
     {
         $this->attributes['filters'][$name] = array(
-            'className' => $className,
+            'class' => $className,
             'parameters' => $parameters
         );
     }
@@ -374,7 +374,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getFilterClassName($name)
     {
         return isset($this->attributes['filters'][$name])
-            ? $this->attributes['filters'][$name]['className']
+            ? $this->attributes['filters'][$name]['class']
             : null;
     }
 
