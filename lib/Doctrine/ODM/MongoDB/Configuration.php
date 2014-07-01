@@ -352,9 +352,9 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Add a filter to the list of possible filters.
      *
-     * @param string $name The name of the filter.
-     * @param string $className The class name of the filter.
-     * @param array $parameters The parameters of the filter.
+     * @param string $name       The name of the filter.
+     * @param string $className  The class name of the filter.
+     * @param array  $parameters The parameters for the filter.
      */
     public function addFilter($name, $className, array $parameters = array())
     {
@@ -369,8 +369,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      *
      * @param string $name The name of the filter.
      *
-     * @return string The class name of the filter, or null of it is not
-     * defined.
+     * @return string|null The filter class name, or null if it is undefined
      */
     public function getFilterClassName($name)
     {
@@ -384,8 +383,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      *
      * @param string $name The name of the filter.
      *
-     * @return string The array containig the filter parameters, or null of it is not
-     * defined.
+     * @return array|null The filter parameters, or null if it is undefined
      */
     public function getFilterParameters($name)
     {
