@@ -122,7 +122,7 @@ Simple example:
         Documents\Person:
           type: document
           inheritanceType: SINGLE_COLLECTION
-          discriminatorMap: type
+          discriminatorField: type
           discriminatorMap:
             person: Person
             employee: Employee
