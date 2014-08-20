@@ -1239,6 +1239,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function addInheritedFieldMapping(array $fieldMapping)
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
+
+        if (isset($fieldMapping['association'])) {
+            $this->associationMappings[$fieldMapping['fieldName']] = $fieldMapping;
+        }
     }
 
     /**
