@@ -97,4 +97,5 @@ Cookbook
   :doc:`Notify ChangeTracking Example <cookbook/implementing-the-notify-changetracking-policy>` |
   :doc:`Using Wakeup Or Clone <cookbook/implementing-wakeup-or-clone>` |
   :doc:`Validation <cookbook/validation-of-documents>` |
-  :doc:`Simple Search Engine <cookbook/simple-search-engine>`
+  :doc:`Simple Search Engine <cookbook/simple-search-engine>` |
+  :doc:`Keeping Your Modules Independent <cookbook/resolve-target-document-listener>`
