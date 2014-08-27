@@ -175,6 +175,10 @@ class PersistentCollection implements BaseCollection
                 // Has NEW objects added through add(). Remember them.
                 $newObjects = $this->coll->toArray();
             }
+            else if (! empty($this->snapshot)) {
+                // a snapshot has been taken during a cascade persist. Remember it.
+                $newObjects = $this->snapshot;
+            }
             $this->coll->clear();
             $this->uow->loadCollection($this);
             $this->takeSnapshot();
