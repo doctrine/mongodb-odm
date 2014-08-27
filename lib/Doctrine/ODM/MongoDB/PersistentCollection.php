@@ -170,29 +170,32 @@ class PersistentCollection implements BaseCollection
      */
     public function initialize()
     {
-        if ( ! $this->initialized && $this->mapping) {
-            if ($this->isDirty) {
-                // Has NEW objects added through add(). Remember them.
-                $newObjects = $this->coll->toArray();
-            }
-            $this->coll->clear();
-            $this->uow->loadCollection($this);
-            $this->takeSnapshot();
-
-            // Reattach NEW objects added through add(), if any.
-            if (isset($newObjects)) {
-                foreach ($newObjects as $key => $obj) {
-                    if ($this->mapping['strategy'] === 'set') {
-                        $this->coll->set($key, $obj);
-                    } else {
-                        $this->coll->add($obj);
-                    }
-                }
-                $this->isDirty = true;
-            }
-            $this->mongoData = array();
-            $this->initialized = true;
+        if ($this->initialized || ! $this->mapping) {
+            return;
         }
+
+        $newObjects = array();
+
+        if ($this->isDirty) {
+            // Remember any NEW objects added through add()
+            $newObjects = $this->coll->toArray();
+        }
+
+        $this->coll->clear();
+        $this->uow->loadCollection($this);
+        $this->takeSnapshot();
+
+        // Reattach any NEW objects added through add()
+        foreach ($newObjects as $key => $obj) {
+            if ($this->mapping['strategy'] === 'set') {
+                $this->coll->set($key, $obj);
+            } else {
+                $this->coll->add($obj);
+            }
+        }
+
+        $this->mongoData = array();
+        $this->initialized = true;
     }
 
     /**
@@ -374,11 +377,15 @@ class PersistentCollection implements BaseCollection
     {
         $this->initialize();
         $removed = $this->coll->remove($key);
-        if ($removed) {
-            $this->changed();
-            if ($this->isOrphanRemovalEnabled()) {
-                $this->uow->scheduleOrphanRemoval($removed);
-            }
+
+        if ( ! $removed) {
+            return $removed;
+        }
+
+        $this->changed();
+
+        if ($this->isOrphanRemovalEnabled()) {
+            $this->uow->scheduleOrphanRemoval($removed);
         }
 
         return $removed;
@@ -391,12 +398,17 @@ class PersistentCollection implements BaseCollection
     {
         $this->initialize();
         $removed = $this->coll->removeElement($element);
-        if ($removed) {
-            $this->changed();
-            if ($this->isOrphanRemovalEnabled()) {
-                $this->uow->scheduleOrphanRemoval($element);
-            }
+
+        if ( ! $removed) {
+            return $removed;
         }
+
+        $this->changed();
+
+        if ($this->isOrphanRemovalEnabled()) {
+            $this->uow->scheduleOrphanRemoval($element);
+        }
+
         return $removed;
     }
 
@@ -504,7 +516,7 @@ class PersistentCollection implements BaseCollection
      */
     public function isEmpty()
     {
-        return $this->count() === 0 ? true : false;
+        return $this->count() === 0;
     }
 
     /**
@@ -633,7 +645,8 @@ class PersistentCollection implements BaseCollection
         if ( ! isset($offset)) {
             return $this->add($value);
         }
-        $this->set($offset, $value);
+
+        return $this->set($offset, $value);
     }
 
     /**
