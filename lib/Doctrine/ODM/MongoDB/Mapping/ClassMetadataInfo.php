@@ -1059,7 +1059,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         $cascades = isset($mapping['cascade']) ? array_map('strtolower', (array) $mapping['cascade']) : array();
 
         if (in_array('all', $cascades) || isset($mapping['embedded'])) {
-            $cascades = array('remove', 'persist', 'refresh', 'merge', 'detach', 'callbacks');
+            $cascades = array('remove', 'persist', 'refresh', 'merge', 'detach');
         }
 
         if (isset($mapping['embedded'])) {
@@ -1073,7 +1073,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
         $mapping['isCascadeMerge'] = in_array('merge', $cascades);
         $mapping['isCascadeDetach'] = in_array('detach', $cascades);
-        $mapping['isCascadeCallbacks'] = in_array('callbacks', $cascades);
         
         if (isset($mapping['type']) && $mapping['type'] === 'file') {
             $mapping['file'] = true;

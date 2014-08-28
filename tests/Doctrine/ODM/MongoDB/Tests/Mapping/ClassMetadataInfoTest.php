@@ -158,14 +158,12 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($class->fieldMappings['address']['isCascadeRefresh']);
         $this->assertTrue($class->fieldMappings['address']['isCascadeMerge']);
         $this->assertTrue($class->fieldMappings['address']['isCascadeDetach']);
-        $this->assertTrue($class->fieldMappings['address']['isCascadeCallbacks']);
 
         $this->assertTrue($class->fieldMappings['addresses']['isCascadeRemove']);
         $this->assertTrue($class->fieldMappings['addresses']['isCascadePersist']);
         $this->assertTrue($class->fieldMappings['addresses']['isCascadeRefresh']);
         $this->assertTrue($class->fieldMappings['addresses']['isCascadeMerge']);
         $this->assertTrue($class->fieldMappings['addresses']['isCascadeDetach']);
-        $this->assertTrue($class->fieldMappings['addresses']['isCascadeCallbacks']);
     }
 
     /**
