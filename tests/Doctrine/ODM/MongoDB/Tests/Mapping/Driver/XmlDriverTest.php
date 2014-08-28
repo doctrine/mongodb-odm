@@ -29,7 +29,6 @@ class XmlDriverTest extends AbstractDriverTest
             'id' => true,
             'name' => '_id',
             'type' => 'custom_id',
-            'isCascadeCallbacks' => false,
             'isCascadeDetach' => false,
             'isCascadeMerge' => false,
             'isCascadePersist' => false,
