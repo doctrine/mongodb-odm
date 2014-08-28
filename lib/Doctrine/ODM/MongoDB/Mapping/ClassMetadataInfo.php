@@ -1111,6 +1111,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ( ! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
         }
+
+        if (isset($mapping['reference']) && ! empty($mapping['simple']) && ! isset($mapping['targetDocument'])) {
+            throw MappingException::simpleReferenceRequiresTargetDocument($this->name, $mapping['fieldName']);
+        }
+
         if (isset($mapping['reference']) && $mapping['type'] === 'one') {
             $mapping['association'] = self::REFERENCE_ONE;
         }

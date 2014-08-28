@@ -151,4 +151,14 @@ class MappingException extends BaseMappingException
     {
         return new self("Cascade on $className::$fieldName is not allowed.");
     }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function simpleReferenceRequiresTargetDocument($className, $fieldName)
+    {
+        return new self("Target document must be specified for simple reference: $className::$fieldName");
+    }
 }
