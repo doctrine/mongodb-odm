@@ -1960,6 +1960,12 @@ class UnitOfWork implements PropertyChangedListener
 
         $visited[$oid] = $document; // mark visited
 
+        /* Cascade first, because scheduleForDelete() removes the entity from
+         * the identity map, which can cause problems when a lazy Proxy has to
+         * be initialized for the cascade operation.
+         */
+        $this->cascadeRemove($document, $visited);
+
         $class = $this->dm->getClassMetadata(get_class($document));
         $documentState = $this->getDocumentState($document);
         switch ($documentState) {
@@ -1982,8 +1988,6 @@ class UnitOfWork implements PropertyChangedListener
             default:
                 throw MongoDBException::invalidDocumentState($documentState);
         }
-
-        $this->cascadeRemove($document, $visited);
     }
 
     /**
@@ -2513,6 +2517,9 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($class->fieldMappings as $mapping) {
             if ( ! $mapping['isCascadeRemove']) {
                 continue;
+            }
+            if ($document instanceof Proxy && ! $document->__isInitialized__) {
+                $document->__load();
             }
             if (isset($mapping['embedded'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
