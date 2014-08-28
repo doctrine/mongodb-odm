@@ -2509,6 +2509,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadeRemove($document, array &$visited)
     {
+        if ($document instanceof Proxy) {
+            $document->__load();
+        }
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
             if ( ! $mapping['isCascadeRemove']) {
