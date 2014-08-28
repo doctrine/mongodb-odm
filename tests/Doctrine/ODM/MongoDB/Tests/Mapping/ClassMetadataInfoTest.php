@@ -220,6 +220,22 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $class->invokeLifecycleCallbacks(Events::prePersist, $proxy);
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Target document must be specified for simple reference: stdClass::assoc
+     */
+    public function testSimpleReferenceRequiresTargetDocument()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+
+        $cm->mapField(array(
+            'fieldName' => 'assoc',
+            'reference' => true,
+            'type' => 'one',
+            'simple' => true,
+        ));
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository
