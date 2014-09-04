@@ -109,10 +109,12 @@ class PersistenceBuilder
             $insertData[$mapping['name']] = $value;
         }
 
-        // add discriminator if the class has one
-        if ($class->hasDiscriminator()) {
-            $insertData[$class->discriminatorField] = $class->discriminatorValue;
-        }
+		// add discriminator if the class has one
+		if (isset($class->discriminatorField)) {
+			$insertData[$class->discriminatorField] = isset($class->discriminatorValue)
+				? $class->discriminatorValue
+				: $class->name;
+		}
 
         return $insertData;
     }
@@ -287,10 +289,12 @@ class PersistenceBuilder
             }
         }
 
-        // add discriminator if the class has one
-        if ($class->hasDiscriminator()) {
-            $updateData['$set'][$class->discriminatorField] = $class->discriminatorValue;
-        }
+		// add discriminator if the class has one
+		if (isset($class->discriminatorField)) {
+			$updateData['$set'][$class->discriminatorField] = isset($class->discriminatorValue)
+				? $class->discriminatorValue
+				: $class->name;
+		}
 
         return $updateData;
     }
