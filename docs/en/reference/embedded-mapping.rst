@@ -141,7 +141,7 @@ you can simply omit the ``targetDocument`` option:
           tasks: ~
 
 Now the ``$tasks`` property can store any type of document! The class name will
-be automatically stored  stored in a field named ``_doctrine_class_name`` within
+be automatically stored in a field named ``_doctrine_class_name`` within
 the embedded document. The field name can be customized with the
 ``discriminatorField`` option:
 
