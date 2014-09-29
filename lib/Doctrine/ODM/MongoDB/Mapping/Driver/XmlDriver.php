@@ -257,7 +257,7 @@ class XmlDriver extends FileDriver
         $attributes = $reference->attributes();
         $mapping = array(
             'cascade'          => $cascade,
-            'orphanRemoval'    => isset($attributes['orphan-removal']) ? $reference['orphan-removal'] : false,
+            'orphanRemoval'    => isset($attributes['orphan-removal']) ? (boolean) $attributes['orphan-removal'] : false,
             'type'             => $type,
             'reference'        => true,
             'simple'           => isset($attributes['simple']) ? (boolean) $attributes['simple'] : false,
