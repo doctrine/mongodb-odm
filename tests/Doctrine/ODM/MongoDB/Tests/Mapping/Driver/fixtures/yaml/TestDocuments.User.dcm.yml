@@ -26,6 +26,7 @@ TestDocuments\User:
       simple: true
       targetDocument: Documents\Profile
       cascade: all
+      orphanRemoval: true
     account:
       targetDocument: Documents\Account
       cascade: all

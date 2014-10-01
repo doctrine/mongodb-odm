@@ -147,7 +147,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'repositoryMethod' => null,
             'limit' => null,
             'skip' => null,
-            'orphanRemoval' => false,
+            'orphanRemoval' => true,
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
