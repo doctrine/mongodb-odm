@@ -28,6 +28,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Configuration;
 
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
@@ -137,10 +138,27 @@ class HydratorFactory
 
         if ( ! class_exists($fqn, false)) {
             $fileName = $this->hydratorDir . DIRECTORY_SEPARATOR . $hydratorClassName . '.php';
-            if ($this->autoGenerate) {
-                $this->generateHydratorClass($class, $hydratorClassName, $fileName);
+            switch ($this->autoGenerate) {
+                case Configuration::AUTOGENERATE_NEVER:
+                    require $fileName;
+                    break;
+                    
+                case Configuration::AUTOGENERATE_ALWAYS:
+                    $this->generateHydratorClass($class, $hydratorClassName, $fileName);
+                    require $fileName;
+                    break;
+                    
+                case Configuration::AUTOGENERATE_FILE_NOT_EXISTS:
+                    if (!file_exists($fileName)) {
+                        $this->generateHydratorClass($class, $hydratorClassName, $fileName);
+                    }
+                    require $fileName;
+                    break;
+                    
+                case Configuration::AUTOGENERATE_EVAL:
+                    $this->generateHydratorClass($class, $hydratorClassName, false);
+                    break;
             }
-            require $fileName;
         }
         $this->hydrators[$className] = new $fqn($this->dm, $this->unitOfWork, $class);
         return $this->hydrators[$className];
@@ -377,19 +395,25 @@ EOF
             $code
         );
 
-        $parentDirectory = dirname($fileName);
+        if ($fileName === false) {
+            if ( ! class_exists($namespace . '\\' . $hydratorClassName)) {
+                eval(substr($code, 5));
+            }
+        } else {
+            $parentDirectory = dirname($fileName);
 
-        if ( ! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
-            throw HydratorException::hydratorDirectoryNotWritable();
+            if ( ! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
+                throw HydratorException::hydratorDirectoryNotWritable();
+            }
+
+            if ( ! is_writable($parentDirectory)) {
+                throw HydratorException::hydratorDirectoryNotWritable();
+            }
+
+            $tmpFileName = $fileName . '.' . uniqid('', true);
+            file_put_contents($tmpFileName, $code);
+            rename($tmpFileName, $fileName);
         }
-
-        if ( ! is_writable($parentDirectory)) {
-            throw HydratorException::hydratorDirectoryNotWritable();
-        }
-
-        $tmpFileName = $fileName . '.' . uniqid('', true);
-        file_put_contents($tmpFileName, $code);
-        rename($tmpFileName, $fileName);
     }
 
     /**
