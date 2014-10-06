@@ -103,10 +103,11 @@ deprecated `slaveOkay` option. Much of this work was implemented in
 
 The `findAll()` and `findBy()` methods in DocumentRepository previously returned
 a Cursor object, which was not compatible with the ObjectRepository interface in
-Doctrine Common. This has been changed in #752, so these methods now return a
-numerically indexed array. The change also affects the magic repository methods,
-which utilize `findBy()` internally. If users require a Cursor, they should
-utilize the query builder or a custom repository method.
+Doctrine Common. This has been changed in
+[#752](https://github.com/doctrine/mongodb-odm/pull/752), so these methods now
+return a numerically indexed array. The change also affects the magic repository
+methods, which utilize `findBy()` internally. If users require a Cursor, they
+should utilize the query builder or a custom repository method.
 
 #### Lifecycle callbacks and AlsoLoad
 
