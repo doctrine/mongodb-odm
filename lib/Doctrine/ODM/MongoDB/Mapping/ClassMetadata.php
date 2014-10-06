@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
+use Doctrine\Instantiator\Instantiator;
 use Doctrine\ODM\MongoDB\LockException;
 
 /**
@@ -49,11 +50,9 @@ class ClassMetadata extends ClassMetadataInfo
     public $reflFields = array();
 
     /**
-     * The prototype from which new instances of the mapped class are created.
-     *
-     * @var object
+     * @var \Doctrine\Instantiator\InstantiatorInterface|null
      */
-    private $prototype;
+    private $instantiator;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
@@ -67,6 +66,7 @@ class ClassMetadata extends ClassMetadataInfo
         $this->reflClass = new \ReflectionClass($documentName);
         $this->namespace = $this->reflClass->getNamespaceName();
         $this->setCollection($this->reflClass->getShortName());
+        $this->instantiator = new Instantiator();
     }
 
     /**
@@ -176,6 +176,7 @@ class ClassMetadata extends ClassMetadataInfo
     {
         // Restore ReflectionClass and properties
         $this->reflClass = new \ReflectionClass($this->name);
+        $this->instantiator = $this->instantiator ?: new Instantiator();
 
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declared'])) {
@@ -195,12 +196,6 @@ class ClassMetadata extends ClassMetadataInfo
      */
     public function newInstance()
     {
-        if ($this->prototype === null) {
-            $this->prototype = version_compare(PHP_VERSION, '5.4.0', '>=')
-                ? $this->reflClass->newInstanceWithoutConstructor()
-                : unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
-        }
-
-        return clone $this->prototype;
+        return $this->instantiator->instantiate($this->name);
     }
 }

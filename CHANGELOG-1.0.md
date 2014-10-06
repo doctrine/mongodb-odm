@@ -15,6 +15,14 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
+#### `__clone()` method no longer called when documents are instantiated via `ClassMetadata::newInstance()`
+
+As of [#956](https://github.com/doctrine/mongodb-odm/pull/956), ClassMetadata
+uses the [Doctrine Instantiator](https://github.com/doctrine/instantiator)
+library to create new document instances. This library avoids calling
+`__clone()` or any public API on instantiated objects. This is a BC break for\
+code that may have relied upon the previous behavior.
+
 1.0.0-BETA11 (2014-06-06)
 -------------------------
 
