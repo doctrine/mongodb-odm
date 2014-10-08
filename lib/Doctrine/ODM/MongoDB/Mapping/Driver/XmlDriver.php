@@ -101,10 +101,10 @@ class XmlDriver extends FileDriver
             }
         }
         if (isset($xmlRoot->{'require-indexes'})) {
-            $class->setRequireIndexes((boolean) $xmlRoot->{'require-indexes'});
+            $class->setRequireIndexes('true' === (string) $xmlRoot->{'require-indexes'});
         }
         if (isset($xmlRoot->{'slave-okay'})) {
-            $class->setSlaveOkay((boolean) $xmlRoot->{'slave-okay'});
+            $class->setSlaveOkay('true' === (string) $xmlRoot->{'slave-okay'});
         }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {

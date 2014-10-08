@@ -27,7 +27,6 @@ use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
@@ -77,13 +76,20 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @var boolean
      */
     private $requireIndexes;
-
+    
     /**
      * Hints for UnitOfWork behavior.
      *
      * @var array
      */
     private $unitOfWorkHints = array();
+    
+    /**
+     * Last constructed FieldExtractor instance
+     * 
+     * @var FieldExtractor
+     */
+    private $fieldExtractor;
 
     /**
      * Constructor.
@@ -163,37 +169,56 @@ class Query extends \Doctrine\MongoDB\Query\Query
     }
 
     /**
-     * Gets the fields involved in this query.
+     * Returns FieldExtractor instance for this Query
+     * 
+     * @return FieldExtractor
+     */
+    public function getFieldExtractor()
+    {
+        if ($this->fieldExtractor === null) {
+            $query = isset($this->query['query']) ? $this->query['query'] : array();
+            $sort = isset($this->query['sort']) ? $this->query['sort'] : array();
+            $this->fieldExtractor = new FieldExtractor($query, $sort);
+        }
+        return $this->fieldExtractor;
+    }
+    
+    /**
+     * Get all fields involved in this query.
      *
      * @return array $fields An array of fields names used in this query.
      */
     public function getFieldsInQuery()
     {
-        $query = isset($this->query['query']) ? $this->query['query'] : array();
-        $sort = isset($this->query['sort']) ? $this->query['sort'] : array();
-
-        $extractor = new FieldExtractor($query, $sort);
-        return $extractor->getFields();
+        return $this->getFieldExtractor()->getFields();
     }
 
     /**
-     * Check if this query is indexed.
+     * Check if this query is indexed. Kept for BC
      *
-     * @return bool
+     * @param $returnBooleanInsteadOfException method will return false when query is not indexed
+     * @return boolean
      */
     public function isIndexed()
     {
-        $fields = $this->getFieldsInQuery();
-        foreach ($fields as $field) {
-            if ( ! $this->collection->isFieldIndexed($field)) {
-                return false;
-            }
-        }
-        return true;
+        return $this->runIndexChecker() === true;
+    }
+    
+    /**
+     * Check if this query is indexed.
+     *
+     * @return true|MongoException
+     */
+    public function runIndexChecker()
+    {
+        $indexChecker = new IndexChecker($this);
+        return $indexChecker->run();
     }
 
     /**
-     * Gets an array of the unindexed fields in this query.
+     * Get an array of the unindexed fields in this query.
+     * NOTE: This method may return wrong results when Compound Index
+     * was used
      *
      * @return array
      */
@@ -217,8 +242,11 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function execute()
     {
-        if ($this->isIndexRequired() && ! $this->isIndexed()) {
-            throw MongoDBException::queryNotIndexed($this->class->name, $this->getUnindexedFields());
+        if ($this->isIndexRequired()) {
+            $verdict = $this->runIndexChecker();
+            if ($verdict !== true) {
+                throw $verdict;
+            }
         }
 
         $results = parent::execute();
@@ -303,7 +331,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
         return $cursor;
     }
-
+    
     /**
      * Return whether queries on this document should require indexes.
      *

@@ -81,7 +81,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * @var bool
      */
     private $requireIndexes;
-
+    
     /**
      * Construct a Builder
      *

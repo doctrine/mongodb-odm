@@ -286,6 +286,8 @@ Optional attributes:
    indexes - Specifies an array of indexes for this document.
 -
    requireIndexes - Specifies whether or not queries should require indexes.
+-
+   allowLessEfficientIndexes - Specifies whether or not allow less efficient indexes (default is true, works only when combined with requireIndexes)
 
 Example:
 
@@ -301,7 +303,8 @@ Example:
      *     indexes={
      *         @Index(keys={"username"="desc"}, options={"unique"=true})
      *     },
-     *     requireIndexes=true
+     *     requireIndexes=true,
+     *     allowLessEfficientIndexes=false
      * )
      */
     class User

@@ -67,11 +67,27 @@ class MongoDBException extends \Exception
         return new self('Cannot persist an embedded document or mapped superclass ' . $className);
     }
 
-    public static function queryNotIndexed($className, $unindexedFields)
+    public static function queryNotIndexed($className, $usedFields)
     {
-        return new self(sprintf('Cannot execute unindexed queries on %s. Unindexed fields: %s',
+        return new self(sprintf('Cannot execute unindexed queries on %s. Used fields: %s',
             $className,
-            implode(', ', $unindexedFields)
+            implode(', ', $usedFields)
+        ));
+    }
+    
+    public static function orClauseNotIndexed($className, $usedFields)
+    {
+        return new self(sprintf('Cannot execute unindexed or clause in query on %s. Used fields: %s',
+            $className,
+            implode(', ', $usedFields)
+        ));
+    }
+    
+    public static function queryNotIndexedForSorting($className, $usedFields)
+    {
+        return new self(sprintf('There is no index capable of sorting results on %s. Used fields: %s',
+            $className,
+            json_encode($usedFields)
         ));
     }
 }
