@@ -52,7 +52,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\EmbedOne(targetDocument="Address") */
         private $address;
     
-        // ...
+        // you have to add getters and setters too for the example code below to work
     }
     
     /** @ODM\Document */
@@ -61,7 +61,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\ReferenceOne(targetDocument="Documents\Manager") */
         private $manager;
     
-        // ...
+        // you have to add getters and setters too for the example code below to work
     }
     
     /** @ODM\Document */
@@ -70,7 +70,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\ReferenceMany(targetDocument="Documents\Project") */
         private $projects = array();
     
-        // ...
+        // you have to add getters and setters too for the example code below to work
     }
     
     /** @ODM\EmbeddedDocument */
@@ -88,7 +88,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\String */
         private $zipcode;
     
-        // ...
+        // you have to add getters and setters too for the example code below to work
     }
     
     /** @ODM\Document */
@@ -105,7 +105,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
             $this->name = $name;
         }
     
-        // ...
+        // you have to add getters and setters too for the example code below to work
     }
 
 Now those objects can be used just like you weren't using any
