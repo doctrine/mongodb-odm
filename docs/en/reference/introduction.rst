@@ -30,6 +30,8 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     {
         /** @ODM\Id */
         private $id;
+        public function getId() { return $this->id; }
+        public function setId($id) { $this->id = $id; }
     
         /** @ODM\Increment */
         private $changes = 0;
@@ -39,18 +41,26 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     
         /** @ODM\String */
         private $name;
+        public function getName() { return $this->name; }
+        public function setName($name) { $this->name = $name; }
     
         /** @ODM\Float */
         private $salary;
+        public function getSalary() { return $this->salary; }
+        public function setSalary($salary) { $this->salary = $salary; }
     
         /** @ODM\Date */
         private $started;
+        public function getStarted() { return $this->started; }
+        public function setStarted($started) { $this->started = $started; }
     
         /** @ODM\Date */
         private $left;
     
         /** @ODM\EmbedOne(targetDocument="Address") */
         private $address;
+        public function getAddress() { return $this->address; }
+        public function setAddress($address) { $this->address = $address; }
     
         // ...
     }
@@ -76,17 +86,26 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     /** @ODM\EmbeddedDocument */
     class Address
     {
+    
         /** @ODM\String */
         private $address;
+        public function getAddress() { return $this->address; }
+        public function setAddress($address) { $this->address = $address; }
     
         /** @ODM\String */
         private $city;
+        public function getCity() { return $this->city; }
+        public function setCity($city) { $this->city = $city; }
     
         /** @ODM\String */
         private $state;
+        public function getState() { return $this->state; }
+        public function setState($state) { $this->state = $state; }
     
         /** @ODM\String */
         private $zipcode;
+        public function getZipcode() { return $this->zipcode; }
+        public function setZipcode($zipcode) { $this->zipcode = $zipcode; }
     
         // ...
     }
@@ -115,6 +134,12 @@ Doctrine:
 .. code-block:: php
 
     <?php
+    
+    use Documents\Employee;
+    use Documents\BaseEmployee;
+    use Documents\Address;
+    use Documents\Project;
+    use Documents\Manager;
 
     $employee = new Employee();
     $employee->setName('Employee');
@@ -133,8 +158,7 @@ Doctrine:
     $manager->setName('Manager');
     $manager->setSalary(100000.00);
     $manager->setStarted(new \DateTime());
-    $manager->addProject($project);
-    
+
     $dm->persist($employee);
     $dm->persist($address);
     $dm->persist($project);
