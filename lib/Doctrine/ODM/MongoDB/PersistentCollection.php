@@ -194,6 +194,10 @@ class PersistentCollection implements BaseCollection
             }
         }
 
+        if ($newObjects) {
+            $this->isDirty = true;
+        }
+
         $this->mongoData = array();
         $this->initialized = true;
     }
