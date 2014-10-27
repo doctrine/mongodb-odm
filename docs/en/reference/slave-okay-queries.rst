@@ -34,7 +34,7 @@ on the query builder.
     $query = $qb->getQuery();
     $users = $query->execute();
 
-The data in the query above will be read from a slave. Even if you have a ``@ReferenceMany`` or 
+The data in the query above will be read from a slave. Even if you have a ``@ReferenceOne`` or 
 ``@ReferenceMany`` resulting from the query above it will be initialized and loaded from a slave.
 
 .. code-block:: php
