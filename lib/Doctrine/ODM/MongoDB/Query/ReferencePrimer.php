@@ -165,6 +165,10 @@ class ReferencePrimer
 
     /**
      * If you are priming references inside an embedded document you'll need to parse the dot syntax.
+     * This method will traverse through embedded documents to find the reference to prime.
+     * However this method will not traverse through multiple layers of references.
+     * I.e. you can prime this: myDocument.embeddedDocument.embeddedDocuments.embeddedDocuments.referencedDocument(s)
+     * ... but you cannot prime this: myDocument.embeddedDocument.referencedDocuments.referencedDocument(s)
      * This addresses Issue #624.
      *
      * @param array $fieldName
@@ -173,90 +177,44 @@ class ReferencePrimer
      * @param array $mapping
      */
     private function parseDotSyntaxForPrimer($fieldName, $class, $documents, $mapping = null) {
-
         // Recursion passthrough:
         if($mapping != null) return array('fieldName'=>$fieldName, 'class'=>$class, 'documents'=>$documents, 'mapping'=>$mapping);
 
-            echo("Mapping null, parsing dot syntax for fieldName $fieldName.\n");
-
-        //Create an array of all the field names in the dot-syntax list.
+        // Gather mapping data:
         $e = explode('.', $fieldName);
-
-        // No further processing for unmapped fields
         if ( ! isset($class->fieldMappings[$e[0]]))
             throw new \InvalidArgumentException("Field $fieldName cannot be further parsed for priming because it is unmpaped..");
-
-        // Get the field mappings for the first item.
         $mapping = $class->fieldMappings[$e[0]];
-        $e[0] = $mapping['name']; // This seems redundant
+        $e[0] = $mapping['name'];
 
-            echo("Found mapping for $e[0]: \n");
-            //print_r($mapping);
-
-        if(!isset($mapping['reference'])) goto checkIfEmbedded;
-        if($mapping['reference']) {
-
-                echo("Mapping is a reference. Making sure it's not deep. \n");
-
-            // If it's a reference but not the last item, abort because we only go one reference in at this time.
-            if(count($e) > 1){
-                throw new \InvalidArgumentException("Cannot prime more than one layer deep but field $e[0] is a reference and has children in fieldName $fieldName.");
-            } else goto complete; // Jump to end for code legibility.
-        }
-
-        checkIfEmbedded:
-        if(!isset($mapping['embedded'])) {
-            throw new \InvalidArgumentException("Field $e[0] of fieldName $fieldName is not an embedded document, therefore no children can be primed. Aborting.");
-        } elseif(!$mapping['embedded']) {
-            throw new \InvalidArgumentException("Field $e[0] of fieldName $fieldName is not an embedded document, therefore no children can be primed. Aborting.");
-        }
-
-        // From here down we know the mapping is embedded and we must go deeper in.
-
-        // Exception for fields without a targetDocument mapping
-        if ( ! isset($mapping['targetDocument']))
-            throw new \InvalidArgumentException("targetDocument mapping must be set in order for prime to work. Reference fieldName $fieldName for mapping of field ".$mapping['fieldName']);
-
-        echo("Checking documents to form nextDocuments array. \n");
-        $nextDocuments = array();
-
-        foreach($documents as $document) {
-            echo("Getting fieldValue for fieldName $e[0].\n");
-            $fieldValue = $class->getFieldValue($document, $e[0]);
-            if(is_a($fieldValue,'Doctrine\ODM\MongoDB\PersistentCollection')) {
-                foreach($fieldValue as $subDocument) {
-                    array_push($nextDocuments,$subDocument);
-                }
+        // Case of embedded document(s) to recurse through:
+        if(!isset($mapping['reference'])) {
+            if(!isset($mapping['embedded']))
+                throw new \InvalidArgumentException("Field $e[0] of fieldName $fieldName is not an embedded document, therefore no children can be primed. Aborting. This feature does not support traversing nested referenced documents at this time.");
+            if(!$mapping['embedded'])
+                throw new \InvalidArgumentException("Field $e[0] of fieldName $fieldName is not an embedded document, therefore no children can be primed. Aborting. This feature does not support traversing nested referenced documents at this time.");
+            if ( ! isset($mapping['targetDocument']))
+                throw new \InvalidArgumentException("No target document class has been specified for this embedded document. However, targetDocument mapping must be specified in order for prime to work on fieldName $fieldName for mapping of field ".$mapping['fieldName']);
+            $childDocuments = array();
+            foreach($documents as $document) {
+                $fieldValue = $class->getFieldValue($document, $e[0]);
+                if(is_a($fieldValue,'Doctrine\ODM\MongoDB\PersistentCollection'))
+                    foreach($fieldValue as $elemDocument) array_push($childDocuments,$elemDocument);
+                else array_push($childDocuments,$fieldValue);
             }
-            else array_push($nextDocuments,$fieldValue);
+            array_shift($e);
+            $childClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+            if ( ! $childClass->hasField($e[0]))
+                throw new \InvalidArgumentException("Field to prime must exist in embedded target document. Reference fieldName $fieldName for mapping of target document class ".$mapping['targetDocument']);
+            $childFieldName = implode('.',$e);
+            return $this->parseDotSyntaxForPrimer($childFieldName, $childClass, $childDocuments);
         }
-
-        // Set our next class to be that of the target embedded document.
-        $nextClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-        // Remove the current field off the list.
-        array_shift($e);
-
-        // Throw an exception if the next class does not have metadata for the next field.
-        if ( ! $nextClass->hasField($e[0]))
-            throw new \InvalidArgumentException("Field to prime must exist in embedded target document. Reference fieldName $fieldName for mapping of target document class ".$mapping['targetDocument']);
-
-        // Prepare the remaining part of the dot-syntax.
-        $childFieldName = implode('.',$e);
-
-        // Go deeper into recursion.
-        return $this->parseDotSyntaxForPrimer($childFieldName, $nextClass, $nextDocuments);
-
-        complete:
-
-            //echo("Completing parsing of dot-syntax. Returning fieldName: $fieldName, class: ".$class->getName().", mapping: ".json_encode($mapping)."\n");
-
-        $return = array('fieldName'=>$fieldName, 'class'=>$class, 'documents'=>$documents, 'mapping'=>$mapping);
-
-            //echo("Checking return fieldname: ".$return['fieldName'].", class: ".$return['class']->getName().", mapping: ".json_encode($return['mapping'])."\n");
-
-        // If it's the last item and it's the reference, prime it.
-        return $return;
-
+        // Case of reference(s) to prime:
+        if($mapping['reference']) {
+            if(count($e) > 1)
+                throw new \InvalidArgumentException("Cannot prime more than one layer deep but field $e[0] is a reference and has children in fieldName $fieldName.");
+            return array('fieldName'=>$fieldName, 'class'=>$class, 'documents'=>$documents, 'mapping'=>$mapping);
+        }
     }
 
     /**
