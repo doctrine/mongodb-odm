@@ -24,6 +24,8 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 
 /**
  * The ReferencePrimer is responsible for priming reference relationships.
@@ -108,7 +110,11 @@ class ReferencePrimer
      */
     public function primeReferences(ClassMetadata $class, $documents, $fieldName, array $hints = array(), $primer = null)
     {
-        $mapping = $class->getFieldMapping($fieldName);
+        $data = $this->parseDotSyntaxForPrimer($fieldName,$class,$documents);
+        $mapping = $data['mapping'];
+        $fieldName = $data['fieldName'];
+        $class = $data['class'];
+        $documents = $data['documents'];
 
         /* Inverse-side references would need to be populated before we can
          * collect references to be primed. This is not supported.
@@ -131,6 +137,7 @@ class ReferencePrimer
         $primer = $primer ?: $this->defaultPrimer;
         $groupedIds = array();
 
+        /** @var Doctrine\ODM\MongoDB\PersistentCollection $document */
         foreach ($documents as $document) {
             $fieldValue = $class->getFieldValue($document, $fieldName);
 
@@ -154,6 +161,102 @@ class ReferencePrimer
             $refClass = $this->dm->getClassMetadata($className);
             call_user_func($primer, $this->dm, $refClass, array_values($ids), $hints);
         }
+    }
+
+    /**
+     * If you are priming references inside an embedded document you'll need to parse the dot syntax.
+     * This addresses Issue #624.
+     *
+     * @param array $fieldName
+     * @param ClassMetadata $class
+     * @param array\Traversable $documents
+     * @param array $mapping
+     */
+    private function parseDotSyntaxForPrimer($fieldName, $class, $documents, $mapping = null) {
+
+        // Recursion passthrough:
+        if($mapping != null) return array('fieldName'=>$fieldName, 'class'=>$class, 'documents'=>$documents, 'mapping'=>$mapping);
+
+            echo("Mapping null, parsing dot syntax for fieldName $fieldName.\n");
+
+        //Create an array of all the field names in the dot-syntax list.
+        $e = explode('.', $fieldName);
+
+        // No further processing for unmapped fields
+        if ( ! isset($class->fieldMappings[$e[0]]))
+            throw new \InvalidArgumentException("Field $fieldName cannot be further parsed for priming because it is unmpaped..");
+
+        // Get the field mappings for the first item.
+        $mapping = $class->fieldMappings[$e[0]];
+        $e[0] = $mapping['name']; // This seems redundant
+
+            echo("Found mapping for $e[0]: \n");
+            //print_r($mapping);
+
+        if(!isset($mapping['reference'])) goto checkIfEmbedded;
+        if($mapping['reference']) {
+
+                echo("Mapping is a reference. Making sure it's not deep. \n");
+
+            // If it's a reference but not the last item, abort because we only go one reference in at this time.
+            if(count($e) > 1){
+                throw new \InvalidArgumentException("Cannot prime more than one layer deep but field $e[0] is a reference and has children in fieldName $fieldName.");
+            } else goto complete; // Jump to end for code legibility.
+        }
+
+        checkIfEmbedded:
+        if(!isset($mapping['embedded'])) {
+            throw new \InvalidArgumentException("Field $e[0] of fieldName $fieldName is not an embedded document, therefore no children can be primed. Aborting.");
+        } elseif(!$mapping['embedded']) {
+            throw new \InvalidArgumentException("Field $e[0] of fieldName $fieldName is not an embedded document, therefore no children can be primed. Aborting.");
+        }
+
+        // From here down we know the mapping is embedded and we must go deeper in.
+
+        // Exception for fields without a targetDocument mapping
+        if ( ! isset($mapping['targetDocument']))
+            throw new \InvalidArgumentException("targetDocument mapping must be set in order for prime to work. Reference fieldName $fieldName for mapping of field ".$mapping['fieldName']);
+
+        echo("Checking documents to form nextDocuments array. \n");
+        $nextDocuments = array();
+
+        foreach($documents as $document) {
+            echo("Getting fieldValue for fieldName $e[0].\n");
+            $fieldValue = $class->getFieldValue($document, $e[0]);
+            if(is_a($fieldValue,'Doctrine\ODM\MongoDB\PersistentCollection')) {
+                foreach($fieldValue as $subDocument) {
+                    array_push($nextDocuments,$subDocument);
+                }
+            }
+            else array_push($nextDocuments,$fieldValue);
+        }
+
+        // Set our next class to be that of the target embedded document.
+        $nextClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+        // Remove the current field off the list.
+        array_shift($e);
+
+        // Throw an exception if the next class does not have metadata for the next field.
+        if ( ! $nextClass->hasField($e[0]))
+            throw new \InvalidArgumentException("Field to prime must exist in embedded target document. Reference fieldName $fieldName for mapping of target document class ".$mapping['targetDocument']);
+
+        // Prepare the remaining part of the dot-syntax.
+        $childFieldName = implode('.',$e);
+
+        // Go deeper into recursion.
+        return $this->parseDotSyntaxForPrimer($childFieldName, $nextClass, $nextDocuments);
+
+        complete:
+
+            //echo("Completing parsing of dot-syntax. Returning fieldName: $fieldName, class: ".$class->getName().", mapping: ".json_encode($mapping)."\n");
+
+        $return = array('fieldName'=>$fieldName, 'class'=>$class, 'documents'=>$documents, 'mapping'=>$mapping);
+
+            //echo("Checking return fieldname: ".$return['fieldName'].", class: ".$return['class']->getName().", mapping: ".json_encode($return['mapping'])."\n");
+
+        // If it's the last item and it's the reference, prime it.
+        return $return;
+
     }
 
     /**
