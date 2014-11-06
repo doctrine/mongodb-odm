@@ -9,10 +9,10 @@ class _Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest {
 
     public function testUpdateOfInheritedDocumentUsingFindAndUpdate() {
         $name = "Ferrari";
-        $features = [
+        $features = array(
             "Super Engine",
             "Huge Wheels"
-        ];
+        );
 
         //first query, create Car with name "Ferrari"
         $this->dm->createQueryBuilder(__NAMESPACE__ . '\Car')
