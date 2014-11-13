@@ -1131,7 +1131,7 @@ Defines that the annotated instance variable holds a timestamp.
 .. note::
 
     The timestamp annotation is intended for internal use (MongoDB uses it in the replication oplog).
-    If you're storing dates and times in your application, the @Date annotation.
+    If you're storing dates and times in your application, please use the @Date annotation.
 
 @UniqueIndex
 ------------
