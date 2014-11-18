@@ -188,7 +188,7 @@ This list explains some of the less obvious mapping types:
 -  ``bin_bytearray``: string to MongoBinData instance with a "byte array" type
 -  ``bin_custom``: string to MongoBinData instance with a "custom" type
 -  ``bin_func``: string to MongoBinData instance with a "function" type
--  ``bin_md5``: string to MongoBinData instance with a "md5" typ
+-  ``bin_md5``: string to MongoBinData instance with a "md5" type
 -  ``bin_uuid``: string to MongoBinData instance with a "uuid" type
 -  ``collection``: numerically indexed array to MongoDB array
 -  ``date``: DateTime to MongoDate
