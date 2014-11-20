@@ -12,6 +12,11 @@ use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ConnectionMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
+use Documents\Ecommerce\ConfigurableProduct;
+use Documents\Ecommerce\Currency;
+use Documents\Ecommerce\Money;
+use Documents\Ecommerce\Option;
+use Documents\Ecommerce\StockItem;
 use Documents\ForumUser;
 use Documents\ForumAvatar;
 
@@ -436,6 +441,41 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->registerManaged($document, null, array());
 
         $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
+    }
+
+    public function testDetach()
+    {
+        $document = new ConfigurableProduct('foo bar');
+        //option 1
+        $document->addOption(
+            new Option(
+                'foo option',
+                new Money(
+                    10.0,
+                    new Currency('EURO')
+                ),
+                new StockItem('foo item')
+            )
+        );
+        //option 2
+        $document->addOption(
+            new Option(
+                'bar option',
+                new Money(
+                    20.0,
+                    new Currency('EURO')
+                ),
+                new StockItem('bar item')
+            )
+        );
+        //persist document
+        $this->dm->persist($document);
+        //check the count of uow (Persist operation of money is not cascaded: 1 + 2*3
+        $this->assertEquals(7, $this->uow->size());
+        //detach the document
+        $this->dm->detach($document);
+        //should be 0 now
+        $this->assertEquals(0, $this->uow->size());
     }
 
     protected function getDocumentManager()
