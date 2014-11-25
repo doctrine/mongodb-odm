@@ -456,20 +456,6 @@ above code to work, you should have:
     <?php
 
     /**
-     * @Document
-     */
-    class Money
-    {
-    //...
-    }
-
-or
-
-.. code-block:: php
-
-    <?php
-
-    /**
      * @EmbeddedDocument
      */
     class Money
@@ -477,9 +463,12 @@ or
     //...
     }
 
-The difference is that @EmbeddedDocument cannot be stored without a
+Note that @EmbeddedDocument cannot be stored without a
 parent @Document and cannot specify its own db or collection
-attributes.
+attributes. If you want to use same type of object as @Document
+and @EmbeddedDocument you should create common @MappedSuperclass
+object which will be extended by concrete objects mapped as
+@Document and @EmbeddedDocument.
 
 @Field
 ------
