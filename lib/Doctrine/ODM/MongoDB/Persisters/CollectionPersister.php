@@ -110,6 +110,7 @@ class CollectionPersister
 
             case 'addToSet':
             case 'pushAll':
+                $coll->initialize();
                 $this->deleteElements($coll, $options);
                 $this->insertElements($coll, $options);
                 break;
