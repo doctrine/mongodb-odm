@@ -6,12 +6,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    private function createUser()
+    private function createUser($name = 'jon', $fullName = 'Jonathan H. Wage')
     {
         $user = new User();
-        $user->name = 'jon';
+        $user->name = $name;
         $user->profile = new Profile();
-        $user->profile->name = 'Jonathan H. Wage';
+        $user->profile->name = $fullName;
         $this->dm->persist($user);
         $this->dm->flush();
         return $user;
@@ -197,6 +197,20 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($user->profiles[0]->preRemove);
         $this->assertTrue($user->profiles[0]->postRemove);
     }
+    
+    public function testReferences()
+    {
+        $user = $this->createUser();
+        $user2 = $this->createUser('maciej', 'Maciej Malarz');
+        
+        $user->friends[] = $user2;
+        $this->dm->flush();
+        
+        $this->assertTrue($user->preUpdate);
+        $this->assertTrue($user->postUpdate);
+        $this->assertFalse($user2->preUpdate);
+        $this->assertFalse($user2->postUpdate);
+    }
 }
 
 /** @ODM\Document */
@@ -210,6 +224,9 @@ class User extends BaseDocument
 
     /** @ODM\EmbedMany(targetDocument="Profile") */
     public $profiles = array();
+    
+    /** @ODM\ReferenceMany(targetDocument="User") */
+    public $friends = array();
 }
 
 /** @ODM\EmbeddedDocument */

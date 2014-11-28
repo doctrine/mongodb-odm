@@ -337,7 +337,7 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $update = $this->pb->prepareUpdateData($document);
 
-        if ( ! empty($update)) {
+        if ( ! empty($update) || $this->uow->hasCollectionScheduledForCommiting($document)) {
 
             $id = $this->class->getDatabaseIdentifierValue($id);
             $query = array('_id' => $id);
@@ -359,6 +359,12 @@ class DocumentPersister
                     $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 }
+            }
+            
+            // We got here because $document has related PersistentCollections to be 
+            // commited later but if it's not versioned then there's nothing left to do
+            if (empty($update)) {
+                return;
             }
 
             // Include locking logic so that if the document object in memory is currently
