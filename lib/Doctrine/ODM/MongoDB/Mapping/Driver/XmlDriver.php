@@ -70,7 +70,19 @@ class XmlDriver extends FileDriver
             $class->setDatabase((string) $xmlRoot['db']);
         }
         if (isset($xmlRoot['collection'])) {
-            $class->setCollection((string) $xmlRoot['collection']);
+            if (isset($xmlRoot['capped-collection'])) {
+                $config = array('name' => (string) $xmlRoot['collection']);
+                $config['capped'] = (bool) $xmlRoot['capped-collection'];
+                if (isset($xmlRoot['capped-collection-max'])) {
+                    $config['max'] = (int) $xmlRoot['capped-collection-max'];
+                }
+                if (isset($xmlRoot['capped-collection-size'])) {
+                    $config['size'] = (int) $xmlRoot['capped-collection-size'];
+                }
+                $class->setCollection($config);
+            } else {
+                $class->setCollection((string) $xmlRoot['collection']);
+            }
         }
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
