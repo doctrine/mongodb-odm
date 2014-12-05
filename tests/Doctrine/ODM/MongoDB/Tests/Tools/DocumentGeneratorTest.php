@@ -13,6 +13,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function setUp()
     {
+        parent::setUp();
         $this->namespace = uniqid("doctrine_");
         $this->tmpDir = \sys_get_temp_dir();
         \mkdir($this->tmpDir . \DIRECTORY_SEPARATOR . $this->namespace);
@@ -25,6 +26,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function tearDown()
     {
+        parent::tearDown();
         $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->tmpDir . '/' . $this->namespace));
         foreach ($ri AS $file) {
             /* @var $file \SplFileInfo */
@@ -190,6 +192,45 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($cm->idGenerator, $metadata->idGenerator);
         $this->assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
     }
+    
+    public function testTraitPropertiesAndMethodsAreNotDuplicated()
+    {
+        if (PHP_VERSION_ID < 50400) {
+            $this->markTestSkipped('Traits are not available before php 5.4.');
+        }
+        $cmf = $this->dm->getMetadataFactory();
+        $user = new \Doctrine\ODM\MongoDB\Tests\Tools\GH297\User();
+        $metadata = $cmf->getMetadataFor(get_class($user));
+        $metadata->name = $this->namespace . "\User";
+        $metadata->namespace = $this->namespace;
+        $this->generator->writeDocumentClass($metadata, $this->tmpDir);
+        $this->assertFileExists($this->tmpDir . "/" . $this->namespace . "/User.php");
+        require $this->tmpDir . "/" . $this->namespace . "/User.php";
+        $reflClass = new \ReflectionClass($metadata->name);
+        $this->assertSame($reflClass->hasProperty('address'), false);
+        $this->assertSame($reflClass->hasMethod('setAddress'), false);
+        $this->assertSame($reflClass->hasMethod('getAddress'), false);
+    }
+
+    public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses() 
+    {
+        if (PHP_VERSION_ID < 50400) {
+            $this->markTestSkipped('Traits are not available before php 5.4.');
+        }
+        $cmf = $this->dm->getMetadataFactory();
+        $user = new \Doctrine\ODM\MongoDB\Tests\Tools\GH297\Admin();
+        $metadata = $cmf->getMetadataFor(get_class($user));
+        $metadata->name = $this->namespace . "\DDC2372Admin";
+        $metadata->namespace = $this->namespace;
+        $this->generator->writeDocumentClass($metadata, $this->tmpDir);
+        $this->assertFileExists($this->tmpDir . "/" . $this->namespace . "/DDC2372Admin.php");
+        require $this->tmpDir . "/" . $this->namespace . "/DDC2372Admin.php";
+        $reflClass = new \ReflectionClass($metadata->name);
+        $this->assertSame($reflClass->hasProperty('address'), false);
+        $this->assertSame($reflClass->hasMethod('setAddress'), false);
+        $this->assertSame($reflClass->hasMethod('getAddress'), false);
+    }
+
 }
 
 class DocumentGeneratorAuthor {}
