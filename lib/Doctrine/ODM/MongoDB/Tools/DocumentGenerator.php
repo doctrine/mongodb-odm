@@ -437,6 +437,20 @@ public function <methodName>()
 
     private function hasProperty($property, ClassMetadataInfo $metadata)
     {
+        if ($this->extendsClass()) {
+            // don't generate property if its already on the base class.
+            $reflClass = new \ReflectionClass($this->getClassToExtend());
+            if ($reflClass->hasProperty($property)) {
+                return true;
+            }
+        }
+        
+        foreach ($this->getTraits($metadata) as $trait) {
+            if ($trait->hasProperty($property)) {
+                return true;
+            }
+        }
+        
         return (
             isset($this->staticReflection[$metadata->name]) &&
             in_array($property, $this->staticReflection[$metadata->name]['properties'])
@@ -445,6 +459,20 @@ public function <methodName>()
 
     private function hasMethod($method, ClassMetadataInfo $metadata)
     {
+        if ($this->extendsClass()) {
+            // don't generate method if its already on the base class.
+            $reflClass = new \ReflectionClass($this->getClassToExtend());
+            if ($reflClass->hasMethod($method)) {
+                return true;
+            }
+        }
+        
+        foreach ($this->getTraits($metadata) as $trait) {
+            if ($trait->hasMethod($method)) {
+                return true;
+            }
+        }
+        
         return (
             isset($this->staticReflection[$metadata->name]) &&
             in_array($method, $this->staticReflection[$metadata->name]['methods'])
@@ -482,6 +510,25 @@ public function <methodName>()
     private function getNamespace(ClassMetadataInfo $metadata)
     {
         return substr($metadata->name, 0, strrpos($metadata->name, '\\'));
+    }
+    
+    /**
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return array
+     */
+    protected function getTraits(ClassMetadataInfo $metadata) 
+    {
+        if (PHP_VERSION_ID >= 50400 && ($metadata->reflClass !== null || class_exists($metadata->name))) {
+            $reflClass = $metadata->reflClass === null ? new \ReflectionClass($metadata->name) : $metadata->reflClass;
+            $traits = array();
+            while ($reflClass !== false) {
+                $traits = array_merge($traits, $reflClass->getTraits());
+                $reflClass = $reflClass->getParentClass();
+            }
+            return $traits;
+        }
+        return array();
     }
 
     private function generateDocumentImports(ClassMetadataInfo $metadata)
