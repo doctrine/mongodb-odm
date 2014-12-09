@@ -1141,3 +1141,15 @@ Defines a unique index on the given document.
     private $email;
 
 .. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbref
+
+@Version
+--------
+
+Marker annotation that defines a specified field as version attribute used in an optimistic locking scenario. It only works with @Int and @Date annotated fields. Combining @Version with @Id is not supported.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Int @Version */
+    private $version;
