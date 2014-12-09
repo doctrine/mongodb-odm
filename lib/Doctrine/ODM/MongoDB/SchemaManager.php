@@ -160,11 +160,17 @@ class SchemaManager
 
         $class = $this->dm->getClassMetadata($documentName);
         $indexes = $this->prepareIndexes($class);
+        $embeddedDocumentIndexes = array();
 
         // Add indexes from embedded & referenced documents
         foreach ($class->fieldMappings as $fieldMapping) {
             if (isset($fieldMapping['embedded']) && isset($fieldMapping['targetDocument'])) {
-                $embeddedIndexes = $this->doGetDocumentIndexes($fieldMapping['targetDocument'], $visited);
+                if (isset($embeddedDocumentIndexes[$fieldMapping['targetDocument']])) {
+                    $embeddedIndexes = $embeddedDocumentIndexes[$fieldMapping['targetDocument']];
+                } else {
+                    $embeddedIndexes = $this->doGetDocumentIndexes($fieldMapping['targetDocument'], $visited);
+                    $embeddedDocumentIndexes[$fieldMapping['targetDocument']] = $embeddedIndexes;
+                }
                 foreach ($embeddedIndexes as $embeddedIndex) {
                     foreach ($embeddedIndex['keys'] as $key => $value) {
                         $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
