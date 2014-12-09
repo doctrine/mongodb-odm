@@ -42,6 +42,12 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
         $this->assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
+
+        $this->assertTrue(isset($indexes[2]['keys']['embedded_secondary.name']));
+        $this->assertEquals(1, $indexes[2]['keys']['embedded_secondary.name']);
+
+        $this->assertTrue(isset($indexes[3]['keys']['embedded_secondary.embeddedMany.name']));
+        $this->assertEquals(1, $indexes[3]['keys']['embedded_secondary.embeddedMany.name']);
     }
 
     public function testDiscriminatorIndexes()
@@ -309,6 +315,9 @@ class DocumentWithEmbeddedIndexes
 
     /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
     public $embedded;
+
+    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
+    public $embedded_secondary;
 }
 
 /**
