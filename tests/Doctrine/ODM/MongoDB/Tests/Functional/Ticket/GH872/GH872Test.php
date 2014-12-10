@@ -8,6 +8,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class GH872Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function tearDown() {
+        parent::tearDown();
+    }
+    
     public function testReferencedInheritanceTreeWorksCorrectly()
     {
         $event = new Event('My Event');
@@ -38,9 +42,10 @@ class GH872Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals((string)$locationId, (string)$eventDoc['location']);
         
         $event = $this->dm->find(__NAMESPACE__ . '\Event', $eventId);
-        
+
         $location = $event->getLocation();
         $this->assertNotNull($location);
+        $this->assertEquals('City Location', $location->name);
         
         $address = $location->getAddress();
         $this->assertNotNull($address);
@@ -58,7 +63,7 @@ class Event
     /** @ODM\String */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument="Location",simple="true") */
+    /** @ODM\ReferenceOne(targetDocument="Location", simple="true") */
     protected $location;
     
     public function getLocation() {

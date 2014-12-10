@@ -575,7 +575,7 @@ class DocumentPersister
             $this->uow->registerManaged($document, $id, $result);
         }
 
-        return $this->uow->getOrCreateDocument($this->class->name, $result, $hints);
+        return $this->uow->getOrCreateDocument($this->class->name, $result, $hints, $document);
     }
 
     /**
