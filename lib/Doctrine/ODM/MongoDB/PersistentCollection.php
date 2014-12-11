@@ -185,13 +185,16 @@ class PersistentCollection implements BaseCollection
         $this->uow->loadCollection($this);
         $this->takeSnapshot();
 
-        // Reattach any NEW objects added through add()
-        foreach ($newObjects as $key => $obj) {
-            if ($this->mapping['strategy'] === 'set') {
-                $this->coll->set($key, $obj);
-            } else {
-                $this->coll->add($obj);
+        if (count($newObjects)) {
+            // Reattach any NEW objects added through add()
+            foreach ($newObjects as $key => $obj) {
+                if ($this->mapping['strategy'] === 'set') {
+                    $this->coll->set($key, $obj);
+                } else {
+                    $this->coll->add($obj);
+                }
             }
+            $this->isDirty = true;
         }
 
         $this->mongoData = array();
