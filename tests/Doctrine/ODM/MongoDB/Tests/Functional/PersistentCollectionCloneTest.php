@@ -102,7 +102,7 @@ class PersistentCollectionCloneTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user2->groups = $user1->groups;
         $user2->groups->add($group3);
 
-        $this->assertEQuals(1, count($user1->groups->getInsertDiff()));
+        $this->assertEquals(1, count($user1->groups->getInsertDiff()));
 
         $this->dm->persist($group3);
         $this->dm->flush();

@@ -50,4 +50,29 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
     {
         return $this->getMock('Doctrine\Common\Collections\Collection');
     }
+
+    public function testIsDirtyAfterInitialize()
+    {
+        $collection = $this->getMockCollection();
+        $dm         = $this->getMockDocumentManager();
+        $uow        = $this->getMockUnitOfWork();
+        $pCollection = new PersistentCollection($collection, $dm, $uow);
+        $pCollection->setOwner($owner = new \stdClass, $mapping = [
+            'isOwningSide'   => false              ,
+            'targetDocument' => 'Not\A\Real\Class' ,
+            ]);
+        $pCollection->setInitialized(false);
+        $this->assertFalse($pCollection->isInitialized());
+        $this->assertFalse($pCollection->isDirty());
+        $document = new \stdClass;
+        $collection->expects($this->any())
+            ->method('toArray')
+            ->will($this->returnValue($document))
+            ;
+        $pCollection->add($document);
+        $this->assertTrue($pCollection->isDirty());
+        $pCollection->initialize();
+        $this->assertTrue($pCollection->isDirty());
+    }
+
 }
