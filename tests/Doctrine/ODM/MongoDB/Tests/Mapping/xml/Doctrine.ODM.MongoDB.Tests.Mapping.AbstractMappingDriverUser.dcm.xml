@@ -11,6 +11,8 @@
             <discriminator-mapping value="default" class="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" />
         </discriminator-map>
         <field fieldName="id" id="true" />
+        <field fieldName="version" version="true" type="int" />
+        <field fieldName="lock" lock="true" type="int" />
         <field fieldName="name" name="username" type="string" />
         <field fieldName="email" type="string" unique="true" drop-dups="true" order="desc" />
         <field fieldName="mysqlProfileId" type="integer" unique="true" drop-dups="true" order="desc" />

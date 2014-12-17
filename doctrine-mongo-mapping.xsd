@@ -65,6 +65,8 @@
     <xs:attribute name="file" type="xs:boolean" />
     <xs:attribute name="distance" type="xs:boolean" />
     <xs:attribute name="reference" type="xs:boolean" />
+    <xs:attribute name="version" type="xs:boolean" />
+    <xs:attribute name="lock" type="xs:boolean" />
     <!-- index options -->
     <xs:attribute name="background" type="xs:boolean" />
     <xs:attribute name="drop-dups" type="xs:boolean" />
