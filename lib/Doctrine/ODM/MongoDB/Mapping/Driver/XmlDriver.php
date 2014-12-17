@@ -127,14 +127,20 @@ class XmlDriver extends FileDriver
                             }
                         }
                     }
-                } 
-                
-                if (isset($attributes['not-saved'])) {
-                    $mapping['notSaved'] = ('true' === $attributes['not-saved']) ? true : false;
                 }
+
+                if (isset($attributes['not-saved'])) {
+                    $mapping['notSaved'] = !strcmp('true', $attributes['not-saved']);
+                }
+
                 if (isset($attributes['also-load'])) {
                     $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
+                } elseif (isset($attributes['version'])) {
+                    $mapping['version'] = !strcmp('true', $attributes['version']);
+                } elseif (isset($attributes['lock'])) {
+                    $mapping['lock'] = !strcmp('true', $attributes['lock']);
                 }
+
                 $this->addFieldMapping($class, $mapping);
             }
         }

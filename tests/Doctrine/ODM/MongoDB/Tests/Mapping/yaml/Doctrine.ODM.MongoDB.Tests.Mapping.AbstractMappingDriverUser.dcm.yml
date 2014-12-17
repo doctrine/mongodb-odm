@@ -9,6 +9,12 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
     id:
       type: id
       id: true
+    version:
+      type: int
+      version: true
+    lock:
+      type: int
+      lock: true
     name:
       type: string
       name: username
