@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Common\Util\Inflector;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 
@@ -62,16 +63,16 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Initializes a new <tt>DocumentRepository</tt>.
      *
-     * @param DocumentManager $dm The DocumentManager to use.
-     * @param UnitOfWork $uow The UnitOfWork to use.
+     * @param DocumentManager       $dm            The DocumentManager to use.
+     * @param UnitOfWork            $uow           The UnitOfWork to use.
      * @param Mapping\ClassMetadata $classMetadata The class descriptor.
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow, Mapping\ClassMetadata $class)
     {
         $this->documentName = $class->name;
-        $this->dm = $dm;
-        $this->uow = $uow;
-        $this->class = $class;
+        $this->dm           = $dm;
+        $this->uow          = $uow;
+        $this->class        = $class;
     }
 
     /**
@@ -96,8 +97,8 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Finds a document by its identifier
      *
      * @param string|object $id The identifier
-     * @param int $lockMode
-     * @param int $lockVersion
+     * @param int           $lockMode
+     * @param int           $lockVersion
      * @throws Mapping\MappingException
      * @throws LockException
      * @return object The document.
@@ -135,7 +136,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         }
 
         if ($lockMode == LockMode::OPTIMISTIC) {
-            if (!$this->class->isVersioned) {
+            if ( ! $this->class->isVersioned) {
                 throw LockException::notVersioned($this->documentName);
             }
             $document = $this->getDocumentPersister()->load($criteria);
@@ -188,7 +189,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Adds support for magic finders.
      *
      * @param string $method
-     * @param array $arguments
+     * @param array  $arguments
      * @throws MongoDBException
      * @throws \BadMethodCallException If the method called is an invalid find* method
      *                                 or no find* method at all and therefore an invalid
@@ -198,10 +199,10 @@ class DocumentRepository implements ObjectRepository, Selectable
     public function __call($method, $arguments)
     {
         if (substr($method, 0, 6) == 'findBy') {
-            $by = substr($method, 6, strlen($method));
+            $by     = substr($method, 6, strlen($method));
             $method = 'findBy';
         } elseif (substr($method, 0, 9) == 'findOneBy') {
-            $by = substr($method, 9, strlen($method));
+            $by     = substr($method, 9, strlen($method));
             $method = 'findOneBy';
         } else {
             throw new \BadMethodCallException(
@@ -214,7 +215,7 @@ class DocumentRepository implements ObjectRepository, Selectable
             throw MongoDBException::findByRequiresParameter($method . $by);
         }
 
-        $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
+        $fieldName = lcfirst(Inflector::classify($by));
 
         if ($this->class->hasField($fieldName)) {
             return $this->$method(array($fieldName => $arguments[0]));
@@ -265,9 +266,15 @@ class DocumentRepository implements ObjectRepository, Selectable
      */
     public function matching(Criteria $criteria)
     {
-        $visitor = new QueryExpressionVisitor($this->createQueryBuilder());
-        $expr = $visitor->dispatch($criteria->getWhereExpression());
-        $queryBuilder = $this->createQueryBuilder()->setQueryArray($expr->getQuery());
+        $queryBuilder    = $this->createQueryBuilder();
+        $whereExpression = $criteria->getWhereExpression();
+
+        if (null !== $whereExpression) {
+            $visitor = new QueryExpressionVisitor($this->createQueryBuilder());
+            $expr    = $visitor->dispatch($whereExpression);
+            
+            $queryBuilder->setQueryArray($expr->getQuery());
+        }
 
         if ($criteria->getMaxResults() !== null) {
             $queryBuilder->limit($criteria->getMaxResults());
