@@ -91,7 +91,7 @@ to be designated as a document. This can be done through the
 
     .. code-block:: yaml
 
-        Documents\User"
+        Documents\User:
           type: document
 
 By default, the document will be persisted to a database named
