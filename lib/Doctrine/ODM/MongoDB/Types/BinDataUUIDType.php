@@ -20,7 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataUUID type.
+ * The BinData type for binary UUID data.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>

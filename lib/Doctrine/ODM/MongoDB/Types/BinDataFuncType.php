@@ -20,7 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataFunc type.
+ * The BinData type for function data.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>

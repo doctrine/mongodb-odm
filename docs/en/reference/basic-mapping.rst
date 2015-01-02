@@ -184,7 +184,7 @@ You can read more about the available MongoDB types on `php.net <http://us.php.n
 Generally, the name of each built-in mapping type hints as to how the value will be converted.
 This list explains some of the less obvious mapping types:
 
--  ``bin``: string to MongoBinData instance with a "byte array" type
+-  ``bin``: string to MongoBinData instance with a "generic" type (default)
 -  ``bin_bytearray``: string to MongoBinData instance with a "byte array" type
 -  ``bin_custom``: string to MongoBinData instance with a "custom" type
 -  ``bin_func``: string to MongoBinData instance with a "function" type

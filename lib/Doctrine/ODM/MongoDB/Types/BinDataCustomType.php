@@ -20,7 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataCustom type.
+ * The BinData type for custom binary data.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
