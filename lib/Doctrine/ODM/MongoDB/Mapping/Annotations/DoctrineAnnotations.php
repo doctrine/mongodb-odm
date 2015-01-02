@@ -46,6 +46,7 @@ require_once __DIR__ . '/Timestamp.php';
 require_once __DIR__ . '/Bin.php';
 require_once __DIR__ . '/BinFunc.php';
 require_once __DIR__ . '/BinUUID.php';
+require_once __DIR__ . '/BinUUIDRFC4122.php';
 require_once __DIR__ . '/BinMD5.php';
 require_once __DIR__ . '/BinCustom.php';
 require_once __DIR__ . '/File.php';

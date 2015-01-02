@@ -33,10 +33,11 @@ class BinDataTest extends BaseTest
         $expectedBinCustom = version_compare(phpversion('mongo'), '1.2.11', '<') ? -128 : \MongoBinData::CUSTOM;
 
         return array(
-            array('bin', 'test', 0),
+            array('bin', 'test', 0), // MongoBinData::GENERIC is only defined in driver 1.5+
             array('binFunc', 'test', \MongoBinData::FUNC),
             array('binByteArray', 'test', \MongoBinData::BYTE_ARRAY),
             array('binUUID', 'test', \MongoBinData::UUID),
+            array('binUUIDRFC4122', 'test', 4), // MongoBinData::UUID_RFC4122 is only defined in driver 1.5+
             array('binMD5', 'test', \MongoBinData::MD5),
             array('binCustom', 'test', $expectedBinCustom),
         );
@@ -60,6 +61,9 @@ class BinDataTestUser
 
     /** @ODM\Bin(type="bin_uuid") */
     public $binUUID;
+
+    /** @ODM\Bin(type="bin_uuid_rfc4122") */
+    public $binUUIDRFC4122;
 
     /** @ODM\Bin(type="bin_md5") */
     public $binMD5;

@@ -17,19 +17,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Types;
+namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/**
- * The BinData type for binary UUID data.
- *
- * Per the BSON specification, this sub-type is deprecated in favor of the
- * RFC 4122 UUID sub-type (BinDataUUIDRFC4122Type class).
- *
- * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
- */
-class BinDataUUIDType extends BinDataType
+/** @Annotation */
+final class BinUUIDRFC4122 extends AbstractField
 {
-    protected $binDataType = \MongoBinData::UUID;
+    public $type = 'bin_uuid_rfc4122';
 }
