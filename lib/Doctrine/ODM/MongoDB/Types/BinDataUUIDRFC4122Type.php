@@ -20,13 +20,24 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinData type for custom binary data.
+ * The BinData type for binary UUID data, which follows RFC 4122.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Jeremy Mikola <jmikola@gmail.com>
  */
-class BinDataCustomType extends BinDataType
+class BinDataUUIDRFC4122Type extends BinDataType
 {
-    protected $binDataType = \MongoBinData::CUSTOM;
+    /**
+     * MongoBinData type
+     *
+     * The default subtype for RFC 4122 UUID binary data is 4, but we cannot use
+     * a constant here because it is not available in all versions of the PHP
+     * driver.
+     *
+     * @var integer
+     * @see http://php.net/manual/en/mongobindata.construct.php
+     * @see http://bsonspec.org/#/specification
+     * @see http://www.faqs.org/rfcs/rfc4122
+     */
+    protected $binDataType = 4;
 }

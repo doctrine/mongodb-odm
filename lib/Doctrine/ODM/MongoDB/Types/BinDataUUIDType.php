@@ -20,7 +20,10 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataUUID type.
+ * The BinData type for binary UUID data.
+ *
+ * Per the BSON specification, this sub-type is deprecated in favor of the
+ * RFC 4122 UUID sub-type (BinDataUUIDRFC4122Type class).
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>

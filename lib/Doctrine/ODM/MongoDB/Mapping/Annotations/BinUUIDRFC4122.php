@@ -17,16 +17,10 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Types;
+namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/**
- * The BinData type for custom binary data.
- *
- * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
- */
-class BinDataCustomType extends BinDataType
+/** @Annotation */
+final class BinUUIDRFC4122 extends AbstractField
 {
-    protected $binDataType = \MongoBinData::CUSTOM;
+    public $type = 'bin_uuid_rfc4122';
 }

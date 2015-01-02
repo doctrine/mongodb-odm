@@ -41,10 +41,8 @@ For additional information on using ``@AlsoLoad``, see
 @Bin
 ----
 
-Alias of @Field, with "type" attribute set to
-"bin". Converts value to
-MongoBinData http://www.php.net/manual/en/class.mongobindata.php,
-using MongoBinData::BYTE\_ARRAY type.
+Alias of `@Field`_, with "type" attribute set to "bin". Converts value to
+`MongoBinData`_ with ``MongoBinData::GENERIC`` sub-type.
 
 .. code-block:: php
 
@@ -56,10 +54,8 @@ using MongoBinData::BYTE\_ARRAY type.
 @BinCustom
 ----------
 
-Alias of @Field, with "type" attribute set to
-"bin\_custom". Converts value to
-MongoBinData http://www.php.net/manual/en/class.mongobindata.php,
-using MongoBinData::CUSTOM type.
+Alias of `@Field`_, with "type" attribute set to "bin\_custom". Converts
+value to `MongoBinData`_ with ``MongoBinData::CUSTOM`` sub-type.
 
 .. code-block:: php
 
@@ -71,10 +67,8 @@ using MongoBinData::CUSTOM type.
 @BinFunc
 --------
 
-Alias of @Field, with "type" attribute set to
-"bin\_func". Converts value to
-MongoBinData http://www.php.net/manual/en/class.mongobindata.php,
-using MongoBinData::FUNC type.
+Alias of `@Field`_, with "type" attribute set to "bin\_func". Converts value to
+`MongoBinData`_ with ``MongoBinData::FUNC`` sub-type.
 
 .. code-block:: php
 
@@ -86,10 +80,8 @@ using MongoBinData::FUNC type.
 @BinMD5
 -------
 
-Alias of @Field, with "type" attribute set to
-"bin\_md5". Converts value to
-MongoBinData http://www.php.net/manual/en/class.mongobindata.php,
-using MongoBinData::MD5 type.
+Alias of `@Field`_, with "type" attribute set to "bin\_md5". Converts value to
+`MongoBinData`_ with ``MongoBinData::MD5`` sub-type.
 
 .. code-block:: php
 
@@ -101,10 +93,8 @@ using MongoBinData::MD5 type.
 @BinUUID
 --------
 
-Alias of @Field, with "type" attribute set to
-"bin\_uuid". Converts value to
-MongoBinData http://www.php.net/manual/en/class.mongobindata.php,
-using MongoBinData::UUID type.
+Alias of `@Field`_, with "type" attribute set to "bin\_uuid". Converts value to
+`MongoBinData`_ with ``MongoBinData::UUID`` sub-type.
 
 .. code-block:: php
 
@@ -112,6 +102,29 @@ using MongoBinData::UUID type.
 
     /** @BinUUID */
     private $uuid;
+
+.. note::
+
+    Per the `BSON specification`_, this sub-type is deprecated in favor of the RFC
+    4122 UUID sub-type. Consider using `@BinUUIDRFC4122`_ instead.
+
+@BinUUIDRFC4122
+--------
+
+Alias of `@Field`_, with "type" attribute set to "bin\_uuid\_rfc4122". Converts
+value to `MongoBinData`_ with ``MongoBinData::UUID_RFC4122`` sub-type.
+
+.. code-block:: php
+
+    <?php
+
+    /** @BinUUIDRFC4122 */
+    private $uuid;
+
+.. note::
+
+    RFC 4122 UUIDs must be 16 bytes. The PHP driver will throw an exception if
+    the binary data's size is invalid.
 
 @Boolean
 --------
@@ -1155,3 +1168,6 @@ is used for pessimistic and optimistic locking. This is only compatible with
 
     /** @Int @Version */
     private $version;
+
+.. _BSON specification: http://bsonspec.org/spec.html
+.. _MongoBinData: http://php.net/manual/en/class.mongobindata.php
