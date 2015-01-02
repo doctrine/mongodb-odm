@@ -15,6 +15,14 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
+#### Added RFC 4122 UUID binary data type
+
+A new field type (`bin_uuid_rfc4122`) and annotation (`@BinUUIDRFC4122`) were
+added in [#1004](https://github.com/doctrine/mongodb-odm/pull/1004). This
+should be used instead of the `bin_uuid` type, which is deprecated in the BSON
+specification. PHP driver 1.5+ will validate RFC 4122 UUIDs, which should
+improve compatibility with other languages that may have native UUID types.
+
 #### `__clone()` method no longer called when documents are instantiated via `ClassMetadata::newInstance()`
 
 As of [#956](https://github.com/doctrine/mongodb-odm/pull/956), ClassMetadata
