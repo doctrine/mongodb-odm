@@ -25,7 +25,7 @@ console command easily with the following code:
 
     // ... include Composer autoloader and configure DocumentManager instance
 
-    $helperSet = \Symfony\Component\Console\Helper\HelperSet(array(
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'dm' => new \Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper($dm),
     ));
 
