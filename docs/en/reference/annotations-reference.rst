@@ -1141,3 +1141,17 @@ Defines a unique index on the given document.
     private $email;
 
 .. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbref
+
+@Version
+--------
+
+The annotated instance variable will be used to store version information, which
+is used for pessimistic and optimistic locking. This is only compatible with
+``@Int`` and ``@Date`` field types, and cannot be combined with ``@Id``.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Int @Version */
+    private $version;
