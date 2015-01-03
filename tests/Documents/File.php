@@ -11,17 +11,23 @@ class File
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\Field */
+    /** @ODM\String */
     private $name;
 
     /** @ODM\File */
     private $file;
 
-    /** @ODM\NotSaved */
+    /** @ODM\String */
+    private $filename;
+
+    /** @ODM\NotSaved(type="int") */
     private $length;
 
-    /** @ODM\NotSaved */
+    /** @ODM\NotSaved(type="string") */
     private $md5;
+
+    /** @ODM\NotSaved(type="date") */
+    private $uploadDate;
 
     public function getId()
     {
@@ -46,5 +52,30 @@ class File
     public function setFile($file)
     {
         $this->file = $file;
+    }
+
+    public function setFilename($filename)
+    {
+        $this->filename = $filename;
+    }
+
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    public function getLength()
+    {
+        return $this->length;
+    }
+
+    public function getMd5()
+    {
+        return $this->md5;
+    }
+
+    public function getUploadDate()
+    {
+        return $this->uploadDate;
     }
 }

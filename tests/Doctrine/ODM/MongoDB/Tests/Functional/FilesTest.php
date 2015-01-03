@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Documents\File;
 use Documents\Profile;
+use Doctrine\MongoDB\GridFSFile;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -51,6 +52,27 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('These are the bytes...', $image->getFile()->getBytes());
     }
 
+    public function testFileMetadataFields()
+    {
+        $file = new File();
+        $file->setName('Image');
+        $file->setFile(new GridFSFile(__DIR__ . '/file.txt'));
+        $file->setFilename('custom_file.txt');
+
+        $this->dm->persist($file);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $file = $this->dm->createQueryBuilder('Documents\File')->getQuery()->getSingleResult();
+
+        $this->assertEquals('Image', $file->getName());
+        $this->assertEquals('These are the bytes...', $file->getFile()->getBytes());
+        $this->assertEquals('custom_file.txt', $file->getFilename());
+        $this->assertEquals(strlen('These are the bytes...'), $file->getLength());
+        $this->assertEquals(md5('These are the bytes...'), $file->getMd5());
+        $this->assertInstanceOf('DateTime', $file->getUploadDate());
+    }
+
     public function testFileReferences()
     {
         $image = new TestFile();
@@ -74,7 +96,7 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testCreateFileWithMongoGridFSFileObject()
     {
-        $file = new \Doctrine\MongoDB\GridFSFile(__DIR__ . '/file.txt');
+        $file = new GridFSFile(__DIR__ . '/file.txt');
 
         $image = new File();
         $image->setName('Test');
@@ -130,7 +152,7 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $test = new TestFile();
         $test->name = 'Test';
-        $test->theFile = new \Doctrine\MongoDB\GridFSFIle($path);
+        $test->theFile = new GridFSFile($path);
 
         $this->dm->persist($test);
         $this->dm->flush();
