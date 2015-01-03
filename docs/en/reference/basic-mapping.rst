@@ -142,6 +142,8 @@ to use with the ``setDefaultDB`` method:
 
     $config->setDefaultDB('my_db');
 
+.. _doctrine_mapping_types:
+
 Doctrine Mapping Types
 ----------------------
 
