@@ -52,6 +52,8 @@ class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFalse(isset($class->fieldMappings['transient']));
 
         $this->assertTrue(isset($class->fieldMappings['mappedRelated1']));
+
+        $this->assertTrue(isset($class->associationMappings['mappedRelated1']));
     }
 
     /**

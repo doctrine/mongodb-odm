@@ -1073,7 +1073,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
         $mapping['isCascadeMerge'] = in_array('merge', $cascades);
         $mapping['isCascadeDetach'] = in_array('detach', $cascades);
-        
+
         if (isset($mapping['type']) && $mapping['type'] === 'file') {
             $mapping['file'] = true;
         }
@@ -1239,6 +1239,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function addInheritedFieldMapping(array $fieldMapping)
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
+        if (isset($fieldMapping['association'])) {
+            $this->associationMappings[$fieldMapping['fieldName']] = $fieldMapping;
+        }
     }
 
     /**
@@ -1444,7 +1447,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             //so the proxy needs to be loaded first.
             $document->__load();
         }
-        
+
         $this->reflFields[$field]->setValue($document, $value);
     }
 
@@ -1461,7 +1464,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ($document instanceof Proxy && $field !== $this->identifier && ! $document->__isInitialized()) {
             $document->__load();
         }
-        
+
         return $this->reflFields[$field]->getValue($document);
     }
 
@@ -1631,7 +1634,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * value to use depending on the column type.
      *
      * @param array $mapping   The version field mapping array
-     * 
+     *
      * @throws LockException
      */
     public function setVersionMapping(array &$mapping)
