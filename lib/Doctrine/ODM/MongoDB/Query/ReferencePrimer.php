@@ -24,8 +24,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
-use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 
 /**
  * The ReferencePrimer is responsible for priming reference relationships.
@@ -110,7 +108,7 @@ class ReferencePrimer
      */
     public function primeReferences(ClassMetadata $class, $documents, $fieldName, array $hints = array(), $primer = null)
     {
-        $data = $this->parseDotSyntaxForPrimer($fieldName,$class,$documents);
+        $data = $this->parseDotSyntaxForPrimer($fieldName, $class, $documents);
         $mapping = $data['mapping'];
         $fieldName = $data['fieldName'];
         $class = $data['class'];
@@ -137,7 +135,7 @@ class ReferencePrimer
         $primer = $primer ?: $this->defaultPrimer;
         $groupedIds = array();
 
-        /** @var Doctrine\ODM\MongoDB\PersistentCollection $document */
+        /* @var $document PersistentCollection */
         foreach ($documents as $document) {
             $fieldValue = $class->getFieldValue($document, $fieldName);
 
@@ -171,49 +169,73 @@ class ReferencePrimer
      * ... but you cannot prime this: myDocument.embeddedDocument.referencedDocuments.referencedDocument(s)
      * This addresses Issue #624.
      *
-     * @param array $fieldName
-     * @param ClassMetadata $class
-     * @param array\Traversable $documents
-     * @param array $mapping
+     * @param string             $fieldName
+     * @param ClassMetadata      $class
+     * @param array|\Traversable $documents
+     * @param array              $mapping
+     * @return array
      */
-    private function parseDotSyntaxForPrimer($fieldName, $class, $documents, $mapping = null) {
+    private function parseDotSyntaxForPrimer($fieldName, $class, $documents, $mapping = null)
+    {
         // Recursion passthrough:
-        if($mapping != null) return array('fieldName'=>$fieldName, 'class'=>$class, 'documents'=>$documents, 'mapping'=>$mapping);
+        if ($mapping != null) {
+            return array('fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping);
+        }
 
         // Gather mapping data:
         $e = explode('.', $fieldName);
-        if ( ! isset($class->fieldMappings[$e[0]]))
-            throw new \InvalidArgumentException("Field $fieldName cannot be further parsed for priming because it is unmpaped..");
+
+        if ( ! isset($class->fieldMappings[$e[0]])) {
+            throw new \InvalidArgumentException(sprintf('Field %s cannot be further parsed for priming because it is unmapped.', $fieldName));
+        }
+
         $mapping = $class->fieldMappings[$e[0]];
         $e[0] = $mapping['name'];
 
         // Case of embedded document(s) to recurse through:
-        if(!isset($mapping['reference'])) {
-            if(!isset($mapping['embedded']))
-                throw new \InvalidArgumentException("Field $e[0] of fieldName $fieldName is not an embedded document, therefore no children can be primed. Aborting. This feature does not support traversing nested referenced documents at this time.");
-            if(!$mapping['embedded'])
-                throw new \InvalidArgumentException("Field $e[0] of fieldName $fieldName is not an embedded document, therefore no children can be primed. Aborting. This feature does not support traversing nested referenced documents at this time.");
-            if ( ! isset($mapping['targetDocument']))
-                throw new \InvalidArgumentException("No target document class has been specified for this embedded document. However, targetDocument mapping must be specified in order for prime to work on fieldName $fieldName for mapping of field ".$mapping['fieldName']);
-            $childDocuments = array();
-            foreach($documents as $document) {
-                $fieldValue = $class->getFieldValue($document, $e[0]);
-                if(is_a($fieldValue,'Doctrine\ODM\MongoDB\PersistentCollection'))
-                    foreach($fieldValue as $elemDocument) array_push($childDocuments,$elemDocument);
-                else array_push($childDocuments,$fieldValue);
+        if ( ! isset($mapping['reference'])) {
+            if (empty($mapping['embedded'])) {
+                throw new \InvalidArgumentException(sprintf('Field "%s" of fieldName "%s" is not an embedded document, therefore no children can be primed. Aborting. This feature does not support traversing nested referenced documents at this time.', $e[0], $fieldName));
             }
+
+            if ( ! isset($mapping['targetDocument'])) {
+                throw new \InvalidArgumentException(sprintf('No target document class has been specified for this embedded document. However, targetDocument mapping must be specified in order for prime to work on fieldName "%s" for mapping of field "%s".', $fieldName, $mapping['fieldName']));
+            }
+
+            $childDocuments = array();
+
+            foreach ($documents as $document) {
+                $fieldValue = $class->getFieldValue($document, $e[0]);
+
+                if ($fieldValue instanceof PersistentCollection) {
+                    foreach ($fieldValue as $elemDocument) {
+                        array_push($childDocuments, $elemDocument);
+                    }
+                } else {
+                    array_push($childDocuments,$fieldValue);
+                }
+            }
+
             array_shift($e);
+
             $childClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-            if ( ! $childClass->hasField($e[0]))
-                throw new \InvalidArgumentException("Field to prime must exist in embedded target document. Reference fieldName $fieldName for mapping of target document class ".$mapping['targetDocument']);
+
+            if ( ! $childClass->hasField($e[0])) {
+                throw new \InvalidArgumentException(sprintf('Field to prime must exist in embedded target document. Reference fieldName "%s" for mapping of target document class "%s".', $fieldName, $mapping['targetDocument']));
+            }
+
             $childFieldName = implode('.',$e);
+
             return $this->parseDotSyntaxForPrimer($childFieldName, $childClass, $childDocuments);
         }
+
         // Case of reference(s) to prime:
-        if($mapping['reference']) {
-            if(count($e) > 1)
-                throw new \InvalidArgumentException("Cannot prime more than one layer deep but field $e[0] is a reference and has children in fieldName $fieldName.");
-            return array('fieldName'=>$fieldName, 'class'=>$class, 'documents'=>$documents, 'mapping'=>$mapping);
+        if ($mapping['reference']) {
+            if (count($e) > 1) {
+                throw new \InvalidArgumentException(sprintf('Cannot prime more than one layer deep but field "%s" is a reference and has children in fieldName "%s".', $e[0], $fieldName));
+            }
+
+            return array('fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping);
         }
     }
 
