@@ -20,7 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinData type.
+ * The BinData type for generic data.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>

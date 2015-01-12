@@ -44,6 +44,7 @@ abstract class Type
     const BINDATAFUNC = 'bin_func';
     const BINDATABYTEARRAY = 'bin_bytearray';
     const BINDATAUUID = 'bin_uuid';
+    const BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
     const BINDATAMD5 = 'bin_md5';
     const BINDATACUSTOM = 'bin_custom';
     const FILE = 'file';
@@ -72,6 +73,7 @@ abstract class Type
         self::BINDATAFUNC => 'Doctrine\ODM\MongoDB\Types\BinDataFuncType',
         self::BINDATABYTEARRAY => 'Doctrine\ODM\MongoDB\Types\BinDataByteArrayType',
         self::BINDATAUUID => 'Doctrine\ODM\MongoDB\Types\BinDataUUIDType',
+        self::BINDATAUUIDRFC4122 => 'Doctrine\ODM\MongoDB\Types\BinDataUUIDRFC4122Type',
         self::BINDATAMD5 => 'Doctrine\ODM\MongoDB\Types\BinDataMD5Type',
         self::BINDATACUSTOM => 'Doctrine\ODM\MongoDB\Types\BinDataCustomType',
         self::FILE => 'Doctrine\ODM\MongoDB\Types\FileType',

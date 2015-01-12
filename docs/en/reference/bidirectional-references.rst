@@ -28,8 +28,8 @@ and changes are tracked and persisted separately. Here is an example:
     }
 
 When I persist some instances of the above classes the references would exist on both sides! The
-``BlogPost`` collection would have a `MongoDbRef`_ stored on the ``$user`` property and the ``User``
-collection would have a `MongoDbRef`_ stored in the ``$posts`` property.
+``BlogPost`` collection would have a `DBRef`_ stored on the ``$user`` property and the ``User``
+collection would have a `DBRef`_ stored in the ``$posts`` property.
 
 Owning and Inverse Sides
 ------------------------
@@ -207,4 +207,4 @@ Self-Referencing Many to Many
         }
     }
 
-.. _MongoDbRef: http://us2.php.net/MongoDbRef
+.. _DBRef: http://docs.mongodb.org/manual/reference/database-references/#dbrefs
