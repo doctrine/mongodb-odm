@@ -305,7 +305,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function setClassMetadataFactoryName($cmfName)
     {
-        $this->_attributes['classMetadataFactoryName'] = $cmfName;
+        $this->attributes['classMetadataFactoryName'] = $cmfName;
     }
 
     /**
@@ -315,10 +315,10 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getClassMetadataFactoryName()
     {
-        if ( ! isset($this->_attributes['classMetadataFactoryName'])) {
-            $this->_attributes['classMetadataFactoryName'] = 'Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory';
+        if ( ! isset($this->attributes['classMetadataFactoryName'])) {
+            $this->attributes['classMetadataFactoryName'] = 'Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory';
         }
-        return $this->_attributes['classMetadataFactoryName'];
+        return $this->attributes['classMetadataFactoryName'];
     }
 
     /**
