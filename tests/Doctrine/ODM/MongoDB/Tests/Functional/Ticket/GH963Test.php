@@ -5,12 +5,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-class MODM963Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH963Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-
     public function testTest()
     {
-        $a = new A();
+        $a = new GH963A();
         $this->dm->persist($a);
         $this->dm->flush();
 
@@ -18,8 +17,8 @@ class MODM963Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         //Clear document manager is necesary to reproduce the bug.
         $this->dm->clear();
 
-        $a = $this->dm->find(__NAMESPACE__.'\A', $id);
-        $b2 = new B('second');
+        $a = $this->dm->find(__NAMESPACE__.'\GH963A', $id);
+        $b2 = new GH963B('second');
         $a->getB()->add($b2);
         $this->dm->flush();
 
@@ -31,12 +30,12 @@ class MODM963Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /** @ODM\Document */
-class A
+class GH963A
 {
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument="B", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument="GH963B", cascade="all") */
     protected $b;
 
     function __construct()
@@ -56,7 +55,7 @@ class A
 }
 
 /** @ODM\Document */
-class B
+class GH963B
 {
 
     /** @ODM\Id */
