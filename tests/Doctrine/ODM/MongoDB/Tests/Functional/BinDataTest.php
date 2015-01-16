@@ -37,7 +37,7 @@ class BinDataTest extends BaseTest
             array('binFunc', 'test', \MongoBinData::FUNC),
             array('binByteArray', 'test', \MongoBinData::BYTE_ARRAY),
             array('binUUID', 'test', \MongoBinData::UUID),
-            array('binUUIDRFC4122', 'test', 4), // MongoBinData::UUID_RFC4122 is only defined in driver 1.5+
+            array('binUUIDRFC4122', '1234567890ABCDEF', 4), // MongoBinData::UUID_RFC4122 is only defined in driver 1.5+
             array('binMD5', 'test', \MongoBinData::MD5),
             array('binCustom', 'test', $expectedBinCustom),
         );
