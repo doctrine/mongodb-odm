@@ -105,6 +105,7 @@ class CollectionPersister
         switch ($mapping['strategy']) {
             case 'set':
             case 'setArray':
+                $coll->initialize();
                 $this->setCollection($coll, $options);
                 break;
 
