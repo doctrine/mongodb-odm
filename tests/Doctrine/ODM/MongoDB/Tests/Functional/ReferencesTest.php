@@ -191,6 +191,55 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('test', $groups[0]->getName());
         $this->assertEquals(1, count($groups));
     }
+    
+    public function testFlushInitializesEmptyPersistentCollection()
+    {
+        $user = new User();
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+        
+        $user = $this->dm->getRepository('Documents\User')->find($user->getId());
+        
+        $user->addGroup(new Group('Group 1'));
+        $user->addGroup(new Group('Group 2'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        
+        $this->assertTrue($user->getGroups()->isInitialized());
+        $this->assertEquals(2, $user->getGroups()->count());
+        $i = 0;
+        foreach ($user->getGroups() as $g) {
+            $i++;
+        }
+        $this->assertEquals(2, $i);
+    }
+    
+    public function testFlushInitializesNotEmptyPersistentCollection()
+    {
+        $user = new User();
+        $user->addGroup(new Group('Group'));
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+        
+        $user = $this->dm->getRepository('Documents\User')->find($user->getId());
+        
+        $user->addGroup(new Group('Group 1'));
+        $user->addGroup(new Group('Group 2'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        
+        $this->assertTrue($user->getGroups()->isInitialized());
+        $this->assertEquals(3, $user->getGroups()->count());
+        $i = 0;
+        foreach ($user->getGroups() as $g) {
+            $i++;
+        }
+        $this->assertEquals(3, $i);
+    }
 
     public function testManyReferenceWithAddToSetStrategy()
     {
