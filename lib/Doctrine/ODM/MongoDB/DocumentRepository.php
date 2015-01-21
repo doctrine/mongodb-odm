@@ -268,9 +268,8 @@ class DocumentRepository implements ObjectRepository, Selectable
         $visitor = new QueryExpressionVisitor($this->createQueryBuilder());
         $queryBuilder = $this->createQueryBuilder();
 
-        $whereExpression = $criteria->getWhereExpression();
-        if ($whereExpression !== null) {
-            $expr = $visitor->dispatch($whereExpression);
+        if ($criteria->getWhereExpression() !== null) {
+            $expr = $visitor->dispatch($criteria->getWhereExpression());
             $queryBuilder->setQueryArray($expr->getQuery());
         }
 
