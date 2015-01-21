@@ -266,8 +266,13 @@ class DocumentRepository implements ObjectRepository, Selectable
     public function matching(Criteria $criteria)
     {
         $visitor = new QueryExpressionVisitor($this->createQueryBuilder());
-        $expr = $visitor->dispatch($criteria->getWhereExpression());
-        $queryBuilder = $this->createQueryBuilder()->setQueryArray($expr->getQuery());
+        $queryBuilder = $this->createQueryBuilder();
+
+        $whereExpression = $criteria->getWhereExpression();
+        if ($whereExpression !== null) {
+            $expr = $visitor->dispatch($whereExpression);
+            $queryBuilder->setQueryArray($expr->getQuery());
+        }
 
         if ($criteria->getMaxResults() !== null) {
             $queryBuilder->limit($criteria->getMaxResults());
