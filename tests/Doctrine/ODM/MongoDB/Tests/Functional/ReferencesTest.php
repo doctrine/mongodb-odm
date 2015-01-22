@@ -191,6 +191,49 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('test', $groups[0]->getName());
         $this->assertEquals(1, count($groups));
     }
+    
+    public function testFlushInitializesEmptyPersistentCollection()
+    {
+        $user = new User();
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->find($user->getId());
+
+        $user->addGroup(new Group('Group 1'));
+        $user->addGroup(new Group('Group 2'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->assertTrue($user->getGroups()->isInitialized(), 'A flushed collection should be initialized');
+        $this->assertCount(2, $user->getGroups());
+        $this->assertCount(2, $user->getGroups()->toArray());
+    }
+
+    public function testFlushInitializesNotEmptyPersistentCollection()
+    {
+        $user = new User();
+        $user->addGroup(new Group('Group'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+        
+        $user = $this->dm->getRepository('Documents\User')->find($user->getId());
+
+        $user->addGroup(new Group('Group 1'));
+        $user->addGroup(new Group('Group 2'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->assertTrue($user->getGroups()->isInitialized(), 'A flushed collection should be initialized');
+        $this->assertCount(3, $user->getGroups());
+        $this->assertCount(3, $user->getGroups()->toArray());
+    }
 
     public function testManyReferenceWithAddToSetStrategy()
     {
