@@ -12,7 +12,8 @@ class GH832Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testGridFSWithUniqueIndex()
     {
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(GH832Document::CLASS);
+        $doc = new GH832Document();
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(get_class($doc));
 
         $docA = new GH832Document();
         $docA->unique = 'foo';
