@@ -210,6 +210,13 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             $classMetadata->lifecycleCallbacks
         );
 
+        $this->assertEquals(
+            array(
+                "doStuffOnAlsoLoad" => array("unmappedField"),
+            ),
+            $classMetadata->alsoLoadMethods
+        );
+
         $classMetadata = new ClassMetadata('TestDocuments\EmbeddedDocument');
         $this->driver->loadMetadataForClass('TestDocuments\EmbeddedDocument', $classMetadata);
 

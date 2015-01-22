@@ -163,6 +163,11 @@ class XmlDriver extends FileDriver
                 $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ODM\MongoDB\Events::' . (string) $lifecycleCallback['type']));
             }
         }
+        if (isset($xmlRoot->{'also-load-methods'})) {
+            foreach ($xmlRoot->{'also-load-methods'}->{'also-load-method'} as $alsoLoadMethod) {
+                $class->registerAlsoLoadMethod((string) $alsoLoadMethod['method'], (string) $alsoLoadMethod['field']);
+            }
+        }
     }
 
     private function addFieldMapping(ClassMetadataInfo $class, $mapping)

@@ -147,6 +147,11 @@ class YamlDriver extends FileDriver
                 }
             }
         }
+        if (isset($element['alsoLoadMethods'])) {
+            foreach ($element['alsoLoadMethods'] as $methodName => $fieldName) {
+                $class->registerAlsoLoadMethod($methodName, $fieldName);
+            }
+        }
     }
 
     private function addFieldMapping(ClassMetadataInfo $class, $mapping)
