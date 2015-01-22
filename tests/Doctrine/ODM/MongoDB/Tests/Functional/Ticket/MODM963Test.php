@@ -36,7 +36,7 @@ class A
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument="B", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument="B", mappedBy="a", cascade="all") */
     protected $b;
 
     function __construct()
@@ -64,6 +64,9 @@ class B
 
     /** @ODM\String */
     protected $value;
+
+    /**@ODM\ReferenceOne(targetDocument="A", inversedBy="b") */
+    protected $a;
 
     function __construct($v)
     {
