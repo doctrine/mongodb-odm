@@ -128,7 +128,7 @@ class UnitOfWork implements PropertyChangedListener
      * object ids by PHP for new objects after garbage collection
      * Keys are object ids (spl_object_hash).
      *
-     * @var type
+     * @var array
      */
     private $embeddedDocumentsKnown = array();
 
