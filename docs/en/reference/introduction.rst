@@ -23,15 +23,16 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
 .. code-block:: php
 
     <?php
+
+    use Doctrine\Common\Collections\ArrayCollection;
     use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+    use DateTime;
 
     /** @ODM\MappedSuperclass */
     abstract class BaseEmployee
     {
         /** @ODM\Id */
         private $id;
-        public function getId() { return $this->id; }
-        public function setId($id) { $this->id = $id; }
     
         /** @ODM\Increment */
         private $changes = 0;
@@ -41,28 +42,41 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     
         /** @ODM\String */
         private $name;
-        public function getName() { return $this->name; }
-        public function setName($name) { $this->name = $name; }
     
-        /** @ODM\Float */
+        /** @ODM\Int */
         private $salary;
-        public function getSalary() { return $this->salary; }
-        public function setSalary($salary) { $this->salary = $salary; }
     
         /** @ODM\Date */
         private $started;
-        public function getStarted() { return $this->started; }
-        public function setStarted($started) { $this->started = $started; }
     
         /** @ODM\Date */
         private $left;
     
         /** @ODM\EmbedOne(targetDocument="Address") */
         private $address;
+
+        public function getId() { return $this->id; }
+
+        public function getChanges() { return $this->changes; }
+        public function incrementChanges() { $this->changes++; }
+
+        public function getNotes() { return $this->notes; }
+        public function addNote($note) { $this->notes[] = $note; }
+
+        public function getName() { return $this->name; }
+        public function setName($name) { $this->name = $name; }
+
+        public function getSalary() { return $this->salary; }
+        public function setSalary($salary) { $this->salary = (int) $salary; }
+
+        public function getStarted() { return $this->started; }
+        public function setStarted(DateTime $started) { $this->started = $started; }
+
+        public function getLeft() { return $this->left; }
+        public function setLeft(DateTime $left) { $this->left = $left; }
+
         public function getAddress() { return $this->address; }
-        public function setAddress($address) { $this->address = $address; }
-    
-        // Note: getter/setter methods for the above properties should follow
+        public function setAddress(Address $address) { $this->address = $address; }
     }
     
     /** @ODM\Document */
@@ -71,43 +85,48 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\ReferenceOne(targetDocument="Documents\Manager") */
         private $manager;
     
-        // Note: getter/setter methods for the above property should follow
+        public function getManager() { return $this->manager; }
+        public function setManager(Manager $manager) { $this->manager = $manager; }
     }
     
     /** @ODM\Document */
     class Manager extends BaseEmployee
     {
         /** @ODM\ReferenceMany(targetDocument="Documents\Project") */
-        private $projects = array();
+        private $projects;
     
-        // Note: getter/setter methods for the above property should follow
+        public __construct() { $this->projects = new ArrayCollection(); }
+
+        public function getProjects() { return $this->projects; }
+        public function addProject(Project $project) { $this->projects[] = $project; }
     }
     
     /** @ODM\EmbeddedDocument */
     class Address
     {
-    
         /** @ODM\String */
         private $address;
-        public function getAddress() { return $this->address; }
-        public function setAddress($address) { $this->address = $address; }
     
         /** @ODM\String */
         private $city;
-        public function getCity() { return $this->city; }
-        public function setCity($city) { $this->city = $city; }
     
         /** @ODM\String */
         private $state;
-        public function getState() { return $this->state; }
-        public function setState($state) { $this->state = $state; }
     
         /** @ODM\String */
         private $zipcode;
+
+        public function getAddress() { return $this->address; }
+        public function setAddress($address) { $this->address = $address; }
+
+        public function getCity() { return $this->city; }
+        public function setCity($city) { $this->city = $city; }
+
+        public function getState() { return $this->state; }
+        public function setState($state) { $this->state = $state; }
+
         public function getZipcode() { return $this->zipcode; }
         public function setZipcode($zipcode) { $this->zipcode = $zipcode; }
-    
-        // Note: getter/setter methods for the above properties should follow
     }
     
     /** @ODM\Document */
@@ -119,12 +138,12 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\String */
         private $name;
     
-        public function __construct($name)
-        {
-            $this->name = $name;
-        }
-    
-        // Note: getter/setter methods for the above properties should follow
+        public function __construct($name) { $this->name = $name; }
+
+        public function getId() { return $this->id; }
+
+        public function getName() { return $this->name; }
+        public function setName($name) { $this->name = $name; }
     }
 
 Now those objects can be used just like you weren't using any
@@ -136,15 +155,15 @@ Doctrine:
     <?php
     
     use Documents\Employee;
-    use Documents\BaseEmployee;
     use Documents\Address;
     use Documents\Project;
     use Documents\Manager;
+    use DateTime;
 
     $employee = new Employee();
     $employee->setName('Employee');
-    $employee->setSalary(50000.00);
-    $employee->setStarted(new \DateTime());
+    $employee->setSalary(50000);
+    $employee->setStarted(new DateTime());
     
     $address = new Address();
     $address->setAddress('555 Doctrine Rd.');
@@ -156,8 +175,8 @@ Doctrine:
     $project = new Project('New Project');
     $manager = new Manager();
     $manager->setName('Manager');
-    $manager->setSalary(100000.00);
-    $manager->setStarted(new \DateTime());
+    $manager->setSalary(100000);
+    $manager->setStarted(new DateTime());
 
     $dm->persist($employee);
     $dm->persist($address);
@@ -165,7 +184,7 @@ Doctrine:
     $dm->persist($manager);
     $dm->flush();
 
-The above would batch insert the following:
+The above would insert the following:
 
 ::
 
@@ -244,7 +263,7 @@ efficient update query using the atomic operators:
 
     <?php
     $newProject = new Project('Another Project');
-    $manager->setSalary(200000.00);
+    $manager->setSalary(200000);
     $manager->addNote('Gave user 100k a year raise');
     $manager->incrementChanges(2);
     $manager->addProject($newProject);
