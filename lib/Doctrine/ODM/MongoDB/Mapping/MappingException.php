@@ -255,4 +255,22 @@ class MappingException extends BaseMappingException
     {
         return new self("ReferenceMany's sort can not be used with addToSet and pushAll strategies, $strategy used in $className::$fieldName");
     }
+
+    /**
+     * @param $subclassName
+     * @return MappingException
+     */
+    public static function shardKeyInSingleCollInheritanceSubclass($subclassName)
+    {
+        return new self("Shard key definition in subclass is forbidden in case of single collection inheritance: $subclassName");
+    }
+
+    /**
+     * @param $className
+     * @return MappingException
+     */
+    public static function embeddedDocumentCantHaveShardKey($className)
+    {
+        return new self("Embedded document can't have shard key: $className");
+    }
 }

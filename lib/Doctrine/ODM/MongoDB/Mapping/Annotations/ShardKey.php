@@ -19,14 +19,12 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use Doctrine\Common\Annotations\Annotation;
+
 /** @Annotation */
-final class Document extends AbstractDocument
+final class ShardKey extends Annotation
 {
-    public $db;
-    public $collection;
-    public $repositoryClass;
-    public $indexes = array();
-    public $requireIndexes = false;
-    public $shardKey;
-    public $slaveOkay;
+    public $fields = array();
+    public $unique = false;
+    public $numInitialChunks;
 }

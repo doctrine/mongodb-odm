@@ -20,7 +20,6 @@
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Instantiator\Instantiator;
-use Doctrine\ODM\MongoDB\LockException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -115,6 +114,7 @@ class ClassMetadata extends ClassMetadataInfo
             'generatorOptions',
             'idGenerator',
             'indexes',
+            'shardKey',
         );
 
         // The rest of the metadata is only serialized if necessary.

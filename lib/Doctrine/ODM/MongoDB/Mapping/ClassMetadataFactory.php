@@ -138,6 +138,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->addInheritedFields($class, $parent);
             $this->addInheritedRelations($class, $parent);
             $this->addInheritedIndexes($class, $parent);
+            $this->setInheritedShardKey($class, $parent);
             $class->setIdentifier($parent->identifier);
             $class->setVersioned($parent->isVersioned);
             $class->setVersionField($parent->versionField);
@@ -334,6 +335,22 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         foreach ($parentClass->indexes as $index) {
             $subClass->addIndex($index['keys'], $index['options']);
+        }
+    }
+
+    /**
+     * Adds inherited shard key to the subclass mapping.
+     *
+     * @param ClassMetadata $subClass
+     * @param ClassMetadata $parentClass
+     */
+    private function setInheritedShardKey(ClassMetadata $subClass, ClassMetadata $parentClass)
+    {
+        if ($parentClass->isSharded()) {
+            $subClass->setShardKey(
+                $parentClass->shardKey['fields'],
+                $parentClass->shardKey['options']
+            );
         }
     }
 }
