@@ -110,6 +110,7 @@ class ClassMetadata extends ClassMetadataInfo
             'generatorOptions',
             'idGenerator',
             'indexes',
+            'shardKey',
         );
 
         // The rest of the metadata is only serialized if necessary.

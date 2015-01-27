@@ -216,6 +216,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $indexes = array();
 
     /**
+     * READ-ONLY: Fields and options describing shard key. Only for sharded collections.
+     */
+    public $shardKey;
+
+    /**
      * READ-ONLY: Whether or not queries on this document should require indexes.
      */
     public $requireIndexes = false;
@@ -821,6 +826,61 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function hasIndexes()
     {
         return $this->indexes ? true : false;
+    }
+
+    /**
+     * Set shard key for this Document.
+     *
+     * @param array $fields  Array of fields for shard key.
+     * @param array $options Array of sharding options.
+     *
+     * @throws MappingException
+     */
+    public function setShardKey(array $fields, array $options = array())
+    {
+        if ($this->inheritanceType == self::INHERITANCE_TYPE_SINGLE_COLLECTION && !is_null($this->shardKey)) {
+            throw MappingException::shardKeyInSingleCollInheritanceSubclass($this->getName());
+        }
+
+        if ($this->isEmbeddedDocument) {
+            throw MappingException::embeddedDocumentCantHaveShardKey($this->getName());
+        }
+
+        $this->shardKey = array(
+            'fields' => array_map(function($value) {
+                if ($value == 1 || $value == -1) {
+                    return (int) $value;
+                }
+                if (is_string($value)) {
+                    $lower = strtolower($value);
+                    if ($lower === 'asc') {
+                        return 1;
+                    } elseif ($lower === 'desc') {
+                        return -1;
+                    }
+                }
+                return $value;
+            }, $fields),
+            'options' => $options
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getShardKey()
+    {
+        return $this->shardKey;
+    }
+
+    /**
+     * Checks whether this document has shard key or not.
+     *
+     * @return bool
+     */
+    public function isSharded()
+    {
+        return $this->shardKey ? true : false;
     }
 
     /**

@@ -298,4 +298,22 @@ class MappingException extends BaseMappingException
     {
         return new self("$collectionClass used as custom collection class for $className::$fieldName has to implement Doctrine\\Common\\Collections\\Collection interface.");
     }
+
+    /**
+     * @param $subclassName
+     * @return MappingException
+     */
+    public static function shardKeyInSingleCollInheritanceSubclass($subclassName)
+    {
+        return new self("Shard key definition in subclass is forbidden in case of single collection inheritance: $subclassName");
+    }
+
+    /**
+     * @param $className
+     * @return MappingException
+     */
+    public static function embeddedDocumentCantHaveShardKey($className)
+    {
+        return new self("Embedded document can't have shard key: $className");
+    }
 }
