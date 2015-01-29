@@ -295,6 +295,140 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $this->schemaManager->dropDatabases();
     }
 
+    public function testEnsureDocumentSharding()
+    {
+        $dbName = DOCTRINE_MONGODB_DATABASE;
+        $classMetadata = $this->dm->getClassMetadata('Documents\Sharded\ShardedUser');
+        $collectionName = $classMetadata->getCollection();
+        $dbMock = $this->getMockDatabase();
+        $dbMock->method('getName')->willReturn($dbName);
+        $adminDBMock = $this->getMockDatabase();
+        $connMock = $this->getMockConnection();
+        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
+        $this->dm->connection = $connMock;
+        $this->dm->documentDatabases = array($classMetadata->getName() => $dbMock);
+
+        $adminDBMock
+            ->expects($this->at(0))
+            ->method('command')
+            ->with(array('enableSharding' => $dbName))
+            ->willReturn(array('ok' => 1));
+        $adminDBMock
+            ->expects($this->at(1))
+            ->method('command')
+            ->with(array('shardCollection' => $dbName . '.' . $collectionName, 'key' => array('_id' => 'hashed')))
+            ->willReturn(array('ok' => 1));
+
+        $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
+     * @expectedExceptionMessage Failed to ensure sharding for document
+     */
+    public function testEnsureDocumentShardingThrowsExceptionIfThereWasAnError()
+    {
+        $dbName = DOCTRINE_MONGODB_DATABASE;
+        $classMetadata = $this->dm->getClassMetadata('Documents\Sharded\ShardedUser');
+        $collectionName = $classMetadata->getCollection();
+        $dbMock = $this->getMockDatabase();
+        $dbMock->method('getName')->willReturn($dbName);
+        $adminDBMock = $this->getMockDatabase();
+        $connMock = $this->getMockConnection();
+        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
+        $this->dm->connection = $connMock;
+        $this->dm->documentDatabases = array($classMetadata->getName() => $dbMock);
+
+        $adminDBMock
+            ->expects($this->at(0))
+            ->method('command')
+            ->with(array('enableSharding' => $dbName))
+            ->willReturn(array('ok' => 1));
+        $adminDBMock
+            ->expects($this->at(1))
+            ->method('command')
+            ->with(array('shardCollection' => $dbName . '.' . $collectionName, 'key' => array('_id' => 'hashed')))
+            ->willReturn(array('ok' => 0, 'errmsg' => 'scary error'));
+
+        $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
+    }
+
+    public function testEnsureDocumentShardingIgnoresAlreadyShardedError()
+    {
+        $dbName = DOCTRINE_MONGODB_DATABASE;
+        $classMetadata = $this->dm->getClassMetadata('Documents\Sharded\ShardedUser');
+        $collectionName = $classMetadata->getCollection();
+        $dbMock = $this->getMockDatabase();
+        $dbMock->method('getName')->willReturn($dbName);
+        $adminDBMock = $this->getMockDatabase();
+        $connMock = $this->getMockConnection();
+        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
+        $this->dm->connection = $connMock;
+        $this->dm->documentDatabases = array($classMetadata->getName() => $dbMock);
+
+        $adminDBMock
+            ->expects($this->at(0))
+            ->method('command')
+            ->with(array('enableSharding' => $dbName))
+            ->willReturn(array('ok' => 1));
+        $adminDBMock
+            ->expects($this->at(1))
+            ->method('command')
+            ->with(array('shardCollection' => $dbName . '.' . $collectionName, 'key' => array('_id' => 'hashed')))
+            ->willReturn(array('ok' => 0, 'errmsg' => 'already sharded'));
+
+        $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
+    }
+
+    public function testEnableShardingForDb()
+    {
+        $adminDBMock = $this->getMockDatabase();
+        $adminDBMock
+            ->expects($this->once())
+            ->method('command')
+            ->with(array('enableSharding' => 'db'))
+            ->willReturn(array('ok' => 1));
+        $connMock = $this->getMockConnection();
+        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
+        $this->dm->connection = $connMock;
+
+        $this->schemaManager->enableShardingForDb('db');
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
+     * @expectedExceptionMessage Failed to enable sharding for database
+     */
+    public function testEnableShardingForDbThrowsExceptionInCaseOfError()
+    {
+        $adminDBMock = $this->getMockDatabase();
+        $adminDBMock
+            ->expects($this->once())
+            ->method('command')
+            ->with(array('enableSharding' => 'db'))
+            ->willReturn(array('ok' => 0, 'errmsg' => 'scary error'));
+        $connMock = $this->getMockConnection();
+        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
+        $this->dm->connection = $connMock;
+
+        $this->schemaManager->enableShardingForDb('db');
+    }
+
+    public function testEnableShardingForDbIgnoresAlreadyShardedError()
+    {
+        $adminDBMock = $this->getMockDatabase();
+        $adminDBMock
+            ->expects($this->once())
+            ->method('command')
+            ->with(array('enableSharding' => 'db'))
+            ->willReturn(array('ok' => 0, 'errmsg' => 'already enabled'));
+        $connMock = $this->getMockConnection();
+        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
+        $this->dm->connection = $connMock;
+
+        $this->schemaManager->enableShardingForDb('db');
+    }
+
     private function getMockCollection()
     {
         return $this->getMockBuilder('Doctrine\MongoDB\Collection')
@@ -344,5 +478,12 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($documentPersister));
 
         return $uow;
+    }
+
+    private function getMockConnection()
+    {
+        return $this->getMockBuilder('Doctrine\MongoDB\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }
