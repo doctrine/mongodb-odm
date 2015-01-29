@@ -28,6 +28,7 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
@@ -291,9 +292,10 @@ class DocumentPersister
                 }
                 $data['$set'][$versionMapping['name']] = $nextVersion;
             }
-            
+
             try {
-                $this->executeUpsert($data, $options);
+                $shardKeyQueryPart = $this->getShardKeyQuery($document, $options);
+                $this->executeUpsert($data, $options, $shardKeyQueryPart);
                 $this->handleCollections($document, $options);
                 unset($this->queuedUpserts[$oid]);
             } catch (\MongoException $e) {
@@ -304,23 +306,27 @@ class DocumentPersister
     }
 
     /**
-     * Executes a single upsert in {@link executeInserts}
+     * Executes a single upsert in {@link executeUpserts}
      *
      * @param array $data
      * @param array $options
+     * @param array $shardKeyQueryPart
      */
-    private function executeUpsert(array $data, array $options)
+    private function executeUpsert(array $data, array $options, array $shardKeyQueryPart = array())
     {
         $options['upsert'] = true;
-        $criteria = array('_id' => $data['$set']['_id']);
-        unset($data['$set']['_id']);
+        $criteria = array_merge(array('_id' => $data['$set']['_id']), $shardKeyQueryPart);
+
+        foreach (array_keys($criteria) as $field) {
+            unset($data['$set'][$field]);
+        }
 
         // Do not send an empty $set modifier
         if (empty($data['$set'])) {
             unset($data['$set']);
         }
 
-        /* If there are no modifiers remaining, we're upserting a document with 
+        /* If there are no modifiers remaining, we're upserting a document with
          * an identifier as its only field. Since a document with the identifier
          * may already exist, the desired behavior is "insert if not exists" and
          * NOOP otherwise. MongoDB 2.6+ does not allow empty modifiers, so $set
@@ -363,7 +369,8 @@ class DocumentPersister
         $update = $this->pb->prepareUpdateData($document);
 
         $id = $this->class->getDatabaseIdentifierValue($id);
-        $query = array('_id' => $id);
+        $shardKeyQueryPart = $this->getShardKeyQuery($document, $options);
+        $query = array_merge(array('_id' => $id), $shardKeyQueryPart);
 
         // Include versioning logic to set the new version value in the database
         // and to ensure the version has not changed since this document object instance
@@ -395,6 +402,10 @@ class DocumentPersister
                 } else {
                     $query[$lockMapping['name']] = array('$exists' => false);
                 }
+            }
+
+            foreach (array_keys($query) as $field) {
+                unset($update['$set'][$field]);
             }
 
             $result = $this->collection->update($query, $update, $options);
@@ -519,6 +530,35 @@ class DocumentPersister
         }
 
         return $cursor;
+    }
+
+    /**
+     * @param object $document
+     * @param array $options
+     *
+     * @return array
+     * @throws MongoDBException
+     */
+    public function getShardKeyQuery($document, array $options = array())
+    {
+        if ( ! $this->class->isSharded()) {
+            return array();
+        }
+
+        $shardKey = $this->class->getShardKey();
+        $shardKeyFields = array_keys($shardKey['fields']);
+
+        $data = $this->uow->getDocumentActualData($document);
+
+        $shardKeyQueryPart = array();
+        foreach ($shardKeyFields as $field) {
+            $this->guardShardKeyFieldInvariants($document, $options, $field, $data);
+            $mapping = $this->class->fieldMappings[$field];
+            $value = Type::getType($mapping['type'])->convertToDatabaseValue($data[$field]);
+            $shardKeyQueryPart[$mapping['name']] = $value;
+        }
+
+        return $shardKeyQueryPart;
     }
 
     /**
@@ -778,7 +818,7 @@ class DocumentPersister
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
     {
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
-        $mapping = $collection->getMapping();        
+        $mapping = $collection->getMapping();
         $documents = $cursor->toArray(false);
         foreach ($documents as $key => $obj) {
             if (CollectionHelper::isHash($mapping['strategy'])) {
@@ -1255,6 +1295,35 @@ class DocumentPersister
         // Take new snapshots from visited collections
         foreach ($this->uow->getVisitedCollections($document) as $coll) {
             $coll->takeSnapshot();
+        }
+    }
+
+    /**
+     * If the document is new, we can ignore shard key field value, otherwise throw an exception.
+     * Also shard key field should be presented in actual document data.
+     *
+     * @param object $document
+     * @param array  $options
+     * @param string $shardKeyField
+     * @param array  $actualDocumentData
+     *
+     * @throws MongoDBException
+     */
+    private function guardShardKeyFieldInvariants($document, array $options, $shardKeyField, $actualDocumentData)
+    {
+        $dcs = $this->uow->getDocumentChangeSet($document);
+        $isUpdate = $this->uow->isScheduledForUpdate($document);
+
+        if ($isUpdate
+            && isset($dcs[$shardKeyField])
+            && $dcs[$shardKeyField][0] != $dcs[$shardKeyField][1]
+            && (!isset($options['upsert']) || $options['upsert'] === true)
+        ) {
+            throw MongoDBException::shardKeyFieldCannotBeChanged($shardKeyField, $this->class->getName());
+        }
+
+        if (!isset($actualDocumentData[$shardKeyField])) {
+            throw MongoDBException::shardKeyFieldMissing($shardKeyField, $this->class->getName());
         }
     }
 }
