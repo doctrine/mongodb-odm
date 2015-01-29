@@ -499,4 +499,87 @@ class SchemaManager
 
         return true;
     }
+
+    /**
+     * Ensure collections are sharded for all documents that can be loaded with the
+     * metadata factory.
+     */
+    public function ensureSharding()
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || !$class->isSharded()) {
+                continue;
+            }
+
+            $this->ensureDocumentSharding($class->name);
+        }
+    }
+
+    /**
+     * Ensure shard key for given document conforms its metadata.
+     * Also enable sharding for document's database.
+     *
+     * @param $documentName
+     *
+     * @throws MongoDBException
+     */
+    public function ensureDocumentSharding($documentName)
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+        if ( ! $class->isSharded()) {
+            return;
+        }
+
+        $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
+        $this->enableShardingForDb($dbName);
+
+        $shardKey = $class->getShardKey();
+        $adminDb = $this->dm->getConnection()->selectDatabase('admin');
+        $result = $adminDb->command(
+            array(
+                'shardCollection' => $dbName . '.' . $class->getCollection(),
+                'key' => $this->getDbShardKeyForShardedClass($class)
+            ),
+            $shardKey['options']
+        );
+
+        if ($result['ok'] != 1 && $result['errmsg'] !== 'already sharded') {
+            throw MongoDBException::failedToEnsureDocumentSharding($documentName, $result['errmsg']);
+        }
+    }
+
+    /**
+     * Enable sharding for database.
+     *
+     * @param $dbName
+     *
+     * @throws MongoDBException
+     */
+    public function enableShardingForDb($dbName)
+    {
+        $adminDb = $this->dm->getConnection()->selectDatabase('admin');
+        $result = $adminDb->command(array('enableSharding' => $dbName));
+
+        if ($result['ok'] != 1 && $result['errmsg'] !== 'already enabled') {
+            throw MongoDBException::failedToEnableSharding($dbName, $result['errmsg']);
+        }
+    }
+
+    /**
+     * @param ClassMetadata $shardedClass
+     *
+     * @return array
+     */
+    private function getDbShardKeyForShardedClass($shardedClass)
+    {
+        $shardKey = $shardedClass->getShardKey();
+        $dbFieldNames = array_map(
+            function ($field) use ($shardedClass) {
+                return $shardedClass->fieldMappings[$field]['name'];
+            },
+            array_keys($shardKey['fields'])
+        );
+
+        return array_combine($dbFieldNames, $shardKey['fields']);
+    }
 }
