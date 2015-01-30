@@ -78,6 +78,16 @@ class MappingException extends BaseMappingException
     }
 
     /**
+     * @param string $className
+     * @param string $dbFieldName
+     * @return MappingException
+     */
+    public static function mappingNotFoundByDbName($className, $dbFieldName)
+    {
+        return new self("No mapping found for field by DB name '$dbFieldName' in class '$className'.");
+    }
+
+    /**
      * @param string $document
      * @param string $fieldName
      * @return MappingException

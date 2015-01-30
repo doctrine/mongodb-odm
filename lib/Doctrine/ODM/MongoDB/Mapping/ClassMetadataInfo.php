@@ -1708,8 +1708,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * @return array  The field mapping.
      *
      * @throws MappingException if the $fieldName is not found in the fieldMappings array
-     *
-     * @throws MappingException
      */
     public function getFieldMapping($fieldName)
     {
@@ -1730,6 +1728,26 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             $this->associationMappings,
             function($assoc) { return ! empty($assoc['embedded']); }
         );
+    }
+
+    /**
+     * Gets the field mapping by its DB name.
+     * E.g. it returns identifier's mapping when called with _id.
+     *
+     * @param string $dbFieldName
+     *
+     * @return array
+     * @throws MappingException
+     */
+    public function getFieldMappingByDbFieldName($dbFieldName)
+    {
+        foreach ($this->fieldMappings as $mapping) {
+            if ($mapping['name'] == $dbFieldName) {
+                return $mapping;
+            }
+        }
+
+        throw MappingException::mappingNotFoundByDbName($this->name, $dbFieldName);
     }
 
     /**
