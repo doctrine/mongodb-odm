@@ -48,6 +48,9 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertSlaveOkayHint($slaveOkay, $cursor->getHints());
 
+        // Workaround replication lag
+        usleep(1000);
+
         $user = $cursor->getSingleResult();
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->getGroups());
@@ -67,6 +70,9 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cursor->setHints(array(Query::HINT_SLAVE_OKAY => $slaveOkay));
 
         $this->assertSlaveOkayHint($slaveOkay, $cursor->getHints());
+
+        // Workaround replication lag
+        usleep(1000);
 
         $user = $cursor->getSingleResult();
 
