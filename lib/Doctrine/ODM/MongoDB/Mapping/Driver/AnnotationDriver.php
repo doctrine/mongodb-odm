@@ -101,8 +101,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_'.$annot->value));
             } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
                 $class->setDefaultDiscriminatorValue($annot->value);
-            } elseif ($annot instanceof ODM\ShardKey) {
-                $this->setShardKey($class, $annot);
             }
 
         }
@@ -118,9 +116,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if ($documentAnnot instanceof ODM\MappedSuperclass) {
             $class->isMappedSuperclass = true;
         } elseif ($documentAnnot instanceof ODM\EmbeddedDocument) {
-            if ($class->isSharded()) {
-                throw MappingException::embeddedDocumentCantHaveShardKey($class->getName());
-            }
             $class->isEmbeddedDocument = true;
         }
         if (isset($documentAnnot->db)) {
@@ -189,6 +184,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
+        // Set shard key after all fields to ensure we mapped all its keys
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey'])) {
+            $this->setShardKey($class, $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey']);
+        }
+
         /** @var $method \ReflectionMethod */
         foreach ($reflClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
             /* Filter for the declaring class only. Callbacks from parent
@@ -255,7 +255,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     private function setShardKey(ClassMetadataInfo $class, ODM\ShardKey $shardKey)
     {
-        $keys = $shardKey->keys;
         $options = array();
         $allowed = array('unique', 'numInitialChunks');
         foreach ($allowed as $name) {
@@ -264,7 +263,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
-        $class->setShardKey($keys, $options);
+        $class->setShardKey($shardKey->keys, $options);
     }
 
     /**
