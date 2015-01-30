@@ -526,7 +526,7 @@ class SchemaManager
         $result = $adminDb->command(
             array(
                 'shardCollection' => $dbName . '.' . $class->getCollection(),
-                'key' => $this->getDbShardKeyForShardedClass($class)
+                'key' => $shardKey['keys']
             ),
             $shardKey['options']
         );
@@ -551,23 +551,5 @@ class SchemaManager
         if ($result['ok'] != 1 && $result['errmsg'] !== 'already enabled') {
             throw MongoDBException::failedToEnableSharding($dbName, $result['errmsg']);
         }
-    }
-
-    /**
-     * @param ClassMetadata $shardedClass
-     *
-     * @return array
-     */
-    private function getDbShardKeyForShardedClass($shardedClass)
-    {
-        $shardKey = $shardedClass->getShardKey();
-        $dbFieldNames = array_map(
-            function ($field) use ($shardedClass) {
-                return $shardedClass->fieldMappings[$field]['name'];
-            },
-            array_keys($shardKey['keys'])
-        );
-
-        return array_combine($dbFieldNames, $shardKey['keys']);
     }
 }

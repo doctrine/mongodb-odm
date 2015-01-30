@@ -546,16 +546,15 @@ class DocumentPersister
         }
 
         $shardKey = $this->class->getShardKey();
-        $shardKeyKeys = array_keys($shardKey['keys']);
-
+        $keys = array_keys($shardKey['keys']);
         $data = $this->uow->getDocumentActualData($document);
 
         $shardKeyQueryPart = array();
-        foreach ($shardKeyKeys as $key) {
+        foreach ($keys as $key) {
+            $mapping = $this->class->getFieldMappingByDbFieldName($key);
             $this->guardShardKeyInvariants($document, $options, $key, $data);
-            $mapping = $this->class->fieldMappings[$key];
-            $value = Type::getType($mapping['type'])->convertToDatabaseValue($data[$key]);
-            $shardKeyQueryPart[$mapping['name']] = $value;
+            $value = Type::getType($mapping['type'])->convertToDatabaseValue($data[$mapping['fieldName']]);
+            $shardKeyQueryPart[$key] = $value;
         }
 
         return $shardKeyQueryPart;
@@ -1322,7 +1321,8 @@ class DocumentPersister
             throw MongoDBException::shardKeyFieldCannotBeChanged($shardKeyField, $this->class->getName());
         }
 
-        if (!isset($actualDocumentData[$shardKeyField])) {
+        $fieldMapping = $this->class->getFieldMappingByDbFieldName($shardKeyField);
+        if (!isset($actualDocumentData[$fieldMapping['fieldName']])) {
             throw MongoDBException::shardKeyFieldMissing($shardKeyField, $this->class->getName());
         }
     }

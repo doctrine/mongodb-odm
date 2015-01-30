@@ -5,7 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class ShardingTest extends BaseTest
+class ShardKeyTest extends BaseTest
 {
     public function setUp()
     {
@@ -74,7 +74,8 @@ class ShardingTest extends BaseTest
 
 /**
  * @ODM\Document
- * @ODM\ShardKey(keys={"key"="asc"})
+ * @ODM\ShardKey(keys={"k"="asc"})
+ * @ODM\Index(keys={"k"="asc"})
  */
 class ShardedOne
 {
