@@ -75,7 +75,6 @@ class ShardKeyTest extends BaseTest
 /**
  * @ODM\Document
  * @ODM\ShardKey(keys={"k"="asc"})
- * @ODM\Index(keys={"k"="asc"})
  */
 class ShardedOne
 {
