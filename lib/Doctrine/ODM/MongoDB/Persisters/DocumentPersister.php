@@ -374,11 +374,20 @@ class DocumentPersister
     public function update($document, array $options = array())
     {
         $id = $this->uow->getDocumentIdentifier($document);
+        $id = $this->class->getDatabaseIdentifierValue($id);
         $update = $this->pb->prepareUpdateData($document);
 
-        $id = $this->class->getDatabaseIdentifierValue($id);
         $shardKeyQueryPart = $this->getShardKeyQuery($document, $options);
         $query = array_merge(array('_id' => $id), $shardKeyQueryPart);
+
+        foreach (array_keys($query) as $field) {
+            unset($update['$set'][$field]);
+        }
+
+        if (empty($update['$set'])) {
+            unset($update['$set']);
+        }
+
 
         // Include versioning logic to set the new version value in the database
         // and to ensure the version has not changed since this document object instance
@@ -410,10 +419,6 @@ class DocumentPersister
                 } else {
                     $query[$lockMapping['name']] = array('$exists' => false);
                 }
-            }
-
-            foreach (array_keys($query) as $field) {
-                unset($update['$set'][$field]);
             }
 
             $result = $this->collection->update($query, $update, $options);
@@ -1337,16 +1342,18 @@ class DocumentPersister
         $dcs = $this->uow->getDocumentChangeSet($document);
         $isUpdate = $this->uow->isScheduledForUpdate($document);
 
+        $fieldMapping = $this->class->getFieldMappingByDbFieldName($shardKeyField);
+        $fieldName = $fieldMapping['fieldName'];
+
         if ($isUpdate
-            && isset($dcs[$shardKeyField])
-            && $dcs[$shardKeyField][0] != $dcs[$shardKeyField][1]
+            && isset($dcs[$fieldName])
+            && $dcs[$fieldName][0] != $dcs[$fieldName][1]
             && (!isset($options['upsert']) || $options['upsert'] === true)
         ) {
             throw MongoDBException::shardKeyFieldCannotBeChanged($shardKeyField, $this->class->getName());
         }
 
-        $fieldMapping = $this->class->getFieldMappingByDbFieldName($shardKeyField);
-        if (!isset($actualDocumentData[$fieldMapping['fieldName']])) {
+        if (!isset($actualDocumentData[$fieldName])) {
             throw MongoDBException::shardKeyFieldMissing($shardKeyField, $this->class->getName());
         }
     }
