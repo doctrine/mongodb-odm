@@ -546,15 +546,15 @@ class DocumentPersister
         }
 
         $shardKey = $this->class->getShardKey();
-        $shardKeyFields = array_keys($shardKey['fields']);
+        $shardKeyKeys = array_keys($shardKey['keys']);
 
         $data = $this->uow->getDocumentActualData($document);
 
         $shardKeyQueryPart = array();
-        foreach ($shardKeyFields as $field) {
-            $this->guardShardKeyFieldInvariants($document, $options, $field, $data);
-            $mapping = $this->class->fieldMappings[$field];
-            $value = Type::getType($mapping['type'])->convertToDatabaseValue($data[$field]);
+        foreach ($shardKeyKeys as $key) {
+            $this->guardShardKeyInvariants($document, $options, $key, $data);
+            $mapping = $this->class->fieldMappings[$key];
+            $value = Type::getType($mapping['type'])->convertToDatabaseValue($data[$key]);
             $shardKeyQueryPart[$mapping['name']] = $value;
         }
 
@@ -1309,7 +1309,7 @@ class DocumentPersister
      *
      * @throws MongoDBException
      */
-    private function guardShardKeyFieldInvariants($document, array $options, $shardKeyField, $actualDocumentData)
+    private function guardShardKeyInvariants($document, array $options, $shardKeyField, $actualDocumentData)
     {
         $dcs = $this->uow->getDocumentChangeSet($document);
         $isUpdate = $this->uow->isScheduledForUpdate($document);

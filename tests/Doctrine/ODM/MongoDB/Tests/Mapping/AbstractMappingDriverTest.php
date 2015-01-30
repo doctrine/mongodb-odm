@@ -327,8 +327,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     {
         $shardKey = $class->getShardKey();
 
-        $this->assertTrue(isset($shardKey['fields']['name']), 'Shard key field is not mapped');
-        $this->assertEquals(1, $shardKey['fields']['name'], 'Wrong value for shard key field');
+        $this->assertTrue(isset($shardKey['keys']['name']), 'Shard key is not mapped');
+        $this->assertEquals(1, $shardKey['keys']['name'], 'Wrong value for shard key');
 
         $this->assertTrue(isset($shardKey['options']['unique']), 'Shard key option is not mapped');
         $this->assertTrue($shardKey['options']['unique'], 'Shard key option has wrong value');
@@ -344,7 +344,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
  * @ODM\DefaultDiscriminatorValue("default")
  * @ODM\HasLifecycleCallbacks
  * @ODM\Indexes(@ODM\Index(keys={"createdAt"="asc"},expireAfterSeconds=3600))
- * @ODM\ShardKey(fields={"name"="asc"},unique=true,numInitialChunks=4096)
+ * @ODM\ShardKey(keys={"name"="asc"},unique=true,numInitialChunks=4096)
  */
 class AbstractMappingDriverUser
 {

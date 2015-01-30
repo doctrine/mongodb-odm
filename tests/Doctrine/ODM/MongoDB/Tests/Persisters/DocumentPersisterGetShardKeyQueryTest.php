@@ -63,7 +63,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 
 /**
  * @ODM\Document
- * @ODM\ShardKey(fields={"int"="asc","string"="asc","bool"="asc","float"="asc"})
+ * @ODM\ShardKey(keys={"int"="asc","string"="asc","bool"="asc","float"="asc"})
  */
 class ShardedByScalars
 {
@@ -85,7 +85,7 @@ class ShardedByScalars
 
 /**
  * @ODM\Document
- * @ODM\ShardKey(fields={"oid"="asc","bin"="asc","date"="asc"})
+ * @ODM\ShardKey(keys={"oid"="asc","bin"="asc","date"="asc"})
  */
 class ShardedByObjects
 {
@@ -104,7 +104,7 @@ class ShardedByObjects
 
 /**
  * @ODM\Document
- * @ODM\ShardKey(fields={"identifier"="ask"})
+ * @ODM\ShardKey(keys={"identifier"="ask"})
  */
 class ShardedById
 {

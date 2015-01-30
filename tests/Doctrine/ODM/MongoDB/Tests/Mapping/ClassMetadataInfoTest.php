@@ -336,7 +336,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $shardKey = $cm->getShardKey();
 
-        $this->assertEquals(array('id' => 1), $shardKey['fields']);
+        $this->assertEquals(array('id' => 1), $shardKey['keys']);
     }
 
     public function testSetShardKeyForClassWithSingleCollectionInheritance()
@@ -347,7 +347,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $shardKey = $cm->getShardKey();
 
-        $this->assertEquals(array('id' => 1), $shardKey['fields']);
+        $this->assertEquals(array('id' => 1), $shardKey['keys']);
     }
 
     /**
@@ -371,7 +371,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $shardKey = $cm->getShardKey();
 
-        $this->assertEquals(array('id' => 1), $shardKey['fields']);
+        $this->assertEquals(array('id' => 1), $shardKey['keys']);
     }
 
     public function testIsNotShardedIfThereIsNoShardKey()

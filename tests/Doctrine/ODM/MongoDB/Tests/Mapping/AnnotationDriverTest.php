@@ -198,7 +198,7 @@ class AnnotationDriverTestChild extends AnnotationDriverTestParent
 
 /**
  * @ODM\EmbeddedDocument
- * @ODM\ShardKey(fields={"foo"="asc"})
+ * @ODM\ShardKey(keys={"foo"="asc"})
  */
 class AnnotationDriverEmbeddedWithShardKey
 {
