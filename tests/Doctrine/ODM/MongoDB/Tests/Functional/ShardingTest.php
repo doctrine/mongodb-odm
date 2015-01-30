@@ -74,7 +74,7 @@ class ShardingTest extends BaseTest
 
 /**
  * @ODM\Document
- * @ODM\ShardKey(fields={"key"="asc"})
+ * @ODM\ShardKey(keys={"key"="asc"})
  */
 class ShardedOne
 {

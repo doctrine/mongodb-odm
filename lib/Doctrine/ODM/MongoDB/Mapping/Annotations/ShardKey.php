@@ -24,7 +24,7 @@ use Doctrine\Common\Annotations\Annotation;
 /** @Annotation */
 final class ShardKey extends Annotation
 {
-    public $fields = array();
+    public $keys = array();
     public $unique = false;
     public $numInitialChunks;
 }

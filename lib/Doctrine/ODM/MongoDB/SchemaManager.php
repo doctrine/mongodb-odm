@@ -577,9 +577,9 @@ class SchemaManager
             function ($field) use ($shardedClass) {
                 return $shardedClass->fieldMappings[$field]['name'];
             },
-            array_keys($shardKey['fields'])
+            array_keys($shardKey['keys'])
         );
 
-        return array_combine($dbFieldNames, $shardKey['fields']);
+        return array_combine($dbFieldNames, $shardKey['keys']);
     }
 }

@@ -350,7 +350,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         if ($parentClass->isSharded()) {
             $subClass->setShardKey(
-                $parentClass->shardKey['fields'],
+                $parentClass->shardKey['keys'],
                 $parentClass->shardKey['options']
             );
         }

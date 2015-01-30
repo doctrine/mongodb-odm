@@ -247,9 +247,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $class->addIndex($keys, $options);
     }
 
-    private function setShardKey(ClassMetadataInfo $class, $shardKey)
+    /**
+     * @param ClassMetadataInfo $class
+     * @param ODM\ShardKey      $shardKey
+     *
+     * @throws MappingException
+     */
+    private function setShardKey(ClassMetadataInfo $class, ODM\ShardKey $shardKey)
     {
-        $fields = $shardKey->fields;
+        $keys = $shardKey->keys;
         $options = array();
         $allowed = array('unique', 'numInitialChunks');
         foreach ($allowed as $name) {
@@ -258,7 +264,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
-        $class->setShardKey($fields, $options);
+        $class->setShardKey($keys, $options);
     }
 
     /**

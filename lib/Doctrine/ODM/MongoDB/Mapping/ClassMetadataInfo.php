@@ -831,12 +831,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Set shard key for this Document.
      *
-     * @param array $fields  Array of fields for shard key.
+     * @param array $keys Array of document keys.
      * @param array $options Array of sharding options.
      *
      * @throws MappingException
      */
-    public function setShardKey(array $fields, array $options = array())
+    public function setShardKey(array $keys, array $options = array())
     {
         if ($this->inheritanceType == self::INHERITANCE_TYPE_SINGLE_COLLECTION && !is_null($this->shardKey)) {
             throw MappingException::shardKeyInSingleCollInheritanceSubclass($this->getName());
@@ -847,7 +847,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         }
 
         $this->shardKey = array(
-            'fields' => array_map(function($value) {
+            'keys' => array_map(function($value) {
                 if ($value == 1 || $value == -1) {
                     return (int) $value;
                 }
@@ -860,7 +860,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                     }
                 }
                 return $value;
-            }, $fields),
+            }, $keys),
             'options' => $options
         );
     }
