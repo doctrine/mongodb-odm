@@ -352,7 +352,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Shard key definition in subclass is forbidden in case of single collection inheritance: stdClass
+     * @expectedExceptionMessage Shard key overriding in subclass is forbidden for single collection inheritance
      */
     public function testSetShardKeyForClassWithSingleCollectionInheritanceWhichAlreadyHasIt()
     {

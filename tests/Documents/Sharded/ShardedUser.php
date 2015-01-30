@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * @ODM\Document(collection="users")
- * @ODM\ShardKey(keys={"id"="hashed"})
+ * @ODM\ShardKey(keys={"_id"="hashed"})
  */
 class ShardedUser
 {

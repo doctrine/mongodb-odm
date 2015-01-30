@@ -104,7 +104,7 @@ class ShardedByObjects
 
 /**
  * @ODM\Document
- * @ODM\ShardKey(keys={"identifier"="ask"})
+ * @ODM\ShardKey(keys={"_id"="asc"})
  */
 class ShardedById
 {
