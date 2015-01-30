@@ -262,7 +262,7 @@ class MappingException extends BaseMappingException
      */
     public static function shardKeyInSingleCollInheritanceSubclass($subclassName)
     {
-        return new self("Shard key definition in subclass is forbidden in case of single collection inheritance: $subclassName");
+        return new self("Shard key overriding in subclass is forbidden for single collection inheritance: $subclassName");
     }
 
     /**
