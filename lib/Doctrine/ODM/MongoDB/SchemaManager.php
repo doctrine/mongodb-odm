@@ -516,32 +516,33 @@ class SchemaManager
     }
 
     /**
-     * Ensure shard key for given document conforms its metadata.
-     * Also enable sharding for document's database.
+     * Ensure sharding for collection by document name.
      *
-     * @param $documentName
+     * @param string $documentName
+     * @param array  $options Options for `ensureIndex` command.
      *
      * @throws MongoDBException
      */
-    public function ensureDocumentSharding($documentName)
+    public function ensureDocumentSharding($documentName, array $options = array())
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ( ! $class->isSharded()) {
             return;
         }
 
-        $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
-        $this->enableShardingForDb($dbName);
+        $this->enableShardingForDbByDocumentName($documentName);
 
-        $shardKey = $class->getShardKey();
-        $adminDb = $this->dm->getConnection()->selectDatabase('admin');
-        $result = $adminDb->command(
-            array(
-                'shardCollection' => $dbName . '.' . $class->getCollection(),
-                'key' => $shardKey['keys']
-            ),
-            $shardKey['options']
-        );
+        do {
+            $result = $this->runShardCollectionCommand($documentName);
+            $done = true;
+            $try = 0;
+
+            if ($result['ok'] != 1 && isset($result['proposedKey'])) {
+                $this->dm->getDocumentCollection($documentName)->ensureIndex($result['proposedKey'], $options);
+                $done = false;
+                $try++;
+            }
+        } while (!$done && $try < 2);
 
         if ($result['ok'] != 1 && $result['errmsg'] !== 'already sharded') {
             throw MongoDBException::failedToEnsureDocumentSharding($documentName, $result['errmsg']);
@@ -549,19 +550,43 @@ class SchemaManager
     }
 
     /**
-     * Enable sharding for database.
+     * Enable sharding for database which contains documents with given name.
      *
-     * @param $dbName
+     * @param string $documentName
      *
      * @throws MongoDBException
      */
-    public function enableShardingForDb($dbName)
+    public function enableShardingForDbByDocumentName($documentName)
     {
+        $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
         $adminDb = $this->dm->getConnection()->selectDatabase('admin');
         $result = $adminDb->command(array('enableSharding' => $dbName));
 
         if ($result['ok'] != 1 && $result['errmsg'] !== 'already enabled') {
             throw MongoDBException::failedToEnableSharding($dbName, $result['errmsg']);
         }
+    }
+
+    /**
+     * @param $documentName
+     *
+     * @return array
+     */
+    private function runShardCollectionCommand($documentName)
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+        $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
+        $shardKey = $class->getShardKey();
+        $adminDb = $this->dm->getConnection()->selectDatabase('admin');
+
+        $result = $adminDb->command(
+            array(
+                'shardCollection' => $dbName . '.' . $class->getCollection(),
+                'key'             => $shardKey['keys']
+            ),
+            $shardKey['options']
+        );
+
+        return $result;
     }
 }
