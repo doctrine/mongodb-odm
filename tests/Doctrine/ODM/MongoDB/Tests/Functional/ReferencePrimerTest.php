@@ -246,6 +246,9 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(0, $invoked, 'Primer was not invoked when all references were already managed.');
     }
 
+    /**
+     * @group replication_lag
+     */
     public function testPrimeReferencesInvokesPrimer()
     {
         $group1 = new Group();
