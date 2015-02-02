@@ -3,8 +3,8 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\Sharded\ShardedOne;
 
 class ShardKeyTest extends BaseTest
 {
@@ -13,7 +13,7 @@ class ShardKeyTest extends BaseTest
         parent::setUp();
 
         $schemaManager = $this->dm->getSchemaManager();
-        $schemaManager->ensureDocumentSharding(__NAMESPACE__ . '\ShardedOne');
+        $schemaManager->ensureDocumentSharding('Documents\Sharded\ShardedOne');
     }
 
     /**
@@ -28,7 +28,7 @@ class ShardKeyTest extends BaseTest
         $this->dm->persist($o);
         $this->dm->flush();
 
-        /** @var ShardedOne $o */
+        /** @var \Documents\Sharded\ShardedOne $o */
         $o = $this->dm->find(get_class($o), $o->id);
         $o->title = 'test2';
         $this->dm->flush();
@@ -128,20 +128,4 @@ class ShardKeyTest extends BaseTest
             $this->dm->getConfiguration()
         );
     }
-}
-
-/**
- * @ODM\Document
- * @ODM\ShardKey(keys={"k"="asc"})
- */
-class ShardedOne
-{
-    /** @ODM\Id */
-    public $id;
-
-    /** @ODM\String */
-    public $title = 'test';
-
-    /** @ODM\String(name="k") */
-    public $key = 'testing';
 }

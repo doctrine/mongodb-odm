@@ -565,8 +565,11 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $connMock = $this->getMockConnection();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
+        $dbMock = $this->getMockDatabase();
+        $dbMock->method('getName')->willReturn('db');
+        $this->dm->documentDatabases = array('Documents\Sharded\ShardedUser' => $dbMock);
 
-        $this->schemaManager->enableShardingForDb('db');
+        $this->schemaManager->enableShardingForDbByDocumentName('Documents\Sharded\ShardedUser');
     }
 
     /**
@@ -584,8 +587,11 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $connMock = $this->getMockConnection();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
+        $dbMock = $this->getMockDatabase();
+        $dbMock->method('getName')->willReturn('db');
+        $this->dm->documentDatabases = array('Documents\Sharded\ShardedUser' => $dbMock);
 
-        $this->schemaManager->enableShardingForDb('db');
+        $this->schemaManager->enableShardingForDbByDocumentName('Documents\Sharded\ShardedUser');
     }
 
     public function testEnableShardingForDbIgnoresAlreadyShardedError()
@@ -599,8 +605,11 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $connMock = $this->getMockConnection();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
+        $dbMock = $this->getMockDatabase();
+        $dbMock->method('getName')->willReturn('db');
+        $this->dm->documentDatabases = array('Documents\Sharded\ShardedUser' => $dbMock);
 
-        $this->schemaManager->enableShardingForDb('db');
+        $this->schemaManager->enableShardingForDbByDocumentName('Documents\Sharded\ShardedUser');
     }
 
     private function getMockCollection()
