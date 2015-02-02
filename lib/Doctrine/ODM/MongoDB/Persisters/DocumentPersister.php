@@ -277,25 +277,8 @@ class DocumentPersister
         }
 
         foreach ($this->queuedUpserts as $oid => $document) {
-            $data = $this->pb->prepareUpsertData($document);
-
-            // Set the initial version for each upsert
-            if ($this->class->isVersioned) {
-                $versionMapping = $this->class->fieldMappings[$this->class->versionField];
-                if ($versionMapping['type'] === 'int') {
-                    $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
-                } elseif ($versionMapping['type'] === 'date') {
-                    $nextVersionDateTime = new \DateTime();
-                    $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
-                }
-                $data['$set'][$versionMapping['name']] = $nextVersion;
-            }
-
             try {
-                $shardKeyQueryPart = $this->getShardKeyQuery($document, $options);
-                $this->executeUpsert($data, $options, $shardKeyQueryPart);
+                $this->executeUpsert($document, $options);
                 $this->handleCollections($document, $options);
                 unset($this->queuedUpserts[$oid]);
             } catch (\MongoException $e) {
@@ -308,14 +291,29 @@ class DocumentPersister
     /**
      * Executes a single upsert in {@link executeUpserts}
      *
-     * @param array $data
-     * @param array $options
-     * @param array $shardKeyQueryPart
+     * @param object $document
+     * @param array  $options
      */
-    private function executeUpsert(array $data, array $options, array $shardKeyQueryPart = array())
+    private function executeUpsert($document, array $options)
     {
         $options['upsert'] = true;
-        $criteria = array_merge(array('_id' => $data['$set']['_id']), $shardKeyQueryPart);
+        $criteria = $this->getQueryForDocument($document, $options);
+
+        $data = $this->pb->prepareUpsertData($document);
+
+        // Set the initial version for each upsert
+        if ($this->class->isVersioned) {
+            $versionMapping = $this->class->fieldMappings[$this->class->versionField];
+            if ($versionMapping['type'] === 'int') {
+                $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
+                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+            } elseif ($versionMapping['type'] === 'date') {
+                $nextVersionDateTime = new \DateTime();
+                $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
+                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
+            }
+            $data['$set'][$versionMapping['name']] = $nextVersion;
+        }
 
         foreach (array_keys($criteria) as $field) {
             unset($data['$set'][$field]);
