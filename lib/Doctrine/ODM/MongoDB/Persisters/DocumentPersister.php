@@ -365,12 +365,9 @@ class DocumentPersister
      */
     public function update($document, array $options = array())
     {
-        $id = $this->uow->getDocumentIdentifier($document);
-        $id = $this->class->getDatabaseIdentifierValue($id);
         $update = $this->pb->prepareUpdateData($document);
 
-        $shardKeyQueryPart = $this->getShardKeyQuery($document, $options);
-        $query = array_merge(array('_id' => $id), $shardKeyQueryPart);
+        $query = $this->getQueryForDocument($document, $options);
 
         foreach (array_keys($query) as $field) {
             unset($update['$set'][$field]);
@@ -432,8 +429,7 @@ class DocumentPersister
      */
     public function delete($document, array $options = array())
     {
-        $id = $this->uow->getDocumentIdentifier($document);
-        $query = array('_id' => $this->class->getDatabaseIdentifierValue($id));
+        $query = $this->getQueryForDocument($document, $options);
 
         if ($this->class->isLockable) {
             $query[$this->class->lockField] = array('$exists' => false);
@@ -449,13 +445,12 @@ class DocumentPersister
     /**
      * Refreshes a managed document.
      *
-     * @param array $id The identifier of the document.
      * @param object $document The document to refresh.
      */
-    public function refresh($id, $document)
+    public function refresh($document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
-        $data = $this->collection->findOne(array('_id' => $id));
+        $query = $this->getQueryForDocument($document);
+        $data = $this->collection->findOne($query);
         $data = $this->hydratorFactory->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
@@ -1303,8 +1298,8 @@ class DocumentPersister
     }
 
     /**
-     * If the document is new, we can ignore shard key field value, otherwise throw an exception.
-     * Also shard key field should be presented in actual document data.
+     * If the document is new, ignore shard key field value, otherwise throw an exception.
+     * Also, shard key field should be presented in actual document data.
      *
      * @param object $document
      * @param array  $options
@@ -1332,5 +1327,24 @@ class DocumentPersister
         if (!isset($actualDocumentData[$fieldName])) {
             throw MongoDBException::shardKeyFieldMissing($shardKeyField, $this->class->getName());
         }
+    }
+
+    /**
+     * Get shard key aware query for single document.
+     *
+     * @param object $document
+     * @param array  $options
+     *
+     * @return array
+     */
+    private function getQueryForDocument($document, array $options = array())
+    {
+        $id = $this->uow->getDocumentIdentifier($document);
+        $id = $this->class->getDatabaseIdentifierValue($id);
+
+        $shardKeyQueryPart = $this->getShardKeyQuery($document, $options);
+        $query = array_merge(array('_id' => $id), $shardKeyQueryPart);
+
+        return $query;
     }
 }
