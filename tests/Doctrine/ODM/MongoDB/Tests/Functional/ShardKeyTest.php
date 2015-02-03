@@ -112,6 +112,20 @@ class ShardKeyTest extends BaseTest
     }
 
     /**
+     * @group sharding
+     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function testUpdateWithUpsertTrue()
+    {
+        $o = new ShardedOne();
+        $this->dm->persist($o);
+        $this->dm->flush();
+
+        $o->key = 'testing2';
+        $this->dm->flush(null, array('upsert' => true));
+    }
+
+    /**
      * Replace DM with the one with enabled query logging
      *
      * @param $queries
