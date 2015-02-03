@@ -305,7 +305,7 @@ class DocumentPersister
     private function executeUpsert($document, array $options)
     {
         $options['upsert'] = true;
-        $criteria = $this->getQueryForDocument($document, $options);
+        $criteria = $this->getQueryForDocument($document);
 
         $data = $this->pb->prepareUpsertData($document);
 
@@ -373,7 +373,7 @@ class DocumentPersister
     {
         $update = $this->pb->prepareUpdateData($document);
 
-        $query = $this->getQueryForDocument($document, $options);
+        $query = $this->getQueryForDocument($document);
 
         foreach (array_keys($query) as $field) {
             unset($update['$set'][$field]);
@@ -435,7 +435,7 @@ class DocumentPersister
      */
     public function delete($document, array $options = array())
     {
-        $query = $this->getQueryForDocument($document, $options);
+        $query = $this->getQueryForDocument($document);
 
         if ($this->class->isLockable) {
             $query[$this->class->lockField] = array('$exists' => false);
@@ -540,12 +540,11 @@ class DocumentPersister
 
     /**
      * @param object $document
-     * @param array $options
      *
      * @return array
      * @throws MongoDBException
      */
-    public function getShardKeyQuery($document, array $options = array())
+    public function getShardKeyQuery($document)
     {
         if ( ! $this->class->isSharded()) {
             return array();
@@ -558,7 +557,7 @@ class DocumentPersister
         $shardKeyQueryPart = array();
         foreach ($keys as $key) {
             $mapping = $this->class->getFieldMappingByDbFieldName($key);
-            $this->guardShardKeyInvariants($document, $options, $key, $data);
+            $this->guardMissingShardKey($document, $key, $data);
             $value = Type::getType($mapping['type'])->convertToDatabaseValue($data[$mapping['fieldName']]);
             $shardKeyQueryPart[$key] = $value;
         }
@@ -1325,13 +1324,12 @@ class DocumentPersister
      * Also, shard key field should be presented in actual document data.
      *
      * @param object $document
-     * @param array  $options
      * @param string $shardKeyField
      * @param array  $actualDocumentData
      *
      * @throws MongoDBException
      */
-    private function guardShardKeyInvariants($document, array $options, $shardKeyField, $actualDocumentData)
+    private function guardMissingShardKey($document, $shardKeyField, $actualDocumentData)
     {
         $dcs = $this->uow->getDocumentChangeSet($document);
         $isUpdate = $this->uow->isScheduledForUpdate($document);
@@ -1339,11 +1337,7 @@ class DocumentPersister
         $fieldMapping = $this->class->getFieldMappingByDbFieldName($shardKeyField);
         $fieldName = $fieldMapping['fieldName'];
 
-        if ($isUpdate
-            && isset($dcs[$fieldName])
-            && $dcs[$fieldName][0] != $dcs[$fieldName][1]
-            && (!isset($options['upsert']) || $options['upsert'] === true)
-        ) {
+        if ($isUpdate && isset($dcs[$fieldName]) && $dcs[$fieldName][0] != $dcs[$fieldName][1]) {
             throw MongoDBException::shardKeyFieldCannotBeChanged($shardKeyField, $this->class->getName());
         }
 
@@ -1356,16 +1350,15 @@ class DocumentPersister
      * Get shard key aware query for single document.
      *
      * @param object $document
-     * @param array  $options
      *
      * @return array
      */
-    private function getQueryForDocument($document, array $options = array())
+    private function getQueryForDocument($document)
     {
         $id = $this->uow->getDocumentIdentifier($document);
         $id = $this->class->getDatabaseIdentifierValue($id);
 
-        $shardKeyQueryPart = $this->getShardKeyQuery($document, $options);
+        $shardKeyQueryPart = $this->getShardKeyQuery($document);
         $query = array_merge(array('_id' => $id), $shardKeyQueryPart);
 
         return $query;
