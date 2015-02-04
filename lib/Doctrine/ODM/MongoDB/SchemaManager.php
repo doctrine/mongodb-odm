@@ -491,15 +491,19 @@ class SchemaManager
     /**
      * Ensure collections are sharded for all documents that can be loaded with the
      * metadata factory.
+     *
+     * @param array $options
+     *
+     * @throws MongoDBException
      */
-    public function ensureSharding()
+    public function ensureSharding(array $options = array())
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || !$class->isSharded()) {
                 continue;
             }
 
-            $this->ensureDocumentSharding($class->name);
+            $this->ensureDocumentSharding($class->name, $options);
         }
     }
 
