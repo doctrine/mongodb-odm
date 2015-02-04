@@ -453,9 +453,11 @@ class XmlDriver extends FileDriver
         if (isset($xmlShardkey->{'option'})) {
             $allowed = array('unique', 'numInitialChunks');
             foreach ($xmlShardkey->{'option'} as $option) {
-                if ( ! in_array($option['name'], $allowed, true)) {
+                $name = (string) $option['name'];
+                if ( ! in_array($name, $allowed, true)) {
                     continue;
                 }
+
                 $value = (string) $option['value'];
                 if ($value === 'true') {
                     $value = true;
@@ -464,7 +466,7 @@ class XmlDriver extends FileDriver
                 } elseif (is_numeric($value)) {
                     $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
                 }
-                $options[$option['name']] = $value;
+                $options[$name] = $value;
             }
         }
 
