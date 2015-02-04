@@ -74,5 +74,10 @@
             <lifecycle-callback method="doOtherStuffOnPrePersistToo" type="prePersist" />
             <lifecycle-callback method="doStuffOnPostPersist" type="postPersist" />
         </lifecycle-callbacks>
+        <shard-key>
+            <key name="name" order="asc"/>
+            <option name="unique" value="true"/>
+            <option name="numInitialChunks" value="4096"/>
+        </shard-key>
     </document>
 </doctrine-mongo-mapping>
