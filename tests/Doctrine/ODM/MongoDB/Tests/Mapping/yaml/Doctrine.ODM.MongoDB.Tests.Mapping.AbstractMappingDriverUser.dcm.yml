@@ -53,6 +53,12 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
         partialFilterExpression:
           version: { $gt: 1 }
           discr: { $eq: 'default' }
+  shardKey:
+    keys:
+      name: asc
+    options:
+      unique: true
+      numInitialChunks: 4096
   referenceOne:
     address:
       targetDocument: Address
