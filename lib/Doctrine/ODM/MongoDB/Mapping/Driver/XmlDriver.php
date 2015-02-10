@@ -444,20 +444,24 @@ class XmlDriver extends FileDriver
 
     private function setShardKey(ClassMetadataInfo $class, \SimpleXmlElement $xmlShardkey)
     {
+        $attributes = $xmlShardkey->attributes();
+
         $keys = array();
+        $options = array();
         foreach ($xmlShardkey->{'key'} as $key) {
             $keys[(string) $key['name']] = isset($key['order']) ? (string)$key['order'] : 'asc';
         }
 
-        $options = array();
-        if (isset($xmlShardkey->{'option'})) {
-            $allowed = array('unique', 'numInitialChunks');
-            foreach ($xmlShardkey->{'option'} as $option) {
-                $name = (string) $option['name'];
-                if ( ! in_array($name, $allowed, true)) {
-                    continue;
-                }
+        if (isset($attributes['unique'])) {
+            $options['unique'] = ('true' === (string) $attributes['unique']);
+        }
 
+        if (isset($attributes['numInitialChunks'])) {
+            $options['numInitialChunks'] = (int) $attributes['numInitialChunks'];
+        }
+
+        if (isset($xmlShardkey->{'option'})) {
+            foreach ($xmlShardkey->{'option'} as $option) {
                 $value = (string) $option['value'];
                 if ($value === 'true') {
                     $value = true;
@@ -466,7 +470,7 @@ class XmlDriver extends FileDriver
                 } elseif (is_numeric($value)) {
                     $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
                 }
-                $options[$name] = $value;
+                $options[(string) $option['name']] = $value;
             }
         }
 
