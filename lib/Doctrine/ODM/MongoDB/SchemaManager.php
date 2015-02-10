@@ -492,18 +492,18 @@ class SchemaManager
      * Ensure collections are sharded for all documents that can be loaded with the
      * metadata factory.
      *
-     * @param array $options
+     * @param array $indexOptions Options for `ensureIndex` command. It's performed on an existing collections
      *
      * @throws MongoDBException
      */
-    public function ensureSharding(array $options = array())
+    public function ensureSharding(array $indexOptions = array())
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || !$class->isSharded()) {
                 continue;
             }
 
-            $this->ensureDocumentSharding($class->name, $options);
+            $this->ensureDocumentSharding($class->name, $indexOptions);
         }
     }
 
@@ -511,11 +511,11 @@ class SchemaManager
      * Ensure sharding for collection by document name.
      *
      * @param string $documentName
-     * @param array  $options Options for `ensureIndex` command.
+     * @param array  $indexOptions Options for `ensureIndex` command. It's performed on an existing collections.
      *
      * @throws MongoDBException
      */
-    public function ensureDocumentSharding($documentName, array $options = array())
+    public function ensureDocumentSharding($documentName, array $indexOptions = array())
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ( ! $class->isSharded()) {
@@ -530,7 +530,7 @@ class SchemaManager
             $try = 0;
 
             if ($result['ok'] != 1 && isset($result['proposedKey'])) {
-                $this->dm->getDocumentCollection($documentName)->ensureIndex($result['proposedKey'], $options);
+                $this->dm->getDocumentCollection($documentName)->ensureIndex($result['proposedKey'], $indexOptions);
                 $done = false;
                 $try++;
             }
