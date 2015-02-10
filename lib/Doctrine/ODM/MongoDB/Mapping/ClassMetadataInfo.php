@@ -216,7 +216,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $indexes = array();
 
     /**
-     * READ-ONLY: Fields and options describing shard key. Only for sharded collections.
+     * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
      */
     public $shardKey;
 
