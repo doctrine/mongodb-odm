@@ -57,7 +57,7 @@ class DateType extends Type
             return null;
         }
         if ($value instanceof \MongoDate) {
-            $date = \DateTime::createFromFormat('u.U', sprintf('%d.%06d', $value->sec, $value->usec));
+            $date = \DateTime::createFromFormat('U.u', sprintf('%d.%06d', $value->sec, $value->usec));
         } elseif (is_numeric($value)) {
             $date = new \DateTime();
             $date->setTimestamp($value);
