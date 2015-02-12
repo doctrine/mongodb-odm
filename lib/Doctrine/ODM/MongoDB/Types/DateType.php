@@ -36,10 +36,11 @@ class DateType extends Type
         if ($value instanceof \MongoDate) {
             return $value;
         }
-        $timestamp = false;
         if ($value instanceof \DateTime) {
-            $timestamp = $value->format('U');
-        } elseif (is_numeric($value)) {
+            return new \MongoDate($value->format('U'), $value->format('u'));
+        }
+        $timestamp = false;
+        if (is_numeric($value)) {
             $timestamp = $value;
         } elseif (is_string($value)) {
             $timestamp = strtotime($value);
@@ -56,8 +57,7 @@ class DateType extends Type
             return null;
         }
         if ($value instanceof \MongoDate) {
-            $date = new \DateTime();
-            $date->setTimestamp($value->sec);
+            $date = \DateTime::createFromFormat('u.U', sprintf('%d.%06d', $value->sec, $value->usec));
         } elseif (is_numeric($value)) {
             $date = new \DateTime();
             $date->setTimestamp($value);
@@ -71,11 +71,11 @@ class DateType extends Type
 
     public function closureToMongo()
     {
-        return 'if ($value instanceof \DateTime) { $value = $value->getTimestamp(); } elseif (is_string($value)) { $value = strtotime($value); } $return = new \MongoDate($value);';
+        return 'if ($value instanceof \DateTime) { $return = new \MongoDate($value->format(\'U\'), $value->format(\'u\')); } elseif (is_string($value)) { $return = new \MongoDate(strtotime($value)); } else { $return = new \MongoDate($value); }';
     }
 
     public function closureToPHP()
     {
-        return 'if ($value instanceof \MongoDate) { $return = new \DateTime(); $return->setTimestamp($value->sec); } elseif (is_numeric($value)) { $return = new \DateTime(); $return->setTimestamp($value); } elseif ($value instanceof \DateTime) { $return = $value; } else { $return = new \DateTime($value); }';
+        return 'if ($value instanceof \MongoDate) { $return = \DateTime::createFromFormat(\'u.U\', sprintf(\'%d.%06d\', $value->sec, $value->usec)); } elseif (is_numeric($value)) { $return = new \DateTime(); $return->setTimestamp($value); } elseif ($value instanceof \DateTime) { $return = $value; } else { $return = new \DateTime($value); }';
     }
 }
