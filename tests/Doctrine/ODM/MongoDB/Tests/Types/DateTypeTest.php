@@ -13,8 +13,8 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
         $date = \DateTime::createFromFormat('U.u', '1423743340.626000'); // "seconds.microseconds"
 
         $this->assertNull($type->convertToDatabaseValue(null), 'null is not converted');
-        $this->assertEquals(1423743340, $type->convertToDatabaseValue($time)->sec);
-        $this->assertEquals(626000, $type->convertToDatabaseValue($time)->usec);
+        $this->assertEquals(1423743340, $type->convertToDatabaseValue($date)->sec);
+        $this->assertEquals(626000, $type->convertToDatabaseValue($date)->usec);
     }
 
     public function testConvertToPHPValue()
