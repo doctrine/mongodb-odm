@@ -58,6 +58,7 @@ class DateType extends Type
         }
         if ($value instanceof \MongoDate) {
             $date = \DateTime::createFromFormat('U.u', sprintf('%d.%06d', $value->sec, $value->usec));
+            $date->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         } elseif (is_numeric($value)) {
             $date = new \DateTime();
             $date->setTimestamp($value);
@@ -76,6 +77,6 @@ class DateType extends Type
 
     public function closureToPHP()
     {
-        return 'if ($value instanceof \MongoDate) { $return = \DateTime::createFromFormat(\'U.u\', sprintf(\'%d.%06d\', $value->sec, $value->usec)); } elseif (is_numeric($value)) { $return = new \DateTime(); $return->setTimestamp($value); } elseif ($value instanceof \DateTime) { $return = $value; } else { $return = new \DateTime($value); }';
+        return 'if ($value instanceof \MongoDate) { $return = \DateTime::createFromFormat(\'U.u\', sprintf(\'%d.%06d\', $value->sec, $value->usec)); $return->setTimezone(new \DateTimeZone(date_default_timezone_get())); } elseif (is_numeric($value)) { $return = new \DateTime(); $return->setTimestamp($value); } elseif ($value instanceof \DateTime) { $return = $value; } else { $return = new \DateTime($value); }';
     }
 }
