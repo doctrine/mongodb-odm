@@ -14,7 +14,7 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNull($type->convertToDatabaseValue(null), 'null is not converted');
         $this->assertEquals(1423743340, $type->convertToDatabaseValue($time)->sec);
-        $this->assertEquals(626000, $type->convertToDatabaseValue($time)->usec));
+        $this->assertEquals(626000, $type->convertToDatabaseValue($time)->usec);
     }
 
     public function testConvertToPHPValue()
