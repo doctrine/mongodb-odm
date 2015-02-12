@@ -76,6 +76,6 @@ class DateType extends Type
 
     public function closureToPHP()
     {
-        return 'if ($value instanceof \MongoDate) { $return = \DateTime::createFromFormat(\'u.U\', sprintf(\'%d.%06d\', $value->sec, $value->usec)); } elseif (is_numeric($value)) { $return = new \DateTime(); $return->setTimestamp($value); } elseif ($value instanceof \DateTime) { $return = $value; } else { $return = new \DateTime($value); }';
+        return 'if ($value instanceof \MongoDate) { $return = \DateTime::createFromFormat(\'U.u\', sprintf(\'%d.%06d\', $value->sec, $value->usec)); } elseif (is_numeric($value)) { $return = new \DateTime(); $return->setTimestamp($value); } elseif ($value instanceof \DateTime) { $return = $value; } else { $return = new \DateTime($value); }';
     }
 }
