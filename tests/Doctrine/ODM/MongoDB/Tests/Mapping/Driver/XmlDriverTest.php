@@ -14,7 +14,7 @@ class XmlDriverTest extends AbstractDriverTest
     {
         $this->driver = new XmlDriver(__DIR__ . '/fixtures/xml');
     }
-    
+
     public function testDriverShouldReturnOptionsForCustomIdGenerator()
     {
         $classMetadata = new ClassMetadata('TestDocuments\UserCustomIdGenerator');
@@ -39,6 +39,25 @@ class XmlDriverTest extends AbstractDriverTest
             'nullable' => false
         ), $classMetadata->fieldMappings['id']);
     }
+
+    public function testDriverShouldParseNonStringAttributes()
+    {
+        $classMetadata = new ClassMetadata('TestDocuments\UserNonStringOptions');
+        $this->driver->loadMetadataForClass('TestDocuments\UserNonStringOptions', $classMetadata);
+
+        $this->assertSame(true, $classMetadata->requireIndexes);
+        $this->assertSame(false, $classMetadata->slaveOkay);
+
+        $profileMapping = $classMetadata->fieldMappings['profile'];
+        $this->assertSame(true, $profileMapping['simple']);
+        $this->assertSame(true, $profileMapping['orphanRemoval']);
+
+        $profileMapping = $classMetadata->fieldMappings['groups'];
+        $this->assertSame(false, $profileMapping['simple']);
+        $this->assertSame(false, $profileMapping['orphanRemoval']);
+        $this->assertSame(0, $profileMapping['limit']);
+        $this->assertSame(2, $profileMapping['skip']);
+    }
 }
 
 namespace TestDocuments;
@@ -46,9 +65,12 @@ namespace TestDocuments;
 class UserCustomIdGenerator
 {
     protected $id;
+}
 
-    public function __construct()
-    {
-    }
+class UserNonStringOptions
+{
+    protected $id;
+    protected $profile;
+    protected $groups;
 }
 
