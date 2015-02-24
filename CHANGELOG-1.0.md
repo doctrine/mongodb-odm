@@ -15,6 +15,15 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
+1.0.0-BETA12 (2014-02-24)
+-------------------------
+
+#### Allow filter parameters to be specified in Configuration
+
+[#908](https://github.com/doctrine/mongodb-odm/pull/908) added an optional
+second parameter to `Configuration::addFilter()`, which accepts an associative
+array of parameters to set on the filter when it is enabled.
+
 #### Added RFC 4122 UUID binary data type
 
 A new field type (`bin_uuid_rfc4122`) and annotation (`@BinUUIDRFC4122`) were
@@ -30,6 +39,14 @@ uses the [Doctrine Instantiator](https://github.com/doctrine/instantiator)
 library to create new document instances. This library avoids calling
 `__clone()` or any public API on instantiated objects. This is a BC break for\
 code that may have relied upon the previous behavior.
+
+#### Simple references now require a target document
+
+As of [#934](https://github.com/doctrine/mongodb-odm/pull/934/files), a
+MappingException will be thrown if a target document is not specified for a
+simple reference. Simple references always required a target document; this
+change simply throws an error while parsing metadata instead of waiting for a
+later error at runtime.
 
 1.0.0-BETA11 (2014-06-06)
 -------------------------
