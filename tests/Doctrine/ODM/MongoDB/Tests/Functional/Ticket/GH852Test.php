@@ -53,14 +53,16 @@ class GH852Test extends BaseTest
          * by DocumentPersister::loadReferenceManyCollectionOwningSide().
          */
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $parent->refMany[0]);
-        $this->assertTrue($parent->refMany[0]->__isInitialized());
         $this->assertEquals($idGenerator('childB'), $parent->refMany[0]->id);
+        $this->assertFalse($parent->refMany[0]->__isInitialized());
         $this->assertEquals('childB', $parent->refMany[0]->name);
+        $this->assertTrue($parent->refMany[0]->__isInitialized());
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $parent->refMany[1]);
-        $this->assertTrue($parent->refMany[1]->__isInitialized());
         $this->assertEquals($idGenerator('childC'), $parent->refMany[1]->id);
+        $this->assertFalse($parent->refMany[1]->__isInitialized());
         $this->assertEquals('childC', $parent->refMany[1]->name);
+        $this->assertTrue($parent->refMany[1]->__isInitialized());
     }
 
     public function provideIdGenerators()

@@ -3,11 +3,11 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH602Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    /** @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException */
     public function testReferenceManyOwningSidePreparesFilterCriteriaForDifferentClass()
     {
         $thingClass = __NAMESPACE__ . '\GH602Thing';
@@ -43,18 +43,14 @@ class GH602Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(2, $user1likes);
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user1likes[0]);
-        $this->assertTrue($user1likes[0]->__isInitialized());
         $this->assertEquals($thing1->getId(), $user1likes[0]->getId());
+        $this->assertFalse($user1likes[0]->__isInitialized());
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user1likes[1]);
-        $this->assertFalse($user1likes[1]->__isInitialized());
         $this->assertEquals($thing2->getId(), $user1likes[1]->getId());
+        $this->assertFalse($user1likes[1]->__isInitialized());
 
-        try {
-            $user1likes[1]->__load();
-            $this->fail('Expected DocumentNotFoundException for filtered Proxy object');
-        } catch (DocumentNotFoundException $e) {
-        }
+        $user1likes[1]->__load();
     }
 
     public function testReferenceManyInverseSidePreparesFilterCriteriaForDifferentClass()

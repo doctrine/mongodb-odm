@@ -1802,6 +1802,19 @@ class UnitOfWork implements PropertyChangedListener
 
         $serializedId = serialize($class->getDatabaseIdentifierValue($id));
 
+        /* Trying all the classes from the discriminator map as well
+         * to avoid issuing extra DB query in case of using simple reference.
+         */
+        foreach ($class->discriminatorMap as $className) {
+            // Never return parent instances, only children
+            if (in_array($className, $class->parentClasses)) {
+                continue;
+            }
+            if (isset($this->identityMap[$className][$serializedId])) {
+                return $this->identityMap[$className][$serializedId];
+            }
+        }
+
         return isset($this->identityMap[$class->name][$serializedId]) ?
             $this->identityMap[$class->name][$serializedId] : false;
     }
@@ -2748,13 +2761,14 @@ class UnitOfWork implements PropertyChangedListener
 
         // @TODO figure out how to remove this
         if (isset($class->discriminatorField, $data[$class->discriminatorField])) {
-            $discriminatorValue = $data[$class->discriminatorField];
+            if (empty($hints[Query::HINT_IGNORE_DISCRIMINATOR])) {
+                $discriminatorValue = $data[$class->discriminatorField];
+                $className = isset($class->discriminatorMap[$discriminatorValue])
+                    ? $class->discriminatorMap[$discriminatorValue]
+                    : $discriminatorValue;
 
-            $className = isset($class->discriminatorMap[$discriminatorValue])
-                ? $class->discriminatorMap[$discriminatorValue]
-                : $discriminatorValue;
-
-            $class = $this->dm->getClassMetadata($className);
+                $class = $this->dm->getClassMetadata($className);
+            }
 
             unset($data[$class->discriminatorField]);
         }

@@ -175,6 +175,8 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($groups[1] instanceof Group);
 
         $this->assertTrue($groups->isInitialized());
+        $this->assertFalse($groups[0]->__isInitialized__);
+        $this->assertFalse($groups[1]->__isInitialized__);
 
         unset($groups[0]);
         $groups[1]->setName('test');
@@ -191,7 +193,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('test', $groups[0]->getName());
         $this->assertEquals(1, count($groups));
     }
-    
+
     public function testFlushInitializesEmptyPersistentCollection()
     {
         $user = new User();
@@ -221,7 +223,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
-        
+
         $user = $this->dm->getRepository('Documents\User')->find($user->getId());
 
         $user->addGroup(new Group('Group 1'));
@@ -274,6 +276,8 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($groups[1] instanceof Group);
 
         $this->assertTrue($groups->isInitialized());
+        $this->assertFalse($groups[0]->__isInitialized__);
+        $this->assertFalse($groups[1]->__isInitialized__);
 
         unset($groups[0]);
         $groups[1]->setName('test');
