@@ -18,6 +18,9 @@ To generate a changelog summary since the last version, run
 1.0.0-BETA12 (2014-02-24)
 -------------------------
 
+All issues and pull requests in this release may be found under the
+[1.0.0-BETA12 milestone](https://github.com/doctrine/mongodb-odm/issues?milestone=6&q=is%3Aclosed).
+
 #### Allow filter parameters to be specified in Configuration
 
 [#908](https://github.com/doctrine/mongodb-odm/pull/908) added an optional
