@@ -381,8 +381,6 @@ Optional attributes:
     value within the embedded document.
 -
     discriminatorMap - Map of discriminator values to class names.
--
-    strategy - The strategy to use to persist the reference. Possible values are ``set`` and ``pushAll``; ``pushAll`` is the default.
 
 .. code-block:: php
 
@@ -390,15 +388,14 @@ Optional attributes:
 
     /**
      * @EmbedOne(
-     *     strategy="set",
      *     discriminatorField="type",
      *     discriminatorMap={
-     *         "book"="Documents\BookTag",
-     *         "song"="Documents\SongTag"
+     *         "user"="Documents\User",
+     *         "author"="Documents\Author"
      *     }
      * )
      */
-    private $tags = array();
+    private $creator;
 
 Depending on the embedded document's class, a value of ``user`` or ``author``
 will be stored in the ``type`` field and used to reconstruct the proper class
