@@ -21,6 +21,25 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(2, $article->version);
     }
 
+    public function testOptimisticLockIntSetInitialVersionOnUpsert()
+    {
+        $id = new \MongoId();
+
+        $article = new LockInt('Test LockInt');
+        $article->id = $id;
+
+        $this->dm->persist($article);
+        $this->dm->flush();
+
+        $this->assertSame($id, $article->id);
+        $this->assertEquals(1, $article->version);
+
+        $article->title = 'test';
+        $this->dm->flush();
+
+        $this->assertEquals(2, $article->version);
+    }
+
     public function testOptimisticLockingIntThrowsException()
     {
         $article = new LockInt('Test LockInt');
@@ -64,6 +83,32 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $date1 = $test->version;
 
+        $this->assertInstanceOf('DateTime', $date1);
+
+        $test->title = 'changed';
+        $this->dm->flush();
+
+        $this->assertNotSame($date1, $test->version);
+
+        return $test;
+    }
+
+    public function testLockTimestampSetsDefaultValueOnUpsert()
+    {
+        $id = new \MongoId();
+
+        $test = new LockTimestamp();
+        $test->title = 'Testing';
+        $test->id = $id;
+
+        $this->assertNull($test->version, "Pre-Condition");
+
+        $this->dm->persist($test);
+        $this->dm->flush();
+
+        $date1 = $test->version;
+
+        $this->assertSame($id, $test->id);
         $this->assertInstanceOf('DateTime', $date1);
 
         $test->title = 'changed';
@@ -359,7 +404,7 @@ abstract class AbstractVersionBase
 class LockInt extends AbstractVersionBase
 {
     /** @ODM\Version @ODM\Int */
-    public $version = 1;
+    public $version;
 }
 
 /** @ODM\Document */

@@ -17,7 +17,7 @@ does not exist.
     /** @String @AlsoLoad("name") */
     public $fullName;
 
-The ``$fullName`` property will be lodaed from ``fullName`` if it exists, but
+The ``$fullName`` property will be loaded from ``fullName`` if it exists, but
 fall back to ``name`` if it does not exist. If multiple fall back fields are
 specified, ODM will consider them in order until the first is found.
 

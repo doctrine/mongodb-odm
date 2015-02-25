@@ -100,11 +100,11 @@ class XmlDriver extends FileDriver
                 $this->addIndex($class, $index);
             }
         }
-        if (isset($xmlRoot->{'require-indexes'})) {
-            $class->setRequireIndexes((boolean) $xmlRoot->{'require-indexes'});
+        if (isset($xmlRoot['require-indexes'])) {
+            $class->setRequireIndexes('true' === (string) $xmlRoot['require-indexes']);
         }
-        if (isset($xmlRoot->{'slave-okay'})) {
-            $class->setSlaveOkay((boolean) $xmlRoot->{'slave-okay'});
+        if (isset($xmlRoot['slave-okay'])) {
+            $class->setSlaveOkay('true' === (string) $xmlRoot['slave-okay']);
         }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
@@ -114,7 +114,7 @@ class XmlDriver extends FileDriver
                     $mapping[$key] = (string) $value;
                     $booleanAttributes = array('id', 'reference', 'embed', 'unique', 'sparse', 'file', 'distance');
                     if (in_array($key, $booleanAttributes)) {
-                        $mapping[$key] = ('true' === $mapping[$key]) ? true : false;
+                        $mapping[$key] = ('true' === $mapping[$key]);
                     }
                 }
                 if (isset($mapping['id']) && $mapping['id'] === true && isset($mapping['strategy'])) {
@@ -127,14 +127,20 @@ class XmlDriver extends FileDriver
                             }
                         }
                     }
-                } 
-                
-                if (isset($attributes['not-saved'])) {
-                    $mapping['notSaved'] = ('true' === $attributes['not-saved']) ? true : false;
                 }
+
+                if (isset($attributes['not-saved'])) {
+                    $mapping['notSaved'] = ('true' === (string) $attributes['not-saved']);
+                }
+
                 if (isset($attributes['also-load'])) {
                     $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
+                } elseif (isset($attributes['version'])) {
+                    $mapping['version'] = ('true' === (string) $attributes['version']);
+                } elseif (isset($attributes['lock'])) {
+                    $mapping['lock'] = ('true' === (string) $attributes['lock']);
                 }
+
                 $this->addFieldMapping($class, $mapping);
             }
         }
@@ -240,7 +246,7 @@ class XmlDriver extends FileDriver
             }
         }
         if (isset($attributes['not-saved'])) {
-            $mapping['notSaved'] = ('true' === $attributes['not-saved']) ? true : false;
+            $mapping['notSaved'] = ('true' === (string) $attributes['not-saved']);
         }
         if (isset($attributes['also-load'])) {
             $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
@@ -257,10 +263,10 @@ class XmlDriver extends FileDriver
         $attributes = $reference->attributes();
         $mapping = array(
             'cascade'          => $cascade,
-            'orphanRemoval'    => isset($attributes['orphan-removal']) ? (boolean) $attributes['orphan-removal'] : false,
+            'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
             'type'             => $type,
             'reference'        => true,
-            'simple'           => isset($attributes['simple']) ? (boolean) $attributes['simple'] : false,
+            'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false,
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'             => (string) $attributes['field'],
             'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
@@ -297,7 +303,7 @@ class XmlDriver extends FileDriver
             }
         }
         if (isset($attributes['not-saved'])) {
-            $mapping['notSaved'] = ('true' === $attributes['not-saved']) ? true : false;
+            $mapping['notSaved'] = ('true' === (string) $attributes['not-saved']);
         }
         if (isset($attributes['also-load'])) {
             $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);

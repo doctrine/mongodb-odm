@@ -40,8 +40,10 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testFieldMappings($class)
     {
-        $this->assertEquals(11, count($class->fieldMappings));
+        $this->assertEquals(13, count($class->fieldMappings));
         $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['version']));
+        $this->assertTrue(isset($class->fieldMappings['lock']));
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertTrue(isset($class->fieldMappings['email']));
 
@@ -110,12 +112,36 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     }
 
     /**
+     * @depends testFieldMappings
+     * @param ClassMetadata $class
+     */
+    public function testVersionFieldMappings($class)
+    {
+        $this->assertEquals('int', $class->fieldMappings['version']['type']);
+        $this->assertTrue(!empty($class->fieldMappings['version']['version']));
+
+        return $class;
+    }
+
+    /**
+    * @depends testFieldMappings
+    * @param ClassMetadata $class
+    */
+    public function testLockFieldMappings($class)
+    {
+        $this->assertEquals('int', $class->fieldMappings['lock']['type']);
+        $this->assertTrue(!empty($class->fieldMappings['lock']['lock']));
+
+        return $class;
+    }
+
+    /**
      * @depends testIdentifier
      * @param ClassMetadata $class
      */
     public function testAssocations($class)
     {
-        $this->assertEquals(11, count($class->fieldMappings));
+        $this->assertEquals(13, count($class->fieldMappings));
 
         return $class;
     }
@@ -303,6 +329,18 @@ class AbstractMappingDriverUser
     public $id;
 
     /**
+     * @ODM\Version
+     * @ODM\Int
+     */
+    public $version;
+
+    /**
+     * @ODM\Lock
+     * @ODM\Int
+     */
+    public $lock;
+
+    /**
      * @ODM\String(name="username")
      * @ODM\UniqueIndex(order="desc", dropDups=false)
      */
@@ -392,6 +430,16 @@ class AbstractMappingDriverUser
         $metadata->mapField(array(
             'id' => true,
             'fieldName' => 'id',
+        ));
+        $metadata->mapField(array(
+            'fieldName' => 'version',
+            'type' => 'int',
+            'version' => true,
+        ));
+        $metadata->mapField(array(
+            'fieldName' => 'lock',
+            'type' => 'int',
+            'lock' => true,
         ));
         $metadata->mapField(array(
             'fieldName' => 'name',
