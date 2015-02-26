@@ -45,11 +45,5 @@ class PersistentCollectionClearSnapshotTest extends \Doctrine\ODM\MongoDB\Tests\
         $this->assertTrue($this->developer->getProjects()->isCleared());
         $this->assertTrue($this->developer->getProjects()->isInitialized());
         $this->assertSame($this->developer->getProjects()->getSnapshot()[0], $this->project);
-        $this->assertSame($this->developer->getProjects()->getDeleteDiff()[0], $this->project);
-
-        $this->developer->getProjects()->add($this->projectTwo);
-
-        $this->assertNotNull($this->developer->getProjects()->getInsertDiff());
-        $this->assertSame($this->developer->getProjects()->getInsertDiff()[0], $this->projectTwo);
     }
 }

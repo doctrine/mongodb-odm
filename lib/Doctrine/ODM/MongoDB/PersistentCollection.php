@@ -327,7 +327,7 @@ class PersistentCollection implements BaseCollection
     public function getDeleteDiff()
     {
         return array_udiff_assoc(
-            $this->snapshot,
+            ($this->isCleared) ? array() : $this->snapshot,
             $this->coll->toArray(),
             function ($a, $b) { return $a === $b ? 0 : 1; }
         );
@@ -343,7 +343,7 @@ class PersistentCollection implements BaseCollection
     {
         return array_udiff_assoc(
             $this->coll->toArray(),
-            $this->snapshot,
+            ($this->isCleared) ? array() : $this->snapshot,
             function ($a, $b) { return $a === $b ? 0 : 1; }
         );
     }
