@@ -11,28 +11,23 @@ class PersistentCollectionClearSnapshotTest extends \Doctrine\ODM\MongoDB\Tests\
 {
     private $project;
 
-    private $projectTwo;
-
     private $developer;
 
     public function setUp()
     {
         parent::setUp();
 
-        $project = new Project('project x');
-        $project2 = new Project('secondProject');
+        $project = new Project('doctrine');
 
-        $developer = new Developer('Martha Facka');
+        $developer = new Developer('John Doe');
         $developer->getProjects()->add($project);
 
         $this->dm->persist($project);
         $this->dm->persist($developer);
-        $this->dm->persist($project2);
         $this->dm->flush();
         $this->dm->clear();
 
         $this->project = $this->dm->find(get_class($project), $project->getId());
-        $this->projectTwo = $this->dm->find(get_class($project2), $project2->getId());
         $this->developer = $this->dm->find(get_class($developer), $developer->getId());
     }
 
@@ -45,5 +40,12 @@ class PersistentCollectionClearSnapshotTest extends \Doctrine\ODM\MongoDB\Tests\
         $this->assertTrue($this->developer->getProjects()->isCleared());
         $this->assertTrue($this->developer->getProjects()->isInitialized());
         $this->assertSame($this->developer->getProjects()->getSnapshot()[0], $this->project);
+
+        $this->dm->persist($this->developer);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $this->assertFalse($this->developer->getProjects()->isCleared());
+        $this->assertFalse($this->developer->getProjects()->isDirty());
     }
 }
