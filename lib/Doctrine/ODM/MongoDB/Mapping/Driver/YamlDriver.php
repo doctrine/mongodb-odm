@@ -183,11 +183,13 @@ class YamlDriver extends FileDriver
 
         if (isset($mapping['index'])) {
             $options = is_array($mapping['index']) ? $mapping['index'] : array();
-        } elseif (isset($mapping['unique'])) {
-            $options = is_array($mapping['unique']) ? $mapping['unique'] : array();
+        } 
+        if (isset($mapping['unique'])) {
+            $options += is_array($mapping['unique']) ? $mapping['unique'] : array();
             $options['unique'] = true;
-        } elseif (isset($mapping['sparse'])) {
-            $options = is_array($mapping['sparse']) ? $mapping['sparse'] : array();
+        }
+        if (isset($mapping['sparse'])) {
+            $options += is_array($mapping['sparse']) ? $mapping['sparse'] : array();
             $options['sparse'] = true;
         }
 

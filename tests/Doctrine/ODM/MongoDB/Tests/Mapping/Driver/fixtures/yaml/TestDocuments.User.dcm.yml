@@ -8,6 +8,8 @@ TestDocuments\User:
     username:
       fieldName: username
       type: string
+      unique: true
+      sparse: true
     createdAt:
       fieldName: createdAt
       type: date
