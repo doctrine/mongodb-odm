@@ -56,8 +56,17 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRemove' => false,
             'isInverseSide' => false,
             'isOwningSide' => true,
-            'nullable' => false
+            'nullable' => false,
+            'unique' => true,
+            'sparse' => true
         ), $classMetadata->fieldMappings['username']);
+        
+        $this->assertEquals(array(
+            array(
+                'keys' => array('username' => 1),
+                'options' => array('unique' => true, 'sparse' => true)
+            )
+        ), $classMetadata->getIndexes());
 
         $this->assertEquals(array(
             'fieldName' => 'createdAt',
