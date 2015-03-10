@@ -49,6 +49,22 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(isset($indexes[3]['keys']['embedded_secondary.embeddedMany.name']));
         $this->assertEquals(1, $indexes[3]['keys']['embedded_secondary.embeddedMany.name']);
     }
+    
+    public function testDiscriminatedEmbeddedIndexes()
+    {
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\DocumentWithIndexInDiscriminatedEmbeds');
+        $sm = $this->dm->getSchemaManager();
+        $indexes = $sm->getDocumentIndexes($class->name);
+        
+        $this->assertTrue(isset($indexes[0]['keys']['embedded.name']));
+        $this->assertEquals(1, $indexes[0]['keys']['embedded.name']);
+        
+        $this->assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
+        $this->assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
+        
+        $this->assertTrue(isset($indexes[2]['keys']['embedded.value']));
+        $this->assertEquals(1, $indexes[2]['keys']['embedded.value']);
+    }
 
     public function testDiscriminatorIndexes()
     {
@@ -346,4 +362,27 @@ class EmbeddedManyDocumentWithIndexes
 {
     /** @ODM\String @ODM\Index */
     public $name;
+}
+
+/** @ODM\EmbeddedDocument */
+class YetAnotherEmbeddedDocumentWithIndex
+{
+    /** @ODM\String @ODM\Index */
+    public $value;
+}
+
+/** @ODM\Document */
+class DocumentWithIndexInDiscriminatedEmbeds
+{
+    /** @ODM\Id */
+    public $id;
+    
+    /** 
+     * @ODM\EmbedOne(
+     *  discriminatorMap={
+     *   "d1"="EmbeddedDocumentWithIndexes",
+     *   "d2"="YetAnotherEmbeddedDocumentWithIndex",
+     * }) 
+     */
+    public $embedded;
 }

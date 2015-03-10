@@ -164,21 +164,29 @@ class SchemaManager
 
         // Add indexes from embedded & referenced documents
         foreach ($class->fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['embedded']) && isset($fieldMapping['targetDocument'])) {
-                if (isset($embeddedDocumentIndexes[$fieldMapping['targetDocument']])) {
-                    $embeddedIndexes = $embeddedDocumentIndexes[$fieldMapping['targetDocument']];
+            if (isset($fieldMapping['embedded'])) {
+                if (isset($fieldMapping['targetDocument'])) {
+                    $possibleEmbeds = array($fieldMapping['targetDocument']);
+                } elseif (isset($fieldMapping['discriminatorMap'])) {
+                    $possibleEmbeds = array_unique($fieldMapping['discriminatorMap']);
                 } else {
-                    $embeddedIndexes = $this->doGetDocumentIndexes($fieldMapping['targetDocument'], $visited);
-                    $embeddedDocumentIndexes[$fieldMapping['targetDocument']] = $embeddedIndexes;
+                    continue;
                 }
-                foreach ($embeddedIndexes as $embeddedIndex) {
-                    foreach ($embeddedIndex['keys'] as $key => $value) {
-                        $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
-                        unset($embeddedIndex['keys'][$key]);
+                foreach ($possibleEmbeds as $embed) {
+                    if (isset($embeddedDocumentIndexes[$embed])) {
+                        $embeddedIndexes = $embeddedDocumentIndexes[$embed];
+                    } else {
+                        $embeddedIndexes = $this->doGetDocumentIndexes($embed, $visited);
+                        $embeddedDocumentIndexes[$embed] = $embeddedIndexes;
                     }
-                    $indexes[] = $embeddedIndex;
+                    foreach ($embeddedIndexes as $embeddedIndex) {
+                        foreach ($embeddedIndex['keys'] as $key => $value) {
+                            $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
+                            unset($embeddedIndex['keys'][$key]);
+                        }
+                        $indexes[] = $embeddedIndex;
+                    }
                 }
-
             } elseif (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
                 foreach ($indexes as $idx => $index) {
                     $newKeys = array();
