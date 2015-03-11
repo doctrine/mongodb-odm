@@ -15,7 +15,7 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
-1.0.0-BETA12 (2014-02-24)
+1.0.0-BETA12 (2015-02-24)
 -------------------------
 
 All issues and pull requests in this release may be found under the
