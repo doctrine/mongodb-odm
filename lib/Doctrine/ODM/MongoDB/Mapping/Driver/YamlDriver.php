@@ -165,9 +165,19 @@ class YamlDriver extends FileDriver
             return;
         }
 
+        // Multiple index specifications in one field mapping is ambiguous
+        if ((isset($mapping['index']) && is_array($mapping['index'])) +
+            (isset($mapping['unique']) && is_array($mapping['unique'])) +
+            (isset($mapping['sparse']) && is_array($mapping['sparse'])) > 1) {
+            throw new \InvalidArgumentException('Multiple index specifications found among index, unique, and/or sparse fields');
+        }
+
         // Index this field if either "index", "unique", or "sparse" are set
         $keys = array($name => 'asc');
 
+        /* The "order" option is only used in the index specification and should
+         * not be passed along as an index option.
+         */
         if (isset($mapping['index']['order'])) {
             $keys[$name] = $mapping['index']['order'];
             unset($mapping['index']['order']);
@@ -179,18 +189,40 @@ class YamlDriver extends FileDriver
             unset($mapping['sparse']['order']);
         }
 
+        /* Initialize $options from any array value among index, unique, and
+         * sparse. Any boolean values for unique or sparse should be merged into
+         * the options afterwards to ensure consistent parsing.
+         */
         $options = array();
+        $unique = null;
+        $sparse = null;
 
-        if (isset($mapping['index'])) {
-            $options = is_array($mapping['index']) ? $mapping['index'] : array();
-        } 
-        if (isset($mapping['unique'])) {
-            $options += is_array($mapping['unique']) ? $mapping['unique'] : array();
-            $options['unique'] = true;
+        if (isset($mapping['index']) && is_array($mapping['index'])) {
+            $options = $mapping['index'];
         }
+
+        if (isset($mapping['unique'])) {
+            if (is_array($mapping['unique'])) {
+                $options = $mapping['unique'] + array('unique' => true);
+            } else {
+                $unique = (boolean) $mapping['unique'];
+            }
+        }
+
         if (isset($mapping['sparse'])) {
-            $options += is_array($mapping['sparse']) ? $mapping['sparse'] : array();
-            $options['sparse'] = true;
+            if (is_array($mapping['sparse'])) {
+                $options = $mapping['sparse'] + array('sparse' => true);
+            } else {
+                $sparse = (boolean) $mapping['sparse'];
+            }
+        }
+
+        if (isset($unique)) {
+            $options['unique'] = $unique;
+        }
+
+        if (isset($sparse)) {
+            $options['sparse'] = $sparse;
         }
 
         $class->addIndex($keys, $options);
