@@ -217,6 +217,9 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function execute()
     {
+        fprintf(STDERR, "isIndexRequired: %d\n", $this->isIndexRequired());
+        fprintf(STDERR, "isIndexed: %d\n", $this->isIndexed());
+        throw new MongoDBException;
         if ($this->isIndexRequired() && ! $this->isIndexed()) {
             throw MongoDBException::queryNotIndexed($this->class->name, $this->getUnindexedFields());
         }
