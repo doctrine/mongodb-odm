@@ -84,6 +84,13 @@ queries.
     Priming is also compatible with :ref:`simple references <simple_references>`
     and discriminated references (e.g. where referenced classes utilize
     :ref:`single collection inheritance <single_collection_inheritance>`).
+
+.. note::
+
+    Priming can be used as well with ``ReferenceMany()`` annotated field that
+    includes references to documents from more than one collection. ``ReferencePrimer``
+    will call priming function for each unique class it finds in collection
+    which will result in that many additional database queries.
     
 .. note::
 
