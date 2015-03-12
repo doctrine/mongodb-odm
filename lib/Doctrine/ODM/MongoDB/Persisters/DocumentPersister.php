@@ -351,7 +351,7 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $update = $this->pb->prepareUpdateData($document);
 
-        if ( ! empty($update) || $this->uow->hasCollectionScheduledForCommiting($document)) {
+        if ( ! empty($update) || $this->uow->hasScheduledCollections($document)) {
 
             $id = $this->class->getDatabaseIdentifierValue($id);
             $query = array('_id' => $id);

@@ -189,7 +189,7 @@ class UnitOfWork implements PropertyChangedListener
      * 
      * @var array
      */
-    private $hasCollectionScheduledForCommiting = array();
+    private $hasScheduledCollections = array();
 
     /**
      * List of collections visited during changeset calculation on a commit-phase of a UnitOfWork.
@@ -497,7 +497,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
         $this->orphanRemovals = 
-        $this->hasCollectionScheduledForCommiting = array();
+        $this->hasScheduledCollections = array();
     }
 
     /**
@@ -1198,7 +1198,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->cascadePreUpdate($class, $document);
                 }
 
-                if ( ! $class->isEmbeddedDocument && (!empty($this->documentChangeSets[$oid]) || $this->hasCollectionScheduledForCommiting($document))) {
+                if ( ! $class->isEmbeddedDocument && (!empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document))) {
                     $persister->update($document, $options);
                 }
                 unset($this->documentUpdates[$oid]);
@@ -2306,7 +2306,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->documentDeletions[$oid], $this->documentIdentifiers[$oid],
                     $this->documentStates[$oid], $this->originalDocumentData[$oid],
                     $this->parentAssociations[$oid], $this->documentUpserts[$oid],
-                    $this->hasCollectionScheduledForCommiting[$oid]);
+                    $this->hasScheduledCollections[$oid]);
                 break;
             case self::STATE_NEW:
             case self::STATE_DETACHED:
@@ -2639,7 +2639,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->collectionDeletions =
             $this->parentAssociations =
             $this->orphanRemovals = 
-            $this->hasCollectionScheduledForCommiting = array();
+            $this->hasScheduledCollections = array();
 
             if ($this->commitOrderCalculator !== null) {
                 $this->commitOrderCalculator->clear();
@@ -2729,9 +2729,9 @@ class UnitOfWork implements PropertyChangedListener
      * @param object $document
      * @return boolean
      */
-    public function hasCollectionScheduledForCommiting($document)
+    public function hasScheduledCollections($document)
     {
-        return isset($this->hasCollectionScheduledForCommiting[spl_object_hash($document)]);
+        return isset($this->hasScheduledCollections[spl_object_hash($document)]);
     }
     
     /**
@@ -2746,7 +2746,7 @@ class UnitOfWork implements PropertyChangedListener
         if (!$document || !$this->isInIdentityMap($document)) {
             return;
         }
-        $this->hasCollectionScheduledForCommiting[spl_object_hash($document)] = true;
+        $this->hasScheduledCollections[spl_object_hash($document)] = true;
         // If owner is not scheduled for any action then most probably we're
         // dealing with document that will have only PersistentCollection updated
         if (!$this->isDocumentScheduled($document)) {
