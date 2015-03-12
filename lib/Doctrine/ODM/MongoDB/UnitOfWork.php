@@ -2743,8 +2743,10 @@ class UnitOfWork implements PropertyChangedListener
     private function collectionScheduledForCommiting(PersistentCollection $coll)
     {
         $document = $coll->getOwner();
-        if (!$document || !$this->isInIdentityMap($document)) {
-            return;
+        $class = $this->dm->getClassMetadata(get_class($document));
+        while ($class->isEmbeddedDocument) {
+            list(, $document, ) = $this->getParentAssociation($document);
+            $class = $this->dm->getClassMetadata(get_class($document));
         }
         $this->hasScheduledCollections[spl_object_hash($document)] = true;
         // If owner is not scheduled for any action then most probably we're
