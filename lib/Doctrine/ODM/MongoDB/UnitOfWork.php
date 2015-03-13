@@ -2411,10 +2411,10 @@ class UnitOfWork implements PropertyChangedListener
                         $relatedDocuments = $relatedDocuments->unwrap();
                     }
                     foreach ($relatedDocuments as $relatedDocument) {
-                        $this->cascadeDetach($relatedDocument, $visited);
+                        $this->doDetach($relatedDocument, $visited);
                     }
                 } elseif ($relatedDocuments !== null) {
-                    $this->cascadeDetach($relatedDocuments, $visited);
+                    $this->doDetach($relatedDocuments, $visited);
                 }
             } elseif (isset($mapping['reference'])) {
                 $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
