@@ -76,15 +76,17 @@ builder's ``prime()`` method allows us to do just that.
         }
     }
 
-In this case, priming will allow us to limit ODM to performing two database
-queries.
+In this case, priming will allow us to load all users and referenced accounts in
+two database queries. If the accounts had used an
+:ref:`inhertiance mapping <inheritance_mapping>`, priming might require several
+queries (one per discriminated class name).
 
 .. note::
 
     Priming is also compatible with :ref:`simple references <simple_references>`
-    and discriminated references (e.g. where referenced classes utilize
-    :ref:`single collection inheritance <single_collection_inheritance>`).
-    
+    and discriminated references. When priming discriminated references, ODM
+    will issue one query per distinct class among the referenced document(s).
+
 .. note::
 
     Hydration must be enabled in the query builder for priming to work properly.
