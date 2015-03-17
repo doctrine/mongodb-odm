@@ -23,6 +23,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
@@ -782,7 +783,7 @@ class DocumentPersister
     /**
      * @param PersistentCollection $collection
      *
-     * @return Cursor
+     * @return Cursor|EagerCursor
      */
     public function createReferenceManyWithRepositoryMethodCursor(PersistentCollection $collection)
     {
@@ -791,20 +792,25 @@ class DocumentPersister
         $cursor = $this->dm->getRepository($mapping['targetDocument'])
             ->$mapping['repositoryMethod']($collection->getOwner());
 
+        $wrappedCursor = $cursor;
+        if ($cursor instanceof EagerCursor) {
+            $wrappedCursor = $cursor->getCursor();
+        }
+
         if (isset($mapping['sort'])) {
-            $cursor->sort($mapping['sort']);
+            $wrappedCursor->sort($mapping['sort']);
         }
         if (isset($mapping['limit'])) {
-            $cursor->limit($mapping['limit']);
+            $wrappedCursor->limit($mapping['limit']);
         }
         if (isset($mapping['skip'])) {
-            $cursor->skip($mapping['skip']);
+            $wrappedCursor->skip($mapping['skip']);
         }
         if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-            $cursor->slaveOkay(true);
+            $wrappedCursor->slaveOkay(true);
         }
         if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-            $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+            $wrappedCursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
         }
 
         return $cursor;
