@@ -183,6 +183,13 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $collectionUpdates = array();
+    
+    /**
+     * A list of documents related to collections scheduled for update or deletion
+     * 
+     * @var array
+     */
+    private $hasScheduledCollections = array();
 
     /**
      * List of collections visited during changeset calculation on a commit-phase of a UnitOfWork.
@@ -489,7 +496,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions =
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
-        $this->orphanRemovals = array();
+        $this->orphanRemovals = 
+        $this->hasScheduledCollections = array();
     }
 
     /**
@@ -778,7 +786,7 @@ class UnitOfWork implements PropertyChangedListener
                 if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                     if ($orgValue instanceof PersistentCollection) {
-                        $this->collectionDeletions[] = $orgValue;
+                        $this->scheduleCollectionDeletion($orgValue);
                     }
                     continue;
                 }
@@ -904,8 +912,8 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($value instanceof PersistentCollection && $value->isDirty() && $mapping['isOwningSide']) {
             if ($topOrExistingDocument || strncmp($mapping['strategy'], 'set', 3) === 0) {
-                if ( ! in_array($value, $this->collectionUpdates, true)) {
-                    $this->collectionUpdates[] = $value;
+                if ( ! $this->isCollectionScheduledForUpdate($value)) {
+                    $this->scheduleCollectionUpdate($value);
                 }
             }
             $this->visitedCollections[] = $value;
@@ -1190,7 +1198,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->cascadePreUpdate($class, $document);
                 }
 
-                if ( ! $class->isEmbeddedDocument && isset($this->documentChangeSets[$oid]) && $this->documentChangeSets[$oid]) {
+                if ( ! $class->isEmbeddedDocument && ( ! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document))) {
                     $persister->update($document, $options);
                 }
                 unset($this->documentUpdates[$oid]);
@@ -2297,7 +2305,8 @@ class UnitOfWork implements PropertyChangedListener
                 unset($this->documentInsertions[$oid], $this->documentUpdates[$oid],
                     $this->documentDeletions[$oid], $this->documentIdentifiers[$oid],
                     $this->documentStates[$oid], $this->originalDocumentData[$oid],
-                    $this->parentAssociations[$oid], $this->documentUpserts[$oid]);
+                    $this->parentAssociations[$oid], $this->documentUpserts[$oid],
+                    $this->hasScheduledCollections[$oid]);
                 break;
             case self::STATE_NEW:
             case self::STATE_DETACHED:
@@ -2629,7 +2638,8 @@ class UnitOfWork implements PropertyChangedListener
             $this->collectionUpdates =
             $this->collectionDeletions =
             $this->parentAssociations =
-            $this->orphanRemovals = array();
+            $this->orphanRemovals = 
+            $this->hasScheduledCollections = array();
 
             if ($this->commitOrderCalculator !== null) {
                 $this->commitOrderCalculator->clear();
@@ -2675,6 +2685,7 @@ class UnitOfWork implements PropertyChangedListener
         //TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
         $this->collectionDeletions[] = $coll;
+        $this->scheduleCollectionOwner($coll);
     }
 
     /**
@@ -2689,6 +2700,18 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * INTERNAL:
+     * Schedules a collection for update when this UnitOfWork commits.
+     *
+     * @param PersistentCollection $coll
+     */
+    public function scheduleCollectionUpdate(PersistentCollection $coll)
+    {
+        $this->collectionUpdates[] = $coll;
+        $this->scheduleCollectionOwner($coll);
+    }
+    
+    /**
      * Checks whether a PersistentCollection is scheduled for update.
      *
      * @param PersistentCollection $coll
@@ -2697,6 +2720,44 @@ class UnitOfWork implements PropertyChangedListener
     public function isCollectionScheduledForUpdate(PersistentCollection $coll)
     {
         return in_array($coll, $this->collectionUpdates, true);
+    }
+    
+    /**
+     * Checks whether the document is related to a PersistentCollection
+     * scheduled for update or deletion.
+     *
+     * @param object $document
+     * @return boolean
+     */
+    public function hasScheduledCollections($document)
+    {
+        return isset($this->hasScheduledCollections[spl_object_hash($document)]);
+    }
+    
+    /**
+     * Marks the PersistentCollection's top-level owner as having a relation to
+     * a collection scheduled for update or deletion.
+     *
+     * If the owner is not scheduled for any lifecycle action, it will be
+     * scheduled for update to ensure that versioning takes place if necessary.
+     * 
+     * @param PersistentCollection $coll
+     */
+    private function scheduleCollectionOwner(PersistentCollection $coll)
+    {
+        $document = $coll->getOwner();
+        $class = $this->dm->getClassMetadata(get_class($document));
+
+        while ($class->isEmbeddedDocument) {
+            list(, $document, ) = $this->getParentAssociation($document);
+            $class = $this->dm->getClassMetadata(get_class($document));
+        }
+
+        $this->hasScheduledCollections[spl_object_hash($document)] = true;
+
+        if ( ! $this->isDocumentScheduled($document)) {
+            $this->scheduleForUpdate($document);
+        }
     }
 
     /**
