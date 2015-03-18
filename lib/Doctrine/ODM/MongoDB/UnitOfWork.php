@@ -1198,7 +1198,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->cascadePreUpdate($class, $document);
                 }
 
-                if ( ! $class->isEmbeddedDocument && (!empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document))) {
+                if ( ! $class->isEmbeddedDocument && ( ! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document))) {
                     $persister->update($document, $options);
                 }
                 unset($this->documentUpdates[$oid]);
@@ -2685,7 +2685,7 @@ class UnitOfWork implements PropertyChangedListener
         //TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
         $this->collectionDeletions[] = $coll;
-        $this->collectionScheduledForCommiting($coll);
+        $this->scheduleCollectionOwner($coll);
     }
 
     /**
@@ -2708,7 +2708,7 @@ class UnitOfWork implements PropertyChangedListener
     public function scheduleCollectionUpdate(PersistentCollection $coll)
     {
         $this->collectionUpdates[] = $coll;
-        $this->collectionScheduledForCommiting($coll);
+        $this->scheduleCollectionOwner($coll);
     }
     
     /**
@@ -2723,9 +2723,9 @@ class UnitOfWork implements PropertyChangedListener
     }
     
     /**
-     * Checks whether Document has any related PersistentCollection
-     * scheduled for update or removal
-     * 
+     * Checks whether the document is related to a PersistentCollection
+     * scheduled for update or deletion.
+     *
      * @param object $document
      * @return boolean
      */
@@ -2735,23 +2735,27 @@ class UnitOfWork implements PropertyChangedListener
     }
     
     /**
-     * Marks that owner of PersistentCollection has PersistentCollection
-     * that will be somehow updated
+     * Marks the PersistentCollection's top-level owner as having a relation to
+     * a collection scheduled for update or deletion.
+     *
+     * If the owner is not scheduled for any lifecycle action, it will be
+     * scheduled for update to ensure that versioning takes place if necessary.
      * 
      * @param PersistentCollection $coll
      */
-    private function collectionScheduledForCommiting(PersistentCollection $coll)
+    private function scheduleCollectionOwner(PersistentCollection $coll)
     {
         $document = $coll->getOwner();
         $class = $this->dm->getClassMetadata(get_class($document));
+
         while ($class->isEmbeddedDocument) {
             list(, $document, ) = $this->getParentAssociation($document);
             $class = $this->dm->getClassMetadata(get_class($document));
         }
+
         $this->hasScheduledCollections[spl_object_hash($document)] = true;
-        // If owner is not scheduled for any action then most probably we're
-        // dealing with document that will have only PersistentCollection updated
-        if (!$this->isDocumentScheduled($document)) {
+
+        if ( ! $this->isDocumentScheduled($document)) {
             $this->scheduleForUpdate($document);
         }
     }

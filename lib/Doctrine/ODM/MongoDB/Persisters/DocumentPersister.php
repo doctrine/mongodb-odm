@@ -374,9 +374,11 @@ class DocumentPersister
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 }
             }
-            
-            // We got here because $document has related PersistentCollections to be 
-            // commited later but if it's not versioned then there's nothing left to do
+
+            /* We got here because the document has one or more related
+             * PersistentCollections to be committed later; however, if the
+             * document is not versioned then there is nothing left to do.
+             */
             if (empty($update)) {
                 return;
             }
