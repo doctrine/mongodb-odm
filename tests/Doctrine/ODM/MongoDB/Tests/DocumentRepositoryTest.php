@@ -28,6 +28,9 @@ class DocumentRepositoryTest extends BaseTest
         $results = $r->findBy(array('id' => $t1->getId()));
         $this->assertCount(1, $results);
         
+        $results = $r->findBy(array('id' => array('$in' => array($t1->getId()))));
+        $this->assertCount(1, $results);
+        
         $results = $r->findBy(array('id' => array($t1->getId())));
         $this->assertCount(1, $results);
     }
