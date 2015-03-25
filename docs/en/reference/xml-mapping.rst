@@ -25,6 +25,13 @@ trunk.
     
     </doctrine-mongo-mapping>
 
+.. note::
+
+    If you do not want to use latest XML Schema document please use link like
+    `http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping-1.0.0-BETA12.xsd <http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping-1.0.0-BETA12.xsd>`_.
+    You can change ``1.0.0-BETA12`` part of the URL to 
+    `any other ODM version <https://github.com/doctrine/mongodb-odm/releases>`_.
+
 The XML mapping document of a class is loaded on-demand the first
 time it is requested and subsequently stored in the metadata cache.
 In order to work, this requires certain conventions:
