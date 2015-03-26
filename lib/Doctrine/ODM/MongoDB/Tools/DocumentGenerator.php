@@ -633,7 +633,7 @@ public function <methodName>()
                 if ($code = $this->generateDocumentStubMethod($metadata, 'remove', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], 'Doctrine\Common\Collections\Collection')) {
+                if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], '\Doctrine\Common\Collections\Collection')) {
                     $methods[] = $code;
                 }
             }
