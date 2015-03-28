@@ -28,26 +28,68 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class DateType extends Type
 {
+    /**
+     * Converts a value to a DateTime.
+     * Supports microseconds
+     *
+     * @throws InvalidArgumentException if $value is invalid
+     * @param  mixed $value \DateTime|\MongoDate|int|float
+     * @return \DateTime
+     */
+    public static function getDateTime($value)
+    {
+        $datetime = false;
+        $exception = null;
+
+        if ($value instanceof \DateTime) {
+            return $value;
+        } elseif ($value instanceof \MongoDate) {
+            $datetime = self::craftDateTime($value->sec, $value->usec);
+        } elseif (is_numeric($value)) {
+            $seconds = $value;
+            $microseconds = 0;
+
+            if (false !== strpos($value, '.')) {
+                list($seconds, $microseconds) = explode('.', $value);
+                $microseconds = (int) str_pad((int) $microseconds, 6, '0'); // ensure microseconds
+            }
+
+            $datetime = self::craftDateTime($seconds, $microseconds);
+        } elseif (is_string($value)) {
+            try {
+                $datetime = new \DateTime($value);
+            } catch (\Exception $e) {
+                $exception = $e;
+            }
+        }
+
+        if ($datetime === false) {
+            throw new \InvalidArgumentException(sprintf('Could not convert %s to a date value', is_scalar($value) ? '"'.$value.'"' : gettype($value)), 0, $exception);
+        }
+
+        return $datetime;
+    }
+
+    private static function craftDateTime($seconds, $microseconds = 0)
+    {
+        $datetime = new \DateTime();
+        $datetime->setTimestamp($seconds);
+        if ($microseconds > 0) {
+            $datetime = \DateTime::createFromFormat('Y-m-d H:i:s.u', $datetime->format('Y-m-d H:i:s') . '.' . $microseconds);
+        }
+
+        return $datetime;
+    }
+
     public function convertToDatabaseValue($value)
     {
-        if ($value === null) {
-            return null;
-        }
-        if ($value instanceof \MongoDate) {
+        if ($value === null || $value instanceof \MongoDate) {
             return $value;
         }
-        $timestamp = false;
-        if ($value instanceof \DateTime) {
-            $timestamp = $value->format('U');
-        } elseif (is_numeric($value)) {
-            $timestamp = $value;
-        } elseif (is_string($value)) {
-            $timestamp = strtotime($value);
-        }
-        if ($timestamp === false) {
-            throw new \InvalidArgumentException(sprintf('Could not convert %s to a date value', is_scalar($value) ? '"'.$value.'"' : gettype($value)));
-        }
-        return new \MongoDate($timestamp);
+
+        $datetime = self::getDateTime($value);
+
+        return new \MongoDate($datetime->format('U'), $datetime->format('u'));
     }
 
     public function convertToPHPValue($value)
@@ -55,27 +97,17 @@ class DateType extends Type
         if ($value === null) {
             return null;
         }
-        if ($value instanceof \MongoDate) {
-            $date = new \DateTime();
-            $date->setTimestamp($value->sec);
-        } elseif (is_numeric($value)) {
-            $date = new \DateTime();
-            $date->setTimestamp($value);
-        } elseif ($value instanceof \DateTime) {
-            $date = $value;
-        } else {
-            $date = new \DateTime($value);
-        }
-        return $date;
+
+        return self::getDateTime($value);
     }
 
     public function closureToMongo()
     {
-        return 'if ($value instanceof \DateTime) { $value = $value->getTimestamp(); } elseif (is_string($value)) { $value = strtotime($value); } $return = new \MongoDate($value);';
+        return 'if ($value === null || $value instanceof \MongoDate) { $return = $value; } else { $datetime = \\'.__CLASS__.'::getDateTime($value); $return = new \MongoDate($datetime->format(\'U\'), $datetime->format(\'u\')); }';
     }
 
     public function closureToPHP()
     {
-        return 'if ($value instanceof \MongoDate) { $return = new \DateTime(); $return->setTimestamp($value->sec); } elseif (is_numeric($value)) { $return = new \DateTime(); $return->setTimestamp($value); } elseif ($value instanceof \DateTime) { $return = $value; } else { $return = new \DateTime($value); }';
+        return 'if ($value === null) { $return = null; } else { $return = \\'.__CLASS__.'::getDateTime($value); }';
     }
 }
