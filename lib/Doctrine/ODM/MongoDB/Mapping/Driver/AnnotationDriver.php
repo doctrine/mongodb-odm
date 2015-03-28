@@ -123,7 +123,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($documentAnnot->collection)) {
             $class->setCollection($documentAnnot->collection);
         }
-        if (isset($documentAnnot->repositoryClass)) {
+        if (isset($documentAnnot->repositoryClass) && !$class->isEmbeddedDocument) {
             $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
         }
         if (isset($documentAnnot->indexes)) {
