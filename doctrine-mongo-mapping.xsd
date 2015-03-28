@@ -40,6 +40,7 @@
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="odm:lifecycle-callbacks" minOccurs="0"/>
+      <xs:element name="also-load-methods" type="odm:also-load-methods" minOccurs="0"/>
       <xs:element name="indexes" type="odm:indexes" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="db" type="xs:NMTOKEN" />
@@ -256,5 +257,17 @@
     </xs:sequence>
   </xs:complexType>
 
+
+  <xs:complexType name="also-load-method">
+    <xs:attribute name="method" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="field" type="xs:NMTOKEN" use="required"/>
+  </xs:complexType>
+
+
+  <xs:complexType name="also-load-methods">
+    <xs:sequence>
+      <xs:element name="also-load-method" type="odm:also-load-method" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
 
 </xs:schema>

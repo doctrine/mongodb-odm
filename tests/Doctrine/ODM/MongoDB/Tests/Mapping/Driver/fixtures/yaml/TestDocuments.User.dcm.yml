@@ -39,3 +39,6 @@ TestDocuments\User:
   lifecycleCallbacks:
     prePersist: [doStuffOnPrePersist]
     postPersist: [doStuffOnPostPersist, doOtherStuffOnPostPersist]
+  alsoLoadMethods:
+    doStuffOnAlsoLoad: unmappedField
+
