@@ -11,9 +11,15 @@ use Documents\Agent;
 use Documents\Functional\FavoritesUser;
 use Documents\Group;
 use Documents\GuestServer;
+use Documents\Phonenumber;
 use Documents\Project;
 use Documents\SimpleReferenceUser;
 use Documents\User;
+use Documents\Ecommerce\ConfigurableProduct;
+use Documents\Ecommerce\Currency;
+use Documents\Ecommerce\Money;
+use Documents\Ecommerce\Option;
+use Documents\Ecommerce\StockItem;
 
 class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -249,5 +255,79 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $group);
             $this->assertInstanceOf('Documents\Group', $group);
         }
+    }
+
+    public function testPrimeEmbeddedReferenceOneLevelDeep()
+    {
+        $user1 = new User();
+        $user2 = new User();
+        $phone = new Phonenumber('555-GET-THIS',$user2);
+
+        $user1->addPhonenumber($phone);
+        $user1->setUsername('SomeName');
+
+        $this->dm->persist($user1);
+        $this->dm->persist($user2);
+        $this->dm->flush();
+
+        $this->dm->clear();
+
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->field('username')->equals('SomeName')
+            ->field('phonenumbers.lastCalledBy')->prime(true);
+
+        $user = $qb->getQuery()->getSingleResult();
+        $phonenumbers = $user->getPhonenumbers();
+
+        $this->assertCount(1, $phonenumbers);
+
+        $phonenumber = $phonenumbers->current();
+
+        $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $phonenumber);
+        $this->assertInstanceOf('Documents\Phonenumber', $phonenumber);
+    }
+
+    public function testPrimeEmbeddedReferenceTwoLevelsDeep()
+    {
+        $product = new ConfigurableProduct('Bundle');
+
+        $product->addOption(
+            new Option('Lens1', new Money(75.00, new Currency('USD',1)),
+            new StockItem('Filter1', new Money(50.00, new Currency('USD',1)), 1))
+        );
+        $product->addOption(
+            new Option('Lens2', new Money(120.00, new Currency('USD',1)),
+            new StockItem('Filter2', new Money(100.00, new Currency('USD',1)), 1))
+        );
+        $product->addOption(
+            new Option('Lens3', new Money(180.00, new Currency('USD',1)),
+            new StockItem('Filter3', new Money(0.01, new Currency('USD',1)), 1))
+        );
+
+        $this->dm->persist($product);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $qb = $this->dm->createQueryBuilder('Documents\Ecommerce\ConfigurableProduct')
+            ->field('name')->equals('Bundle')
+            ->field('options.money.currency')->prime(true);
+
+        /** @var Query $query */
+        $query = $qb->getQuery();
+
+        /** @var ConfigurableProduct $product */
+        $product = $query->getSingleResult();
+
+        /** @var Option $option */
+        $option = $product->getOption('Lens2');
+
+        /** @var Money $money */
+        $money = $option->getPrice(true);
+
+        /** @var Currency $currency */
+        $currency = $money->getCurrency();
+
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $currency);
+        $this->assertTrue($currency->__isInitialized());
     }
 }
