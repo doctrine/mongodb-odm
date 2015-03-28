@@ -2,18 +2,16 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\Common\PropertyChangedListener;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Tests\Mocks\ConnectionMock;
-use Doctrine\ODM\MongoDB\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
-use Documents\ForumUser;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\ForumAvatar;
+use Documents\ForumUser;
 
 class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -101,7 +99,6 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->scheduleForDelete($user);
         $this->assertFalse($this->uow->isScheduledForDelete($user));
     }
-
 
     /* Operational tests */
 
@@ -347,47 +344,47 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array(
                 null,
                 array('bar' => 'foo'),
-                true
+                true,
             ),
             array(
                 array('foo' => 'bar'),
                 null,
-                true
+                true,
             ),
             array(
                 array('foo' => 'bar'),
                 array('bar' => 'foo'),
-                true
+                true,
             ),
             array(
                 array('foo' => 'bar'),
                 array('foo' => 'foo'),
-                true
+                true,
             ),
             array(
                 array('foo' => 'bar'),
                 array('foo' => 'bar'),
-                false
+                false,
             ),
             array(
                 array('foo' => 'bar'),
                 array('foo' => true),
-                true
+                true,
             ),
             array(
                 array('foo' => 'bar'),
                 array('foo' => 99),
-                true
+                true,
             ),
             array(
                 array('foo' => 99),
                 array('foo' => true),
-                true
+                true,
             ),
             array(
                 array('foo' => true),
                 array('foo' => true),
-                false
+                false,
             ),
         );
     }
@@ -449,7 +446,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * Gets mock HydratorFactory instance
+     * Gets mock HydratorFactory instance.
      *
      * @return Doctrine\ODM\MongoDB\Hydrator\HydratorFactory
      */
@@ -462,7 +459,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * Gets mock EventManager instance
+     * Gets mock EventManager instance.
      *
      * @return Doctrine\Common\EventManager
      */
@@ -490,7 +487,8 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     protected function getClassMetadata($class, $flag)
     {
         $classMetadata = new ClassMetadata($class);
-        $classMetadata->{'is' . ucfirst($flag)} = true;
+        $classMetadata->{'is'.ucfirst($flag)} = true;
+
         return $classMetadata;
     }
 }
@@ -521,7 +519,7 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 
     private $transient; // not persisted
 
-    public function  __construct()
+    public function __construct()
     {
         $this->items = new ArrayCollection();
     }

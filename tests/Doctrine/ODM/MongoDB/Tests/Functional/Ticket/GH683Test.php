@@ -2,13 +2,11 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\Common\Collections\ArrayCollection;
-
-use Documents\Functional\Ticket\GH683\ParentDocument;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Functional\Ticket\GH683\EmbeddedSubDocument1;
 use Documents\Functional\Ticket\GH683\EmbeddedSubDocument2;
+use Documents\Functional\Ticket\GH683\ParentDocument;
 
 class GH683Test extends BaseTest
 {
@@ -16,16 +14,16 @@ class GH683Test extends BaseTest
     {
         $parent = new ParentDocument();
         $parent->name = 'Parent';
-        
+
         $sub1 = new EmbeddedSubDocument1();
         $sub1->name = 'Sub 1';
-        
+
         $parent->embedOne = $sub1;
 
         $this->dm->persist($parent);
         $this->dm->flush();
         $this->dm->clear();
-        
+
         $id = $parent->id;
 
         $parent = $this->dm->find(get_class($parent), $id);
@@ -36,13 +34,13 @@ class GH683Test extends BaseTest
     {
         $parent = new ParentDocument();
         $parent->name = 'Parent';
-        
+
         $sub1 = new EmbeddedSubDocument1();
         $sub1->name = 'Sub 1';
-        
+
         $sub2 = new EmbeddedSubDocument2();
         $sub2->name = 'Sub 2';
-        
+
         $parent->embedMany = new ArrayCollection();
         $parent->embedMany->add($sub1);
         $parent->embedMany->add($sub2);
@@ -50,7 +48,7 @@ class GH683Test extends BaseTest
         $this->dm->persist($parent);
         $this->dm->flush();
         $this->dm->clear();
-        
+
         $id = $parent->id;
 
         $parent = $this->dm->find(get_class($parent), $id);
@@ -59,5 +57,4 @@ class GH683Test extends BaseTest
         $this->assertInstanceOf(get_class($sub1), $firstSub);
         $this->assertInstanceOf(get_class($sub2), $secondSub);
     }
-
 }

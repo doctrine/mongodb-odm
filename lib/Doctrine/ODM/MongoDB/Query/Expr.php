@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -26,19 +26,20 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * Query expression builder for ODM.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Expr extends \Doctrine\MongoDB\Query\Expr
 {
     /**
-     * The DocumentManager instance for this query
+     * The DocumentManager instance for this query.
      *
      * @var DocumentManager
      */
     private $dm;
 
     /**
-     * The ClassMetadata instance for the document being queried
+     * The ClassMetadata instance for the document being queried.
      *
      * @var ClassMetadata
      */
@@ -73,7 +74,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                 }
 
                 foreach ($keys as $key => $value) {
-                    $this->query[$this->currentField . '.$' . $key] = $dbRef['$' . $key];
+                    $this->query[$this->currentField.'.$'.$key] = $dbRef['$'.$key];
                 }
             }
         } else {
@@ -103,7 +104,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                 }
 
                 foreach ($keys as $key => $value) {
-                    $this->query[$this->currentField]['$elemMatch']['$' . $key] = $dbRef['$' . $key];
+                    $this->query[$this->currentField]['$elemMatch']['$'.$key] = $dbRef['$'.$key];
                 }
             }
         } else {

@@ -25,7 +25,7 @@ class GH850Document
 {
     /** @ODM\Id */
     public $id;
-    
+
     /** @ODM\ReferenceOne */
-    public $refs = "";
+    public $refs = '';
 }

@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 
 class GH774Test extends BaseTest
@@ -43,7 +42,7 @@ class GH774Test extends BaseTest
 
     protected function createMetadataDriverImpl()
     {
-        return new XmlDriver(__DIR__ . '/GH774');
+        return new XmlDriver(__DIR__.'/GH774');
     }
 }
 

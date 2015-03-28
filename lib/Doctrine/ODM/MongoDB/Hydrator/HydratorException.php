@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,15 +17,15 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
- * MongoDB ODM Hydrator Exception
+ * MongoDB ODM Hydrator Exception.
  *
  * @since  1.0
+ *
  * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class HydratorException extends MongoDBException

@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH928Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest

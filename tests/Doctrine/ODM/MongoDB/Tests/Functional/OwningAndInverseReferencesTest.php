@@ -2,10 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use DateTime,
-    Doctrine\ODM\MongoDB\PersistentCollection;
+use DateTime;
 
-class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class OwningAndInverseReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testOneToOne()
     {
@@ -17,9 +16,9 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         // if inversedBy then isOwningSide
         // if mappedBy then isInverseSide
 
-        $customer = new \Documents\Customer;
+        $customer = new \Documents\Customer();
         $customer->name = 'Jon Wage';
-        $customer->cart = new \Documents\Cart;
+        $customer->cart = new \Documents\Cart();
         $customer->cart->numItems = 5;
         $customer->cart->customer = $customer;
         $customer->cartTest = 'test';

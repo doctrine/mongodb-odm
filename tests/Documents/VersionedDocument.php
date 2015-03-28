@@ -5,7 +5,7 @@ namespace Documents;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * Documents\VersionedDocument
+ * Documents\VersionedDocument.
  *
  * @ODM\Document
  */

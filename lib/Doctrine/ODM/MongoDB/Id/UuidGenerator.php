@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,16 +17,15 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * UuidGenerator generates a uuid for the id.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class UuidGenerator extends AbstractIdGenerator
@@ -38,7 +38,7 @@ class UuidGenerator extends AbstractIdGenerator
     protected $salt = null;
 
     /**
-     * Used to set the salt that will be applied to each id
+     * Used to set the salt that will be applied to each id.
      *
      * @param string $salt The sale to use
      */
@@ -48,7 +48,7 @@ class UuidGenerator extends AbstractIdGenerator
     }
 
     /**
-     * Returns the current salt value
+     * Returns the current salt value.
      *
      * @return string $salt The current salt
      */
@@ -61,7 +61,8 @@ class UuidGenerator extends AbstractIdGenerator
      * Checks that a given string is a valid uuid.
      *
      * @param string $uuid The string to check.
-     * @return boolean
+     *
+     * @return bool
      */
     public function isValid($guid)
     {
@@ -69,18 +70,19 @@ class UuidGenerator extends AbstractIdGenerator
     }
 
     /**
-     * Generates a new GUID
+     * Generates a new GUID.
      *
      * @return string
      */
     public function generate(DocumentManager $dm, $document)
     {
         $guid = $this->generateV4();
+
         return $this->generateV5($guid, $this->salt ?: php_uname('n'));
     }
 
     /**
-     * Generates a v4 GUID
+     * Generates a v4 GUID.
      *
      * @return string
      */
@@ -108,17 +110,19 @@ class UuidGenerator extends AbstractIdGenerator
     }
 
     /**
-     * Generates a v5 GUID
+     * Generates a v5 GUID.
      *
      * @param string $namespace The GUID to seed with
-     * @param string $salt The string to salt this new UUID with
+     * @param string $salt      The string to salt this new UUID with
+     *
      * @throws \Exception when the provided namespace is invalid
+     *
      * @return string
      */
     public function generateV5($namespace, $salt)
     {
-        if ( ! $this->isValid($namespace)) {
-            throw new \Exception('Provided $namespace is invalid: ' . $namespace);
+        if (! $this->isValid($namespace)) {
+            throw new \Exception('Provided $namespace is invalid: '.$namespace);
         }
 
         // Get hexadecimal components of namespace
@@ -129,11 +133,11 @@ class UuidGenerator extends AbstractIdGenerator
 
         // Convert Namespace UUID to bits
         for ($i = 0; $i < strlen($nhex); $i += 2) {
-            $nstr .= chr(hexdec($nhex[$i] . $nhex[$i + 1]));
+            $nstr .= chr(hexdec($nhex[$i].$nhex[$i + 1]));
         }
 
         // Calculate hash value
-        $hash = sha1($nstr . $salt);
+        $hash = sha1($nstr.$salt);
 
         $guid = sprintf(
             '%08s%04s%04x%04x%12s',

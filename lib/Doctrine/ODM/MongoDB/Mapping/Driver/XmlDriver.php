@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
@@ -27,6 +27,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -50,7 +51,7 @@ class XmlDriver extends FileDriver
         /* @var $class ClassMetadataInfo */
         /* @var $xmlRoot \SimpleXMLElement */
         $xmlRoot = $this->getElement($className);
-        if ( ! $xmlRoot) {
+        if (! $xmlRoot) {
             return;
         }
 
@@ -86,10 +87,10 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
-            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
+            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_'.$inheritanceType));
         }
         if (isset($xmlRoot['change-tracking-policy'])) {
-            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_' . strtoupper((string) $xmlRoot['change-tracking-policy'])));
+            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'.strtoupper((string) $xmlRoot['change-tracking-policy'])));
         }
         if (isset($xmlRoot->{'discriminator-field'})) {
             $discrField = $xmlRoot->{'discriminator-field'};
@@ -102,7 +103,7 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot->{'discriminator-map'})) {
             $map = array();
-            foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} AS $discrMapElement) {
+            foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} as $discrMapElement) {
                 $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
             }
             $class->setDiscriminatorMap($map);
@@ -178,7 +179,7 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
-                $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ODM\MongoDB\Events::' . (string) $lifecycleCallback['type']));
+                $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ODM\MongoDB\Events::'.(string) $lifecycleCallback['type']));
             }
         }
         if (isset($xmlRoot->{'also-load-methods'})) {
@@ -206,7 +207,7 @@ class XmlDriver extends FileDriver
         $class->mapField($mapping);
 
         // Index this field if either "index", "unique", or "sparse" are set
-        if ( ! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
+        if (! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
             return;
         }
 

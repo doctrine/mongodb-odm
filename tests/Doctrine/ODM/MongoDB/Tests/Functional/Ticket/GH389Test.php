@@ -24,10 +24,10 @@ class GH389Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         unset($rootDocument);
 
         //Get root document
-        $rootDocument = $this->dm->getRepository(__NAMESPACE__ . '\RootDocument')->find($rootDocumentId);
+        $rootDocument = $this->dm->getRepository(__NAMESPACE__.'\RootDocument')->find($rootDocumentId);
 
         //Test
-        $this->assertInstanceOf(__NAMESPACE__ . '\EmptyEmbeddedDocument', $rootDocument->getEmptyEmbeddedDocument());
+        $this->assertInstanceOf(__NAMESPACE__.'\EmptyEmbeddedDocument', $rootDocument->getEmptyEmbeddedDocument());
     }
 }
 

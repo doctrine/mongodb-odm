@@ -102,7 +102,7 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(array('name' => 'Root'));
- 
+
         $this->assertNotNull($test);
         $child1 = $test->getChild('Child 1')->setName('Child 1 Changed');
         $child2 = $test->getChild('Child 2')->setName('Child 2 Changed');
@@ -174,7 +174,8 @@ class Hierarchy
                 return $child;
             }
         }
-        return null;
+
+        return;
     }
 
     public function addChild($child)
@@ -183,6 +184,7 @@ class Hierarchy
             $child = new Hierarchy($child);
         }
         $this->children[] = $child;
+
         return $child;
     }
 
@@ -227,7 +229,8 @@ class BaseCategory
                 return $child;
             }
         }
-        return null;
+
+        return;
     }
 
     public function addChild($child)
@@ -236,6 +239,7 @@ class BaseCategory
             $child = new ChildCategory($child);
         }
         $this->children[] = $child;
+
         return $child;
     }
 

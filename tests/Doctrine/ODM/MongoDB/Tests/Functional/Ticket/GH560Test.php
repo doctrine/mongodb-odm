@@ -4,7 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH560Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -27,8 +26,8 @@ class GH560Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $called = array(
-            array(Events::prePersist, __NAMESPACE__ . '\GH560Document'),
-            array(Events::postPersist, __NAMESPACE__ . '\GH560Document'),
+            array(Events::prePersist, __NAMESPACE__.'\GH560Document'),
+            array(Events::postPersist, __NAMESPACE__.'\GH560Document'),
         );
 
         $this->assertEquals($called, $listener->called);
@@ -44,7 +43,7 @@ class GH560Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(__NAMESPACE__ . '\GH560Document', $id);
+        $doc = $this->dm->find(__NAMESPACE__.'\GH560Document', $id);
         $this->assertEquals($id, $doc->id);
     }
 
@@ -69,8 +68,8 @@ class GH560Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $called = array(
-            array(Events::preUpdate, __NAMESPACE__ . '\GH560Document'),
-            array(Events::postUpdate, __NAMESPACE__ . '\GH560Document'),
+            array(Events::preUpdate, __NAMESPACE__.'\GH560Document'),
+            array(Events::postUpdate, __NAMESPACE__.'\GH560Document'),
         );
 
         $this->assertEquals($called, $listener->called);

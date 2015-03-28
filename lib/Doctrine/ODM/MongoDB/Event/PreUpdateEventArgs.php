@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -61,7 +61,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      *
      * @param string $field
      *
-     * @return boolean
+     * @return bool
      */
     public function hasChangedField($field)
     {
@@ -72,6 +72,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      * Gets the old value of the changeset of the changed field.
      *
      * @param string $field
+     *
      * @return mixed
      */
     public function getOldValue($field)
@@ -85,6 +86,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      * Gets the new value of the changeset of the changed field.
      *
      * @param string $field
+     *
      * @return mixed
      */
     public function getNewValue($field)
@@ -111,11 +113,12 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      * Asserts the field exists in changeset.
      *
      * @param string $field
+     *
      * @throws \InvalidArgumentException if the field has no changeset
      */
     private function assertValidField($field)
     {
-        if ( ! isset($this->documentChangeSet[$field])) {
+        if (! isset($this->documentChangeSet[$field])) {
             throw new \InvalidArgumentException(sprintf(
                 'Field "%s" is not a valid field of the document "%s" in PreUpdateEventArgs.',
                 $field,

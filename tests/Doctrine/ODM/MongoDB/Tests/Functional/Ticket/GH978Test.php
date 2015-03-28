@@ -1,4 +1,5 @@
 <?php
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Documents\Ecommerce\ConfigurableProduct;
@@ -8,7 +9,7 @@ use Documents\Ecommerce\Option;
 use Documents\Ecommerce\StockItem;
 
 /**
- * Test for UnitOfWork::detach()
+ * Test for UnitOfWork::detach().
  *
  * @author Fridolin Koch <info@fridokoch.de>
  */

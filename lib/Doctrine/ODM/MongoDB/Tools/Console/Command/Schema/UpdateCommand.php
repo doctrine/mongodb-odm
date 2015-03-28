@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
@@ -43,8 +43,9 @@ class UpdateCommand extends AbstractCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @return int|null|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -65,13 +66,13 @@ class UpdateCommand extends AbstractCommand
                 $output->writeln('Updated <comment>indexes</comment> for <info>all classes</info>');
             }
         } catch (\Exception $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $output->writeln('<error>'.$e->getMessage().'</error>');
         }
     }
 
     /**
      * @param SchemaManager $sm
-     * @param object $document
+     * @param object        $document
      */
     protected function processDocumentIndex(SchemaManager $sm, $document)
     {
@@ -88,7 +89,8 @@ class UpdateCommand extends AbstractCommand
 
     /**
      * @param SchemaManager $sm
-     * @param object $document
+     * @param object        $document
+     *
      * @throws \BadMethodCallException
      */
     protected function processDocumentCollection(SchemaManager $sm, $document)
@@ -98,6 +100,7 @@ class UpdateCommand extends AbstractCommand
 
     /**
      * @param SchemaManager $sm
+     *
      * @throws \BadMethodCallException
      */
     protected function processCollection(SchemaManager $sm)
@@ -107,7 +110,8 @@ class UpdateCommand extends AbstractCommand
 
     /**
      * @param SchemaManager $sm
-     * @param object $document
+     * @param object        $document
+     *
      * @throws \BadMethodCallException
      */
     protected function processDocumentDb(SchemaManager $sm, $document)
@@ -117,6 +121,7 @@ class UpdateCommand extends AbstractCommand
 
     /**
      * @param SchemaManager $sm
+     *
      * @throws \BadMethodCallException
      */
     protected function processDb(SchemaManager $sm)

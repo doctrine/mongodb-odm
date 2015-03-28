@@ -2,9 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM67Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -42,7 +42,7 @@ class MODM67Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $dm->clear();
 
-        $testDoc = $dm->find(__NAMESPACE__ . '\MODM67DerivedClass', $testDoc->id);
+        $testDoc = $dm->find(__NAMESPACE__.'\MODM67DerivedClass', $testDoc->id);
         $testDoc->embedOne->numAccesses = 1;
         $dm->flush();
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -36,6 +36,7 @@ use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
  *     $dm = DocumentManager::create(new Connection(), $config);
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -56,12 +57,14 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Resolves a registered namespace alias to the full namespace.
      *
      * @param string $documentNamespaceAlias
+     *
      * @return string
+     *
      * @throws MongoDBException
      */
     public function getDocumentNamespace($documentNamespaceAlias)
     {
-        if ( ! isset($this->attributes['documentNamespaces'][$documentNamespaceAlias])) {
+        if (! isset($this->attributes['documentNamespaces'][$documentNamespaceAlias])) {
             throw MongoDBException::unknownDocumentNamespace($documentNamespaceAlias);
         }
 
@@ -79,10 +82,9 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     }
 
     /**
-     * Set the document alias map
+     * Set the document alias map.
      *
      * @param array $documentNamespaces
-     * @return void
      */
     public function setDocumentNamespaces(array $documentNamespaces)
     {
@@ -93,6 +95,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Sets the cache driver implementation that is used for metadata caching.
      *
      * @param MappingDriver $driverImpl
+     *
      * @todo Force parameter to be a Closure to ensure lazy evaluation
      *       (as soon as a metadata cache is in effect, the driver never needs to initialize).
      */
@@ -105,13 +108,14 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Add a new default annotation driver with a correctly configured annotation reader.
      *
      * @param array $paths
+     *
      * @return Mapping\Driver\AnnotationDriver
      */
     public function newDefaultAnnotationDriver($paths = array())
     {
         $reader = new AnnotationReader();
 
-        return new AnnotationDriver($reader, (array)$paths);
+        return new AnnotationDriver($reader, (array) $paths);
     }
 
     /**
@@ -171,7 +175,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Gets a boolean flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
      *
-     * @return boolean|integer
+     * @return bool|int
      */
     public function getAutoGenerateProxyClasses()
     {
@@ -183,7 +187,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Sets a boolean flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
      *
-     * @param boolean|int $bool Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory
+     * @param bool|int $bool Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory
      */
     public function setAutoGenerateProxyClasses($bool)
     {
@@ -236,7 +240,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Gets a boolean flag that indicates whether hydrator classes should always be regenerated
      * during each script execution.
      *
-     * @return boolean
+     * @return bool
      */
     public function getAutoGenerateHydratorClasses()
     {
@@ -248,7 +252,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Sets a boolean flag that indicates whether hydrator classes should always be regenerated
      * during each script execution.
      *
-     * @param boolean $bool
+     * @param bool $bool
      */
     public function setAutoGenerateHydratorClasses($bool)
     {
@@ -275,7 +279,6 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         $this->attributes['hydratorNamespace'] = $ns;
     }
-
 
     /**
      * Sets the default DB to use for all Documents that do not specify
@@ -316,16 +319,17 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getClassMetadataFactoryName()
     {
-        if ( ! isset($this->attributes['classMetadataFactoryName'])) {
+        if (! isset($this->attributes['classMetadataFactoryName'])) {
             $this->attributes['classMetadataFactoryName'] = 'Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory';
         }
+
         return $this->attributes['classMetadataFactoryName'];
     }
 
     /**
      * Gets array of default commit options.
      *
-     * @return boolean
+     * @return bool
      */
     public function getDefaultCommitOptions()
     {
@@ -343,7 +347,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Sets array of default commit options.
      *
-     * @param boolean $defaultCommitOptions
+     * @param bool $defaultCommitOptions
      */
     public function setDefaultCommitOptions($defaultCommitOptions)
     {
@@ -361,7 +365,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         $this->attributes['filters'][$name] = array(
             'class' => $className,
-            'parameters' => $parameters
+            'parameters' => $parameters,
         );
     }
 
@@ -398,15 +402,13 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      *
      * @param string $className
      *
-     * @return void
-     *
      * @throws MongoDBException If not is a ObjectRepository
      */
     public function setDefaultRepositoryClassName($className)
     {
         $reflectionClass = new \ReflectionClass($className);
 
-        if ( ! $reflectionClass->implementsInterface('Doctrine\Common\Persistence\ObjectRepository')) {
+        if (! $reflectionClass->implementsInterface('Doctrine\Common\Persistence\ObjectRepository')) {
             throw MongoDBException::invalidDocumentRepository($className);
         }
 

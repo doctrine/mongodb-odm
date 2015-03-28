@@ -22,7 +22,7 @@ class GH499Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH499Document');
+        $collection = $this->dm->getDocumentCollection(__NAMESPACE__.'\GH499Document');
 
         $a = $collection->findOne(array('_id' => new \MongoId($a->getId())));
 

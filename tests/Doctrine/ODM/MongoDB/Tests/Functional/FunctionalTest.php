@@ -2,17 +2,12 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\User;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Documents\Account;
-use Documents\Phonenumber;
-use Documents\Employee;
-use Documents\Manager;
 use Documents\Address;
-use Documents\Group;
-use Documents\Project;
 use Documents\Agent;
-use Documents\Server;
-use Documents\GuestServer;
+use Documents\Album;
+use Documents\Employee;
 use Documents\Functional\EmbeddedTestLevel0;
 use Documents\Functional\EmbeddedTestLevel0b;
 use Documents\Functional\EmbeddedTestLevel1;
@@ -27,9 +22,14 @@ use Documents\Functional\PreUpdateTestSeller;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
 use Documents\Functional\SimpleEmbedAndReference;
-use Documents\Album;
+use Documents\Group;
+use Documents\GuestServer;
+use Documents\Manager;
+use Documents\Phonenumber;
+use Documents\Project;
+use Documents\Server;
 use Documents\Song;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Documents\User;
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -38,7 +38,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         return array(
             array('Documents\\UserUpsert', new \MongoId('4f18f593acee41d724000005'), 'user'),
             array('Documents\\UserUpsertIdStrategyNone', 'jwage', 'user'),
-            array('Documents\\UserUpsertChild', new \MongoId('4f18f593acee41d724000005'), 'child')
+            array('Documents\\UserUpsertChild', new \MongoId('4f18f593acee41d724000005'), 'child'),
         );
     }
 
@@ -476,7 +476,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection->drop();
         $test = array(
             'name' => 'Jonathan Wage',
-            'notSaved' => 'test'
+            'notSaved' => 'test',
         );
         $collection->insert($test);
         $notSaved = $this->dm->find('Documents\Functional\NotSaved', $test['_id']);
@@ -618,7 +618,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder(array(
             'Documents\Functional\SameCollection1',
-            'Documents\Functional\SameCollection2')
+            'Documents\Functional\SameCollection2', )
         );
         $q = $qb->getQuery();
         $test = $q->execute();
@@ -640,7 +640,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $test = $this->dm->createQueryBuilder(array(
              'Documents\User',
-             'Documents\Profile')
+             'Documents\Profile', )
          )->getQuery()->execute();
     }
 

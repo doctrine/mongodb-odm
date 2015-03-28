@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\QueryBuilder;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class QueryTest extends BaseTest
@@ -35,7 +34,7 @@ class QueryTest extends BaseTest
 
         $this->assertEquals(array('$or' => array(
             array('firstName' => 'Kris'),
-            array('firstName' => 'Chris')
+            array('firstName' => 'Chris'),
         )), $qb->getQueryArray());
 
         $query = $qb->getQuery();

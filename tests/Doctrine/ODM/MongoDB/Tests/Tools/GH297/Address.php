@@ -9,12 +9,12 @@ class Address
 {
     /** @ODM\String */
     private $street;
-    
+
     public function getStreet()
     {
         return $this->street;
     }
-    
+
     public function setStreet($street)
     {
         $this->street = $street;

@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
-use Doctrine\ODM\MongoDB\Query\Builder;
-
 class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**

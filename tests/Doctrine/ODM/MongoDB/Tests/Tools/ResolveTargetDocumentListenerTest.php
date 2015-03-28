@@ -3,8 +3,8 @@
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 
 class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -22,7 +22,7 @@ class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\Base
     {
         parent::setUp();
 
-         $this->listener = new ResolveTargetDocumentListener();
+        $this->listener = new ResolveTargetDocumentListener();
     }
 
     public function testResolveTargetDocumentListenerCanResolveTargetDocument()

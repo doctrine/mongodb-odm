@@ -2,17 +2,17 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Documents\CmsUser;
-use Documents\CmsPhonenumber;
-use Documents\CmsAddress;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Documents\CmsAddress;
+use Documents\CmsPhonenumber;
+use Documents\CmsUser;
 
 class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testSimpleDetachMerge()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
         $user->name = 'Roman';
         $user->username = 'romanb';
         $user->status = 'dev';
@@ -37,12 +37,12 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testSerializeUnserializeModifyMerge()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
         $user->status = 'developer';
-        
-        $ph1 = new CmsPhonenumber;
+
+        $ph1 = new CmsPhonenumber();
         $ph1->phonenumber = '1234';
         $user->addPhonenumber($ph1);
 
@@ -54,12 +54,12 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $serialized = serialize($user);
 
         $this->dm->clear();
-        $this->assertFalse($this->dm->contains($user));        
+        $this->assertFalse($this->dm->contains($user));
         unset($user);
-        
+
         $user = unserialize($serialized);
-        
-        $ph2 = new CmsPhonenumber;
+
+        $ph2 = new CmsPhonenumber();
         $ph2->phonenumber = '56789';
         $user->addPhonenumber($ph2);
         $this->assertEquals(2, count($user->getPhonenumbers()));
@@ -77,7 +77,7 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame($user, $phonenumbers[1]->getUser());
 
         $this->dm->flush();
-        
+
         $this->assertTrue($this->dm->contains($user));
         $this->assertEquals(2, count($user->getPhonenumbers()));
         $phonenumbers = $user->getPhonenumbers();
@@ -99,17 +99,18 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         try {
             $this->dm->flush();
             $this->fail();
-        } catch (\Exception $expected) {}
+        } catch (\Exception $expected) {
+        }
     }
 
     public function testUninitializedLazyAssociationsAreIgnoredOnMerge()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
         $user->status = 'developer';
 
-        $address = new CmsAddress;
+        $address = new CmsAddress();
         $address->city = 'Berlin';
         $address->country = 'Germany';
         $address->street = 'Sesamestreet';

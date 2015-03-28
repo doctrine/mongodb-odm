@@ -29,7 +29,7 @@ class ConfigurableProduct
      */
     protected $selectedOption;
 
-    public function  __construct($name)
+    public function __construct($name)
     {
         $this->setName($name);
     }
@@ -51,6 +51,7 @@ class ConfigurableProduct
             throw new \InvalidArgumentException('Product name cannot be empty');
         }
         $this->name = $name;
+
         return $this;
     }
 
@@ -60,13 +61,13 @@ class ConfigurableProduct
     }
 
     /**
-     * @param string|Option $name
-     * @param float|null $price
+     * @param string|Option  $name
+     * @param float|null     $price
      * @param StockItem|null $item
      */
     public function addOption($name, $price = null, StockItem $item = null)
     {
-        if ( ! $name instanceof Option) {
+        if (! $name instanceof Option) {
             $name = (string) $name;
             if (empty($name)) {
                 throw new \InvalidArgumentException('option name cannot be empty');
@@ -88,8 +89,8 @@ class ConfigurableProduct
 
     public function removeOption($name)
     {
-        if(null === ($option = $this->_findOption($name))) {
-            throw new \InvalidArgumentException('option ' . $name . ' doesn\'t exist');
+        if (null === ($option = $this->_findOption($name))) {
+            throw new \InvalidArgumentException('option '.$name.' doesn\'t exist');
         }
         if ($this->options instanceof \Doctrine\Common\Collections\Collection) {
             $index = $this->options->indexOf($option);
@@ -97,6 +98,7 @@ class ConfigurableProduct
             $index = array_search($option, $this->options);
         }
         unset($this->options[$index]);
+
         return $this;
     }
 
@@ -108,10 +110,11 @@ class ConfigurableProduct
     public function selectOption($name)
     {
         $option = $this->_findOption($name);
-        if ( ! isset($option)) {
-            throw new \InvalidArgumentException('specified option: ' . $name . ' doesn\'t exist');
+        if (! isset($option)) {
+            throw new \InvalidArgumentException('specified option: '.$name.' doesn\'t exist');
         }
         $this->selectedOption = $option;
+
         return $this;
     }
 
@@ -122,7 +125,8 @@ class ConfigurableProduct
                 return $option;
             }
         }
-        return null;
+
+        return;
     }
 
     public function getPrice()
@@ -137,7 +141,7 @@ class ConfigurableProduct
         foreach ($this->getOptions() as $option) {
             $stockItems[] = $option->getStockItem();
         }
+
         return $stockItems;
     }
-
 }

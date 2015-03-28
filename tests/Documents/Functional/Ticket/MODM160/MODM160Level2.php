@@ -9,6 +9,4 @@ class MODM160Level2
 {
     /** @ODM\String */
     public $name;
-
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,15 +17,15 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB;
 
 /**
- * LockException
+ * LockException.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @author Jonathan H. Wage <jonwage@gmail.com>
+ *
  * @since 1.0
  */
 class LockException extends MongoDBException
@@ -54,12 +55,12 @@ class LockException extends MongoDBException
 
     public static function lockFailedVersionMissmatch($document, $expectedLockVersion, $actualLockVersion)
     {
-        return new self('The optimistic lock failed, version ' . $expectedLockVersion . ' was expected, but is actually '.$actualLockVersion, $document);
+        return new self('The optimistic lock failed, version '.$expectedLockVersion.' was expected, but is actually '.$actualLockVersion, $document);
     }
 
     public static function notVersioned($documentName)
     {
-        return new self('Document ' . $documentName . ' is not versioned.');
+        return new self('Document '.$documentName.' is not versioned.');
     }
 
     public static function invalidLockFieldType($type)

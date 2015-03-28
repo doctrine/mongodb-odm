@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
@@ -28,6 +28,7 @@ use Doctrine\ODM\MongoDB\Query\Query;
  * initialization.
  *
  * @since  1.0
+ *
  * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class EagerCursor extends BaseEagerCursor
@@ -42,7 +43,7 @@ class EagerCursor extends BaseEagerCursor
     /**
      * Whether to hydrate results as document class instances.
      *
-     * @var boolean
+     * @var bool
      */
     private $hydrate = true;
 
@@ -64,9 +65,9 @@ class EagerCursor extends BaseEagerCursor
     /**
      * Constructor.
      *
-     * @param Cursor        $cursor      Cursor instance being wrapped
-     * @param UnitOfWork    $unitOfWork  UnitOfWork for result hydration and query preparation
-     * @param ClassMetadata $class       ClassMetadata for the document class being queried
+     * @param Cursor        $cursor     Cursor instance being wrapped
+     * @param UnitOfWork    $unitOfWork UnitOfWork for result hydration and query preparation
+     * @param ClassMetadata $class      ClassMetadata for the document class being queried
      */
     public function __construct(Cursor $cursor, UnitOfWork $uow, ClassMetadata $class)
     {
@@ -114,12 +115,15 @@ class EagerCursor extends BaseEagerCursor
      * Set whether to hydrate results as document class instances.
      *
      * @see Cursor::hydrate()
-     * @param boolean $hydrate
+     *
+     * @param bool $hydrate
+     *
      * @return self
      */
     public function hydrate($hydrate = true)
     {
         $this->hydrate = (boolean) $hydrate;
+
         return $this;
     }
 
@@ -141,12 +145,15 @@ class EagerCursor extends BaseEagerCursor
      * This option has no effect if hydration is disabled.
      *
      * @see Cursor::refresh()
-     * @param boolean $refresh
+     *
+     * @param bool $refresh
+     *
      * @return self
      */
     public function refresh($refresh = true)
     {
         $this->unitOfWorkHints[Query::HINT_REFRESH] = (boolean) $refresh;
+
         return $this;
     }
 
@@ -154,8 +161,10 @@ class EagerCursor extends BaseEagerCursor
      * Wrapper method for MongoCursor::setReadPreference().
      *
      * @see Cursor::setReadPreference()
+     *
      * @param string $readPreference
      * @param array  $tags
+     *
      * @return self
      */
     public function setReadPreference($readPreference, array $tags = null)
@@ -163,6 +172,7 @@ class EagerCursor extends BaseEagerCursor
         $this->cursor->setReadPreference($readPreference, $tags);
         $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE] = $readPreference;
         $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE_TAGS] = $tags;
+
         return $this;
     }
 
@@ -170,7 +180,9 @@ class EagerCursor extends BaseEagerCursor
      * Wrapper method for MongoCursor::slaveOkay().
      *
      * @see Cursor::slaveOkay()
-     * @param boolean $ok
+     *
+     * @param bool $ok
+     *
      * @return self
      */
     public function slaveOkay($ok = true)
@@ -178,6 +190,7 @@ class EagerCursor extends BaseEagerCursor
         $ok = (boolean) $ok;
         $this->cursor->slaveOkay($ok);
         $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
+
         return $this;
     }
 
@@ -188,6 +201,7 @@ class EagerCursor extends BaseEagerCursor
     public function toArray()
     {
         $this->initialize();
+
         return iterator_to_array($this);
     }
 }

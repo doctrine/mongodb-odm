@@ -18,8 +18,7 @@ class VirtualHostDirective
      */
     protected $directives;
 
-
-    public function __construct($name='', $value='')
+    public function __construct($name = '', $value = '')
     {
         $this->name = $name;
         $this->value = $value;
@@ -27,7 +26,7 @@ class VirtualHostDirective
 
     public function __toString()
     {
-        return $this->name . ' ' . $this->value;
+        return $this->name.' '.$this->value;
     }
 
     public function getRecId()
@@ -35,10 +34,11 @@ class VirtualHostDirective
         return $this->recId;
     }
 
-    public function setRecId($value=null)
+    public function setRecId($value = null)
     {
-        if (!$value)
+        if (!$value) {
             $value = uniqid();
+        }
 
         $this->recId = $value;
     }
@@ -67,8 +67,10 @@ class VirtualHostDirective
 
     public function getDirectives()
     {
-        if (!$this->directives)
+        if (!$this->directives) {
             $this->directives = new \Doctrine\Common\Collections\ArrayCollection(array());
+        }
+
         return $this->directives;
     }
 
@@ -87,8 +89,8 @@ class VirtualHostDirective
     }
 
     /**
-     *
      * @param string $name
+     *
      * @return VirtualHostDirective
      */
     public function hasDirective($name)
@@ -98,13 +100,14 @@ class VirtualHostDirective
                 return $d;
             }
         }
-        return null;
-    }
 
+        return;
+    }
 
     public function getDirective($name)
     {
         $d = $this->hasDirective($name);
+
         return $d;
     }
 
@@ -114,5 +117,4 @@ class VirtualHostDirective
 
         return $this;
     }
-
 }

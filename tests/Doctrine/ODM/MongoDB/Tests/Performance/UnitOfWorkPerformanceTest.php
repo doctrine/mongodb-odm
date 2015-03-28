@@ -10,16 +10,16 @@ use Documents\CmsUser;
 class UnitOfWorkPerformanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**
-     * [jwage: compute changesets for 10000 objects in ~10 seconds]
+     * [jwage: compute changesets for 10000 objects in ~10 seconds].
      */
     public function testComputeChanges()
     {
         $users = array();
         for ($i = 1; $i <= 10000; ++$i) {
-            $user = new CmsUser;
+            $user = new CmsUser();
             $user->status = 'user';
-            $user->username = 'user' . $i;
-            $user->name = 'Mr.Smith-' . $i;
+            $user->username = 'user'.$i;
+            $user->name = 'Mr.Smith-'.$i;
             $this->dm->persist($user);
             $users[] = $user;
         }
@@ -27,7 +27,7 @@ class UnitOfWorkPerformanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         foreach ($users as $user) {
             $user->status = 'other';
-            $user->username = $user->username . '++';
+            $user->username = $user->username.'++';
             $user->name = str_replace('Mr.', 'Mrs.', $user->name);
         }
 
@@ -35,6 +35,6 @@ class UnitOfWorkPerformanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $e = microtime(true);
 
-        echo 'Compute ChangeSet '.$n.' objects in ' . ($e - $s) . ' seconds' . PHP_EOL;
+        echo 'Compute ChangeSet '.$n.' objects in '.($e - $s).' seconds'.PHP_EOL;
     }
 }

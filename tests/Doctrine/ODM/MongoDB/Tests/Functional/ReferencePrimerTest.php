@@ -2,12 +2,16 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Documents\Account;
 use Documents\Agent;
+use Documents\Ecommerce\ConfigurableProduct;
+use Documents\Ecommerce\Currency;
+use Documents\Ecommerce\Money;
+use Documents\Ecommerce\Option;
+use Documents\Ecommerce\StockItem;
 use Documents\Functional\FavoritesUser;
 use Documents\Group;
 use Documents\GuestServer;
@@ -15,11 +19,6 @@ use Documents\Phonenumber;
 use Documents\Project;
 use Documents\SimpleReferenceUser;
 use Documents\User;
-use Documents\Ecommerce\ConfigurableProduct;
-use Documents\Ecommerce\Currency;
-use Documents\Ecommerce\Money;
-use Documents\Ecommerce\Option;
-use Documents\Ecommerce\StockItem;
 
 class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -172,7 +171,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->createQueryBuilder('Documents\Group')->getQuery()->toArray();
 
         $invoked = 0;
-        $primer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
+        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
             $invoked++;
         };
 
@@ -207,7 +206,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $invokedArgs = array();
-        $primer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
+        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
             $invokedArgs[] = func_get_args();
         };
 
@@ -261,7 +260,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $user1 = new User();
         $user2 = new User();
-        $phone = new Phonenumber('555-GET-THIS',$user2);
+        $phone = new Phonenumber('555-GET-THIS', $user2);
 
         $user1->addPhonenumber($phone);
         $user1->setUsername('SomeName');
@@ -292,16 +291,16 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $product = new ConfigurableProduct('Bundle');
 
         $product->addOption(
-            new Option('Lens1', new Money(75.00, new Currency('USD',1)),
-            new StockItem('Filter1', new Money(50.00, new Currency('USD',1)), 1))
+            new Option('Lens1', new Money(75.00, new Currency('USD', 1)),
+            new StockItem('Filter1', new Money(50.00, new Currency('USD', 1)), 1))
         );
         $product->addOption(
-            new Option('Lens2', new Money(120.00, new Currency('USD',1)),
-            new StockItem('Filter2', new Money(100.00, new Currency('USD',1)), 1))
+            new Option('Lens2', new Money(120.00, new Currency('USD', 1)),
+            new StockItem('Filter2', new Money(100.00, new Currency('USD', 1)), 1))
         );
         $product->addOption(
-            new Option('Lens3', new Money(180.00, new Currency('USD',1)),
-            new StockItem('Filter3', new Money(0.01, new Currency('USD',1)), 1))
+            new Option('Lens3', new Money(180.00, new Currency('USD', 1)),
+            new StockItem('Filter3', new Money(0.01, new Currency('USD', 1)), 1))
         );
 
         $this->dm->persist($product);

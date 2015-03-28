@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
@@ -28,6 +28,7 @@ use Symfony\Component\Yaml\Yaml;
  * The YamlDriver reads the mapping metadata from yaml schema files.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -50,7 +51,7 @@ class YamlDriver extends FileDriver
     {
         /* @var $class ClassMetadataInfo */
         $element = $this->getElement($className);
-        if ( ! $element) {
+        if (! $element) {
             return;
         }
         $element['type'] = isset($element['type']) ? $element['type'] : 'document';
@@ -74,12 +75,12 @@ class YamlDriver extends FileDriver
             $class->isEmbeddedDocument = true;
         }
         if (isset($element['indexes'])) {
-            foreach($element['indexes'] as $index) {
+            foreach ($element['indexes'] as $index) {
                 $class->addIndex($index['keys'], isset($index['options']) ? $index['options'] : array());
             }
         }
         if (isset($element['inheritanceType'])) {
-            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
+            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_'.strtoupper($element['inheritanceType'])));
         }
         if (isset($element['discriminatorField'])) {
             $class->setDiscriminatorField($this->parseDiscriminatorField($element['discriminatorField']));
@@ -89,7 +90,7 @@ class YamlDriver extends FileDriver
         }
         if (isset($element['changeTrackingPolicy'])) {
             $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
-                    . strtoupper($element['changeTrackingPolicy'])));
+                    .strtoupper($element['changeTrackingPolicy'])));
         }
         if (isset($element['requireIndexes'])) {
             $class->setRequireIndexes($element['requireIndexes']);
@@ -104,7 +105,7 @@ class YamlDriver extends FileDriver
                     $mapping = array();
                     $mapping['type'] = $type;
                 }
-                if ( ! isset($mapping['fieldName'])) {
+                if (! isset($mapping['fieldName'])) {
                     $mapping['fieldName'] = $fieldName;
                 }
                 if (isset($mapping['type']) && $mapping['type'] === 'collection') {
@@ -143,7 +144,7 @@ class YamlDriver extends FileDriver
         if (isset($element['lifecycleCallbacks'])) {
             foreach ($element['lifecycleCallbacks'] as $type => $methods) {
                 foreach ($methods as $method) {
-                    $class->addLifecycleCallback($method, constant('Doctrine\ODM\MongoDB\Events::' . $type));
+                    $class->addLifecycleCallback($method, constant('Doctrine\ODM\MongoDB\Events::'.$type));
                 }
             }
         }
@@ -166,7 +167,7 @@ class YamlDriver extends FileDriver
 
         $class->mapField($mapping);
 
-        if ( ! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
+        if (! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
             return;
         }
 
@@ -297,7 +298,9 @@ class YamlDriver extends FileDriver
      * a string.
      *
      * @param array|string $discriminatorField
+     *
      * @return string
+     *
      * @throws \InvalidArgumentException if the value is neither a string nor an
      *                                   array with a "name" or "fieldName" key.
      */
@@ -307,8 +310,8 @@ class YamlDriver extends FileDriver
             return $discriminatorField;
         }
 
-        if ( ! is_array($discriminatorField)) {
-            throw new \InvalidArgumentException('Expected array or string for discriminatorField; found: ' . gettype($discriminatorField));
+        if (! is_array($discriminatorField)) {
+            throw new \InvalidArgumentException('Expected array or string for discriminatorField; found: '.gettype($discriminatorField));
         }
 
         if (isset($discriminatorField['name'])) {

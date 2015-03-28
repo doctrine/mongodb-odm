@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,19 +17,19 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console;
 use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
 use Doctrine\ODM\MongoDB\Tools\DocumentRepositoryGenerator;
+use Symfony\Component\Console;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Command to generate repository classes for mapping information.
  *
  * @since   1.0
+ *
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -51,7 +52,7 @@ class GenerateRepositoriesCommand extends Console\Command\Command
             ),
             new InputArgument(
                 'dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.'
-            )
+            ),
         ))
         ->setHelp(<<<EOT
 Generate repository classes from your mapping information.
@@ -65,18 +66,18 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
-        
+
         $metadatas = $dm->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
 
         // Process destination directory
         $destPath = realpath($input->getArgument('dest-path'));
 
-        if ( ! file_exists($destPath)) {
+        if (! file_exists($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } elseif ( ! is_writable($destPath)) {
+        } elseif (! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );
@@ -89,7 +90,7 @@ EOT
             foreach ($metadatas as $metadata) {
                 if ($metadata->customRepositoryClassName) {
                     $output->write(
-                        sprintf('Processing repository "<info>%s</info>"', $metadata->customRepositoryClassName) . PHP_EOL
+                        sprintf('Processing repository "<info>%s</info>"', $metadata->customRepositoryClassName).PHP_EOL
                     );
 
                     $generator->writeDocumentRepositoryClass($metadata->customRepositoryClassName, $destPath);
@@ -100,12 +101,12 @@ EOT
 
             if ($numRepositories) {
                 // Outputting information message
-                $output->write(PHP_EOL . sprintf('Repository classes generated to "<info>%s</INFO>"', $destPath) . PHP_EOL);
+                $output->write(PHP_EOL.sprintf('Repository classes generated to "<info>%s</INFO>"', $destPath).PHP_EOL);
             } else {
-                $output->write('No Repository classes were found to be processed.' . PHP_EOL);
+                $output->write('No Repository classes were found to be processed.'.PHP_EOL);
             }
         } else {
-            $output->write('No Metadata Classes to process.' . PHP_EOL);
+            $output->write('No Metadata Classes to process.'.PHP_EOL);
         }
     }
 }

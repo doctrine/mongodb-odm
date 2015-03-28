@@ -13,13 +13,13 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
             $this->markTestSkipped('This test requires the Symfony YAML component');
         }
 
-        return new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
+        return new YamlDriver(__DIR__.DIRECTORY_SEPARATOR.'yaml');
     }
 
     public function testAlternateRelationshipMappingSyntaxShouldSetDefaults()
     {
         $className = __NAMESPACE__.'\AbstractMappingDriverAlternateUser';
-        $mappingDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
+        $mappingDriver = new YamlDriver(__DIR__.DIRECTORY_SEPARATOR.'yaml');
 
         $class = new ClassMetadata($className);
         $mappingDriver->loadMetadataForClass($className, $class);
@@ -40,7 +40,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     public function testFieldLevelIndexSyntaxWithBooleanValues()
     {
         $className = __NAMESPACE__.'\AbstractMappingDriverAlternateUser';
-        $mappingDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
+        $mappingDriver = new YamlDriver(__DIR__.DIRECTORY_SEPARATOR.'yaml');
 
         $class = new ClassMetadata($className);
         $mappingDriver->loadMetadataForClass($className, $class);

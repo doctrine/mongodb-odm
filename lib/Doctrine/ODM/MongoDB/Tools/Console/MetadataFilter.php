@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,13 +17,13 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools\Console;
 
 /**
  * Used by CLI Tools to restrict entity-based commands to given patterns.
  *
  * @since       1.0
+ *
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan Wage <jonwage@gmail.com>
@@ -33,13 +34,15 @@ class MetadataFilter extends \FilterIterator implements \Countable
     /**
      * Filter Metadatas by one or more filter options.
      *
-     * @param array $metadatas
+     * @param array        $metadatas
      * @param array|string $filter
+     *
      * @return array
      */
     public static function filter(array $metadatas, $filter)
     {
         $metadatas = new MetadataFilter(new \ArrayIterator($metadatas), $filter);
+
         return iterator_to_array($metadatas);
     }
 
@@ -50,7 +53,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
 
     /**
      * @param \ArrayIterator $metadata
-     * @param array|string $filter
+     * @param array|string   $filter
      */
     public function __construct(\ArrayIterator $metadata, $filter)
     {
@@ -70,11 +73,12 @@ class MetadataFilter extends \FilterIterator implements \Countable
         $it = $this->getInnerIterator();
         $metadata = $it->current();
 
-        foreach ($this->_filter AS $filter) {
+        foreach ($this->_filter as $filter) {
             if (strpos($metadata->name, $filter) !== false) {
                 return true;
             }
         }
+
         return false;
     }
 

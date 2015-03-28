@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -30,13 +30,12 @@ class SchemaManager
     protected $dm;
 
     /**
-     *
      * @var ClassMetadataFactory
      */
     protected $metadataFactory;
 
     /**
-     * @param DocumentManager $dm
+     * @param DocumentManager      $dm
      * @param ClassMetadataFactory $cmf
      */
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
@@ -49,7 +48,7 @@ class SchemaManager
      * Ensure indexes are created for all documents that can be loaded with the
      * metadata factory.
      *
-     * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @param int $timeout Timeout (ms) for acknowledged index creation
      */
     public function ensureIndexes($timeout = null)
     {
@@ -67,7 +66,7 @@ class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      *
-     * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @param int $timeout Timeout (ms) for acknowledged index creation
      */
     public function updateIndexes($timeout = null)
     {
@@ -86,7 +85,8 @@ class SchemaManager
      * deleted.
      *
      * @param string $documentName
-     * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @param int    $timeout      Timeout (ms) for acknowledged index creation
+     *
      * @throws \InvalidArgumentException
      */
     public function updateDocumentIndexes($documentName, $timeout = null)
@@ -137,17 +137,20 @@ class SchemaManager
 
     /**
      * @param string $documentName
+     *
      * @return array
      */
     public function getDocumentIndexes($documentName)
     {
         $visited = array();
+
         return $this->doGetDocumentIndexes($documentName, $visited);
     }
 
     /**
      * @param string $documentName
-     * @param array $visited
+     * @param array  $visited
+     *
      * @return array
      */
     private function doGetDocumentIndexes($documentName, array &$visited)
@@ -181,7 +184,7 @@ class SchemaManager
                     }
                     foreach ($embeddedIndexes as $embeddedIndex) {
                         foreach ($embeddedIndex['keys'] as $key => $value) {
-                            $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
+                            $embeddedIndex['keys'][$fieldMapping['name'].'.'.$key] = $value;
                             unset($embeddedIndex['keys'][$key]);
                         }
                         $indexes[] = $embeddedIndex;
@@ -192,7 +195,7 @@ class SchemaManager
                     $newKeys = array();
                     foreach ($index['keys'] as $key => $v) {
                         if ($key == $fieldMapping['name']) {
-                            $key = $fieldMapping['simple'] ? $key : $key . '.$id';
+                            $key = $fieldMapping['simple'] ? $key : $key.'.$id';
                         }
                         $newKeys[$key] = $v;
                     }
@@ -200,11 +203,13 @@ class SchemaManager
                 }
             }
         }
+
         return $indexes;
     }
 
     /**
      * @param ClassMetadata $class
+     *
      * @return array
      */
     private function prepareIndexes(ClassMetadata $class)
@@ -216,7 +221,7 @@ class SchemaManager
         foreach ($indexes as $index) {
             $newIndex = array(
                 'keys' => array(),
-                'options' => $index['options']
+                'options' => $index['options'],
             );
             foreach ($index['keys'] as $key => $value) {
                 $key = $persister->prepareFieldName($key);
@@ -238,7 +243,8 @@ class SchemaManager
      * Ensure the given document's indexes are created.
      *
      * @param string $documentName
-     * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @param int    $timeout      Timeout (ms) for acknowledged index creation
+     *
      * @throws \InvalidArgumentException
      */
     public function ensureDocumentIndexes($documentName, $timeout = null)
@@ -253,7 +259,7 @@ class SchemaManager
                 $keys = $index['keys'];
                 $options = $index['options'];
 
-                if ( ! isset($options['safe']) && ! isset($options['w'])) {
+                if (! isset($options['safe']) && ! isset($options['w'])) {
                     if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
                         $options['safe'] = true;
                     } else {
@@ -263,12 +269,11 @@ class SchemaManager
 
                 if (isset($options['safe']) && ! isset($options['w']) &&
                     version_compare(phpversion('mongo'), '1.3.0', '>=')) {
-
                     $options['w'] = is_bool($options['safe']) ? (integer) $options['safe'] : $options['safe'];
                     unset($options['safe']);
                 }
 
-                if ( ! isset($options['timeout']) && isset($timeout)) {
+                if (! isset($options['timeout']) && isset($timeout)) {
                     $options['timeout'] = $timeout;
                 }
 
@@ -295,6 +300,7 @@ class SchemaManager
      * Delete the given document's indexes.
      *
      * @param string $documentName
+     *
      * @throws \InvalidArgumentException
      */
     public function deleteDocumentIndexes($documentName)
@@ -323,6 +329,7 @@ class SchemaManager
      * Create the document collection for a mapped class.
      *
      * @param string $documentName
+     *
      * @throws \InvalidArgumentException
      */
     public function createDocumentCollection($documentName)
@@ -334,8 +341,8 @@ class SchemaManager
         }
 
         if ($class->isFile()) {
-            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection() . '.files');
-            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection() . '.chunks');
+            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection().'.files');
+            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection().'.chunks');
 
             return;
         }
@@ -365,6 +372,7 @@ class SchemaManager
      * Drop the document collection for a mapped class.
      *
      * @param string $documentName
+     *
      * @throws \InvalidArgumentException
      */
     public function dropDocumentCollection($documentName)
@@ -395,6 +403,7 @@ class SchemaManager
      * Drop the document database for a mapped class.
      *
      * @param string $documentName
+     *
      * @throws \InvalidArgumentException
      */
     public function dropDocumentDatabase($documentName)
@@ -423,6 +432,7 @@ class SchemaManager
      * Create the document database for a mapped class.
      *
      * @param string $documentName
+     *
      * @throws \InvalidArgumentException
      */
     public function createDocumentDatabase($documentName)
@@ -431,7 +441,7 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
             throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
         }
-        $this->dm->getDocumentDatabase($documentName)->execute("function() { return true; }");
+        $this->dm->getDocumentDatabase($documentName)->execute('function() { return true; }');
     }
 
     /**
@@ -467,9 +477,8 @@ class SchemaManager
             return false;
         }
 
-        if ( ! empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
+        if (! empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
             ! empty($documentIndexOptions['unique']) && ! empty($documentIndexOptions['dropDups'])) {
-
             return false;
         }
 
@@ -480,7 +489,6 @@ class SchemaManager
 
             if (isset($mongoIndex[$option]) && isset($documentIndexOptions[$option]) &&
                 $mongoIndex[$option] !== $documentIndexOptions[$option]) {
-
                 return false;
             }
         }

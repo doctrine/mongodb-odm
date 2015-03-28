@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -23,11 +22,11 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertPostDocument($expectedDocument, $post);
 
         // fill documents with comments
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(__NAMESPACE__.'\GH597Post', $post->getId());
         $post->comments = new ArrayCollection(array(
             new GH597Comment('Comment 1'),
             new GH597Comment('Comment 2'),
-            new GH597Comment('Comment 3')
+            new GH597Comment('Comment 3'),
         ));
         $this->dm->persist($post);
         $this->dm->flush($post);
@@ -38,19 +37,19 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'comments' => array(
                 array('comment' => 'Comment 1'),
                 array('comment' => 'Comment 2'),
-                array('comment' => 'Comment 3')
-            )
+                array('comment' => 'Comment 3'),
+            ),
         );
         $this->assertPostDocument($expectedDocument, $post);
 
         // trigger update
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(__NAMESPACE__.'\GH597Post', $post->getId());
         $this->assertCount(3, $post->getComments());
         $post->comments = null;
         $this->dm->flush($post);
         $this->dm->clear();
 
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(__NAMESPACE__.'\GH597Post', $post->getId());
         $this->assertCount(0, $post->getComments());
 
         // make sure embedded documents got unset
@@ -70,7 +69,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertPostDocument($expectedDocument, $post);
 
         // associate post with many GH597ReferenceMany documents
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(__NAMESPACE__.'\GH597Post', $post->getId());
 
         $referenceMany1 = new GH597ReferenceMany('one');
         $this->dm->persist($referenceMany1);
@@ -86,19 +85,19 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             '_id' => new \MongoId($post->getId()),
             'referenceMany' => array(
                 new \MongoId($referenceMany1->getId()),
-                new \MongoId($referenceMany2->getId())
-            )
+                new \MongoId($referenceMany2->getId()),
+            ),
         );
         $this->assertPostDocument($expectedDocument, $post);
 
         // trigger update
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(__NAMESPACE__.'\GH597Post', $post->getId());
         $this->assertCount(2, $post->getReferenceMany());
         $post->referenceMany = null;
         $this->dm->flush($post);
         $this->dm->clear();
 
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(__NAMESPACE__.'\GH597Post', $post->getId());
         $this->assertCount(0, $post->getReferenceMany());
 
         // make sure reference-many documents got unset
@@ -109,12 +108,12 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     /**
      * Asserts that raw document matches expected document.
      *
-     * @param array $expected
+     * @param array     $expected
      * @param GH597Post $post
      */
     private function assertPostDocument(array $expected, GH597Post $post)
     {
-        $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH597Post');
+        $collection = $this->dm->getDocumentCollection(__NAMESPACE__.'\GH597Post');
         $document = $collection->findOne(array('_id' => new \MongoId($post->getId())));
         $this->assertEquals($expected, $document);
     }
@@ -165,7 +164,6 @@ class GH597Comment
         $this->comment = $comment;
     }
 }
-
 
 /** @ODM\Document */
 class GH597ReferenceMany

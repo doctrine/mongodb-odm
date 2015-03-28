@@ -62,7 +62,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = new LockInt();
 
         for ($i = 0; $i < 5; $i++) {
-            $test->title = 'test' . $i;
+            $test->title = 'test'.$i;
             $this->dm->persist($test);
             $this->dm->flush();
 
@@ -76,7 +76,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = new LockTimestamp();
         $test->title = 'Testing';
 
-        $this->assertNull($test->version, "Pre-Condition");
+        $this->assertNull($test->version, 'Pre-Condition');
 
         $this->dm->persist($test);
         $this->dm->flush();
@@ -101,7 +101,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test->title = 'Testing';
         $test->id = $id;
 
-        $this->assertNull($test->version, "Pre-Condition");
+        $this->assertNull($test->version, 'Pre-Condition');
 
         $this->dm->persist($test);
         $this->dm->flush();
@@ -139,7 +139,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testLockVersionedDocument()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -150,7 +150,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testLockVersionedDocumentMissmatchThrowsException()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -185,7 +185,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testLockPessimisticWrite()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -199,7 +199,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testLockPessimisticRead()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -213,7 +213,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUnlock()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -234,7 +234,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPessimisticReadLockThrowsExceptionOnRemove()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -251,7 +251,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPessimisticReadLockThrowsExceptionOnUpdate()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -268,7 +268,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPessimisticWriteLockThrowExceptionOnRemove()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -285,7 +285,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPessimisticWriteLockThrowExceptionOnUpdate()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -302,7 +302,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPessimisticWriteLockThrowExceptionOnRead()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -319,7 +319,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPessimisticReadLockFunctional()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();
@@ -338,7 +338,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPessimisticWriteLockFunctional()
     {
         $article = new LockInt();
-        $article->title = "my article";
+        $article->title = 'my article';
 
         $this->dm->persist($article);
         $this->dm->flush();

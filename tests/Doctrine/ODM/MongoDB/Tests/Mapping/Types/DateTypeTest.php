@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Types;
 
-use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 class DateTypeTest extends \PHPUnit_Framework_TestCase
@@ -21,7 +20,7 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
         $mongoDate = new \MongoDate(100000000, 123000);
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTime), 'DateTime objects are converted to MongoDate objects');
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($timestamp), 'Numeric timestamps are converted to MongoDate objects');
-        $this->assertEquals($mongoDate, $type->convertToDatabaseValue('' . $timestamp), 'String dates are converted to MongoDate objects');
+        $this->assertEquals($mongoDate, $type->convertToDatabaseValue(''.$timestamp), 'String dates are converted to MongoDate objects');
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are converted to MongoDate objects');
         $this->assertEquals(null, $type->convertToDatabaseValue(null), 'null are converted to null');
     }
@@ -31,7 +30,7 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
         $type = Type::getType(Type::DATE);
 
         $date = new \DateTime('1900-01-01 00:00:00.123', new \DateTimeZone('UTC'));
-        $timestamp = "-2208988800.123";
+        $timestamp = '-2208988800.123';
         $this->assertEquals($type->convertToDatabaseValue($timestamp), $type->convertToDatabaseValue($date));
     }
 
@@ -83,7 +82,7 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
         $type = Type::getType(Type::DATE);
         $return = null;
 
-        call_user_func(function($value) use ($type, &$return) {
+        call_user_func(function ($value) use ($type, &$return) {
             eval($type->closureToPHP());
         }, $input);
 
@@ -95,7 +94,7 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
     {
         $yesterday = strtotime('yesterday');
         $mongoDate = new \MongoDate($yesterday);
-        $dateTime = new \DateTime('@' . $yesterday);
+        $dateTime = new \DateTime('@'.$yesterday);
 
         return array(
             array($dateTime, $dateTime),
@@ -115,7 +114,7 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
             $type = Type::getType(Type::DATE);
             $type->convertToDatabaseValue('1900-01-01');
         } else {
-            $this->markTestSkipped("Platform is not 32-bit");
+            $this->markTestSkipped('Platform is not 32-bit');
         }
     }
 
@@ -128,7 +127,7 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('MongoDate', $return);
             $this->assertEquals(new \MongoDate(strtotime('1900-01-01')), $return);
         } else {
-            $this->markTestSkipped("Platform is not 64-bit");
+            $this->markTestSkipped('Platform is not 64-bit');
         }
     }
 

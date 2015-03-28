@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Query\Filter;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -33,12 +33,14 @@ abstract class BsonFilter
 {
     /**
      * The entity manager.
+     *
      * @var DocumentManager
      */
     protected $dm;
 
     /**
      * Parameters for the filter.
+     *
      * @var array
      */
     protected $parameters = array();
@@ -56,14 +58,15 @@ abstract class BsonFilter
     /**
      * Sets a parameter that can be used by the filter.
      *
-     * @param string $name Name of the parameter.
-     * @param mixed $value Value of the parameter.
+     * @param string $name  Name of the parameter.
+     * @param mixed  $value Value of the parameter.
      *
      * @return BsonFilter The current Bson filter.
      */
     final public function setParameter($name, $value)
     {
         $this->parameters[$name] = $value;
+
         return $this;
     }
 
@@ -80,9 +83,10 @@ abstract class BsonFilter
      */
     final public function getParameter($name)
     {
-        if ( ! isset($this->parameters[$name])) {
-            throw new \InvalidArgumentException("Filter parameter '" . $name . "' is not set.");
+        if (! isset($this->parameters[$name])) {
+            throw new \InvalidArgumentException("Filter parameter '".$name."' is not set.");
         }
+
         return $this->parameters[$name];
     }
 
@@ -92,6 +96,7 @@ abstract class BsonFilter
      * If there is no criteria for the class, an empty array should be returned.
      *
      * @param ClassMetadata $class
+     *
      * @return array
      */
     abstract public function addFilterCriteria(ClassMetadata $class);

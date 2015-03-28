@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,13 +17,13 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Date type.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -30,10 +31,12 @@ class DateType extends Type
 {
     /**
      * Converts a value to a DateTime.
-     * Supports microseconds
+     * Supports microseconds.
      *
      * @throws InvalidArgumentException if $value is invalid
-     * @param  mixed $value \DateTime|\MongoDate|int|float
+     *
+     * @param mixed $value \DateTime|\MongoDate|int|float
+     *
      * @return \DateTime
      */
     public static function getDateTime($value)
@@ -75,7 +78,7 @@ class DateType extends Type
         $datetime = new \DateTime();
         $datetime->setTimestamp($seconds);
         if ($microseconds > 0) {
-            $datetime = \DateTime::createFromFormat('Y-m-d H:i:s.u', $datetime->format('Y-m-d H:i:s') . '.' . $microseconds);
+            $datetime = \DateTime::createFromFormat('Y-m-d H:i:s.u', $datetime->format('Y-m-d H:i:s').'.'.$microseconds);
         }
 
         return $datetime;
@@ -95,7 +98,7 @@ class DateType extends Type
     public function convertToPHPValue($value)
     {
         if ($value === null) {
-            return null;
+            return;
         }
 
         return self::getDateTime($value);

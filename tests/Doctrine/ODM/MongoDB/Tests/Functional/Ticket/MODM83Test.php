@@ -16,6 +16,7 @@ class MODM83Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             Events::postUpdate,
         );
         $evm->addEventListener($events, $this->listener);
+
         return $this->dm;
     }
 
@@ -42,7 +43,7 @@ class MODM83Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $called = array(
             Events::preUpdate  => array(__NAMESPACE__.'\MODM83OtherDocument'),
-            Events::postUpdate => array(__NAMESPACE__.'\MODM83OtherDocument')
+            Events::postUpdate => array(__NAMESPACE__.'\MODM83OtherDocument'),
         );
         $this->assertEquals($called, $this->listener->called);
     }

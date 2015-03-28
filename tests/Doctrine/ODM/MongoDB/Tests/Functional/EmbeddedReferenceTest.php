@@ -2,9 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class EmbeddedReferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -46,7 +45,7 @@ class EmbeddedReferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $offer = $this->dm->getRepository(__NAMESPACE__ . '\Offer')->findOneByName('My Offer');
+        $offer = $this->dm->getRepository(__NAMESPACE__.'\Offer')->findOneByName('My Offer');
 
         // Should be: 1 Link, 5 referenced documents
         // Actual Result: 1 link, 10 referenced documents

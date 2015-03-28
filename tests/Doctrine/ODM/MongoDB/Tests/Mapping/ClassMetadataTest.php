@@ -4,7 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-use Doctrine\ODM\MongoDB\Events;
 
 class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -23,9 +22,9 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Customize state
         $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION);
-        $cm->setSubclasses(array("One", "Two", "Three"));
-        $cm->setParentClasses(array("UserParent"));
-        $cm->setCustomRepositoryClass("UserRepository");
+        $cm->setSubclasses(array('One', 'Two', 'Three'));
+        $cm->setParentClasses(array('UserParent'));
+        $cm->setCustomRepositoryClass('UserRepository');
         $cm->setDiscriminatorField('disc');
         $cm->mapOneEmbedded(array('fieldName' => 'phonenumbers', 'targetDocument' => 'Bar'));
         $cm->setFile('customFileProperty');
@@ -83,7 +82,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Implicit Not Nullable
         $cm->mapField(array('fieldName' => 'name', 'type' => 'string', 'length' => 50));
-        $this->assertFalse($cm->isNullable('name'), "By default a field should not be nullable.");
+        $this->assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
     }
 
     /**
@@ -91,7 +90,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testMapAssocationInGlobalNamespace()
     {
-        require_once __DIR__."/Documents/GlobalNamespaceDocument.php";
+        require_once __DIR__.'/Documents/GlobalNamespaceDocument.php';
 
         $cm = new ClassMetadata('DoctrineGlobal_Article');
         $cm->mapManyEmbedded(array(
@@ -99,7 +98,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'targetDocument' => 'DoctrineGlobal_User',
         ));
 
-        $this->assertEquals("DoctrineGlobal_User", $cm->fieldMappings['author']['targetDocument']);
+        $this->assertEquals('DoctrineGlobal_User', $cm->fieldMappings['author']['targetDocument']);
     }
 
     public function testMapManyToManyJoinTableDefaults()
@@ -108,7 +107,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->mapManyEmbedded(
             array(
             'fieldName' => 'groups',
-            'targetDocument' => 'CmsGroup'
+            'targetDocument' => 'CmsGroup',
         ));
 
         $assoc = $cm->fieldMappings['groups'];
@@ -120,13 +119,13 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testSetDiscriminatorMapInGlobalNamespace()
     {
-        require_once __DIR__."/Documents/GlobalNamespaceDocument.php";
+        require_once __DIR__.'/Documents/GlobalNamespaceDocument.php';
 
         $cm = new ClassMetadata('DoctrineGlobal_User');
         $cm->setDiscriminatorMap(array('descr' => 'DoctrineGlobal_Article', 'foo' => 'DoctrineGlobal_User'));
 
-        $this->assertEquals("DoctrineGlobal_Article", $cm->discriminatorMap['descr']);
-        $this->assertEquals("DoctrineGlobal_User", $cm->discriminatorMap['foo']);
+        $this->assertEquals('DoctrineGlobal_Article', $cm->discriminatorMap['descr']);
+        $this->assertEquals('DoctrineGlobal_User', $cm->discriminatorMap['foo']);
     }
 
     /**
@@ -134,12 +133,12 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testSetSubClassesInGlobalNamespace()
     {
-        require_once __DIR__."/Documents/GlobalNamespaceDocument.php";
+        require_once __DIR__.'/Documents/GlobalNamespaceDocument.php';
 
         $cm = new ClassMetadata('DoctrineGlobal_User');
         $cm->setSubclasses(array('DoctrineGlobal_Article'));
 
-        $this->assertEquals("DoctrineGlobal_Article", $cm->subClasses[0]);
+        $this->assertEquals('DoctrineGlobal_Article', $cm->subClasses[0]);
     }
 
     public function testDuplicateFieldMapping()

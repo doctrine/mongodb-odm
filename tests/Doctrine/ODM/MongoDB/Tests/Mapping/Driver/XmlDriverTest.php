@@ -2,8 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
@@ -12,7 +12,7 @@ class XmlDriverTest extends AbstractDriverTest
 {
     public function setUp()
     {
-        $this->driver = new XmlDriver(__DIR__ . '/fixtures/xml');
+        $this->driver = new XmlDriver(__DIR__.'/fixtures/xml');
     }
 
     public function testDriverShouldReturnOptionsForCustomIdGenerator()
@@ -24,7 +24,7 @@ class XmlDriverTest extends AbstractDriverTest
             'strategy' => 'custom',
             'options' => array(
                 'class' => 'TestDocuments\CustomIdGenerator',
-                'someOption' => 'some-option'
+                'someOption' => 'some-option',
             ),
             'id' => true,
             'name' => '_id',
@@ -36,7 +36,7 @@ class XmlDriverTest extends AbstractDriverTest
             'isCascadeRemove' => false,
             'isInverseSide' => false,
             'isOwningSide' => true,
-            'nullable' => false
+            'nullable' => false,
         ), $classMetadata->fieldMappings['id']);
     }
 
@@ -73,4 +73,3 @@ class UserNonStringOptions
     protected $profile;
     protected $groups;
 }
-

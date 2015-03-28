@@ -18,16 +18,16 @@ class HydratorTest extends BaseTest
             'referenceOne' => array('$id' => '1'),
             'referenceMany' => array(
                 array(
-                    '$id' => '1'
+                    '$id' => '1',
                 ),
                 array(
-                    '$id' => '2'
-                )
+                    '$id' => '2',
+                ),
             ),
             'embedOne' => array('name' => 'jon'),
             'embedMany' => array(
-                array('name' => 'jon')
-            )
+                array('name' => 'jon'),
+            ),
         ));
 
         $this->assertEquals(1, $user->id);
@@ -51,7 +51,7 @@ class HydrationClosureUser
 
     /** @ODM\String */
     public $name;
-    
+
     /** @ODM\Date */
     public $birthdate;
 

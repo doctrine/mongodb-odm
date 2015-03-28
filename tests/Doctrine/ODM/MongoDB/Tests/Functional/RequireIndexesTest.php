@@ -2,8 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class RequireIndexesTest extends BaseTest
@@ -42,7 +42,7 @@ class RequireIndexesTest extends BaseTest
         $query = $qb->getQuery();
         $this->assertEquals(array(
             'flashes.startDate',
-            'flashes.endDate'
+            'flashes.endDate',
         ), $query->getFieldsInQuery());
     }
 
@@ -61,7 +61,7 @@ class RequireIndexesTest extends BaseTest
             'flashes.startDate',
             'flashes.endDate',
             'flashes.something',
-            'flashes.id'
+            'flashes.id',
         ), $query->getFieldsInQuery());
     }
 
@@ -90,7 +90,7 @@ class RequireIndexesTest extends BaseTest
             'field2',
             'field3.embedded',
             'field4.embedded',
-            'field5'
+            'field5',
         ), $query->getFieldsInQuery());
     }
 
@@ -217,7 +217,6 @@ class RequireIndexesTest extends BaseTest
         $query = $qb->getQuery();
         $query->execute();
     }
-
 
     public function testRequireIndexesFalse()
     {

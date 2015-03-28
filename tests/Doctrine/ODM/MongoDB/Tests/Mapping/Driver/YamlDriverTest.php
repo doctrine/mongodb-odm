@@ -15,6 +15,6 @@ class YamlDriverTest extends AbstractDriverTest
             $this->markTestSkipped('This test requires the Symfony YAML component');
         }
 
-        $this->driver = new YamlDriver(__DIR__ . '/fixtures/yaml');
+        $this->driver = new YamlDriver(__DIR__.'/fixtures/yaml');
     }
 }

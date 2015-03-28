@@ -6,7 +6,7 @@ if (!file_exists($file = __DIR__.'/../vendor/autoload.php')) {
 
 $loader = require $file;
 
-$loader->add('Doctrine\ODM\MongoDB\Tests', __DIR__ . '/../tests');
+$loader->add('Doctrine\ODM\MongoDB\Tests', __DIR__.'/../tests');
 $loader->add('Documents', __DIR__);
 $loader->add('Stubs', __DIR__);
 

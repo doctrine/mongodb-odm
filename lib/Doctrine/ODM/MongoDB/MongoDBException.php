@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,13 +17,13 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB;
 
 /**
- * Class for all exceptions related to the Doctrine MongoDB ODM
+ * Class for all exceptions related to the Doctrine MongoDB ODM.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class MongoDBException extends \Exception
@@ -64,7 +65,7 @@ class MongoDBException extends \Exception
 
     public static function cannotPersistMappedSuperclass($className)
     {
-        return new self('Cannot persist an embedded document or mapped superclass ' . $className);
+        return new self('Cannot persist an embedded document or mapped superclass '.$className);
     }
 
     public static function queryNotIndexed($className, $unindexedFields)

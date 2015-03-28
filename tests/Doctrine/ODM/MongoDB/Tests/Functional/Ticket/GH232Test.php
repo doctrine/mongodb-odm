@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * @author Vadim Tyukov <brainreflex@gmail.com>
+ *
  * @since 6/26/12
  */
 class GH232Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -31,7 +32,7 @@ class GH232Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $product = $this->dm->getRepository(__NAMESPACE__ . '\Product')->findOneByName('Product');
+        $product = $this->dm->getRepository(__NAMESPACE__.'\Product')->findOneByName('Product');
 
         $this->assertEquals(1, $product->subproducts->count());
         $this->assertEquals(1, $product->subproducts[0]->prices->count());

@@ -14,14 +14,14 @@ class GH593Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->getFilterCollection()->enable('testFilter');
         $filter = $this->dm->getFilterCollection()->getFilter('testFilter');
-        $filter->setParameter('class', __NAMESPACE__ . '\GH593User');
+        $filter->setParameter('class', __NAMESPACE__.'\GH593User');
         $filter->setParameter('field', 'deleted');
         $filter->setParameter('value', false);
     }
 
     public function testReferenceManyOwningSidePreparesFilterCriteria()
     {
-        $class = __NAMESPACE__ . '\GH593User';
+        $class = __NAMESPACE__.'\GH593User';
 
         $user1 = new GH593User();
         $user2 = new GH593User();
@@ -68,7 +68,7 @@ class GH593Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testReferenceManyInverseSidePreparesFilterCriteria()
     {
-        $class = __NAMESPACE__ . '\GH593User';
+        $class = __NAMESPACE__.'\GH593User';
 
         $user1 = new GH593User();
         $user2 = new GH593User();

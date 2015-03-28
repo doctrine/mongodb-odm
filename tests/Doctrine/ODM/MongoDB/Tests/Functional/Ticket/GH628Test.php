@@ -8,7 +8,7 @@ class GH628Test extends BaseTest
 {
     public function testQueryBuilderShouldOnlyPrepareFirstPartOfRawFields()
     {
-        $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH628Document')
+        $query = $this->dm->createQueryBuilder(__NAMESPACE__.'\GH628Document')
             ->field('foo.bar.baz')->equals(1)
             ->getQuery()
             ->getQuery();

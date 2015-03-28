@@ -67,12 +67,30 @@ class GH921User
     /** @ODM\ReferenceMany(targetDocument="GH921Post") */
     private $posts;
 
-    public function __construct() { $this->posts = new ArrayCollection(); }
-    public function getId() { return $this->id; }
-    public function getName() { return $this->name; }
-    public function setName($name) { $this->name = $name; }
-    public function addPost(GH921Post $post) { $this->posts[] = $post; }
-    public function getPosts() { return $this->posts; }
+    public function __construct()
+    {
+        $this->posts = new ArrayCollection();
+    }
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function getName()
+    {
+        return $this->name;
+    }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    public function addPost(GH921Post $post)
+    {
+        $this->posts[] = $post;
+    }
+    public function getPosts()
+    {
+        return $this->posts;
+    }
 }
 
 /** @ODM\Document */
@@ -84,7 +102,16 @@ class GH921Post
     /** @ODM\String */
     private $name;
 
-    public function getId() { return $this->id; }
-    public function getName() { return $this->name; }
-    public function setName($name) { $this->name = $name; }
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function getName()
+    {
+        return $this->name;
+    }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 }

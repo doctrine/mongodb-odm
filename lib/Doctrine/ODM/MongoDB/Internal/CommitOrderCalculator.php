@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Internal;
 
 /**
@@ -24,6 +24,7 @@ namespace Doctrine\ODM\MongoDB\Internal;
  * correct order in which changes to documents need to be persisted.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -32,26 +33,24 @@ class CommitOrderCalculator
     const NOT_VISITED = 1;
     const IN_PROGRESS = 2;
     const VISITED = 3;
-    
+
     private $nodeStates = array();
     private $classes = array(); // The nodes to sort
     private $relatedClasses = array();
     private $sorted = array();
-    
+
     /**
      * Clears the current graph.
-     *
-     * @return void
      */
     public function clear()
     {
         $this->classes =
         $this->relatedClasses = array();
     }
-    
+
     /**
      * Gets a valid commit order for all current nodes.
-     * 
+     *
      * Uses a depth-first search (DFS) to traverse the graph.
      * The desired topological sorting is the reverse postorder of these searches.
      *
@@ -68,12 +67,12 @@ class CommitOrderCalculator
         if ($nodeCount === 1) {
             return array_values($this->classes);
         }
-        
+
         // Init
         foreach ($this->classes as $node) {
             $this->nodeStates[$node->name] = self::NOT_VISITED;
         }
-        
+
         // Go
         foreach ($this->classes as $node) {
             if ($this->nodeStates[$node->name] == self::NOT_VISITED) {
@@ -103,15 +102,15 @@ class CommitOrderCalculator
         $this->nodeStates[$node->name] = self::VISITED;
         $this->sorted[] = $node;
     }
-    
+
     public function addDependency($fromClass, $toClass)
     {
         $this->relatedClasses[$fromClass->name][] = $toClass;
     }
-    
+
     public function hasDependency($fromClass, $toClass)
     {
-        if ( ! isset($this->relatedClasses[$fromClass->name])) {
+        if (! isset($this->relatedClasses[$fromClass->name])) {
             return false;
         }
 
@@ -122,7 +121,7 @@ class CommitOrderCalculator
     {
         return isset($this->classes[$className]);
     }
-    
+
     public function addClass($class)
     {
         $this->classes[$class->name] = $class;

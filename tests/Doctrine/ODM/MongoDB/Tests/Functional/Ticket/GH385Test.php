@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-
 class GH385Test extends BaseTest
 {
     public function testQueryBuilderShouldPrepareUnmappedFields()

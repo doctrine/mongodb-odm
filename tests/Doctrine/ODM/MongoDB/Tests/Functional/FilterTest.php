@@ -2,9 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\User;
 use Documents\Group;
 use Documents\Profile;
+use Documents\User;
 
 class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -91,14 +91,15 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $usernames = array();
 
-        if(isset($tim)) {
+        if (isset($tim)) {
             $usernames[] = $tim->getUsername();
         }
-        if(isset($john)) {
+        if (isset($john)) {
             $usernames[] = $john->getUsername();
         }
 
         sort($usernames);
+
         return $usernames;
     }
 
@@ -124,6 +125,7 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $usernames[] = $user->getUsername();
         }
         sort($usernames);
+
         return $usernames;
     }
 
@@ -169,6 +171,7 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $usernames[] = $user->getUsername();
         }
         sort($usernames);
+
         return $usernames;
     }
 
@@ -194,10 +197,11 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             try {
                 $groupnames[] = $group->getName();
             } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
-               //Proxy object filtered
+                //Proxy object filtered
             }
         }
         sort($groupnames);
+
         return $groupnames;
     }
 
@@ -223,7 +227,7 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             return $profile->getFirstname();
         } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
             //Proxy object filtered
-            return null;
+            return;
         }
     }
 
@@ -260,6 +264,7 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         }
 
         sort($usernames);
+
         return $usernames;
     }
 
@@ -287,6 +292,7 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $usernames[] = $user->getUsername();
         }
         sort($usernames);
+
         return $usernames;
     }
 

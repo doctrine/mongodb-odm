@@ -3,11 +3,10 @@
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-
-use Documents\Ecommerce\Currency;
-use Documents\Ecommerce\ConfigurableProduct;
 use Documents\CmsArticle;
 use Documents\CmsComment;
+use Documents\Ecommerce\ConfigurableProduct;
+use Documents\Ecommerce\Currency;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
 
@@ -39,7 +38,7 @@ class PersistenceBuilderTest extends BaseTest
         $this->uow->computeChangeSets();
 
         /**
-         * @var \Doctrine\ODM\MongoDB\Query\Builder $qb
+         * @var \Doctrine\ODM\MongoDB\Query\Builder
          */
         $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
         $qb->update()
@@ -48,8 +47,8 @@ class PersistenceBuilderTest extends BaseTest
             ->field('id')->equals($id);
 
         /**
-         * @var \Doctrine\ODM\MongoDB\Query\Query $query
-         * @var \Doctrine\ODM\MongoDB\Cursor $results
+         * @var \Doctrine\ODM\MongoDB\Query\Query
+         * @var \Doctrine\ODM\MongoDB\Cursor
          */
         $query = $qb->getQuery();
         $results = $query->execute();
@@ -67,7 +66,7 @@ class PersistenceBuilderTest extends BaseTest
         $ids = array(
             '4f28aa84acee413889000001',
             '4f28aa84acee41388900002a',
-            '4f28aa84acee41388900002b'
+            '4f28aa84acee41388900002b',
         );
 
         $sameCollection1->id = $ids[0];
@@ -91,15 +90,15 @@ class PersistenceBuilderTest extends BaseTest
         $this->uow->computeChangeSets();
 
         /**
-         * @var \Doctrine\ODM\MongoDB\Query\Builder $qb
+         * @var \Doctrine\ODM\MongoDB\Query\Builder
          */
         $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection2');
         $qb
             ->field('id')->in($ids)
             ->select('id')->hydrate(false);
         /**
-         * @var \Doctrine\ODM\MongoDB\Query\Query $query
-         * @var \Doctrine\ODM\MongoDB\Cursor $results
+         * @var \Doctrine\ODM\MongoDB\Query\Query
+         * @var \Doctrine\ODM\MongoDB\Cursor
          */
         $query = $qb->getQuery();
         $debug = $query->debug('query');
@@ -111,7 +110,6 @@ class PersistenceBuilderTest extends BaseTest
         $mongoId1 = $targetClass->getDatabaseIdentifierValue($ids[1]);
 
         $this->assertEquals($mongoId1, $debug['_id']['$in'][1]);
-
 
         $this->assertEquals(2, $results->count(true));
     }
@@ -149,8 +147,8 @@ class PersistenceBuilderTest extends BaseTest
             'article' => array(
                 '$db' => DOCTRINE_MONGODB_DATABASE,
                 '$id' => new \MongoId($article->id),
-                '$ref' => 'CmsArticle'
-            )
+                '$ref' => 'CmsArticle',
+            ),
         );
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
@@ -174,8 +172,8 @@ class PersistenceBuilderTest extends BaseTest
             'article' => array(
                 '$db' => DOCTRINE_MONGODB_DATABASE,
                 '$id' => new \MongoId($article->id),
-                '$ref' => 'CmsArticle'
-            )
+                '$ref' => 'CmsArticle',
+            ),
         );
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
@@ -204,10 +202,10 @@ class PersistenceBuilderTest extends BaseTest
                 'article' => array(
                     '$db' => DOCTRINE_MONGODB_DATABASE,
                     '$id' => new \MongoId($article->id),
-                    '$ref' => 'CmsArticle'
+                    '$ref' => 'CmsArticle',
                 ),
                 '_id' => new \MongoId($comment->id),
-            )
+            ),
         );
         $this->assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
     }
@@ -224,7 +222,7 @@ class PersistenceBuilderTest extends BaseTest
 
     /**
      * Provides data for @see PersistenceBuilderTest::testPrepareInsertData()
-     * Returns arrays of array(document => expected data)
+     * Returns arrays of array(document => expected data).
      *
      * @return array
      */
@@ -245,7 +243,7 @@ class PersistenceBuilderTest extends BaseTest
             }
             $this->assertEquals($expectedData[$key], $value);
         }
-        if ( ! isset($preparedData['_id'])) {
+        if (! isset($preparedData['_id'])) {
             $this->fail('insert data should always contain id');
         }
         unset($preparedData['_id']);
@@ -272,14 +270,14 @@ class PersistenceBuilderTest extends BaseTest
         $commentId = (string) $comment->id;
 
         /**
-         * @var \Doctrine\ODM\MongoDB\Query\Builder $qb
+         * @var \Doctrine\ODM\MongoDB\Query\Builder
          */
         $qb = $this->dm->createQueryBuilder('Documents\CmsComment');
         $qb
             ->field('article.id')->in(array($articleId));
         /**
-         * @var \Doctrine\ODM\MongoDB\Query\Query $query
-         * @var \Doctrine\ODM\MongoDB\Cursor $results
+         * @var \Doctrine\ODM\MongoDB\Query\Query
+         * @var \Doctrine\ODM\MongoDB\Cursor
          */
         $query = $qb->getQuery();
         $results = $query->execute();

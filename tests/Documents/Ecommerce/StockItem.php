@@ -34,7 +34,7 @@ class StockItem
         return $this->id;
     }
 
-    public function  __construct($name = null, $cost = null, $inventory = null)
+    public function __construct($name = null, $cost = null, $inventory = null)
     {
         if (null !== $name) {
             $this->setName($name);
@@ -50,6 +50,7 @@ class StockItem
     public function setName($name)
     {
         $this->name = (string) $name;
+
         return $this;
     }
 
@@ -71,6 +72,7 @@ class StockItem
     public function setInventory($inventory)
     {
         $this->inventory = (int) $inventory;
+
         return $this;
     }
 

@@ -69,8 +69,8 @@ class GH852Test extends BaseTest
         $binDataType = defined('MongoBinData::GENERIC') ? \MongoBinData::GENERIC : 0;
 
         return array(
-            array(function($id) { return array('foo' => $id); }),
-            array(function($id) use ($binDataType) { return new \MongoBinData($id, $binDataType); }),
+            array(function ($id) { return array('foo' => $id); }),
+            array(function ($id) use ($binDataType) { return new \MongoBinData($id, $binDataType); }),
         );
     }
 }

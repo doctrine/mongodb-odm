@@ -7,7 +7,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-
     public function testTest()
     {
         $b1 = new MODM52B('first');
@@ -24,9 +23,9 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(2, count($b));
 
         $this->assertEquals(array(
-            $b1->getId(), $b2->getId()
+            $b1->getId(), $b2->getId(),
             ), array(
-            $b[0]->getId(), $b[1]->getId()
+            $b[0]->getId(), $b[1]->getId(),
         ));
     }
 
@@ -48,12 +47,11 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(2, count($b));
 
         $this->assertEquals(array(
-            $b1->getId(), $b2->getId()
+            $b1->getId(), $b2->getId(),
             ), array(
-            $b[0]->getId(), $b[1]->getId()
+            $b[0]->getId(), $b[1]->getId(),
         ));
     }
-
 }
 
 /** @ODM\Document */
@@ -65,12 +63,12 @@ class MODM52A
     /** @ODM\ReferenceMany(targetDocument="MODM52B", cascade="all") */
     protected $b;
 
-    function __construct($b)
+    public function __construct($b)
     {
         $this->b = new ArrayCollection($b);
     }
 
-    function getB()
+    public function getB()
     {
         return $this->b;
     }
@@ -79,14 +77,13 @@ class MODM52A
 /** @ODM\Document */
 class MODM52B
 {
-
     /** @ODM\Id */
     protected $id;
 
     /** @ODM\String */
     protected $value;
 
-    function __construct($v)
+    public function __construct($v)
     {
         $this->value = $v;
     }
@@ -95,5 +92,4 @@ class MODM52B
     {
         return $this->id;
     }
-
 }

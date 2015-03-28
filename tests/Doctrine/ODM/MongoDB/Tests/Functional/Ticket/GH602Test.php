@@ -10,8 +10,8 @@ class GH602Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testReferenceManyOwningSidePreparesFilterCriteriaForDifferentClass()
     {
-        $thingClass = __NAMESPACE__ . '\GH602Thing';
-        $userClass = __NAMESPACE__ . '\GH602User';
+        $thingClass = __NAMESPACE__.'\GH602Thing';
+        $userClass = __NAMESPACE__.'\GH602User';
         $this->enableDeletedFilter($thingClass);
 
         $user1 = new GH602User();
@@ -59,8 +59,8 @@ class GH602Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testReferenceManyInverseSidePreparesFilterCriteriaForDifferentClass()
     {
-        $thingClass = __NAMESPACE__ . '\GH602Thing';
-        $userClass = __NAMESPACE__ . '\GH602User';
+        $thingClass = __NAMESPACE__.'\GH602Thing';
+        $userClass = __NAMESPACE__.'\GH602User';
         $this->enableDeletedFilter($userClass);
 
         $user1 = new GH602User();

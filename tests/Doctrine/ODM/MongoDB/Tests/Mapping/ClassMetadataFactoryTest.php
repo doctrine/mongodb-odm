@@ -43,9 +43,9 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testHasGetMetadata_NamespaceSeperatorIsNotNormalized()
     {
-        require_once __DIR__."/Documents/GlobalNamespaceDocument.php";
+        require_once __DIR__.'/Documents/GlobalNamespaceDocument.php';
 
-        $driver = AnnotationDriver::create(__DIR__ . '/Documents');
+        $driver = AnnotationDriver::create(__DIR__.'/Documents');
 
         $dm = $this->getMockDocumentManager($driver);
 
@@ -53,8 +53,8 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cmf->setConfiguration($dm->getConfiguration());
         $cmf->setDocumentManager($dm);
 
-        $m1 = $cmf->getMetadataFor("DoctrineGlobal_Article");
-        $h1 = $cmf->hasMetadataFor("DoctrineGlobal_Article");
+        $m1 = $cmf->getMetadataFor('DoctrineGlobal_Article');
+        $h1 = $cmf->hasMetadataFor('DoctrineGlobal_Article');
         $h2 = $cmf->hasMetadataFor("\DoctrineGlobal_Article");
         $m2 = $cmf->getMetadataFor("\DoctrineGlobal_Article");
 
@@ -90,9 +90,10 @@ class ClassMetadataFactoryTestSubject extends \Doctrine\ODM\MongoDB\Mapping\Clas
     protected function _newClassMetadataInstance($className)
     {
         $this->_requestedClasses[] = $className;
-        if ( ! isset($this->_mockMetadata[$className])) {
+        if (! isset($this->_mockMetadata[$className])) {
             throw new InvalidArgumentException("No mock metadata found for class $className.");
         }
+
         return $this->_mockMetadata[$className];
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Proxy;
 
 use Doctrine\Common\Proxy\Proxy as BaseProxy;
@@ -25,8 +25,11 @@ use Doctrine\Common\Proxy\Proxy as BaseProxy;
  * Document Proxy interface.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
-interface Proxy extends BaseProxy {}
+interface Proxy extends BaseProxy
+{
+}

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,11 +17,9 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Instantiator\Instantiator;
-use Doctrine\ODM\MongoDB\LockException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -37,6 +36,7 @@ use Doctrine\ODM\MongoDB\LockException;
  *    the serialized representation).
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -73,7 +73,6 @@ class ClassMetadata extends ClassMetadataInfo
      * Map a field.
      *
      * @param array $mapping The mapping information.
-     * @return void
      */
     public function mapField(array $mapping)
     {
@@ -169,8 +168,6 @@ class ClassMetadata extends ClassMetadataInfo
 
     /**
      * Restores some state that can not be serialized/unserialized.
-     *
-     * @return void
      */
     public function __wakeup()
     {

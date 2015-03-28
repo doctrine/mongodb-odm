@@ -31,20 +31,20 @@ class MODM65Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
  */
 class MODM65User
 {
-	/**
-	 * @ODM\Id
-	 */
-	public $id;
-	/**
-	 * @ODM\EmbedOne(
-	 * 	discriminatorField="php",
-	 * 	discriminatorMap={
-	 * 		"fbu"="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\MODM65SocialNetworkUser"
-	 * 	},
-	 * 	name="snu"
-	 * )
-	 */
-	public $socialNetworkUser;
+    /**
+     * @ODM\Id
+     */
+    public $id;
+    /**
+     * @ODM\EmbedOne(
+     * 	discriminatorField="php",
+     * 	discriminatorMap={
+     * 		"fbu"="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\MODM65SocialNetworkUser"
+     * 	},
+     * 	name="snu"
+     * )
+     */
+    public $socialNetworkUser;
 }
 
 /**
@@ -52,14 +52,16 @@ class MODM65User
  */
 class MODM65SocialNetworkUser
 {
-	/**
-	 * @ODM\String(name="fN")
-	 * @var string
-	 */
-	public $firstName;
-	/**
-	 * @ODM\String(name="lN")
-	 * @var string
-	 */
-	public $lastName;
+    /**
+     * @ODM\String(name="fN")
+     *
+     * @var string
+     */
+    public $firstName;
+    /**
+     * @ODM\String(name="lN")
+     *
+     * @var string
+     */
+    public $lastName;
 }

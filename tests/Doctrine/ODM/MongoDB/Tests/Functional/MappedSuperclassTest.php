@@ -8,12 +8,12 @@ class MappedSuperclassTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testCRUD()
     {
-        $e = new DocumentSubClass;
+        $e = new DocumentSubClass();
         $e->setId(1);
         $e->setName('Roman');
         $e->setMapped1(42);
         $e->setMapped2('bar');
-        
+
         $related = new MappedSuperclassRelated1();
         $related->setId(1);
         $related->setName('Related');
@@ -95,17 +95,17 @@ class MappedSuperclassRelated1
     {
         $this->name = $name;
     }
-    
+
     public function getName()
     {
         return $this->name;
     }
-    
+
     public function setId($id)
     {
         $this->id = $id;
     }
-    
+
     public function getId()
     {
         return $this->id;
@@ -120,22 +120,22 @@ class DocumentSubClass extends MappedSuperclassBase
 
     /** @ODM\String */
     private $name;
-    
+
     public function setName($name)
     {
         $this->name = $name;
     }
-    
+
     public function getName()
     {
         return $this->name;
     }
-    
+
     public function setId($id)
     {
         $this->id = $id;
     }
-    
+
     public function getId()
     {
         return $this->id;

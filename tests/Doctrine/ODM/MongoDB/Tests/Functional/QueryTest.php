@@ -2,13 +2,10 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Article;
 use Documents\Account;
-use Documents\Address;
+use Documents\Article;
 use Documents\Group;
 use Documents\Phonenumber;
-use Documents\Profile;
-use Documents\File;
 use Documents\User;
 
 class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -359,8 +356,8 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb->field('username')->in($choices);
         $expected = array(
             'username' => array(
-                '$in' => $choices
-            )
+                '$in' => $choices,
+            ),
         );
         $this->assertSame($expected, $qb->getQueryArray());
     }
@@ -372,8 +369,8 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb->field('account.$id')->in($choices);
         $expected = array(
             'account.$id' => array(
-                '$in' => $choices
-            )
+                '$in' => $choices,
+            ),
         );
         $this->assertSame($expected, $qb->getQueryArray());
         $this->assertSame($expected, $qb->getQuery()->debug('query'));
@@ -385,7 +382,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $qb->field('tags')->equals('pet');
         $expected = array(
-            'tags' => 'pet'
+            'tags' => 'pet',
         );
         $this->assertSame($expected, $qb->getQueryArray());
         $this->assertSame($expected, $qb->getQuery()->debug('query'));
@@ -397,7 +394,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $qb->field('tags')->equals(array('pet', 'blue'));
         $expected = array(
-            'tags' => array('pet', 'blue')
+            'tags' => array('pet', 'blue'),
         );
         $this->assertSame($expected, $qb->getQueryArray());
         $this->assertSame($expected, $qb->getQuery()->debug('query'));

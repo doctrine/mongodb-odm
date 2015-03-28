@@ -20,19 +20,19 @@ class VersionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $doc->embedMany[] = new VersionedEmbeddedDocument('embed 3');
         $this->dm->flush();
         $this->assertEquals($expectedVersion++, $doc->version);
-        
+
         $doc->embedMany[0]->embedMany[] = new VersionedEmbeddedDocument('deeply embed 1');
         $this->dm->flush();
         $this->assertEquals($expectedVersion++, $doc->version);
-        
+
         unset($doc->embedMany[1]);
         $this->dm->flush();
         $this->assertEquals($expectedVersion++, $doc->version);
 
         $doc->embedMany->clear();
         $this->dm->flush();
-        $this->assertEquals($expectedVersion++, $doc->version); 
-        
+        $this->assertEquals($expectedVersion++, $doc->version);
+
         $doc->embedMany = null;
         $this->dm->flush();
         $this->assertEquals($expectedVersion++, $doc->version);
@@ -46,16 +46,16 @@ class VersionedDocument
 {
     /** @ODM\Id */
     public $id;
-    
+
     /** @ODM\Int @ODM\Version */
     public $version = 1;
-    
+
     /** @ODM\String */
     public $name;
-    
+
     /** @ODM\EmbedMany(targetDocument="VersionedEmbeddedDocument") */
     public $embedMany = array();
-    
+
     public function __construct()
     {
         $this->embedMany = new \Doctrine\Common\Collections\ArrayCollection();
@@ -69,11 +69,11 @@ class VersionedEmbeddedDocument
 {
     /** @ODM\String */
     public $value;
-    
+
     /** @ODM\EmbedMany(targetDocument="VersionedEmbeddedDocument") */
     public $embedMany;
-    
-    public function __construct($value) 
+
+    public function __construct($value)
     {
         $this->value = $value;
         $this->embedMany = new \Doctrine\Common\Collections\ArrayCollection();

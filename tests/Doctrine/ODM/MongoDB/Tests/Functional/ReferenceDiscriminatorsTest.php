@@ -9,11 +9,11 @@ class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function setUp()
     {
         parent::setUp();
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\CommentableAction');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\GroupMainActivityStreamItem');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\GroupMembersActivityStreamItem');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\UserDashboardActivityStreamItem');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\UserProfileActivityStreamItem');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\CommentableAction');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\GroupMainActivityStreamItem');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\GroupMembersActivityStreamItem');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\UserDashboardActivityStreamItem');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__.'\UserProfileActivityStreamItem');
     }
 
     /**
@@ -30,11 +30,11 @@ class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $commentableAction = $this->dm->find(__NAMESPACE__ . '\CommentableAction', $commentableAction->getId());
-        $groupMainActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\GroupMainActivityStreamItem', $groupMainActivityStreamItem->getId());
-        $groupMemberActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem->getId());
-        $userDashboardActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem->getId());
-        $userProfileActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\UserProfileActivityStreamItem', $userProfileActivityStreamItem->getId());
+        $commentableAction = $this->dm->find(__NAMESPACE__.'\CommentableAction', $commentableAction->getId());
+        $groupMainActivityStreamItem = $this->dm->find(__NAMESPACE__.'\GroupMainActivityStreamItem', $groupMainActivityStreamItem->getId());
+        $groupMemberActivityStreamItem = $this->dm->find(__NAMESPACE__.'\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem->getId());
+        $userDashboardActivityStreamItem = $this->dm->find(__NAMESPACE__.'\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem->getId());
+        $userProfileActivityStreamItem = $this->dm->find(__NAMESPACE__.'\UserProfileActivityStreamItem', $userProfileActivityStreamItem->getId());
 
         $this->assertSame($commentableAction, $groupMainActivityStreamItem->getAction());
         $this->assertSame($commentableAction, $groupMemberActivityStreamItem->getAction());
@@ -63,17 +63,17 @@ class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $commentableAction1 = $this->dm->find(__NAMESPACE__ . '\CommentableAction', $commentableAction1->getId());
-        $groupMainActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\GroupMainActivityStreamItem', $groupMainActivityStreamItem1->getId());
-        $groupMemberActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem1->getId());
-        $userDashboardActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem1->getId());
-        $userProfileActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\UserProfileActivityStreamItem', $userProfileActivityStreamItem1->getId());
+        $commentableAction1 = $this->dm->find(__NAMESPACE__.'\CommentableAction', $commentableAction1->getId());
+        $groupMainActivityStreamItem1 = $this->dm->find(__NAMESPACE__.'\GroupMainActivityStreamItem', $groupMainActivityStreamItem1->getId());
+        $groupMemberActivityStreamItem1 = $this->dm->find(__NAMESPACE__.'\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem1->getId());
+        $userDashboardActivityStreamItem1 = $this->dm->find(__NAMESPACE__.'\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem1->getId());
+        $userProfileActivityStreamItem1 = $this->dm->find(__NAMESPACE__.'\UserProfileActivityStreamItem', $userProfileActivityStreamItem1->getId());
 
-        $commentableAction2 = $this->dm->find(__NAMESPACE__ . '\CommentableAction', $commentableAction2->getId());
-        $groupMainActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\GroupMainActivityStreamItem', $groupMainActivityStreamItem2->getId());
-        $groupMemberActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem2->getId());
-        $userDashboardActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem2->getId());
-        $userProfileActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\UserProfileActivityStreamItem', $userProfileActivityStreamItem2->getId());
+        $commentableAction2 = $this->dm->find(__NAMESPACE__.'\CommentableAction', $commentableAction2->getId());
+        $groupMainActivityStreamItem2 = $this->dm->find(__NAMESPACE__.'\GroupMainActivityStreamItem', $groupMainActivityStreamItem2->getId());
+        $groupMemberActivityStreamItem2 = $this->dm->find(__NAMESPACE__.'\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem2->getId());
+        $userDashboardActivityStreamItem2 = $this->dm->find(__NAMESPACE__.'\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem2->getId());
+        $userProfileActivityStreamItem2 = $this->dm->find(__NAMESPACE__.'\UserProfileActivityStreamItem', $userProfileActivityStreamItem2->getId());
 
         $this->assertSame($commentableAction1, $groupMainActivityStreamItem1->getAction());
         $this->assertSame($commentableAction1, $groupMemberActivityStreamItem1->getAction());
@@ -88,11 +88,11 @@ class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
-* @ODM\Document(collection="rdt_action")
-* @ODM\InheritanceType("SINGLE_COLLECTION")
-* @ODM\DiscriminatorField(fieldName="discriminator")
-* @ODM\DiscriminatorMap({"action"="Action", "commentable_action"="CommentableAction"})
-*/
+ * @ODM\Document(collection="rdt_action")
+ * @ODM\InheritanceType("SINGLE_COLLECTION")
+ * @ODM\DiscriminatorField(fieldName="discriminator")
+ * @ODM\DiscriminatorMap({"action"="Action", "commentable_action"="CommentableAction"})
+ */
 class Action
 {
     /** @ODM\Id */

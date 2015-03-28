@@ -2,8 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
-use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
 
 class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -14,9 +14,9 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function setUp()
     {
         parent::setUp();
-        $this->namespace = uniqid("doctrine_");
+        $this->namespace = uniqid('doctrine_');
         $this->tmpDir = \sys_get_temp_dir();
-        \mkdir($this->tmpDir . \DIRECTORY_SEPARATOR . $this->namespace);
+        \mkdir($this->tmpDir.\DIRECTORY_SEPARATOR.$this->namespace);
         $this->generator = new DocumentGenerator();
         $this->generator->setGenerateAnnotations(true);
         $this->generator->setGenerateStubMethods(true);
@@ -27,21 +27,21 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function tearDown()
     {
         parent::tearDown();
-        $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->tmpDir . '/' . $this->namespace));
-        foreach ($ri AS $file) {
+        $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->tmpDir.'/'.$this->namespace));
+        foreach ($ri as $file) {
             /* @var $file \SplFileInfo */
             if ($file->isFile()) {
                 \unlink($file->getPathname());
             }
         }
-        rmdir($this->tmpDir . '/' . $this->namespace);
+        rmdir($this->tmpDir.'/'.$this->namespace);
     }
 
     public function generateBookDocumentFixture()
     {
-        $metadata = new ClassMetadataInfo($this->namespace . '\DocumentGeneratorBook');
+        $metadata = new ClassMetadataInfo($this->namespace.'\DocumentGeneratorBook');
         $metadata->namespace = $this->namespace;
-        $metadata->customRepositoryClassName = $this->namespace  . '\DocumentGeneratorBookRepository';
+        $metadata->customRepositoryClassName = $this->namespace.'\DocumentGeneratorBookRepository';
 
         $metadata->collection = 'book';
         $metadata->mapField(array('fieldName' => 'name', 'type' => 'string'));
@@ -50,11 +50,11 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $metadata->mapOneReference(array('fieldName' => 'author', 'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorAuthor'));
         $metadata->mapManyReference(array(
             'fieldName' => 'comments',
-            'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorComment'
+            'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorComment',
         ));
         $metadata->mapManyReference(array(
                 'fieldName' => 'searches',
-                'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorSearch'
+                'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorSearch',
         ));
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
@@ -66,16 +66,17 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @param  ClassMetadataInfo $metadata
+     * @param ClassMetadataInfo $metadata
+     *
      * @return DocumentGeneratorBook
      */
     public function newInstance($metadata)
     {
-        $path = $this->tmpDir . '/'. $this->namespace . '/DocumentGeneratorBook.php';
+        $path = $this->tmpDir.'/'.$this->namespace.'/DocumentGeneratorBook.php';
         $this->assertFileExists($path);
         require_once $path;
 
-        return new $metadata->name;
+        return new $metadata->name();
     }
 
     public function testGeneratedDocumentClass()
@@ -84,19 +85,19 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $book = $this->newInstance($metadata);
 
-        $this->assertTrue(class_exists($metadata->name), "Class does not exist.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', '__construct'), "DocumentGeneratorBook::__construct() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getId'), "DocumentGeneratorBook::getId() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'setName'), "DocumentGeneratorBook::setName() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getName'), "DocumentGeneratorBook::getName() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'setAuthor'), "DocumentGeneratorBook::setAuthor() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getAuthor'), "DocumentGeneratorBook::getAuthor() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getComments'), "DocumentGeneratorBook::getComments() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'addComment'), "DocumentGeneratorBook::addComment() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'removeComment'), "DocumentGeneratorBook::removeComment() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'getSearches'), "DocumentGeneratorBook::getSearches() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'addSearch'), "DocumentGeneratorBook::addSearch() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\DocumentGeneratorBook', 'removeSearch'), "DocumentGeneratorBook::removeSearch() missing.");
+        $this->assertTrue(class_exists($metadata->name), 'Class does not exist.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', '__construct'), 'DocumentGeneratorBook::__construct() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'getId'), 'DocumentGeneratorBook::getId() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'setName'), 'DocumentGeneratorBook::setName() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'getName'), 'DocumentGeneratorBook::getName() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'setAuthor'), 'DocumentGeneratorBook::setAuthor() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'getAuthor'), 'DocumentGeneratorBook::getAuthor() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'getComments'), 'DocumentGeneratorBook::getComments() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'addComment'), 'DocumentGeneratorBook::addComment() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'removeComment'), 'DocumentGeneratorBook::removeComment() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'getSearches'), 'DocumentGeneratorBook::getSearches() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'addSearch'), 'DocumentGeneratorBook::addSearch() missing.');
+        $this->assertTrue(method_exists($metadata->namespace.'\DocumentGeneratorBook', 'removeSearch'), 'DocumentGeneratorBook::removeSearch() missing.');
 
         $book->setName('Jonathan H. Wage');
         $this->assertEquals('Jonathan H. Wage', $book->getName());
@@ -120,7 +121,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->generator->writeDocumentClass($metadata, $this->tmpDir);
 
-        $this->assertFileExists($this->tmpDir . "/" . $this->namespace . "/DocumentGeneratorBook.php");
+        $this->assertFileExists($this->tmpDir.'/'.$this->namespace.'/DocumentGeneratorBook.php');
 
         $book = $this->newInstance($metadata);
         $reflClass = new \ReflectionClass($metadata->name);
@@ -129,8 +130,8 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($reflClass->hasProperty('status'), "Regenerating keeps property 'status'.");
         $this->assertTrue($reflClass->hasProperty('id'), "Regenerating keeps property 'id'.");
 
-        $this->assertTrue($reflClass->hasProperty('test'), "Check for property test failed.");
-        $this->assertTrue($reflClass->getProperty('test')->isProtected(), "Check for protected property test failed.");
+        $this->assertTrue($reflClass->hasProperty('test'), 'Check for property test failed.');
+        $this->assertTrue($reflClass->getProperty('test')->isProtected(), 'Check for protected property test failed.');
         $this->assertTrue($reflClass->hasMethod('getTest'), "Check for method 'getTest' failed.");
         $this->assertTrue($reflClass->getMethod('getTest')->isPublic(), "Check for public visibility of method 'getTest' failed.");
         $this->assertTrue($reflClass->hasMethod('setTest'), "Check for method 'getTest' failed.");
@@ -153,8 +154,8 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $book = $this->newInstance($metadata);
         $reflClass = new \ReflectionClass($metadata->name);
 
-        $this->assertTrue($reflClass->hasMethod('loading'), "Check for postLoad lifecycle callback.");
-        $this->assertTrue($reflClass->hasMethod('willBeRemoved'), "Check for preRemove lifecycle callback.");
+        $this->assertTrue($reflClass->hasMethod('loading'), 'Check for postLoad lifecycle callback.');
+        $this->assertTrue($reflClass->hasMethod('willBeRemoved'), 'Check for preRemove lifecycle callback.');
     }
 
     public function testLoadMetadata()
@@ -192,7 +193,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($cm->idGenerator, $metadata->idGenerator);
         $this->assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
     }
-    
+
     public function testTraitPropertiesAndMethodsAreNotDuplicated()
     {
         if (PHP_VERSION_ID < 50400) {
@@ -201,18 +202,18 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cmf = $this->dm->getMetadataFactory();
         $user = new \Doctrine\ODM\MongoDB\Tests\Tools\GH297\User();
         $metadata = $cmf->getMetadataFor(get_class($user));
-        $metadata->name = $this->namespace . "\User";
+        $metadata->name = $this->namespace."\User";
         $metadata->namespace = $this->namespace;
         $this->generator->writeDocumentClass($metadata, $this->tmpDir);
-        $this->assertFileExists($this->tmpDir . "/" . $this->namespace . "/User.php");
-        require $this->tmpDir . "/" . $this->namespace . "/User.php";
+        $this->assertFileExists($this->tmpDir.'/'.$this->namespace.'/User.php');
+        require $this->tmpDir.'/'.$this->namespace.'/User.php';
         $reflClass = new \ReflectionClass($metadata->name);
         $this->assertSame($reflClass->hasProperty('address'), false);
         $this->assertSame($reflClass->hasMethod('setAddress'), false);
         $this->assertSame($reflClass->hasMethod('getAddress'), false);
     }
 
-    public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses() 
+    public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses()
     {
         if (PHP_VERSION_ID < 50400) {
             $this->markTestSkipped('Traits are not available before php 5.4.');
@@ -220,19 +221,24 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cmf = $this->dm->getMetadataFactory();
         $user = new \Doctrine\ODM\MongoDB\Tests\Tools\GH297\Admin();
         $metadata = $cmf->getMetadataFor(get_class($user));
-        $metadata->name = $this->namespace . "\DDC2372Admin";
+        $metadata->name = $this->namespace."\DDC2372Admin";
         $metadata->namespace = $this->namespace;
         $this->generator->writeDocumentClass($metadata, $this->tmpDir);
-        $this->assertFileExists($this->tmpDir . "/" . $this->namespace . "/DDC2372Admin.php");
-        require $this->tmpDir . "/" . $this->namespace . "/DDC2372Admin.php";
+        $this->assertFileExists($this->tmpDir.'/'.$this->namespace.'/DDC2372Admin.php');
+        require $this->tmpDir.'/'.$this->namespace.'/DDC2372Admin.php';
         $reflClass = new \ReflectionClass($metadata->name);
         $this->assertSame($reflClass->hasProperty('address'), false);
         $this->assertSame($reflClass->hasMethod('setAddress'), false);
         $this->assertSame($reflClass->hasMethod('getAddress'), false);
     }
-
 }
 
-class DocumentGeneratorAuthor {}
-class DocumentGeneratorComment {}
-class DocumentGeneratorSearch {}
+class DocumentGeneratorAuthor
+{
+}
+class DocumentGeneratorComment
+{
+}
+class DocumentGeneratorSearch
+{
+}

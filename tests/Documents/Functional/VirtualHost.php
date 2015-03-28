@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class VirtualHost
 {
-
     /** @ODM\Id */
     protected $id;
     /**
@@ -30,6 +29,7 @@ class VirtualHost
         if (!$this->vhostDirective) {
             $this->vhostDirective = new VirtualHostDirective('VirtualHost', '*:80');
         }
+
         return $this->vhostDirective;
     }
 
@@ -39,6 +39,4 @@ class VirtualHost
 
         return $this;
     }
-
 }
-

@@ -8,6 +8,6 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
     protected function _loadDriver()
     {
-        return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
+        return new XmlDriver(__DIR__.DIRECTORY_SEPARATOR.'xml');
     }
 }

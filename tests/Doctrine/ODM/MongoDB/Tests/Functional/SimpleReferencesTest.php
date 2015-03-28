@@ -92,7 +92,7 @@ class SimpleReferencesTest extends BaseTest
     {
         $user = $this->dm->getRepository('Documents\User')->findOneBy(array());
         $test = $user->getSimpleReferenceManyInverse()->toArray();
-        $this->assertEquals('test' ,current($test)->getName());
+        $this->assertEquals('test', current($test)->getName());
     }
 
     public function testOneInverseSide()
@@ -102,7 +102,8 @@ class SimpleReferencesTest extends BaseTest
         $this->assertEquals('test', $test->getName());
     }
 
-    public function testQueryForNonIds() {
+    public function testQueryForNonIds()
+    {
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->equals(null);
         $this->assertEquals(array('userId' => null), $qb->getQueryArray());

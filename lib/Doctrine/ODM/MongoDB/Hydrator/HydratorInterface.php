@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,15 +17,13 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-
 /**
- * The HydratorInterface defines methods all hydrator need to implement
+ * The HydratorInterface defines methods all hydrator need to implement.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 interface HydratorInterface
@@ -32,10 +31,11 @@ interface HydratorInterface
     /**
      * Hydrate array of MongoDB document data into the given document object.
      *
-     * @param object $document  The document object to hydrate the data into.
-     * @param array $data The array of document data.
-     * @param array $hints Any hints to account for during reconstitution/lookup of the document.
+     * @param object $document The document object to hydrate the data into.
+     * @param array  $data     The array of document data.
+     * @param array  $hints    Any hints to account for during reconstitution/lookup of the document.
+     *
      * @return array $values The array of hydrated values.
      */
-    function hydrate($document, $data, array $hints = array());
+    public function hydrate($document, $data, array $hints = array());
 }

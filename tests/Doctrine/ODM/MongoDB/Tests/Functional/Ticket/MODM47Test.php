@@ -9,7 +9,7 @@ class MODM47Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testTest()
     {
         $a = array(
-            'c' => 'c value'
+            'c' => 'c value',
         );
         $this->dm->getDocumentCollection(__NAMESPACE__.'\MODM47A')->insert($a);
 
@@ -28,6 +28,12 @@ class MODM47A
     public $b = 'tmp';
 
     /** @ODM\AlsoLoad("c") */
-    function renameC($c) {$this->b = $c;}
-    function getId() {return $this->id;}
+    public function renameC($c)
+    {
+        $this->b = $c;
+    }
+    public function getId()
+    {
+        return $this->id;
+    }
 }

@@ -8,8 +8,8 @@ class MODM42Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $file1 = new File(__DIR__ . '/MODM42/test1.txt');
-        $file2 = new File(__DIR__ . '/MODM42/test2.txt');
+        $file1 = new File(__DIR__.'/MODM42/test1.txt');
+        $file2 = new File(__DIR__.'/MODM42/test2.txt');
         $dir = new Directory(array($file1, $file2));
 
         $this->dm->persist($file1);
@@ -26,7 +26,7 @@ class MODM42Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dir = $this->dm->find(__NAMESPACE__.'\Directory', $dir->getId());
         $this->assertNotNull($dir);
         $this->assertEquals(2, count($dir->getFiles()));
-        foreach($dir->getFiles() as $file) {
+        foreach ($dir->getFiles() as $file) {
             $this->assertInstanceOf('Doctrine\MongoDB\GridFSFile', $file->getMongoFile());
         }
     }
@@ -79,7 +79,7 @@ class File
         return $this->id;
     }
 
-    public function getMongoFile() 
+    public function getMongoFile()
     {
         return $this->file;
     }

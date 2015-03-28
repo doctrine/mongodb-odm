@@ -83,7 +83,6 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $check = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->find($user1->id);
         $this->assertNotNull($check);
-
     }
 
     public function testEmbeddedDocumentWithId()

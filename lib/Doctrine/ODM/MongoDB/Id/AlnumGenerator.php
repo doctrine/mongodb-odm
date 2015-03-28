@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,11 +17,9 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * AlnumGenerator is responsible for generating cased alpha-numeric unique identifiers.
@@ -35,11 +34,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * The character set used for ID generation can be explicitly set with the "chars" option (e.g. base36, etc.)
  *
  * @since       1.0
+ *
  * @author      Frederik Eychenié <feychenie@gmail.com>
  */
 class AlnumGenerator extends IncrementGenerator
 {
-
     protected $pad = null;
 
     protected $awkwardSafeMode = false;
@@ -49,7 +48,7 @@ class AlnumGenerator extends IncrementGenerator
     protected $awkwardSafeChars = '0123456789BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz';
 
     /**
-     * Set padding on generated id
+     * Set padding on generated id.
      *
      * @param int $pad
      */
@@ -59,7 +58,7 @@ class AlnumGenerator extends IncrementGenerator
     }
 
     /**
-     * Enable awkwardSafeMode character set
+     * Enable awkwardSafeMode character set.
      *
      * @param bool $awkwardSafeMode
      */
@@ -69,7 +68,7 @@ class AlnumGenerator extends IncrementGenerator
     }
 
     /**
-     * Set the character set used for ID generation
+     * Set the character set used for ID generation.
      *
      * @param string $chars ID character set
      */
@@ -85,14 +84,14 @@ class AlnumGenerator extends IncrementGenerator
         $index = $this->awkwardSafeMode ? $this->awkwardSafeChars : $this->chars;
         $base  = strlen($index);
 
-        $out = "";
+        $out = '';
         do {
-            $out = $index[bcmod($id, $base)] . $out;
+            $out = $index[bcmod($id, $base)].$out;
             $id = bcdiv($id, $base);
         } while (bccomp($id, 0) == 1);
 
         if (is_numeric($this->pad)) {
-            $out = str_pad($out, $this->pad, "0", STR_PAD_LEFT);
+            $out = str_pad($out, $this->pad, '0', STR_PAD_LEFT);
         }
 
         return $out;

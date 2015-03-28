@@ -16,8 +16,8 @@ class GeoSpatialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('coordinates')->withinBox(41, 41, 72, 72);
         $this->assertEquals(array(
             'coordinates' => array(
-                '$within' => array('$box' => array(array(41, 41), array(72, 72)))
-            )
+                '$within' => array('$box' => array(array(41, 41), array(72, 72))),
+            ),
         ), $qb->getQueryArray());
     }
 
@@ -169,7 +169,6 @@ class GeoSpatialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->assertNotNull($city->test);
         }
     }
-
 }
 
 /**

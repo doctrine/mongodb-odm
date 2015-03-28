@@ -2,14 +2,14 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Address;
-use Documents\Profile;
-use Documents\Phonenumber;
-use Documents\Account;
-use Documents\Group;
-use Documents\User;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Documents\Account;
+use Documents\Address;
+use Documents\Group;
+use Documents\Phonenumber;
+use Documents\Profile;
+use Documents\User;
 
 class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -191,7 +191,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('test', $groups[0]->getName());
         $this->assertEquals(1, count($groups));
     }
-    
+
     public function testFlushInitializesEmptyPersistentCollection()
     {
         $user = new User();
@@ -221,7 +221,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
-        
+
         $user = $this->dm->getRepository('Documents\User')->find($user->getId());
 
         $user->addGroup(new Group('Group 1'));
@@ -420,7 +420,6 @@ class DocumentWithArrayId
     /** @ODM\Id(strategy="none", options={"type"="hash"}) */
     public $id;
 }
-
 
 /** @ODM\Document */
 class DocumentWithMongoBinDataReference

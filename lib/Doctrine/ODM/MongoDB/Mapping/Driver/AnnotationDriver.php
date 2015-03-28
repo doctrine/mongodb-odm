@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -33,6 +33,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -51,7 +52,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public static function registerAnnotationClasses()
     {
-        AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
+        AnnotationRegistry::registerFile(__DIR__.'/../Annotations/DoctrineAnnotations.php');
     }
 
     /**
@@ -59,7 +60,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $class)
     {
-        /** @var $class ClassMetadataInfo */
+        /* @var $class ClassMetadataInfo */
         $reflClass = $class->getReflectionClass();
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
@@ -101,10 +102,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {
                 $class->setChangeTrackingPolicy(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::CHANGETRACKING_'.$annot->value));
             }
-
         }
 
-        if ( ! $documentAnnots) {
+        if (! $documentAnnots) {
             throw MappingException::classIsNotAValidDocument($className);
         }
 
@@ -197,7 +197,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $class->registerAlsoLoadMethod($method->getName(), $annot->value);
                 }
 
-                if ( ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks'])) {
+                if (! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks'])) {
                     continue;
                 }
 
@@ -239,10 +239,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     * Factory method for the Annotation Driver
+     * Factory method for the Annotation Driver.
      *
      * @param array|string $paths
-     * @param Reader $reader
+     * @param Reader       $reader
+     *
      * @return AnnotationDriver
      */
     public static function create($paths = array(), Reader $reader = null)
@@ -250,6 +251,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if ($reader === null) {
             $reader = new AnnotationReader();
         }
+
         return new self($reader, $paths);
     }
 }

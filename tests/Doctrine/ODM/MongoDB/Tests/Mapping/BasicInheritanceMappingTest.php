@@ -2,8 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 
 class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -59,7 +59,7 @@ class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testSerializationWithPrivateFieldsFromMappedSuperclass()
     {
-        $class = $this->factory->getMetadataFor(__NAMESPACE__ . '\\DocumentSubClass2');
+        $class = $this->factory->getMetadataFor(__NAMESPACE__.'\\DocumentSubClass2');
 
         $class2 = unserialize(serialize($class));
 

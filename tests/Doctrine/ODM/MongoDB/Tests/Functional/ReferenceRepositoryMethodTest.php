@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\PersistentCollection;
-
 use Documents\BlogPost;
 use Documents\User;
 
@@ -34,7 +32,7 @@ class ReferenceRepositoryMethodTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * Tests Bi-Directional Reference "one to many" with nullable=true flag
+     * Tests Bi-Directional Reference "one to many" with nullable=true flag.
      *
      * @url http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/bidirectional-references.html
      */

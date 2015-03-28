@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,13 +17,13 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Key type.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -31,16 +32,18 @@ class KeyType extends Type
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
-            return null;
+            return;
         }
-        return $value ? new \MongoMaxKey : new \MongoMinKey;
+
+        return $value ? new \MongoMaxKey() : new \MongoMinKey();
     }
 
     public function convertToPHPValue($value)
     {
         if ($value === null) {
-            return null;
+            return;
         }
+
         return $value instanceof \MongoMaxKey ? 1 : 0;
     }
 }

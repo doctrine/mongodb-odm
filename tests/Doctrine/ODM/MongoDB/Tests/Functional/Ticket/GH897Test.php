@@ -63,7 +63,7 @@ class GH897B
     /** @ODM\PreFlush */
     public function preFlush()
     {
-        if ( ! $this->refOne instanceof GH897A) {
+        if (! $this->refOne instanceof GH897A) {
             return;
         }
 

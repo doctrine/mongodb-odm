@@ -3,7 +3,6 @@
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Documents\User;
 
 /** @ODM\Document */
 class BlogPost

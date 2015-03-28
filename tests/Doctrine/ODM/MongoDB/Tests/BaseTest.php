@@ -2,10 +2,10 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use Doctrine\MongoDB\Connection;
 
 abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +20,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        if ( ! $this->dm) {
+        if (! $this->dm) {
             return;
         }
 
@@ -35,9 +35,9 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     {
         $config = new Configuration();
 
-        $config->setProxyDir(__DIR__ . '/../../../../Proxies');
+        $config->setProxyDir(__DIR__.'/../../../../Proxies');
         $config->setProxyNamespace('Proxies');
-        $config->setHydratorDir(__DIR__ . '/../../../../Hydrators');
+        $config->setHydratorDir(__DIR__.'/../../../../Hydrators');
         $config->setHydratorNamespace('Hydrators');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl($this->createMetadataDriverImpl());
@@ -50,7 +50,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
     protected function createMetadataDriverImpl()
     {
-        return AnnotationDriver::create(__DIR__ . '/../../../../Documents');
+        return AnnotationDriver::create(__DIR__.'/../../../../Documents');
     }
 
     protected function createTestDocumentManager()

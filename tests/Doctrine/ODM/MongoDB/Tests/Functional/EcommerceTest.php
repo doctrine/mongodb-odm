@@ -2,19 +2,11 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\Common\ClassLoader;
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\MongoDB\Connection;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Documents\Ecommerce\ConfigurableProduct;
-use Documents\Ecommerce\StockItem;
 use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\Money;
 use Documents\Ecommerce\Option;
+use Documents\Ecommerce\StockItem;
 
 class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -103,6 +95,7 @@ class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->execute();
         $products->valid() ?: $products->next();
+
         return $products->current();
     }
 }

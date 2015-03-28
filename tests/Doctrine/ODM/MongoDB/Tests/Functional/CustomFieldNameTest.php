@@ -13,7 +13,7 @@ class CustomFieldNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->persist($test);
         $this->dm->flush();
-        
+
         $test = $this->dm->getDocumentCollection(__NAMESPACE__.'\CustomFieldName')->findOne();
         $this->assertTrue(isset($test['login']));
         $this->assertEquals('test', $test['login']);

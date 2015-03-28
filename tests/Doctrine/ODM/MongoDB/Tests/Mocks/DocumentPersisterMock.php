@@ -21,6 +21,7 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPer
         $this->inserts[] = $document;
         $id = $this->identityColumnValueCounter++;
         $this->postInsertIds[$id] = array($id, $document);
+
         return $id;
     }
 
@@ -29,6 +30,7 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPer
         $this->inserts[] = $document;
         $id = $this->identityColumnValueCounter++;
         $this->postInsertIds[$id] = array($id, $document);
+
         return $id;
     }
 
@@ -37,6 +39,7 @@ class DocumentPersisterMock extends \Doctrine\ODM\MongoDB\Persisters\DocumentPer
         $this->upserts[] = $document;
         $id = $this->identityColumnValueCounter++;
         $this->postInsertIds[$id] = array($id, $document);
+
         return $id;
     }
 
