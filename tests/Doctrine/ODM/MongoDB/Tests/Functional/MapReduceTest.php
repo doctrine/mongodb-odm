@@ -3,12 +3,12 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Documents\Ecommerce\ConfigurableProduct;
-use Documents\Ecommerce\StockItem;
 use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\Money;
 use Documents\Ecommerce\Option;
-use Documents\User;
+use Documents\Ecommerce\StockItem;
 use Documents\Event;
+use Documents\User;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
@@ -179,13 +179,13 @@ class MapReduceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('type')
             ->equals('sale')
             ->map('function() { emit(this.user.$id, 1); }')
-            ->reduce("function(k, vals) {
+            ->reduce('function(k, vals) {
                 var sum = 0;
                 for (var i in vals) {
                     sum += vals[i];
                 }
                 return sum;
-            }");
+            }');
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
 

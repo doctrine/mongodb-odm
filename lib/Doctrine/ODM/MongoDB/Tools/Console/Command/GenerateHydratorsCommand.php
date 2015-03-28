@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,18 +17,18 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
+use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
+use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console;
-use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
 
 /**
  * Command to (re)generate the hydrator classes used by doctrine.
  *
  * @since   1.0
+ *
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -65,7 +66,7 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
-        
+
         $metadatas = $dm->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
 
@@ -74,17 +75,17 @@ EOT
             $destPath = $dm->getConfiguration()->getHydratorDir();
         }
 
-        if ( ! is_dir($destPath)) {
+        if (! is_dir($destPath)) {
             mkdir($destPath, 0777, true);
         }
 
         $destPath = realpath($destPath);
 
-        if ( ! file_exists($destPath)) {
+        if (! file_exists($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Hydrators destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } elseif ( ! is_writable($destPath)) {
+        } elseif (! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Hydrators destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );
@@ -93,7 +94,7 @@ EOT
         if (count($metadatas)) {
             foreach ($metadatas as $metadata) {
                 $output->write(
-                    sprintf('Processing document "<info>%s</info>"', $metadata->name) . PHP_EOL
+                    sprintf('Processing document "<info>%s</info>"', $metadata->name).PHP_EOL
                 );
             }
 
@@ -101,9 +102,9 @@ EOT
             $dm->getHydratorFactory()->generateHydratorClasses($metadatas, $destPath);
 
             // Outputting information message
-            $output->write(PHP_EOL . sprintf('Hydrator classes generated to "<info>%s</INFO>"', $destPath) . PHP_EOL);
+            $output->write(PHP_EOL.sprintf('Hydrator classes generated to "<info>%s</INFO>"', $destPath).PHP_EOL);
         } else {
-            $output->write('No Metadata Classes to process.' . PHP_EOL);
+            $output->write('No Metadata Classes to process.'.PHP_EOL);
         }
     }
 }

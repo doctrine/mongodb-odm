@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB;
 
 /**
@@ -24,6 +24,7 @@ namespace Doctrine\ODM\MongoDB;
  * an identifier that does not exist in the database.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class DocumentNotFoundException extends MongoDBException
@@ -32,7 +33,7 @@ class DocumentNotFoundException extends MongoDBException
     {
         return new self(sprintf(
             'The "%s" document with identifier %s could not be found.',
-            $className, 
+            $className,
             json_encode($identifier)
         ));
     }

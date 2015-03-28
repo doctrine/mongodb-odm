@@ -4,8 +4,6 @@ namespace Documents\Functional\Ticket\MODM160;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 /** @ODM\EmbeddedDocument */
 class EmbedManyInArrayLevel1
 {

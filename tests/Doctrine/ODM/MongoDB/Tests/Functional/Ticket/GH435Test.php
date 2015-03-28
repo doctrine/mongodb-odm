@@ -8,14 +8,14 @@ class GH435Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $parent = $this->dm->getClassMetadata(__NAMESPACE__ . '\GH435Parent');
+        $parent = $this->dm->getClassMetadata(__NAMESPACE__.'\GH435Parent');
 
         $this->assertArrayHasKey('id', $parent->fieldMappings['id']);
         $this->assertTrue($parent->fieldMappings['id']['id']);
         $this->assertEquals('id', $parent->fieldMappings['id']['type']);
         $this->assertEquals('int', $parent->fieldMappings['test']['type']);
 
-        $child = $this->dm->getClassMetadata(__NAMESPACE__ . '\GH435Child');
+        $child = $this->dm->getClassMetadata(__NAMESPACE__.'\GH435Child');
 
         /* The child overrode the identifier field mapping such that the field
          * is no longer an identifier, although the child's ClassMetadata still

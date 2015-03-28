@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,25 +17,26 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The BinData type for binary UUID data, which follows RFC 4122.
  *
  * @since       1.0
+ *
  * @author      Jeremy Mikola <jmikola@gmail.com>
  */
 class BinDataUUIDRFC4122Type extends BinDataType
 {
     /**
-     * MongoBinData type
+     * MongoBinData type.
      *
      * The default subtype for RFC 4122 UUID binary data is 4, but we cannot use
      * a constant here because it is not available in all versions of the PHP
      * driver.
      *
-     * @var integer
+     * @var int
+     *
      * @see http://php.net/manual/en/mongobindata.construct.php
      * @see http://bsonspec.org/#/specification
      * @see http://www.faqs.org/rfcs/rfc4122

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,24 +17,22 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Hydrator;
-use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
  * Query builder for ODM.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Builder extends \Doctrine\MongoDB\Query\Builder
 {
     /**
-     * The DocumentManager instance for this query
+     * The DocumentManager instance for this query.
      *
      * @var DocumentManager
      */
@@ -50,6 +49,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * The current field we are operating on.
      *
      * @todo Change this to private once ODM requires doctrine/mongodb 1.1+
+     *
      * @var string
      */
     protected $currentField;
@@ -57,14 +57,14 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     /**
      * Whether or not to hydrate the data to documents.
      *
-     * @var boolean
+     * @var bool
      */
     private $hydrate = true;
 
     /**
      * Whether or not to refresh the data for documents that are already in the identity map.
      *
-     * @var boolean
+     * @var bool
      */
     private $refresh = false;
 
@@ -83,9 +83,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     private $requireIndexes;
 
     /**
-     * Construct a Builder
+     * Construct a Builder.
      *
-     * @param DocumentManager $dm
+     * @param DocumentManager      $dm
      * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
      */
     public function __construct(DocumentManager $dm, $documentName = null)
@@ -101,11 +101,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Set whether or not to require indexes.
      *
      * @param bool $requireIndexes
+     *
      * @return Builder
      */
     public function requireIndexes($requireIndexes = true)
     {
         $this->requireIndexes = $requireIndexes;
+
         return $this;
     }
 
@@ -113,11 +115,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Set the current field to operate on.
      *
      * @param string $field
+     *
      * @return self
      */
     public function field($field)
     {
         $this->currentField = $field;
+
         return parent::field($field);
     }
 
@@ -135,37 +139,44 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * If a custom callable is used, its signature should conform to the default
      * Closure defined in {@link ReferencePrimer::__construct()}.
      *
-     * @param boolean|callable $primer
+     * @param bool|callable $primer
+     *
      * @return Builder
+     *
      * @throws \InvalidArgumentException If $primer is not boolean or callable
      */
     public function prime($primer = true)
     {
-        if ( ! is_bool($primer) && ! is_callable($primer)) {
+        if (! is_bool($primer) && ! is_callable($primer)) {
             throw new \InvalidArgumentException('$primer is not a boolean or callable');
         }
 
         $this->primers[$this->currentField] = $primer;
+
         return $this;
     }
 
     /**
      * @param bool $bool
+     *
      * @return Builder
      */
     public function hydrate($bool = true)
     {
         $this->hydrate = $bool;
+
         return $this;
     }
 
     /**
      * @param bool $bool
+     *
      * @return Builder
      */
     public function refresh($bool = true)
     {
         $this->refresh = $bool;
+
         return $this;
     }
 
@@ -173,91 +184,109 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Change the query type to find and optionally set and change the class being queried.
      *
      * @param string $documentName
+     *
      * @return Builder
      */
     public function find($documentName = null)
     {
         $this->setDocumentName($documentName);
+
         return parent::find();
     }
 
     /**
      * @param string $documentName
+     *
      * @return Builder
      */
     public function findAndUpdate($documentName = null)
     {
         $this->setDocumentName($documentName);
+
         return parent::findAndUpdate();
     }
 
     /**
      * @param bool $bool
+     *
      * @return self
      */
     public function returnNew($bool = true)
     {
         $this->refresh(true);
+
         return parent::returnNew($bool);
     }
 
     /**
      * @param string $documentName
+     *
      * @return Builder
      */
     public function findAndRemove($documentName = null)
     {
         $this->setDocumentName($documentName);
+
         return parent::findAndRemove();
     }
 
     /**
      * @param string $documentName
+     *
      * @return Builder
      */
     public function update($documentName = null)
     {
         $this->setDocumentName($documentName);
+
         return parent::update();
     }
 
     /**
      * @param string $documentName
+     *
      * @return Builder
      */
     public function insert($documentName = null)
     {
         $this->setDocumentName($documentName);
+
         return parent::insert();
     }
 
     /**
      * @param string $documentName
+     *
      * @return Builder
      */
     public function remove($documentName = null)
     {
         $this->setDocumentName($documentName);
+
         return parent::remove();
     }
 
     /**
      * @param object $document
+     *
      * @return Builder
      */
     public function references($document)
     {
         $this->expr->references($document);
+
         return $this;
     }
 
     /**
      * @param object $document
+     *
      * @return Builder
      */
     public function includesReferenceTo($document)
     {
         $this->expr->includesReferenceTo($document);
+
         return $this;
     }
 
@@ -265,6 +294,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Gets the Query executable.
      *
      * @param array $options
+     *
      * @return Query $query
      */
     public function getQuery(array $options = array())
@@ -309,7 +339,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     }
 
     /**
-     * Create a new Expr instance that can be used as an expression with the Builder
+     * Create a new Expr instance that can be used as an expression with the Builder.
      *
      * @return Expr $expr
      */
@@ -345,10 +375,12 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     }
 
     /**
-     * Get Discriminator Values
+     * Get Discriminator Values.
      *
      * @param \Iterator|array $classNames
+     *
      * @return array an array of discriminatorValues (mixed type)
+     *
      * @throws \InvalidArgumentException if the number of found collections > 1
      */
     private function getDiscriminatorValues($classNames)
@@ -358,12 +390,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         foreach ($classNames as $className) {
             $class = $this->dm->getClassMetadata($className);
             $discriminatorValues[] = $class->discriminatorValue;
-            $key = $this->dm->getDocumentDatabase($className)->getName() . '.' . $class->getCollection();
+            $key = $this->dm->getDocumentDatabase($className)->getName().'.'.$class->getCollection();
             $collections[$key] = $key;
         }
         if (count($collections) > 1) {
             throw new \InvalidArgumentException('Documents involved are not all mapped to the same database collection.');
         }
+
         return $discriminatorValues;
     }
 }

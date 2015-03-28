@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH301Test extends BaseTest
@@ -11,7 +10,7 @@ class GH301Test extends BaseTest
     {
         $ref = new GH301Document();
         $ref->name = 'referenced';
-        
+
         $doc = new GH301Document();
         $doc->name = 'parent';
         $doc->refOnePersist = $ref;
@@ -19,11 +18,13 @@ class GH301Test extends BaseTest
         $this->dm->persist($doc);
         $this->dm->flush($doc);
         $this->dm->clear();
-        
-        $docId = $doc->id; unset($doc);
-        $refId = $ref->id; unset($ref);
 
-        $doc = $this->dm->find(__NAMESPACE__ . '\GH301Document', $docId);
+        $docId = $doc->id;
+        unset($doc);
+        $refId = $ref->id;
+        unset($ref);
+
+        $doc = $this->dm->find(__NAMESPACE__.'\GH301Document', $docId);
         $this->assertNotNull($doc);
         $this->assertEquals($refId, $doc->refOnePersist->id);
     }

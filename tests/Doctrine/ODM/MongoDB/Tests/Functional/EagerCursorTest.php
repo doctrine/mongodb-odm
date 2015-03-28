@@ -2,8 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Query\Query;
 
 class EagerCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

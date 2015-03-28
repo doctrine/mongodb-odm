@@ -33,7 +33,7 @@ class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $usernames = array('David', 'Xander', 'Alex', 'Kris', 'Jon');
 
-        foreach ($usernames as $username){
+        foreach ($usernames as $username) {
             $user = new User();
             $user->setUsername($username);
             $this->dm->persist($user);

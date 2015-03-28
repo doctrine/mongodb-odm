@@ -10,7 +10,7 @@ use Documents\CmsUser;
 class HydrationPerformanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**
-     * [jwage: 10000 objects in ~6 seconds]
+     * [jwage: 10000 objects in ~6 seconds].
      */
     public function testHydrationPerformance()
     {
@@ -18,10 +18,10 @@ class HydrationPerformanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $batchSize = 20;
         for ($i = 1; $i <= 10000; ++$i) {
-            $user = new CmsUser;
+            $user = new CmsUser();
             $user->status = 'user';
-            $user->username = 'user' . $i;
-            $user->name = 'Mr.Smith-' . $i;
+            $user->username = 'user'.$i;
+            $user->name = 'Mr.Smith-'.$i;
             $this->dm->persist($user);
             if (($i % $batchSize) == 0) {
                 $this->dm->flush();
@@ -31,7 +31,7 @@ class HydrationPerformanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         gc_collect_cycles();
 
-        echo "Memory usage before: " . (memory_get_usage() / 1024) . " KB" . PHP_EOL;
+        echo 'Memory usage before: '.(memory_get_usage() / 1024).' KB'.PHP_EOL;
 
         $users = $this->dm->getRepository('Documents\CmsUser')->findAll();
         foreach ($users as $user) {
@@ -40,10 +40,10 @@ class HydrationPerformanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
         gc_collect_cycles();
 
-        echo "Memory usage after: " . (memory_get_usage() / 1024) . " KB" . PHP_EOL;
+        echo 'Memory usage after: '.(memory_get_usage() / 1024).' KB'.PHP_EOL;
 
         $e = microtime(true);
 
-        echo 'Hydrated 10000 objects in ' . ($e - $s) . ' seconds' . PHP_EOL;
+        echo 'Hydrated 10000 objects in '.($e - $s).' seconds'.PHP_EOL;
     }
 }

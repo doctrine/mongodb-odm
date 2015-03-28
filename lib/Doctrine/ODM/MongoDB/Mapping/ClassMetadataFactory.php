@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
@@ -25,8 +25,6 @@ use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -34,6 +32,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * to a document database.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -64,7 +63,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * Sets the Configuration instance
+     * Sets the Configuration instance.
      *
      * @param Configuration $config
      */
@@ -89,7 +88,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
     {
-        return $this->config->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
+        return $this->config->getDocumentNamespace($namespaceAlias).'\\'.$simpleClassName;
     }
 
     /**
@@ -127,7 +126,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = array())
     {
-        /** @var $class ClassMetadata */
+        /* @var $class ClassMetadata */
         /** @var $parent ClassMetadata */
         if ($parent) {
             $class->setInheritanceType($parent->inheritanceType);
@@ -188,11 +187,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Validates the identifier mapping.
      *
      * @param ClassMetadata $class
+     *
      * @throws MappingException
      */
     protected function validateIdentifier($class)
     {
-        if ( ! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
+        if (! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
             throw MappingException::identifierRequired($class->name);
         }
     }
@@ -201,6 +201,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Creates a new ClassMetadata instance for the given class name.
      *
      * @param string $className
+     *
      * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
      */
     protected function newClassMetadataInstance($className)
@@ -248,16 +249,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     throw MappingException::missingIdGeneratorClass($class->name);
                 }
 
-                $customGenerator = new $idGenOptions['class'];
+                $customGenerator = new $idGenOptions['class']();
                 unset($idGenOptions['class']);
-                if ( ! $customGenerator instanceof \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator) {
+                if (! $customGenerator instanceof \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator) {
                     throw MappingException::classIsNotAValidGenerator(get_class($customGenerator));
                 }
 
                 $methods = get_class_methods($customGenerator);
                 foreach ($idGenOptions as $name => $value) {
-                    $method = 'set' . ucfirst($name);
-                    if ( ! in_array($method, $methods)) {
+                    $method = 'set'.ucfirst($name);
+                    if (! in_array($method, $methods)) {
                         throw MappingException::missingGeneratorSetter(get_class($customGenerator), $name);
                     }
 
@@ -268,7 +269,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             case ClassMetadata::GENERATOR_TYPE_NONE;
                 break;
             default:
-                throw new MappingException("Unknown generator type: " . $class->generatorType);
+                throw new MappingException('Unknown generator type: '.$class->generatorType);
         }
     }
 
@@ -281,10 +282,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
-            if ( ! isset($mapping['declared'])) {
+            if (! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
             $subClass->addInheritedFieldMapping($mapping);

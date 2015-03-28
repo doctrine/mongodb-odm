@@ -11,7 +11,7 @@ use Documents\CmsUser;
 class MemoryUsageTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**
-     * Output for jwage "Memory increased by 14.09 kb"
+     * Output for jwage "Memory increased by 14.09 kb".
      */
     public function testMemoryUsage()
     {
@@ -47,6 +47,7 @@ class MemoryUsageTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     private function formatMemory($size)
     {
         $unit = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
-        return round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
+
+        return round($size / pow(1024, ($i = floor(log($size, 1024)))), 2).' '.$unit[$i];
     }
 }

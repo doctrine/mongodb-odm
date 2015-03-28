@@ -2,7 +2,6 @@
 
 namespace Documents;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -67,8 +66,7 @@ class Article
 
     public function removeTag($tag)
     {
-        if ( ! in_array($tag, $this->tags))
-        {
+        if (! in_array($tag, $this->tags)) {
             return;
         }
         unset($this->tags[array_search($tag, $this->tags)]);

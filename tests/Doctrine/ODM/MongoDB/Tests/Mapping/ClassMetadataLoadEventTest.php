@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -22,7 +21,7 @@ class ClassMetadataLoadEventTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $classMetadata = $eventArgs->getClassMetadata();
         $field = array(
             'fieldName' => 'about',
-            'type' => 'string'
+            'type' => 'string',
         );
         $classMetadata->mapField($field);
     }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,13 +17,11 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
-use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
@@ -36,6 +35,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
  * mapping strategy.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Bulat Shakirzyanov <bulat@theopenskyproject.com>
  * @author      Roman Borschel <roman@code-factory.org>
@@ -59,9 +59,9 @@ class CollectionPersister
     /**
      * Constructs a new CollectionPersister instance.
      *
-     * @param DocumentManager $dm
+     * @param DocumentManager    $dm
      * @param PersistenceBuilder $pb
-     * @param UnitOfWork $uow
+     * @param UnitOfWork         $uow
      */
     public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
     {
@@ -74,7 +74,7 @@ class CollectionPersister
      * Deletes a PersistentCollection instance completely from a document using $unset.
      *
      * @param PersistentCollection $coll
-     * @param array $options
+     * @param array                $options
      */
     public function delete(PersistentCollection $coll, array $options)
     {
@@ -92,7 +92,7 @@ class CollectionPersister
      * inserting new rows.
      *
      * @param PersistentCollection $coll
-     * @param array $options
+     * @param array                $options
      */
     public function update(PersistentCollection $coll, array $options)
     {
@@ -117,7 +117,7 @@ class CollectionPersister
                 break;
 
             default:
-                throw new \UnexpectedValueException('Unsupported collection strategy: ' . $mapping['strategy']);
+                throw new \UnexpectedValueException('Unsupported collection strategy: '.$mapping['strategy']);
         }
     }
 
@@ -130,7 +130,7 @@ class CollectionPersister
      * reindexed numerically before storage.
      *
      * @param PersistentCollection $coll
-     * @param array $options
+     * @param array                $options
      */
     private function setCollection(PersistentCollection $coll, array $options)
     {
@@ -140,8 +140,8 @@ class CollectionPersister
         $pb = $this->pb;
 
         $callback = isset($mapping['embedded'])
-            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
-            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
+            ? function ($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
+        : function ($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
 
         $setData = $coll->map($callback)->toArray();
 
@@ -161,7 +161,7 @@ class CollectionPersister
      * strategies.
      *
      * @param PersistentCollection $coll
-     * @param array $options
+     * @param array                $options
      */
     private function deleteElements(PersistentCollection $coll, array $options)
     {
@@ -176,12 +176,12 @@ class CollectionPersister
         $query = array('$unset' => array());
 
         foreach ($deleteDiff as $key => $document) {
-            $query['$unset'][$propertyPath . '.' . $key] = true;
+            $query['$unset'][$propertyPath.'.'.$key] = true;
         }
 
         $this->executeQuery($parent, $query, $options);
 
-        /**
+        /*
          * @todo This is a hack right now because we don't have a proper way to
          * remove an element from an array by its key. Unsetting the key results
          * in the element being left in the array as null so we have to pull
@@ -197,7 +197,7 @@ class CollectionPersister
      * strategies.
      *
      * @param PersistentCollection $coll
-     * @param array $options
+     * @param array                $options
      */
     private function insertElements(PersistentCollection $coll, array $options)
     {
@@ -213,8 +213,8 @@ class CollectionPersister
         $pb = $this->pb;
 
         $callback = isset($mapping['embedded'])
-            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
-            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
+            ? function ($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
+        : function ($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
 
         $value = array_values(array_map($callback, $insertDiff));
 
@@ -222,7 +222,7 @@ class CollectionPersister
             $value = array('$each' => $value);
         }
 
-        $query = array('$' . $mapping['strategy'] => array($propertyPath => $value));
+        $query = array('$'.$mapping['strategy'] => array($propertyPath => $value));
 
         $this->executeQuery($parent, $query, $options);
     }
@@ -230,8 +230,9 @@ class CollectionPersister
     /**
      * Gets the document database identifier value for the given document.
      *
-     * @param object $document
+     * @param object        $document
      * @param ClassMetadata $class
+     *
      * @return mixed $id
      */
     private function getDocumentId($document, ClassMetadata $class)
@@ -251,6 +252,7 @@ class CollectionPersister
      *     </code>
      *
      * @param PersistentCollection $coll
+     *
      * @return array $pathAndParent
      */
     private function getPathAndParent(PersistentCollection $coll)
@@ -269,8 +271,9 @@ class CollectionPersister
         $propertyPath = implode('.', array_reverse($fields));
         $path = $mapping['name'];
         if ($propertyPath) {
-            $path = $propertyPath . '.' . $path;
+            $path = $propertyPath.'.'.$path;
         }
+
         return array($path, $parent);
     }
 
@@ -278,8 +281,8 @@ class CollectionPersister
      * Executes a query updating the given document.
      *
      * @param object $document
-     * @param array $query
-     * @param array $options
+     * @param array  $query
+     * @param array  $options
      */
     private function executeQuery($document, array $query, array $options)
     {

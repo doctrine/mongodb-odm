@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\MongoDB\Collection;
@@ -34,6 +34,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  * and to hydrate the raw arrays of data to Doctrine document objects.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Query extends \Doctrine\MongoDB\Query\Query
@@ -60,7 +61,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Whether to hydrate results as document class instances.
      *
-     * @var boolean
+     * @var bool
      */
     private $hydrate = true;
 
@@ -74,7 +75,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Whether or not to require indexes.
      *
-     * @var boolean
+     * @var bool
      */
     private $requireIndexes;
 
@@ -89,14 +90,14 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * Constructor.
      *
      * @param DocumentManager $dm
-     * @param ClassMetadata $class
-     * @param Collection $collection
-     * @param array $query
-     * @param array $options
-     * @param boolean $hydrate
-     * @param boolean $refresh
-     * @param array $primers
-     * @param null $requireIndexes
+     * @param ClassMetadata   $class
+     * @param Collection      $collection
+     * @param array           $query
+     * @param array           $options
+     * @param bool            $hydrate
+     * @param bool            $refresh
+     * @param array           $primers
+     * @param null            $requireIndexes
      */
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
     {
@@ -142,7 +143,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Sets whether or not to hydrate the documents to objects.
      *
-     * @param boolean $hydrate
+     * @param bool $hydrate
      */
     public function setHydrate($hydrate)
     {
@@ -155,7 +156,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
      *
      * This option has no effect if hydration is disabled.
      *
-     * @param boolean $refresh
+     * @param bool $refresh
      */
     public function setRefresh($refresh)
     {
@@ -173,6 +174,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $sort = isset($this->query['sort']) ? $this->query['sort'] : array();
 
         $extractor = new FieldExtractor($query, $sort);
+
         return $extractor->getFields();
     }
 
@@ -185,10 +187,11 @@ class Query extends \Doctrine\MongoDB\Query\Query
     {
         $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {
-            if ( ! $this->collection->isFieldIndexed($field)) {
+            if (! $this->collection->isFieldIndexed($field)) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -202,10 +205,11 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $unindexedFields = array();
         $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {
-            if ( ! $this->collection->isFieldIndexed($field)) {
+            if (! $this->collection->isFieldIndexed($field)) {
                 $unindexedFields[] = $field;
             }
         }
+
         return $unindexedFields;
     }
 
@@ -213,6 +217,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * Execute the query and returns the results.
      *
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     *
      * @return mixed
      */
     public function execute()
@@ -223,7 +228,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
         $results = parent::execute();
 
-        if ( ! $this->hydrate) {
+        if (! $this->hydrate) {
             return $results;
         }
 
@@ -253,11 +258,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
         if (($this->query['type'] === self::TYPE_FIND_AND_UPDATE ||
              $this->query['type'] === self::TYPE_FIND_AND_REMOVE) &&
             is_array($results) && isset($results['_id'])) {
-
             $results = $uow->getOrCreateDocument($this->class->name, $results, $this->unitOfWorkHints);
         }
 
-        if ( ! empty($this->primers)) {
+        if (! empty($this->primers)) {
             $referencePrimer = new ReferencePrimer($this->dm, $uow);
 
             foreach ($this->primers as $fieldName => $primer) {
@@ -278,7 +282,9 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * to any preparation done by the base Query class.
      *
      * @see \Doctrine\MongoDB\Cursor::prepareCursor()
+     *
      * @param BaseCursor $cursor
+     *
      * @return Cursor|EagerCursor
      */
     protected function prepareCursor(BaseCursor $cursor)
@@ -294,7 +300,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $cursor = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
 
         // Wrap ODM Cursor with EagerCursor
-        if ( ! empty($this->query['eagerCursor'])) {
+        if (! empty($this->query['eagerCursor'])) {
             $cursor = new EagerCursor($cursor, $this->dm->getUnitOfWork(), $this->class);
         }
 
@@ -307,7 +313,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Return whether queries on this document should require indexes.
      *
-     * @return boolean
+     * @return bool
      */
     private function isIndexRequired()
     {

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
 use Doctrine\Common\EventManager;
@@ -31,9 +31,10 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
- * type based on document's ClassMetadata
+ * type based on document's ClassMetadata.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class HydratorFactory
@@ -53,7 +54,7 @@ class HydratorFactory
     private $unitOfWork;
 
     /**
-     * The EventManager associated with this Hydrator
+     * The EventManager associated with this Hydrator.
      *
      * @var \Doctrine\Common\EventManager
      */
@@ -62,7 +63,7 @@ class HydratorFactory
     /**
      * Whether to automatically (re)generate hydrator classes.
      *
-     * @var boolean
+     * @var bool
      */
     private $autoGenerate;
 
@@ -89,18 +90,19 @@ class HydratorFactory
 
     /**
      * @param DocumentManager $dm
-     * @param EventManager $evm
-     * @param string $hydratorDir
-     * @param string $hydratorNs
-     * @param boolean $autoGenerate
+     * @param EventManager    $evm
+     * @param string          $hydratorDir
+     * @param string          $hydratorNs
+     * @param bool            $autoGenerate
+     *
      * @throws HydratorException
      */
     public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate)
     {
-        if ( ! $hydratorDir) {
+        if (! $hydratorDir) {
             throw HydratorException::hydratorDirectoryRequired();
         }
-        if ( ! $hydratorNs) {
+        if (! $hydratorNs) {
             throw HydratorException::hydratorNamespaceRequired();
         }
         $this->dm = $dm;
@@ -124,6 +126,7 @@ class HydratorFactory
      * Gets the hydrator object for the given document class.
      *
      * @param string $className
+     *
      * @return \Doctrine\ODM\MongoDB\Hydrator\HydratorInterface $hydrator
      */
     public function getHydratorFor($className)
@@ -131,44 +134,45 @@ class HydratorFactory
         if (isset($this->hydrators[$className])) {
             return $this->hydrators[$className];
         }
-        $hydratorClassName = str_replace('\\', '', $className) . 'Hydrator';
-        $fqn = $this->hydratorNamespace . '\\' . $hydratorClassName;
+        $hydratorClassName = str_replace('\\', '', $className).'Hydrator';
+        $fqn = $this->hydratorNamespace.'\\'.$hydratorClassName;
         $class = $this->dm->getClassMetadata($className);
 
-        if ( ! class_exists($fqn, false)) {
-            $fileName = $this->hydratorDir . DIRECTORY_SEPARATOR . $hydratorClassName . '.php';
+        if (! class_exists($fqn, false)) {
+            $fileName = $this->hydratorDir.DIRECTORY_SEPARATOR.$hydratorClassName.'.php';
             if ($this->autoGenerate) {
                 $this->generateHydratorClass($class, $hydratorClassName, $fileName);
             }
             require $fileName;
         }
         $this->hydrators[$className] = new $fqn($this->dm, $this->unitOfWork, $class);
+
         return $this->hydrators[$className];
     }
 
     /**
      * Generates hydrator classes for all given classes.
      *
-     * @param array $classes The classes (ClassMetadata instances) for which to generate hydrators.
-     * @param string $toDir The target directory of the hydrator classes. If not specified, the
-     *                      directory configured on the Configuration of the DocumentManager used
-     *                      by this factory is used.
+     * @param array  $classes The classes (ClassMetadata instances) for which to generate hydrators.
+     * @param string $toDir   The target directory of the hydrator classes. If not specified, the
+     *                        directory configured on the Configuration of the DocumentManager used
+     *                        by this factory is used.
      */
     public function generateHydratorClasses(array $classes, $toDir = null)
     {
         $hydratorDir = $toDir ?: $this->hydratorDir;
-        $hydratorDir = rtrim($hydratorDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $hydratorDir = rtrim($hydratorDir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
         foreach ($classes as $class) {
-            $hydratorClassName = str_replace('\\', '', $class->name) . 'Hydrator';
-            $hydratorFileName = $hydratorDir . $hydratorClassName . '.php';
+            $hydratorClassName = str_replace('\\', '', $class->name).'Hydrator';
+            $hydratorFileName = $hydratorDir.$hydratorClassName.'.php';
             $this->generateHydratorClass($class, $hydratorClassName, $hydratorFileName);
         }
     }
 
     /**
      * @param ClassMetadata $class
-     * @param string $hydratorClassName
-     * @param string $fileName
+     * @param string        $hydratorClassName
+     * @param string        $fileName
      */
     private function generateHydratorClass(ClassMetadata $class, $hydratorClassName, $fileName)
     {
@@ -208,9 +212,7 @@ EOF
                     $mapping['fieldName'],
                     Type::getType($mapping['type'])->closureToPHP()
                 );
-
-
-            } elseif ( ! isset($mapping['association'])) {
+            } elseif (! isset($mapping['association'])) {
                 $code .= sprintf(<<<EOF
 
         /** @Field(type="{$mapping['type']}") */
@@ -379,15 +381,15 @@ EOF
 
         $parentDirectory = dirname($fileName);
 
-        if ( ! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
+        if (! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
             throw HydratorException::hydratorDirectoryNotWritable();
         }
 
-        if ( ! is_writable($parentDirectory)) {
+        if (! is_writable($parentDirectory)) {
             throw HydratorException::hydratorDirectoryNotWritable();
         }
 
-        $tmpFileName = $fileName . '.' . uniqid('', true);
+        $tmpFileName = $fileName.'.'.uniqid('', true);
         file_put_contents($tmpFileName, $code);
         rename($tmpFileName, $fileName);
     }
@@ -395,16 +397,17 @@ EOF
     /**
      * Hydrate array of MongoDB document data into the given document object.
      *
-     * @param object $document  The document object to hydrate the data into.
-     * @param array $data The array of document data.
-     * @param array $hints Any hints to account for during reconstitution/lookup of the document.
+     * @param object $document The document object to hydrate the data into.
+     * @param array  $data     The array of document data.
+     * @param array  $hints    Any hints to account for during reconstitution/lookup of the document.
+     *
      * @return array $values The array of hydrated values.
      */
     public function hydrate($document, $data, array $hints = array())
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners
-        if ( ! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
+        if (! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
             $args = array(&$data);
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
@@ -413,7 +416,7 @@ EOF
         }
 
         // alsoLoadMethods may transform the document before hydration
-        if ( ! empty($metadata->alsoLoadMethods)) {
+        if (! empty($metadata->alsoLoadMethods)) {
             foreach ($metadata->alsoLoadMethods as $method => $fieldNames) {
                 foreach ($fieldNames as $fieldName) {
                     // Invoke the method only once for the first field we find
@@ -431,7 +434,7 @@ EOF
         }
 
         // Invoke the postLoad lifecycle callbacks and listeners
-        if ( ! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
+        if (! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
             $metadata->invokeLifecycleCallbacks(Events::postLoad, $document);
         }
         if ($this->evm->hasListeners(Events::postLoad)) {

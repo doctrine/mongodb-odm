@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\MongoDB\Collection;
@@ -35,6 +35,7 @@ use Doctrine\ODM\MongoDB\Query\Query;
  * For compatibility, this class also extends Doctrine\MongoDB\Cursor.
  *
  * @since  1.0
+ *
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  * @author Jeremy Mikola <jmikola@gmail.com>
@@ -58,7 +59,7 @@ class Cursor extends BaseCursor
     /**
      * Whether or not to hydrate results as document class instances.
      *
-     * @var boolean
+     * @var bool
      */
     private $hydrate = true;
 
@@ -80,9 +81,9 @@ class Cursor extends BaseCursor
     /**
      * Constructor.
      *
-     * @param BaseCursor    $baseCursor  Doctrine\MongoDB\Cursor instance being wrapped
-     * @param UnitOfWork    $unitOfWork  UnitOfWork for result hydration and query preparation
-     * @param ClassMetadata $class       ClassMetadata for the document class being queried
+     * @param BaseCursor    $baseCursor Doctrine\MongoDB\Cursor instance being wrapped
+     * @param UnitOfWork    $unitOfWork UnitOfWork for result hydration and query preparation
+     * @param ClassMetadata $class      ClassMetadata for the document class being queried
      */
     public function __construct(BaseCursor $baseCursor, UnitOfWork $unitOfWork, ClassMetadata $class)
     {
@@ -106,6 +107,7 @@ class Cursor extends BaseCursor
      * Return the database connection for this cursor.
      *
      * @see \Doctrine\MongoDB\Cursor::getConnection()
+     *
      * @return Connection
      */
     public function getConnection()
@@ -117,6 +119,7 @@ class Cursor extends BaseCursor
      * Return the collection for this cursor.
      *
      * @see \Doctrine\MongoDB\Cursor::getCollection()
+     *
      * @return Collection
      */
     public function getCollection()
@@ -128,6 +131,7 @@ class Cursor extends BaseCursor
      * Return the selected fields (projection).
      *
      * @see \Doctrine\MongoDB\Cursor::getFields()
+     *
      * @return array
      */
     public function getFields()
@@ -159,6 +163,7 @@ class Cursor extends BaseCursor
      * Return the query criteria.
      *
      * @see \Doctrine\MongoDB\Cursor::getQuery()
+     *
      * @return array
      */
     public function getQuery()
@@ -182,13 +187,16 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::addOption()
      * @see http://php.net/manual/en/mongocursor.addoption.php
+     *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @return self
      */
     public function addOption($key, $value)
     {
         $this->baseCursor->addOption($key, $value);
+
         return $this;
     }
 
@@ -197,12 +205,15 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::batchSize()
      * @see http://php.net/manual/en/mongocursor.batchsize.php
-     * @param integer $num
+     *
+     * @param int $num
+     *
      * @return self
      */
     public function batchSize($num)
     {
         $this->baseCursor->batchSize($num);
+
         return $this;
     }
 
@@ -214,6 +225,7 @@ class Cursor extends BaseCursor
      * @see \Doctrine\MongoDB\Cursor::current()
      * @see http://php.net/manual/en/iterator.current.php
      * @see http://php.net/manual/en/mongocursor.current.php
+     *
      * @return array|object|null
      */
     public function current()
@@ -232,11 +244,13 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::fields()
      * @see http://php.net/manual/en/mongocursor.fields.php
+     *
      * @return self
      */
     public function fields(array $f)
     {
         $this->baseCursor->fields($f);
+
         return $this;
     }
 
@@ -247,6 +261,7 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::getNext()
      * @see http://php.net/manual/en/mongocursor.getnext.php
+     *
      * @return array|object|null
      */
     public function getNext()
@@ -265,6 +280,7 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::getReadPreference()
      * @see http://php.net/manual/en/mongocursor.getreadpreference.php
+     *
      * @return array
      */
     public function getReadPreference()
@@ -277,8 +293,10 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::setReadPreference()
      * @see http://php.net/manual/en/mongocursor.setreadpreference.php
+     *
      * @param string $readPreference
      * @param array  $tags
+     *
      * @return self
      */
     public function setReadPreference($readPreference, array $tags = null)
@@ -286,6 +304,7 @@ class Cursor extends BaseCursor
         $this->baseCursor->setReadPreference($readPreference, $tags);
         $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE] = $readPreference;
         $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE_TAGS] = $tags;
+
         return $this;
     }
 
@@ -297,24 +316,29 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::hint()
      * @see http://php.net/manual/en/mongocursor.hint.php
+     *
      * @param array|string $keyPattern
+     *
      * @return self
      */
     public function hint($keyPattern)
     {
         $this->baseCursor->hint($keyPattern);
+
         return $this;
     }
 
     /**
      * Set whether to hydrate results as document class instances.
      *
-     * @param boolean $bool
+     * @param bool $bool
+     *
      * @return self
      */
     public function hydrate($hydrate = true)
     {
         $this->hydrate = (boolean) $hydrate;
+
         return $this;
     }
 
@@ -323,12 +347,15 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::immortal()
      * @see http://php.net/manual/en/mongocursor.immortal.php
-     * @param boolean $liveForever
+     *
+     * @param bool $liveForever
+     *
      * @return self
      */
     public function immortal($liveForever = true)
     {
         $this->baseCursor->immortal($liveForever);
+
         return $this;
     }
 
@@ -337,12 +364,15 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::limit()
      * @see http://php.net/manual/en/mongocursor.limit.php
-     * @param integer $num
+     *
+     * @param int $num
+     *
      * @return self
      */
     public function limit($num)
     {
         $this->baseCursor->limit($num);
+
         return $this;
     }
 
@@ -352,12 +382,14 @@ class Cursor extends BaseCursor
      *
      * This option has no effect if hydration is disabled.
      *
-     * @param boolean $refresh
+     * @param bool $refresh
+     *
      * @return self
      */
     public function refresh($refresh = true)
     {
         $this->unitOfWorkHints[Query::HINT_REFRESH] = (boolean) $refresh;
+
         return $this;
     }
 
@@ -366,12 +398,15 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::skip()
      * @see http://php.net/manual/en/mongocursor.skip.php
-     * @param integer $num
+     *
+     * @param int $num
+     *
      * @return self
      */
     public function skip($num)
     {
         $this->baseCursor->skip($num);
+
         return $this;
     }
 
@@ -380,7 +415,9 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::slaveOkay()
      * @see http://php.net/manual/en/mongocursor.slaveokay.php
-     * @param boolean $ok
+     *
+     * @param bool $ok
+     *
      * @return self
      */
     public function slaveOkay($ok = true)
@@ -388,6 +425,7 @@ class Cursor extends BaseCursor
         $ok = (boolean) $ok;
         $this->baseCursor->slaveOkay($ok);
         $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
+
         return $this;
     }
 
@@ -396,11 +434,13 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::snapshot()
      * @see http://php.net/manual/en/mongocursor.snapshot.php
+     *
      * @return self
      */
     public function snapshot()
     {
         $this->baseCursor->snapshot();
+
         return $this;
     }
 
@@ -411,7 +451,9 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::sort()
      * @see http://php.net/manual/en/mongocursor.sort.php
+     *
      * @param array $fields
+     *
      * @return self
      */
     public function sort($fields)
@@ -421,6 +463,7 @@ class Cursor extends BaseCursor
             ->prepareSortOrProjection($fields);
 
         $this->baseCursor->sort($fields);
+
         return $this;
     }
 
@@ -429,12 +472,15 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::tailable()
      * @see http://php.net/manual/en/mongocursor.tailable.php
-     * @param boolean $tail
+     *
+     * @param bool $tail
+     *
      * @return self
      */
     public function tailable($tail = true)
     {
         $this->baseCursor->tailable($tail);
+
         return $this;
     }
 
@@ -443,12 +489,15 @@ class Cursor extends BaseCursor
      *
      * @see \Doctrine\MongoDB\Cursor::timeout()
      * @see http://php.net/manual/en/mongocursor.timeout.php
-     * @param integer $ms
+     *
+     * @param int $ms
+     *
      * @return self
      */
     public function timeout($ms)
     {
         $this->baseCursor->timeout($ms);
+
         return $this;
     }
 }

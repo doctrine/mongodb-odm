@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\Configuration;
@@ -86,11 +86,11 @@ class FilterCollection
      */
     public function enable($name)
     {
-        if ( ! $this->has($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
+        if (! $this->has($name)) {
+            throw new \InvalidArgumentException("Filter '".$name."' does not exist.");
         }
 
-        if ( ! $this->isEnabled($name)) {
+        if (! $this->isEnabled($name)) {
             $filterClass = $this->config->getFilterClassName($name);
             $filterParameters = $this->config->getFilterParameters($name);
             $filter = new $filterClass($this->dm);
@@ -135,9 +135,10 @@ class FilterCollection
      */
     public function getFilter($name)
     {
-        if ( ! $this->isEnabled($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
+        if (! $this->isEnabled($name)) {
+            throw new \InvalidArgumentException("Filter '".$name."' is not enabled.");
         }
+
         return $this->enabledFilters[$name];
     }
 
@@ -145,6 +146,7 @@ class FilterCollection
      * Checks whether filter with given name is defined.
      *
      * @param string $name Name of the filter.
+     *
      * @return bool true if the filter exists, false if not.
      */
     public function has($name)
@@ -156,6 +158,7 @@ class FilterCollection
      * Checks whether filter with given name is enabled.
      *
      * @param string $name Name of the filter
+     *
      * @return bool
      */
     public function isEnabled($name)
@@ -167,6 +170,7 @@ class FilterCollection
      * Gets enabled filter criteria.
      *
      * @param ClassMetadata $class
+     *
      * @return array
      */
     public function getFilterCriteria(ClassMetadata $class)
@@ -178,7 +182,7 @@ class FilterCollection
         return call_user_func_array(
             array($this->cm, 'merge'),
             array_map(
-                function($filter) use ($class) { return $filter->addFilterCriteria($class); },
+                function ($filter) use ($class) { return $filter->addFilterCriteria($class); },
                 $this->enabledFilters
             )
         );

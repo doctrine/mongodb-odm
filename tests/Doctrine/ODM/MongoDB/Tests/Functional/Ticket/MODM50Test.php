@@ -8,7 +8,7 @@ class MODM50Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $image = new MODM50Image(__DIR__ . '/MODM50/test.txt');
+        $image = new MODM50Image(__DIR__.'/MODM50/test.txt');
         $this->dm->persist($image);
         $this->dm->flush();
 
@@ -33,7 +33,10 @@ class MODM50File
     /** @ODM\File */
     public $file;
 
-    function __construct($file) {$this->file = $file;}
+    public function __construct($file)
+    {
+        $this->file = $file;
+    }
 }
 
 /** @ODM\Document */

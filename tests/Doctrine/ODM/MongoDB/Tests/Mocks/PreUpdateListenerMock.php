@@ -2,9 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
-use Doctrine\Common\EventSubscriber;
 
 class PreUpdateListenerMock implements EventSubscriber
 {
@@ -12,7 +12,7 @@ class PreUpdateListenerMock implements EventSubscriber
     {
         return array(
             'onFlush',
-            'preUpdate'
+            'preUpdate',
         );
     }
 

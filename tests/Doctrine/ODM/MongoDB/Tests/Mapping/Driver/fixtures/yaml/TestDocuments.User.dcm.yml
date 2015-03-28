@@ -41,4 +41,3 @@ TestDocuments\User:
     postPersist: [doStuffOnPostPersist, doOtherStuffOnPostPersist]
   alsoLoadMethods:
     doStuffOnAlsoLoad: unmappedField
-

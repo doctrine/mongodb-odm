@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,20 +17,20 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
+use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
+use Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
+use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console;
-use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
-use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
-use Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory;
 
 /**
  * Command to generate document classes and method stubs from your mapping information.
  *
  * @since   1.0
+ *
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -76,7 +77,7 @@ class GenerateDocumentsCommand extends Console\Command\Command
             new InputOption(
                 'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces.', 4
-            )
+            ),
         ))
         ->setHelp(<<<EOT
 Generate document classes and method stubs from your mapping information.
@@ -107,21 +108,21 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
-        
+
         $cmf = new DisconnectedClassMetadataFactory();
         $cmf->setDocumentManager($dm);
         $cmf->setConfiguration($dm->getConfiguration());
         $metadatas = $cmf->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
-        
+
         // Process destination directory
         $destPath = realpath($input->getArgument('dest-path'));
 
-        if ( ! file_exists($destPath)) {
+        if (! file_exists($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } elseif ( ! is_writable($destPath)) {
+        } elseif (! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );
@@ -153,7 +154,7 @@ EOT
             // Outputting information message
             $output->writeln(array(
                 '',
-                sprintf('Document classes have been generated to "<info>%s</info>".', $destPath)
+                sprintf('Document classes have been generated to "<info>%s</info>".', $destPath),
             ));
         } else {
             $output->writeln('No Metadata Classes to process.');

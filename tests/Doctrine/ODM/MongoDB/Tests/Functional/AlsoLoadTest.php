@@ -2,8 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Functional\AlsoLoad;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Documents\Functional\AlsoLoad;
 
 class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -16,9 +16,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'zip' => 'zip',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadDocument')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadDocument')->findOneBy(array());
 
         $this->assertEquals('foo', $document->foo, '"foo" gets its own value and ignores "bar" and "zip"');
         $this->assertEquals('bar', $document->bar, '"bar" is hydrated normally');
@@ -29,9 +29,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $document = array('zip' => 'zip');
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadDocument')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadDocument')->findOneBy(array());
 
         $this->assertEquals('zip', $document->zap, '"zap" gets value from "zip", overwriting its default value');
         $this->assertEquals('zip', $document->zip, '"zip" is hydrated normally');
@@ -44,9 +44,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'zip' => 'zip',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadDocument')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadDocument')->findOneBy(array());
 
         $this->assertEquals(null, $document->foo, '"foo" gets null value from "bar" and ignores "zip"');
         $this->assertEquals('zip', $document->baz, '"baz" gets value from "zip" and ignores "bar"');
@@ -58,9 +58,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $document = array('zip' => 'zip');
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadDocument')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadDocument')->findOneBy(array());
 
         $this->assertEquals('zip', $document->foo, '"foo" gets value from "zip" since "bar" was missing');
         $this->assertNull($document->bar, '"bar" is not hydrated');
@@ -74,9 +74,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'testOld' => 'testOld',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadDocument')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadDocument')->findOneBy(array());
 
         $this->assertEquals('testNew', $document->test, '"test" gets value from "testNew"');
         $this->assertEquals('testNew', $document->testNew, '"testNew" is hydrated normally');
@@ -90,9 +90,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'name' => 'Kris Wallsmith',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadDocument')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadDocument')->findOneBy(array());
 
         $this->assertEquals('Jonathan', $document->firstName, '"firstName" gets value from exploded "name" but is overwritten with normal hydration');
         $this->assertEquals('Wallsmith', $document->lastName, '"lastName" gets value from exploded "name"');
@@ -103,9 +103,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $document = array('testOld' => null);
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadDocument')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadDocument')->findOneBy(array());
 
         $this->assertNull($document->test, '"test" gets value from "testOld", overwriting its default value');
         $this->assertNull($document->testOld, '"testOld" is hydrated normally"');
@@ -120,9 +120,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'testOlder' => 'testOlder',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadDocument')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadDocument')->findOneBy(array());
 
         $this->assertEquals('Jonathan Wage', $document->name, '"name" is hydrated normally');
         $this->assertEquals('Kris Wallsmith', $document->fullName, '"fullName" is hydrated normally');
@@ -141,9 +141,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'testOlder' => 'testOlder',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadDocument')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadDocument')->findOneBy(array());
 
         $this->assertNull($document->name, '"name" is not hydrated');
         $this->assertEquals('Kris Wallsmith', $document->fullName, '"fullName" is hydrated normally');
@@ -166,7 +166,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $document = $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->findOne();
+        $document = $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadDocument')->findOne();
 
         $this->assertEquals('Jonathan', $document['firstName'], '"firstName" is hydrated normally');
         $this->assertEquals('Wage', $document['lastName'], '"lastName" is hydrated normally');
@@ -183,9 +183,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'testOlder' => 'testOlder',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadChild')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadChild')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadChild')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadChild')->findOneBy(array());
 
         $this->assertEquals('buzz', $document->fizz, '"fizz" gets value from "buzz"');
         $this->assertEquals('test', $document->test, '"test" is hydrated normally, since "testOldest" was missing and parent method was overridden');
@@ -198,9 +198,9 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'testReallyOldest' => 'testReallyOldest',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadGrandchild')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\AlsoLoadGrandchild')->insert($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadGrandchild')->findOneBy(array());
+        $document = $this->dm->getRepository(__NAMESPACE__.'\AlsoLoadGrandchild')->findOneBy(array());
 
         $this->assertEquals('buzz', $document->fizz, '"fizz" gets value from "buzz"');
         $this->assertEquals('testReallyOldest', $document->test, '"test" gets value from "testReallyOldest"');

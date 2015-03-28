@@ -23,6 +23,7 @@ class UnitOfWorkMock extends \Doctrine\ODM\MongoDB\UnitOfWork
     public function getDocumentChangeSet($document)
     {
         $oid = spl_object_hash($document);
+
         return isset($this->_mockDataChangeSets[$oid]) ?
                 $this->_mockDataChangeSets[$oid] : parent::getDocumentChangeSet($document);
     }

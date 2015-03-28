@@ -2,10 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
-use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -24,6 +22,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testLoadMapping
+     *
      * @param ClassMetadata $class
      */
     public function testDocumentCollectionNameAndInheritance($class)
@@ -36,6 +35,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testDocumentCollectionNameAndInheritance
+     *
      * @param ClassMetadata $class
      */
     public function testFieldMappings($class)
@@ -52,6 +52,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testDocumentCollectionNameAndInheritance
+     *
      * @param ClassMetadata $class
      */
     public function testAssociationMappings($class)
@@ -67,6 +68,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testDocumentCollectionNameAndInheritance
+     *
      * @param ClassMetadata $class
      */
     public function testGetAssociationTargetClass($class)
@@ -82,6 +84,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     /**
      * @depends testDocumentCollectionNameAndInheritance
      * @expectedException \InvalidArgumentException
+     *
      * @param ClassMetadata $class
      */
     public function testGetAssociationTargetClassThrowsExceptionWhenEmpty($class)
@@ -91,6 +94,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testDocumentCollectionNameAndInheritance
+     *
      * @param ClassMetadata $class
      */
     public function testStringFieldMappings($class)
@@ -102,6 +106,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testFieldMappings
+     *
      * @param ClassMetadata $class
      */
     public function testIdentifier($class)
@@ -113,6 +118,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testFieldMappings
+     *
      * @param ClassMetadata $class
      */
     public function testVersionFieldMappings($class)
@@ -124,9 +130,10 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     }
 
     /**
-    * @depends testFieldMappings
-    * @param ClassMetadata $class
-    */
+     * @depends testFieldMappings
+     *
+     * @param ClassMetadata $class
+     */
     public function testLockFieldMappings($class)
     {
         $this->assertEquals('int', $class->fieldMappings['lock']['type']);
@@ -137,6 +144,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testIdentifier
+     *
      * @param ClassMetadata $class
      */
     public function testAssocations($class)
@@ -148,6 +156,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testAssocations
+     *
      * @param ClassMetadata $class
      */
     public function testOwningOneToOneAssocation($class)
@@ -166,6 +175,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testOwningOneToOneAssocation
+     *
      * @param ClassMetadata $class
      */
     public function testLifecycleCallbacks($class)
@@ -182,6 +192,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testLifecycleCallbacks
+     *
      * @param ClassMetadata $class
      */
     public function testCustomFieldName($class)
@@ -194,6 +205,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testCustomFieldName
+     *
      * @param ClassMetadata $class
      */
     public function testCustomReferenceFieldName($class)
@@ -206,6 +218,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testCustomReferenceFieldName
+     *
      * @param ClassMetadata $class
      */
     public function testCustomEmbedFieldName($class)
@@ -218,6 +231,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testCustomEmbedFieldName
+     *
      * @param ClassMetadata $class
      */
     public function testDiscriminator($class)
@@ -234,6 +248,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testDiscriminator
+     *
      * @param ClassMetadata $class
      */
     public function testEmbedDiscriminator($class)
@@ -243,7 +258,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
         $this->assertEquals('discr', $class->fieldMappings['otherPhonenumbers']['discriminatorField']);
         $this->assertEquals(array(
             'home' => 'Doctrine\ODM\MongoDB\Tests\Mapping\HomePhonenumber',
-            'work' => 'Doctrine\ODM\MongoDB\Tests\Mapping\WorkPhonenumber'
+            'work' => 'Doctrine\ODM\MongoDB\Tests\Mapping\WorkPhonenumber',
         ), $class->fieldMappings['otherPhonenumbers']['discriminatorMap']);
 
         return $class;
@@ -251,6 +266,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testEmbedDiscriminator
+     *
      * @param ClassMetadata $class
      */
     public function testReferenceDiscriminator($class)
@@ -260,7 +276,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
         $this->assertEquals('discr', $class->fieldMappings['phonenumbers']['discriminatorField']);
         $this->assertEquals(array(
             'home' => 'Doctrine\ODM\MongoDB\Tests\Mapping\HomePhonenumber',
-            'work' => 'Doctrine\ODM\MongoDB\Tests\Mapping\WorkPhonenumber'
+            'work' => 'Doctrine\ODM\MongoDB\Tests\Mapping\WorkPhonenumber',
         ), $class->fieldMappings['phonenumbers']['discriminatorMap']);
 
         return $class;
@@ -268,6 +284,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     /**
      * @depends testCustomFieldName
+     *
      * @param ClassMetadata $class
      */
     public function testIndexes($class)
@@ -277,19 +294,19 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
         /* Sort indexes by their first fieldname. This is necessary since the
          * index registration order may differ among drivers.
          */
-        $this->assertTrue(usort($indexes, function(array $a, array $b) {
+        $this->assertTrue(usort($indexes, function (array $a, array $b) {
             return strcmp(key($a['keys']), key($b['keys']));
         }));
 
         $this->assertTrue(isset($indexes[0]['keys']['createdAt']));
         $this->assertEquals(1, $indexes[0]['keys']['createdAt']);
-        $this->assertTrue( ! empty($indexes[0]['options']));
+        $this->assertTrue(! empty($indexes[0]['options']));
         $this->assertTrue(isset($indexes[0]['options']['expireAfterSeconds']));
         $this->assertSame(3600, $indexes[0]['options']['expireAfterSeconds']);
 
         $this->assertTrue(isset($indexes[1]['keys']['email']));
         $this->assertEquals(-1, $indexes[1]['keys']['email']);
-        $this->assertTrue( ! empty($indexes[1]['options']));
+        $this->assertTrue(! empty($indexes[1]['options']));
         $this->assertTrue(isset($indexes[1]['options']['unique']));
         $this->assertEquals(true, $indexes[1]['options']['unique']);
         $this->assertTrue(isset($indexes[1]['options']['dropDups']));
@@ -297,7 +314,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
         $this->assertTrue(isset($indexes[2]['keys']['mysqlProfileId']));
         $this->assertEquals(-1, $indexes[2]['keys']['mysqlProfileId']);
-        $this->assertTrue( ! empty($indexes[2]['options']));
+        $this->assertTrue(! empty($indexes[2]['options']));
         $this->assertTrue(isset($indexes[2]['options']['unique']));
         $this->assertEquals(true, $indexes[2]['options']['unique']);
         $this->assertTrue(isset($indexes[2]['options']['dropDups']));
@@ -466,7 +483,7 @@ class AbstractMappingDriverUser
             'discriminatorField' => 'discr',
             'discriminatorMap' => array(
                 'home' => 'HomePhonenumber',
-                'work' => 'WorkPhonenumber'
+                'work' => 'WorkPhonenumber',
             ),
         ));
         $metadata->mapManyReference(array(

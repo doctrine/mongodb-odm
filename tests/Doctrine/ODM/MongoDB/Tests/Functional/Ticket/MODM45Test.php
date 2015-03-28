@@ -16,7 +16,7 @@ class MODM45Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $a = $this->dm->find(__NAMESPACE__.'\MODM45A', $a->getId());
-        $c = (null !== $a->getB()); 
+        $c = (null !== $a->getB());
         $this->assertTrue($c); // returns false, while expecting true
     }
 }
@@ -30,9 +30,18 @@ class MODM45A
     /** @ODM\EmbedOne(targetDocument="MODM45B") */
     protected $b;
 
-    function getId()  {return $this->id;}
-    function getB()   {return $this->b;}
-    function setB($b) {$this->b = $b;}
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function getB()
+    {
+        return $this->b;
+    }
+    public function setB($b)
+    {
+        $this->b = $b;
+    }
 }
 
 /** @ODM\EmbeddedDocument */
@@ -40,6 +49,12 @@ class MODM45B
 {
     /** @ODM\String */
     protected $val;
-    function setVal($val) {$this->val = $val;}
-    function getVal() {return $this->val;}
+    public function setVal($val)
+    {
+        $this->val = $val;
+    }
+    public function getVal()
+    {
+        return $this->val;
+    }
 }

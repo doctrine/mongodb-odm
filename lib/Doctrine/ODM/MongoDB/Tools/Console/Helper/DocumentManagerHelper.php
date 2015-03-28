@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools\Console\Helper;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -26,6 +26,7 @@ use Symfony\Component\Console\Helper\Helper;
  * Symfony console component helper for accessing a DocumentManager instance.
  *
  * @since  1.0
+ *
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
 class DocumentManagerHelper extends Helper
@@ -56,6 +57,7 @@ class DocumentManagerHelper extends Helper
      * Get the canonical name of this helper.
      *
      * @see \Symfony\Component\Console\Helper\HelperInterface::getName()
+     *
      * @return string
      */
     public function getName()

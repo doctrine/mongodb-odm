@@ -68,8 +68,8 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testGetFilterCollection()
     {
         $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Query\FilterCollection', $this->dm->getFilterCollection());
-    }  
-    
+    }
+
     public function testGetPartialReference()
     {
         $id = new \MongoId();
@@ -93,13 +93,14 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('remove'),
             array('merge'),
             array('refresh'),
-            array('detach')
+            array('detach'),
         );
     }
 
     /**
      * @dataProvider dataMethodsAffectedByNoObjectArguments
      * @expectedException \InvalidArgumentException
+     *
      * @param string $methodName
      */
     public function testThrowsExceptionOnNonObjectValues($methodName)
@@ -120,6 +121,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     /**
      * @dataProvider dataAffectedByErrorIfClosedException
+     *
      * @param string $methodName
      */
     public function testAffectedByErrorIfClosedException($methodName)

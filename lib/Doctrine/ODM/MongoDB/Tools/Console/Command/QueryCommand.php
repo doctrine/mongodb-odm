@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,17 +17,17 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
+use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console;
 
 /**
  * Command to query mongodb and inspect the outputted results from your document classes.
  *
  * @since   1.0
+ *
  * @author  Jonathan Wage <jonwage@gmail.com>
  */
 class QueryCommand extends Console\Command\Command
@@ -63,7 +64,7 @@ class QueryCommand extends Console\Command\Command
             new InputOption(
                 'depth', null, InputOption::VALUE_REQUIRED,
                 'Dumping depth of Document graph.', 7
-            )
+            ),
         ))
         ->setHelp(<<<EOT
 Execute a query and output the results.
@@ -83,12 +84,12 @@ EOT
 
         $depth = $input->getOption('depth');
 
-        if ( ! is_numeric($depth)) {
+        if (! is_numeric($depth)) {
             throw new \LogicException("Option 'depth' must contain an integer value");
         }
 
         if (($skip = $input->getOption('skip')) !== null) {
-            if ( ! is_numeric($skip)) {
+            if (! is_numeric($skip)) {
                 throw new \LogicException("Option 'skip' must contain an integer value");
             }
 
@@ -96,7 +97,7 @@ EOT
         }
 
         if (($limit = $input->getOption('limit')) !== null) {
-            if ( ! is_numeric($limit)) {
+            if (! is_numeric($limit)) {
                 throw new \LogicException("Option 'limit' must contain an integer value");
             }
 

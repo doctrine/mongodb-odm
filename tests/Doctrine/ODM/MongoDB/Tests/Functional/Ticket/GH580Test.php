@@ -8,7 +8,7 @@ class GH580Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testDocumentPersisterShouldClearQueuedInsertsOnMongoException()
     {
-        $class = __NAMESPACE__ . '\GH580Document';
+        $class = __NAMESPACE__.'\GH580Document';
 
         $schemaManager = $this->dm->getSchemaManager();
         $schemaManager->updateDocumentIndexes($class);
@@ -40,7 +40,7 @@ class GH580Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Remove initial object
         $doc1 = $repository->findOneByName('foo');
-        $this->dm->remove($doc1) ;
+        $this->dm->remove($doc1);
         $this->dm->flush();
         $this->dm->clear($class);
 

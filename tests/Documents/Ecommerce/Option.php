@@ -14,25 +14,28 @@ class Option
 
     /**
      * @ODM\String
+     *
      * @var string
      */
     protected $name;
 
     /**
      * @ODM\EmbedOne(targetDocument="Documents\Ecommerce\Money")
+     *
      * @var float
      */
     protected $money;
 
     /**
      * @ODM\ReferenceOne(targetDocument="Documents\Ecommerce\StockItem", cascade="all")
+     *
      * @var Documents\StockItem
      */
     protected $stockItem;
 
     /**
-     * @param string $name
-     * @param float $price
+     * @param string    $name
+     * @param float     $price
      * @param StockItem $stockItem
      */
     public function __construct($name, Money $money, StockItem $stockItem)
@@ -64,6 +67,7 @@ class Option
         if (true === $object) {
             return $this->money;
         }
+
         return $this->money->getAmount();
     }
 

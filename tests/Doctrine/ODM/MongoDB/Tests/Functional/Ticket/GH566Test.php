@@ -9,7 +9,7 @@ class GH566Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testFoo()
     {
-        $class = __NAMESPACE__ . '\GH566Document';
+        $class = __NAMESPACE__.'\GH566Document';
 
         $doc1 = new GH566Document();
         $doc2 = new GH566Document();

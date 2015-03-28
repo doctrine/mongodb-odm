@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -34,6 +34,7 @@ use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
  * write their own repositories with business-specific methods to locate documents.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -62,8 +63,8 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Initializes a new <tt>DocumentRepository</tt>.
      *
-     * @param DocumentManager $dm The DocumentManager to use.
-     * @param UnitOfWork $uow The UnitOfWork to use.
+     * @param DocumentManager       $dm            The DocumentManager to use.
+     * @param UnitOfWork            $uow           The UnitOfWork to use.
      * @param Mapping\ClassMetadata $classMetadata The class descriptor.
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow, Mapping\ClassMetadata $class)
@@ -75,7 +76,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Create a new Query\Builder instance that is prepopulated for this document name
+     * Create a new Query\Builder instance that is prepopulated for this document name.
      *
      * @return Query\Builder $qb
      */
@@ -93,13 +94,15 @@ class DocumentRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Finds a document by its identifier
+     * Finds a document by its identifier.
      *
-     * @param string|object $id The identifier
-     * @param int $lockMode
-     * @param int $lockVersion
+     * @param string|object $id          The identifier
+     * @param int           $lockMode
+     * @param int           $lockVersion
+     *
      * @throws Mapping\MappingException
      * @throws LockException
+     *
      * @return object The document.
      */
     public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
@@ -161,10 +164,10 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Finds documents by a set of criteria.
      *
-     * @param array        $criteria Query criteria
-     * @param array        $sort     Sort array for Cursor::sort()
-     * @param integer|null $limit    Limit for Cursor::limit()
-     * @param integer|null $skip     Skip for Cursor::skip()
+     * @param array    $criteria Query criteria
+     * @param array    $sort     Sort array for Cursor::sort()
+     * @param int|null $limit    Limit for Cursor::limit()
+     * @param int|null $skip     Skip for Cursor::skip()
      *
      * @return array
      */
@@ -177,6 +180,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Finds a single document by a set of criteria.
      *
      * @param array $criteria
+     *
      * @return object
      */
     public function findOneBy(array $criteria)
@@ -188,11 +192,13 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Adds support for magic finders.
      *
      * @param string $method
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @throws MongoDBException
      * @throws \BadMethodCallException If the method called is an invalid find* method
      *                                 or no find* method at all and therefore an invalid
      *                                 method call.
+     *
      * @return array|object The found document/documents.
      */
     public function __call($method, $arguments)
@@ -205,13 +211,13 @@ class DocumentRepository implements ObjectRepository, Selectable
             $method = 'findOneBy';
         } else {
             throw new \BadMethodCallException(
-                "Undefined method '$method'. The method name must start with " .
-                "either findBy or findOneBy!"
+                "Undefined method '$method'. The method name must start with ".
+                'either findBy or findOneBy!'
             );
         }
 
-        if ( ! isset($arguments[0])) {
-            throw MongoDBException::findByRequiresParameter($method . $by);
+        if (! isset($arguments[0])) {
+            throw MongoDBException::findByRequiresParameter($method.$by);
         }
 
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
@@ -219,7 +225,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         if ($this->class->hasField($fieldName)) {
             return $this->$method(array($fieldName => $arguments[0]));
         } else {
-            throw MongoDBException::invalidFindByCall($this->documentName, $fieldName, $method . $by);
+            throw MongoDBException::invalidFindByCall($this->documentName, $fieldName, $method.$by);
         }
     }
 
@@ -260,7 +266,9 @@ class DocumentRepository implements ObjectRepository, Selectable
      * returns a new collection containing these elements.
      *
      * @see Selectable::matching()
+     *
      * @param Criteria $criteria
+     *
      * @return Collection
      */
     public function matching(Criteria $criteria)

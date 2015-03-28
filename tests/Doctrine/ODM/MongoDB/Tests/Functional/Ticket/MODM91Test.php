@@ -16,6 +16,7 @@ class MODM91Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             Events::postUpdate,
         );
         $evm->addEventListener($events, $this->listener);
+
         return $this->dm;
     }
 

@@ -151,7 +151,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbeddedAssociationsAlwaysCascade()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\EmbeddedAssociationsCascadeTest');
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\EmbeddedAssociationsCascadeTest');
 
         $this->assertTrue($class->fieldMappings['address']['isCascadeRemove']);
         $this->assertTrue($class->fieldMappings['address']['isCascadePersist']);
@@ -172,7 +172,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testEmbedWithCascadeThrowsMappingException()
     {
-        $class = new ClassMetadataInfo(__NAMESPACE__ . '\EmbedWithCascadeTest');
+        $class = new ClassMetadataInfo(__NAMESPACE__.'\EmbedWithCascadeTest');
         $class->mapOneEmbedded(array(
             'fieldName' => 'address',
             'targetDocument' => 'Documents\Address',
@@ -250,7 +250,7 @@ class EmbeddedAssociationsCascadeTest
 {
     /** @ODM\Id */
     public $id;
- 
+
     /** @ODM\EmbedOne(targetDocument="Documents\Address") */
     public $address;
 

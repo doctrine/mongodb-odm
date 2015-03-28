@@ -21,12 +21,11 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        unset ($this->driver);
+        unset($this->driver);
     }
 
     public function testDriver()
     {
-
         $classMetadata = new ClassMetadata('TestDocuments\User');
         $this->driver->loadMetadataForClass('TestDocuments\User', $classMetadata);
 
@@ -42,7 +41,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRemove' => false,
             'isInverseSide' => false,
             'isOwningSide' => true,
-            'nullable' => false
+            'nullable' => false,
         ), $classMetadata->fieldMappings['id']);
 
         $this->assertEquals(array(
@@ -58,14 +57,14 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'unique' => true,
-            'sparse' => true
+            'sparse' => true,
         ), $classMetadata->fieldMappings['username']);
-        
+
         $this->assertEquals(array(
             array(
                 'keys' => array('username' => 1),
-                'options' => array('unique' => true, 'sparse' => true)
-            )
+                'options' => array('unique' => true, 'sparse' => true),
+            ),
         ), $classMetadata->getIndexes());
 
         $this->assertEquals(array(
@@ -79,7 +78,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRemove' => false,
             'isInverseSide' => false,
             'isOwningSide' => true,
-            'nullable' => false
+            'nullable' => false,
         ), $classMetadata->fieldMappings['createdAt']);
 
         $this->assertEquals(array(
@@ -221,7 +220,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                "doStuffOnAlsoLoad" => array("unmappedField"),
+                'doStuffOnAlsoLoad' => array('unmappedField'),
             ),
             $classMetadata->alsoLoadMethods
         );
@@ -243,5 +242,4 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'nullable' => false,
         ), $classMetadata->fieldMappings['name']);
     }
-
 }

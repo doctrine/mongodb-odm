@@ -3,15 +3,13 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public static function setUpBeforeClass()
     {
-        Type::addType('date_collection', __NAMESPACE__ . '\DateCollectionType');
+        Type::addType('date_collection', __NAMESPACE__.'\DateCollectionType');
     }
 
     public function testCustomTypeValueConversions()
@@ -24,7 +22,7 @@ class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->clear();
 
-        $country = $this->dm->find(__NAMESPACE__ . '\Country', $country->id);
+        $country = $this->dm->find(__NAMESPACE__.'\Country', $country->id);
 
         $this->assertContainsOnly('DateTime', $country->nationalHolidays);
     }
@@ -48,7 +46,7 @@ class DateCollectionType extends Type
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
-            return null;
+            return;
         }
 
         if (!is_array($value)) {
@@ -57,7 +55,7 @@ class DateCollectionType extends Type
 
         $converter = Type::getType('date');
 
-        $value = array_map(function($date) use ($converter) {
+        $value = array_map(function ($date) use ($converter) {
             return $converter->convertToDatabaseValue($date);
         }, array_values($value));
 
@@ -68,7 +66,7 @@ class DateCollectionType extends Type
     public function convertToPHPValue($value)
     {
         if ($value === null) {
-            return null;
+            return;
         }
 
         if (!is_array($value)) {
@@ -77,7 +75,7 @@ class DateCollectionType extends Type
 
         $converter = Type::getType('date');
 
-        $value = array_map(function($date) use ($converter) {
+        $value = array_map(function ($date) use ($converter) {
             return $converter->convertToPHPValue($date);
         }, array_values($value));
 

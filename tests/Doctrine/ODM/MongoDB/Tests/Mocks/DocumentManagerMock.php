@@ -18,6 +18,7 @@ class DocumentManagerMock extends DocumentManager
      *
      * @param string $name
      * @param mixed  $value
+     *
      * @throws \ReflectionException if the property does not exist
      */
     public function __set($name, $value)
@@ -31,7 +32,9 @@ class DocumentManagerMock extends DocumentManager
      * Get private properties declared in the DocumentManager class.
      *
      * @param string $name
+     *
      * @return mixed
+     *
      * @throws \ReflectionException if the property does not exist
      */
     public function __get($name)

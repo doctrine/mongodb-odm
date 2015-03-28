@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,27 +17,27 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
 
 /**
- * Class for all exceptions related to the Doctrine MongoDB ODM
+ * Class for all exceptions related to the Doctrine MongoDB ODM.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class MappingException extends BaseMappingException
 {
     public static function typeExists($name)
     {
-        return new self('Type ' . $name . ' already exists.');
+        return new self('Type '.$name.' already exists.');
     }
 
     public static function typeNotFound($name)
     {
-        return new self('Type to be overwritten ' . $name . ' does not exist.');
+        return new self('Type to be overwritten '.$name.' does not exist.');
     }
 
     public static function mappingNotFound($className, $fieldName)
@@ -46,27 +47,28 @@ class MappingException extends BaseMappingException
 
     public static function duplicateFieldMapping($document, $fieldName)
     {
-        return new self('Property "' . $fieldName . '" in "' . $document . '" was already declared, but it must be declared only once');
+        return new self('Property "'.$fieldName.'" in "'.$document.'" was already declared, but it must be declared only once');
     }
 
     public static function discriminatorFieldConflict($document, $fieldName)
     {
-        return new self('Discriminator field "' . $fieldName . '" in "' . $document . '" conflicts with a mapped field\'s "name" attribute.');
+        return new self('Discriminator field "'.$fieldName.'" in "'.$document.'" conflicts with a mapped field\'s "name" attribute.');
     }
 
     /**
      * Throws an exception that indicates that a class used in a discriminator map does not exist.
      * An example would be an outdated (maybe renamed) classname.
      *
-     * @param string $className The class that could not be found
+     * @param string $className   The class that could not be found
      * @param string $owningClass The class that declares the discriminator map.
+     *
      * @return self
      */
     public static function invalidClassInDiscriminatorMap($className, $owningClass)
     {
         return new self(
-            "Document class '$className' used in the discriminator map of class '$owningClass' " .
-            "does not exist."
+            "Document class '$className' used in the discriminator map of class '$owningClass' ".
+            'does not exist.'
         );
     }
 
@@ -77,45 +79,49 @@ class MappingException extends BaseMappingException
 
     public static function classIsNotAValidDocument($className)
     {
-        return new self('Class ' . $className . ' is not a valid document or mapped super class.');
+        return new self('Class '.$className.' is not a valid document or mapped super class.');
     }
 
     /**
      * Exception for reflection exceptions - adds the document name,
      * because there might be long classnames that will be shortened
-     * within the stacktrace
+     * within the stacktrace.
      *
-     * @param string $document The document's name
+     * @param string               $document          The document's name
      * @param \ReflectionException $previousException
+     *
      * @return \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public static function reflectionFailure($document, \ReflectionException $previousException)
     {
-        return new self('An error occurred in ' . $document, 0, $previousException);
+        return new self('An error occurred in '.$document, 0, $previousException);
     }
 
     /**
      * @param string $documentName
+     *
      * @return MappingException
      */
     public static function identifierRequired($documentName)
     {
         return new self("No identifier/primary key specified for Document '$documentName'."
-            . " Every Document must have an identifier/primary key.");
+            .' Every Document must have an identifier/primary key.');
     }
 
     /**
      * @param string $className
      * @param string $fieldName
+     *
      * @return MappingException
      */
     public static function missingIdentifierField($className, $fieldName)
     {
-        return new self("The identifier $fieldName is missing for a query of " . $className);
+        return new self("The identifier $fieldName is missing for a query of ".$className);
     }
 
     /**
      * @param string $className
+     *
      * @return MappingException
      */
     public static function missingIdGeneratorClass($className)
@@ -125,6 +131,7 @@ class MappingException extends BaseMappingException
 
     /**
      * @param string $className
+     *
      * @return MappingException
      */
     public static function classIsNotAValidGenerator($className)
@@ -135,6 +142,7 @@ class MappingException extends BaseMappingException
     /**
      * @param string $className
      * @param string $optionName
+     *
      * @return MappingException
      */
     public static function missingGeneratorSetter($className, $optionName)
@@ -145,6 +153,7 @@ class MappingException extends BaseMappingException
     /**
      * @param string $className
      * @param string $fieldName
+     *
      * @return MappingException
      */
     public static function cascadeOnEmbeddedNotAllowed($className, $fieldName)
@@ -155,6 +164,7 @@ class MappingException extends BaseMappingException
     /**
      * @param string $className
      * @param string $fieldName
+     *
      * @return MappingException
      */
     public static function simpleReferenceRequiresTargetDocument($className, $fieldName)

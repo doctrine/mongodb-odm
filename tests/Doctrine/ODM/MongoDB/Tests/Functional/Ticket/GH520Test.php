@@ -17,7 +17,7 @@ class GH520Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH520Document')
+        $query = $this->dm->createQueryBuilder(__NAMESPACE__.'\GH520Document')
             ->field('id')->equals($document->id)
             ->field('ref')->prime(true)
             ->getQuery();
@@ -55,11 +55,11 @@ class GH520Test extends BaseTest
         $this->dm->clear();
 
         $primedIds = null;
-        $primer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$primedIds) {
+        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$primedIds) {
             $primedIds = $ids;
         };
 
-        $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH520Document')
+        $query = $this->dm->createQueryBuilder(__NAMESPACE__.'\GH520Document')
             ->field('ref')->exists(true)->prime($primer)
             ->getQuery();
 

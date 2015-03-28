@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,16 +17,15 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Collections\Collection as BaseCollection;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -40,7 +40,7 @@ class PersistentCollection implements BaseCollection
     private $snapshot = array();
 
     /**
-     * Collection's owning entity
+     * Collection's owning entity.
      *
      * @var object
      */
@@ -55,14 +55,14 @@ class PersistentCollection implements BaseCollection
      * Whether the collection is dirty and needs to be synchronized with the database
      * when the UnitOfWork that manages its persistent state commits.
      *
-     * @var boolean
+     * @var bool
      */
     private $isDirty = false;
 
     /**
      * Whether the collection has already been initialized.
      *
-     * @var boolean
+     * @var bool
      */
     private $initialized = true;
 
@@ -102,9 +102,9 @@ class PersistentCollection implements BaseCollection
     private $hints = array();
 
     /**
-     * @param BaseCollection $coll
+     * @param BaseCollection  $coll
      * @param DocumentManager $dm
-     * @param UnitOfWork $uow
+     * @param UnitOfWork      $uow
      */
     public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow)
     {
@@ -226,7 +226,7 @@ class PersistentCollection implements BaseCollection
      * Gets a boolean flag indicating whether this collection is dirty which means
      * its state needs to be synchronized with the database.
      *
-     * @return boolean TRUE if the collection is dirty, FALSE otherwise.
+     * @return bool TRUE if the collection is dirty, FALSE otherwise.
      */
     public function isDirty()
     {
@@ -236,7 +236,7 @@ class PersistentCollection implements BaseCollection
     /**
      * Sets a boolean flag, indicating whether this collection is dirty.
      *
-     * @param boolean $dirty Whether the collection should be marked dirty or not.
+     * @param bool $dirty Whether the collection should be marked dirty or not.
      */
     public function setDirty($dirty)
     {
@@ -249,7 +249,7 @@ class PersistentCollection implements BaseCollection
      * describes the association between the owner and the elements of the collection.
      *
      * @param object $document
-     * @param array $mapping
+     * @param array  $mapping
      */
     public function setOwner($document, array $mapping)
     {
@@ -291,7 +291,7 @@ class PersistentCollection implements BaseCollection
 
     /**
      * INTERNAL:
-     * getDeleteDiff
+     * getDeleteDiff.
      *
      * @return array
      */
@@ -306,7 +306,7 @@ class PersistentCollection implements BaseCollection
 
     /**
      * INTERNAL:
-     * getInsertDiff
+     * getInsertDiff.
      *
      * @return array
      */
@@ -343,7 +343,7 @@ class PersistentCollection implements BaseCollection
     /**
      * Sets the initialized flag of the collection, forcing it into that state.
      *
-     * @param boolean $bool
+     * @param bool $bool
      */
     public function setInitialized($bool)
     {
@@ -353,7 +353,7 @@ class PersistentCollection implements BaseCollection
     /**
      * Checks whether this collection has been initialized.
      *
-     * @return boolean
+     * @return bool
      */
     public function isInitialized()
     {
@@ -364,6 +364,7 @@ class PersistentCollection implements BaseCollection
     public function first()
     {
         $this->initialize();
+
         return $this->coll->first();
     }
 
@@ -371,6 +372,7 @@ class PersistentCollection implements BaseCollection
     public function last()
     {
         $this->initialize();
+
         return $this->coll->last();
     }
 
@@ -382,7 +384,7 @@ class PersistentCollection implements BaseCollection
         $this->initialize();
         $removed = $this->coll->remove($key);
 
-        if ( ! $removed) {
+        if (! $removed) {
             return $removed;
         }
 
@@ -403,7 +405,7 @@ class PersistentCollection implements BaseCollection
         $this->initialize();
         $removed = $this->coll->removeElement($element);
 
-        if ( ! $removed) {
+        if (! $removed) {
             return $removed;
         }
 
@@ -422,6 +424,7 @@ class PersistentCollection implements BaseCollection
     public function containsKey($key)
     {
         $this->initialize();
+
         return $this->coll->containsKey($key);
     }
 
@@ -431,6 +434,7 @@ class PersistentCollection implements BaseCollection
     public function contains($element)
     {
         $this->initialize();
+
         return $this->coll->contains($element);
     }
 
@@ -440,6 +444,7 @@ class PersistentCollection implements BaseCollection
     public function exists(\Closure $p)
     {
         $this->initialize();
+
         return $this->coll->exists($p);
     }
 
@@ -449,6 +454,7 @@ class PersistentCollection implements BaseCollection
     public function indexOf($element)
     {
         $this->initialize();
+
         return $this->coll->indexOf($element);
     }
 
@@ -458,6 +464,7 @@ class PersistentCollection implements BaseCollection
     public function get($key)
     {
         $this->initialize();
+
         return $this->coll->get($key);
     }
 
@@ -467,6 +474,7 @@ class PersistentCollection implements BaseCollection
     public function getKeys()
     {
         $this->initialize();
+
         return $this->coll->getKeys();
     }
 
@@ -476,6 +484,7 @@ class PersistentCollection implements BaseCollection
     public function getValues()
     {
         $this->initialize();
+
         return $this->coll->getValues();
     }
 
@@ -487,6 +496,7 @@ class PersistentCollection implements BaseCollection
         if ($this->mapping['isInverseSide']) {
             $this->initialize();
         }
+
         return count($this->mongoData) + $this->coll->count();
     }
 
@@ -506,6 +516,7 @@ class PersistentCollection implements BaseCollection
     {
         $this->coll->add($value);
         $this->changed();
+
         return true;
     }
 
@@ -523,6 +534,7 @@ class PersistentCollection implements BaseCollection
     public function getIterator()
     {
         $this->initialize();
+
         return $this->coll->getIterator();
     }
 
@@ -532,6 +544,7 @@ class PersistentCollection implements BaseCollection
     public function map(\Closure $func)
     {
         $this->initialize();
+
         return $this->coll->map($func);
     }
 
@@ -541,6 +554,7 @@ class PersistentCollection implements BaseCollection
     public function filter(\Closure $p)
     {
         $this->initialize();
+
         return $this->coll->filter($p);
     }
 
@@ -550,6 +564,7 @@ class PersistentCollection implements BaseCollection
     public function forAll(\Closure $p)
     {
         $this->initialize();
+
         return $this->coll->forAll($p);
     }
 
@@ -559,6 +574,7 @@ class PersistentCollection implements BaseCollection
     public function partition(\Closure $p)
     {
         $this->initialize();
+
         return $this->coll->partition($p);
     }
 
@@ -568,6 +584,7 @@ class PersistentCollection implements BaseCollection
     public function toArray()
     {
         $this->initialize();
+
         return $this->coll->toArray();
     }
 
@@ -601,6 +618,7 @@ class PersistentCollection implements BaseCollection
     public function slice($offset, $length = null)
     {
         $this->initialize();
+
         return $this->coll->slice($offset, $length);
     }
 
@@ -640,7 +658,7 @@ class PersistentCollection implements BaseCollection
      */
     public function offsetSet($offset, $value)
     {
-        if ( ! isset($offset)) {
+        if (! isset($offset)) {
             return $this->add($value);
         }
 
@@ -715,7 +733,7 @@ class PersistentCollection implements BaseCollection
      * Embedded documents are automatically considered as "orphan removal enabled" because they might have references
      * that require to trigger cascade remove operations.
      *
-     * @return boolean
+     * @return bool
      */
     private function isOrphanRemovalEnabled()
     {

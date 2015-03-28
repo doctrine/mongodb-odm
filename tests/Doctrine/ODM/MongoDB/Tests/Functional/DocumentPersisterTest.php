@@ -13,7 +13,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         parent::setUp();
 
-        $this->class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
+        $this->class = __NAMESPACE__.'\DocumentPersisterTestDocument';
 
         $collection = $this->dm->getDocumentCollection($this->class);
         $collection->drop();
@@ -139,7 +139,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrepareQueryOrNewObjWithHashId($hashId)
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $class = __NAMESPACE__.'\DocumentPersisterTestHashIdDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $value = array('_id' => $hashId);
@@ -153,7 +153,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrepareQueryOrNewObjWithHashIdAndInOperators($hashId)
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $class = __NAMESPACE__.'\DocumentPersisterTestHashIdDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $value = array('_id' => array('$exists' => true));
@@ -193,7 +193,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithNormalIdType()
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $class = __NAMESPACE__.'\DocumentPersisterTestHashIdDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $id = new \MongoId();
@@ -234,7 +234,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithHashIdType($hashId)
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
+        $class = __NAMESPACE__.'\DocumentPersisterTestDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $value = array('simpleRef' => $hashId);
@@ -270,7 +270,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithNormalIdType()
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $class = __NAMESPACE__.'\DocumentPersisterTestHashIdDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $id = new \MongoId();
@@ -311,7 +311,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithHashIdType($hashId)
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
+        $class = __NAMESPACE__.'\DocumentPersisterTestDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $value = array('complexRef.id' => $hashId);
@@ -425,7 +425,6 @@ class DocumentPersisterTestDocumentEmbed extends AbstractDocumentPersisterTestDo
     /** @ODM\EmbedOne(name="nestedName") */
     public $nested;
 }
-
 
 /** @ODM\Document */
 class DocumentPersisterTestHashIdDocument

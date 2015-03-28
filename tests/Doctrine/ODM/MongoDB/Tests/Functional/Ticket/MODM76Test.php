@@ -9,8 +9,8 @@ class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $c1 = new MODM76C;
-        $c2 = new MODM76C;
+        $c1 = new MODM76C();
+        $c2 = new MODM76C();
 
         $b = new MODM76B($c1);
         $a = new MODM76A(array($b), array($c1));

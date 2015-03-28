@@ -11,7 +11,7 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
 {
     public function testSlice()
     {
-        list ($start, $limit) = array(0, 25);
+        list($start, $limit) = array(0, 25);
         $collection = $this->getMockCollection();
         $collection->expects($this->once())
             ->method('slice')

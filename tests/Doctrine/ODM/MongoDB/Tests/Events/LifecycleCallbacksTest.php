@@ -14,6 +14,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->profile->name = $fullName;
         $this->dm->persist($user);
         $this->dm->flush();
+
         return $user;
     }
 
@@ -59,7 +60,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($user->postUpdate);
         $this->assertTrue($user->profile->postUpdate);
     }
-    
+
     public function testPreFlush()
     {
         $user = $this->createUser();
@@ -166,7 +167,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
         $profile = $user->profile->profile;
         $profile->name = '2nd level changed again';
-        
+
         $profile2 = new Profile();
         $profile2->name = 'test';
         $user->profiles[] = $profile2;
@@ -197,15 +198,15 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($user->profiles[0]->preRemove);
         $this->assertTrue($user->profiles[0]->postRemove);
     }
-    
+
     public function testReferences()
     {
         $user = $this->createUser();
         $user2 = $this->createUser('maciej', 'Maciej Malarz');
-        
+
         $user->friends[] = $user2;
         $this->dm->flush();
-        
+
         $this->assertTrue($user->preUpdate);
         $this->assertTrue($user->postUpdate);
         $this->assertFalse($user2->preUpdate);
@@ -224,7 +225,7 @@ class User extends BaseDocument
 
     /** @ODM\EmbedMany(targetDocument="Profile") */
     public $profiles = array();
-    
+
     /** @ODM\ReferenceMany(targetDocument="User") */
     public $friends = array();
 }
@@ -307,7 +308,7 @@ abstract class BaseDocument
     {
         $this->postLoad = true;
     }
-    
+
     /** @ODM\PreFlush */
     public function preFlush()
     {

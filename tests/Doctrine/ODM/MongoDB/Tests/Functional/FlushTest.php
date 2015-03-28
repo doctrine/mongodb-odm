@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Documents\CmsAddress;
-use Documents\CmsArticle;
 use Documents\CmsUser;
 use Documents\FriendUser;
 
@@ -12,7 +11,7 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     /**
      * Given 3 users, userA userB userC
      * userA has a relation to userB
-     * userB has a relation to userC
+     * userB has a relation to userC.
      *
      * With only userA in the uow,
      * If I flush I then have both userA and userB in the uow.
@@ -30,7 +29,9 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $userB->addFriend($userC);
 
         // persist all users, flush and clear
-        foreach (array($userA, $userB, $userC) as $user) $this->dm->persist($user);
+        foreach (array($userA, $userB, $userC) as $user) {
+            $this->dm->persist($user);
+        }
         $this->dm->flush();
         $this->dm->clear();
 
@@ -73,7 +74,7 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testFlushSingleManagedDocument()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
         $user->name = 'Dominik';
         $user->username = 'domnikl';
         $user->status = 'developer';
@@ -91,7 +92,7 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testFlushSingleUnmanagedDocument()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
         $user->name = 'Dominik';
         $user->username = 'domnikl';
         $user->status = 'developer';
@@ -102,7 +103,7 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testFlushSingleAndNewDocument()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
         $user->name = 'Dominik';
         $user->username = 'domnikl';
         $user->status = 'developer';
@@ -110,7 +111,7 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $otherUser = new CmsUser;
+        $otherUser = new CmsUser();
         $otherUser->name = 'Dominik2';
         $otherUser->username = 'domnikl2';
         $otherUser->status = 'developer';
@@ -120,13 +121,13 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($otherUser);
         $this->dm->flush($user);
 
-        $this->assertTrue($this->dm->contains($otherUser), "Other user is contained in DocumentManager");
-        $this->assertTrue($otherUser->id > 0, "other user has an id");
+        $this->assertTrue($this->dm->contains($otherUser), 'Other user is contained in DocumentManager');
+        $this->assertTrue($otherUser->id > 0, 'other user has an id');
     }
 
     public function testFlushAndCascadePersist()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
         $user->name = 'Dominik';
         $user->username = 'domnikl';
         $user->status = 'developer';
@@ -135,22 +136,22 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $address = new CmsAddress();
-        $address->city = "Springfield";
-        $address->zip = "12354";
-        $address->country = "Germany";
-        $address->street = "Foo Street";
+        $address->city = 'Springfield';
+        $address->zip = '12354';
+        $address->country = 'Germany';
+        $address->street = 'Foo Street';
         $address->user = $user;
         $user->address = $address;
 
         $this->dm->flush($user);
 
-        $this->assertTrue($this->dm->contains($address), "Other user is contained in DocumentManager");
-        $this->assertTrue($address->id > 0, "other user has an id");
+        $this->assertTrue($this->dm->contains($address), 'Other user is contained in DocumentManager');
+        $this->assertTrue($address->id > 0, 'other user has an id');
     }
 
     public function testProxyIsIgnored()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
         $user->name = 'Dominik';
         $user->username = 'domnikl';
         $user->status = 'developer';
@@ -161,7 +162,7 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user = $this->dm->getReference(get_class($user), $user->id);
 
-        $otherUser = new CmsUser;
+        $otherUser = new CmsUser();
         $otherUser->name = 'Dominik2';
         $otherUser->username = 'domnikl2';
         $otherUser->status = 'developer';
@@ -169,8 +170,8 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($otherUser);
         $this->dm->flush($user);
 
-        $this->assertTrue($this->dm->contains($otherUser), "Other user is contained in DocumentManager");
-        $this->assertTrue($otherUser->id > 0, "other user has an id");
+        $this->assertTrue($this->dm->contains($otherUser), 'Other user is contained in DocumentManager');
+        $this->assertTrue($otherUser->id > 0, 'other user has an id');
     }
 
     protected function assertSize($size)

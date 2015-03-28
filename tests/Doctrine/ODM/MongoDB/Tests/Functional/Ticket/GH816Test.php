@@ -8,19 +8,19 @@ class GH816Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testPersistAfterDetachWithIdSet()
     {
-        $d=new GH816Document();
-        $d->_id="Test";
+        $d = new GH816Document();
+        $d->_id = 'Test';
         $this->assertSame(array(), $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);
         $this->dm->flush();
         $this->assertSame(array(), $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
     }
-    
+
     public function testPersistAfterDetachWithTitleSet()
     {
-        $d=new GH816Document();
-        $d->title="Test";
+        $d = new GH816Document();
+        $d->title = 'Test';
         $this->assertSame(array(), $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);
@@ -36,7 +36,7 @@ class GH816Document
 {
     /** @ODM\Id */
     public $_id;
-    
+
     /** @ODM\String */
     public $title;
 }

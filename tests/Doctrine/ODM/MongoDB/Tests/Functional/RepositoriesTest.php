@@ -3,9 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Criteria;
-use Documents\Account;
-use Documents\Address;
-use Documents\Phonenumber;
 use Documents\User;
 
 class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest

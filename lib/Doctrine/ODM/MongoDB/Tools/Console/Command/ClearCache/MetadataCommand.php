@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache;
 
 use Symfony\Component\Console\Command\Command;
@@ -27,7 +27,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Command to clear the metadata cache of the various cache drivers.
  *
  * @since   1.0
+ *
  * @version $Revision$
+ *
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -59,22 +61,22 @@ EOT
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         $cacheDriver = $dm->getConfiguration()->getMetadataCacheImpl();
 
-        if ( ! $cacheDriver) {
+        if (! $cacheDriver) {
             throw new \InvalidArgumentException('No Metadata cache driver is configured on given DocumentManager.');
         }
 
         if ($cacheDriver instanceof \Doctrine\Common\Cache\ApcCache) {
-            throw new \LogicException("Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
+            throw new \LogicException('Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
         }
 
-        $output->write('Clearing ALL Metadata cache entries' . PHP_EOL);
+        $output->write('Clearing ALL Metadata cache entries'.PHP_EOL);
 
         $success = $cacheDriver->deleteAll();
 
         if ($success) {
-            $output->write('The cache entries were successfully deleted.' . PHP_EOL);
+            $output->write('The cache entries were successfully deleted.'.PHP_EOL);
         } else {
-            $output->write('No entries to be deleted.' . PHP_EOL);
+            $output->write('No entries to be deleted.'.PHP_EOL);
         }
     }
 }

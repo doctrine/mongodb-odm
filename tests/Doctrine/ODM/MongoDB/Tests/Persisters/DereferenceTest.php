@@ -38,7 +38,6 @@ class DereferenceTest extends BaseTest
         $post->comments[] = $comment;
 
         $this->dm->flush();
-
     }
 }
 

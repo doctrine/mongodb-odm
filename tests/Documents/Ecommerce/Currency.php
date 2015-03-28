@@ -32,10 +32,10 @@ class Currency
     public function __construct($name, $multiplier = 1)
     {
         $name = (string) $name;
-        if ( ! in_array($name, self::getAll())) {
+        if (! in_array($name, self::getAll())) {
             throw new \InvalidArgumentException(
-                'Currency must be one of ' . implode(', ', self::getAll()) .
-                $name . 'given'
+                'Currency must be one of '.implode(', ', self::getAll()).
+                $name.'given'
             );
         }
         $this->name = $name;

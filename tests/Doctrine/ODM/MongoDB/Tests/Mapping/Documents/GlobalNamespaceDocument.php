@@ -45,12 +45,14 @@ class DoctrineGlobal_User
 
     /**
      * @ODM\String
+     *
      * @var string
      */
     private $username;
 
     /**
      * @ODM\String
+     *
      * @var string
      */
     private $email;

@@ -39,6 +39,7 @@ abstract class BaseEmployee
     public function setId($val)
     {
         $this->id = $val;
+
         return $this;
     }
 
@@ -50,6 +51,7 @@ abstract class BaseEmployee
     public function incrementChanges($num)
     {
         $this->changes = $this->changes + $num;
+
         return $this;
     }
 
@@ -61,6 +63,7 @@ abstract class BaseEmployee
     public function addNote($note)
     {
         $this->notes[] = $note;
+
         return $this;
     }
 
@@ -72,6 +75,7 @@ abstract class BaseEmployee
     public function setName($val)
     {
         $this->name = $val;
+
         return $this;
     }
 
@@ -83,6 +87,7 @@ abstract class BaseEmployee
     public function setSalary($val)
     {
         $this->salary = $val;
+
         return $this;
     }
 
@@ -94,6 +99,7 @@ abstract class BaseEmployee
     public function setStarted($val)
     {
         $this->started = $val;
+
         return $this;
     }
 
@@ -105,6 +111,7 @@ abstract class BaseEmployee
     public function setLeft($val)
     {
         $this->left = $val;
+
         return $this;
     }
 
@@ -116,6 +123,7 @@ abstract class BaseEmployee
     public function setAddress($val)
     {
         $this->address = $val;
+
         return $this;
     }
 }

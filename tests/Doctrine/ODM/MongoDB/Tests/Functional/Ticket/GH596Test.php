@@ -12,14 +12,14 @@ class GH596Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->getFilterCollection()->enable('testFilter');
         $filter = $this->dm->getFilterCollection()->getFilter('testFilter');
-        $filter->setParameter('class', __NAMESPACE__ . '\GH596Document');
+        $filter->setParameter('class', __NAMESPACE__.'\GH596Document');
         $filter->setParameter('field', 'deleted');
         $filter->setParameter('value', false);
     }
 
     public function testExpressionPreparationDoesNotInjectFilterCriteria()
     {
-        $class = __NAMESPACE__ . '\GH596Document';
+        $class = __NAMESPACE__.'\GH596Document';
 
         $repository = $this->dm->getRepository($class);
         $qb = $repository->createQueryBuilder();

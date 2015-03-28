@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
@@ -29,6 +29,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
  * from the mapping information.
  *
  * @since   1.0
+ *
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -43,10 +44,11 @@ class DisconnectedClassMetadataFactory extends ClassMetadataFactory
     {
         $metadata = new ClassMetadataInfo($className);
         if (strpos($className, "\\") !== false) {
-            $metadata->namespace = strrev(substr( strrev($className), strpos(strrev($className), "\\")+1 ));
+            $metadata->namespace = strrev(substr(strrev($className), strpos(strrev($className), "\\")+1));
         } else {
-            $metadata->namespace = "";
+            $metadata->namespace = '';
         }
+
         return $metadata;
     }
 

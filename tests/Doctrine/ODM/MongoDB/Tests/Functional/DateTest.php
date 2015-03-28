@@ -2,12 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\Account;
-use Documents\Address;
-use Documents\Group;
-use Documents\Phonenumber;
-use Documents\Profile;
-use Documents\File;
 use Documents\User;
 
 class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -81,7 +75,7 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testOldDate()
     {
         if (PHP_INT_SIZE === 4) {
-            $this->setExpectedException("InvalidArgumentException");
+            $this->setExpectedException('InvalidArgumentException');
         }
 
         $user = new User();

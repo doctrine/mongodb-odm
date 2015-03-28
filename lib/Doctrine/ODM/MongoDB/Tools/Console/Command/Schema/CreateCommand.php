@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
@@ -67,9 +67,9 @@ class CreateCommand extends AbstractCommand
         foreach ($create as $option) {
             try {
                 if (isset($class)) {
-                    $this->{'processDocument' . ucfirst($option)}($sm, $class);
+                    $this->{'processDocument'.ucfirst($option)}($sm, $class);
                 } else {
-                    $this->{'process' . ucfirst($option)}($sm);
+                    $this->{'process'.ucfirst($option)}($sm);
                 }
                 $output->writeln(sprintf(
                     'Created <comment>%s%s</comment> for <info>%s</info>',
@@ -78,7 +78,7 @@ class CreateCommand extends AbstractCommand
                     (isset($class) ? $class : 'all classes')
                 ));
             } catch (\Exception $e) {
-                $output->writeln('<error>' . $e->getMessage() . '</error>');
+                $output->writeln('<error>'.$e->getMessage().'</error>');
             }
         }
     }

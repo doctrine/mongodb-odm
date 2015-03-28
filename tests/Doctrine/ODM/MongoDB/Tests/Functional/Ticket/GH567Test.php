@@ -14,7 +14,7 @@ class GH567Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function setUp()
     {
         parent::setUp();
-        $class = __NAMESPACE__ . '\GH567Document';
+        $class = __NAMESPACE__.'\GH567Document';
         $this->repository = $this->dm->getRepository($class);
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Types;
 
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -25,6 +25,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * The Type interface.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
@@ -85,13 +86,16 @@ abstract class Type
     );
 
     /* Prevent instantiation and force use of the factory method. */
-    final private function __construct() {}
+    final private function __construct()
+    {
+    }
 
     /**
      * Converts a value from its PHP representation to its database representation
      * of this type.
      *
      * @param mixed $value The value to convert.
+     *
      * @return mixed The database representation of the value.
      */
     public function convertToDatabaseValue($value)
@@ -104,6 +108,7 @@ abstract class Type
      * of this type.
      *
      * @param mixed $value The value to convert.
+     *
      * @return mixed The PHP representation of the value.
      */
     public function convertToPHPValue($value)
@@ -124,7 +129,7 @@ abstract class Type
     /**
      * Register a new type in the type map.
      *
-     * @param string $name The name of the type.
+     * @param string $name  The name of the type.
      * @param string $class The class name.
      */
     public static function registerType($name, $class)
@@ -136,18 +141,21 @@ abstract class Type
      * Get a Type instance.
      *
      * @param string $type The type name.
+     *
      * @return \Doctrine\ODM\MongoDB\Types\Type $type
+     *
      * @throws \InvalidArgumentException
      */
     public static function getType($type)
     {
-        if ( ! isset(self::$typesMap[$type])) {
+        if (! isset(self::$typesMap[$type])) {
             throw new \InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
         }
-        if ( ! isset(self::$typeObjects[$type])) {
+        if (! isset(self::$typeObjects[$type])) {
             $className = self::$typesMap[$type];
-            self::$typeObjects[$type] = new $className;
+            self::$typeObjects[$type] = new $className();
         }
+
         return self::$typeObjects[$type];
     }
 
@@ -155,7 +163,9 @@ abstract class Type
      * Get a Type instance based on the type of the passed php variable.
      *
      * @param mixed $variable
+     *
      * @return \Doctrine\ODM\MongoDB\Types\Type $type
+     *
      * @throws \InvalidArgumentException
      */
     public static function getTypeFromPHPVariable($variable)
@@ -170,10 +180,12 @@ abstract class Type
             $type = gettype($variable);
             switch ($type) {
                 case 'integer';
+
                     return self::getType('int');
             }
         }
-        return null;
+
+        return;
     }
 
     public static function convertPHPToDatabaseValue($value)
@@ -182,6 +194,7 @@ abstract class Type
         if ($type !== null) {
             return $type->convertToDatabaseValue($value);
         }
+
         return $value;
     }
 
@@ -189,8 +202,10 @@ abstract class Type
      * Adds a custom type to the type map.
      *
      * @static
-     * @param string $name Name of the type. This should correspond to what getName() returns.
+     *
+     * @param string $name      Name of the type. This should correspond to what getName() returns.
      * @param string $className The class name of the custom type.
+     *
      * @throws MappingException
      */
     public static function addType($name, $className)
@@ -206,8 +221,10 @@ abstract class Type
      * Checks if exists support for a type.
      *
      * @static
+     *
      * @param string $name Name of the type
-     * @return boolean TRUE if type is supported; FALSE otherwise
+     *
+     * @return bool TRUE if type is supported; FALSE otherwise
      */
     public static function hasType($name)
     {
@@ -218,13 +235,15 @@ abstract class Type
      * Overrides an already defined type to use a different implementation.
      *
      * @static
+     *
      * @param string $name
      * @param string $className
+     *
      * @throws MappingException
      */
     public static function overrideType($name, $className)
     {
-        if ( ! isset(self::$typesMap[$name])) {
+        if (! isset(self::$typesMap[$name])) {
             throw MappingException::typeNotFound($name);
         }
 
@@ -233,7 +252,7 @@ abstract class Type
 
     /**
      * Get the types array map which holds all registered types and the corresponding
-     * type class
+     * type class.
      *
      * @return array $typesMap
      */
@@ -245,6 +264,7 @@ abstract class Type
     public function __toString()
     {
         $e = explode('\\', get_class($this));
+
         return str_replace('Type', '', end($e));
     }
 }

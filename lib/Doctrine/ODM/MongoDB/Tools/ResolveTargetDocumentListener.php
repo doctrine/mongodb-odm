@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
- * ResolveTargetDocumentListener
+ * ResolveTargetDocumentListener.
  *
  * Mechanism to overwrite document interfaces or classes specified as association targets.
  *
@@ -24,8 +24,7 @@ class ResolveTargetDocumentListener
      *
      * @param string $originalDocument
      * @param string $newDocument
-     * @param array $mapping
-     * @return void
+     * @param array  $mapping
      */
     public function addResolveTargetDocument($originalDocument, $newDocument, array $mapping)
     {
@@ -37,7 +36,6 @@ class ResolveTargetDocumentListener
      * Process event and resolve new target document names.
      *
      * @param LoadClassMetadataEventArgs $args
-     * @return void
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $args)
     {
@@ -51,7 +49,7 @@ class ResolveTargetDocumentListener
 
     /**
      * @param ClassMetadata $classMetadata
-     * @param array $mapping
+     * @param array         $mapping
      */
     private function remapAssociation(ClassMetadata $classMetadata, array $mapping)
     {

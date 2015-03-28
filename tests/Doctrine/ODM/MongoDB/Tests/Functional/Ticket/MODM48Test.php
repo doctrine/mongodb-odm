@@ -36,9 +36,18 @@ class MODM48A
     /** @ODM\EmbedOne(targetDocument="MODM48B") */
     public $b;
 
-    function getId()  {return $this->id;}
-    function getB()   {return $this->b;}
-    function setB($b) {$this->b = $b;}
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function getB()
+    {
+        return $this->b;
+    }
+    public function setB($b)
+    {
+        $this->b = $b;
+    }
 }
 
 /** @ODM\EmbeddedDocument */
@@ -47,6 +56,12 @@ class MODM48B
     /** @ODM\String */
     public $val;
 
-    function setVal($val) {$this->val = $val;}
-    function getVal() {return $this->val;}
+    public function setVal($val)
+    {
+        $this->val = $val;
+    }
+    public function getVal()
+    {
+        return $this->val;
+    }
 }

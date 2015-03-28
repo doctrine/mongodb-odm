@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,13 +17,12 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
@@ -36,6 +36,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
  * the referenced identifiers are not immediately available on an inverse side.
  *
  * @since  1.0
+ *
  * @author Jeremy Mikola <jmikola@gmail.com>
  */
 class ReferencePrimer
@@ -50,7 +51,7 @@ class ReferencePrimer
     /**
      * The DocumentManager instance.
      *
-     * @var DocumentManager $dm
+     * @var DocumentManager
      */
     private $dm;
 
@@ -71,22 +72,21 @@ class ReferencePrimer
         $this->dm = $dm;
         $this->uow = $uow;
 
-        $this->defaultPrimer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
+        $this->defaultPrimer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
             $qb = $dm->createQueryBuilder($class->name)
                 ->field($class->identifier)->in($ids);
 
-            if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
+            if (! empty($hints[Query::HINT_SLAVE_OKAY])) {
                 $qb->slaveOkay(true);
             }
 
-            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+            if (! empty($hints[Query::HINT_READ_PREFERENCE])) {
                 $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
             }
 
             $qb->getQuery()->toArray();
         };
     }
-
 
     /**
      * Prime references within a mapped field of one or more documents.
@@ -100,11 +100,12 @@ class ReferencePrimer
      * @param string             $fieldName Field name containing references to prime
      * @param array              $hints     UnitOfWork hints for priming queries
      * @param callable           $primer    Optional primer callable
+     *
      * @throws \InvalidArgumentException If the mapped field is not the owning
      *                                   side of a reference relationship.
      * @throws \InvalidArgumentException If $primer is not callable
-     * @throws \LogicException If the mapped field is a simple reference and is
-     *                         missing a target document class.
+     * @throws \LogicException           If the mapped field is a simple reference and is
+     *                                   missing a target document class.
      */
     public function primeReferences(ClassMetadata $class, $documents, $fieldName, array $hints = array(), $primer = null)
     {
@@ -117,14 +118,14 @@ class ReferencePrimer
         /* Inverse-side references would need to be populated before we can
          * collect references to be primed. This is not supported.
          */
-        if ( ! isset($mapping['reference']) || ! $mapping['isOwningSide']) {
+        if (! isset($mapping['reference']) || ! $mapping['isOwningSide']) {
             throw new \InvalidArgumentException(sprintf('Field "%s" is not the owning side of a reference relationship in class "%s"', $fieldName, $class->name));
         }
 
         /* Simple reference require a target document class so we can construct
          * the priming query.
          */
-        if ( ! empty($mapping['simple']) && empty($mapping['targetDocument'])) {
+        if (! empty($mapping['simple']) && empty($mapping['targetDocument'])) {
             throw new \LogicException(sprintf('Field "%s" is a simple reference without a target document class in class "%s"', $fieldName, $class->name));
         }
 
@@ -142,7 +143,7 @@ class ReferencePrimer
             /* The field will need to be either a Proxy (reference-one) or
              * PersistentCollection (reference-many) in order to prime anything.
              */
-            if ( ! is_object($fieldValue)) {
+            if (! is_object($fieldValue)) {
                 continue;
             }
 
@@ -173,6 +174,7 @@ class ReferencePrimer
      * @param ClassMetadata      $class
      * @param array|\Traversable $documents
      * @param array              $mapping
+     *
      * @return array
      */
     private function parseDotSyntaxForPrimer($fieldName, $class, $documents, $mapping = null)
@@ -185,7 +187,7 @@ class ReferencePrimer
         // Gather mapping data:
         $e = explode('.', $fieldName);
 
-        if ( ! isset($class->fieldMappings[$e[0]])) {
+        if (! isset($class->fieldMappings[$e[0]])) {
             throw new \InvalidArgumentException(sprintf('Field %s cannot be further parsed for priming because it is unmapped.', $fieldName));
         }
 
@@ -193,12 +195,12 @@ class ReferencePrimer
         $e[0] = $mapping['name'];
 
         // Case of embedded document(s) to recurse through:
-        if ( ! isset($mapping['reference'])) {
+        if (! isset($mapping['reference'])) {
             if (empty($mapping['embedded'])) {
                 throw new \InvalidArgumentException(sprintf('Field "%s" of fieldName "%s" is not an embedded document, therefore no children can be primed. Aborting. This feature does not support traversing nested referenced documents at this time.', $e[0], $fieldName));
             }
 
-            if ( ! isset($mapping['targetDocument'])) {
+            if (! isset($mapping['targetDocument'])) {
                 throw new \InvalidArgumentException(sprintf('No target document class has been specified for this embedded document. However, targetDocument mapping must be specified in order for prime to work on fieldName "%s" for mapping of field "%s".', $fieldName, $mapping['fieldName']));
             }
 
@@ -212,7 +214,7 @@ class ReferencePrimer
                         array_push($childDocuments, $elemDocument);
                     }
                 } else {
-                    array_push($childDocuments,$fieldValue);
+                    array_push($childDocuments, $fieldValue);
                 }
             }
 
@@ -220,11 +222,11 @@ class ReferencePrimer
 
             $childClass = $this->dm->getClassMetadata($mapping['targetDocument']);
 
-            if ( ! $childClass->hasField($e[0])) {
+            if (! $childClass->hasField($e[0])) {
                 throw new \InvalidArgumentException(sprintf('Field to prime must exist in embedded target document. Reference fieldName "%s" for mapping of target document class "%s".', $fieldName, $mapping['targetDocument']));
             }
 
-            $childFieldName = implode('.',$e);
+            $childFieldName = implode('.', $e);
 
             return $this->parseDotSyntaxForPrimer($childFieldName, $childClass, $childDocuments);
         }
@@ -253,13 +255,13 @@ class ReferencePrimer
     {
         $mapping = $persistentCollection->getMapping();
 
-        if ( ! empty($mapping['simple'])) {
+        if (! empty($mapping['simple'])) {
             $className = $mapping['targetDocument'];
             $class = $this->dm->getClassMetadata($className);
         }
 
         foreach ($persistentCollection->getMongoData() as $reference) {
-            if ( ! empty($mapping['simple'])) {
+            if (! empty($mapping['simple'])) {
                 $id = $reference;
             } else {
                 $id = $reference['$id'];
@@ -269,7 +271,7 @@ class ReferencePrimer
 
             $document = $this->uow->tryGetById($id, $class);
 
-            if ( ! $document || ($document instanceof Proxy && ! $document->__isInitialized())) {
+            if (! $document || ($document instanceof Proxy && ! $document->__isInitialized())) {
                 $id = $class->getPHPIdentifierValue($id);
                 $groupedIds[$className][serialize($id)] = $id;
             }

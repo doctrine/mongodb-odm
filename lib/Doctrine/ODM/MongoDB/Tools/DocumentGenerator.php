@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,7 +17,6 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Tools;
 
 use Doctrine\Common\Inflector\Inflector;
@@ -24,7 +24,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
- * Generic class used to generate PHP5 document classes from ClassMetadataInfo instances
+ * Generic class used to generate PHP5 document classes from ClassMetadataInfo instances.
  *
  *     [php]
  *     $classes = $dm->getClassMetadataInfoFactory()->getAllMetadata();
@@ -37,6 +37,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
  *     $generator->generate($classes, '/path/to/generate/documents');
  *
  * @since   1.0
+ *
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -152,11 +153,10 @@ public function <methodName>()
 ';
 
     /**
-     * Generate and write document classes for the given array of ClassMetadataInfo instances
+     * Generate and write document classes for the given array of ClassMetadataInfo instances.
      *
-     * @param array $metadatas
+     * @param array  $metadatas
      * @param string $outputDirectory
-     * @return void
      */
     public function generate(array $metadatas, $outputDirectory)
     {
@@ -166,32 +166,32 @@ public function <methodName>()
     }
 
     /**
-     * Generated and write document class to disk for the given ClassMetadataInfo instance
+     * Generated and write document class to disk for the given ClassMetadataInfo instance.
      *
      * @param ClassMetadataInfo $metadata
-     * @param string $outputDirectory
+     * @param string            $outputDirectory
+     *
      * @throws \RuntimeException
-     * @return void
      */
     public function writeDocumentClass(ClassMetadataInfo $metadata, $outputDirectory)
     {
-        $path = $outputDirectory . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name) . $this->extension;
+        $path = $outputDirectory.'/'.str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name).$this->extension;
         $dir = dirname($path);
 
-        if ( ! is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
 
         $this->isNew = ! file_exists($path) || (file_exists($path) && $this->regenerateDocumentIfExists);
 
-        if ( ! $this->isNew) {
+        if (! $this->isNew) {
             $this->parseTokensInDocumentFile($path);
         }
 
         if ($this->backupExisting && file_exists($path)) {
-            $backupPath = dirname($path) . DIRECTORY_SEPARATOR . basename($path) . '~';
-            if ( ! copy($path, $backupPath)) {
-                throw new \RuntimeException("Attempt to backup overwritten document file but copy operation failed.");
+            $backupPath = dirname($path).DIRECTORY_SEPARATOR.basename($path).'~';
+            if (! copy($path, $backupPath)) {
+                throw new \RuntimeException('Attempt to backup overwritten document file but copy operation failed.');
             }
         }
 
@@ -200,15 +200,16 @@ public function <methodName>()
             file_put_contents($path, $this->generateDocumentClass($metadata));
 
         // If document exists and we're allowed to update the document class
-        } elseif ( ! $this->isNew && $this->updateDocumentIfExists) {
+        } elseif (! $this->isNew && $this->updateDocumentIfExists) {
             file_put_contents($path, $this->generateUpdatedDocumentClass($metadata, $path));
         }
     }
 
     /**
-     * Generate a PHP5 Doctrine 2 document class from the given ClassMetadataInfo instance
+     * Generate a PHP5 Doctrine 2 document class from the given ClassMetadataInfo instance.
      *
      * @param ClassMetadataInfo $metadata
+     *
      * @return string $code
      */
     public function generateDocumentClass(ClassMetadataInfo $metadata)
@@ -218,7 +219,7 @@ public function <methodName>()
             '<imports>',
             '<documentAnnotation>',
             '<documentClassName>',
-            '<documentBody>'
+            '<documentBody>',
         );
 
         $replacements = array(
@@ -226,18 +227,20 @@ public function <methodName>()
             $this->generateDocumentImports($metadata),
             $this->generateDocumentDocBlock($metadata),
             $this->generateDocumentClassName($metadata),
-            $this->generateDocumentBody($metadata)
+            $this->generateDocumentBody($metadata),
         );
 
         $code = str_replace($placeHolders, $replacements, self::$classTemplate);
+
         return str_replace('<spaces>', $this->spaces, $code);
     }
 
     /**
-     * Generate the updated code for the given ClassMetadataInfo and document at path
+     * Generate the updated code for the given ClassMetadataInfo and document at path.
      *
      * @param ClassMetadataInfo $metadata
-     * @param string $path
+     * @param string            $path
+     *
      * @return string $code;
      */
     public function generateUpdatedDocumentClass(ClassMetadataInfo $metadata, $path)
@@ -248,14 +251,13 @@ public function <methodName>()
         $body = str_replace('<spaces>', $this->spaces, $body);
         $last = strrpos($currentCode, '}');
 
-        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : '') . "}\n";
+        return substr($currentCode, 0, $last).$body.(strlen($body) > 0 ? "\n" : '')."}\n";
     }
 
     /**
-     * Set the number of spaces the exported class should have
+     * Set the number of spaces the exported class should have.
      *
-     * @param integer $numSpaces
-     * @return void
+     * @param int $numSpaces
      */
     public function setNumSpaces($numSpaces)
     {
@@ -264,10 +266,9 @@ public function <methodName>()
     }
 
     /**
-     * Set the extension to use when writing php files to disk
+     * Set the extension to use when writing php files to disk.
      *
      * @param string $extension
-     * @return void
      */
     public function setExtension($extension)
     {
@@ -275,9 +276,7 @@ public function <methodName>()
     }
 
     /**
-     * Set the name of the class the generated classes should extend from
-     *
-     * @return void
+     * Set the name of the class the generated classes should extend from.
      */
     public function setClassToExtend($classToExtend)
     {
@@ -285,10 +284,9 @@ public function <methodName>()
     }
 
     /**
-     * Set whether or not to generate annotations for the document
+     * Set whether or not to generate annotations for the document.
      *
      * @param bool $bool
-     * @return void
      */
     public function setGenerateAnnotations($bool)
     {
@@ -296,10 +294,9 @@ public function <methodName>()
     }
 
     /**
-     * Set whether or not to try and update the document if it already exists
+     * Set whether or not to try and update the document if it already exists.
      *
      * @param bool $bool
-     * @return void
      */
     public function setUpdateDocumentIfExists($bool)
     {
@@ -307,10 +304,9 @@ public function <methodName>()
     }
 
     /**
-     * Set whether or not to regenerate the document if it exists
+     * Set whether or not to regenerate the document if it exists.
      *
      * @param bool $bool
-     * @return void
      */
     public function setRegenerateDocumentIfExists($bool)
     {
@@ -318,10 +314,9 @@ public function <methodName>()
     }
 
     /**
-     * Set whether or not to generate stub methods for the document
+     * Set whether or not to generate stub methods for the document.
      *
      * @param bool $bool
-     * @return void
      */
     public function setGenerateStubMethods($bool)
     {
@@ -339,14 +334,14 @@ public function <methodName>()
     private function generateDocumentNamespace(ClassMetadataInfo $metadata)
     {
         if ($this->hasNamespace($metadata)) {
-            return 'namespace ' . $this->getNamespace($metadata) . ';';
+            return 'namespace '.$this->getNamespace($metadata).';';
         }
     }
 
     private function generateDocumentClassName(ClassMetadataInfo $metadata)
     {
-        return 'class ' . $this->getClassName($metadata) .
-            ($this->extendsClass() ? ' extends ' . $this->getClassToExtendName() : null);
+        return 'class '.$this->getClassName($metadata).
+            ($this->extendsClass() ? ' extends '.$this->getClassToExtendName() : null);
     }
 
     private function generateDocumentBody(ClassMetadataInfo $metadata)
@@ -373,7 +368,7 @@ public function <methodName>()
         }
 
         if ($lifecycleCallbackMethods) {
-            $code[] = "\n" . $lifecycleCallbackMethods;
+            $code[] = "\n".$lifecycleCallbackMethods;
         }
 
         return implode("\n", $code);
@@ -386,19 +381,21 @@ public function <methodName>()
         }
 
         $collections = array();
-        foreach ($metadata->fieldMappings AS $mapping) {
+        foreach ($metadata->fieldMappings as $mapping) {
             if ($mapping['type'] === ClassMetadataInfo::MANY) {
-                $collections[] = '$this->' . $mapping['fieldName'] . ' = new \Doctrine\Common\Collections\ArrayCollection();';
+                $collections[] = '$this->'.$mapping['fieldName'].' = new \Doctrine\Common\Collections\ArrayCollection();';
             }
         }
         if ($collections) {
-            return $this->prefixCodeWithSpaces(str_replace("<collections>", $this->spaces . implode("\n" . $this->spaces, $collections), self::$constructorMethodTemplate));
+            return $this->prefixCodeWithSpaces(str_replace('<collections>', $this->spaces.implode("\n".$this->spaces, $collections), self::$constructorMethodTemplate));
         }
+
         return '';
     }
 
     /**
      * @todo this won't work if there is a namespace in brackets and a class outside of it.
+     *
      * @param string $path
      */
     private function parseTokensInDocumentFile($path)
@@ -420,7 +417,7 @@ public function <methodName>()
                     }
                 }
             } elseif ($token[0] == T_CLASS) {
-                $lastSeenClass = $lastSeenNamespace . '\\' . $tokens[$i + 2][1];
+                $lastSeenClass = $lastSeenNamespace.'\\'.$tokens[$i + 2][1];
                 $this->staticReflection[$lastSeenClass]['properties'] = array();
                 $this->staticReflection[$lastSeenClass]['methods'] = array();
             } elseif ($token[0] == T_FUNCTION) {
@@ -444,13 +441,13 @@ public function <methodName>()
                 return true;
             }
         }
-        
+
         foreach ($this->getTraits($metadata) as $trait) {
             if ($trait->hasProperty($property)) {
                 return true;
             }
         }
-        
+
         return (
             isset($this->staticReflection[$metadata->name]) &&
             in_array($property, $this->staticReflection[$metadata->name]['properties'])
@@ -466,13 +463,13 @@ public function <methodName>()
                 return true;
             }
         }
-        
+
         foreach ($this->getTraits($metadata) as $trait) {
             if ($trait->hasMethod($method)) {
                 return true;
             }
         }
-        
+
         return (
             isset($this->staticReflection[$metadata->name]) &&
             in_array($method, $this->staticReflection[$metadata->name]['methods'])
@@ -498,7 +495,7 @@ public function <methodName>()
     {
         $refl = new \ReflectionClass($this->getClassToExtend());
 
-        return '\\' . $refl->getName();
+        return '\\'.$refl->getName();
     }
 
     private function getClassName(ClassMetadataInfo $metadata)
@@ -511,13 +508,13 @@ public function <methodName>()
     {
         return substr($metadata->name, 0, strrpos($metadata->name, '\\'));
     }
-    
+
     /**
      * @param ClassMetadataInfo $metadata
      *
      * @return array
      */
-    protected function getTraits(ClassMetadataInfo $metadata) 
+    protected function getTraits(ClassMetadataInfo $metadata)
     {
         if (PHP_VERSION_ID >= 50400 && ($metadata->reflClass !== null || class_exists($metadata->name))) {
             $reflClass = $metadata->reflClass === null ? new \ReflectionClass($metadata->name) : $metadata->reflClass;
@@ -526,8 +523,10 @@ public function <methodName>()
                 $traits = array_merge($traits, $reflClass->getTraits());
                 $reflClass = $reflClass->getParentClass();
             }
+
             return $traits;
         }
+
         return array();
     }
 
@@ -542,7 +541,7 @@ public function <methodName>()
     {
         $lines = array();
         $lines[] = '/**';
-        $lines[] = ' * ' . $metadata->name;
+        $lines[] = ' * '.$metadata->name;
 
         if ($this->generateAnnotations) {
             $lines[] = ' *';
@@ -556,30 +555,30 @@ public function <methodName>()
             }
 
             $document = array();
-            if ( ! $metadata->isMappedSuperclass && ! $metadata->isEmbeddedDocument) {
+            if (! $metadata->isMappedSuperclass && ! $metadata->isEmbeddedDocument) {
                 if ($metadata->collection) {
-                    $document[] = ' *     collection="' . $metadata->collection . '"';
+                    $document[] = ' *     collection="'.$metadata->collection.'"';
                 }
                 if ($metadata->customRepositoryClassName) {
-                    $document[] = ' *     repositoryClass="' . $metadata->customRepositoryClassName . '"';
+                    $document[] = ' *     repositoryClass="'.$metadata->customRepositoryClassName.'"';
                 }
             }
             if ($metadata->indexes) {
                 $indexes = array();
                 $indexLines = array();
-                $indexLines[] = " *     indexes={";
+                $indexLines[] = ' *     indexes={';
                 foreach ($metadata->indexes as $index) {
                     $keys = array();
                     foreach ($index['keys'] as $key => $value) {
-                        $keys[] = '"' . $key . '"="' . $value . '"';
+                        $keys[] = '"'.$key.'"="'.$value.'"';
                     }
                     $options = array();
                     foreach ($index['options'] as $key => $value) {
-                        $options[] = '"' . $key . '"="' . $value . '"';
+                        $options[] = '"'.$key.'"="'.$value.'"';
                     }
-                    $indexes[] = '@ODM\\Index(keys={' . implode(', ', $keys) . '}, options={' . implode(', ', $options) . '})';
+                    $indexes[] = '@ODM\\Index(keys={'.implode(', ', $keys).'}, options={'.implode(', ', $options).'})';
                 }
-                $indexLines[] = "\n *         " . implode(",\n *         ", $indexes);
+                $indexLines[] = "\n *         ".implode(",\n *         ", $indexes);
                 $indexLines[] = "\n *     }";
 
                 $document[] = implode(null, $indexLines);
@@ -591,7 +590,7 @@ public function <methodName>()
                 $lines[] = ' * )';
             }
 
-            if ( ! empty($metadata->lifecycleCallbacks)) {
+            if (! empty($metadata->lifecycleCallbacks)) {
                 $lines[] = ' * @ODM\HasLifecycleCallbacks';
             }
 
@@ -599,31 +598,32 @@ public function <methodName>()
                 'generateInheritanceAnnotation',
                 'generateDiscriminatorFieldAnnotation',
                 'generateDiscriminatorMapAnnotation',
-                'generateChangeTrackingPolicyAnnotation'
+                'generateChangeTrackingPolicyAnnotation',
             );
 
             foreach ($methods as $method) {
                 if ($code = $this->$method($metadata)) {
-                    $lines[] = ' * ' . $code;
+                    $lines[] = ' * '.$code;
                 }
             }
         }
 
         $lines[] = ' */';
+
         return implode("\n", $lines);
     }
 
     private function generateInheritanceAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->inheritanceType !== ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
-            return '@ODM\\InheritanceType("' . $this->getInheritanceTypeString($metadata->inheritanceType) . '")';
+            return '@ODM\\InheritanceType("'.$this->getInheritanceTypeString($metadata->inheritanceType).'")';
         }
     }
 
     private function generateDiscriminatorFieldAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
-            return '@ODM\\DiscriminatorField(name="' . $metadata->discriminatorField . '")';
+            return '@ODM\\DiscriminatorField(name="'.$metadata->discriminatorField.'")';
         }
     }
 
@@ -633,16 +633,16 @@ public function <methodName>()
             $inheritanceClassMap = array();
 
             foreach ($metadata->discriminatorMap as $type => $class) {
-                $inheritanceClassMap[] .= '"' . $type . '" = "' . $class . '"';
+                $inheritanceClassMap[] .= '"'.$type.'" = "'.$class.'"';
             }
 
-            return '@ODM\\DiscriminatorMap({' . implode(', ', $inheritanceClassMap) . '})';
+            return '@ODM\\DiscriminatorMap({'.implode(', ', $inheritanceClassMap).'})';
         }
     }
 
     private function generateChangeTrackingPolicyAnnotation(ClassMetadataInfo $metadata)
     {
-        return '@ODM\\ChangeTrackingPolicy("' . $this->getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . '")';
+        return '@ODM\\ChangeTrackingPolicy("'.$this->getChangeTrackingPolicyString($metadata->changeTrackingPolicy).'")';
     }
 
     private function generateDocumentStubMethods(ClassMetadataInfo $metadata)
@@ -659,7 +659,7 @@ public function <methodName>()
                 if ($code = $code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type'])) {
                     $methods[] = $code;
                 }
-            } elseif ( ! isset($fieldMapping['association'])) {
+            } elseif (! isset($fieldMapping['association'])) {
                 if ($code = $code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
                     $methods[] = $code;
                 }
@@ -717,13 +717,13 @@ public function <methodName>()
                 $metadata->isInheritedField($fieldMapping['fieldName'])) {
                 continue;
             }
-            if ( ! isset($fieldMapping['association'])) {
+            if (! isset($fieldMapping['association'])) {
                 continue;
             }
 
             $lines[] = $this->generateAssociationMappingPropertyDocBlock($fieldMapping, $metadata);
-            $lines[] = $this->spaces . 'protected $' . $fieldMapping['fieldName']
-                . ($fieldMapping['type'] === ClassMetadataInfo::MANY ? ' = array()' : null) . ";\n";
+            $lines[] = $this->spaces.'protected $'.$fieldMapping['fieldName']
+                .($fieldMapping['type'] === ClassMetadataInfo::MANY ? ' = array()' : null).";\n";
         }
 
         return implode("\n", $lines);
@@ -743,8 +743,8 @@ public function <methodName>()
             }
 
             $lines[] = $this->generateFieldMappingPropertyDocBlock($fieldMapping, $metadata);
-            $lines[] = $this->spaces . 'protected $' . $fieldMapping['fieldName']
-                . (isset($fieldMapping['default']) ? ' = ' . var_export($fieldMapping['default'], true) : null) . ";\n";
+            $lines[] = $this->spaces.'protected $'.$fieldMapping['fieldName']
+                .(isset($fieldMapping['default']) ? ' = '.var_export($fieldMapping['default'], true) : null).";\n";
         }
 
         return implode("\n", $lines);
@@ -757,18 +757,18 @@ public function <methodName>()
             ? Inflector::singularize($fieldName)
             : $fieldName;
 
-        $methodName = $type . Inflector::classify($formattedFieldName);
+        $methodName = $type.Inflector::classify($formattedFieldName);
         $variableName = Inflector::camelize($formattedFieldName);
 
         if ($this->hasMethod($methodName, $metadata)) {
             return;
         }
 
-        $description = ucfirst($type) . ' ' . $variableName;
+        $description = ucfirst($type).' '.$variableName;
 
         $types = Type::getTypesMap();
-        $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
-        $variableType = $typeHint ? $typeHint . ' ' : null;
+        $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\'.$typeHint.' ' : null;
+        $variableType = $typeHint ? $typeHint.' ' : null;
 
         $replacements = array(
             '<description>'    => $description,
@@ -797,7 +797,7 @@ public function <methodName>()
         }
 
         $replacements = array(
-            '<comment>'    => $this->generateAnnotations ? '/** @ODM\\' . ucfirst($name) . ' */' : '',
+            '<comment>'    => $this->generateAnnotations ? '/** @ODM\\'.ucfirst($name).' */' : '',
             '<methodName>' => $methodName,
         );
 
@@ -813,11 +813,11 @@ public function <methodName>()
     private function generateAssociationMappingPropertyDocBlock(array $fieldMapping, ClassMetadataInfo $metadata)
     {
         $lines = array();
-        $lines[] = $this->spaces . '/**';
-        $lines[] = $this->spaces . ' * @var ' . (isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : 'object');
+        $lines[] = $this->spaces.'/**';
+        $lines[] = $this->spaces.' * @var '.(isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : 'object');
 
         if ($this->generateAnnotations) {
-            $lines[] = $this->spaces . ' *';
+            $lines[] = $this->spaces.' *';
 
             $type = null;
             switch ($fieldMapping['association']) {
@@ -837,25 +837,35 @@ public function <methodName>()
             $typeOptions = array();
 
             if (isset($fieldMapping['targetDocument'])) {
-                $typeOptions[] = 'targetDocument="' . $fieldMapping['targetDocument'] . '"';
+                $typeOptions[] = 'targetDocument="'.$fieldMapping['targetDocument'].'"';
             }
 
             if (isset($fieldMapping['cascade']) && $fieldMapping['cascade']) {
                 $cascades = array();
 
-                if ($fieldMapping['isCascadePersist']) $cascades[] = '"persist"';
-                if ($fieldMapping['isCascadeRemove']) $cascades[] = '"remove"';
-                if ($fieldMapping['isCascadeDetach']) $cascades[] = '"detach"';
-                if ($fieldMapping['isCascadeMerge']) $cascades[] = '"merge"';
-                if ($fieldMapping['isCascadeRefresh']) $cascades[] = '"refresh"';
+                if ($fieldMapping['isCascadePersist']) {
+                    $cascades[] = '"persist"';
+                }
+                if ($fieldMapping['isCascadeRemove']) {
+                    $cascades[] = '"remove"';
+                }
+                if ($fieldMapping['isCascadeDetach']) {
+                    $cascades[] = '"detach"';
+                }
+                if ($fieldMapping['isCascadeMerge']) {
+                    $cascades[] = '"merge"';
+                }
+                if ($fieldMapping['isCascadeRefresh']) {
+                    $cascades[] = '"refresh"';
+                }
 
-                $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';
+                $typeOptions[] = 'cascade={'.implode(',', $cascades).'}';
             }
 
-            $lines[] = $this->spaces . ' * @ODM\\' . $type . '(' . implode(', ', $typeOptions) . ')';
+            $lines[] = $this->spaces.' * @ODM\\'.$type.'('.implode(', ', $typeOptions).')';
         }
 
-        $lines[] = $this->spaces . ' */';
+        $lines[] = $this->spaces.' */';
 
         return implode("\n", $lines);
     }
@@ -863,61 +873,61 @@ public function <methodName>()
     private function generateFieldMappingPropertyDocBlock(array $fieldMapping, ClassMetadataInfo $metadata)
     {
         $lines = array();
-        $lines[] = $this->spaces . '/**';
+        $lines[] = $this->spaces.'/**';
         if (isset($fieldMapping['id']) && $fieldMapping['id']) {
             $fieldMapping['strategy'] = isset($fieldMapping['strategy']) ? $fieldMapping['strategy'] : ClassMetadataInfo::GENERATOR_TYPE_AUTO;
             if ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_AUTO) {
-                $lines[] = $this->spaces . ' * @var MongoId $' . $fieldMapping['fieldName'];
+                $lines[] = $this->spaces.' * @var MongoId $'.$fieldMapping['fieldName'];
             } elseif ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_INCREMENT) {
-                $lines[] = $this->spaces . ' * @var integer $' . $fieldMapping['fieldName'];
+                $lines[] = $this->spaces.' * @var integer $'.$fieldMapping['fieldName'];
             } elseif ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_UUID) {
-                $lines[] = $this->spaces . ' * @var string $' . $fieldMapping['fieldName'];
+                $lines[] = $this->spaces.' * @var string $'.$fieldMapping['fieldName'];
             } elseif ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_NONE) {
-                $lines[] = $this->spaces . ' * @var $' . $fieldMapping['fieldName'];
+                $lines[] = $this->spaces.' * @var $'.$fieldMapping['fieldName'];
             } else {
-                $lines[] = $this->spaces . ' * @var $' . $fieldMapping['fieldName'];
+                $lines[] = $this->spaces.' * @var $'.$fieldMapping['fieldName'];
             }
         } else {
-            $lines[] = $this->spaces . ' * @var ' . $fieldMapping['type'] . ' $' . $fieldMapping['fieldName'];
+            $lines[] = $this->spaces.' * @var '.$fieldMapping['type'].' $'.$fieldMapping['fieldName'];
         }
 
         if ($this->generateAnnotations) {
-            $lines[] = $this->spaces . ' *';
+            $lines[] = $this->spaces.' *';
 
             $field = array();
             if (isset($fieldMapping['id']) && $fieldMapping['id']) {
                 if (isset($fieldMapping['strategy'])) {
-                    $field[] = 'strategy="' . $this->getIdGeneratorTypeString($metadata->generatorType) . '"';
+                    $field[] = 'strategy="'.$this->getIdGeneratorTypeString($metadata->generatorType).'"';
                 }
-                $lines[] = $this->spaces . ' * @ODM\\Id(' . implode(', ', $field) . ')';
+                $lines[] = $this->spaces.' * @ODM\\Id('.implode(', ', $field).')';
             } else {
                 if (isset($fieldMapping['name'])) {
-                    $field[] = 'name="' . $fieldMapping['name'] . '"';
+                    $field[] = 'name="'.$fieldMapping['name'].'"';
                 }
 
                 if (isset($fieldMapping['type'])) {
-                    $field[] = 'type="' . $fieldMapping['type'] . '"';
+                    $field[] = 'type="'.$fieldMapping['type'].'"';
                 }
 
                 if (isset($fieldMapping['nullable']) && $fieldMapping['nullable'] === true) {
-                    $field[] = 'nullable=' . var_export($fieldMapping['nullable'], true);
+                    $field[] = 'nullable='.var_export($fieldMapping['nullable'], true);
                 }
                 if (isset($fieldMapping['options'])) {
                     $options = array();
                     foreach ($fieldMapping['options'] as $key => $value) {
-                        $options[] = '"' . $key . '" = "' . $value . '"';
+                        $options[] = '"'.$key.'" = "'.$value.'"';
                     }
-                    $field[] = "options={" . implode(', ', $options) . "}";
+                    $field[] = 'options={'.implode(', ', $options).'}';
                 }
-                $lines[] = $this->spaces . ' * @ODM\\Field(' . implode(', ', $field) . ')';
+                $lines[] = $this->spaces.' * @ODM\\Field('.implode(', ', $field).')';
             }
 
             if (isset($fieldMapping['version']) && $fieldMapping['version']) {
-                $lines[] = $this->spaces . ' * @ODM\\Version';
+                $lines[] = $this->spaces.' * @ODM\\Version';
             }
         }
 
-        $lines[] = $this->spaces . ' */';
+        $lines[] = $this->spaces.' */';
 
         return implode("\n", $lines);
     }
@@ -927,7 +937,7 @@ public function <methodName>()
         $lines = explode("\n", $code);
 
         foreach ($lines as $key => $value) {
-            $lines[$key] = str_repeat($this->spaces, $num) . $lines[$key];
+            $lines[$key] = str_repeat($this->spaces, $num).$lines[$key];
         }
 
         return implode("\n", $lines);
@@ -946,7 +956,7 @@ public function <methodName>()
                 return 'COLLECTION_PER_CLASS';
 
             default:
-                throw new \InvalidArgumentException('Invalid provided InheritanceType: ' . $type);
+                throw new \InvalidArgumentException('Invalid provided InheritanceType: '.$type);
         }
     }
 
@@ -963,7 +973,7 @@ public function <methodName>()
                 return 'NOTIFY';
 
             default:
-                throw new \InvalidArgumentException('Invalid provided ChangeTrackingPolicy: ' . $policy);
+                throw new \InvalidArgumentException('Invalid provided ChangeTrackingPolicy: '.$policy);
         }
     }
 
@@ -978,18 +988,18 @@ public function <methodName>()
 
             case ClassMetadataInfo::GENERATOR_TYPE_UUID:
                 return 'UUID';
-                
+
             case ClassMetadataInfo::GENERATOR_TYPE_ALNUM:
                 return 'ALNUM';
 
             case ClassMetadataInfo::GENERATOR_TYPE_CUSTOM:
                 return 'CUSTOM';
-                
+
             case ClassMetadataInfo::GENERATOR_TYPE_NONE:
                 return 'NONE';
 
             default:
-                throw new \InvalidArgumentException('Invalid provided IdGeneratorType: ' . $type);
+                throw new \InvalidArgumentException('Invalid provided IdGeneratorType: '.$type);
         }
     }
 }

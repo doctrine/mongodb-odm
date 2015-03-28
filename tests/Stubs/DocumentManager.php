@@ -2,16 +2,15 @@
 
 namespace Stubs;
 
+use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\DocumentManager as BaseDocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\Common\EventManager;
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
 class DocumentManager extends BaseDocumentManager
 {
-
     protected $classMetadatas = array();
 
     private $_eventManager;
@@ -33,10 +32,10 @@ class DocumentManager extends BaseDocumentManager
 
     public function getClassMetadata($className)
     {
-        if ( ! isset($this->classMetadatas[$className])) {
-            throw new \InvalidArgumentException('Metadata for class ' . $className . ' doesn\'t exist, try calling ->setClassMetadata() first');
+        if (! isset($this->classMetadatas[$className])) {
+            throw new \InvalidArgumentException('Metadata for class '.$className.' doesn\'t exist, try calling ->setClassMetadata() first');
         }
+
         return $this->classMetadatas[$className];
     }
-
 }

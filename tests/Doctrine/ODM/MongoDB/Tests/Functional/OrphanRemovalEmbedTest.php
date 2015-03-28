@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**
-     * Test unsetting an embedOne relationship
+     * Test unsetting an embedOne relationship.
      */
     public function testUnsettingEmbedOne()
     {
@@ -32,7 +32,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * Test Collection::remove() method on an embedMany relationship
+     * Test Collection::remove() method on an embedMany relationship.
      */
     public function testRemoveEmbedMany()
     {
@@ -68,7 +68,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * Test Collection::clear() method on an embedMany relationship
+     * Test Collection::clear() method on an embedMany relationship.
      */
     public function testClearEmbedMany()
     {
@@ -97,7 +97,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * Test clearing and adding on an embedMany relationship
+     * Test clearing and adding on an embedMany relationship.
      */
     public function testClearAndAddEmbedMany()
     {

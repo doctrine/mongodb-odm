@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,26 +17,27 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The BinData type for generic data.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
 class BinDataType extends Type
 {
     /**
-     * MongoBinData type
+     * MongoBinData type.
      *
      * The default subtype for BSON binary values is 0, but we cannot use a
      * constant here because it is not available in all versions of the PHP
      * driver.
      *
-     * @var integer
+     * @var int
+     *
      * @see http://php.net/manual/en/mongobindata.construct.php
      * @see http://bsonspec.org/#/specification
      */
@@ -44,10 +46,10 @@ class BinDataType extends Type
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
-            return null;
+            return;
         }
 
-        if ( ! $value instanceof \MongoBinData) {
+        if (! $value instanceof \MongoBinData) {
             return new \MongoBinData($value, $this->binDataType);
         }
 

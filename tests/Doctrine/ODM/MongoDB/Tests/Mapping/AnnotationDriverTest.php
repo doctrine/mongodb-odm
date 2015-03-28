@@ -2,18 +2,17 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
     // @TODO: This can be a generic test for all drivers
     public function testFieldInheritance()
     {
-        $super = $this->dm->getClassMetadata(__NAMESPACE__ . '\AnnotationDriverTestSuper');
-        $parent = $this->dm->getClassMetadata(__NAMESPACE__ . '\AnnotationDriverTestParent');
-        $child = $this->dm->getClassMetadata(__NAMESPACE__ . '\AnnotationDriverTestChild');
+        $super = $this->dm->getClassMetadata(__NAMESPACE__.'\AnnotationDriverTestSuper');
+        $parent = $this->dm->getClassMetadata(__NAMESPACE__.'\AnnotationDriverTestParent');
+        $child = $this->dm->getClassMetadata(__NAMESPACE__.'\AnnotationDriverTestChild');
 
         $this->assertFalse($super->hasField('id'), 'MappedSuperclass does not register its own public field');
         $this->assertFalse($super->hasField('protected'), 'MappedSuperclass does not register its own protected field');
@@ -40,7 +39,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $this->assertArrayNotHasKey('declared', $parent->fieldMappings['id'], 'Document does not track "declared" for non-inherited public field from MappedSuperclass parent');
         $this->assertArrayNotHasKey('declared', $parent->fieldMappings['protected'], 'Document does not track "declared" for non-inherited protected field from MappedSuperclass parent');
-        $this->assertEquals(__NAMESPACE__ . '\AnnotationDriverTestSuper', $parent->fieldMappings['private']['declared'], 'Non-inherited private field from MappedSuperclass parent is declared in MappedSuperclass parent');
+        $this->assertEquals(__NAMESPACE__.'\AnnotationDriverTestSuper', $parent->fieldMappings['private']['declared'], 'Non-inherited private field from MappedSuperclass parent is declared in MappedSuperclass parent');
         $this->assertArrayNotHasKey('declared', $parent->fieldMappings['foo'], 'Document does not track "declared" for its own public field');
 
         $this->assertTrue($child->hasField('id'), 'Document does have public field from MappedSuperclass grandparent');
@@ -54,10 +53,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertTrue($child->hasField('bar'), 'Document does register its own public field');
         $this->assertFalse($child->isInheritedField('bar'), 'Document does not inherit its own field');
 
-        $this->assertEquals(__NAMESPACE__ . '\AnnotationDriverTestParent', $child->fieldMappings['id']['declared'], 'Inherited public field from MappedSuperclass grandparent is declared in Document parent');
-        $this->assertEquals(__NAMESPACE__ . '\AnnotationDriverTestParent', $child->fieldMappings['protected']['declared'], 'Inherited protected field from MappedSuperclass grandparent is declared in Document parent');
-        $this->assertEquals(__NAMESPACE__ . '\AnnotationDriverTestSuper', $child->fieldMappings['private']['declared'], 'Inherited private field from MappedSuperclass grandparent is declared in MappedSuperclass grandparent');
-        $this->assertEquals(__NAMESPACE__ . '\AnnotationDriverTestParent', $child->fieldMappings['foo']['declared'], 'Inherited public field from Document parent is declared in Document parent');
+        $this->assertEquals(__NAMESPACE__.'\AnnotationDriverTestParent', $child->fieldMappings['id']['declared'], 'Inherited public field from MappedSuperclass grandparent is declared in Document parent');
+        $this->assertEquals(__NAMESPACE__.'\AnnotationDriverTestParent', $child->fieldMappings['protected']['declared'], 'Inherited protected field from MappedSuperclass grandparent is declared in Document parent');
+        $this->assertEquals(__NAMESPACE__.'\AnnotationDriverTestSuper', $child->fieldMappings['private']['declared'], 'Inherited private field from MappedSuperclass grandparent is declared in MappedSuperclass grandparent');
+        $this->assertEquals(__NAMESPACE__.'\AnnotationDriverTestParent', $child->fieldMappings['foo']['declared'], 'Inherited public field from Document parent is declared in Document parent');
     }
 
     /**
@@ -143,13 +142,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     protected function _loadDriverForCMSDocuments()
     {
         $annotationDriver = $this->_loadDriver();
-        $annotationDriver->addPaths(array(__DIR__ . '/../../../../../Documents'));
+        $annotationDriver->addPaths(array(__DIR__.'/../../../../../Documents'));
+
         return $annotationDriver;
     }
 
     protected function _loadDriver()
     {
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+
         return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
     }
 }

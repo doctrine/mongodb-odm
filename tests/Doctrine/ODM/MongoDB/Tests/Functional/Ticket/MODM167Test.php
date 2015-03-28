@@ -8,7 +8,6 @@ use Documents\User;
 
 class MODM167Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-
     public function setUp()
     {
         parent::setUp();
@@ -16,6 +15,7 @@ class MODM167Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->listener = new MODM167EventListener();
         $evm = $this->dm->getEventManager();
         $evm->addEventListener(Events::onFlush, $this->listener);
+
         return $this->dm;
     }
 

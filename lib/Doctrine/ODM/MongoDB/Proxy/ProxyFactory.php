@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,18 +17,17 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Proxy;
 
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\Common\Proxy\Proxy as BaseProxy;
 use Doctrine\Common\Proxy\ProxyDefinition;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\Common\Proxy\Proxy as BaseProxy;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use ReflectionProperty;
 
@@ -35,6 +35,7 @@ use ReflectionProperty;
  * This factory is used to create proxy objects for documents at runtime.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
@@ -65,7 +66,7 @@ class ProxyFactory extends AbstractProxyFactory
      * @param string                                $proxyDir        The directory to use for the proxy classes. It
      *                                                               must exist.
      * @param string                                $proxyNamespace  The namespace to use for the proxy classes.
-     * @param integer                               $autoGenerate    Whether to automatically generate proxy classes.
+     * @param int                                   $autoGenerate    Whether to automatically generate proxy classes.
      */
     public function __construct(DocumentManager $documentManager, $proxyDir, $proxyNamespace, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
@@ -108,7 +109,7 @@ class ProxyFactory extends AbstractProxyFactory
     }
 
     /**
-     * Generates a closure capable of initializing a proxy
+     * Generates a closure capable of initializing a proxy.
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
      * @param \Doctrine\ODM\MongoDB\Persisters\DocumentPersister $documentPersister
@@ -123,7 +124,6 @@ class ProxyFactory extends AbstractProxyFactory
         DocumentPersister $documentPersister,
         ReflectionProperty $reflectionId
     ) {
-
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
             return function (BaseProxy $proxy) use ($documentPersister, $reflectionId) {
                 $proxy->__setInitializer(null);
@@ -136,7 +136,7 @@ class ProxyFactory extends AbstractProxyFactory
                 $properties = $proxy->__getLazyProperties();
 
                 foreach ($properties as $propertyName => $property) {
-                    if ( ! isset($proxy->$propertyName)) {
+                    if (! isset($proxy->$propertyName)) {
                         $proxy->$propertyName = $properties[$propertyName];
                     }
                 }
@@ -163,7 +163,7 @@ class ProxyFactory extends AbstractProxyFactory
             $properties = $proxy->__getLazyProperties();
 
             foreach ($properties as $propertyName => $property) {
-                if ( ! isset($proxy->$propertyName)) {
+                if (! isset($proxy->$propertyName)) {
                     $proxy->$propertyName = $properties[$propertyName];
                 }
             }
@@ -179,7 +179,7 @@ class ProxyFactory extends AbstractProxyFactory
     }
 
     /**
-     * Generates a closure capable of finalizing a cloned proxy
+     * Generates a closure capable of finalizing a cloned proxy.
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
      * @param \Doctrine\ODM\MongoDB\Persisters\DocumentPersister $documentPersister

@@ -9,7 +9,7 @@ class MODM46Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testTest()
     {
         $a = array(
-            'c' => array('value' => 'value')
+            'c' => array('value' => 'value'),
         );
         $this->dm->getDocumentCollection(__NAMESPACE__.'\MODM46A')->insert($a);
 

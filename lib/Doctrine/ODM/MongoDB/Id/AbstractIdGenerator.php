@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,16 +17,15 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
- * AbstractIdGenerator
+ * AbstractIdGenerator.
  *
  * @since       1.0
+ *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 abstract class AbstractIdGenerator
@@ -34,7 +34,8 @@ abstract class AbstractIdGenerator
      * Generates an identifier for a document.
      *
      * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
-     * @param object $document
+     * @param object                                $document
+     *
      * @return mixed
      */
     abstract public function generate(DocumentManager $dm, $document);

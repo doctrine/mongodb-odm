@@ -2,10 +2,10 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
-use Doctrine\Common\Collections\ExpressionBuilder;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\Value;
+use Doctrine\Common\Collections\ExpressionBuilder;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 

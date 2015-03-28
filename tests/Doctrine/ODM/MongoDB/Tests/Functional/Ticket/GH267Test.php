@@ -35,7 +35,7 @@ class GH267Test extends BaseTest
         // Clear out DM and read from DB afresh
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\User')
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\User')
             ->field('_id')->equals($user1Id);
 
         $query = $qb->getQuery();
@@ -56,7 +56,7 @@ class GH267Test extends BaseTest
  * @ODM\Document(collection="users")
  */
 class User
-{   
+{
     /** @ODM\Id */
     protected $id;
 
@@ -73,32 +73,32 @@ class User
         $this->name = $name;
     }
 
-    public function setId($id) 
+    public function setId($id)
     {
         $this->id = $id;
     }
 
-    public function getId() 
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setName($name) 
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function getName() 
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setCompany($company) 
+    public function setCompany($company)
     {
         $this->company = $company;
     }
 
-    public function getCompany() 
+    public function getCompany()
     {
         return $this->company;
     }
@@ -108,10 +108,10 @@ class User
  * @ODM\Document(collection="companies")
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField(fieldName="type")
- * @ODM\DiscriminatorMap({"seller"="SellerCompany", "buyer"="BuyerCompany"}) 
+ * @ODM\DiscriminatorMap({"seller"="SellerCompany", "buyer"="BuyerCompany"})
  */
 class Company
-{   
+{
     /** @ODM\Id */
     protected $id;
 
@@ -120,22 +120,22 @@ class Company
      */
     protected $users;
 
-    public function setId($id) 
+    public function setId($id)
     {
         $this->id = $id;
     }
 
-    public function getId() 
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setUsers($users) 
+    public function setUsers($users)
     {
         $this->users = $users;
     }
 
-    public function getUsers() 
+    public function getUsers()
     {
         return $this->users;
     }
@@ -145,14 +145,12 @@ class Company
  * @ODM\Document(collection="companies")
  */
 class BuyerCompany extends Company
-{   
-
+{
 }
 
 /**
  * @ODM\Document(collection="companies")
  */
 class SellerCompany extends Company
-{   
-
+{
 }

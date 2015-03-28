@@ -3,9 +3,9 @@
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 
 /**
@@ -107,7 +107,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $collection = $this->documentCollections['Documents\CmsArticle'];
         $collection->expects($this->once())
             ->method('ensureIndex')
-            ->with($this->anything(), $this->callback(function($o) {
+            ->with($this->anything(), $this->callback(function ($o) {
                 return isset($o['timeout']) && $o['timeout'] === 10000;
             }));
 
@@ -138,7 +138,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $database = $this->documentDatabases['Documents\CmsArticle'];
         $database->expects($this->once())
             ->method('command')
-            ->with($this->callback(function($c) {
+            ->with($this->callback(function ($c) {
                 return array_key_exists('deleteIndexes', $c);
             }));
 
@@ -148,7 +148,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(array(array(
                 'v' => 1,
                 'key' => array('topic' => -1),
-                'name' => 'topic_-1'
+                'name' => 'topic_-1',
             ))));
         $collection->expects($this->once())
             ->method('ensureIndex');
@@ -312,7 +312,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
     private function getMockDocumentManager()
     {
         $config = new Configuration();
-        $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/../../../../Documents'));
+        $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__.'/../../../../Documents'));
 
         $em = $this->getMockBuilder('Doctrine\Common\EventManager')
             ->disableOriginalConstructor()

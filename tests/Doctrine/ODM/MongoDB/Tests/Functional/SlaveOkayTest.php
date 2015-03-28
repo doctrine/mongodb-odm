@@ -100,7 +100,7 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         return array(
             array(true),
-            array(false)
+            array(false),
         );
     }
 
