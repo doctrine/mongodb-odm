@@ -29,6 +29,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy as BaseProxy;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use Doctrine\ODM\MongoDB\Query\Query;
 use ReflectionProperty;
 
 /**
@@ -123,9 +124,10 @@ class ProxyFactory extends AbstractProxyFactory
         DocumentPersister $documentPersister,
         ReflectionProperty $reflectionId
     ) {
+        $initializationHints = array(Query::HINT_IGNORE_DISCRIMINATOR => true);
 
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            return function (BaseProxy $proxy) use ($documentPersister, $reflectionId) {
+            return function (BaseProxy $proxy) use ($documentPersister, $reflectionId, $initializationHints) {
                 $proxy->__setInitializer(null);
                 $proxy->__setCloner(null);
 
@@ -146,13 +148,13 @@ class ProxyFactory extends AbstractProxyFactory
 
                 $id = $reflectionId->getValue($proxy);
 
-                if (null === $documentPersister->load(array('_id' => $id), $proxy)) {
+                if (null === $documentPersister->load(array('_id' => $id), $proxy, $initializationHints)) {
                     throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
                 }
             };
         }
 
-        return function (BaseProxy $proxy) use ($documentPersister, $reflectionId) {
+        return function (BaseProxy $proxy) use ($documentPersister, $reflectionId, $initializationHints) {
             $proxy->__setInitializer(null);
             $proxy->__setCloner(null);
 
@@ -172,7 +174,7 @@ class ProxyFactory extends AbstractProxyFactory
 
             $id = $reflectionId->getValue($proxy);
 
-            if (null === $documentPersister->load(array('_id' => $id), $proxy)) {
+            if (null === $documentPersister->load(array('_id' => $id), $proxy, $initializationHints)) {
                 throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
             }
         };

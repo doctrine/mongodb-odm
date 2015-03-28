@@ -310,7 +310,7 @@ class DocumentPersister
             unset($data['$set']);
         }
 
-        /* If there are no modifiers remaining, we're upserting a document with 
+        /* If there are no modifiers remaining, we're upserting a document with
          * an identifier as its only field. Since a document with the identifier
          * may already exist, the desired behavior is "insert if not exists" and
          * NOOP otherwise. MongoDB 2.6+ does not allow empty modifiers, so $set
@@ -657,7 +657,6 @@ class DocumentPersister
 
     private function loadReferenceManyCollectionOwningSide(PersistentCollection $collection)
     {
-        $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $groupedIds = array();
 
@@ -673,58 +672,24 @@ class DocumentPersister
             }
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
 
-            // create a reference to the class and id
             $reference = $this->dm->getReference($className, $id);
 
-            // no custom sort so add the references right now in the order they are embedded
-            if ( ! $sorted) {
+            /* If the reference has custom sort, remember IDs to execute the query later.
+             * Otherwise add the references right now in the order they are embedded.
+             */
+            if ($sorted) {
+                $groupedIds[$className][] = $mongoId;
+            } else {
                 if ($mapping['strategy'] === 'set') {
                     $collection->set($key, $reference);
                 } else {
                     $collection->add($reference);
                 }
             }
-
-            // only query for the referenced object if it is not already initialized or the collection is sorted
-            if (($reference instanceof Proxy && ! $reference->__isInitialized__) || $sorted) {
-                $groupedIds[$className][] = $mongoId;
-            }
         }
-        foreach ($groupedIds as $className => $ids) {
-            $class = $this->dm->getClassMetadata($className);
-            $mongoCollection = $this->dm->getDocumentCollection($className);
-            $criteria = $this->cm->merge(
-                array('_id' => array('$in' => array_values($ids))),
-                $this->dm->getFilterCollection()->getFilterCriteria($class),
-                isset($mapping['criteria']) ? $mapping['criteria'] : array()
-            );
-            $criteria = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
-            $cursor = $mongoCollection->find($criteria);
-            if (isset($mapping['sort'])) {
-                $cursor->sort($mapping['sort']);
-            }
-            if (isset($mapping['limit'])) {
-                $cursor->limit($mapping['limit']);
-            }
-            if (isset($mapping['skip'])) {
-                $cursor->skip($mapping['skip']);
-            }
-            if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-                $cursor->slaveOkay(true);
-            }
-            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-                $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
-            }
-            $documents = $cursor->toArray(false);
-            foreach ($documents as $documentData) {
-                $document = $this->uow->getById($documentData['_id'], $class);
-                $data = $this->hydratorFactory->hydrate($document, $documentData);
-                $this->uow->setOriginalDocumentData($document, $data);
-                $document->__isInitialized__ = true;
-                if ($sorted) {
-                    $collection->add($document);
-                }
-            }
+
+        if ($sorted && count($groupedIds)) {
+            $this->loadActualDataForSortedReferenceManyCollectionByIds($collection, $groupedIds);
         }
     }
 
@@ -1229,5 +1194,60 @@ class DocumentPersister
             }
         }
         return $discriminatorValues;
+    }
+
+    /**
+     * @param PersistentCollection $collection
+     * @param array $groupedIds
+     *
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function loadActualDataForSortedReferenceManyCollectionByIds(
+        PersistentCollection $collection,
+        array $groupedIds
+    ) {
+        $mapping = $collection->getMapping();
+        $hints = $collection->getHints();
+
+        foreach ($groupedIds as $className => $ids) {
+            $class = $this->dm->getClassMetadata($className);
+            $mongoCollection = $this->dm->getDocumentCollection($className);
+            $criteria = $this->cm->merge(
+                array('_id' => array('$in' => array_values($ids))),
+                $this->dm->getFilterCollection()->getFilterCriteria($class),
+                isset($mapping['criteria']) ? $mapping['criteria'] : array()
+            );
+            $criteria = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj(
+                $criteria
+            );
+            $cursor = $mongoCollection->find($criteria);
+            if (isset($mapping['sort'])) {
+                $cursor->sort($mapping['sort']);
+            }
+            if (isset($mapping['limit'])) {
+                $cursor->limit($mapping['limit']);
+            }
+            if (isset($mapping['skip'])) {
+                $cursor->skip($mapping['skip']);
+            }
+            if (!empty($hints[Query::HINT_SLAVE_OKAY])) {
+                $cursor->slaveOkay(true);
+            }
+            if (!empty($hints[Query::HINT_READ_PREFERENCE])) {
+                $cursor->setReadPreference(
+                    $hints[Query::HINT_READ_PREFERENCE],
+                    $hints[Query::HINT_READ_PREFERENCE_TAGS]
+                );
+            }
+            $documents = $cursor->toArray(false);
+            foreach ($documents as $documentData) {
+                $docId = $documentData['_id'];
+                $document = $this->uow->getById($docId, $class);
+                $data = $this->hydratorFactory->hydrate($document, $documentData);
+                $this->uow->setOriginalDocumentData($document, $data);
+                $document->__isInitialized__ = true;
+                $collection->add($document);
+            }
+        }
     }
 }
