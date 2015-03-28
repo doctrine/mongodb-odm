@@ -811,7 +811,9 @@ class UnitOfWork implements PropertyChangedListener
                     : $changeSet;
 
                 $this->originalDocumentData[$oid] = $actualData;
-                $this->documentUpdates[$oid] = $document;
+                if ( ! isset($this->documentInsertions[$oid])) {
+                    $this->documentUpdates[$oid] = $document;
+                }
             }
         }
 
@@ -839,7 +841,7 @@ class UnitOfWork implements PropertyChangedListener
                         $oid2 = spl_object_hash($obj);
                         if (isset($this->documentChangeSets[$oid2])) {
                             $this->documentChangeSets[$oid][$mapping['fieldName']] = array($value, $value);
-                            if ( ! $isNewDocument) {
+                            if ( ! $isNewDocument && ! isset($this->documentInsertions[$oid])) {
                                 $this->documentUpdates[$oid] = $document;
                             }
                             break;
