@@ -780,7 +780,7 @@ class UnitOfWork implements PropertyChangedListener
                     : $changeSet;
 
                 $this->originalDocumentData[$oid] = $actualData;
-                $this->documentUpdates[$oid] = $document;
+                $this->scheduleForUpdate($document);
             }
         }
 
@@ -812,7 +812,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->documentChangeSets[$oid][$mapping['fieldName']] = array($value, $value);
 
                     if ( ! $isNewDocument) {
-                        $this->documentUpdates[$oid] = $document;
+                        $this->scheduleForUpdate($document);
                     }
 
                     break;
@@ -1442,7 +1442,9 @@ class UnitOfWork implements PropertyChangedListener
             throw new \InvalidArgumentException("Document is removed.");
         }
 
-        if ( ! isset($this->documentUpdates[$oid]) && ! isset($this->documentInsertions[$oid]) && ! isset($this->documentUpserts[$oid])) {
+        if ( ! isset($this->documentUpdates[$oid])
+            && ! isset($this->documentInsertions[$oid])
+            && ! isset($this->documentUpserts[$oid])) {
             $this->documentUpdates[$oid] = $document;
         }
     }
