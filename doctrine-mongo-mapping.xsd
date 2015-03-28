@@ -46,6 +46,9 @@
     <xs:attribute name="db" type="xs:NMTOKEN" />
     <xs:attribute name="name" type="xs:string" />
     <xs:attribute name="collection" type="xs:NMTOKEN" />
+    <xs:attribute name="capped-collection" type="xs:boolean" />
+    <xs:attribute name="capped-collection-size" type="xs:integer" />
+    <xs:attribute name="capped-collection-max" type="xs:integer" />
     <xs:attribute name="repository-class" type="xs:string"/>
     <xs:attribute name="inheritance-type" type="odm:inheritance-type"/>
     <xs:attribute name="change-tracking-policy" type="odm:change-tracking-policy" />
