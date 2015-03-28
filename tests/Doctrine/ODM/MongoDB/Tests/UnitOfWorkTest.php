@@ -333,12 +333,16 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $arrayTest = new ArrayTest($origData);
         $this->uow->persist($arrayTest);
         $this->uow->computeChangeSets();
+        $this->uow->commit();
 
         $arrayTest->data = $updateData;
-        $this->uow->persist($arrayTest);
         $this->uow->computeChangeSets();
 
         $this->assertEquals($shouldInUpdate, $this->uow->isScheduledForUpdate($arrayTest));
+
+        $this->uow->commit();
+
+        $this->assertFalse($this->uow->isScheduledForUpdate($arrayTest));
     }
 
     public function getScheduleForUpdateWithArraysTests()
