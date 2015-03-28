@@ -74,4 +74,9 @@ class MongoDBException extends \Exception
             implode(', ', $unindexedFields)
         ));
     }
+
+    public static function invalidDocumentRepository($className)
+    {
+        return new self("Invalid repository class '".$className."'. It must be a Doctrine\Common\Persistence\ObjectRepository.");
+    }
 }
