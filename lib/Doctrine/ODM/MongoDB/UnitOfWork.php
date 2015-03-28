@@ -2800,10 +2800,11 @@ class UnitOfWork implements PropertyChangedListener
      * @param string $className The name of the document class.
      * @param array $data The data for the document.
      * @param array $hints Any hints to account for during reconstitution/lookup of the document.
+     * @param object The document to be hydrated into in case of creation
      * @return object The document instance.
      * @internal Highly performance-sensitive method.
      */
-    public function getOrCreateDocument($className, $data, &$hints = array())
+    public function getOrCreateDocument($className, $data, &$hints = array(), $document = null)
     {
         $class = $this->dm->getClassMetadata($className);
 
@@ -2840,7 +2841,9 @@ class UnitOfWork implements PropertyChangedListener
                 $this->originalDocumentData[$oid] = $data;
             }
         } else {
-            $document = $class->newInstance();
+            if ($document === null) {
+                $document = $class->newInstance();
+            }
             $this->registerManaged($document, $id, $data);
             $oid = spl_object_hash($document);
             $this->documentStates[$oid] = self::STATE_MANAGED;
