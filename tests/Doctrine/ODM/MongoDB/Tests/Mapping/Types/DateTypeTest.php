@@ -92,6 +92,32 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function test32bit1900Date()
+    {
+        if (PHP_INT_SIZE === 4) {
+            $type = Type::getType(Type::DATE);
+            $type->convertToDatabaseValue('1900-01-01');
+        } else {
+            $this->markTestSkipped("Platform is not 32-bit");
+        }
+    }
+
+    public function test64bit1900Date()
+    {
+        if (PHP_INT_SIZE === 8) {
+            $type = Type::getType(Type::DATE);
+            $return = $type->convertToDatabaseValue('1900-01-01');
+
+            $this->assertInstanceOf('MongoDate', $return);
+            $this->assertEquals(new \MongoDate(strtotime('1900-01-01')), $return);
+        } else {
+            $this->markTestSkipped("Platform is not 64-bit");
+        }
+    }
+
     private function assertTimestampEquals(\DateTime $expected, \DateTime $actual)
     {
         $this->assertEquals($expected->getTimestamp(), $actual->getTimestamp());
