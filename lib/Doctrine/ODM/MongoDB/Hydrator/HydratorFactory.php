@@ -61,9 +61,9 @@ class HydratorFactory
     private $evm;
 
     /**
-     * Whether to automatically (re)generate hydrator classes.
+     * Which algorithm to use to automatically (re)generate hydrator classes.
      *
-     * @var boolean
+     * @var integer
      */
     private $autoGenerate;
 
@@ -93,7 +93,7 @@ class HydratorFactory
      * @param EventManager $evm
      * @param string $hydratorDir
      * @param string $hydratorNs
-     * @param boolean $autoGenerate
+     * @param integer $autoGenerate
      * @throws HydratorException
      */
     public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate)

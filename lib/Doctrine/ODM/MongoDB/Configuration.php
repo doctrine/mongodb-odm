@@ -71,8 +71,8 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Generate the proxy/hydrator classes using eval().
      *
-     * This strategy is only sane for development, and even then it gives me
-     * the creeps a little. Copied from \Doctrine\Common\Proxy\AbstractProxyFactory.
+     * This strategy is only sane for development.
+     * Copied from \Doctrine\Common\Proxy\AbstractProxyFactory.
      *
      * @var integer
      */
