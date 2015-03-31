@@ -918,7 +918,10 @@ class UnitOfWork implements PropertyChangedListener
             switch ($state) {
                 case self::STATE_NEW:
                     if ( ! $assoc['isCascadePersist']) {
-                        throw MongoDBInvalidArgumentException::newDocumentFoundThroughRelationship($assoc, $entry);
+                        throw new \InvalidArgumentException("A new document was found through a relationship that was not"
+                            . " configured to cascade persist operations: " . self::objToStr($entry) . "."
+                            . " Explicitly persist the new document or configure cascading persist operations"
+                            . " on the relationship.");
                     }
 
                     $this->persistNew($targetClass, $entry);
@@ -942,8 +945,10 @@ class UnitOfWork implements PropertyChangedListener
                     break;
 
                 case self::STATE_DETACHED:
-                    // Can actually not happen right now as we assume STATE_NEW.
-                    throw MongoDBInvalidArgumentException::detachedDocumentFoundThroughRelationship($assoc, $entry);
+                    // Can actually not happen right now as we assume STATE_NEW,
+                    // so the exception will be raised from the DBAL layer (constraint violation).
+                    throw new \InvalidArgumentException("A detached document was found through a "
+                        . "relationship during cascading a persist operation.");
                     break;
 
                 default:
