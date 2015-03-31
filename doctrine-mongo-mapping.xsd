@@ -88,6 +88,10 @@
   </xs:complexType>
 
   <xs:complexType name="embed-one">
+    <xs:sequence>
+      <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
+      <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
+    </xs:sequence>
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
@@ -108,6 +112,8 @@
   <xs:complexType name="reference-one">
     <xs:sequence>
       <xs:element name="cascade" type="odm:cascade-type" minOccurs="0" />
+      <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
+      <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
       <xs:element name="sort" type="odm:sort-map" minOccurs="0" />
       <xs:element name="criteria" type="odm:criteria-map" minOccurs="0" />
     </xs:sequence>
