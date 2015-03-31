@@ -66,7 +66,7 @@ class GH520Test extends BaseTest
         $result = $query->getSingleResult();
 
         $this->assertContains($document2->id, $primedIds);
-        $this->assertContains($document4->id, $primedIds);
+        $this->assertNotContains($document4->id, $primedIds, 'Only the dataset being fetched should be primed');
     }
 }
 

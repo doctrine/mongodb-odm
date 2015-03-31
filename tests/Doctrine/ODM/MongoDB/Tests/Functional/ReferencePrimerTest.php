@@ -28,10 +28,16 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrimeReferencesShouldRequireReferenceMapping()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $user = new User();
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $this->dm->createQueryBuilder('Documents\User')
             ->field('username')->prime(true)
             ->getQuery()
-            ->execute();
+            ->toArray();
     }
 
     /**
@@ -39,13 +45,30 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrimeReferencesShouldRequireOwningSideReferenceMapping()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $user = new User();
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $this->dm->createQueryBuilder('Documents\User')
             ->field('simpleReferenceOneInverse')->prime(true)
             ->getQuery()
-            ->execute();
+            ->toArray();
     }
 
-    public function testPrimeReferencesWithDBRefObjects()
+    public static function eagerCursorProvider()
+    {
+        return array(
+            'lazyCursor' => array(false),
+            'eagerCursur' => array(true)
+        );
+    }
+
+    /**
+     * @dataProvider eagerCursorProvider
+     */
+    public function testPrimeReferencesWithDBRefObjects($eagerCursor)
     {
         $user = new User();
         $user->addGroup(new Group());
@@ -57,6 +80,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->eagerCursor($eagerCursor)
             ->field('account')->prime(true)
             ->field('groups')->prime(true);
 
@@ -211,12 +235,12 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $invokedArgs[] = func_get_args();
         };
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $this->dm->createQueryBuilder('Documents\User')
             ->field('account')->prime($primer)
             ->field('groups')->prime($primer)
             ->slaveOkay(true)
             ->getQuery()
-            ->execute();
+            ->toArray();
 
         $this->assertCount(2, $invokedArgs, 'Primer was invoked once for each referenced class.');
         $this->assertArrayHasKey(Query::HINT_SLAVE_OKAY, $invokedArgs[0][3], 'Primer was invoked with UnitOfWork hints from original query.');
