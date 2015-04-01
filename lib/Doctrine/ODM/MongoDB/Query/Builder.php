@@ -285,6 +285,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         if (isset($query['select'])) {
             $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
+            $this->refresh();
         }
 
         if (isset($query['sort'])) {
