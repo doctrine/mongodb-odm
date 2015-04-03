@@ -87,6 +87,9 @@ class YamlDriver extends FileDriver
         if (isset($element['discriminatorMap'])) {
             $class->setDiscriminatorMap($element['discriminatorMap']);
         }
+        if (isset($element['defaultDiscriminatorValue'])) {
+            $class->setDefaultDiscriminatorValue($element['defaultDiscriminatorValue']);
+        }
         if (isset($element['changeTrackingPolicy'])) {
             $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
                     . strtoupper($element['changeTrackingPolicy'])));
@@ -251,6 +254,9 @@ class YamlDriver extends FileDriver
         if (isset($embed['discriminatorMap'])) {
             $mapping['discriminatorMap'] = $embed['discriminatorMap'];
         }
+        if (isset($embed['defaultDiscriminatorValue'])) {
+            $mapping['defaultDiscriminatorValue'] = $embed['defaultDiscriminatorValue'];
+        }
         $this->addFieldMapping($class, $mapping);
     }
 
@@ -279,6 +285,9 @@ class YamlDriver extends FileDriver
         }
         if (isset($reference['discriminatorMap'])) {
             $mapping['discriminatorMap'] = $reference['discriminatorMap'];
+        }
+        if (isset($reference['defaultDiscriminatorValue'])) {
+            $mapping['defaultDiscriminatorValue'] = $reference['defaultDiscriminatorValue'];
         }
         if (isset($reference['sort'])) {
             $mapping['sort'] = $reference['sort'];

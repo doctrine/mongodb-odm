@@ -599,6 +599,7 @@ public function <methodName>()
                 'generateInheritanceAnnotation',
                 'generateDiscriminatorFieldAnnotation',
                 'generateDiscriminatorMapAnnotation',
+                'generateDefaultDiscriminatorValueAnnotation',
                 'generateChangeTrackingPolicyAnnotation'
             );
 
@@ -637,6 +638,13 @@ public function <methodName>()
             }
 
             return '@ODM\\DiscriminatorMap({' . implode(', ', $inheritanceClassMap) . '})';
+        }
+    }
+
+    private function generateDefaultDiscriminatorValueAnnotation(ClassMetadataInfo $metadata)
+    {
+        if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION && isset($metadata->defaultDiscriminatorValue)) {
+            return '@ODM\\DefaultDiscriminatorValue("' . $metadata->defaultDiscriminatorValue . '")';
         }
     }
 

@@ -26,6 +26,7 @@ use Documents\Functional\PreUpdateTestSellable;
 use Documents\Functional\PreUpdateTestSeller;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
+use Documents\Functional\SameCollection3;
 use Documents\Functional\SimpleEmbedAndReference;
 use Documents\Album;
 use Documents\Song;
@@ -605,6 +606,11 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($test2);
         $this->dm->flush();
 
+        $test3 = new SameCollection3();
+        $test3->name = 'test3';
+        $this->dm->persist($test3);
+        $this->dm->flush();
+
         $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findOneBy(array('name' => 'test1'));
         $this->assertNotNull($test);
         $this->assertInstanceOf('Documents\Functional\SameCollection1', $test);
@@ -612,6 +618,10 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $this->dm->getRepository('Documents\Functional\SameCollection2')->findOneBy(array('name' => 'test2'));
         $this->assertNotNull($test);
         $this->assertInstanceOf('Documents\Functional\SameCollection2', $test);
+
+        $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findOneBy(array('name' => 'test3'));
+        $this->assertNotNull($test);
+        $this->assertInstanceOf('Documents\Functional\SameCollection1', $test);
 
         $test = $this->dm->getRepository('Documents\Functional\SameCollection2')->findOneBy(array('name' => 'test1'));
         $this->assertNull($test);
@@ -622,15 +632,15 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         );
         $q = $qb->getQuery();
         $test = $q->execute();
-        $this->assertEquals(2, count($test));
+        $this->assertEquals(3, count($test));
 
         $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findAll();
-        $this->assertEquals(1, count($test));
+        $this->assertEquals(2, count($test));
 
         $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
         $query = $qb->getQuery();
         $test = $query->execute();
-        $this->assertEquals(1, count($test));
+        $this->assertEquals(2, count($test));
     }
 
     /**

@@ -1228,6 +1228,12 @@ class DocumentPersister
                 $discriminatorValues[] = $key;
             }
         }
+
+        // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list
+        if ($metadata->defaultDiscriminatorValue && (array_search($metadata->defaultDiscriminatorValue, $discriminatorValues)) !== false) {
+            $discriminatorValues[] = null;
+        }
+
         return $discriminatorValues;
     }
 }

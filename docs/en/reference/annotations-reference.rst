@@ -178,6 +178,29 @@ in MongoDB. The property will be a DateTime when loaded from the database.
     /** @Date */
     private $createdAt;
 
+@DefaultDiscriminatorValue
+--------------------------
+
+This annotation can be used when using `@DiscriminatorField`_. It will be used
+as a fallback value if a document has no discriminator field set. This must
+correspond to a value from a discriminator map.
+
+.. code-block:: php
+
+    <?php
+
+    /**
+     * @Document
+     * @InheritanceType("SINGLE_COLLECTION")
+     * @DiscriminatorField("type")
+     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+     * @DefaultDiscriminatorValue("person")
+     */
+    class Person
+    {
+        // ...
+    }
+
 @DiscriminatorField
 -------------------
 
@@ -344,6 +367,9 @@ Optional attributes:
 -
     discriminatorMap - Map of discriminator values to class names.
 -
+    defaultDiscriminatorValue - A default value for discriminatorField if no value
+    has been set in the embedded document.
+-
     strategy - The strategy used to persist changes to the collection. Possible
     values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
     is the default. See :ref:`collection_strategies` for more information.
@@ -359,7 +385,8 @@ Optional attributes:
      *     discriminatorMap={
      *         "book"="Documents\BookTag",
      *         "song"="Documents\SongTag"
-     *     }
+     *     },
+     *     defaultDiscriminatorValue="book"
      * )
      */
     private $tags = array();
@@ -394,6 +421,9 @@ Optional attributes:
     value within the embedded document.
 -
     discriminatorMap - Map of discriminator values to class names.
+-
+    defaultDiscriminatorValue - A default value for discriminatorField if no value
+    has been set in the embedded document.
 
 .. code-block:: php
 
@@ -405,7 +435,8 @@ Optional attributes:
      *     discriminatorMap={
      *         "user"="Documents\User",
      *         "author"="Documents\Author"
-     *     }
+     *     },
+     *     defaultDiscriminatorValue="user"
      * )
      */
     private $creator;
@@ -1066,6 +1097,9 @@ Optional attributes:
 -
     discriminatorMap - Map of discriminator values to class names.
 -
+    defaultDiscriminatorValue - A default value for discriminatorField if no value
+    has been set in the embedded document.
+-
     inversedBy - The field name of the inverse side. Only allowed on owning side.
 -
     mappedBy - The field name of the owning side. Only allowed on the inverse side.
@@ -1098,7 +1132,8 @@ Optional attributes:
      *     discriminatorMap={
      *         "book"="Documents\BookItem",
      *         "song"="Documents\SongItem"
-     *     }
+     *     },
+     *     defaultDiscriminatorValue="book"
      * )
      */
     private $cart;
@@ -1126,6 +1161,9 @@ Optional attributes:
 -
     discriminatorMap - Map of discriminator values to class names.
 -
+    defaultDiscriminatorValue - A default value for discriminatorField if no value
+    has been set in the embedded document.
+-
     inversedBy - The field name of the inverse side. Only allowed on owning side.
 -
     mappedBy - The field name of the owning side. Only allowed on the inverse side.
@@ -1152,7 +1190,8 @@ Optional attributes:
      *     discriminatorMap={
      *         "book"="Documents\BookItem",
      *         "song"="Documents\SongItem"
-     *     }
+     *     },
+     *     defaultDiscriminatorValue="book"
      * )
      */
     private $cart;

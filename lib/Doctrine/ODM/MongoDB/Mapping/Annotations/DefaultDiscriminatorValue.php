@@ -19,14 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use Doctrine\Common\Annotations\Annotation;
+
 /** @Annotation */
-final class EmbedMany extends AbstractField
+final class DefaultDiscriminatorValue extends Annotation
 {
-    public $type = 'many';
-    public $embedded = true;
-    public $targetDocument;
-    public $discriminatorField;
-    public $discriminatorMap;
-    public $defaultDiscriminatorValue;
-    public $strategy = 'pushAll'; // pushAll, set
 }
