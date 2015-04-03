@@ -113,15 +113,15 @@ class MODM67EmbeddedObject
     /** @ODM\Int */
     public $numAccesses = 0;
 
-    /** @ODM\Boolean */
+    /** @ODM\Bool */
     public $prePersist = false;
 
-    /** @ODM\Boolean */
+    /** @ODM\Bool */
     public $postPersist = false;
 
-    /** @ODM\Boolean */
+    /** @ODM\Bool */
     public $preUpdate = false;
 
-    /** @ODM\Boolean */
+    /** @ODM\Bool */
     public $postUpdate = false;
 }
