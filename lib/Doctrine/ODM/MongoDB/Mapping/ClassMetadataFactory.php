@@ -133,6 +133,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setInheritanceType($parent->inheritanceType);
             $class->setDiscriminatorField($parent->discriminatorField);
             $class->setDiscriminatorMap($parent->discriminatorMap);
+            $class->setDefaultDiscriminatorValue($parent->defaultDiscriminatorValue);
             $class->setIdGeneratorType($parent->generatorType);
             $this->addInheritedFields($class, $parent);
             $this->addInheritedIndexes($class, $parent);

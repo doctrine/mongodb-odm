@@ -28,6 +28,7 @@ final class ReferenceMany extends AbstractField
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
+    public $defaultDiscriminatorValue;
     public $cascade;
     public $orphanRemoval;
     public $inversedBy;

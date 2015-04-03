@@ -330,8 +330,15 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $documentNames = $documentName;
             $documentName = $documentNames[0];
 
-            $discriminatorField = $this->dm->getClassMetadata($documentName)->discriminatorField;
+            $metadata = $this->dm->getClassMetadata($documentName);
+            $discriminatorField = $metadata->discriminatorField;
             $discriminatorValues = $this->getDiscriminatorValues($documentNames);
+
+            // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list
+            if ($metadata->defaultDiscriminatorValue && (array_search($metadata->defaultDiscriminatorValue, $discriminatorValues)) !== false) {
+                $discriminatorValues[] = null;
+            }
+
             $this->field($discriminatorField)->in($discriminatorValues);
         }
 

@@ -347,6 +347,14 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $discriminatorField;
 
     /**
+     * READ-ONLY: The default value for discriminatorField in case it's not set in the document
+     *
+     * @var string
+     * @see discriminatorField
+     */
+    public $defaultDiscriminatorValue;
+
+    /**
      * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
      *
      * @var boolean
@@ -684,6 +692,29 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 }
             }
         }
+    }
+
+    /**
+     * Sets the default discriminator value to be used for this class
+     * Used for JOINED and SINGLE_TABLE inheritance mapping strategies if the document has no discriminator value
+     *
+     * @param string $defaultDiscriminatorValue
+     *
+     * @throws MappingException
+     */
+    public function setDefaultDiscriminatorValue($defaultDiscriminatorValue)
+    {
+        if ($defaultDiscriminatorValue === null) {
+            $this->defaultDiscriminatorValue = null;
+
+            return;
+        }
+
+        if (!array_key_exists($defaultDiscriminatorValue, $this->discriminatorMap)) {
+            throw MappingException::invalidDiscriminatorValue($defaultDiscriminatorValue, $this->name);
+        }
+
+        $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
     }
 
     /**

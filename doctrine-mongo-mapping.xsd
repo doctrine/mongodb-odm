@@ -39,6 +39,7 @@
       <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
+      <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="odm:lifecycle-callbacks" minOccurs="0"/>
       <xs:element name="also-load-methods" type="odm:also-load-methods" minOccurs="0"/>
       <xs:element name="indexes" type="odm:indexes" minOccurs="0"/>
@@ -91,6 +92,7 @@
     <xs:sequence>
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
+      <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
@@ -102,6 +104,7 @@
     <xs:sequence>
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
+      <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
@@ -114,6 +117,7 @@
       <xs:element name="cascade" type="odm:cascade-type" minOccurs="0" />
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
+      <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0"/>
       <xs:element name="sort" type="odm:sort-map" minOccurs="0" />
       <xs:element name="criteria" type="odm:criteria-map" minOccurs="0" />
     </xs:sequence>
@@ -133,6 +137,7 @@
       <xs:element name="cascade" type="odm:cascade-type" minOccurs="0" />
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
+      <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0"/>
       <xs:element name="sort" type="odm:sort-map" minOccurs="0" />
       <xs:element name="criteria" type="odm:criteria-map" minOccurs="0" />
     </xs:sequence>
@@ -211,6 +216,10 @@
 
   <xs:complexType name="discriminator-field">
     <xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="default-discriminator-value">
+    <xs:attribute name="value" type="xs:NMTOKEN" use="required"/>
   </xs:complexType>
 
   <xs:simpleType name="lifecycle-callback-type">

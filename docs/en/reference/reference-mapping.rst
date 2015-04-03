@@ -244,6 +244,53 @@ class name with each reference:
               album: Documents\Album
               song: Documents\Song
 
+If you have references without a discriminator value that need to be treated
+correctly you can optionally specify a default value for the discriminator:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        /** @Document */
+        class User
+        {
+            // ..
+
+            /**
+             * @ReferenceMany(
+             *   discriminatorMap={
+             *     "album"="Album",
+             *     "song"="Song"
+             *   },
+             *   defaultDiscriminatorValue="album"
+             * )
+             */
+            private $favorites = array();
+
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <reference-many fieldName="favorites">
+            <discriminator-map>
+                <discriminator-mapping value="album" class="Documents\Album" />
+                <discriminator-mapping value="song" class="Documents\Song" />
+            </discriminator-map>
+            <default-discriminator-value value="album" />
+        </reference-many>
+
+    .. code-block:: yaml
+
+        referenceMany:
+          favorites:
+            discriminatorMap:
+              album: Documents\Album
+              song: Documents\Song
+            defaultDiscriminatorValue: album
+
 .. _simple_references:
 
 Simple References

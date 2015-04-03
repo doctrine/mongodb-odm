@@ -2771,9 +2771,14 @@ class UnitOfWork implements PropertyChangedListener
     {
         $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : null;
 
+        $discriminatorValue = null;
         if (isset($discriminatorField, $data[$discriminatorField])) {
             $discriminatorValue = $data[$discriminatorField];
+        } elseif (isset($mapping['defaultDiscriminatorValue'])) {
+            $discriminatorValue = $mapping['defaultDiscriminatorValue'];
+        }
 
+        if ($discriminatorValue !== null) {
             return isset($mapping['discriminatorMap'][$discriminatorValue])
                 ? $mapping['discriminatorMap'][$discriminatorValue]
                 : $discriminatorValue;
@@ -2781,9 +2786,14 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->dm->getClassMetadata($mapping['targetDocument']);
 
+        $discriminatorValue = null;
         if (isset($class->discriminatorField, $data[$class->discriminatorField])) {
             $discriminatorValue = $data[$class->discriminatorField];
+        } elseif ($class->defaultDiscriminatorValue !== null) {
+            $discriminatorValue = $class->defaultDiscriminatorValue;
+        }
 
+        if ($discriminatorValue !== null) {
             return isset($class->discriminatorMap[$discriminatorValue])
                 ? $class->discriminatorMap[$discriminatorValue]
                 : $discriminatorValue;
@@ -2809,9 +2819,14 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->dm->getClassMetadata($className);
 
         // @TODO figure out how to remove this
+        $discriminatorValue = null;
         if (isset($class->discriminatorField, $data[$class->discriminatorField])) {
             $discriminatorValue = $data[$class->discriminatorField];
+        } elseif (isset($class->defaultDiscriminatorValue)) {
+            $discriminatorValue = $class->defaultDiscriminatorValue;
+        }
 
+        if ($discriminatorValue !== null) {
             $className = isset($class->discriminatorMap[$discriminatorValue])
                 ? $class->discriminatorMap[$discriminatorValue]
                 : $discriminatorValue;

@@ -100,6 +100,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $class->setDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {
                 $class->setChangeTrackingPolicy(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::CHANGETRACKING_'.$annot->value));
+            } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
+                $class->setDefaultDiscriminatorValue($annot->value);
             }
 
         }
