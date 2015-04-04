@@ -126,6 +126,19 @@ value to `MongoBinData`_ with ``MongoBinData::UUID_RFC4122`` sub-type.
     RFC 4122 UUIDs must be 16 bytes. The PHP driver will throw an exception if
     the binary data's size is invalid.
 
+@Bool
+--------
+
+Alias of `@Field`_, with "type" attribute set to "bool". Internally it uses
+exactly same logic as `@Boolean`_ annotation and "boolean" type.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Bool */
+    private $active;
+
 @Boolean
 --------
 
@@ -741,6 +754,26 @@ Examples:
 ----
 
 Alias of `@Field`_, with "type" attribute set to "int".
+
+.. code-block:: php
+
+    <?php
+
+    /** @Int */
+    private $columns;
+
+@Integer
+--------
+
+Alias of `@Field`_, with "type" attribute set to "integer". Internally it uses
+exactly same logic as `@Int`_ annotation and "int" type.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Integer */
+    private $columns;
 
 @Key
 ----

@@ -128,7 +128,7 @@ class GH611Document
 /** @ODM\EmbeddedDocument */
 class GH611EmbeddedDocument
 {
-    /** @ODM\Int */
+    /** @ODM\Integer */
     public $id;
 
     /** @ODM\String(name="n") */

@@ -33,8 +33,10 @@ abstract class Type
     const ID = 'id';
     const INTID = 'int_id';
     const CUSTOMID = 'custom_id';
+    const BOOL = 'bool';
     const BOOLEAN = 'boolean';
-    const INTEGER = 'int';
+    const INT = 'int';
+    const INTEGER = 'integer';
     const FLOAT = 'float';
     const STRING = 'string';
     const DATE = 'date';
@@ -62,7 +64,9 @@ abstract class Type
         self::ID => 'Doctrine\ODM\MongoDB\Types\IdType',
         self::INTID => 'Doctrine\ODM\MongoDB\Types\IntIdType',
         self::CUSTOMID => 'Doctrine\ODM\MongoDB\Types\CustomIdType',
+        self::BOOL => 'Doctrine\ODM\MongoDB\Types\BooleanType',
         self::BOOLEAN => 'Doctrine\ODM\MongoDB\Types\BooleanType',
+        self::INT => 'Doctrine\ODM\MongoDB\Types\IntType',
         self::INTEGER => 'Doctrine\ODM\MongoDB\Types\IntType',
         self::FLOAT => 'Doctrine\ODM\MongoDB\Types\FloatType',
         self::STRING => 'Doctrine\ODM\MongoDB\Types\StringType',
