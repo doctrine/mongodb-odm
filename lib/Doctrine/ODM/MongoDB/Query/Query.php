@@ -255,15 +255,14 @@ class Query extends \Doctrine\MongoDB\Query\Query
             is_array($results) && isset($results['_id'])) {
 
             $results = $uow->getOrCreateDocument($this->class->name, $results, $this->unitOfWorkHints);
-        }
 
-        if ( ! empty($this->primers)) {
-            $referencePrimer = new ReferencePrimer($this->dm, $uow);
+            if ( ! empty($this->primers)) {
+                $referencePrimer = new ReferencePrimer($this->dm, $uow);
 
-            foreach ($this->primers as $fieldName => $primer) {
-                $primer = is_callable($primer) ? $primer : null;
-                $documents = $results instanceof Iterator ? $results : array($results);
-                $referencePrimer->primeReferences($this->class, $documents, $fieldName, $this->unitOfWorkHints, $primer);
+                foreach ($this->primers as $fieldName => $primer) {
+                    $primer = is_callable($primer) ? $primer : null;
+                    $referencePrimer->primeReferences($this->class, array($results), $fieldName, $this->unitOfWorkHints, $primer);
+                }
             }
         }
 
@@ -300,6 +299,11 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
         $cursor->hydrate($this->hydrate);
         $cursor->setHints($this->unitOfWorkHints);
+
+        if ( ! empty($this->primers)) {
+            $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
+            $cursor->enableReferencePriming($this->primers, $referencePrimer);
+        }
 
         return $cursor;
     }

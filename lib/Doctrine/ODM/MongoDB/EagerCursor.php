@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 
 /**
  * EagerCursor wraps a Cursor instance and fetches all of its results upon
@@ -62,6 +63,27 @@ class EagerCursor extends BaseEagerCursor
     private $unitOfWorkHints = array();
 
     /**
+     * ReferencePrimer object for priming references
+     *
+     * @var ReferencePrimer
+     */
+    private $referencePrimer;
+
+    /**
+     * Primers
+     *
+     * @var array
+     */
+    private $primers = array();
+
+    /**
+     * Whether references have been primed
+     *
+     * @var bool
+     */
+    private $referencesPrimed = false;
+
+    /**
      * Constructor.
      *
      * @param Cursor        $cursor      Cursor instance being wrapped
@@ -81,6 +103,8 @@ class EagerCursor extends BaseEagerCursor
      */
     public function current()
     {
+        $this->primeReferences();
+
         $current = parent::current();
 
         if ($current === null || ! $this->hydrate) {
@@ -189,5 +213,37 @@ class EagerCursor extends BaseEagerCursor
     {
         $this->initialize();
         return iterator_to_array($this);
+    }
+
+    /**
+     * @param array $primers
+     * @param ReferencePrimer $referencePrimer
+     * @return self
+     */
+    public function enableReferencePriming(array $primers, ReferencePrimer $referencePrimer)
+    {
+        $this->referencePrimer = $referencePrimer;
+        $this->primers = $primers;
+        return $this;
+    }
+
+    /**
+     * Prime references
+     */
+    protected function primeReferences()
+    {
+        if ($this->referencesPrimed || !$this->hydrate) {
+            return;
+        }
+
+        $this->referencesPrimed = true;
+
+        foreach ($this->primers as $fieldName => $primer) {
+            $this->rewind();
+            $primer = is_callable($primer) ? $primer : null;
+            $this->referencePrimer->primeReferences($this->class, $this, $fieldName, $this->unitOfWorkHints, $primer);
+        }
+
+        $this->rewind();
     }
 }
