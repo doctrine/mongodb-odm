@@ -183,7 +183,7 @@ in MongoDB. The property will be a DateTime when loaded from the database.
 
 This annotation can be used when using `@DiscriminatorField`_. It will be used
 as a fallback value if a document has no discriminator field set. This must
-correspond to a value from a discriminator map.
+correspond to a value from the configured discriminator map.
 
 .. code-block:: php
 
