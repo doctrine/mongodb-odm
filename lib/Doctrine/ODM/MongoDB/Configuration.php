@@ -24,6 +24,7 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
+use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 
 /**
  * Configuration class for the DocumentManager. When setting up your DocumentManager
