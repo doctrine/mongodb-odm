@@ -164,6 +164,12 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'distance';
         }
 
+        if ($this->collectionCapped) {
+            $serialized[] = 'collectionCapped';
+            $serialized[] = 'collectionSize';
+            $serialized[] = 'collectionMax';
+        }
+
         return $serialized;
     }
 
