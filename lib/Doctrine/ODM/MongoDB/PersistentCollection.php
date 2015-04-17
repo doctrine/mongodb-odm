@@ -613,7 +613,7 @@ class PersistentCollection implements BaseCollection
      */
     public function __sleep()
     {
-        return array('coll', 'initialized');
+        return array('coll', 'initialized', 'mongoData');
     }
 
     /* ArrayAccess implementation */
