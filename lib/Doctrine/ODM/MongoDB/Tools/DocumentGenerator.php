@@ -764,11 +764,12 @@ public function <methodName>()
             return;
         }
 
-        $description = ucfirst($type) . ' ' . $variableName;
-
-        $types = Type::getTypesMap();
-        $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
-        $variableType = $typeHint ? $typeHint . ' ' : null;
+        $description    = ucfirst($type) . ' ' . $variableName;
+        $methodMetaData = $metadata->getFieldMapping($fieldName);
+        $isNullable     = isset($methodMetaData['nullable']) && $methodMetaData['nullable'];
+        $types          = Type::getTypesMap();
+        $methodTypeHint = (($type !== 'set' || !$isNullable) && $typeHint) && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
+        $variableType   = $typeHint ? $typeHint . ' ' : null;
 
         $replacements = array(
             '<description>'    => $description,
