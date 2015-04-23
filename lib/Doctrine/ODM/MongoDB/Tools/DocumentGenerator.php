@@ -461,7 +461,7 @@ public function <methodName>()
     {
         if ($this->extendsClass()) {
             // don't generate method if its already on the base class.
-            $reflClass = new \ReflectionClass($this->getClassTogenerateDocumentStubMethodExtend());
+            $reflClass = new \ReflectionClass($this->getClassToExtend());
             if ($reflClass->hasMethod($method)) {
                 return true;
             }
@@ -667,8 +667,8 @@ public function <methodName>()
                     $methods[] = $code;
                 }
             } elseif ($fieldMapping['type'] === ClassMetadataInfo::ONE) {
-                $nullable = $this->isAssociationIsNullable($fieldMapping) ? 'null' : null;
-                if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
+                $nullable = $this->isAssociationNullable($fieldMapping) ? 'null' : null;
+                if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null), $nullable) {
                     $methods[] = $code;
                 }
                 if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
@@ -695,7 +695,7 @@ public function <methodName>()
      *
      * @return bool
      */
-    protected function isAssociationIsNullable($fieldMapping)
+    protected function isAssociationNullable($fieldMapping)
     {
         return isset($fieldMapping['nullable']) && $fieldMapping['nullable'];
     }
@@ -788,7 +788,7 @@ public function <methodName>()
             '<variableName>'        => $variableName,
             '<methodName>'          => $methodName,
             '<fieldName>'           => $fieldName,
-            '<variableDefault>'     => ($defaultValue !== null ) ? (' = '.$defaultValue) : '',
+            '<variableDefault>'     => ($defaultValue !== null ) ? (' = ' . $defaultValue) : '',
         );
 
         $templateVar = sprintf('%sMethodTemplate', $type);
