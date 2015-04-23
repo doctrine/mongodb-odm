@@ -109,7 +109,7 @@ public function <methodName>()
  * @param <variableType>$<variableName>
  * @return self
  */
-public function <methodName>(<methodTypeHint>$<variableName>)
+public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
 {
 <spaces>$this-><fieldName> = $<variableName>;
 <spaces>return $this;
@@ -667,7 +667,8 @@ public function <methodName>()
                     $methods[] = $code;
                 }
             } elseif ($fieldMapping['type'] === ClassMetadataInfo::ONE) {
-                if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
+                $nullable = $this->isAssociationNullable($fieldMapping) ? 'null' : null;
+                if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null, $nullable)) {
                     $methods[] = $code;
                 }
                 if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
@@ -687,6 +688,16 @@ public function <methodName>()
         }
 
         return implode("\n\n", $methods);
+    }
+    
+    /**
+     * @param array $fieldMapping
+     *
+     * @return bool
+     */
+    protected function isAssociationNullable($fieldMapping)
+    {
+        return isset($fieldMapping['nullable']) && $fieldMapping['nullable'];
     }
 
     private function generateDocumentLifecycleCallbackMethods(ClassMetadataInfo $metadata)
@@ -750,7 +761,7 @@ public function <methodName>()
         return implode("\n", $lines);
     }
 
-    private function generateDocumentStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null)
+    private function generateDocumentStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null, $defaultValue = null)
     {
         // Add/remove methods should use the singular form of the field name
         $formattedFieldName = in_array($type, array('add', 'remove'))
@@ -771,12 +782,13 @@ public function <methodName>()
         $variableType = $typeHint ? $typeHint . ' ' : null;
 
         $replacements = array(
-            '<description>'    => $description,
-            '<methodTypeHint>' => $methodTypeHint,
-            '<variableType>'   => $variableType,
-            '<variableName>'   => $variableName,
-            '<methodName>'     => $methodName,
-            '<fieldName>'      => $fieldName,
+            '<description>'         => $description,
+            '<methodTypeHint>'      => $methodTypeHint,
+            '<variableType>'        => $variableType,
+            '<variableName>'        => $variableName,
+            '<methodName>'          => $methodName,
+            '<fieldName>'           => $fieldName,
+            '<variableDefault>'     => ($defaultValue !== null ) ? (' = ' . $defaultValue) : '',
         );
 
         $templateVar = sprintf('%sMethodTemplate', $type);
