@@ -26,6 +26,7 @@ require_once __DIR__ . '/InheritanceType.php';
 require_once __DIR__ . '/DiscriminatorField.php';
 require_once __DIR__ . '/DiscriminatorMap.php';
 require_once __DIR__ . '/DiscriminatorValue.php';
+require_once __DIR__ . '/DefaultDiscriminatorValue.php';
 require_once __DIR__ . '/Indexes.php';
 require_once __DIR__ . '/AbstractIndex.php';
 require_once __DIR__ . '/Index.php';

@@ -107,6 +107,9 @@ class XmlDriver extends FileDriver
             }
             $class->setDiscriminatorMap($map);
         }
+        if (isset($xmlRoot->{'default-discriminator-value'})) {
+            $class->setDefaultDiscriminatorValue((string) $xmlRoot->{'default-discriminator-value'}['value']);
+        }
         if (isset($xmlRoot->{'indexes'})) {
             foreach ($xmlRoot->{'indexes'}->{'index'} as $index) {
                 $this->addIndex($class, $index);
@@ -262,6 +265,9 @@ class XmlDriver extends FileDriver
                 $mapping['discriminatorMap'][(string) $attr['value']] = (string) $attr['class'];
             }
         }
+        if (isset($embed->{'default-discriminator-value'})) {
+            $mapping['defaultDiscriminatorValue'] = (string) $embed->{'default-discriminator-value'}['value'];
+        }
         if (isset($attributes['not-saved'])) {
             $mapping['notSaved'] = ('true' === (string) $attributes['not-saved']);
         }
@@ -306,6 +312,9 @@ class XmlDriver extends FileDriver
                 $attr = $discriminatorMapping->attributes();
                 $mapping['discriminatorMap'][(string) $attr['value']] = (string) $attr['class'];
             }
+        }
+        if (isset($reference->{'default-discriminator-value'})) {
+            $mapping['defaultDiscriminatorValue'] = (string) $reference->{'default-discriminator-value'}['value'];
         }
         if (isset($reference->{'sort'})) {
             foreach ($reference->{'sort'}->{'sort'} as $sort) {

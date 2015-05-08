@@ -148,6 +148,75 @@ would get an Employee instance back:
 Even though we queried for a Person, Doctrine will know to return an Employee
 instance because of the discriminator map!
 
+If your document structure has changed and you've added discriminators after
+already having a bunch of documents, you can specify a default value for the
+discriminator field:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        namespace Documents;
+
+        /**
+         * @Document
+         * @InheritanceType("SINGLE_COLLECTION")
+         * @DiscriminatorField("type")
+         * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
+         * @DefaultDiscriminatorValue("person")
+         */
+        class Person
+        {
+            // ...
+        }
+
+        /**
+         * @Document
+         */
+        class Employee extends Person
+        {
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+          <document name="Documents\Person" inheritance-type="SINGLE_COLLECTION">
+            <discriminator-field name="type" />
+            <discriminator-map>
+                <discriminator-mapping value="person" class="Person" />
+                <discriminator-mapping value="employee" class="Employee" />
+            </discriminator-map>
+            <default-discriminator-value value="person" />
+          </document>
+        </doctrine-mongo-mapping>
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+          <document name="Documents\Employee">
+          </document>
+        </doctrine-mongo-mapping>
+
+    .. code-block:: yaml
+
+        Documents\Person:
+          type: document
+          inheritanceType: SINGLE_COLLECTION
+          discriminatorField: type
+          defaultDiscriminatorValue: person
+          discriminatorMap:
+            person: Person
+            employee: Employee
+
 .. _collection_per_class_inheritance:
 
 Collection Per Class Inheritance

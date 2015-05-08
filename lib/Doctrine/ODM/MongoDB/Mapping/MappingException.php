@@ -70,6 +70,18 @@ class MappingException extends BaseMappingException
         );
     }
 
+    /**
+     * Throws an exception that indicates a discriminator value does not exist in a map
+     *
+     * @param string $value The discriminator value that could not be found
+     * @param string $owningClass The class that declares the discriminator map
+     * @return self
+     */
+    public static function invalidDiscriminatorValue($value, $owningClass)
+    {
+        return new self("Discriminator value '$value' used in the declaration of class '$owningClass' does not exist.");
+    }
+
     public static function missingFieldName($className)
     {
         return new self("The Document class '$className' field mapping misses the 'fieldName' attribute.");

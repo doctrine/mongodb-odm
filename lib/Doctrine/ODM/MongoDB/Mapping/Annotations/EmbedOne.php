@@ -27,4 +27,5 @@ final class EmbedOne extends AbstractField
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
+    public $defaultDiscriminatorValue;
 }

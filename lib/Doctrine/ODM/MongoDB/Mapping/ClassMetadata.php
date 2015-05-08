@@ -131,6 +131,7 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'discriminatorField';
             $serialized[] = 'discriminatorValue';
             $serialized[] = 'discriminatorMap';
+            $serialized[] = 'defaultDiscriminatorValue';
             $serialized[] = 'parentClasses';
             $serialized[] = 'subClasses';
         }
