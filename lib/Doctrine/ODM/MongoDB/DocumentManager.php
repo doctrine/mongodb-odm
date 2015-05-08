@@ -23,8 +23,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
@@ -64,13 +62,6 @@ class DocumentManager implements ObjectManager
      * @var \Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
      */
     private $metadataFactory;
-
-    /**
-     * The DocumentRepository instances.
-     *
-     * @var array
-     */
-    private $repositories = array();
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
