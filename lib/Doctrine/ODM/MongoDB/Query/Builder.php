@@ -118,7 +118,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function field($field)
     {
         $this->currentField = $field;
-        return parent::field($field);
+        parent::field($field);
+
+        return $this;
     }
 
     /**
@@ -178,7 +180,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function find($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::find();
+        parent::find();
+
+        return $this;
     }
 
     /**
@@ -188,7 +192,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function findAndUpdate($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::findAndUpdate();
+        parent::findAndUpdate();
+
+        return $this;
     }
 
     /**
@@ -198,7 +204,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function returnNew($bool = true)
     {
         $this->refresh(true);
-        return parent::returnNew($bool);
+        parent::returnNew($bool);
+
+        return $this;
     }
 
     /**
@@ -208,7 +216,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function findAndRemove($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::findAndRemove();
+        parent::findAndRemove();
+
+        return $this;
     }
 
     /**
@@ -218,7 +228,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function update($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::update();
+        parent::update();
+
+        return $this;
     }
 
     /**
@@ -228,7 +240,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function insert($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::insert();
+        parent::insert();
+
+        return $this;
     }
 
     /**
@@ -238,7 +252,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function remove($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::remove();
+        parent::remove();
+
+        return $this;
     }
 
     /**
