@@ -56,6 +56,7 @@ class DropCommand extends AbstractCommand
 
         $class = $input->getOption('class');
         $sm = $this->getSchemaManager();
+        $isErrored = false;
 
         foreach ($drop as $option) {
             try {
@@ -72,8 +73,11 @@ class DropCommand extends AbstractCommand
                 ));
             } catch (\Exception $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');
+                $isErrored = true;
             }
         }
+
+        return ($isErrored) ? 255 : 0;
     }
 
     protected function processDocumentCollection(SchemaManager $sm, $document)
