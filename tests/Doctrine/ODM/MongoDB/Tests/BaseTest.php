@@ -58,13 +58,6 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config = $this->getConfiguration();
         $conn = new Connection(DOCTRINE_MONGODB_SERVER, array(), $config);
 
-        $config->setLoggerCallable(array($this, 'queryTriggeredHandler'));
-
         return DocumentManager::create($conn, $config);
-    }
-
-    public function queryTriggeredHandler($event)
-    {
-        error_log(json_encode($event) . "\n", 3, "/var/log/lyft/mongo.log");
     }
 }
