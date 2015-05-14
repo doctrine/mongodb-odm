@@ -463,6 +463,13 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($this->collectionDeletions as $collectionToDelete) {
             $this->getCollectionPersister()->delete($collectionToDelete, $options);
         }
+
+        // This hack allows me to fire simulated concurrent PHP logic from my functional test allowing me to demonstrate a concurrency problem.
+        global $concurrentPHPRequestSimulatedLogic;
+        if (get_class($document) == 'Documents\UserVersionedDemo' && is_callable($concurrentPHPRequestSimulatedLogic) && $document->getUsername() == 'apple' && $document->version == 2) {
+            $concurrentPHPRequestSimulatedLogic();
+        }
+
         // Collection updates (deleteRows, updateRows, insertRows)
         foreach ($this->collectionUpdates as $collectionToUpdate) {
             $this->getCollectionPersister()->update($collectionToUpdate, $options);
