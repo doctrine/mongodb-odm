@@ -439,6 +439,8 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
+
+
         if ($this->documentInsertions) {
             foreach ($commitOrder as $class) {
                 if ($class->isEmbeddedDocument) {
@@ -448,11 +450,15 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
+        // surface incremented here along with version
+
         if ($this->documentUpdates) {
             foreach ($commitOrder as $class) {
                 $this->executeUpdates($class, $options);
             }
         }
+
+        // end of surface and version increment
 
         // Extra updates that were requested by persisters.
         if ($this->extraUpdates) {
@@ -463,10 +469,21 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($this->collectionDeletions as $collectionToDelete) {
             $this->getCollectionPersister()->delete($collectionToDelete, $options);
         }
+
+        // This hack allows me to fire simulated concurrent PHP logic from my functional test allowing me to demonstrate a concurrency problem.
+        global $concurrentPHPRequestSimulatedLogic;
+        if (get_class($document) == 'Documents\UserVersioned' && is_callable($concurrentPHPRequestSimulatedLogic) && $document->getUsername() == 'apple' && $document->version == 2) {
+            $concurrentPHPRequestSimulatedLogic();
+        }
+
+        // This is where the embedded documents are updated
+
         // Collection updates (deleteRows, updateRows, insertRows)
         foreach ($this->collectionUpdates as $collectionToUpdate) {
             $this->getCollectionPersister()->update($collectionToUpdate, $options);
         }
+
+        // Updates to embedded documents are finished here
 
         // Document deletions come last and need to be in reverse commit order
         if ($this->documentDeletions) {
