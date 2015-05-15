@@ -173,4 +173,9 @@ class MappingException extends BaseMappingException
     {
         return new self("Target document must be specified for simple reference: $className::$fieldName");
     }
+    
+    public static function atomicCollectionStrategyNotAllowed($strategy, $className, $fieldName)
+    {
+        return new self("$strategy collection strategy can be used only in top level document, used in $className::$fieldName");
+    }
 }
