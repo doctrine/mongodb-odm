@@ -24,10 +24,21 @@
         "doctrine/mongodb": ">=1.1.5,<2.0"
     },
     "require-dev": {
-        "symfony/yaml": "~2.3|~3.0"
+        "symfony/yaml": "~2.3|~3.0",
+        "squizlabs/php_codesniffer": "~2.0"
     },
     "suggest": {
         "symfony/yaml": "Enables the YAML metadata mapping driver"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "bash contrib/setup.sh"
+        ],
+        "post-update-cmd": [
+        ]
+    },
+    "config": {
+        "bin-dir": "bin"
     },
     "autoload": {
         "psr-0": { "Doctrine\\ODM\\MongoDB": "lib/" }
