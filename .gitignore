@@ -4,3 +4,4 @@ tests/Proxies/*
 tests/Hydrators/*
 phpunit.xml
 vendor/
+/bin/
