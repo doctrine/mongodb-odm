@@ -116,6 +116,12 @@ class CollectionPersister
                 $this->insertElements($coll, $options);
                 break;
 
+            case 'atomic':
+                $coll->initialize();
+                $this->atomicDeleteElements($coll, $options);
+                $this->insertElements($coll, $options);
+                break;
+
             default:
                 throw new \UnexpectedValueException('Unsupported collection strategy: ' . $mapping['strategy']);
         }
@@ -222,7 +228,56 @@ class CollectionPersister
             $value = array('$each' => $value);
         }
 
-        $query = array('$' . $mapping['strategy'] => array($propertyPath => $value));
+        switch ($mapping['strategy']) {
+            case 'atomic':
+                $strategyModifier = 'push';
+                break;
+
+            default:
+                $strategyModifier = $mapping['strategy'];
+        }
+
+        $query = array('$' . $strategyModifier => array($propertyPath => $value));
+
+        $this->executeQuery($parent, $query, $options);
+    }
+
+    /**
+     * Deletes removed elements from a PersistentCollection instance.
+     *
+     * This method is intended to be used with the "atomic" strategy.
+     *
+     * @param PersistentCollection $coll
+     * @param array $options
+     */
+    private function atomicDeleteElements(PersistentCollection $coll, array $options)
+    {
+        $deleteDiff = $coll->getDeleteDiff();
+
+        if (empty($deleteDiff)) {
+            return;
+        }
+
+        list($propertyPath, $parent) = $this->getPathAndParent($coll);
+
+        $query = array('$pull' => array());
+
+        foreach ($deleteDiff as $key => $document) {
+            $className = get_class($document);
+            $class = $class = $this->dm->getClassMetadata($className);
+
+            if (!$class->identifier) {
+                throw new \LogicException(
+                    sprintf('The atomic strategy requires that the target document being persisted has a mapped identifier. %s does not have a mapped identifier.',
+                        $class->name
+                    )
+                );
+            }
+
+            $query['$pull'][$propertyPath] = array(
+                '_id' => $this->getDocumentId($document, $class)
+            );
+        }
 
         $this->executeQuery($parent, $query, $options);
     }
@@ -236,6 +291,14 @@ class CollectionPersister
      */
     private function getDocumentId($document, ClassMetadata $class)
     {
+        if (!$class->identifier) {
+            throw new \InvalidArgumentException(
+                sprintf('Cannot call CollectionPersister::getDocumentId() for %s which does not have a mapped identifier.',
+                    $class->name
+                )
+            );
+        }
+
         return $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
     }
 
