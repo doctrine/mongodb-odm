@@ -234,6 +234,23 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'simple' => true,
         ));
     }
+    
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage atomicSet collection strategy can be used only in top level document, used in stdClass::many
+     */
+    public function testAtomicCollectionUpdateUsageInEmbeddedDocument()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->isEmbeddedDocument = true;
+
+        $cm->mapField(array(
+            'fieldName' => 'many',
+            'reference' => true,
+            'type' => 'many',
+            'strategy' => 'atomicSet',
+        ));
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository

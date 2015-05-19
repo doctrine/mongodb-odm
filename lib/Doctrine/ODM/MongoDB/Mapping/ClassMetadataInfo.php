@@ -1149,6 +1149,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['reference']) && ! empty($mapping['simple']) && ! isset($mapping['targetDocument'])) {
             throw MappingException::simpleReferenceRequiresTargetDocument($this->name, $mapping['fieldName']);
         }
+        
+        if ($this->isEmbeddedDocument && isset($mapping['strategy']) &&
+                ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')) {
+            throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
+        }
 
         if (isset($mapping['reference']) && $mapping['type'] === 'one') {
             $mapping['association'] = self::REFERENCE_ONE;
@@ -1235,6 +1240,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function mapManyEmbedded(array $mapping)
     {
+        if ($this->isEmbeddedDocument && isset($mapping['strategy']) &&
+                ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')) {
+            throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
+        }
         $mapping['embedded'] = true;
         $mapping['type'] = 'many';
         $this->mapField($mapping);
@@ -1259,6 +1268,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function mapManyReference(array $mapping)
     {
+        if ($this->isEmbeddedDocument && isset($mapping['strategy']) &&
+                ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')) {
+            throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
+        }
         $mapping['reference'] = true;
         $mapping['type'] = 'many';
         $this->mapField($mapping);

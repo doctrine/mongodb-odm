@@ -188,7 +188,7 @@ class PersistentCollection implements BaseCollection
         // Reattach any NEW objects added through add()
         if ($newObjects) {
             foreach ($newObjects as $key => $obj) {
-                if ($this->mapping['strategy'] === 'set') {
+                if ($this->mapping['strategy'] === 'set' || $this->mapping['strategy'] === 'atomicSet') {
                     $this->coll->set($key, $obj);
                 } else {
                     $this->coll->add($obj);

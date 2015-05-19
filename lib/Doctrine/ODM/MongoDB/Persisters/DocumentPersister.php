@@ -73,13 +73,6 @@ class DocumentPersister
     private $uow;
 
     /**
-     * The Hydrator instance
-     *
-     * @var HydratorInterface
-     */
-    private $hydrator;
-
-    /**
      * The ClassMetadata instance for the document type being persisted.
      *
      * @var ClassMetadata
@@ -235,6 +228,11 @@ class DocumentPersister
                 }
                 $data[$versionMapping['name']] = $nextVersion;
             }
+            
+            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
+            if (!empty($atomicCollectionQuery['$set'])) {
+                $data = array_merge($data, $atomicCollectionQuery['$set']);
+            }
 
             $inserts[$oid] = $data;
         }
@@ -281,6 +279,11 @@ class DocumentPersister
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
                 }
                 $data['$set'][$versionMapping['name']] = $nextVersion;
+            }
+            
+            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
+            if ( ! empty($atomicCollectionQuery)) {
+                $data = array_merge_recursive($data, $atomicCollectionQuery);
             }
 
             try {
@@ -374,6 +377,11 @@ class DocumentPersister
                     $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 }
+            }
+            
+            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
+            if ( ! empty($atomicCollectionQuery)) {
+                $update = array_merge_recursive($update, $atomicCollectionQuery);
             }
 
             /* We got here because the document has one or more related
@@ -646,7 +654,7 @@ class DocumentPersister
 
                 $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
-                if ($mapping['strategy'] === 'set') {
+                if ($mapping['strategy'] === 'set' || $mapping['strategy'] === 'atomicSet') {
                     $collection->set($key, $embeddedDocumentObject);
                 } else {
                     $collection->add($embeddedDocumentObject);
@@ -1235,5 +1243,34 @@ class DocumentPersister
         }
 
         return $discriminatorValues;
+    }
+    
+    private function getAtomicCollectionUpdateQuery($document)
+    {
+        $update = array();
+        $collections = $this->uow->getScheduledCollections($document);
+        $collPersister = $this->uow->getCollectionPersister();
+        foreach ($collections as $coll) {
+            /* @var $coll PersistentCollection */
+            $mapping = $coll->getMapping();
+            if ($mapping['strategy'] !== "atomicSet" && $mapping['strategy'] !== "atomicSetArray") {
+                continue;
+            }
+            if ($this->uow->isCollectionScheduledForUpdate($coll)) {
+                $update = array_merge_recursive($update, $collPersister->prepareSetQuery($coll));
+                $this->uow->unscheduleCollectionUpdate($coll);
+                /* TODO:
+                 * Collection can be set for both deletion and update if
+                 * PersistentCollection instance was changed. Since we're dealing
+                 * with collection update in one query we won't need the $unset.
+                 * Line can be removed once the issue is fixed.
+                 */
+                $this->uow->unscheduleCollectionDeletion($coll);
+            } elseif ($this->uow->isCollectionScheduledForDeletion($coll)) {
+                $update = array_merge_recursive($update, $collPersister->prepareDeleteQuery($coll));
+                $this->uow->unscheduleCollectionDeletion($coll);
+            }
+        }
+        return $update;
     }
 }
