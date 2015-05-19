@@ -281,7 +281,7 @@ you can just call the ``where()`` method:
     $qb = $dm->createQueryBuilder('User')
         ->where("function() { return this.type == 'admin'; }");
 
-You can read more about the $where operator](http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-JavascriptExpressionsand%7B%7B%24where%7D%7D) in the Mongo docs.
+You can read more about the `$where operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-JavascriptExpressionsand%7B%7B%24where%7D%7D>`_ in the Mongo docs.
 
 Conditional Operators
 ~~~~~~~~~~~~~~~~~~~~~
