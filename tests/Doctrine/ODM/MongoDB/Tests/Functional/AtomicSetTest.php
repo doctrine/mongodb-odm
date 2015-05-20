@@ -110,7 +110,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $public = $user->phonebooks->get('public');
         $this->assertNotNull($public);
         $this->assertCount(1, $public->getPhonenumbers());
-        $this->assertEquals('10203040', $private->getPhonenumbers()->get(0)->getPhonenumber());
+        $this->assertEquals('10203040', $public->getPhonenumbers()->get(0)->getPhonenumber());
     }
 }
 
