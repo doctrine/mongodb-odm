@@ -160,9 +160,9 @@ class CollectionPersister
         list($propertyPath, ) = $this->getPathAndParent($coll);
 
         $pb = $this->pb;
-
+        
         $callback = isset($mapping['embedded'])
-            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
+            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v, in_array($mapping['strategy'], array('atomicSet', 'atomicSetArray'))); }
             : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
 
         $setData = $coll->map($callback)->toArray();

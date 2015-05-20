@@ -383,7 +383,6 @@ class DocumentPersister
             if ( ! empty($atomicCollectionQuery)) {
                 $update = array_merge_recursive($update, $atomicCollectionQuery);
             }
-
             /* We got here because the document has one or more related
              * PersistentCollections to be committed later; however, if the
              * document is not versioned then there is nothing left to do.

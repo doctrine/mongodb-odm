@@ -332,7 +332,7 @@ class PersistenceBuilder
      * @param object $embeddedDocument
      * @return array|object
      */
-    public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument)
+    public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false)
     {
         $embeddedDocumentValue = array();
         $class = $this->dm->getClassMetadata(get_class($embeddedDocument));
@@ -363,15 +363,21 @@ class PersistenceBuilder
                     case ClassMetadata::EMBED_MANY:
                     case ClassMetadata::REFERENCE_MANY:
                         // Skip PersistentCollections already scheduled for deletion/update
-                        if ($rawValue instanceof PersistentCollection &&
+                        if (!$includeNestedCollections && $rawValue instanceof PersistentCollection &&
                             ($this->uow->isCollectionScheduledForDeletion($rawValue) ||
                              $this->uow->isCollectionScheduledForUpdate($rawValue))) {
                             break;
                         }
+                        
+                        // We're handling atomicSet or atomicSetArray collection
+                        if ($includeNestedCollections && $rawValue instanceof PersistentCollection) {
+                            $this->uow->unscheduleCollectionDeletion($rawValue);
+                            $this->uow->unscheduleCollectionUpdate($rawValue);
+                        }
 
                         $pb = $this;
-                        $value = $rawValue->map(function($v) use ($pb, $mapping) {
-                            return $pb->prepareAssociatedDocumentValue($mapping, $v);
+                        $value = $rawValue->map(function($v) use ($pb, $mapping, $includeNestedCollections) {
+                            return $pb->prepareAssociatedDocumentValue($mapping, $v, $includeNestedCollections);
                         })->toArray();
 
                         // Numerical reindexing may be necessary to ensure BSON array storage
