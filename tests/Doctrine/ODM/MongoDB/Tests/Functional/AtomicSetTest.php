@@ -79,15 +79,38 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testAtomicCollectionWithAnotherNested()
     {
         $user = new AtomicUser('Maciej');
-        $phonebook = new Phonebook('Private');
-        $phonebook->addPhonenumber(new Phonenumber('12345678'));
-        $user->phonebooks['private'] = $phonebook;
+        $private = new Phonebook('Private');
+        $private->addPhonenumber(new Phonenumber('12345678'));
+        $user->phonebooks['private'] = $private;
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
-        $newUser = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertNotNull($newUser->phonebooks->get('private'));
-        $this->assertCount(1, $newUser->phonebooks->get('private')->getPhonenumbers());
+
+        $user = $this->dm->getRepository(get_class($user))->find($user->id);
+        $this->assertEquals('Maciej', $user->name);
+        $private = $user->phonebooks->get('private');
+        $this->assertNotNull($private);
+        $this->assertCount(1, $private->getPhonenumbers());
+        $this->assertEquals('12345678', $private->getPhonenumbers()->get(0)->getPhonenumber());
+
+        $private->addPhonenumber(new Phonenumber('87654321'));
+        $public = new Phonebook('Public');
+        $public->addPhonenumber(new Phonenumber('10203040'));
+        $user->phonebooks['public'] = $public;
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository(get_class($user))->find($user->id);
+        $this->assertEquals('Maciej', $user->name);
+        $private = $user->phonebooks->get('private');
+        $this->assertNotNull($private);
+        $this->assertCount(2, $private->getPhonenumbers());
+        $this->assertEquals('12345678', $private->getPhonenumbers()->get(0)->getPhonenumber());
+        $this->assertEquals('87654321', $private->getPhonenumbers()->get(1)->getPhonenumber());
+        $public = $user->phonebooks->get('public');
+        $this->assertNotNull($public);
+        $this->assertCount(1, $public->getPhonenumbers());
+        $this->assertEquals('10203040', $private->getPhonenumbers()->get(0)->getPhonenumber());
     }
 }
 
