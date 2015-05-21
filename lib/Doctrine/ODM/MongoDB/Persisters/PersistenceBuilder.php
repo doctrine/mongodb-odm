@@ -449,12 +449,14 @@ class PersistenceBuilder
      *
      * @param array $mapping
      * @param object $document
+     * @param boolean $includeNestedCollections
      * @return array|object|null
+     * @throws \InvalidArgumentException if the mapping is neither embedded nor reference
      */
-    public function prepareAssociatedDocumentValue(array $mapping, $document)
+    public function prepareAssociatedDocumentValue(array $mapping, $document, $includeNestedCollections = false)
     {
         if (isset($mapping['embedded'])) {
-            return $this->prepareEmbeddedDocumentValue($mapping, $document);
+            return $this->prepareEmbeddedDocumentValue($mapping, $document, $includeNestedCollections);
         }
 
         if (isset($mapping['reference'])) {
