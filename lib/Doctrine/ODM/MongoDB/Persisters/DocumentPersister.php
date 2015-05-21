@@ -685,7 +685,7 @@ class DocumentPersister
 
             // no custom sort so add the references right now in the order they are embedded
             if ( ! $sorted) {
-                if ($mapping['strategy'] === 'set') {
+                if ($mapping['strategy'] === 'set' || $mapping['strategy'] === 'atomicSet') {
                     $collection->set($key, $reference);
                 } else {
                     $collection->add($reference);
