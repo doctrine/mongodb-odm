@@ -383,7 +383,6 @@ class DocumentPersister
             if ( ! empty($atomicCollectionQuery)) {
                 $update = array_merge_recursive($update, $atomicCollectionQuery);
             }
-
             /* We got here because the document has one or more related
              * PersistentCollections to be committed later; however, if the
              * document is not versioned then there is nothing left to do.
@@ -686,7 +685,7 @@ class DocumentPersister
 
             // no custom sort so add the references right now in the order they are embedded
             if ( ! $sorted) {
-                if ($mapping['strategy'] === 'set') {
+                if ($mapping['strategy'] === 'set' || $mapping['strategy'] === 'atomicSet') {
                     $collection->set($key, $reference);
                 } else {
                     $collection->add($reference);
