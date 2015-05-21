@@ -12,8 +12,7 @@ Doctrine MongoDB ODM don't panic. You can get help from different sources:
 
 -  The `Doctrine Mailing List <http://groups.google.com/group/doctrine-user>`_
 -  Internet Relay Chat (IRC) in `#doctrine on Freenode <irc://irc.freenode.net/doctrine>`_
--  Report a bug on `JIRA <http://www.doctrine-project.org/jira>`_.
--  On `Twitter <https://twitter.com/search/%23doctrine2>`_ with ``#doctrine-mongodb``
+-  Report a bug on `GitHub <https://github.com/doctrine/mongodb-odm/issues>`_.
 -  On `StackOverflow <http://stackoverflow.com/questions/tagged/doctrine-mongodb>`_
 
 Getting Started
