@@ -328,9 +328,17 @@ class PersistenceBuilder
      * returned if the document is empty, to ensure that a BSON object will be
      * stored in lieu of an array.
      *
+     * If $includeNestedCollections is true, nested collections will be included
+     * in this prepared value and the option will cascade to all embedded
+     * associations. If any nested PersistentCollections (embed or reference)
+     * within this value were previously scheduled for deletion or update, they
+     * will also be unscheduled.
+     *
      * @param array $embeddedMapping
      * @param object $embeddedDocument
+     * @param boolean $includeNestedCollections
      * @return array|object
+     * @throws \UnexpectedValueException if an unsupported associating mapping is found
      */
     public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false)
     {
@@ -357,7 +365,8 @@ class PersistenceBuilder
 
                     case ClassMetadata::EMBED_ONE:
                     case ClassMetadata::REFERENCE_ONE:
-                        $value = $this->prepareAssociatedDocumentValue($mapping, $rawValue);
+                        // Nested collections should only be included for embedded relationships
+                        $value = $this->prepareAssociatedDocumentValue($mapping, $rawValue, $includeNestedCollections && isset($mapping['embedded']));
                         break;
 
                     case ClassMetadata::EMBED_MANY:
@@ -377,7 +386,8 @@ class PersistenceBuilder
 
                         $pb = $this;
                         $value = $rawValue->map(function($v) use ($pb, $mapping, $includeNestedCollections) {
-                            return $pb->prepareAssociatedDocumentValue($mapping, $v, $includeNestedCollections);
+                            // Nested collections should only be included for embedded relationships
+                            return $pb->prepareAssociatedDocumentValue($mapping, $v, $includeNestedCollections && isset($mapping['embedded']));
                         })->toArray();
 
                         // Numerical reindexing may be necessary to ensure BSON array storage
