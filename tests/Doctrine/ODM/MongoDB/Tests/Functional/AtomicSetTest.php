@@ -154,6 +154,35 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $publicBook->getPhonenumbers());
         $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
+    
+    public function testWeNeedToGoDeeper()
+    {
+        $user = new AtomicUser('Maciej');
+        $user->inception[0] = new GonnaBeDeep('start');
+        $user->inception[0]->one = new GonnaBeDeep('start.one');
+        $user->inception[0]->one->many[] = new GonnaBeDeep('start.one.many.0');
+        $user->inception[0]->one->many[] = new GonnaBeDeep('start.one.many.1');
+        $user->inception[0]->one->one = new GonnaBeDeep('start.one.one');
+        $user->inception[0]->one->one->many[] = new GonnaBeDeep('start.one.one.many.0');
+        $user->inception[0]->one->one->many[0]->many[] = new GonnaBeDeep('start.one.one.many.0.many.0');
+        $this->dm->persist($user);
+        $this->dm->flush();
+        
+        $user = $this->dm->getRepository(get_class($user))->find($user->id);
+        $this->assertCount(1, $user->inception);
+        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertNotNull($user->inception[0]->one);
+        $this->assertEquals($user->inception[0]->one->value, 'start.one');
+        $this->assertCount(2, $user->inception[0]->one->many);
+        $this->assertEquals($user->inception[0]->one->many[0]->value, 'start.one.many.0');
+        $this->assertEquals($user->inception[0]->one->many[1]->value, 'start.one.many.1');
+        $this->assertNotNull($user->inception[0]->one->one);
+        $this->assertEquals($user->inception[0]->one->one->value, 'start.one.one');
+        $this->assertCount(1, $user->inception[0]->one->one->many);
+        $this->assertEquals($user->inception[0]->one->one->many[0]->value, 'start.one.one.many.0');
+        $this->assertCount(1, $user->inception[0]->one->one->many[0]->many);
+        $this->assertEquals($user->inception[0]->one->one->many[0]->many[0]->value, 'start.one.one.many.0.many.0');
+    }
 }
 
 /**
@@ -179,11 +208,35 @@ class AtomicUser
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="Documents\Phonebook") */
     public $phonebooks;
     
+    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="GonnaBeDeep") */
+    public $inception;
+    
     public function __construct($name)
     {
         $this->name = $name;
         $this->phonenumbers = new ArrayCollection();
         $this->phonenumbersArray = new ArrayCollection();
         $this->phonebooks = new ArrayCollection();
+    }
+}
+
+/**
+ * @ODM\EmbeddedDocument
+ */
+class GonnaBeDeep
+{
+    /** @ODM\String */
+    public $value;
+    
+    /** @ODM\EmbedOne(targetDocument="GonnaBeDeep") */
+    public $one;
+    
+    /** @ODM\EmbedMany(targetDocument="GonnaBeDeep") */
+    public $many;
+    
+    public function __construct($value)
+    {
+        $this->value = $value;
+        $this->many = new ArrayCollection();
     }
 }
