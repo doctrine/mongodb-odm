@@ -19,7 +19,7 @@ To generate a changelog summary since the last version, run
 -------------------------
 
 All issues and pull requests in this release may be found under the
-[1.0.0-BETA13 milestone](https://github.com/doctrine/mongodb-odm/issues?milestone=7&q=is%3Aclosed).
+[1.0.0-BETA13 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.0-BETA13).
 
 #### `atomicSet` and `atomicSetArray` strategies for top-level collections
 
@@ -91,7 +91,7 @@ Custom repository and factory classes must implement
 -------------------------
 
 All issues and pull requests in this release may be found under the
-[1.0.0-BETA12 milestone](https://github.com/doctrine/mongodb-odm/issues?milestone=6&q=is%3Aclosed).
+[1.0.0-BETA12 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.0-BETA12).
 
 #### Allow filter parameters to be specified in Configuration
 
@@ -127,7 +127,7 @@ later error at runtime.
 -------------------------
 
 All issues and pull requests in this release may be found under the
-[1.0.0-BETA11 milestone](https://github.com/doctrine/mongodb-odm/issues?milestone=5&state=closed).
+[1.0.0-BETA11 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.0-BETA11).
 
 #### Ensure cascade mapping option is always set
 
@@ -149,7 +149,7 @@ This change was implemented in
 -------------------------
 
 All issues and pull requests in this release may be found under the
-[1.0.0-BETA10 milestone](https://github.com/doctrine/mongodb-odm/issues?milestone=2&state=closed).
+[1.0.0-BETA10 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.0-BETA10).
 
 #### ResolveTargetDocumentListener
 
