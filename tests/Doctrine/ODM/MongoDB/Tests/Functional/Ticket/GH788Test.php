@@ -20,14 +20,6 @@ class GH788Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($listed), $listed->id);
-        $this->assertInstanceOf(__NAMESPACE__.'\GH788DocumentListed', $doc);
-        $this->assertEquals('listed', $doc->name);
-
-        $doc = $this->dm->find(get_class($unlisted), $unlisted->id);
-        $this->assertInstanceOf(__NAMESPACE__.'\GH788DocumentUnlisted', $doc);
-        $this->assertEquals('unlisted', $doc->name);
-
         /* Attempting to find the unlisted class by the parent class will not
          * work, as DocumentPersister::addDiscriminatorToPreparedQuery() adds
          * discriminator criteria to the query, which limits the results to
@@ -35,6 +27,14 @@ class GH788Test extends BaseTest
          */
         $doc = $this->dm->find(get_class($listed), $unlisted->id);
         $this->assertNull($doc);
+
+        $doc = $this->dm->find(get_class($listed), $listed->id);
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788DocumentListed', $doc);
+        $this->assertEquals('listed', $doc->name);
+
+        $doc = $this->dm->find(get_class($unlisted), $unlisted->id);
+        $this->assertInstanceOf(__NAMESPACE__.'\GH788DocumentUnlisted', $doc);
+        $this->assertEquals('unlisted', $doc->name);
     }
 
     public function testEmbedManyWithExternalDiscriminatorMap()

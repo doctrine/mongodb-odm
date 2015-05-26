@@ -183,10 +183,10 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $collectionUpdates = array();
-    
+
     /**
      * A list of documents related to collections scheduled for update or deletion
-     * 
+     *
      * @var array
      */
     private $hasScheduledCollections = array();
@@ -496,7 +496,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions =
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
-        $this->orphanRemovals = 
+        $this->orphanRemovals =
         $this->hasScheduledCollections = array();
     }
 
@@ -1664,6 +1664,11 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $this->identityMap[$class->name][$id] = $document;
+        if ($class->inheritanceType == ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+            foreach ($class->parentClasses as $className) {
+                $this->identityMap[$className][$id] = $document;
+            }
+        }
 
         if ($document instanceof NotifyPropertyChanged) {
             $document->addPropertyChangedListener($this);
@@ -2638,7 +2643,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->collectionUpdates =
             $this->collectionDeletions =
             $this->parentAssociations =
-            $this->orphanRemovals = 
+            $this->orphanRemovals =
             $this->hasScheduledCollections = array();
 
             if ($this->commitOrderCalculator !== null) {
@@ -2698,14 +2703,14 @@ class UnitOfWork implements PropertyChangedListener
     {
         return in_array($coll, $this->collectionDeletions, true);
     }
-    
+
     /**
      * INTERNAL:
      * Unschedules a collection from being updated deleted when this UnitOfWork commits.
      * Effectively this is used for atomicSet and atomicSetArray update strategies.
      * The method doesn't remove $coll from $this->hasScheduledCollections because
      * it is called only from DocumentPersister resolving that very document
-     * 
+     *
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
     public function unscheduleCollectionDeletion(PersistentCollection $coll)
@@ -2726,14 +2731,14 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionUpdates[] = $coll;
         $this->scheduleCollectionOwner($coll);
     }
-    
+
     /**
      * INTERNAL:
      * Unschedules a collection from being updated update when this UnitOfWork commits.
      * Effectively this is used for atomicSet and atomicSetArray update strategies.
      * The method doesn't remove $coll from $this->hasScheduledCollections because
      * it is called only from DocumentPersister resolving that very document
-     * 
+     *
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
     public function unscheduleCollectionUpdate(PersistentCollection $coll)
@@ -2742,7 +2747,7 @@ class UnitOfWork implements PropertyChangedListener
             unset($this->collectionUpdates[$key]);
         }
     }
-    
+
     /**
      * Checks whether a PersistentCollection is scheduled for update.
      *
@@ -2753,22 +2758,22 @@ class UnitOfWork implements PropertyChangedListener
     {
         return in_array($coll, $this->collectionUpdates, true);
     }
-    
+
     /**
      * INTERNAL:
      * Gets PersistentCollections that are scheduled to update and related to $document
-     * 
+     *
      * @param object $document
      * @return array
      */
     public function getScheduledCollections($document)
     {
         $oid = spl_object_hash($document);
-        return isset($this->hasScheduledCollections[$oid]) 
+        return isset($this->hasScheduledCollections[$oid])
                 ? $this->hasScheduledCollections[$oid]
                 : array();
     }
-    
+
     /**
      * Checks whether the document is related to a PersistentCollection
      * scheduled for update or deletion.
@@ -2780,14 +2785,14 @@ class UnitOfWork implements PropertyChangedListener
     {
         return isset($this->hasScheduledCollections[spl_object_hash($document)]);
     }
-    
+
     /**
      * Marks the PersistentCollection's top-level owner as having a relation to
      * a collection scheduled for update or deletion.
      *
      * If the owner is not scheduled for any lifecycle action, it will be
      * scheduled for update to ensure that versioning takes place if necessary.
-     * 
+     *
      * @param PersistentCollection $coll
      */
     private function scheduleCollectionOwner(PersistentCollection $coll)
