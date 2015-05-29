@@ -2,6 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Documents\Bars\Location;
 use Documents\User;
 use Documents\Account;
 use Documents\Phonenumber;
@@ -494,6 +497,53 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $notSaved = $collection->findOne(array('name' => 'Roman Borschel'));
         $this->assertEquals('Roman Borschel', $notSaved['name']);
         $this->assertFalse(isset($notSaved['notSaved']));
+    }
+
+    /**
+     * @expectedException MongoDBException
+     */
+    public function testTypeClassMissing()
+    {
+        $project = new Project('Test Project');
+        $this->dm->persist($project);
+        $this->dm->flush();
+
+        $group = new Group('Test Group');
+        $this->dm->persist($group);
+        $this->dm->flush();
+
+        $user = new FavoritesUser();
+        $user->setName('favorites');
+        $user->addFavorite($project);
+        $user->addFavorite($group);
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var $test FavoritesUser */
+        $test = $this->dm->getDocumentCollection('Documents\Functional\FavoritesUser')->findOne(array('name' => 'favorites'));
+
+        /** @var $collection PersistentCollection */
+        $collection = $test->getFavorites();
+        $collection->getTypeClass();
+    }
+
+    public function testTypeClass()
+    {
+        $bar = new Bar("Jon's Pub");
+        $bar->addLocation(new Location('West Nashville'));
+        $bar->addLocation(new Location('East Nashville'));
+        $bar->addLocation(new Location('North Nashville'));
+        $this->dm->persist($bar);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var $test Bar */
+        $test = $this->dm->find('Documents\Bars\Bar', $bar->getId());
+
+        /** @var $collection PersistentCollection */
+        $collection = $test->getFavorites();
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\ClassMetadata', $collection->getTypeClass());
     }
 
     public function testFavoritesReference()
