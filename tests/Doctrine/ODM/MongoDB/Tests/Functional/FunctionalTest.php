@@ -522,7 +522,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         /** @var $test FavoritesUser */
-        $test = $this->dm->getDocumentCollection('Documents\Functional\FavoritesUser')->findOne(array('name' => 'favorites'));
+        $test = $this->dm->find('Documents\Functional\FavoritesUser', $user->getId());
 
         /** @var $collection PersistentCollection */
         $collection = $test->getFavorites();

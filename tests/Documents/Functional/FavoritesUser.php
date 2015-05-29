@@ -33,6 +33,11 @@ class FavoritesUser
     /** @ODM\EmbedOne */
     private $embed;
 
+    public function getId()
+    {
+        return $this->getId();
+    }
+
     public function setFavorite($favorite)
     {
         $this->favorite = $favorite;
