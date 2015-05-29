@@ -35,7 +35,7 @@ class FavoritesUser
 
     public function getId()
     {
-        return $this->getId();
+        return $this->id;
     }
 
     public function setFavorite($favorite)
