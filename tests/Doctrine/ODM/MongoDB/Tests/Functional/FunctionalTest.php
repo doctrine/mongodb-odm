@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Documents\Bars\Bar;
 use Documents\Bars\Location;
 use Documents\User;
 use Documents\Account;
@@ -542,7 +543,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $this->dm->find('Documents\Bars\Bar', $bar->getId());
 
         /** @var $collection PersistentCollection */
-        $collection = $test->getFavorites();
+        $collection = $test->getLocations();
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\ClassMetadata', $collection->getTypeClass());
     }
 
