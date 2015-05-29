@@ -501,7 +501,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoDBException
+     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function testTypeClassMissing()
     {
@@ -695,7 +695,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testNotSameCollectionThrowsException()
     {
