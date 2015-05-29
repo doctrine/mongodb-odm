@@ -260,7 +260,10 @@ class PersistentCollection implements BaseCollection
     {
         $this->owner = $document;
         $this->mapping = $mapping;
-        $this->typeClass = $this->dm->getClassMetadata($this->mapping['targetDocument']);
+
+        if (!empty($this->mapping['targetDocument'])) {
+            $this->typeClass = $this->dm->getClassMetadata($this->mapping['targetDocument']);
+        }
     }
 
     /**
@@ -346,9 +349,14 @@ class PersistentCollection implements BaseCollection
 
     /**
      * @return ClassMetadata
+     * @throws MongoDBException
      */
     public function getTypeClass()
     {
+        if (empty($this->typeClass)) {
+            throw new MongoDBException('targetDocument option is required for typeClass');
+        }
+
         return $this->typeClass;
     }
 
