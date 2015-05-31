@@ -147,9 +147,27 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             throw new \InvalidArgumentException('$primer is not a boolean or callable');
         }
 
+        if (array_key_exists('eagerCursor', $this->query) && !$this->query['eagerCursor']) {
+            throw new \BadMethodCallException("Can't call prime() when setting eagerCursor to false");
+        }
+
+        $this->eagerCursor(true);
         $this->primers[$this->currentField] = $primer;
         return $this;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function eagerCursor($bool = true)
+    {
+        if ( ! $bool && ! empty($this->primers)) {
+            throw new \BadMethodCallException("Can't set eagerCursor to false when using reference primers");
+        }
+
+        return parent::eagerCursor($bool);
+    }
+
 
     /**
      * @param bool $bool

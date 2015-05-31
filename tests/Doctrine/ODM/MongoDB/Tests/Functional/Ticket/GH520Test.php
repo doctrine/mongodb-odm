@@ -32,9 +32,12 @@ class GH520Test extends BaseTest
     {
         /* Since Query::getSingleResult() exists for Doctrine MongoDB's
          * IteratorAggregate interface, it executes the query and obtains an
-         * iterator before calling Iterator::getSingleResult(). If priming is
-         * configured, references among all documents in the result set will be
-         * primed -- not simply those in the first document.
+         * iterator before calling Iterator::getSingleResult(). Since priming
+         * implies an EagerCursor, all documents will be fetched and all of
+         * their references will be primed (not simply the first document and
+         * its references). As a result, users that wish to combine
+         * getSingleResult() with priming should also specify a limit on their
+         * queries.
          *
          * This behavior is not ideal, but a workaround would further complicate
          * ODM's Query class. A userland solution would be to simply enforce a
@@ -66,7 +69,7 @@ class GH520Test extends BaseTest
         $result = $query->getSingleResult();
 
         $this->assertContains($document2->id, $primedIds);
-        $this->assertNotContains($document4->id, $primedIds, 'Only the dataset being fetched should be primed');
+        $this->assertContains($document4->id, $primedIds, 'The entire dataset is fetched and primed');
     }
 }
 
