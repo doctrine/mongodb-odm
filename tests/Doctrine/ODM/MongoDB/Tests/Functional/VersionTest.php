@@ -8,37 +8,37 @@ use Doctrine\Common\Collections\ArrayCollection as ArrayCollection;
 
 class VersionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-//    public function testVersioningWhenManipulatingEmbedMany()
-//    {
-//        $expectedVersion = 1;
-//        $doc = new VersionedDocument();
-//        $doc->name = 'test';
-//        $doc->embedMany[] = new VersionedEmbeddedDocument('embed 1');
-//        $doc->embedMany[] = new VersionedEmbeddedDocument('embed 2');
-//        $this->dm->persist($doc);
-//        $this->dm->flush();
-//        $this->assertEquals($expectedVersion++, $doc->version);
-//
-//        $doc->embedMany[] = new VersionedEmbeddedDocument('embed 3');
-//        $this->dm->flush();
-//        $this->assertEquals($expectedVersion++, $doc->version);
-//
-//        $doc->embedMany[0]->embedMany[] = new VersionedEmbeddedDocument('deeply embed 1');
-//        $this->dm->flush();
-//        $this->assertEquals($expectedVersion++, $doc->version);
-//
-//        unset($doc->embedMany[1]);
-//        $this->dm->flush();
-//        $this->assertEquals($expectedVersion++, $doc->version);
-//
-//        $doc->embedMany->clear();
-//        $this->dm->flush();
-//        $this->assertEquals($expectedVersion++, $doc->version);
-//
-//        $doc->embedMany = null;
-//        $this->dm->flush();
-//        $this->assertEquals($expectedVersion++, $doc->version);
-//    }
+    public function testVersioningWhenManipulatingEmbedMany()
+    {
+        $expectedVersion = 1;
+        $doc = new VersionedDocument();
+        $doc->name = 'test';
+        $doc->embedMany[] = new VersionedEmbeddedDocument('embed 1');
+        $doc->embedMany[] = new VersionedEmbeddedDocument('embed 2');
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->assertEquals($expectedVersion++, $doc->version);
+
+        $doc->embedMany[] = new VersionedEmbeddedDocument('embed 3');
+        $this->dm->flush();
+        $this->assertEquals($expectedVersion++, $doc->version);
+
+        $doc->embedMany[0]->embedMany[] = new VersionedEmbeddedDocument('deeply embed 1');
+        $this->dm->flush();
+        $this->assertEquals($expectedVersion++, $doc->version);
+
+        unset($doc->embedMany[1]);
+        $this->dm->flush();
+        $this->assertEquals($expectedVersion++, $doc->version);
+
+        $doc->embedMany->clear();
+        $this->dm->flush();
+        $this->assertEquals($expectedVersion++, $doc->version);
+
+        $doc->embedMany = null;
+        $this->dm->flush();
+        $this->assertEquals($expectedVersion++, $doc->version);
+    }
 
     public function testAtomicSetWorksAsExpected()
     {
