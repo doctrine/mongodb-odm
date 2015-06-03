@@ -211,6 +211,9 @@ class AtomicUser
     
     /** @ODM\String */
     public $name;
+
+    /** @ODM\Int @ODM\Version */
+    public $version = 1;
     
     /** @ODM\String */
     public $surname;
