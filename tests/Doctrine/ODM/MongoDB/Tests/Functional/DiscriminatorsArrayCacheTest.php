@@ -11,9 +11,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class DiscriminatorsArrayCacheTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    /** @var DocumentManager */
-    protected $dm;
-
     /**
      * @var FindEventListener
      */
