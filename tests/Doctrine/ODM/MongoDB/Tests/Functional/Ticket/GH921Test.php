@@ -25,7 +25,6 @@ class GH921Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $this->assertFalse($user->getPosts()->isDirty(), 'A flushed collection should not be dirty');
-        $this->assertTrue($user->getPosts()->isInitialized(), 'A flushed collection should be initialized');
         $this->assertCount(1, $user->getPosts());
         $this->assertCount(1, $user->getPosts()->toArray());
 
@@ -43,7 +42,6 @@ class GH921Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($postB);
 
         $this->assertTrue($user->getPosts()->isDirty(), 'A refreshed collection then modified should be dirty');
-        $this->assertFalse($user->getPosts()->isInitialized(), 'A refreshed collection then modified should not be initialized');
         $this->assertCount(2, $user->getPosts());
         $this->assertCount(2, $user->getPosts()->toArray());
 

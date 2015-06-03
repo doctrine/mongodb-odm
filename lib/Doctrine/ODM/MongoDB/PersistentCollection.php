@@ -522,8 +522,11 @@ class PersistentCollection implements BaseCollection
     /**
      * {@inheritdoc}
      */
-    public function add($value)
+    public function add($value, $initialize=true)
     {
+        if ($initialize) {
+            $this->initialize();
+        }
         $this->coll->add($value);
         $this->changed();
         return true;
