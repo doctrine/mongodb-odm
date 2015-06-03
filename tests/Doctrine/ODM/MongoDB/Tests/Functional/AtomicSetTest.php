@@ -20,6 +20,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -29,7 +30,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user->surname = "Malarz";
         $user->phonenumbers[] = new Phonenumber('87654321');
+        $this->ql->reset();
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -47,6 +50,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -61,6 +65,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -70,7 +75,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user->surname = "Malarz";
         $user->phonenumbers = null;
+        $this->ql->reset();
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -86,6 +93,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->phonenumbersArray[2] = new Phonenumber('87654321');
         $this->dm->persist($user);
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -95,13 +103,15 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('87654321', $user->phonenumbersArray[1]->getPhonenumber());
 
         unset($user->phonenumbersArray[0]);
+        $this->ql->reset();
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->phonenumbersArray);
         $this->assertEquals('87654321', $user->phonenumbersArray[0]->getPhonenumber());
-        $this->assertFalse(isset($newUser->phonenumbersArray[1]));
+        $this->assertFalse(isset($user->phonenumbersArray[1]));
     }
 
     public function testAtomicCollectionWithAnotherNested()
@@ -112,6 +122,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->phonebooks[] = $privateBook;
         $this->dm->persist($user);
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -126,7 +137,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $publicBook = new Phonebook('Public');
         $publicBook->addPhonenumber(new Phonenumber('10203040'));
         $user->phonebooks[] = $publicBook;
+        $this->ql->reset();
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -142,7 +155,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
 
         $privateBook->getPhonenumbers()->clear();
+        $this->ql->reset();
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -167,6 +182,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->inception[0]->one->one->many[0]->many[] = new GonnaBeDeep('start.one.one.many.0.many.0');
         $this->dm->persist($user);
         $this->dm->flush();
+        $this->assertEquals(1, $this->ql->count());
         
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
