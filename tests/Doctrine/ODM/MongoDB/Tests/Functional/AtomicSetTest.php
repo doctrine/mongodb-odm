@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 use Documents\Phonebook;
 use Documents\Phonenumber;
 
@@ -14,13 +15,27 @@ use Documents\Phonenumber;
  */
 class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    private $ql;
+
+    protected function getConfiguration()
+    {
+        if ( ! isset($this->ql)) {
+            $this->ql = new QueryLogger();
+        }
+
+        $config = parent::getConfiguration();
+        $config->setLoggerCallable($this->ql);
+
+        return $config;
+    }
+
     public function testAtomicInsertAndUpdate()
     {
         $user = new AtomicUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Inserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -30,9 +45,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user->surname = "Malarz";
         $user->phonenumbers[] = new Phonenumber('87654321');
-        $this->ql->reset();
+        $this->ql->clear();
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Updating a document and its embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -50,7 +65,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Upserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -65,7 +80,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Inserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -75,9 +90,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user->surname = "Malarz";
         $user->phonenumbers = null;
-        $this->ql->reset();
+        $this->ql->clear();
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Updating a document and unsetting its embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -93,7 +108,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->phonenumbersArray[2] = new Phonenumber('87654321');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Inserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -103,9 +118,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('87654321', $user->phonenumbersArray[1]->getPhonenumber());
 
         unset($user->phonenumbersArray[0]);
-        $this->ql->reset();
+        $this->ql->clear();
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Unsetting an element within an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -122,7 +137,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->phonebooks[] = $privateBook;
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Inserting a document with a nested embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -137,9 +152,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $publicBook = new Phonebook('Public');
         $publicBook->addPhonenumber(new Phonenumber('10203040'));
         $user->phonebooks[] = $publicBook;
-        $this->ql->reset();
+        $this->ql->clear();
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Updating multiple, nested embed-many collections requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -155,9 +170,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
 
         $privateBook->getPhonenumbers()->clear();
-        $this->ql->reset();
+        $this->ql->clear();
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Clearing a nested embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -182,7 +197,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->inception[0]->one->one->many[0]->many[] = new GonnaBeDeep('start.one.one.many.0.many.0');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertEquals(1, $this->ql->count());
+        $this->assertCount(1, $this->ql, 'Inserting a document with nested embed-many collections requires one query');
         
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);

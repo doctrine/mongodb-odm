@@ -19,11 +19,6 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
      */
     protected $uow;
 
-    /**
-     * @var QueryLogger
-     */
-    protected $ql;
-
     public function setUp()
     {
         $this->dm = $this->createTestDocumentManager();
@@ -56,9 +51,6 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
         $config->addFilter('testFilter', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
         $config->addFilter('testFilter2', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
-
-        $this->ql = new QueryLogger();
-        $config->setLoggerCallable(array($this->ql, 'log'));
 
         return $config;
     }
