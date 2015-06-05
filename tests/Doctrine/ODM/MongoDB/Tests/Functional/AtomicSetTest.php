@@ -31,7 +31,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testAtomicInsertAndUpdate()
     {
-        $user = new AtomicUser('Maciej');
+        $user = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
@@ -60,7 +60,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testAtomicUpsert()
     {
-        $user = new AtomicUser('Maciej');
+        $user = new AtomicSetUser('Maciej');
         $user->id = new \MongoId();
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
@@ -76,7 +76,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testAtomicCollectionUnset()
     {
-        $user = new AtomicUser('Maciej');
+        $user = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
@@ -103,7 +103,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testAtomicSetArray()
     {
-        $user = new AtomicUser('Maciej');
+        $user = new AtomicSetUser('Maciej');
         $user->phonenumbersArray[1] = new Phonenumber('12345678');
         $user->phonenumbersArray[2] = new Phonenumber('87654321');
         $this->dm->persist($user);
@@ -131,7 +131,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testAtomicCollectionWithAnotherNested()
     {
-        $user = new AtomicUser('Maciej');
+        $user = new AtomicSetUser('Maciej');
         $privateBook = new Phonebook('Private');
         $privateBook->addPhonenumber(new Phonenumber('12345678'));
         $user->phonebooks[] = $privateBook;
@@ -187,14 +187,14 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     
     public function testWeNeedToGoDeeper()
     {
-        $user = new AtomicUser('Maciej');
-        $user->inception[0] = new GonnaBeDeep('start');
-        $user->inception[0]->one = new GonnaBeDeep('start.one');
-        $user->inception[0]->one->many[] = new GonnaBeDeep('start.one.many.0');
-        $user->inception[0]->one->many[] = new GonnaBeDeep('start.one.many.1');
-        $user->inception[0]->one->one = new GonnaBeDeep('start.one.one');
-        $user->inception[0]->one->one->many[] = new GonnaBeDeep('start.one.one.many.0');
-        $user->inception[0]->one->one->many[0]->many[] = new GonnaBeDeep('start.one.one.many.0.many.0');
+        $user = new AtomicSetUser('Maciej');
+        $user->inception[0] = new AtomicSetInception('start');
+        $user->inception[0]->one = new AtomicSetInception('start.one');
+        $user->inception[0]->one->many[] = new AtomicSetInception('start.one.many.0');
+        $user->inception[0]->one->many[] = new AtomicSetInception('start.one.many.1');
+        $user->inception[0]->one->one = new AtomicSetInception('start.one.one');
+        $user->inception[0]->one->one->many[] = new AtomicSetInception('start.one.one.many.0');
+        $user->inception[0]->one->one->many[0]->many[] = new AtomicSetInception('start.one.one.many.0.many.0');
         $this->dm->persist($user);
         $this->dm->flush();
         $this->assertCount(1, $this->ql, 'Inserting a document with nested embed-many collections requires one query');
@@ -219,7 +219,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /**
  * @ODM\Document
  */
-class AtomicUser
+class AtomicSetUser
 {
     /** @ODM\Id */
     public $id;
@@ -242,7 +242,7 @@ class AtomicUser
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="Documents\Phonebook") */
     public $phonebooks;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="GonnaBeDeep") */
+    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="AtomicSetInception") */
     public $inception;
 
     public function __construct($name)
@@ -257,15 +257,15 @@ class AtomicUser
 /**
  * @ODM\EmbeddedDocument
  */
-class GonnaBeDeep
+class AtomicSetInception
 {
     /** @ODM\String */
     public $value;
 
-    /** @ODM\EmbedOne(targetDocument="GonnaBeDeep") */
+    /** @ODM\EmbedOne(targetDocument="AtomicSetInception") */
     public $one;
 
-    /** @ODM\EmbedMany(targetDocument="GonnaBeDeep") */
+    /** @ODM\EmbedMany(targetDocument="AtomicSetInception") */
     public $many;
 
     public function __construct($value)
