@@ -100,7 +100,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Malarz', $user->surname);
         $this->assertCount(0, $user->phonenumbers);
     }
-    
+
     public function testAtomicSetArray()
     {
         $user = new AtomicUser('Maciej');
@@ -198,7 +198,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
         $this->assertCount(1, $this->ql, 'Inserting a document with nested embed-many collections requires one query');
-        
+
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
         $this->assertEquals($user->inception[0]->value, 'start');
@@ -223,28 +223,28 @@ class AtomicUser
 {
     /** @ODM\Id */
     public $id;
-    
+
     /** @ODM\String */
     public $name;
 
     /** @ODM\Int @ODM\Version */
     public $version = 1;
-    
+
     /** @ODM\String */
     public $surname;
-    
+
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="Documents\Phonenumber") */
     public $phonenumbers;
-    
+
     /** @ODM\EmbedMany(strategy="atomicSetArray", targetDocument="Documents\Phonenumber") */
     public $phonenumbersArray;
-    
+
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="Documents\Phonebook") */
     public $phonebooks;
-    
+
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="GonnaBeDeep") */
     public $inception;
-    
+
     public function __construct($name)
     {
         $this->name = $name;
@@ -261,13 +261,13 @@ class GonnaBeDeep
 {
     /** @ODM\String */
     public $value;
-    
+
     /** @ODM\EmbedOne(targetDocument="GonnaBeDeep") */
     public $one;
-    
+
     /** @ODM\EmbedMany(targetDocument="GonnaBeDeep") */
     public $many;
-    
+
     public function __construct($value)
     {
         $this->value = $value;
