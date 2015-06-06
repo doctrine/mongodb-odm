@@ -201,6 +201,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
         $this->assertCount(1, $this->ql, 'Inserting a document with nested embed-many collections requires one query');
+        $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
@@ -218,18 +219,26 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($user->inception[0]->one->one->many[0]->many[0]->value, 'start.one.one.many.0.many.0');
 
         unset($user->inception[0]->one->many[0]);
+        $user->inception[0]->one->many[] = new AtomicSetInception('start.one.many.2');
         $user->inception[0]->one->one->many[0]->many[] = new AtomicSetInception('start.one.one.many.0.many.1');
         $this->ql->clear();
         $this->dm->flush();
         $this->assertCount(1, $this->ql, 'Updating nested collections on various levels requires one query');
+        $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
         $this->assertEquals($user->inception[0]->value, 'start');
         $this->assertNotNull($user->inception[0]->one);
         $this->assertEquals($user->inception[0]->one->value, 'start.one');
-        $this->assertCount(1, $user->inception[0]->one->many);
-        $this->assertEquals($user->inception[0]->one->many[1]->value, 'start.one.many.1');
+        $this->assertCount(2, $user->inception[0]->one->many);
+        /* Note: Since the "start.one.many" collection uses a pushAll strategy,
+         * "start.one.many.1" is reindexed at 0 after fetching. Before the last
+         * flush (when we unset "start.one.many.0"), it would still have been
+         * accessible via index 1.
+         */
+        $this->assertEquals($user->inception[0]->one->many[0]->value, 'start.one.many.1');
+        $this->assertEquals($user->inception[0]->one->many[1]->value, 'start.one.many.2');
         $this->assertNotNull($user->inception[0]->one->one);
         $this->assertEquals($user->inception[0]->one->one->value, 'start.one.one');
         $this->assertCount(1, $user->inception[0]->one->one->many);
