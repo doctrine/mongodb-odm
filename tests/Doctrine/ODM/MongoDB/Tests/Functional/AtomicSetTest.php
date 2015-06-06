@@ -238,6 +238,52 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($user->inception[0]->one->one->many[0]->many[0]->value, 'start.one.one.many.0.many.0');
         $this->assertEquals($user->inception[0]->one->one->many[0]->many[1]->value, 'start.one.one.many.0.many.1');
     }
+
+    public function testUpdatingNestedCollectionWhileDeletingParent()
+    {
+        $user = new AtomicSetUser('Jon');
+        $user->inception[0] = new AtomicSetInception('start');
+        $user->inception[0]->many[0] = new AtomicSetInception('start.many.0');
+        $user->inception[0]->many[0]->many[0] = new AtomicSetInception('start.many.0.many.0');
+        $user->inception[0]->many[1] = new AtomicSetInception('start.many.1');
+        $user->inception[0]->many[1]->many[0] = new AtomicSetInception('start.many.1.many.0');
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Inserting a document with nested embed-many collections requires one query');
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository(get_class($user))->find($user->id);
+        $this->assertCount(1, $user->inception);
+        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertCount(2, $user->inception[0]->many);
+        $this->assertEquals($user->inception[0]->many[0]->value, 'start.many.0');
+        $this->assertCount(1, $user->inception[0]->many[0]->many);
+        $this->assertEquals($user->inception[0]->many[0]->many[0]->value, 'start.many.0.many.0');
+        $this->assertEquals($user->inception[0]->many[1]->value, 'start.many.1');
+        $this->assertCount(1, $user->inception[0]->many[0]->many);
+        $this->assertEquals($user->inception[0]->many[1]->many[0]->value, 'start.many.1.many.0');
+
+        $user->inception[0]->many[0]->many[0]->value = 'start.many.0.many.0-changed';
+        $user->inception[0]->many[0]->many[1] = new AtomicSetInception('start.many.0.many.1');
+        $user->inception[0]->many[0]->many->clear();
+        $user->inception[0]->many[1]->many[1] = new AtomicSetInception('start.many.1.many.1');
+        $user->inception[0]->many[1] = new AtomicSetInception('start.many.1');
+        $user->inception[0]->many[1]->many[0] = new AtomicSetInception('start.many.1.many.0-new');
+        $this->ql->clear();
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Updating nested collections while deleting parents requires one query');
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository(get_class($user))->find($user->id);
+        $this->assertCount(1, $user->inception);
+        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertCount(2, $user->inception[0]->many);
+        $this->assertEquals($user->inception[0]->many[0]->value, 'start.many.0');
+        $this->assertCount(0, $user->inception[0]->many[0]->many);
+        $this->assertEquals($user->inception[0]->many[1]->value, 'start.many.1');
+        $this->assertCount(1, $user->inception[0]->many[1]->many);
+        $this->assertEquals($user->inception[0]->many[1]->many[0]->value, 'start.many.1.many.0-new');
+    }
 }
 
 /**
