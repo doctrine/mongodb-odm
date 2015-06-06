@@ -1247,53 +1247,86 @@ class DocumentPersister
     private function getAtomicCollectionUpdateQuery($document)
     {
         $update = array();
-        $collections = $this->uow->getScheduledCollections($document);
+        $atomicCollUpdates = array();
+        $atomicCollDeletes = array();
         $collPersister = $this->uow->getCollectionPersister();
-        foreach ($collections as $coll) {
-            if ( ! $this->uow->isCollectionScheduledForUpdate($coll) && ! $this->uow->isCollectionScheduledForDeletion($coll)) {
-                continue; // collection was resolved in a meanwhile
-            }
-            /* @var $coll PersistentCollection */
+
+        /* Collect all atomic collections (top-level and nested) to be included
+         * in the update.
+         */
+        foreach ($this->uow->getScheduledCollections($document) as $coll) {
+            /* If this is a top-level, atomic collection, its scheduled update
+             * or deletion must be included in the document's update query.
+             */
             if ($coll->getOwner() === $document) {
                 $mapping = $coll->getMapping();
+
                 if ($mapping['strategy'] !== "atomicSet" && $mapping['strategy'] !== "atomicSetArray") {
                     continue;
                 }
+
                 if ($this->uow->isCollectionScheduledForUpdate($coll)) {
-                    $update = array_merge_recursive($update, $collPersister->prepareSetQuery($coll));
-                    $this->uow->unscheduleCollectionUpdate($coll);
-                    /* TODO:
-                     * Collection can be set for both deletion and update if
-                     * PersistentCollection instance was changed. Since we're dealing
-                     * with collection update in one query we won't need the $unset.
-                     * Line can be removed once the issue is fixed.
-                     */
-                    $this->uow->unscheduleCollectionDeletion($coll);
+                    $atomicCollUpdates[spl_object_hash($coll)] = $coll;
                 } elseif ($this->uow->isCollectionScheduledForDeletion($coll)) {
-                    $update = array_merge_recursive($update, $collPersister->prepareDeleteQuery($coll));
-                    $this->uow->unscheduleCollectionDeletion($coll);
+                    $atomicCollDeletes[spl_object_hash($coll)] = $coll;
                 }
-            } else {
-                /* we are handling deeply nested collection update, we need to check
-                 * if it is embedded within atomicSet/atomicSetArray collection
-                 * and resolve that collection if true
-                 */
-                $parent = $coll->getOwner();
-                while (null !== ($association = $this->uow->getParentAssociation($parent))) {
-                    list($m, $owner, ) = $association;
-                    $parent = $owner;
-                }
-                if ( ! isset($m['association']) || $m['association'] !== ClassMetadata::EMBED_MANY
-                        || ($m['strategy'] !== "atomicSet" && $m['strategy'] !== "atomicSetArray")) {
-                    continue;
-                }
-                $classMetadata = $this->dm->getClassMetadata(get_class($document));
-                $atomicCollection = $classMetadata->getFieldValue($document, $m['fieldName']);
-                $update = array_merge_recursive($update, $collPersister->prepareSetQuery($atomicCollection));
-                $this->uow->unscheduleCollectionUpdate($atomicCollection);
-                $this->uow->unscheduleCollectionDeletion($atomicCollection);
+
+                continue;
+            }
+
+            /* Otherwise, the collection is nested. Check if its top-most parent
+             * is an atomic collection and include it for updating if so. This
+             * is necessary because the atomic parent may not have directly
+             * changed.
+             */
+            $parent = $coll->getOwner();
+            while (null !== ($parentAssoc = $this->uow->getParentAssociation($parent))) {
+                list($mapping, $parent, ) = $parentAssoc;
+            }
+
+            if ( ! isset($mapping['association']) ||
+                $mapping['association'] !== ClassMetadata::EMBED_MANY ||
+                ($mapping['strategy'] !== 'atomicSet' && $mapping['strategy'] !== 'atomicSetArray')) {
+                continue;
+            }
+
+            $classMetadata = $this->dm->getClassMetadata(get_class($document));
+            $parentColl = $classMetadata->getFieldValue($document, $mapping['fieldName']);
+
+            /* It's possible that the atomic parent was independently scheduled
+             * for deletion. In that case, updating nested data is unnecessary.
+             */
+            if ( ! $this->uow->isCollectionScheduledForDeletion($parentColl)) {
+                $atomicCollUpdates[spl_object_hash($parentColl)] = $parentColl;
             }
         }
+
+        foreach ($atomicCollUpdates as $coll) {
+            $update = array_merge_recursive($update, $collPersister->prepareSetQuery($coll));
+            /* Note: If the collection is only be handled because it's an atomic
+             * parent of a scheduled child, the following calls are NOPs.
+             */
+            $this->uow->unscheduleCollectionUpdate($coll);
+            /* TODO: The collection may have been scheduled for both update and
+             * deletion if the PersistentCollection instance was changed. Since
+             * we're including the collection's update in an atomic $set, the
+             * $unset is unnecessary and we can unschedule the deletion.
+             *
+             * This can be removed if UnitOfWork is ever fixed to not schedule
+             * collections for both updates and deletions.
+             */
+            $this->uow->unscheduleCollectionDeletion($coll);
+        }
+
+        foreach ($atomicCollDeletes as $coll) {
+            $update = array_merge_recursive($update, $collPersister->prepareDeleteQuery($coll));
+            /* Note: We don't need to call unscheduleCollectionUpdate(), because
+             * the collection should never have been added to $atomicCollDeletes
+             * if it was independently scheduled for update.
+             */
+            $this->uow->unscheduleCollectionDeletion($coll);
+        }
+
         return $update;
     }
 }
