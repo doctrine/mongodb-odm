@@ -1250,24 +1250,48 @@ class DocumentPersister
         $collections = $this->uow->getScheduledCollections($document);
         $collPersister = $this->uow->getCollectionPersister();
         foreach ($collections as $coll) {
-            /* @var $coll PersistentCollection */
-            $mapping = $coll->getMapping();
-            if ($mapping['strategy'] !== "atomicSet" && $mapping['strategy'] !== "atomicSetArray") {
-                continue;
+            if ( ! $this->uow->isCollectionScheduledForUpdate($coll) && ! $this->uow->isCollectionScheduledForDeletion($coll)) {
+                continue; // collection was resolved in a meanwhile
             }
-            if ($this->uow->isCollectionScheduledForUpdate($coll)) {
-                $update = array_merge_recursive($update, $collPersister->prepareSetQuery($coll));
-                $this->uow->unscheduleCollectionUpdate($coll);
-                /* TODO:
-                 * Collection can be set for both deletion and update if
-                 * PersistentCollection instance was changed. Since we're dealing
-                 * with collection update in one query we won't need the $unset.
-                 * Line can be removed once the issue is fixed.
+            /* @var $coll PersistentCollection */
+            if ($coll->getOwner() === $document) {
+                $mapping = $coll->getMapping();
+                if ($mapping['strategy'] !== "atomicSet" && $mapping['strategy'] !== "atomicSetArray") {
+                    continue;
+                }
+                if ($this->uow->isCollectionScheduledForUpdate($coll)) {
+                    $update = array_merge_recursive($update, $collPersister->prepareSetQuery($coll));
+                    $this->uow->unscheduleCollectionUpdate($coll);
+                    /* TODO:
+                     * Collection can be set for both deletion and update if
+                     * PersistentCollection instance was changed. Since we're dealing
+                     * with collection update in one query we won't need the $unset.
+                     * Line can be removed once the issue is fixed.
+                     */
+                    $this->uow->unscheduleCollectionDeletion($coll);
+                } elseif ($this->uow->isCollectionScheduledForDeletion($coll)) {
+                    $update = array_merge_recursive($update, $collPersister->prepareDeleteQuery($coll));
+                    $this->uow->unscheduleCollectionDeletion($coll);
+                }
+            } else {
+                /* we are handling deeply nested collection update, we need to check
+                 * if it is embedded within atomicSet/atomicSetArray collection
+                 * and resolve that collection if true
                  */
-                $this->uow->unscheduleCollectionDeletion($coll);
-            } elseif ($this->uow->isCollectionScheduledForDeletion($coll)) {
-                $update = array_merge_recursive($update, $collPersister->prepareDeleteQuery($coll));
-                $this->uow->unscheduleCollectionDeletion($coll);
+                $parent = $coll->getOwner();
+                while (null !== ($association = $this->uow->getParentAssociation($parent))) {
+                    list($m, $owner, ) = $association;
+                    $parent = $owner;
+                }
+                if ( ! isset($m['association']) || $m['association'] !== ClassMetadata::EMBED_MANY
+                        || ($m['strategy'] !== "atomicSet" && $m['strategy'] !== "atomicSetArray")) {
+                    continue;
+                }
+                $classMetadata = $this->dm->getClassMetadata(get_class($document));
+                $atomicCollection = $classMetadata->getFieldValue($document, $m['fieldName']);
+                $update = array_merge_recursive($update, $collPersister->prepareSetQuery($atomicCollection));
+                $this->uow->unscheduleCollectionUpdate($atomicCollection);
+                $this->uow->unscheduleCollectionDeletion($atomicCollection);
             }
         }
         return $update;
