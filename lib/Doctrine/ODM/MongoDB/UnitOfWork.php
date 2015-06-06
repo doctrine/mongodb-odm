@@ -2701,10 +2701,14 @@ class UnitOfWork implements PropertyChangedListener
     
     /**
      * INTERNAL:
-     * Unschedules a collection from being updated deleted when this UnitOfWork commits.
-     * Effectively this is used for atomicSet and atomicSetArray update strategies.
-     * The method doesn't remove $coll from $this->hasScheduledCollections because
-     * it is called only from DocumentPersister resolving that very document
+     * Unschedules a collection from being deleted when this UnitOfWork commits.
+     * This is mainly used for the atomicSet and atomicSetArray strategies and
+     * called from DocumentPersister and PersistenceBuilder.
+     *
+     * This does not remove $coll from $this->hasScheduledCollections because
+     * DocumentPersister will already have called hasScheduledCollections()
+     * before deciding to include any collections with an atomic strategy in its
+     * update query.
      * 
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
@@ -2729,10 +2733,14 @@ class UnitOfWork implements PropertyChangedListener
     
     /**
      * INTERNAL:
-     * Unschedules a collection from being updated update when this UnitOfWork commits.
-     * Effectively this is used for atomicSet and atomicSetArray update strategies.
-     * The method doesn't remove $coll from $this->hasScheduledCollections because
-     * it is called only from DocumentPersister resolving that very document
+     * Unschedules a collection from being updated when this UnitOfWork commits.
+     * This is mainly used for the atomicSet and atomicSetArray strategies and
+     * called from DocumentPersister and PersistenceBuilder.
+     *
+     * This does not remove $coll from $this->hasScheduledCollections because
+     * DocumentPersister will already have called hasScheduledCollections()
+     * before deciding to include any collections with an atomic strategy in its
+     * update query.
      * 
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
