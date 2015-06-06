@@ -524,6 +524,13 @@ class PersistentCollection implements BaseCollection
      */
     public function add($value)
     {
+        /* Initialize the collection before calling add() so this append operation
+         * uses the appropriate key. Otherwise, we risk overwriting original data
+         * when $newObjects are re-added in a later call to initialize().
+         */
+        if (isset($this->mapping['strategy']) && ($this->mapping['strategy'] === 'set' || $this->mapping['strategy'] === 'atomicSet')) {
+            $this->initialize();
+        }
         $this->coll->add($value);
         $this->changed();
         return true;
