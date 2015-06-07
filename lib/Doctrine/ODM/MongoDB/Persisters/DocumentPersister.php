@@ -1307,15 +1307,6 @@ class DocumentPersister
              * parent of a scheduled child, the following calls are NOPs.
              */
             $this->uow->unscheduleCollectionUpdate($coll);
-            /* TODO: The collection may have been scheduled for both update and
-             * deletion if the PersistentCollection instance was changed. Since
-             * we're including the collection's update in an atomic $set, the
-             * $unset is unnecessary and we can unschedule the deletion.
-             *
-             * This can be removed if UnitOfWork is ever fixed to not schedule
-             * collections for both updates and deletions.
-             */
-            $this->uow->unscheduleCollectionDeletion($coll);
         }
 
         foreach ($atomicCollDeletes as $coll) {
