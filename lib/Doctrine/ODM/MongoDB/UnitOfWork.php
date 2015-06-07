@@ -785,6 +785,12 @@ class UnitOfWork implements PropertyChangedListener
                 // if embed-many or reference-many relationship
                 if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
                     $changeSet[$propName] = array($orgValue, $actualValue);
+                    /* If original collection was exchanged with a non-empty value
+                     * and $set will be issued, there is no need to $unset it first
+                     */
+                    if ($actualValue && $actualValue->isDirty() && in_array($class->fieldMappings[$propName]['strategy'], array('set', 'setArray', 'atomicSet', 'atomicSetArray'))) {
+                        continue;
+                    }
                     if ($orgValue instanceof PersistentCollection) {
                         $this->scheduleCollectionDeletion($orgValue);
                     }
@@ -2727,6 +2733,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function scheduleCollectionUpdate(PersistentCollection $coll)
     {
+        $mapping = $coll->getMapping();
+        if (isset($mapping['strategy']) && in_array($mapping['strategy'], array('set', 'setArray', 'atomicSet', 'atomicSetArray'))) {
+            /* There is no need to $unset collection if it will be $set later
+             * This is NOP if collection is not scheduled for deletion
+             */
+            $this->unscheduleCollectionDeletion($coll);
+        }
         $this->collectionUpdates[] = $coll;
         $this->scheduleCollectionOwner($coll);
     }

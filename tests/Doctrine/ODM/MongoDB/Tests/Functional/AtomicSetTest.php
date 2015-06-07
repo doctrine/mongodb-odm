@@ -77,7 +77,10 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
     }
 
-    public function testAtomicCollectionUnset()
+    /**
+     * @dataProvider provideAtomicCollectionUnset
+     */
+    public function testAtomicCollectionUnset($clearWith)
     {
         $user = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
@@ -92,7 +95,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
 
         $user->surname = "Malarz";
-        $user->phonenumbers = null;
+        $user->phonenumbers = $clearWith;
         $this->ql->clear();
         $this->dm->flush();
         $this->assertCount(1, $this->ql, 'Updating a document and unsetting its embed-many collection requires one query');
@@ -102,6 +105,61 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Maciej', $user->name);
         $this->assertEquals('Malarz', $user->surname);
         $this->assertCount(0, $user->phonenumbers);
+    }
+
+    public function provideAtomicCollectionUnset()
+    {
+        return array(
+            array(null),
+            array(array()),
+            array(new ArrayCollection()),
+        );
+    }
+
+    public function testAtomicCollectionClearAndUpdate()
+    {
+        $user = new AtomicSetUser('Maciej');
+        $user->phonenumbers[] = new Phonenumber('12345678');
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Inserting a document with an embed-many collection requires one query');
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository(get_class($user))->find($user->id);
+        $user->phonenumbers->clear();
+        $user->phonenumbers[] = new Phonenumber('87654321');
+        $this->ql->clear();
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Updating emptied collection requires one query');
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository(get_class($user))->find($user->id);
+        $this->assertEquals('Maciej', $user->name);
+        $this->assertCount(1, $user->phonenumbers);
+        $this->assertEquals('87654321', $user->phonenumbers[0]->getPhonenumber());
+    }
+
+    public function testAtomicCollectionReplacedAndUpdated()
+    {
+        $user = new AtomicSetUser('Maciej');
+        $user->phonenumbers[] = new Phonenumber('12345678');
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Inserting a document with an embed-many collection requires one query');
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository(get_class($user))->find($user->id);
+        $user->phonenumbers = new ArrayCollection();
+        $user->phonenumbers[] = new Phonenumber('87654321');
+        $this->ql->clear();
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Updating emptied collection requires one query');
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository(get_class($user))->find($user->id);
+        $this->assertEquals('Maciej', $user->name);
+        $this->assertCount(1, $user->phonenumbers);
+        $this->assertEquals('87654321', $user->phonenumbers[0]->getPhonenumber());
     }
 
     public function testAtomicSetArray()
