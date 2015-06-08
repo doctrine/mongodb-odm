@@ -153,7 +153,7 @@ class EagerCursor extends BaseEagerCursor
     public function initialize()
     {
         if ($this->initialized === false) {
-            $this->data = $this->cursor->getBaseCursor()->toArray();
+            $this->data = $this->cursor->getBaseCursor()->toArray(false);
         }
         $this->initialized = true;
     }
