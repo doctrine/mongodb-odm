@@ -83,7 +83,7 @@ class ReferencePrimer
                 $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
             }
 
-            $qb->getQuery()->toArray();
+            $qb->getQuery()->execute()->toArray(false);
         };
     }
 

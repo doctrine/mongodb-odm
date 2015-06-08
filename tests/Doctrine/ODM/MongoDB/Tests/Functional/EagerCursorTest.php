@@ -68,7 +68,7 @@ class EagerCursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testToArray()
     {
-        $this->assertEquals(array($this->document->id => $this->document), $this->test->toArray());
+        $this->assertEquals(array($this->document), $this->test->toArray());
     }
 
     public function testHydrate()
