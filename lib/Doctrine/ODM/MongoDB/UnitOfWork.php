@@ -1190,7 +1190,11 @@ class UnitOfWork implements PropertyChangedListener
                         $this->recomputeSingleDocumentChangeSet($class, $document);
                     }
 
-                    if ($hasPreUpdateListeners && isset($this->documentChangeSets[$oid])) {
+                    if ($hasPreUpdateListeners) {
+                        if ( ! isset($this->documentChangeSets[$oid])) {
+                            // only ReferenceMany collection is scheduled for update
+                            $this->documentChangeSets[$oid] = array();
+                        }
                         $this->evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
                             $document, $this->dm, $this->documentChangeSets[$oid])
                         );
