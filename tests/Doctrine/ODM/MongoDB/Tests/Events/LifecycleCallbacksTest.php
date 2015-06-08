@@ -205,7 +205,8 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         
         $user->friends[] = $user2;
         $this->dm->flush();
-        
+
+        $this->assertTrue($user->preFlush);
         $this->assertTrue($user->preUpdate);
         $this->assertTrue($user->postUpdate);
         $this->assertFalse($user2->preUpdate);
