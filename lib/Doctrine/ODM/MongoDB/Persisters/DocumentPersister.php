@@ -211,6 +211,7 @@ class DocumentPersister
             return;
         }
 
+        $allVisitedCollections = array();
         $inserts = array();
         foreach ($this->queuedInserts as $oid => $document) {
             $data = $this->pb->prepareInsertData($document);
@@ -228,11 +229,12 @@ class DocumentPersister
                 }
                 $data[$versionMapping['name']] = $nextVersion;
             }
-            
-            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
-            if (!empty($atomicCollectionQuery['$set'])) {
+
+            list($visitedCollections, $atomicCollectionQuery) = $this->getAtomicCollectionUpdateQuery($document);
+            if ( ! empty($atomicCollectionQuery['$set'])) {
                 $data = array_merge($data, $atomicCollectionQuery['$set']);
             }
+            $allVisitedCollections = array_merge($allVisitedCollections, $visitedCollections);
 
             $inserts[$oid] = $data;
         }
@@ -246,6 +248,9 @@ class DocumentPersister
             }
         }
 
+        foreach ($allVisitedCollections as $coll) {
+            $coll->takeSnapshot();
+        }
         $this->queuedInserts = array();
     }
 
@@ -281,7 +286,7 @@ class DocumentPersister
                 $data['$set'][$versionMapping['name']] = $nextVersion;
             }
             
-            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
+            list($visitedCollections, $atomicCollectionQuery) = $this->getAtomicCollectionUpdateQuery($document);
             if ( ! empty($atomicCollectionQuery)) {
                 $data = array_merge_recursive($data, $atomicCollectionQuery);
             }
@@ -292,6 +297,10 @@ class DocumentPersister
             } catch (\MongoException $e) {
                 unset($this->queuedUpserts[$oid]);
                 throw $e;
+            }
+
+            foreach ($visitedCollections as $coll) {
+                $coll->takeSnapshot();
             }
         }
     }
@@ -379,7 +388,7 @@ class DocumentPersister
                 }
             }
             
-            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
+            list($visitedCollections, $atomicCollectionQuery) = $this->getAtomicCollectionUpdateQuery($document);
             if ( ! empty($atomicCollectionQuery)) {
                 $update = array_merge_recursive($update, $atomicCollectionQuery);
             }
@@ -408,6 +417,10 @@ class DocumentPersister
 
             if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
                 throw LockException::lockFailed($document);
+            }
+
+            foreach ($visitedCollections as $coll) {
+                $coll->takeSnapshot();
             }
         }
     }
@@ -1243,12 +1256,23 @@ class DocumentPersister
 
         return $discriminatorValues;
     }
-    
+
+    /**
+     * Prepares query for saving atomic collections and its children.
+     *
+     * <code>
+     * list($visitedCollections, $query) = $this->getAtomicCollectionUpdateQuery($document);
+     * </code>
+     *
+     * @param object $document
+     * @return array
+     */
     private function getAtomicCollectionUpdateQuery($document)
     {
         $update = array();
         $atomicCollUpdates = array();
         $atomicCollDeletes = array();
+        $visitedCollections = array();
         $collPersister = $this->uow->getCollectionPersister();
 
         /* Collect all atomic collections (top-level and nested) to be included
@@ -1270,6 +1294,8 @@ class DocumentPersister
                 } elseif ($this->uow->isCollectionScheduledForDeletion($coll)) {
                     $atomicCollDeletes[spl_object_hash($coll)] = $coll;
                 }
+
+                $visitedCollections[] = $coll;
 
                 continue;
             }
@@ -1299,6 +1325,8 @@ class DocumentPersister
             if ( ! $this->uow->isCollectionScheduledForDeletion($parentColl)) {
                 $atomicCollUpdates[spl_object_hash($parentColl)] = $parentColl;
             }
+
+            $visitedCollections[] = $coll;
         }
 
         foreach ($atomicCollUpdates as $coll) {
@@ -1318,6 +1346,6 @@ class DocumentPersister
             $this->uow->unscheduleCollectionDeletion($coll);
         }
 
-        return $update;
+        return array($visitedCollections, $update);
     }
 }
