@@ -158,7 +158,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $this->validateIdentifier($class);
 
-        if ($parent && $rootEntityFound) {
+        if ($parent && $rootEntityFound && $parent->generatorType === $class->generatorType) {
             if ($parent->generatorType) {
                 $class->setIdGeneratorType($parent->generatorType);
             }
