@@ -269,10 +269,20 @@ class PersistentCollection implements BaseCollection
 
     /**
      * INTERNAL:
-     * Tells this collection to take a snapshot of its current state.
+     * Tells this collection to take a snapshot of its current state reindexing
+     * itself numerically if using save strategy that is enforcing BSON array.
+     * Reindexing is safe as snapshot is taken only after synchronizing collection
+     * with database or clearing it.
      */
     public function takeSnapshot()
     {
+        if (CollectionHelper::isList($this->mapping['strategy'])) {
+            $array = $this->coll->toArray();
+            $this->coll->clear();
+            foreach ($array as $document) {
+                $this->coll->add($document);
+            }
+        }
         $this->snapshot = $this->coll->toArray();
         $this->isDirty = false;
     }
