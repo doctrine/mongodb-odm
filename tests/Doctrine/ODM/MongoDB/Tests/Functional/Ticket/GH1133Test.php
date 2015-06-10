@@ -6,13 +6,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 
-class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1133Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testReplacementOfEmbedManyElements()
     {
         // Create a book with a single chapter.
-        $book = new GHXXXXBook();
-        $book->chapters->add(new GHXXXXChapter('A'));
+        $book = new GH1133Book();
+        $book->chapters->add(new GH1133Chapter('A'));
 
         // Save it.
         $this->dm->persist($book);
@@ -20,19 +20,19 @@ class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Simulate another PHP request which loads this record.
         $this->dm->clear();
-        $book = $this->dm->getRepository(GHXXXXBook::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(GH1133Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
 
         // Developers commonly attempt to replace the contents of an EmbedMany with a new ArrayCollection like this:
         $replacementChatpers = new ArrayCollection();
         $replacementChatpers->add($book->chapters->first());
-        $replacementChatpers->add(new GHXXXXChapter('B'));
+        $replacementChatpers->add(new GH1133Chapter('B'));
         $book->chapters = $replacementChatpers;
 
         $this->dm->flush(); // <- Currently getting "Cannot update 'chapters' and 'chapters' at the same time" failures.
 
         // Simulate another PHP request.
         $this->dm->clear();
-        $book = $this->dm->getRepository(GHXXXXBook::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(GH1133Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
 
         // Verify we see chapters A and B.
         $discoveredChapterTitles = array();
@@ -45,14 +45,14 @@ class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /** @ODM\Document */
-class GHXXXXBook
+class GH1133Book
 {
     const CLASSNAME = __CLASS__;
 
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument="GHXXXXChapter", strategy="atomicSet") */
+    /** @ODM\EmbedMany(targetDocument="GH1133Chapter", strategy="atomicSet") */
     public $chapters;
 
     public function __construct()
@@ -62,7 +62,7 @@ class GHXXXXBook
 }
 
 /** @ODM\EmbeddedDocument */
-class GHXXXXChapter
+class GH1133Chapter
 {
     /** @ODM\String */
     public $name;
