@@ -2916,7 +2916,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function setOriginalDocumentData($document, array $data)
     {
-        $this->originalDocumentData[spl_object_hash($document)] = $data;
+        $oid = spl_object_hash($document);
+        $this->originalDocumentData[$oid] = $data;
+        unset($this->documentChangeSets[$oid]);
     }
 
     /**
