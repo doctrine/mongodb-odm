@@ -296,4 +296,8 @@ class User extends BaseDocument
         return $this->posts;
     }
 
+    public function setPhonenumbers($phonenumbers)
+    {
+        $this->phonenumbers = $phonenumbers;
+    }
 }
