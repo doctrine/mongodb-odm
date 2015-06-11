@@ -608,11 +608,20 @@ class PersistentCollection implements BaseCollection
 
         $this->mongoData = array();
         $this->coll->clear();
-        if ($this->mapping['isOwningSide']) {
-            $this->changed();
-            $this->uow->scheduleCollectionDeletion($this);
-            $this->takeSnapshot();
+
+        // Nothing to do for inverse-side collections
+        if ( ! $this->mapping['isOwningSide']) {
+            return;
         }
+
+        // Nothing to do if the collection was initialized but contained no data
+        if ($this->initialized && empty($this->snapshot)) {
+            return;
+        }
+
+        $this->changed();
+        $this->uow->scheduleCollectionDeletion($this);
+        $this->takeSnapshot();
     }
 
     /**

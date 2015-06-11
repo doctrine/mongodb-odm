@@ -706,6 +706,13 @@ class UnitOfWork implements PropertyChangedListener
             $this->originalDocumentData[$oid] = $actualData;
             $changeSet = array();
             foreach ($actualData as $propName => $actualValue) {
+                /* At this PersistentCollection shouldn't be here, probably it
+                 * was cloned and its ownership must be fixed
+                 */
+                if ($actualValue instanceof PersistentCollection && $actualValue->getOwner() !== $document) {
+                    $actualData[$propName] = $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
+                    $actualValue = $actualData[$propName];
+                }
                 $changeSet[$propName] = array(null, $actualValue);
             }
             $this->documentChangeSets[$oid] = $changeSet;
@@ -768,18 +775,8 @@ class UnitOfWork implements PropertyChangedListener
                 // Persistent collection was exchanged with the "originally"
                 // created one. This can only mean it was cloned and replaced
                 // on another document.
-                if ($actualValue instanceof PersistentCollection) {
-                    $owner = $actualValue->getOwner();
-                    if ($owner === null) { // cloned
-                        $actualValue->setOwner($document, $class->fieldMappings[$propName]);
-                    } elseif ($owner !== $document) { // no clone, we have to fix
-                        if ( ! $actualValue->isInitialized()) {
-                            $actualValue->initialize(); // we have to do this otherwise the cols share state
-                        }
-                        $newValue = clone $actualValue;
-                        $newValue->setOwner($document, $class->fieldMappings[$propName]);
-                        $class->reflFields[$propName]->setValue($document, $newValue);
-                    }
+                if ($actualValue instanceof PersistentCollection && $actualValue->getOwner() !== $document) {
+                    $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
                 }
 
                 // if embed-many or reference-many relationship
@@ -2672,6 +2669,23 @@ class UnitOfWork implements PropertyChangedListener
     public function scheduleOrphanRemoval($document)
     {
         $this->orphanRemovals[spl_object_hash($document)] = $document;
+    }
+
+    private function fixPersistentCollectionOwnership(PersistentCollection $coll, $document, $class, $propName)
+    {
+        $owner = $coll->getOwner();
+        if ($owner === null) { // cloned
+            $coll->setOwner($document, $class->fieldMappings[$propName]);
+        } elseif ($owner !== $document) { // no clone, we have to fix
+            if ( ! $coll->isInitialized()) {
+                $coll->initialize(); // we have to do this otherwise the cols share state
+            }
+            $newValue = clone $coll;
+            $newValue->setOwner($document, $class->fieldMappings[$propName]);
+            $class->reflFields[$propName]->setValue($document, $newValue);
+            return $newValue;
+        }
+        return $coll;
     }
 
     /**
