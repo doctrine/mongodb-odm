@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+
 /**
  * Class for all exceptions related to the Doctrine MongoDB ODM
  *
@@ -57,6 +59,24 @@ class MongoDBException extends \Exception
         return new self("You need to pass a parameter to '".$methodName."'");
     }
 
+    public static function unknownDocumentField($field, ClassMetadata $class)
+    {
+        $suggestions = array();
+        foreach ($class->getFieldNames() as $existing) {
+            if (levenshtein($field, $existing)<=2) {
+                $suggestions[] = $existing;
+            }
+        }
+        switch (count($suggestions)) {
+            case 0:
+                return new self(sprintf("Unknown field %s in %s", $field, $class->name));
+            case 1:
+                return new self(sprintf("Unknown field %s in %s. Have you meant %s?", $field, $class->name, $suggestions[0]));
+            default:
+                return new self(sprintf("Unknown field %s in %s. Have you meant one of %s?", $field, $class->name, join(', ', $suggestions)));
+        }
+    }
+    
     public static function unknownDocumentNamespace($documentNamespaceAlias)
     {
         return new self("Unknown Document namespace alias '$documentNamespaceAlias'.");
