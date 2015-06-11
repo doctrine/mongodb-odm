@@ -251,6 +251,33 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'strategy' => 'atomicSet',
         ));
     }
+
+    /**
+     * @dataProvider provideOwningAndInversedRefsNeedTargetDocument
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     */
+    public function testOwningAndInversedRefsNeedTargetDocument($config)
+    {
+        $config = array_merge($config, array(
+            'fieldName' => 'many',
+            'reference' => true,
+            'strategy' => 'atomicSet',
+        ));
+
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->isEmbeddedDocument = true;
+        $cm->mapField($config);
+    }
+
+    public function provideOwningAndInversedRefsNeedTargetDocument()
+    {
+        return array(
+            array(array('type' => 'one', 'mappedBy' => 'post')),
+            array(array('type' => 'one', 'inversedBy' => 'post')),
+            array(array('type' => 'many', 'mappedBy' => 'post')),
+            array(array('type' => 'many', 'inversedBy' => 'post')),
+        );
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository
