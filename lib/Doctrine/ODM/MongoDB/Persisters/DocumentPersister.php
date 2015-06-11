@@ -656,7 +656,7 @@ class DocumentPersister
                 if ($mapping['strategy'] === 'set' || $mapping['strategy'] === 'atomicSet') {
                     $collection->set($key, $embeddedDocumentObject);
                 } else {
-                    $collection->add($embeddedDocumentObject);
+                    $collection->add($embeddedDocumentObject, false);
                 }
             }
         }
@@ -688,7 +688,7 @@ class DocumentPersister
                 if ($mapping['strategy'] === 'set' || $mapping['strategy'] === 'atomicSet') {
                     $collection->set($key, $reference);
                 } else {
-                    $collection->add($reference);
+                    $collection->add($reference, false);
                 }
             }
 
@@ -729,7 +729,7 @@ class DocumentPersister
                 $this->uow->setOriginalDocumentData($document, $data);
                 $document->__isInitialized__ = true;
                 if ($sorted) {
-                    $collection->add($document);
+                    $collection->add($document, false);
                 }
             }
         }
@@ -740,7 +740,7 @@ class DocumentPersister
         $query = $this->createReferenceManyInverseSideQuery($collection);
         $documents = $query->execute()->toArray(false);
         foreach ($documents as $key => $document) {
-            $collection->add($document);
+            $collection->add($document, false);
         }
     }
 
@@ -791,7 +791,7 @@ class DocumentPersister
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
         $documents = $cursor->toArray(false);
         foreach ($documents as $document) {
-            $collection->add($document);
+            $collection->add($document, false);
         }
     }
 
