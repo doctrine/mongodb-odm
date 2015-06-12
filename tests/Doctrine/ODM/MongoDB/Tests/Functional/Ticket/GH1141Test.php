@@ -6,13 +6,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 
-class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1141Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testReplacementOfEmbedManyElements()
     {
         // Create a book with a single chapter.
-        $book = new GHXXXXBook();
-        $book->chapters->add(new GHXXXXChapter('A'));
+        $book = new GH1141Book();
+        $book->chapters->add(new GH1141Chapter('A'));
 
         // Save it.
         $this->dm->persist($book);
@@ -20,7 +20,7 @@ class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Simulate another PHP request which loads this record.
         $this->dm->clear();
-        $book = $this->dm->getRepository(GHXXXXBook::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(GH1141Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
 
         $firstChapter = $book->chapters->first();
         $firstChapter->name = "First chapter A";
@@ -28,14 +28,14 @@ class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         // Developers commonly attempt to replace the contents of an EmbedMany with a new ArrayCollection like this:
         $replacementChatpers = new ArrayCollection();
         $replacementChatpers->add($firstChapter);
-        $replacementChatpers->add(new GHXXXXChapter('Second chapter B'));
+        $replacementChatpers->add(new GH1141Chapter('Second chapter B'));
         $book->chapters = $replacementChatpers;
 
         $this->dm->flush(); // <- Currently getting "Cannot update 'chapters' and 'chapters' at the same time" failures.
 
         // Simulate another PHP request.
         $this->dm->clear();
-        $book = $this->dm->getRepository(GHXXXXBook::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(GH1141Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
 
         // Verify we see chapters A and B.
         $discoveredChapterTitles = array();
@@ -48,14 +48,14 @@ class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /** @ODM\Document */
-class GHXXXXBook
+class GH1141Book
 {
     const CLASSNAME = __CLASS__;
 
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument="GHXXXXChapter", strategy="atomicSet") */
+    /** @ODM\EmbedMany(targetDocument="GH1141Chapter", strategy="atomicSet") */
     public $chapters;
 
     public function __construct()
@@ -65,7 +65,7 @@ class GHXXXXBook
 }
 
 /** @ODM\EmbeddedDocument */
-class GHXXXXChapter
+class GH1141Chapter
 {
     /** @ODM\String */
     public $name;
