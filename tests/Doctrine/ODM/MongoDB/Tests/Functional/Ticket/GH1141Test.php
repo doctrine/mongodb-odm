@@ -25,10 +25,10 @@ class GH1141Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $firstChapter->name = "First chapter A";
 
         // Developers commonly attempt to replace the contents of an EmbedMany with a new ArrayCollection like this:
-        $replacementChatpers = new ArrayCollection();
-        $replacementChatpers->add($firstChapter);
-        $replacementChatpers->add(new GH1141Chapter('Second chapter B'));
-        $book->chapters = $replacementChatpers;
+        $replacementChapters = new ArrayCollection();
+        $replacementChapters->add($firstChapter);
+        $replacementChapters->add(new GH1141Chapter('Second chapter B'));
+        $book->chapters = $replacementChapters;
 
         $this->dm->flush(); // <- Currently getting "Cannot update 'chapters' and 'chapters' at the same time" failures.
 
