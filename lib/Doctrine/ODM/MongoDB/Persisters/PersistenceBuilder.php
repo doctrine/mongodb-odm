@@ -181,15 +181,13 @@ class PersistenceBuilder
                 }
 
             // @EmbedMany
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
-                if (null !== $new) {
-                    foreach ($new as $key => $embeddedDoc) {
-                        if ( ! $this->uow->isScheduledForInsert($embeddedDoc) && ! $this->isPartOfAtomicUpdate($embeddedDoc)) {
-                            $update = $this->prepareUpdateData($embeddedDoc);
-                            foreach ($update as $cmd => $values) {
-                                foreach ($values as $name => $value) {
-                                    $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
-                                }
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY && $new) {
+                foreach ($new as $key => $embeddedDoc) {
+                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc) && ! $this->isPartOfAtomicUpdate($embeddedDoc)) {
+                        $update = $this->prepareUpdateData($embeddedDoc);
+                        foreach ($update as $cmd => $values) {
+                            foreach ($values as $name => $value) {
+                                $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
                             }
                         }
                     }
