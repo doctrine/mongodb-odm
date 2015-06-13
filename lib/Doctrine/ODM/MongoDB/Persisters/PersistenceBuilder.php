@@ -74,39 +74,40 @@ class PersistenceBuilder
         $insertData = array();
         foreach ($class->fieldMappings as $mapping) {
 
-            // @ReferenceMany and @EmbedMany are inserted later
+            /* Do nothing for embed-many or reference-many collections. If it
+             * uses an atomic strategy, the data will be included when preparing
+             * the atomic query in DocumentPersister::executeUpserts(). Other
+             * strategies will be handled by CollectionPersister.
+             */
             if ($mapping['type'] === ClassMetadata::MANY) {
                 continue;
             }
 
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
 
-            // Don't store null values unless nullable === true
-            if ($new === null && $mapping['nullable'] === false) {
+            if ($new === null && $mapping['nullable']) {
+                $insertData[$mapping['name']] = null;
+            }
+
+            /* Nothing more to do for null values, since we're either storing
+             * them (if nullable was true) or not.
+             */
+            if ($new === null) {
                 continue;
             }
 
-            $value = null;
-            if ($new !== null) {
-                // @Field, @String, @Date, etc.
-                if ( ! isset($mapping['association'])) {
-                    $value = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+            // @Field, @String, @Date, etc.
+            if ( ! isset($mapping['association'])) {
+                $insertData[$mapping['name']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
 
-                // @ReferenceOne
-                } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
-                    if ($mapping['isInverseSide']) {
-                        continue;
-                    }
+            // @ReferenceOne
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
+                $insertData[$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
 
-                    $value = $this->prepareReferencedDocumentValue($mapping, $new);
-
-                // @EmbedOne
-                } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
-                    $value = $this->prepareEmbeddedDocumentValue($mapping, $new);
-                }
+            // @EmbedOne
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
+                $insertData[$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
             }
-
-            $insertData[$mapping['name']] = $value;
         }
 
         // add discriminator if the class has one
@@ -184,15 +185,13 @@ class PersistenceBuilder
                 }
 
             // @EmbedMany
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
-                if (null !== $new) {
-                    foreach ($new as $key => $embeddedDoc) {
-                        if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
-                            $update = $this->prepareUpdateData($embeddedDoc);
-                            foreach ($update as $cmd => $values) {
-                                foreach ($values as $name => $value) {
-                                    $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
-                                }
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY && $new) {
+                foreach ($new as $key => $embeddedDoc) {
+                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc) && ! $this->isPartOfAtomicUpdate($embeddedDoc)) {
+                        $update = $this->prepareUpdateData($embeddedDoc);
+                        foreach ($update as $cmd => $values) {
+                            foreach ($values as $name => $value) {
+                                $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
                             }
                         }
                     }
@@ -229,6 +228,15 @@ class PersistenceBuilder
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
+            /* Do nothing for embed-many or reference-many collections. If it
+             * uses an atomic strategy, the data will be included when preparing
+             * the atomic query in DocumentPersister::executeUpserts(). Other
+             * strategies will be handled by CollectionPersister.
+             */
+            if ($mapping['type'] === ClassMetadata::MANY) {
+                continue;
+            }
+
             list($old, $new) = $change;
 
             // @Inc
@@ -264,28 +272,11 @@ class PersistenceBuilder
                     }
                 }
 
-            // @EmbedMany
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY && $new) {
-                foreach ($new as $key => $embeddedDoc) {
-                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
-                        $update = $this->prepareUpsertData($embeddedDoc);
-                        foreach ($update as $cmd => $values) {
-                            foreach ($values as $name => $value) {
-                                $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
-                            }
-                        }
-                    }
-                }
-
             // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 if (isset($new) || $mapping['nullable'] === true) {
                     $updateData['$set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 }
-
-            // @ReferenceMany
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
-                // Do nothing right now
             }
         }
 
@@ -484,5 +475,22 @@ class PersistenceBuilder
     {
         return $this->uow->isScheduledForInsert($document)
             || $this->uow->getDocumentPersister(get_class($document))->isQueuedForInsert($document);
+    }
+
+    /**
+     * @param object $embeddeDoc
+     * @return bool
+     */
+    private function isPartOfAtomicUpdate($embeddeDoc)
+    {
+        /* TODO: this method is similar to part of DocumentPersister::getAtomicCollectionUpdateQuery()
+         * and it might be good idea to refactor into UnitOfWork::getTopmostCollectionMapping
+         * returning array|null
+         */
+        while (null !== ($parentAssoc = $this->uow->getParentAssociation($embeddeDoc))) {
+            list($mapping, $embeddeDoc, ) = $parentAssoc;
+        }
+        return isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY
+                && ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray');
     }
 }
