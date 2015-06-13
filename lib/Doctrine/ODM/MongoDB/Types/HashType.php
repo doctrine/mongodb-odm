@@ -19,8 +19,10 @@
 
 namespace Doctrine\ODM\MongoDB\Types;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
+
 /**
- * The Array type.
+ * The Hash type.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
@@ -31,6 +33,9 @@ class HashType extends Type
 {
     public function convertToDatabaseValue($value)
     {
+        if ($value !== null && ! is_array($value)) {
+            throw MongoDBException::invalidValueForType('Hash', array('array', 'null'), $value);
+        }
         return $value !== null ? (object) $value : null;
     }
 
