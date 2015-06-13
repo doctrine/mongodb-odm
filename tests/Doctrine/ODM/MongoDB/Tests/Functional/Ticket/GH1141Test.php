@@ -25,10 +25,10 @@ class GH1141Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $firstChapter->name = "First chapter A";
 
         // Developers commonly attempt to replace the contents of an EmbedMany with a new ArrayCollection like this:
-        $replacementChatpers = new ArrayCollection();
-        $replacementChatpers->add($firstChapter);
-        $replacementChatpers->add(new GH1141Chapter('Second chapter B'));
-        $book->chapters = $replacementChatpers;
+        $replacementChapters = new ArrayCollection();
+        $replacementChapters->add($firstChapter);
+        $replacementChapters->add(new GH1141Chapter('Second chapter B'));
+        $book->chapters = $replacementChapters;
 
         $this->dm->flush(); // <- Currently getting "Cannot update 'chapters' and 'chapters' at the same time" failures.
 
@@ -37,12 +37,33 @@ class GH1141Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $book = $this->dm->getRepository(GH1141Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
 
         // Verify we see chapters A and B.
-        $discoveredChapterTitles = array();
-        foreach ($book->chapters as $thisChapter) {
-            $discoveredChapterTitles[] = $thisChapter->name;
-        }
-        $this->assertTrue(in_array('First chapter A', $discoveredChapterTitles));
-        $this->assertTrue(in_array('Second chapter B', $discoveredChapterTitles));
+        $this->assertEquals('First chapter A', $book->chapters[0]->name);
+        $this->assertEquals('Second chapter B', $book->chapters[1]->name);
+    }
+
+    public function testReplacementOfIdentifiedEmbedManyElements()
+    {
+        $book = new GH1141Book();
+        $book->identifiedChapters->add(new GH1141IdentifiedChapter('A'));
+
+        $this->dm->persist($book);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $book = $this->dm->getRepository(GH1141Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $firstChapter = $book->identifiedChapters->first();
+        $firstChapter->name = "First chapter A";
+        $replacementChapters = new ArrayCollection();
+        $replacementChapters->add($firstChapter);
+        $replacementChapters->add(new GH1141IdentifiedChapter('Second chapter B'));
+        $book->identifiedChapters = $replacementChapters;
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $book = $this->dm->getRepository(GH1141Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $this->assertEquals('First chapter A', $book->identifiedChapters[0]->name);
+        $this->assertEquals('Second chapter B', $book->identifiedChapters[1]->name);
     }
 }
 
@@ -57,15 +78,34 @@ class GH1141Book
     /** @ODM\EmbedMany(targetDocument="GH1141Chapter", strategy="atomicSet") */
     public $chapters;
 
+    /** @ODM\EmbedMany(targetDocument="GH1141IdentifiedChapter", strategy="atomicSet") */
+    public $identifiedChapters;
+
     public function __construct()
     {
         $this->chapters = new ArrayCollection();
+        $this->identifiedChapters = new ArrayCollection();
     }
 }
 
 /** @ODM\EmbeddedDocument */
 class GH1141Chapter
 {
+    /** @ODM\String */
+    public $name;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+}
+
+/** @ODM\EmbeddedDocument */
+class GH1141IdentifiedChapter
+{
+    /** @ODM\Id */
+    public $id;
+
     /** @ODM\String */
     public $name;
 

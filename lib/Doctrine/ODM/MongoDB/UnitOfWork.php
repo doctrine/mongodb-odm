@@ -1479,6 +1479,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
 
+        if ($class->isEmbeddedDocument) {
+            throw new \InvalidArgumentException("Embedded document can not be scheduled for upsert.");
+        }
         if (isset($this->documentUpdates[$oid])) {
             throw new \InvalidArgumentException("Dirty document can not be scheduled for upsert.");
         }
