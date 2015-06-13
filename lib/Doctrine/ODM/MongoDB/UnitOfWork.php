@@ -1521,13 +1521,7 @@ class UnitOfWork implements PropertyChangedListener
     public function addToIdentityMap($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-
-        if ( ! $class->identifier) {
-            $id = spl_object_hash($document);
-        } else {
-            $id = $this->documentIdentifiers[spl_object_hash($document)];
-            $id = serialize($class->getDatabaseIdentifierValue($id));
-        }
+        $id = $this->getIdForIdentityMap($document);
 
         if (isset($this->identityMap[$class->name][$id])) {
             return false;
@@ -1623,13 +1617,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $class = $this->dm->getClassMetadata(get_class($document));
-
-        if ( ! $class->identifier) {
-            $id = spl_object_hash($document);
-        } else {
-            $id = $this->documentIdentifiers[spl_object_hash($document)];
-            $id = serialize($class->getDatabaseIdentifierValue($id));
-        }
+        $id = $this->getIdForIdentityMap($document);
 
         if (isset($this->identityMap[$class->name][$id])) {
             unset($this->identityMap[$class->name][$id]);
@@ -1711,6 +1699,18 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $class = $this->dm->getClassMetadata(get_class($document));
+        $id = $this->getIdForIdentityMap($document);
+
+        return isset($this->identityMap[$class->name][$id]);
+    }
+
+    /**
+     * @param object $document
+     * @return string
+     */
+    private function getIdForIdentityMap($document)
+    {
+        $class = $this->dm->getClassMetadata(get_class($document));
 
         if ( ! $class->identifier) {
             $id = spl_object_hash($document);
@@ -1719,7 +1719,7 @@ class UnitOfWork implements PropertyChangedListener
             $id = serialize($class->getDatabaseIdentifierValue($id));
         }
 
-        return isset($this->identityMap[$class->name][$id]);
+        return $id;
     }
 
     /**
