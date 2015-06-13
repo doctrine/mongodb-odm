@@ -1014,7 +1014,6 @@ class UnitOfWork implements PropertyChangedListener
     {
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
-        $collection = $this->dm->getDocumentCollection($className);
 
         $insertedDocuments = array();
 
@@ -1065,7 +1064,6 @@ class UnitOfWork implements PropertyChangedListener
     {
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
-        $collection = $this->dm->getDocumentCollection($className);
 
         $upsertedDocuments = array();
 
@@ -1291,7 +1289,6 @@ class UnitOfWork implements PropertyChangedListener
 
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
-        $collection = $this->dm->getDocumentCollection($className);
         foreach ($this->documentDeletions as $oid => $document) {
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
                 if ( ! $class->isEmbeddedDocument) {
@@ -2697,7 +2694,6 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->dm->getClassMetadata($mapping['targetDocument']);
 
-        $discriminatorValue = null;
         if (isset($class->discriminatorField, $data[$class->discriminatorField])) {
             $discriminatorValue = $data[$class->discriminatorField];
         } elseif ($class->defaultDiscriminatorValue !== null) {
