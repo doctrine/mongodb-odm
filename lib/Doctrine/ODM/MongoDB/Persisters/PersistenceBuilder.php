@@ -81,32 +81,29 @@ class PersistenceBuilder
 
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
 
-            // Don't store null values unless nullable === true
-            if ($new === null && $mapping['nullable'] === false) {
+            if ($new === null && $mapping['nullable']) {
+                $insertData[$mapping['name']] = null;
+            }
+
+            /* Nothing more to do for null values, since we're either storing
+             * them (if nullable was true) or not.
+             */
+            if ($new === null) {
                 continue;
             }
 
-            $value = null;
-            if ($new !== null) {
-                // @Field, @String, @Date, etc.
-                if ( ! isset($mapping['association'])) {
-                    $value = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+            // @Field, @String, @Date, etc.
+            if ( ! isset($mapping['association'])) {
+                $insertData[$mapping['name']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
 
-                // @ReferenceOne
-                } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
-                    if ($mapping['isInverseSide']) {
-                        continue;
-                    }
+            // @ReferenceOne
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
+                $insertData[$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
 
-                    $value = $this->prepareReferencedDocumentValue($mapping, $new);
-
-                // @EmbedOne
-                } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
-                    $value = $this->prepareEmbeddedDocumentValue($mapping, $new);
-                }
+            // @EmbedOne
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
+                $insertData[$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
             }
-
-            $insertData[$mapping['name']] = $value;
         }
 
         // add discriminator if the class has one
