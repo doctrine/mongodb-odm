@@ -317,7 +317,12 @@ database:
 Also, for your convenience you can create the indexes for your mapped documents from the
 :doc:`console <console-commands>`:
 
+..
+
     $ php mongodb.php mongodb:schema:create --index
+
+**Important note**: If you are mixing types for your embedded documents, the indexes will not be
+created unless you specify the ``@discriminatorMap`` annotation on the main document.  See more at :doc:`Embedded mapping <embedded-mapping>`.
 
 Geospatial Indexing
 -------------------
