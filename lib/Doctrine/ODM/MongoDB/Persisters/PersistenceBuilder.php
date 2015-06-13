@@ -187,7 +187,7 @@ class PersistenceBuilder
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
                 if (null !== $new) {
                     foreach ($new as $key => $embeddedDoc) {
-                        if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
+                        if ( ! $this->uow->isScheduledForInsert($embeddedDoc) && ! $this->isPartOfAtomicUpdate($embeddedDoc)) {
                             $update = $this->prepareUpdateData($embeddedDoc);
                             foreach ($update as $cmd => $values) {
                                 foreach ($values as $name => $value) {
@@ -267,7 +267,7 @@ class PersistenceBuilder
             // @EmbedMany
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY && $new) {
                 foreach ($new as $key => $embeddedDoc) {
-                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
+                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc) && ! $this->isPartOfAtomicUpdate($embeddeDoc)) {
                         $update = $this->prepareUpsertData($embeddedDoc);
                         foreach ($update as $cmd => $values) {
                             foreach ($values as $name => $value) {
@@ -484,5 +484,22 @@ class PersistenceBuilder
     {
         return $this->uow->isScheduledForInsert($document)
             || $this->uow->getDocumentPersister(get_class($document))->isQueuedForInsert($document);
+    }
+
+    /**
+     * @param object $embeddeDoc
+     * @return bool
+     */
+    private function isPartOfAtomicUpdate($embeddeDoc)
+    {
+        /* TODO: this method is similar to part of DocumentPersister::getAtomicCollectionUpdateQuery()
+         * and it might be good idea to refactor into UnitOfWork::getTopmostCollectionMapping
+         * returning array|null
+         */
+        while (null !== ($parentAssoc = $this->uow->getParentAssociation($embeddeDoc))) {
+            list($mapping, $embeddeDoc, ) = $parentAssoc;
+        }
+        return isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY
+                && ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray');
     }
 }
