@@ -194,4 +194,14 @@ class MappingException extends BaseMappingException
     {
         return new self("Target document must be specified for owning/inverse sides of reference: $className::$fieldName");
     }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function mustNotChangeIdentifierFieldsType($className, $fieldName)
+    {
+        return new self("You must not change identifier field's type: $className::$fieldName");
+    }
 }
