@@ -29,26 +29,49 @@ use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException
  */
 class MappingException extends BaseMappingException
 {
+    /**
+     * @param string $name
+     * @return MappingException
+     */
     public static function typeExists($name)
     {
         return new self('Type ' . $name . ' already exists.');
     }
 
+    /**
+     * @param string $name
+     * @return MappingException
+     */
     public static function typeNotFound($name)
     {
         return new self('Type to be overwritten ' . $name . ' does not exist.');
     }
 
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
     public static function mappingNotFound($className, $fieldName)
     {
         return new self("No mapping found for field '$fieldName' in class '$className'.");
     }
 
+    /**
+     * @param string $document
+     * @param string $fieldName
+     * @return MappingException
+     */
     public static function duplicateFieldMapping($document, $fieldName)
     {
         return new self('Property "' . $fieldName . '" in "' . $document . '" was already declared, but it must be declared only once');
     }
 
+    /**
+     * @param string $document
+     * @param string $fieldName
+     * @return MappingException
+     */
     public static function discriminatorFieldConflict($document, $fieldName)
     {
         return new self('Discriminator field "' . $fieldName . '" in "' . $document . '" conflicts with a mapped field\'s "name" attribute.');
@@ -60,7 +83,7 @@ class MappingException extends BaseMappingException
      *
      * @param string $className The class that could not be found
      * @param string $owningClass The class that declares the discriminator map.
-     * @return self
+     * @return MappingException
      */
     public static function invalidClassInDiscriminatorMap($className, $owningClass)
     {
@@ -75,18 +98,26 @@ class MappingException extends BaseMappingException
      *
      * @param string $value The discriminator value that could not be found
      * @param string $owningClass The class that declares the discriminator map
-     * @return self
+     * @return MappingException
      */
     public static function invalidDiscriminatorValue($value, $owningClass)
     {
         return new self("Discriminator value '$value' used in the declaration of class '$owningClass' does not exist.");
     }
 
+    /**
+     * @param string $className
+     * @return MappingException
+     */
     public static function missingFieldName($className)
     {
         return new self("The Document class '$className' field mapping misses the 'fieldName' attribute.");
     }
 
+    /**
+     * @param string $className
+     * @return MappingException
+     */
     public static function classIsNotAValidDocument($className)
     {
         return new self('Class ' . $className . ' is not a valid document or mapped super class.');
