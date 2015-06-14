@@ -1070,6 +1070,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ( ! isset($mapping['name'])) {
             $mapping['name'] = $mapping['fieldName'];
         }
+        if ($this->identifier === $mapping['name'] && $mapping['type'] !== 'id') {
+            throw MappingException::mustNotChangeIdentifierFieldsType($this->name, $mapping['name']);
+        }
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
             //throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }

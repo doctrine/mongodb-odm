@@ -298,6 +298,20 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals($expected, $cm->associationMappings);
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage You must not change identifier field's type: stdClass::id
+     */
+    public function testIdFieldsTypeMustNotBeOverrriden()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->setIdentifier('id');
+        $cm->mapField(array(
+            'fieldName' => 'id',
+            'type' => 'string'
+        ));
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository
