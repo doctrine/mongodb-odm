@@ -28,7 +28,6 @@ use Doctrine\MongoDB\GridFSFile;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
-use Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
@@ -157,13 +156,6 @@ class UnitOfWork implements PropertyChangedListener
     private $documentUpserts = array();
 
     /**
-     * Any pending extra updates that have been scheduled by persisters.
-     *
-     * @var array
-     */
-    private $extraUpdates = array();
-
-    /**
      * A list of all pending document deletions.
      *
      * @var array
@@ -206,14 +198,6 @@ class UnitOfWork implements PropertyChangedListener
      * @var DocumentManager
      */
     private $dm;
-
-    /**
-     * The calculator used to calculate the order in which changes to
-     * documents need to be written to the database.
-     *
-     * @var Internal\CommitOrderCalculator
-     */
-    private $commitOrderCalculator;
 
     /**
      * The EventManager used for dispatching events.
@@ -427,36 +411,20 @@ class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
         }
 
-        // Now we need a commit order to maintain referential integrity
-        $commitOrder = $this->getCommitOrder();
-
-        if ($this->documentUpserts) {
-            foreach ($commitOrder as $class) {
-                if ($class->isEmbeddedDocument) {
-                    continue;
-                }
+        foreach ($this->getClassesForCommitAction($this->documentUpserts) as $class) {
+            if ( ! $class->isEmbeddedDocument) {
                 $this->executeUpserts($class, $options);
             }
         }
 
-        if ($this->documentInsertions) {
-            foreach ($commitOrder as $class) {
-                if ($class->isEmbeddedDocument) {
-                    continue;
-                }
+        foreach ($this->getClassesForCommitAction($this->documentInsertions) as $class) {
+            if ( ! $class->isEmbeddedDocument) {
                 $this->executeInserts($class, $options);
             }
         }
 
-        if ($this->documentUpdates) {
-            foreach ($commitOrder as $class) {
-                $this->executeUpdates($class, $options);
-            }
-        }
-
-        // Extra updates that were requested by persisters.
-        if ($this->extraUpdates) {
-            $this->executeExtraUpdates($options);
+        foreach ($this->getClassesForCommitAction($this->documentUpdates) as $class) {
+            $this->executeUpdates($class, $options);
         }
 
         // Collection deletions (deletions of complete collections)
@@ -468,11 +436,8 @@ class UnitOfWork implements PropertyChangedListener
             $this->getCollectionPersister()->update($collectionToUpdate, $options);
         }
 
-        // Document deletions come last and need to be in reverse commit order
-        if ($this->documentDeletions) {
-            for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
-                $this->executeDeletions($commitOrder[$i], $options);
-            }
+        foreach ($this->getClassesForCommitAction($this->documentDeletions) as $class) {
+            $this->executeDeletions($class, $options);
         }
 
         // Take new snapshots from visited collections
@@ -490,7 +455,6 @@ class UnitOfWork implements PropertyChangedListener
         $this->documentUpserts =
         $this->documentUpdates =
         $this->documentDeletions =
-        $this->extraUpdates =
         $this->documentChangeSets =
         $this->collectionUpdates =
         $this->collectionDeletions =
@@ -498,6 +462,26 @@ class UnitOfWork implements PropertyChangedListener
         $this->scheduledForDirtyCheck =
         $this->orphanRemovals = 
         $this->hasScheduledCollections = array();
+    }
+
+    /**
+     * @param array $documents
+     * @return ClassMetadata[]
+     */
+    private function getClassesForCommitAction($documents)
+    {
+        if (empty($documents)) {
+            return array();
+        }
+        $classes = array();
+        foreach ($documents as $d) {
+            $className = get_class($d);
+            if ( ! isset($classes[$className])) {
+                $class = $this->dm->getClassMetadata($className);
+                $classes[$class->name] = $class;
+            }
+        }
+        return $classes;
     }
 
     /**
@@ -579,18 +563,6 @@ class UnitOfWork implements PropertyChangedListener
             && isset($this->documentStates[$oid])
         ) {
             $this->computeChangeSet($class, $document);
-        }
-    }
-
-    /**
-     * Executes reference updates
-     */
-    private function executeExtraUpdates(array $options)
-    {
-        foreach ($this->extraUpdates as $oid => $update) {
-            list ($document, $changeset) = $update;
-            $this->documentChangeSets[$oid] = $changeset;
-            $this->getDocumentPersister(get_class($document))->update($document, $options);
         }
     }
 
@@ -1045,7 +1017,6 @@ class UnitOfWork implements PropertyChangedListener
     {
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
-        $collection = $this->dm->getDocumentCollection($className);
 
         $insertedDocuments = array();
 
@@ -1096,7 +1067,6 @@ class UnitOfWork implements PropertyChangedListener
     {
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
-        $collection = $this->dm->getDocumentCollection($className);
 
         $upsertedDocuments = array();
 
@@ -1326,7 +1296,6 @@ class UnitOfWork implements PropertyChangedListener
 
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
-        $collection = $this->dm->getDocumentCollection($className);
         foreach ($this->documentDeletions as $oid => $document) {
             if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
                 if ( ! $class->isEmbeddedDocument) {
@@ -1362,83 +1331,6 @@ class UnitOfWork implements PropertyChangedListener
                 $this->cascadePostRemove($class, $document);
             }
         }
-    }
-
-    /**
-     * Gets the commit order.
-     *
-     * @return array
-     */
-    private function getCommitOrder(array $documentChangeSet = null)
-    {
-        if ($documentChangeSet === null) {
-            $documentChangeSet = array_merge(
-                $this->documentInsertions,
-                $this->documentUpserts,
-                $this->documentUpdates,
-                $this->documentDeletions
-            );
-        }
-
-        $calc = $this->getCommitOrderCalculator();
-
-        // See if there are any new classes in the changeset, that are not in the
-        // commit order graph yet (don't have a node).
-        // We have to inspect changeSet to be able to correctly build dependencies.
-        // It is not possible to use IdentityMap here because post inserted ids
-        // are not yet available.
-        $newNodes = array();
-
-        foreach ($documentChangeSet as $document) {
-            $className = get_class($document);
-
-            if ($calc->hasClass($className)) {
-                continue;
-            }
-
-            $class = $this->dm->getClassMetadata($className);
-            $calc->addClass($class);
-
-            $newNodes[] = $class;
-        }
-
-        // Calculate dependencies for new nodes
-        while ($class = array_pop($newNodes)) {
-            foreach ($class->associationMappings as $assoc) {
-                if ( ! ($assoc['isOwningSide'] && isset($assoc['targetDocument']))) {
-                    continue;
-                }
-
-                $targetClass = $this->dm->getClassMetadata($assoc['targetDocument']);
-
-                if ( ! $calc->hasClass($targetClass->name)) {
-                    $calc->addClass($targetClass);
-
-                    $newNodes[] = $targetClass;
-                }
-
-                $calc->addDependency($targetClass, $class);
-
-                // If the target class has mapped subclasses, these share the same dependency.
-                if ( ! $targetClass->subClasses) {
-                    continue;
-                }
-
-                foreach ($targetClass->subClasses as $subClassName) {
-                    $targetSubClass = $this->dm->getClassMetadata($subClassName);
-
-                    if ( ! $calc->hasClass($subClassName)) {
-                        $calc->addClass($targetSubClass);
-
-                        $newNodes[] = $targetSubClass;
-                    }
-
-                    $calc->addDependency($targetSubClass, $class);
-                }
-            }
-        }
-
-        return $calc->getCommitOrder();
     }
 
     /**
@@ -1545,28 +1437,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
-     * Schedules an extra update that will be executed immediately after the
-     * regular document updates within the currently running commit cycle.
-     *
-     * Extra updates for documents are stored as (document, changeset) tuples.
-     *
-     * @ignore
-     * @param object $document The document for which to schedule an extra update.
-     * @param array $changeset The changeset of the document (what to update).
-     */
-    public function scheduleExtraUpdate($document, array $changeset)
-    {
-        $oid = spl_object_hash($document);
-        if (isset($this->extraUpdates[$oid])) {
-            list($ignored, $changeset2) = $this->extraUpdates[$oid];
-            $this->extraUpdates[$oid] = array($document, $changeset + $changeset2);
-        } else {
-            $this->extraUpdates[$oid] = array($document, $changeset);
-        }
-    }
-
-    /**
      * Checks whether a document is registered as dirty in the unit of work.
      * Note: Is not very useful currently as dirty documents are only registered
      * at commit time.
@@ -1661,13 +1531,7 @@ class UnitOfWork implements PropertyChangedListener
     public function addToIdentityMap($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-
-        if ( ! $class->identifier) {
-            $id = spl_object_hash($document);
-        } else {
-            $id = $this->documentIdentifiers[spl_object_hash($document)];
-            $id = serialize($class->getDatabaseIdentifierValue($id));
-        }
+        $id = $this->getIdForIdentityMap($document);
 
         if (isset($this->identityMap[$class->name][$id])) {
             return false;
@@ -1763,13 +1627,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $class = $this->dm->getClassMetadata(get_class($document));
-
-        if ( ! $class->identifier) {
-            $id = spl_object_hash($document);
-        } else {
-            $id = $this->documentIdentifiers[spl_object_hash($document)];
-            $id = serialize($class->getDatabaseIdentifierValue($id));
-        }
+        $id = $this->getIdForIdentityMap($document);
 
         if (isset($this->identityMap[$class->name][$id])) {
             unset($this->identityMap[$class->name][$id]);
@@ -1851,6 +1709,18 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $class = $this->dm->getClassMetadata(get_class($document));
+        $id = $this->getIdForIdentityMap($document);
+
+        return isset($this->identityMap[$class->name][$id]);
+    }
+
+    /**
+     * @param object $document
+     * @return string
+     */
+    private function getIdForIdentityMap($document)
+    {
+        $class = $this->dm->getClassMetadata(get_class($document));
 
         if ( ! $class->identifier) {
             $id = spl_object_hash($document);
@@ -1859,7 +1729,7 @@ class UnitOfWork implements PropertyChangedListener
             $id = serialize($class->getDatabaseIdentifierValue($id));
         }
 
-        return isset($this->identityMap[$class->name][$id]);
+        return $id;
     }
 
     /**
@@ -2614,19 +2484,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Gets the CommitOrderCalculator used by the UnitOfWork to order commits.
-     *
-     * @return \Doctrine\ODM\MongoDB\Internal\CommitOrderCalculator
-     */
-    public function getCommitOrderCalculator()
-    {
-        if ($this->commitOrderCalculator === null) {
-            $this->commitOrderCalculator = new CommitOrderCalculator;
-        }
-        return $this->commitOrderCalculator;
-    }
-
-    /**
      * Clears the UnitOfWork.
      *
      * @param string|null $documentName if given, only documents of this type will get detached.
@@ -2644,16 +2501,11 @@ class UnitOfWork implements PropertyChangedListener
             $this->documentUpserts =
             $this->documentUpdates =
             $this->documentDeletions =
-            $this->extraUpdates =
             $this->collectionUpdates =
             $this->collectionDeletions =
             $this->parentAssociations =
             $this->orphanRemovals = 
             $this->hasScheduledCollections = array();
-
-            if ($this->commitOrderCalculator !== null) {
-                $this->commitOrderCalculator->clear();
-            }
         } else {
             $visited = array();
             foreach ($this->identityMap as $className => $documents) {
@@ -2876,7 +2728,6 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->dm->getClassMetadata($mapping['targetDocument']);
 
-        $discriminatorValue = null;
         if (isset($class->discriminatorField, $data[$class->discriminatorField])) {
             $discriminatorValue = $data[$class->discriminatorField];
         } elseif ($class->defaultDiscriminatorValue !== null) {
