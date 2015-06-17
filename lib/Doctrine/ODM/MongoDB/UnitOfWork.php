@@ -905,6 +905,12 @@ class UnitOfWork implements PropertyChangedListener
 
         $count = 0;
         foreach ($unwrappedValue as $key => $entry) {
+            if ( ! is_object($entry)) {
+                throw new \InvalidArgumentException(
+                        sprintf('Expected object, found "%s" in %s::%s', $entry, get_class($parentDocument), $assoc['name'])
+                );
+            }
+
             $targetClass = $this->dm->getClassMetadata(get_class($entry));
 
             $state = $this->getDocumentState($entry, self::STATE_NEW);
