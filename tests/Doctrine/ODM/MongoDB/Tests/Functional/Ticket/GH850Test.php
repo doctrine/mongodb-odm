@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\ODM\MongoDB\Tests;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -8,7 +8,7 @@ class GH850Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage You are trying to reference a non-object in refs field, "" given
+     * @expectedExceptionMessage Expected object, found "" in Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH850Document::refs
      */
     public function testPersistWrongReference()
     {

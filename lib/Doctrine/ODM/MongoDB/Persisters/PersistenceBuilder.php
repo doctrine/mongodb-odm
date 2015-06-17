@@ -304,13 +304,7 @@ class PersistenceBuilder
      */
     public function prepareReferencedDocumentValue(array $referenceMapping, $document)
     {
-        try {
-            return $this->dm->createDBRef($document, $referenceMapping);
-        } catch (\InvalidArgumentException $e) {
-            throw new \InvalidArgumentException(
-                sprintf('You are trying to reference a non-object in %s field, "%s" given', $referenceMapping['name'], $document)
-            );
-        }
+        return $this->dm->createDBRef($document, $referenceMapping);
     }
 
     /**
