@@ -358,10 +358,9 @@ class PersistenceBuilder
 
                     case ClassMetadata::EMBED_MANY:
                     case ClassMetadata::REFERENCE_MANY:
-                        // Skip PersistentCollections already scheduled for deletion/update
-                        if ( ! $includeNestedCollections && $rawValue instanceof PersistentCollection &&
-                            ($this->uow->isCollectionScheduledForDeletion($rawValue)/* ||
-                             $this->uow->isCollectionScheduledForUpdate($rawValue)*/)) {
+                        // Skip PersistentCollections already scheduled for deletion
+                        if ( ! $includeNestedCollections && $rawValue instanceof PersistentCollection
+                            && $this->uow->isCollectionScheduledForDeletion($rawValue)) {
                             break;
                         }
 

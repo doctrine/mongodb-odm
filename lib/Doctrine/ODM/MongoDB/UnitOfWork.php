@@ -834,6 +834,14 @@ class UnitOfWork implements PropertyChangedListener
         // Compute changes for other MANAGED documents. Change tracking policies take effect here.
         foreach ($this->identityMap as $className => $documents) {
             $class = $this->dm->getClassMetadata($className);
+            if ($class->isEmbeddedDocument) {
+                /* we do not want to compute changes to embedded documents up front
+                 * in case embedded document was replaced and its changeset
+                 * would corrupt data. Embedded documents' change set will
+                 * be calculated by reachability from owning document.
+                 */
+                continue;
+            }
 
             // If change tracking is explicit or happens through notification, then only compute
             // changes on document of that type that are explicitly marked for synchronization.
@@ -873,7 +881,7 @@ class UnitOfWork implements PropertyChangedListener
      * Computes the changes of an association.
      *
      * @param object $parentDocument
-     * @param array $mapping
+     * @param array $assoc
      * @param mixed $value The value of the association.
      * @throws \InvalidArgumentException
      */
