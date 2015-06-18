@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 
-class GH____Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1138Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**
      * @var Doctrine\ODM\MongoDB\Tests\QueryLogger
@@ -28,10 +28,10 @@ class GH____Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testUpdatingDocumentBeforeItsInsertionShouldNotEntailMultipleQueries()
     {
-        $listener = new GH____Listener();
+        $listener = new GH1138Listener();
         $this->dm->getEventManager()->addEventListener(Events::onFlush, $listener);
 
-        $doc = new GH____Document();
+        $doc = new GH1138Document();
         $doc->name = 'foo';
 
         $this->dm->persist($doc);
@@ -45,7 +45,7 @@ class GH____Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /** @ODM\Document */
-class GH____Document
+class GH1138Document
 {
     const CLASSNAME = __CLASS__;
 
@@ -56,7 +56,7 @@ class GH____Document
     public $name;
 }
 
-class GH____Listener
+class GH1138Listener
 {
     public $inserts = 0;
     public $updates = 0;
@@ -68,9 +68,9 @@ class GH____Listener
 
         foreach ($uow->getScheduledDocumentInsertions() as $document) {
             $this->inserts++;
-            if ($document instanceof GH____Document) {
+            if ($document instanceof GH1138Document) {
                 $document->name .= '-changed';
-                $cm = $dm->getClassMetadata(GH____Document::CLASSNAME);
+                $cm = $dm->getClassMetadata(GH1138Document::CLASSNAME);
                 $uow->recomputeSingleDocumentChangeSet($cm, $document);
             }
         }
@@ -80,3 +80,4 @@ class GH____Listener
         }
     }
 }
+
