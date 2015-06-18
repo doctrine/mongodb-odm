@@ -26,7 +26,6 @@ use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\MongoDB\GridFSFile;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
-use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
@@ -1094,19 +1093,6 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $persister->executeInserts($options);
-
-        foreach ($insertedDocuments as $document) {
-            $id = $class->getIdentifierValue($document);
-
-            /* Inline call to UnitOfWork::registerManager(), but only update the
-             * identifier in the original document data.
-             */
-            $oid = spl_object_hash($document);
-            $this->documentIdentifiers[$oid] = $id;
-            $this->documentStates[$oid] = self::STATE_MANAGED;
-            $this->originalDocumentData[$oid][$class->identifier] = $id;
-            $this->addToIdentityMap($document);
-        }
 
         $hasPostPersistLifecycleCallbacks = ! empty($class->lifecycleCallbacks[Events::postPersist]);
         $hasPostPersistListeners = $this->evm->hasListeners(Events::postPersist);
