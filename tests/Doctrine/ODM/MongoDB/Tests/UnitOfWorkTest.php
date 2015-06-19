@@ -347,22 +347,22 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array(
                 null,
                 array('bar' => 'foo'),
-                true
+                false
             ),
             array(
                 array('foo' => 'bar'),
                 null,
-                true
+                false
             ),
             array(
                 array('foo' => 'bar'),
                 array('bar' => 'foo'),
-                true
+                false
             ),
             array(
                 array('foo' => 'bar'),
                 array('foo' => 'foo'),
-                true
+                false
             ),
             array(
                 array('foo' => 'bar'),
@@ -372,17 +372,17 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array(
                 array('foo' => 'bar'),
                 array('foo' => true),
-                true
+                false
             ),
             array(
                 array('foo' => 'bar'),
                 array('foo' => 99),
-                true
+                false
             ),
             array(
                 array('foo' => 99),
                 array('foo' => true),
-                true
+                false
             ),
             array(
                 array('foo' => true),
