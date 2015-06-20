@@ -483,14 +483,17 @@ class PersistenceBuilder
      */
     private function isPartOfAtomicUpdate($embeddeDoc)
     {
-        /* TODO: this method is similar to part of DocumentPersister::getAtomicCollectionUpdateQuery()
-         * and it might be good idea to refactor into UnitOfWork::getTopmostCollectionMapping
-         * returning array|null
-         */
+        $isInDirtyCollection = false;
         while (null !== ($parentAssoc = $this->uow->getParentAssociation($embeddeDoc))) {
             list($mapping, $embeddeDoc, ) = $parentAssoc;
+            if ($mapping['association'] === ClassMetadata::EMBED_MANY) {
+                $classMetadata = $this->dm->getClassMetadata(get_class($embeddeDoc));
+                $parentColl = $classMetadata->getFieldValue($embeddeDoc, $mapping['fieldName']);
+                $isInDirtyCollection |= $parentColl->isDirty();
+            }
         }
         return isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY
-                && ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray');
+                && ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')
+                && $isInDirtyCollection;
     }
 }
