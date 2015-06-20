@@ -237,11 +237,6 @@ class DocumentPersister
                 }
                 $data[$versionMapping['name']] = $nextVersion;
             }
-            
-            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
-            if (!empty($atomicCollectionQuery['$set'])) {
-                $data = array_merge($data, $atomicCollectionQuery['$set']);
-            }
 
             $inserts[$oid] = $data;
         }
@@ -255,7 +250,10 @@ class DocumentPersister
             }
         }
 
-        // TODO: collections should be created at the time time of insert
+        /* All collections except for ones using addToSet have already been
+         * saved. We have left these to be handled separately to avoid checking
+         * collection for uniqueness on PHP side.
+         */
         foreach ($this->queuedInserts as $document) {
             $this->handleCollections($document, $options);
         }

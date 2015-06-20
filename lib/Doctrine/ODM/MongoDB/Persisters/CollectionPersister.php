@@ -21,7 +21,6 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -155,22 +154,11 @@ class CollectionPersister
      */
     public function prepareSetQuery(PersistentCollection $coll)
     {
-        $coll->initialize();
-        
-        $mapping = $coll->getMapping();
         list($propertyPath, ) = $this->getPathAndParent($coll);
 
-        $pb = $this->pb;
-
-        $callback = isset($mapping['embedded'])
-            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v, CollectionHelper::isAtomic($mapping['strategy'])); }
-            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
-
-        $setData = $coll->map($callback)->toArray();
-
-        if (CollectionHelper::isList($mapping['strategy'])) {
-            $setData = array_values($setData);
-        }
+        $coll->initialize();
+        $mapping = $coll->getMapping();
+        $setData = $this->pb->prepareAssociatedCollectionValue($coll, CollectionHelper::isAtomic($mapping['strategy']));
 
         return array('$set' => array($propertyPath => $setData));
     }
@@ -257,7 +245,7 @@ class CollectionPersister
 
         $value = array_values(array_map($callback, $insertDiff));
 
-        if ($mapping['strategy'] !== 'pushAll') {
+        if ($mapping['strategy'] === 'addToSet') {
             $value = array('$each' => $value);
         }
 
