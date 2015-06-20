@@ -894,9 +894,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($value instanceof PersistentCollection && $value->isDirty() && $assoc['isOwningSide']) {
             if ($topOrExistingDocument || strncmp($assoc['strategy'], 'set', 3) === 0) {
-                if ( ! $this->isCollectionScheduledForUpdate($value)) {
-                    $this->scheduleCollectionUpdate($value);
-                }
+                $this->scheduleCollectionUpdate($value);
             }
 
             $this->visitedCollections[] = $value;
@@ -2560,10 +2558,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function scheduleCollectionDeletion(PersistentCollection $coll)
     {
-        //TODO: if $coll is already scheduled for recreation ... what to do?
+        // TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
-        $this->collectionDeletions[] = $coll;
-        $this->scheduleCollectionOwner($coll);
+        $oid = spl_object_hash($coll);
+        if ( ! isset($this->collectionDeletions[$oid])) {
+            $this->collectionDeletions[$oid] = $coll;
+            $this->scheduleCollectionOwner($coll);
+        }
     }
 
     /**
@@ -2574,7 +2575,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
     {
-        return in_array($coll, $this->collectionDeletions, true);
+        return isset($this->collectionDeletions[spl_object_hash($coll)]);
     }
     
     /**
@@ -2592,9 +2593,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function unscheduleCollectionDeletion(PersistentCollection $coll)
     {
-        if (($key = array_search($coll, $this->collectionDeletions, true)) !== false) {
-            unset($this->collectionDeletions[$key]);
-        }
+        unset($this->collectionDeletions[spl_object_hash($coll)]);
     }
 
     /**
@@ -2612,8 +2611,11 @@ class UnitOfWork implements PropertyChangedListener
              */
             $this->unscheduleCollectionDeletion($coll);
         }
-        $this->collectionUpdates[] = $coll;
-        $this->scheduleCollectionOwner($coll);
+        $oid = spl_object_hash($coll);
+        if ( ! isset($this->collectionUpdates[$oid])) {
+            $this->collectionUpdates[$oid] = $coll;
+            $this->scheduleCollectionOwner($coll);
+        }
     }
     
     /**
@@ -2631,9 +2633,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function unscheduleCollectionUpdate(PersistentCollection $coll)
     {
-        if (($key = array_search($coll, $this->collectionUpdates, true)) !== false) {
-            unset($this->collectionUpdates[$key]);
-        }
+        unset($this->collectionUpdates[spl_object_hash($coll)]);
     }
     
     /**
@@ -2644,7 +2644,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function isCollectionScheduledForUpdate(PersistentCollection $coll)
     {
-        return in_array($coll, $this->collectionUpdates, true);
+        return isset($this->collectionUpdates[spl_object_hash($coll)]);
     }
     
     /**
@@ -2698,9 +2698,8 @@ class UnitOfWork implements PropertyChangedListener
             list(, $document, ) = $parentAssociation;
             $class = $this->dm->getClassMetadata(get_class($document));
         }
-        $oid = spl_object_hash($document);
 
-        $this->hasScheduledCollections[$oid][] = $coll;
+        $this->hasScheduledCollections[spl_object_hash($document)][spl_object_hash($coll)] = $coll;
 
         if ( ! $this->isDocumentScheduled($document)) {
             $this->scheduleForUpdate($document);
