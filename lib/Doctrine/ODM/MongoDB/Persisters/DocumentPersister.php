@@ -109,6 +109,13 @@ class DocumentPersister
     private $cm;
 
     /**
+     * The CollectionPersister instance.
+     *
+     * @var CollectionPersister
+     */
+    private $cp;
+
+    /**
      * Initializes a new DocumentPersister instance.
      *
      * @param PersistenceBuilder $pb
@@ -128,6 +135,7 @@ class DocumentPersister
         $this->hydratorFactory = $hydratorFactory;
         $this->class = $class;
         $this->collection = $dm->getDocumentCollection($class->name);
+        $this->cp = $this->uow->getCollectionPersister();
     }
 
     /**
@@ -247,6 +255,11 @@ class DocumentPersister
             }
         }
 
+        // TODO: collections should be created at the time time of insert
+        foreach ($this->queuedInserts as $document) {
+            $this->handleCollections($document, $options);
+        }
+
         $this->queuedInserts = array();
     }
 
@@ -289,6 +302,7 @@ class DocumentPersister
 
             try {
                 $this->executeUpsert($data, $options);
+                $this->handleCollections($document, $options);
                 unset($this->queuedUpserts[$oid]);
             } catch (\MongoException $e) {
                 unset($this->queuedUpserts[$oid]);
@@ -384,32 +398,29 @@ class DocumentPersister
             if ( ! empty($atomicCollectionQuery)) {
                 $update = array_merge_recursive($update, $atomicCollectionQuery);
             }
-            /* We got here because the document has one or more related
-             * PersistentCollections to be committed later; however, if the
-             * document is not versioned then there is nothing left to do.
-             */
-            if (empty($update)) {
-                return;
-            }
+            
+            if ( ! empty($update)) {
+                // Include locking logic so that if the document object in memory is currently
+                // locked then it will remove it, otherwise it ensures the document is not locked.
+                if ($this->class->isLockable) {
+                    $isLocked = $this->class->reflFields[$this->class->lockField]->getValue($document);
+                    $lockMapping = $this->class->fieldMappings[$this->class->lockField];
+                    if ($isLocked) {
+                        $update['$unset'] = array($lockMapping['name'] => true);
+                    } else {
+                        $query[$lockMapping['name']] = array('$exists' => false);
+                    }
+                }
 
-            // Include locking logic so that if the document object in memory is currently
-            // locked then it will remove it, otherwise it ensures the document is not locked.
-            if ($this->class->isLockable) {
-                $isLocked = $this->class->reflFields[$this->class->lockField]->getValue($document);
-                $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-                if ($isLocked) {
-                    $update['$unset'] = array($lockMapping['name'] => true);
-                } else {
-                    $query[$lockMapping['name']] = array('$exists' => false);
+                unset($update['$set']['_id']);
+                $result = $this->collection->update($query, $update, $options);
+
+                if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
+                    throw LockException::lockFailed($document);
                 }
             }
 
-            unset($update['$set']['_id']);
-            $result = $this->collection->update($query, $update, $options);
-
-            if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
-                throw LockException::lockFailed($document);
-            }
+            $this->handleCollections($document, $options);
         }
     }
 
@@ -1320,5 +1331,25 @@ class DocumentPersister
         }
 
         return $update;
+    }
+
+    public function handleCollections($document, $options)
+    {
+        // Collection deletions (deletions of complete collections)
+        foreach ($this->uow->getScheduledCollections($document) as $coll) {
+            if ($this->uow->isCollectionScheduledForDeletion($coll)) {
+                $this->cp->delete($coll, $options);
+            }
+        }
+        // Collection updates (deleteRows, updateRows, insertRows)
+        foreach ($this->uow->getScheduledCollections($document) as $coll) {
+            if ($this->uow->isCollectionScheduledForUpdate($coll)) {
+                $this->cp->update($coll, $options);
+            }
+        }
+        // Take new snapshots from visited collections
+        foreach ($this->uow->getVisitedCollections($document) as $coll) {
+            $coll->takeSnapshot();
+        }
     }
 }

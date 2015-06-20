@@ -426,24 +426,8 @@ class UnitOfWork implements PropertyChangedListener
             $this->executeUpdates($class, $options);
         }
 
-        // Collection deletions (deletions of complete collections)
-        foreach ($this->collectionDeletions as $collectionToDelete) {
-            $this->getCollectionPersister()->delete($collectionToDelete, $options);
-        }
-        // Collection updates (deleteRows, updateRows, insertRows)
-        foreach ($this->collectionUpdates as $collectionToUpdate) {
-            $this->getCollectionPersister()->update($collectionToUpdate, $options);
-        }
-
         foreach ($this->getClassesForCommitAction($this->documentDeletions) as $class) {
             $this->executeDeletions($class, $options);
-        }
-
-        // Take new snapshots from visited collections
-        foreach ($this->visitedCollections as $colls) {
-            foreach ($colls as $coll) {
-                $coll->takeSnapshot();
-            }
         }
 
         // Raise postFlush
@@ -2649,6 +2633,22 @@ class UnitOfWork implements PropertyChangedListener
     public function isCollectionScheduledForUpdate(PersistentCollection $coll)
     {
         return isset($this->collectionUpdates[spl_object_hash($coll)]);
+    }
+
+    /**
+     * INTERNAL:
+     * Gets PersistentCollections that have been visited during computing change
+     * set of $document
+     *
+     * @param object $document
+     * @return PersistentCollection[]
+     */
+    public function getVisitedCollections($document)
+    {
+        $oid = spl_object_hash($document);
+        return isset($this->visitedCollections[$oid])
+                ? $this->visitedCollections[$oid]
+                : array();
     }
     
     /**
