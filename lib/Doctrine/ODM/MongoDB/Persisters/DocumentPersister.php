@@ -24,6 +24,7 @@ use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\EagerCursor;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
@@ -654,7 +655,7 @@ class DocumentPersister
                     : null;
 
                 $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
-                if ($mapping['strategy'] === 'set' || $mapping['strategy'] === 'atomicSet') {
+                if (CollectionHelper::isHash($mapping['strategy'])) {
                     $collection->set($key, $embeddedDocumentObject);
                 } else {
                     $collection->add($embeddedDocumentObject);
@@ -686,7 +687,7 @@ class DocumentPersister
 
             // no custom sort so add the references right now in the order they are embedded
             if ( ! $sorted) {
-                if ($mapping['strategy'] === 'set' || $mapping['strategy'] === 'atomicSet') {
+                if (CollectionHelper::isHash($mapping['strategy'])) {
                     $collection->set($key, $reference);
                 } else {
                     $collection->add($reference);
@@ -1262,7 +1263,7 @@ class DocumentPersister
             if ($coll->getOwner() === $document) {
                 $mapping = $coll->getMapping();
 
-                if ($mapping['strategy'] !== "atomicSet" && $mapping['strategy'] !== "atomicSetArray") {
+                if ( !CollectionHelper::isAtomic($mapping['strategy'])) {
                     continue;
                 }
 
@@ -1285,9 +1286,8 @@ class DocumentPersister
                 list($mapping, $parent, ) = $parentAssoc;
             }
 
-            if ( ! isset($mapping['association']) ||
-                $mapping['association'] !== ClassMetadata::EMBED_MANY ||
-                ($mapping['strategy'] !== 'atomicSet' && $mapping['strategy'] !== 'atomicSetArray')) {
+            if ( ! isset($mapping['association']) || $mapping['association'] !== ClassMetadata::EMBED_MANY
+                    || ! CollectionHelper::isAtomic($mapping['strategy'])) {
                 continue;
             }
 

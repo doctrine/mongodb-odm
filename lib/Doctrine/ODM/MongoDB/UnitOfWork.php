@@ -748,7 +748,7 @@ class UnitOfWork implements PropertyChangedListener
                     /* If original collection was exchanged with a non-empty value
                      * and $set will be issued, there is no need to $unset it first
                      */
-                    if ($actualValue && $actualValue->isDirty() && in_array($class->fieldMappings[$propName]['strategy'], array('set', 'setArray', 'atomicSet', 'atomicSetArray'))) {
+                    if ($actualValue && $actualValue->isDirty() && Utility\CollectionHelper::usesSet($class->fieldMappings[$propName]['strategy'])) {
                         continue;
                     }
                     if ($orgValue instanceof PersistentCollection) {
@@ -919,7 +919,7 @@ class UnitOfWork implements PropertyChangedListener
             $state = $this->getDocumentState($entry, self::STATE_NEW);
 
             // Handle "set" strategy for multi-level hierarchy
-            $pathKey = ($assoc['strategy'] !== 'set' && $assoc['strategy'] !== 'atomicSet') ? $count : $key;
+            $pathKey = Utility\CollectionHelper::isList($assoc['strategy']) ? $count : $key;
             $path = $assoc['type'] === 'many' ? $assoc['name'] . '.' . $pathKey : $assoc['name'];
 
             $count++;
@@ -2605,7 +2605,7 @@ class UnitOfWork implements PropertyChangedListener
     public function scheduleCollectionUpdate(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        if (isset($mapping['strategy']) && in_array($mapping['strategy'], array('set', 'setArray', 'atomicSet', 'atomicSetArray'))) {
+        if (Utility\CollectionHelper::usesSet($mapping['strategy'])) {
             /* There is no need to $unset collection if it will be $set later
              * This is NOP if collection is not scheduled for deletion
              */

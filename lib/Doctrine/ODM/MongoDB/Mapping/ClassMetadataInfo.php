@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
@@ -1155,8 +1156,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::owningAndInverseReferencesRequireTargetDocument($this->name, $mapping['fieldName']);
         }
         
-        if ($this->isEmbeddedDocument && isset($mapping['strategy']) &&
-                ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')) {
+        if ($this->isEmbeddedDocument && $mapping['type'] === 'many' && CollectionHelper::isAtomic($mapping['strategy'])) {
             throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
         }
 
@@ -1245,10 +1245,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function mapManyEmbedded(array $mapping)
     {
-        if ($this->isEmbeddedDocument && isset($mapping['strategy']) &&
-                ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')) {
-            throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
-        }
         $mapping['embedded'] = true;
         $mapping['type'] = 'many';
         $this->mapField($mapping);
@@ -1273,10 +1269,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function mapManyReference(array $mapping)
     {
-        if ($this->isEmbeddedDocument && isset($mapping['strategy']) &&
-                ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')) {
-            throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
-        }
         $mapping['reference'] = true;
         $mapping['type'] = 'many';
         $this->mapField($mapping);
