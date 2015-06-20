@@ -19,6 +19,7 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -377,7 +378,7 @@ class PersistenceBuilder
                         })->toArray();
 
                         // Numerical reindexing may be necessary to ensure BSON array storage
-                        if (in_array($mapping['strategy'], array('atomicSetArray', 'setArray', 'pushAll', 'addToSet'))) {
+                        if (CollectionHelper::isList($mapping['strategy'])) {
                             $value = array_values($value);
                         }
                         break;
@@ -488,7 +489,6 @@ class PersistenceBuilder
             }
         }
         return isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY
-                && ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')
-                && $isInDirtyCollection;
+                && CollectionHelper::isAtomic($mapping['strategy']) && $isInDirtyCollection;
     }
 }

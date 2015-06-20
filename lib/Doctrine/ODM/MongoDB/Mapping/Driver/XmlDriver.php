@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**
@@ -201,11 +202,6 @@ class XmlDriver extends FileDriver
             throw new \InvalidArgumentException('Cannot infer a MongoDB name from the mapping');
         }
 
-        if (isset($mapping['type']) && $mapping['type'] === 'collection') {
-            // Note: this strategy is not actually used
-            $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
-        }
-
         $class->mapField($mapping);
 
         // Index this field if either "index", "unique", or "sparse" are set
@@ -250,7 +246,7 @@ class XmlDriver extends FileDriver
             'embedded'       => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
-            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
+            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
         );
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
@@ -292,7 +288,7 @@ class XmlDriver extends FileDriver
             'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false,
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'             => (string) $attributes['field'],
-            'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
+            'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
             'inversedBy'       => isset($attributes['inversed-by']) ? (string) $attributes['inversed-by'] : null,
             'mappedBy'         => isset($attributes['mapped-by']) ? (string) $attributes['mapped-by'] : null,
             'repositoryMethod' => isset($attributes['repository-method']) ? (string) $attributes['repository-method'] : null,

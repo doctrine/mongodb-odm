@@ -23,6 +23,4 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Collection extends AbstractField
 {
     public $type = 'collection';
-    // Note: this strategy is not actually used
-    public $strategy = 'pushAll'; // pushAll, set
 }

@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
@@ -95,7 +96,7 @@ class CollectionPersister
         if ($mapping['isInverseSide']) {
             return; // ignore inverse side
         }
-        if ($mapping['strategy'] === "atomicSet" || $mapping['strategy'] === "atomicSetArray") {
+        if (CollectionHelper::isAtomic($mapping['strategy'])) {
             throw new \UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
         }
         list(, $parent) = $this->getPathAndParent($coll);
@@ -162,12 +163,12 @@ class CollectionPersister
         $pb = $this->pb;
 
         $callback = isset($mapping['embedded'])
-            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v, ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')); }
+            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v, CollectionHelper::isAtomic($mapping['strategy'])); }
             : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
 
         $setData = $coll->map($callback)->toArray();
 
-        if ($mapping['strategy'] === 'setArray' || $mapping['strategy'] === 'atomicSetArray') {
+        if (CollectionHelper::isList($mapping['strategy'])) {
             $setData = array_values($setData);
         }
 
