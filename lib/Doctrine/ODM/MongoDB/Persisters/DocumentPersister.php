@@ -293,11 +293,6 @@ class DocumentPersister
                 $data['$set'][$versionMapping['name']] = $nextVersion;
             }
             
-            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
-            if ( ! empty($atomicCollectionQuery)) {
-                $data = array_merge_recursive($data, $atomicCollectionQuery);
-            }
-
             try {
                 $this->executeUpsert($data, $options);
                 $this->handleCollections($document, $options);
@@ -1272,7 +1267,7 @@ class DocumentPersister
             if ($coll->getOwner() === $document) {
                 $mapping = $coll->getMapping();
 
-                if ( !CollectionHelper::isAtomic($mapping['strategy'])) {
+                if ( ! CollectionHelper::isAtomic($mapping['strategy'])) {
                     continue;
                 }
 

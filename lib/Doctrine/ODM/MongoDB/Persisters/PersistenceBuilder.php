@@ -228,15 +228,6 @@ class PersistenceBuilder
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
-            /* Do nothing for embed-many or reference-many collections. If it
-             * uses an atomic strategy, the data will be included when preparing
-             * the atomic query in DocumentPersister::executeUpserts(). Other
-             * strategies will be handled by CollectionPersister.
-             */
-            if ($mapping['type'] === ClassMetadata::MANY) {
-                continue;
-            }
-
             list($old, $new) = $change;
 
             // @Inc
@@ -277,6 +268,12 @@ class PersistenceBuilder
                 if (isset($new) || $mapping['nullable'] === true) {
                     $updateData['$set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 }
+
+            // @ReferenceMany, @EmbedMany
+            } elseif ($mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
+                    && $new instanceof PersistentCollection && $new->isDirty()
+                    && CollectionHelper::isAtomic($mapping['strategy'])) {
+                $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
             }
             // @EmbedMany and @ReferenceMany are handled by CollectionPersister
         }
