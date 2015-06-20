@@ -440,8 +440,10 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Take new snapshots from visited collections
-        foreach ($this->visitedCollections as $coll) {
-            $coll->takeSnapshot();
+        foreach ($this->visitedCollections as $colls) {
+            foreach ($colls as $coll) {
+                $coll->takeSnapshot();
+            }
         }
 
         // Raise postFlush
@@ -492,8 +494,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($this->documentInsertions as $document) {
             $class = $this->dm->getClassMetadata(get_class($document));
-
-            $this->computeChangeSet($class, $document);
+            if ( ! $class->isEmbeddedDocument) {
+                $this->computeChangeSet($class, $document);
+            }
         }
     }
 
@@ -506,8 +509,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($this->documentUpserts as $document) {
             $class = $this->dm->getClassMetadata(get_class($document));
-
-            $this->computeChangeSet($class, $document);
+            if ( ! $class->isEmbeddedDocument) {
+                $this->computeChangeSet($class, $document);
+            }
         }
     }
 
@@ -896,8 +900,8 @@ class UnitOfWork implements PropertyChangedListener
             if ($topOrExistingDocument || strncmp($assoc['strategy'], 'set', 3) === 0) {
                 $this->scheduleCollectionUpdate($value);
             }
-
-            $this->visitedCollections[] = $value;
+            $topmostOwner = $this->getOwningDocument($value->getOwner());
+            $this->visitedCollections[spl_object_hash($topmostOwner)][] = $value;
         }
 
 
@@ -2685,9 +2689,23 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function scheduleCollectionOwner(PersistentCollection $coll)
     {
-        $document = $coll->getOwner();
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $document = $this->getOwningDocument($coll->getOwner());
+        $this->hasScheduledCollections[spl_object_hash($document)][spl_object_hash($coll)] = $coll;
 
+        if ( ! $this->isDocumentScheduled($document)) {
+            $this->scheduleForUpdate($document);
+        }
+    }
+
+    /**
+     * Gets topmost owning document for given embedded document. For simplicity
+     * returns given object if it happens to be the document.
+     *
+     * @param object $document
+     */
+    public function getOwningDocument($document)
+    {
+        $class = $this->dm->getClassMetadata(get_class($document));
         while ($class->isEmbeddedDocument) {
             $parentAssociation = $this->getParentAssociation($document);
 
@@ -2699,11 +2717,7 @@ class UnitOfWork implements PropertyChangedListener
             $class = $this->dm->getClassMetadata(get_class($document));
         }
 
-        $this->hasScheduledCollections[spl_object_hash($document)][spl_object_hash($coll)] = $coll;
-
-        if ( ! $this->isDocumentScheduled($document)) {
-            $this->scheduleForUpdate($document);
-        }
+        return $document;
     }
 
     /**
