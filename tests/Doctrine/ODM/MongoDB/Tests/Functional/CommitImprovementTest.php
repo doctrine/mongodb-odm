@@ -63,6 +63,7 @@ class CommitImprovementTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $privateBook->addPhonenumber(new Phonenumber('87654321'));
+        $troll->setUsername('Trollsky');
         $troll->setVersion(3);
         try {
             $this->dm->flush();
