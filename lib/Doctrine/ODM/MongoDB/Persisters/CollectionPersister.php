@@ -143,7 +143,7 @@ class CollectionPersister
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
         $coll->initialize();
         $mapping = $coll->getMapping();
-        $setData = $this->pb->prepareAssociatedCollectionValue($coll, CollectionHelper::isAtomic($mapping['strategy']));
+        $setData = $this->pb->prepareAssociatedCollectionValue($coll, CollectionHelper::usesSet($mapping['strategy']));
         $query = array('$set' => array($propertyPath => $setData));
         $this->executeQuery($parent, $query, $options);
     }
