@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\EventSubscriber;
+use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 use Documents\Phonebook;
 use Documents\Phonenumber;
@@ -74,5 +76,72 @@ class CommitImprovementTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(2, $phonenumbers);
         $this->assertEquals('12345678', $phonenumbers[0]->getPhonenumber());
         $this->assertEquals('87654321', $phonenumbers[1]->getPhonenumber());
+    }
+
+    /**
+     * This test checks few things:
+     *  - if collections were updated after post* events, our changes would be saved
+     *  - if collection snapshot would be taken after post* events, collection
+     *    wouldn't be dirty and wouldn't be updated in next flush
+     */
+    public function testChangingCollectionInPostEventsHasNoIllEffects()
+    {
+        $this->dm->getEventManager()->addEventSubscriber(new PhonenumberMachine());
+
+        $user = new VersionedUser();
+        $user->setUsername('malarzm');
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->assertCount(1, $user->getPhonenumbers()); // so we got a number on postPersist
+        $this->assertTrue($user->getPhonenumbers()->isDirty()); // but they should be dirty
+        
+        $collection = $this->dm->getDocumentCollection(get_class($user));
+        $inDb = $collection->findOne();
+        $this->assertTrue( ! isset($inDb['phonenumbers']), 'Collection modified in postPersist should not be in database without recomputing change set');
+
+        $this->dm->flush();
+        $this->assertCount(2, $user->getPhonenumbers()); // so we got a number on postUpdate
+        $this->assertTrue($user->getPhonenumbers()->isDirty()); // but they should be dirty
+
+        $inDb = $collection->findOne();
+        $this->assertCount(1, $inDb['phonenumbers'], 'Collection changes from postUpdate should not be in database');
+    }
+}
+
+class PhonenumberMachine implements EventSubscriber
+{
+    private $numbers = array('12345678', '87654321');
+
+    private $numberId = 0;
+
+    public function getSubscribedEvents()
+    {
+        return array(
+            Events::postPersist,
+            Events::postUpdate,
+        );
+    }
+
+    public function __call($eventName, $args)
+    {
+        $document = $args[0]->getDocument();
+        if ( ! ($document instanceof User)) {
+            return;
+        }
+        // hey I just met you, and this is crazy!
+        $document->addPhonenumber(new Phonenumber($this->numbers[$this->numberId++]));
+        // and call me maybe ;)
+
+        // recomputing change set in postPersist will schedule document for update
+        // which would be handled in same commit(), we're not checking for this
+        if ($eventName === Events::postUpdate) {
+            // prove that even this won't break our flow
+            $dm = $args[0]->getDocumentManager();
+            $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet(
+                    $dm->getClassMetadata(get_class($document)),
+                    $document
+            );
+        }
     }
 }

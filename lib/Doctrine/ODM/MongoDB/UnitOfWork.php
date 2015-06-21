@@ -1292,7 +1292,6 @@ class UnitOfWork implements PropertyChangedListener
                 } else {
                     if ( ! empty($entryClass->lifecycleCallbacks[Events::postUpdate])) {
                         $entryClass->invokeLifecycleCallbacks(Events::postUpdate, $entry);
-                        $this->recomputeSingleDocumentChangeSet($entryClass, $entry);
                     }
                     if ($hasPostUpdateListeners) {
                         $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($entry, $this->dm));
