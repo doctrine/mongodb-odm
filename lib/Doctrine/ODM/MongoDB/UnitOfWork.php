@@ -417,9 +417,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         foreach ($this->getClassesForCommitAction($this->documentInsertions) as $class) {
-            if ($class->isEmbeddedDocument) {
-                $this->executeEmbeddedInserts($class, $options);
-            } else {
+            if ( ! $class->isEmbeddedDocument) {
                 $this->executeInserts($class, $options);
             }
         }
@@ -1042,34 +1040,48 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes all embedded document insertions for documents of the specified type.
+     * Cascades the postPersist events to embedded documents.
      *
      * @param ClassMetadata $class
-     * @param array $options Array of options to be used with batchInsert()
+     * @param object $document
      */
-    private function executeEmbeddedInserts(ClassMetadata $class, array $options = array())
+    private function cascadePostPersist(ClassMetadata $class, $document)
     {
-        $hasPostPersistLifecycleCallbacks = ! empty($class->lifecycleCallbacks[Events::postPersist]);
         $hasPostPersistListeners = $this->evm->hasListeners(Events::postPersist);
 
-        // no callbacks? then we have nothing to do here.
-        if ( ! ($hasPostPersistLifecycleCallbacks || $hasPostPersistListeners)) {
-            return;
-        }
+        $embeddedMappings = array_filter(
+            $class->associationMappings,
+            function($assoc) { return ! empty($assoc['embedded']); }
+        );
 
-        $className = $class->name;
+        foreach ($embeddedMappings as $mapping) {
+            $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
 
-        foreach ($this->documentInsertions as $oid => $document) {
-            if (get_class($document) === $className) {
-                if ($hasPostPersistLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::postPersist, $document);
+            if ($value === null) {
+                continue;
+            }
+
+            $values = $mapping['type'] === ClassMetadata::ONE ? array($value) : $value;
+
+            if (isset($mapping['targetDocument'])) {
+                $embeddedClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+            }
+
+            foreach ($values as $embeddedDocument) {
+                if ( ! isset($mapping['targetDocument'])) {
+                    $embeddedClass = $this->dm->getClassMetadata(get_class($embeddedDocument));
+                }
+
+                if ( ! empty($embeddedClass->lifecycleCallbacks[Events::postPersist])) {
+                    $embeddedClass->invokeLifecycleCallbacks(Events::postPersist, $embeddedDocument);
                 }
                 if ($hasPostPersistListeners) {
-                    $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
+                    $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($embeddedDocument, $this->dm));
                 }
+                $this->cascadePostPersist($embeddedClass, $embeddedDocument);
             }
-        }
-    }
+         }
+     }
 
     /**
      * Executes all document insertions for documents of the specified type.
@@ -1104,6 +1116,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($hasPostPersistListeners) {
                 $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
             }
+            $this->cascadePostPersist($class, $document);
         }
     }
 
@@ -1140,6 +1153,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($hasListeners) {
                 $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
             }
+            $this->cascadePostPersist($class, $document);
         }
     }
 
@@ -1283,15 +1297,20 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 if (isset($this->documentInsertions[$entryOid])) {
-                    continue;
-                }
-
-                if ( ! empty($entryClass->lifecycleCallbacks[Events::postUpdate])) {
-                    $entryClass->invokeLifecycleCallbacks(Events::postUpdate, $entry);
-                    $this->recomputeSingleDocumentChangeSet($entryClass, $entry);
-                }
-                if ($hasPostUpdateListeners) {
-                    $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($entry, $this->dm));
+                    if ( ! empty($entryClass->lifecycleCallbacks[Events::postPersist])) {
+                        $entryClass->invokeLifecycleCallbacks(Events::postPersist, $entry);
+                    }
+                    if ($hasPostPersistListeners) {
+                        $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($entry, $this->dm));
+                    }
+                } else {
+                    if ( ! empty($entryClass->lifecycleCallbacks[Events::postUpdate])) {
+                        $entryClass->invokeLifecycleCallbacks(Events::postUpdate, $entry);
+                        $this->recomputeSingleDocumentChangeSet($entryClass, $entry);
+                    }
+                    if ($hasPostUpdateListeners) {
+                        $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($entry, $this->dm));
+                    }
                 }
 
                 $this->cascadePostUpdate($entryClass, $entry);
