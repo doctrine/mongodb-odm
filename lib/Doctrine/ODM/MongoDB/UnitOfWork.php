@@ -2545,9 +2545,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function scheduleCollectionDeletion(PersistentCollection $coll)
     {
-        // TODO: if $coll is already scheduled for recreation ... what to do?
-        // Just remove $coll from the scheduled recreations?
         $oid = spl_object_hash($coll);
+        unset($this->collectionUpdates[$oid]);
         if ( ! isset($this->collectionDeletions[$oid])) {
             $this->collectionDeletions[$oid] = $coll;
             $this->scheduleCollectionOwner($coll);

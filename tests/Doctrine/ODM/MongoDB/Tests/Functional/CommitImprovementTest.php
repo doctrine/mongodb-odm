@@ -108,6 +108,30 @@ class CommitImprovementTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $inDb = $collection->findOne();
         $this->assertCount(1, $inDb['phonenumbers'], 'Collection changes from postUpdate should not be in database');
     }
+
+    public function testSchedulingCollectionDeletionAfterSchedulingForUpdate()
+    {
+        $user = new User();
+        $user->addPhonenumber(new Phonenumber('12345678'));
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $user->addPhonenumber(new Phonenumber('87654321'));
+        $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($user)), $user);
+        $this->assertTrue($this->uow->isCollectionScheduledForUpdate($user->getPhonenumbers()));
+        $this->assertFalse($this->uow->isCollectionScheduledForDeletion($user->getPhonenumbers()));
+
+        $user->getPhonenumbers()->clear();
+        $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($user)), $user);
+        $this->assertFalse($this->uow->isCollectionScheduledForUpdate($user->getPhonenumbers()));
+        $this->assertTrue($this->uow->isCollectionScheduledForDeletion($user->getPhonenumbers()));
+        $this->ql->clear();
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->find(get_class($user), $user->getId());
+        $this->assertCount(0, $user->getPhonenumbers());
+    }
 }
 
 class PhonenumberMachine implements EventSubscriber
