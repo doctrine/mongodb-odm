@@ -363,58 +363,49 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $update = $this->pb->prepareUpdateData($document);
 
-        if ( ! empty($update) || $this->uow->hasScheduledCollections($document)) {
+        $id = $this->class->getDatabaseIdentifierValue($id);
+        $query = array('_id' => $id);
 
-            $id = $this->class->getDatabaseIdentifierValue($id);
-            $query = array('_id' => $id);
-
-            // Include versioning logic to set the new version value in the database
-            // and to ensure the version has not changed since this document object instance
-            // was fetched from the database
-            if ($this->class->isVersioned) {
-                $versionMapping = $this->class->fieldMappings[$this->class->versionField];
-                $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
-                if ($versionMapping['type'] === 'int') {
-                    $nextVersion = $currentVersion + 1;
-                    $update['$inc'][$versionMapping['name']] = 1;
-                    $query[$versionMapping['name']] = $currentVersion;
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
-                } elseif ($versionMapping['type'] === 'date') {
-                    $nextVersion = new \DateTime();
-                    $update['$set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
-                    $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
-                }
+        // Include versioning logic to set the new version value in the database
+        // and to ensure the version has not changed since this document object instance
+        // was fetched from the database
+        if ($this->class->isVersioned) {
+            $versionMapping = $this->class->fieldMappings[$this->class->versionField];
+            $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
+            if ($versionMapping['type'] === 'int') {
+                $nextVersion = $currentVersion + 1;
+                $update['$inc'][$versionMapping['name']] = 1;
+                $query[$versionMapping['name']] = $currentVersion;
+                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+            } elseif ($versionMapping['type'] === 'date') {
+                $nextVersion = new \DateTime();
+                $update['$set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
+                $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
+                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             }
-            
-            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
-            if ( ! empty($atomicCollectionQuery)) {
-                $update = array_merge_recursive($update, $atomicCollectionQuery);
-            }
-            
-            if ( ! empty($update)) {
-                // Include locking logic so that if the document object in memory is currently
-                // locked then it will remove it, otherwise it ensures the document is not locked.
-                if ($this->class->isLockable) {
-                    $isLocked = $this->class->reflFields[$this->class->lockField]->getValue($document);
-                    $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-                    if ($isLocked) {
-                        $update['$unset'] = array($lockMapping['name'] => true);
-                    } else {
-                        $query[$lockMapping['name']] = array('$exists' => false);
-                    }
-                }
-
-                unset($update['$set']['_id']);
-                $result = $this->collection->update($query, $update, $options);
-
-                if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
-                    throw LockException::lockFailed($document);
-                }
-            }
-
-            $this->handleCollections($document, $options);
         }
+
+        if ( ! empty($update)) {
+            // Include locking logic so that if the document object in memory is currently
+            // locked then it will remove it, otherwise it ensures the document is not locked.
+            if ($this->class->isLockable) {
+                $isLocked = $this->class->reflFields[$this->class->lockField]->getValue($document);
+                $lockMapping = $this->class->fieldMappings[$this->class->lockField];
+                if ($isLocked) {
+                    $update['$unset'] = array($lockMapping['name'] => true);
+                } else {
+                    $query[$lockMapping['name']] = array('$exists' => false);
+                }
+            }
+
+            $result = $this->collection->update($query, $update, $options);
+
+            if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
+                throw LockException::lockFailed($document);
+            }
+        }
+
+        $this->handleCollections($document, $options);
     }
 
     /**
@@ -1248,82 +1239,6 @@ class DocumentPersister
         }
 
         return $discriminatorValues;
-    }
-    
-    private function getAtomicCollectionUpdateQuery($document)
-    {
-        $update = array();
-        $atomicCollUpdates = array();
-        $atomicCollDeletes = array();
-        $collPersister = $this->uow->getCollectionPersister();
-
-        /* Collect all atomic collections (top-level and nested) to be included
-         * in the update.
-         */
-        foreach ($this->uow->getScheduledCollections($document) as $coll) {
-            /* If this is a top-level, atomic collection, its scheduled update
-             * or deletion must be included in the document's update query.
-             */
-            if ($coll->getOwner() === $document) {
-                $mapping = $coll->getMapping();
-
-                if ( ! CollectionHelper::isAtomic($mapping['strategy'])) {
-                    continue;
-                }
-
-                if ($this->uow->isCollectionScheduledForUpdate($coll)) {
-                    $atomicCollUpdates[spl_object_hash($coll)] = $coll;
-                } elseif ($this->uow->isCollectionScheduledForDeletion($coll)) {
-                    $atomicCollDeletes[spl_object_hash($coll)] = $coll;
-                }
-
-                continue;
-            }
-
-            /* Otherwise, the collection is nested. Check if its top-most parent
-             * is an atomic collection and include it for updating if so. This
-             * is necessary because the atomic parent may not have directly
-             * changed.
-             */
-            $parent = $coll->getOwner();
-            while (null !== ($parentAssoc = $this->uow->getParentAssociation($parent))) {
-                list($mapping, $parent, ) = $parentAssoc;
-            }
-
-            if ( ! isset($mapping['association']) || $mapping['association'] !== ClassMetadata::EMBED_MANY
-                    || ! CollectionHelper::isAtomic($mapping['strategy'])) {
-                continue;
-            }
-
-            $classMetadata = $this->dm->getClassMetadata(get_class($document));
-            $parentColl = $classMetadata->getFieldValue($document, $mapping['fieldName']);
-
-            /* It's possible that the atomic parent was independently scheduled
-             * for deletion. In that case, updating nested data is unnecessary.
-             */
-            if ( ! $this->uow->isCollectionScheduledForDeletion($parentColl)) {
-                $atomicCollUpdates[spl_object_hash($parentColl)] = $parentColl;
-            }
-        }
-
-        foreach ($atomicCollUpdates as $coll) {
-            $update = array_merge_recursive($update, $collPersister->prepareSetQuery($coll));
-            /* Note: If the collection is only be handled because it's an atomic
-             * parent of a scheduled child, the following calls are NOPs.
-             */
-            $this->uow->unscheduleCollectionUpdate($coll);
-        }
-
-        foreach ($atomicCollDeletes as $coll) {
-            $update = array_merge_recursive($update, $collPersister->prepareDeleteQuery($coll));
-            /* Note: We don't need to call unscheduleCollectionUpdate(), because
-             * the collection should never have been added to $atomicCollDeletes
-             * if it was independently scheduled for update.
-             */
-            $this->uow->unscheduleCollectionDeletion($coll);
-        }
-
-        return $update;
     }
 
     public function handleCollections($document, $options)
