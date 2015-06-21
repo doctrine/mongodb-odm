@@ -1241,7 +1241,7 @@ class DocumentPersister
         return $discriminatorValues;
     }
 
-    public function handleCollections($document, $options)
+    private function handleCollections($document, $options)
     {
         // Collection deletions (deletions of complete collections)
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
