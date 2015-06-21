@@ -2569,19 +2569,15 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Unschedules a collection from being deleted when this UnitOfWork commits.
-     * This is mainly used for the atomicSet and atomicSetArray strategies and
-     * called from DocumentPersister and PersistenceBuilder.
-     *
-     * This does not remove $coll from $this->hasScheduledCollections because
-     * DocumentPersister will already have called hasScheduledCollections()
-     * before deciding to include any collections with an atomic strategy in its
-     * update query.
      * 
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
     public function unscheduleCollectionDeletion(PersistentCollection $coll)
     {
-        unset($this->collectionDeletions[spl_object_hash($coll)]);
+        $oid = spl_object_hash($coll);
+        $topmostOwner = $this->getOwningDocument($coll->getOwner());
+        unset($this->collectionDeletions[$oid]);
+        unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
     }
 
     /**
@@ -2609,19 +2605,15 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Unschedules a collection from being updated when this UnitOfWork commits.
-     * This is mainly used for the atomicSet and atomicSetArray strategies and
-     * called from DocumentPersister and PersistenceBuilder.
-     *
-     * This does not remove $coll from $this->hasScheduledCollections because
-     * DocumentPersister will already have called hasScheduledCollections()
-     * before deciding to include any collections with an atomic strategy in its
-     * update query.
      * 
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
     public function unscheduleCollectionUpdate(PersistentCollection $coll)
     {
-        unset($this->collectionUpdates[spl_object_hash($coll)]);
+        $oid = spl_object_hash($coll);
+        $topmostOwner = $this->getOwningDocument($coll->getOwner());
+        unset($this->collectionUpdates[$oid]);
+        unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
     }
     
     /**
@@ -2684,6 +2676,10 @@ class UnitOfWork implements PropertyChangedListener
      *
      * If the owner is not scheduled for any lifecycle action, it will be
      * scheduled for update to ensure that versioning takes place if necessary.
+     *
+     * If the collection is nested within atomic collection, it is immediately
+     * unscheduled and atomic one is scheduled for update instead. This makes
+     * calculating update data way easier.
      * 
      * @param PersistentCollection $coll
      */
@@ -2692,6 +2688,20 @@ class UnitOfWork implements PropertyChangedListener
         $document = $this->getOwningDocument($coll->getOwner());
         $this->hasScheduledCollections[spl_object_hash($document)][spl_object_hash($coll)] = $coll;
 
+        if ($document !== $coll->getOwner()) {
+            $parent = $coll->getOwner();
+            while (null !== ($parentAssoc = $this->getParentAssociation($parent))) {
+                list($mapping, $parent, ) = $parentAssoc;
+            }
+            if (Utility\CollectionHelper::isAtomic($mapping['strategy'])) {
+                $class = $this->dm->getClassMetadata(get_class($document));
+                $atomicCollection = $class->getFieldValue($document, $mapping['fieldName']);
+                $this->scheduleCollectionUpdate($atomicCollection);
+                $this->unscheduleCollectionDeletion($coll);
+                $this->unscheduleCollectionUpdate($coll);
+            }
+        }
+
         if ( ! $this->isDocumentScheduled($document)) {
             $this->scheduleForUpdate($document);
         }
@@ -2699,7 +2709,7 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets topmost owning document for given embedded document. For simplicity
-     * returns given object if it happens to be the document.
+     * returns given object if it happens to be a top level document.
      *
      * @param object $document
      */

@@ -183,14 +183,24 @@ class PersistenceBuilder
                     }
                 }
 
-            // @EmbedMany
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY && $new) {
-                foreach ($new as $key => $embeddedDoc) {
-                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc) && ! $this->isPartOfAtomicUpdate($embeddedDoc)) {
-                        $update = $this->prepareUpdateData($embeddedDoc);
-                        foreach ($update as $cmd => $values) {
-                            foreach ($values as $name => $value) {
-                                $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
+            // @ReferenceMany, @EmbedMany
+            } elseif (isset($mapping['association']) && $mapping['type'] === 'many' && $new) {
+                if (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForUpdate($new)) {
+                    $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
+                } elseif (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForDeletion($new)) {
+                    $updateData['$unset'][$mapping['name']] = true;
+                    $this->uow->unscheduleCollectionDeletion($new);
+                } elseif (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForDeletion($old)) {
+                    $updateData['$unset'][$mapping['name']] = true;
+                    $this->uow->unscheduleCollectionDeletion($old);
+                } elseif ($mapping['association'] === ClassMetadata::EMBED_MANY) {
+                    foreach ($new as $key => $embeddedDoc) {
+                        if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
+                            $update = $this->prepareUpdateData($embeddedDoc);
+                            foreach ($update as $cmd => $values) {
+                                foreach ($values as $name => $value) {
+                                    $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
+                                }
                             }
                         }
                     }
@@ -203,10 +213,17 @@ class PersistenceBuilder
                 } else {
                     $updateData['$unset'][$mapping['name']] = true;
                 }
-
-            // @ReferenceMany
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
-                // Do nothing right now
+            }
+        }
+        // collections that areen't dirty but could be subject to update are
+        // excluded from change set, let's go through them now
+        foreach ($this->uow->getScheduledCollections($document) as $coll) {
+            $mapping = $coll->getMapping();
+            if (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForUpdate($coll)) {
+                $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($coll, true);
+            } elseif (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForDeletion($coll)) {
+                $updateData['$unset'][$mapping['name']] = true;
+                $this->uow->unscheduleCollectionDeletion($coll);
             }
             // @ReferenceMany is handled by CollectionPersister
         }
@@ -479,24 +496,5 @@ class PersistenceBuilder
     {
         return $this->uow->isScheduledForInsert($document)
             || $this->uow->getDocumentPersister(get_class($document))->isQueuedForInsert($document);
-    }
-
-    /**
-     * @param object $embeddeDoc
-     * @return bool
-     */
-    private function isPartOfAtomicUpdate($embeddeDoc)
-    {
-        $isInDirtyCollection = false;
-        while (null !== ($parentAssoc = $this->uow->getParentAssociation($embeddeDoc))) {
-            list($mapping, $embeddeDoc, ) = $parentAssoc;
-            if ($mapping['association'] === ClassMetadata::EMBED_MANY) {
-                $classMetadata = $this->dm->getClassMetadata(get_class($embeddeDoc));
-                $parentColl = $classMetadata->getFieldValue($embeddeDoc, $mapping['fieldName']);
-                $isInDirtyCollection |= $parentColl->isDirty();
-            }
-        }
-        return isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY
-                && CollectionHelper::isAtomic($mapping['strategy']) && $isInDirtyCollection;
     }
 }

@@ -351,6 +351,46 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $user->inception[0]->many[1]->many);
         $this->assertEquals($user->inception[0]->many[1]->many[0]->value, 'start.many.1.many.0-new');
     }
+
+    public function testAtomicRefMany()
+    {
+        $malarzm = new AtomicSetUser('Maciej');
+        $jmikola = new AtomicSetUser('Jeremy');
+        $jonwage = new AtomicSetUser('Jon');
+
+        $this->dm->persist($malarzm);
+        $this->dm->persist($jmikola);
+        $this->dm->persist($jonwage);
+        $this->dm->flush();
+        $this->ql->clear();
+
+        $malarzm->friends[] = $jmikola;
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Updating empty atomic reference many requires one query');
+        $this->dm->clear();
+
+        $malarzm = $this->dm->find(get_class($malarzm), $malarzm->id);
+        $this->assertCount(1, $malarzm->friends);
+        $this->assertEquals('Jeremy', $malarzm->friends[0]->name);
+
+        $jonwage = $this->dm->find(get_class($jonwage), $jonwage->id);
+        $malarzm->friends[] = $jonwage;
+        $this->ql->clear();
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Updating existing atomic reference many requires one query');
+        $this->dm->clear();
+
+        $malarzm = $this->dm->find(get_class($malarzm), $malarzm->id);
+        $this->assertCount(2, $malarzm->friends);
+        $this->assertEquals('Jeremy', $malarzm->friends[0]->name);
+        $this->assertEquals('Jon', $malarzm->friends[1]->name);
+
+        $malarzm->friends->clear();
+        $this->ql->clear();
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Clearing atomic reference many requires one query');
+        $this->dm->clear();
+    }
 }
 
 /**
@@ -382,12 +422,16 @@ class AtomicSetUser
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="AtomicSetInception") */
     public $inception;
 
+    /** @ODM\ReferenceMany(strategy="atomicSetArray", targetDocument="AtomicSetUser") */
+    public $friends;
+
     public function __construct($name)
     {
         $this->name = $name;
         $this->phonenumbers = new ArrayCollection();
         $this->phonenumbersArray = new ArrayCollection();
         $this->phonebooks = new ArrayCollection();
+        $this->friends = new ArrayCollection();
     }
 }
 
