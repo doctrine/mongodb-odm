@@ -57,18 +57,41 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->toArray();
     }
 
-    public static function eagerCursorProvider()
+    public function testPrimeImpliesEagerCursor()
     {
-        return array(
-            'lazyCursor' => array(false),
-            'eagerCursur' => array(true)
-        );
+        $query = $this->dm->createQueryBuilder('Documents\User')
+            ->field('account')
+            ->prime(true)
+            ->getQuery()
+            ->getQuery();
+
+        $this->assertArrayHasKey('eagerCursor', $query);
+        $this->assertTrue($query['eagerCursor']);
     }
 
     /**
-     * @dataProvider eagerCursorProvider
+     * @expectedException BadMethodCallException
      */
-    public function testPrimeReferencesWithDBRefObjects($eagerCursor)
+    public function testPrimeForbidsLazyCursor()
+    {
+        $this->dm->createQueryBuilder('Documents\User')
+            ->field('account')
+            ->prime(true)
+            ->eagerCursor(false);
+    }
+
+    /**
+     * @expectedException BadMethodCallException
+     */
+    public function testLazyCursorForbidsPrime()
+    {
+        $this->dm->createQueryBuilder('Documents\User')
+            ->eagerCursor(false)
+            ->field('account')
+            ->prime(true);
+    }
+
+    public function testPrimeReferencesWithDBRefObjects()
     {
         $user = new User();
         $user->addGroup(new Group());
@@ -80,7 +103,6 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->eagerCursor($eagerCursor)
             ->field('account')->prime(true)
             ->field('groups')->prime(true);
 
