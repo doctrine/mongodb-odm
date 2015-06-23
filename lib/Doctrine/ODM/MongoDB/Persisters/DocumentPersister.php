@@ -646,13 +646,14 @@ class DocumentPersister
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
+                $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
+
                 $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument);
                 $id = $embeddedMetadata->identifier && isset($data[$embeddedMetadata->identifier])
                     ? $data[$embeddedMetadata->identifier]
                     : null;
 
                 $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
-                $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
                 if ($mapping['strategy'] === 'set' || $mapping['strategy'] === 'atomicSet') {
                     $collection->set($key, $embeddedDocumentObject);
                 } else {
