@@ -209,6 +209,7 @@ class PersistenceBuilder
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_MANY) {
                 // Do nothing right now
             }
+            // @ReferenceMany is handled by CollectionPersister
         }
         return $updateData;
     }
@@ -278,6 +279,7 @@ class PersistenceBuilder
                     $updateData['$set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 }
             }
+            // @EmbedMany and @ReferenceMany are handled by CollectionPersister
         }
 
         // add discriminator if the class has one
@@ -302,13 +304,7 @@ class PersistenceBuilder
      */
     public function prepareReferencedDocumentValue(array $referenceMapping, $document)
     {
-        try {
-            return $this->dm->createDBRef($document, $referenceMapping);
-        } catch (\InvalidArgumentException $e) {
-            throw new \InvalidArgumentException(
-                sprintf('You are trying to reference a non-object in %s field, "%s" given', $referenceMapping['name'], $document)
-            );
-        }
+        return $this->dm->createDBRef($document, $referenceMapping);
     }
 
     /**
@@ -362,10 +358,9 @@ class PersistenceBuilder
 
                     case ClassMetadata::EMBED_MANY:
                     case ClassMetadata::REFERENCE_MANY:
-                        // Skip PersistentCollections already scheduled for deletion/update
-                        if ( ! $includeNestedCollections && $rawValue instanceof PersistentCollection &&
-                            ($this->uow->isCollectionScheduledForDeletion($rawValue) ||
-                             $this->uow->isCollectionScheduledForUpdate($rawValue))) {
+                        // Skip PersistentCollections already scheduled for deletion
+                        if ( ! $includeNestedCollections && $rawValue instanceof PersistentCollection
+                            && $this->uow->isCollectionScheduledForDeletion($rawValue)) {
                             break;
                         }
 

@@ -1299,6 +1299,22 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
+     * INTERNAL:
+     * Adds an association mapping without completing/validating it.
+     * This is mainly used to add inherited association mappings to derived classes.
+     *
+     * @param array $mapping
+     *
+     * @return void
+     *
+     * @throws MappingException
+     */
+    public function addInheritedAssociationMapping(array $mapping/*, $owningClassName = null*/)
+    {
+        $this->associationMappings[$mapping['fieldName']] = $mapping;
+    }
+
+    /**
      * Checks whether the class has a mapped association with the given field name.
      *
      * @param string $fieldName
