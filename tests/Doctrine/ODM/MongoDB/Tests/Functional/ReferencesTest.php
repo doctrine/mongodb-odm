@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Documents\Address;
 use Documents\Profile;
+use Documents\ProfileNotify;
 use Documents\Phonenumber;
 use Documents\Account;
 use Documents\Group;
@@ -70,6 +71,31 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals('Jonathan', $profile->getFirstName());
         $this->assertEquals('Wage', $profile->getLastName());
+    }
+
+    public function testLazyLoadedWithNotifyPropertyChanged()
+    {
+        $user = new User();
+        $profile = new ProfileNotify();
+        $profile->setFirstName('Maciej');
+        $user->setProfileNotify($profile);
+        $user->setUsername('malarzm');
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->find(get_class($user), $user->getId());
+        $this->assertTrue($user->getProfileNotify() instanceof \Doctrine\Common\Persistence\Proxy);
+        $this->assertFalse($user->getProfileNotify()->__isInitialized());
+
+        $user->getProfileNotify()->setLastName('Malarz');
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $profile = $this->dm->find(get_class($profile), $profile->getProfileId());
+        $this->assertEquals('Maciej', $profile->getFirstName());
+        $this->assertEquals('Malarz', $profile->getLastName());
     }
 
     public function testOneEmbedded()
