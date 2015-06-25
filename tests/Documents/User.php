@@ -30,6 +30,9 @@ class User extends BaseDocument
     /** @ODM\ReferenceOne(targetDocument="Profile", cascade={"all"}) */
     protected $profile;
 
+    /** @ODM\ReferenceOne(targetDocument="ProfileNotify", cascade={"all"}) */
+    protected $profileNotify;
+
     /** @ODM\EmbedMany(targetDocument="Phonenumber") */
     protected $phonenumbers;
 
@@ -157,6 +160,16 @@ class User extends BaseDocument
     public function getProfile()
     {
         return $this->profile;
+    }
+
+    public function setProfileNotify(ProfileNotify $profile)
+    {
+        $this->profileNotify = $profile;
+    }
+
+    public function getProfileNotify()
+    {
+        return $this->profileNotify;
     }
 
     public function setAccount(Account $account)

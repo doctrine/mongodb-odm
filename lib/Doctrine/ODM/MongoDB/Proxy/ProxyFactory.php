@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Proxy;
 
+use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -123,9 +124,10 @@ class ProxyFactory extends AbstractProxyFactory
         DocumentPersister $documentPersister,
         ReflectionProperty $reflectionId
     ) {
+        $unitOfWork = $this->uow;
 
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            return function (BaseProxy $proxy) use ($documentPersister, $reflectionId) {
+            return function (BaseProxy $proxy) use ($documentPersister, $reflectionId, $unitOfWork) {
                 $proxy->__setInitializer(null);
                 $proxy->__setCloner(null);
 
@@ -149,10 +151,14 @@ class ProxyFactory extends AbstractProxyFactory
                 if (null === $documentPersister->load(array('_id' => $id), $proxy)) {
                     throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
                 }
+
+                if ($proxy instanceof NotifyPropertyChanged) {
+                    $proxy->addPropertyChangedListener($unitOfWork);
+                }
             };
         }
 
-        return function (BaseProxy $proxy) use ($documentPersister, $reflectionId) {
+        return function (BaseProxy $proxy) use ($documentPersister, $reflectionId, $unitOfWork) {
             $proxy->__setInitializer(null);
             $proxy->__setCloner(null);
 
@@ -174,6 +180,10 @@ class ProxyFactory extends AbstractProxyFactory
 
             if (null === $documentPersister->load(array('_id' => $id), $proxy)) {
                 throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
+            }
+
+            if ($proxy instanceof NotifyPropertyChanged) {
+                $proxy->addPropertyChangedListener($unitOfWork);
             }
         };
     }
