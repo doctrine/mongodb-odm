@@ -317,6 +317,10 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         $query['newObj'] = $this->expr->getNewObj();
 
+        if (isset($query['distinct'])) {
+            $query['distinct'] = $documentPersister->prepareFieldName($query['distinct']);
+        }
+
         if (isset($query['select'])) {
             $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
         }
