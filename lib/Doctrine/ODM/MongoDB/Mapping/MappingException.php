@@ -206,6 +206,15 @@ class MappingException extends BaseMappingException
     }
 
     /**
+     * @param string $targetDocument
+     * @return MappingException
+     */
+    public static function simpleReferenceMustNotTargetDiscriminatedDocument($targetDocument)
+    {
+        return new self("Simple reference must not target document using Single Collection Inheritance, $targetDocument targeted.");
+    }
+
+    /**
      * @param string $strategy
      * @param string $className
      * @param string $fieldName
