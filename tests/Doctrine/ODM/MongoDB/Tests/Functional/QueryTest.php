@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Documents\Article;
 use Documents\Account;
 use Documents\Address;
+use Documents\CmsComment;
 use Documents\Group;
 use Documents\Phonenumber;
 use Documents\Profile;
@@ -122,6 +123,26 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->execute();
         $this->assertEquals(array(1, 2, 3), $results->toArray());
+    }
+
+    public function testDistinctWithDifferentDbName()
+    {
+        $c1 = new CmsComment();
+        $c1->authorIp = "127.0.0.1";
+        $c2 = new CmsComment();
+        $c3 = new CmsComment();
+        $c2->authorIp = $c3->authorIp = "192.168.0.1";
+        $this->dm->persist($c1);
+        $this->dm->persist($c2);
+        $this->dm->persist($c3);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $results = $this->dm->createQueryBuilder(get_class($c1))
+            ->distinct('authorIp')
+            ->getQuery()
+            ->execute();
+        $this->assertEquals(array("127.0.0.1", "192.168.0.1"), $results->toArray());
     }
 
     public function testFindQuery()
