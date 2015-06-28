@@ -2573,9 +2573,11 @@ class UnitOfWork implements PropertyChangedListener
     public function unscheduleCollectionDeletion(PersistentCollection $coll)
     {
         $oid = spl_object_hash($coll);
-        $topmostOwner = $this->getOwningDocument($coll->getOwner());
-        unset($this->collectionDeletions[$oid]);
-        unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
+        if (isset($this->collectionDeletions[$oid])) {
+            $topmostOwner = $this->getOwningDocument($coll->getOwner());
+            unset($this->collectionDeletions[$oid]);
+            unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
+        }
     }
 
     /**
@@ -2609,9 +2611,11 @@ class UnitOfWork implements PropertyChangedListener
     public function unscheduleCollectionUpdate(PersistentCollection $coll)
     {
         $oid = spl_object_hash($coll);
-        $topmostOwner = $this->getOwningDocument($coll->getOwner());
-        unset($this->collectionUpdates[$oid]);
-        unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
+        if (isset($this->collectionUpdates[$oid])) {
+            $topmostOwner = $this->getOwningDocument($coll->getOwner());
+            unset($this->collectionUpdates[$oid]);
+            unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
+        }
     }
     
     /**
