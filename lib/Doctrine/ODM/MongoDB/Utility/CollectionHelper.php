@@ -23,6 +23,7 @@ namespace Doctrine\ODM\MongoDB\Utility;
  * Utility class used to unify checks on how collection strategies should behave.
  *
  * @since   1.0
+ * @internal
  * @author  Maciej Malarz <malarzm@gmail.com>
  */
 class CollectionHelper
