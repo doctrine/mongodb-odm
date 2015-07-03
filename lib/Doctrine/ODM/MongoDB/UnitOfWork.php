@@ -33,6 +33,7 @@ use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -736,7 +737,7 @@ class UnitOfWork implements PropertyChangedListener
                     /* If original collection was exchanged with a non-empty value
                      * and $set will be issued, there is no need to $unset it first
                      */
-                    if ($actualValue && $actualValue->isDirty() && Utility\CollectionHelper::usesSet($class->fieldMappings[$propName]['strategy'])) {
+                    if ($actualValue && $actualValue->isDirty() && CollectionHelper::usesSet($class->fieldMappings[$propName]['strategy'])) {
                         continue;
                     }
                     if ($orgValue instanceof PersistentCollection) {
@@ -907,7 +908,7 @@ class UnitOfWork implements PropertyChangedListener
             $state = $this->getDocumentState($entry, self::STATE_NEW);
 
             // Handle "set" strategy for multi-level hierarchy
-            $pathKey = Utility\CollectionHelper::isList($assoc['strategy']) ? $count : $key;
+            $pathKey = CollectionHelper::isList($assoc['strategy']) ? $count : $key;
             $path = $assoc['type'] === 'many' ? $assoc['name'] . '.' . $pathKey : $assoc['name'];
 
             $count++;
@@ -2589,7 +2590,7 @@ class UnitOfWork implements PropertyChangedListener
     public function scheduleCollectionUpdate(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        if (Utility\CollectionHelper::usesSet($mapping['strategy'])) {
+        if (CollectionHelper::usesSet($mapping['strategy'])) {
             /* There is no need to $unset collection if it will be $set later
              * This is NOP if collection is not scheduled for deletion
              */
@@ -2695,7 +2696,7 @@ class UnitOfWork implements PropertyChangedListener
             while (null !== ($parentAssoc = $this->getParentAssociation($parent))) {
                 list($mapping, $parent, ) = $parentAssoc;
             }
-            if (Utility\CollectionHelper::isAtomic($mapping['strategy'])) {
+            if (CollectionHelper::isAtomic($mapping['strategy'])) {
                 $class = $this->dm->getClassMetadata(get_class($document));
                 $atomicCollection = $class->getFieldValue($document, $mapping['fieldName']);
                 $this->scheduleCollectionUpdate($atomicCollection);
