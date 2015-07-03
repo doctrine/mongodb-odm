@@ -170,6 +170,23 @@ class QueryTest extends BaseTest
         $this->assertTrue(array_key_exists('eO.eO.e1.eO.eP.pO._id', $debug));
         $this->assertEquals($mongoId, $debug['eO.eO.e1.eO.eP.pO._id']);
     }
+
+    public function testSelectVsSingleCollectionInheritance()
+    {
+        $p = new \Documents\SubProject('SubProject');
+        $this->dm->persist($p);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->createQueryBuilder()
+                ->find('Documents\Project')
+                ->select(array('name'))
+                ->field('id')->equals($p->getId())
+                ->getQuery()->getSingleResult();
+        $this->assertNotNull($test);
+        $this->assertInstanceOf('Documents\SubProject', $test);
+        $this->assertEquals('SubProject', $test->getName());
+    }
 }
 
 /** @ODM\Document(collection="people") */
