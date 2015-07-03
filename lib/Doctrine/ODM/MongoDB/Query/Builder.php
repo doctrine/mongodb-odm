@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
@@ -321,8 +322,15 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $query['distinct'] = $documentPersister->prepareFieldName($query['distinct']);
         }
 
-        if (isset($query['select'])) {
+        if ( ! empty($query['select'])) {
             $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
+            if ($this->hydrate && $this->class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION
+                && ! isset($query['select'][$this->class->discriminatorField])) {
+                $includeMode = 0 < count(array_filter($query['select'], function($mode) { return $mode == 1; }));
+                if ($includeMode && ! isset($query['select'][$this->class->discriminatorField])) {
+                    $query['select'][$this->class->discriminatorField] = 1;
+                }
+            }
         }
 
         if (isset($query['sort'])) {
