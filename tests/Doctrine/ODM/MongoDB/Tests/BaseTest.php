@@ -9,7 +9,14 @@ use Doctrine\MongoDB\Connection;
 
 abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
+     */
     protected $dm;
+    
+    /**
+     * @var \Doctrine\ODM\MongoDB\UnitOfWork
+     */
     protected $uow;
 
     public function setUp()

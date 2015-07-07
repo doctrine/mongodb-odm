@@ -1149,6 +1149,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['reference']) && ! empty($mapping['simple']) && ! isset($mapping['targetDocument'])) {
             throw MappingException::simpleReferenceRequiresTargetDocument($this->name, $mapping['fieldName']);
         }
+
+        if (isset($mapping['reference']) && empty($mapping['targetDocument']) && empty($mapping['discriminatorMap']) &&
+                (isset($mapping['mappedBy']) || isset($mapping['inversedBy']))) {
+            throw MappingException::owningAndInverseReferencesRequireTargetDocument($this->name, $mapping['fieldName']);
+        }
         
         if ($this->isEmbeddedDocument && isset($mapping['strategy']) &&
                 ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')) {
@@ -1291,6 +1296,22 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($fieldMapping['association'])) {
             $this->associationMappings[$fieldMapping['fieldName']] = $fieldMapping;
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Adds an association mapping without completing/validating it.
+     * This is mainly used to add inherited association mappings to derived classes.
+     *
+     * @param array $mapping
+     *
+     * @return void
+     *
+     * @throws MappingException
+     */
+    public function addInheritedAssociationMapping(array $mapping/*, $owningClassName = null*/)
+    {
+        $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
 
     /**

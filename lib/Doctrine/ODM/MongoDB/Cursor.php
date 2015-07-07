@@ -24,7 +24,6 @@ use Doctrine\MongoDB\Connection;
 use Doctrine\MongoDB\Cursor as BaseCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 
 /**
  * Wrapper for the Doctrine\MongoDB\Cursor class.
@@ -77,27 +76,6 @@ class Cursor extends BaseCursor
      * @var array
      */
     private $unitOfWorkHints = array();
-
-    /**
-     * ReferencePrimer object for priming references
-     *
-     * @var ReferencePrimer
-     */
-    private $referencePrimer;
-
-    /**
-     * Primers
-     *
-     * @var array
-     */
-    private $primers = array();
-
-    /**
-     * Whether references have been primed
-     *
-     * @var bool
-     */
-    private $referencesPrimed = false;
 
     /**
      * Constructor.
@@ -240,8 +218,6 @@ class Cursor extends BaseCursor
      */
     public function current()
     {
-        $this->primeReferences();
-
         $current = $this->baseCursor->current();
 
         if ($current !== null && $this->hydrate) {
@@ -474,37 +450,5 @@ class Cursor extends BaseCursor
     {
         $this->baseCursor->timeout($ms);
         return $this;
-    }
-
-    /**
-     * @param array $primers
-     * @param ReferencePrimer $referencePrimer
-     * @return self
-     */
-    public function enableReferencePriming(array $primers, ReferencePrimer $referencePrimer)
-    {
-        $this->referencePrimer = $referencePrimer;
-        $this->primers = $primers;
-        return $this;
-    }
-
-    /**
-     * Prime references
-     */
-    protected function primeReferences()
-    {
-        if ($this->referencesPrimed || !$this->hydrate) {
-            return;
-        }
-
-        $this->referencesPrimed = true;
-
-        foreach ($this->primers as $fieldName => $primer) {
-            $this->rewind();
-            $primer = is_callable($primer) ? $primer : null;
-            $this->referencePrimer->primeReferences($this->class, $this, $fieldName, $this->unitOfWorkHints, $primer);
-        }
-
-        $this->rewind();
     }
 }

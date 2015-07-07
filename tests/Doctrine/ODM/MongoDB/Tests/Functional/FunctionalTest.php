@@ -2,6 +2,10 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Documents\Bars\Bar;
+use Documents\Bars\Location;
 use Documents\User;
 use Documents\Account;
 use Documents\Phonenumber;
@@ -100,6 +104,12 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
         $this->assertTrue(isset($check['username']));
         $this->assertEquals('test', $check['username']);
+    }
+
+    public function testInheritedAssociationMappings()
+    {
+        $class = $this->dm->getClassMetadata('Documents\UserUpsertChild');
+        $this->assertTrue(isset($class->associationMappings['groups']));
     }
 
     public function testFlushSingleDocument()
@@ -496,6 +506,53 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFalse(isset($notSaved['notSaved']));
     }
 
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function testTypeClassMissing()
+    {
+        $project = new Project('Test Project');
+        $this->dm->persist($project);
+        $this->dm->flush();
+
+        $group = new Group('Test Group');
+        $this->dm->persist($group);
+        $this->dm->flush();
+
+        $user = new FavoritesUser();
+        $user->setName('favorites');
+        $user->addFavorite($project);
+        $user->addFavorite($group);
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var $test FavoritesUser */
+        $test = $this->dm->find('Documents\Functional\FavoritesUser', $user->getId());
+
+        /** @var $collection PersistentCollection */
+        $collection = $test->getFavorites();
+        $collection->getTypeClass();
+    }
+
+    public function testTypeClass()
+    {
+        $bar = new Bar("Jon's Pub");
+        $bar->addLocation(new Location('West Nashville'));
+        $bar->addLocation(new Location('East Nashville'));
+        $bar->addLocation(new Location('North Nashville'));
+        $this->dm->persist($bar);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var $test Bar */
+        $test = $this->dm->find('Documents\Bars\Bar', $bar->getId());
+
+        /** @var $collection PersistentCollection */
+        $collection = $test->getLocations();
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\ClassMetadata', $collection->getTypeClass());
+    }
+
     public function testFavoritesReference()
     {
         $project = new Project('Test Project');
@@ -644,7 +701,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testNotSameCollectionThrowsException()
     {

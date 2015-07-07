@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 
 class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -87,6 +88,10 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPreAndPostRemove()
     {
         $user = $this->createUser();
+
+        $this->assertTrue($this->uow->isInIdentityMap($user));
+        $this->assertTrue($this->uow->isInIdentityMap($user->profile));
+
         $this->dm->remove($user);
         $this->dm->flush();
 
@@ -151,6 +156,9 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->profile->profile = $profile;
         $this->dm->flush();
 
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->profile->profile));
+        $this->assertTrue($this->uow->isInIdentityMap($user->profile->profile));
+
         $this->assertTrue($profile->prePersist);
         $this->assertTrue($profile->postPersist);
         $this->assertFalse($profile->preUpdate);
@@ -205,7 +213,8 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         
         $user->friends[] = $user2;
         $this->dm->flush();
-        
+
+        $this->assertTrue($user->preFlush);
         $this->assertTrue($user->preUpdate);
         $this->assertTrue($user->postUpdate);
         $this->assertFalse($user2->preUpdate);

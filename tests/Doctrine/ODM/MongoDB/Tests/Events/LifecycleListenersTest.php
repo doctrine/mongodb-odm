@@ -78,8 +78,8 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
 
         $called = array(
-            Events::preRemove => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'),
-            Events::postRemove => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument')
+            Events::preRemove => array('Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
+            Events::postRemove => array('Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument')
         );
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = array();
@@ -140,6 +140,42 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = array();
     }
+
+    public function testChangeToReferenceFieldTriggersEvents()
+    {
+        $dm = $this->getDocumentManager();
+        $document = new TestDocument();
+        $document->name = 'Maciej';
+        $dm->persist($document);
+        $profile = new TestProfile();
+        $profile->name = 'github';
+        $dm->persist($profile);
+        $dm->flush();
+        $dm->clear();
+        $this->listener->called = array();
+
+        $called = array(
+            Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
+            Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
+        );
+
+        $document = $dm->getRepository(get_class($document))->find($document->id);
+        $profile = $dm->getRepository(get_class($profile))->find($profile->id);
+        $this->listener->called = array();
+        $document->profile = $profile;
+        $dm->flush();
+        $dm->clear();
+        $this->assertEquals($called, $this->listener->called, 'Changing ReferenceOne field did not dispatched proper events.');
+        $this->listener->called = array();
+
+        $document = $dm->getRepository(get_class($document))->find($document->id);
+        $profile = $dm->getRepository(get_class($profile))->find($profile->id);
+        $this->listener->called = array();
+        $document->profiles[] = $profile;
+        $dm->flush();
+        $this->assertEquals($called, $this->listener->called, 'Changing ReferenceMany field did not dispatched proper events.');
+        $this->listener->called = array();
+    }
 }
 
 class MyEventListener
@@ -168,6 +204,12 @@ class TestDocument
 
     /** @ODM\EmbedOne(targetDocument="Image") */
     public $image;
+
+    /** @ODM\ReferenceMany(targetDocument="TestProfile") */
+    public $profiles;
+
+    /** @ODM\ReferenceOne(targetDocument="TestProfile") */
+    public $profile;
 }
 
 /** @ODM\EmbeddedDocument */

@@ -29,7 +29,7 @@ class EmbeddedIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbedOneDocumentWithMissingIdentifier()
     {
-        $user = new EmbeddedIdTestUser();
+        $user = new EmbeddedStrategyNoneIdTestUser();
         $user->embedOne = new DefaultIdStrategyNoneEmbeddedDocument();
 
         $this->dm->persist($user);
@@ -41,7 +41,7 @@ class EmbeddedIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbedManyDocumentWithMissingIdentifier()
     {
-        $user = new EmbeddedIdTestUser();
+        $user = new EmbeddedStrategyNoneIdTestUser();
         $user->embedMany[] = new DefaultIdStrategyNoneEmbeddedDocument();
 
         $this->dm->persist($user);
@@ -65,6 +65,19 @@ class EmbeddedIdTestUser
     public $embedOne;
 
     /** @ODM\EmbedMany(targetDocument="DefaultIdEmbeddedDocument") */
+    public $embedMany = array();
+}
+
+/** @ODM\Document */
+class EmbeddedStrategyNoneIdTestUser
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\EmbedOne(targetDocument="DefaultIdStrategyNoneEmbeddedDocument") */
+    public $embedOne;
+
+    /** @ODM\EmbedMany(targetDocument="DefaultIdStrategyNoneEmbeddedDocument") */
     public $embedMany = array();
 }
 

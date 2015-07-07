@@ -102,6 +102,11 @@ class PersistentCollection implements BaseCollection
     private $hints = array();
 
     /**
+     * @var ClassMetadata
+     */
+    private $typeClass;
+
+    /**
      * @param BaseCollection $coll
      * @param DocumentManager $dm
      * @param UnitOfWork $uow
@@ -255,6 +260,10 @@ class PersistentCollection implements BaseCollection
     {
         $this->owner = $document;
         $this->mapping = $mapping;
+
+        if ( ! empty($this->mapping['targetDocument'])) {
+            $this->typeClass = $this->dm->getClassMetadata($this->mapping['targetDocument']);
+        }
     }
 
     /**
@@ -330,13 +339,24 @@ class PersistentCollection implements BaseCollection
         return $this->owner;
     }
 
+    /**
+     * @return array
+     */
     public function getMapping()
     {
         return $this->mapping;
     }
 
+    /**
+     * @return ClassMetadata
+     * @throws MongoDBException
+     */
     public function getTypeClass()
     {
+        if (empty($this->typeClass)) {
+            throw new MongoDBException('Specifying targetDocument is required for the ClassMetadata to be obtained.');
+        }
+
         return $this->typeClass;
     }
 
@@ -504,6 +524,13 @@ class PersistentCollection implements BaseCollection
      */
     public function add($value)
     {
+        /* Initialize the collection before calling add() so this append operation
+         * uses the appropriate key. Otherwise, we risk overwriting original data
+         * when $newObjects are re-added in a later call to initialize().
+         */
+        if (isset($this->mapping['strategy']) && ($this->mapping['strategy'] === 'set' || $this->mapping['strategy'] === 'atomicSet')) {
+            $this->initialize();
+        }
         $this->coll->add($value);
         $this->changed();
         return true;
@@ -588,11 +615,20 @@ class PersistentCollection implements BaseCollection
 
         $this->mongoData = array();
         $this->coll->clear();
-        if ($this->mapping['isOwningSide']) {
-            $this->changed();
-            $this->uow->scheduleCollectionDeletion($this);
-            $this->takeSnapshot();
+
+        // Nothing to do for inverse-side collections
+        if ( ! $this->mapping['isOwningSide']) {
+            return;
         }
+
+        // Nothing to do if the collection was initialized but contained no data
+        if ($this->initialized && empty($this->snapshot)) {
+            return;
+        }
+
+        $this->changed();
+        $this->uow->scheduleCollectionDeletion($this);
+        $this->takeSnapshot();
     }
 
     /**

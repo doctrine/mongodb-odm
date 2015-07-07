@@ -1,6 +1,8 @@
 # Doctrine MongoDB Object Document Mapper
 
 [![Build Status](https://secure.travis-ci.org/doctrine/mongodb-odm.png?branch=master)](http://travis-ci.org/doctrine/mongodb-odm)
+[![Code Coverage](https://scrutinizer-ci.com/g/doctrine/mongodb-odm/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/doctrine/mongodb-odm/?branch=master)
+
 
 The Doctrine MongoDB ODM project is a library that provides a PHP object mapping functionality for MongoDB.
 

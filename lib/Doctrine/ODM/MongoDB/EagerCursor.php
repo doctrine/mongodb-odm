@@ -153,7 +153,7 @@ class EagerCursor extends BaseEagerCursor
     public function initialize()
     {
         if ($this->initialized === false) {
-            $this->data = $this->cursor->getBaseCursor()->toArray();
+            $this->data = $this->cursor->getBaseCursor()->toArray(false);
         }
         $this->initialized = true;
     }
@@ -232,14 +232,13 @@ class EagerCursor extends BaseEagerCursor
      */
     protected function primeReferences()
     {
-        if ($this->referencesPrimed || !$this->hydrate) {
+        if ($this->referencesPrimed || !$this->hydrate || empty($this->primers)) {
             return;
         }
 
         $this->referencesPrimed = true;
 
         foreach ($this->primers as $fieldName => $primer) {
-            $this->rewind();
             $primer = is_callable($primer) ? $primer : null;
             $this->referencePrimer->primeReferences($this->class, $this, $fieldName, $this->unitOfWorkHints, $primer);
         }

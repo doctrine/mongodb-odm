@@ -144,7 +144,7 @@ document) as the first argument:
         public function findSomeComments(BlogPost $blogPost)
         {
             return $this->createQueryBuilder()
-                // ...
+                ->field('blogPost')->references($blogPost);
                 ->getQuery()->execute();
         }
     }

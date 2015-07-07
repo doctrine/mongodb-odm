@@ -61,6 +61,27 @@ class GH852Test extends BaseTest
         $this->assertTrue($parent->refMany[1]->__isInitialized());
         $this->assertEquals($idGenerator('childC'), $parent->refMany[1]->id);
         $this->assertEquals('childC', $parent->refMany[1]->name);
+
+        // these lines are relevant for $useKeys = false in ReferencePrimer::__construct()
+        $this->dm->clear();
+        $docs = $this->dm->createQueryBuilder(get_class($parent))
+                ->field('name')->equals('parent')
+                ->field('refMany')->prime()
+                ->getQuery()->execute();
+        $this->assertCount(1, $docs);
+        $this->assertCount(2, $docs->current()->refMany);
+
+        // these lines are relevant for $useKeys = false in EagerCursor::initialize()
+        $this->dm->clear();
+        $docs = $this->dm->createQueryBuilder(get_class($parent))
+                ->eagerCursor()->getQuery()->execute();
+        $this->assertCount(4, $docs);
+
+        // these lines are relevant for $useKeys = false in DocumentRepository::matching()
+        $this->dm->clear();
+        $docs = $this->dm->getRepository(get_class($parent))
+                ->matching(new \Doctrine\Common\Collections\Criteria());
+        $this->assertCount(4, $docs);
     }
 
     public function provideIdGenerators()

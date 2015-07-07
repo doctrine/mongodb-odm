@@ -173,9 +173,25 @@ class MappingException extends BaseMappingException
     {
         return new self("Target document must be specified for simple reference: $className::$fieldName");
     }
-    
+
+    /**
+     * @param string $strategy
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
     public static function atomicCollectionStrategyNotAllowed($strategy, $className, $fieldName)
     {
         return new self("$strategy collection strategy can be used only in top level document, used in $className::$fieldName");
+    }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function owningAndInverseReferencesRequireTargetDocument($className, $fieldName)
+    {
+        return new self("Target document must be specified for owning/inverse sides of reference: $className::$fieldName");
     }
 }

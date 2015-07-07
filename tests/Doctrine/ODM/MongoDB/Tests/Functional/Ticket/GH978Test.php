@@ -41,8 +41,8 @@ class GH978Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         );
         //persist document
         $this->dm->persist($document);
-        //check the count of uow (Persist operation of money is not cascaded: 1 + 2*3
-        $this->assertEquals(7, $this->uow->size());
+        //check the count of uow (Persist operation of money is cascaded)
+        $this->assertEquals(9, $this->uow->size());
         //detach the document
         $this->dm->detach($document);
         //should be 0 now
