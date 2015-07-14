@@ -13,9 +13,9 @@ Example filter class
 Throughout this document, the example ``MyLocaleFilter`` class will be used to
 illustrate how the filter feature works. A filter class must extend the base
 ``Doctrine\ODM\MongoDB\Query\Filter\BsonFilter`` class and implement the
-``addFilterConstraint()`` method. This method receives ``ClassMetadata`` and is
+``addFilterCriteria()`` method. This method receives ``ClassMetadata`` and is
 invoked whenever a query is prepared for any class. Since filters are typically
-designed with a specific class or interface in mind, ``addFilterConstraint()``
+designed with a specific class or interface in mind, ``addFilterCriteria()``
 will frequently start by checking ``ClassMetadata`` and returning immediately if
 it is not supported.
 
@@ -34,7 +34,7 @@ should be accessed via ``BsonFilter::getParameter()``.
 
     class MyLocaleFilter extends BsonFilter
     {
-        public function addFilterConstraint(ClassMetadata $targetDocument)
+        public function addFilterCriteria(ClassMetadata $targetDocument)
         {
             // Check if the entity implements the LocalAware interface
             if ( ! $targetDocument->reflClass->implementsInterface('LocaleAware')) {
