@@ -215,7 +215,7 @@ class PersistenceBuilder
                 }
             }
         }
-        // collections that areen't dirty but could be subject to update are
+        // collections that aren't dirty but could be subject to update are
         // excluded from change set, let's go through them now
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
             $mapping = $coll->getMapping();

@@ -503,7 +503,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Only flush the given document according to a ruleset that keeps the UoW consistent.
      *
-     * 1. All documents scheduled for insertion, (orphan) removals and changes in collections are processed as well!
+     * 1. All documents scheduled for insertion and (orphan) removals are processed as well!
      * 2. Proxies are skipped.
      * 3. Only if document is properly managed.
      *
@@ -882,13 +882,12 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($value instanceof PersistentCollection && $value->isDirty() && $assoc['isOwningSide']) {
-            if ($topOrExistingDocument || strncmp($assoc['strategy'], 'set', 3) === 0) {
+            if ($topOrExistingDocument || CollectionHelper::usesSet($assoc['strategy'])) {
                 $this->scheduleCollectionUpdate($value);
             }
             $topmostOwner = $this->getOwningDocument($value->getOwner());
             $this->visitedCollections[spl_object_hash($topmostOwner)][] = $value;
         }
-
 
         // Look through the documents, and in any of their associations,
         // for transient (new) documents, recursively. ("Persistence by reachability")
@@ -2711,10 +2710,15 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Gets topmost owning document for given embedded document. For simplicity
-     * returns given object if it happens to be a top level document.
+     * Get the top-most owning document of a given document
+     *
+     * If a top-level document is provided, that same document will be returned.
+     * For an embedded document, we will walk through parent associations until
+     * we find a top-level document.
      *
      * @param object $document
+     * @throws \UnexpectedValueException when a top-level document could not be found
+     * @return object
      */
     public function getOwningDocument($document)
     {
@@ -2722,8 +2726,8 @@ class UnitOfWork implements PropertyChangedListener
         while ($class->isEmbeddedDocument) {
             $parentAssociation = $this->getParentAssociation($document);
 
-            if (!$parentAssociation) {
-                return;
+            if ( ! $parentAssociation) {
+                throw new \UnexpectedValueException("Could not determine parent association for " . get_class($document));
             }
 
             list(, $document, ) = $parentAssociation;
