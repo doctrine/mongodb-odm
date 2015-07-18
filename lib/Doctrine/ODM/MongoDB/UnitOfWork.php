@@ -1561,7 +1561,8 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->identityMap[$class->name][$id] = $document;
 
-        if ($document instanceof NotifyPropertyChanged) {
+        if ($document instanceof NotifyPropertyChanged &&
+            ( ! $document instanceof Proxy || $document->__isInitialized())) {
             $document->addPropertyChangedListener($this);
         }
 
