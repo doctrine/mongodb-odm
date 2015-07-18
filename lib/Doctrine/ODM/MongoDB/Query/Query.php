@@ -185,7 +185,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     {
         $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {
-            if ( ! $this->collection->isFieldIndexed($field)) {
+            if (! $this->collection->isFieldIndexed($field)) {
                 return false;
             }
         }
@@ -202,7 +202,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $unindexedFields = array();
         $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {
-            if ( ! $this->collection->isFieldIndexed($field)) {
+            if (! $this->collection->isFieldIndexed($field)) {
                 $unindexedFields[] = $field;
             }
         }
@@ -223,7 +223,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
         $results = parent::execute();
 
-        if ( ! $this->hydrate) {
+        if (! $this->hydrate) {
             return $results;
         }
 
@@ -256,7 +256,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
             $results = $uow->getOrCreateDocument($this->class->name, $results, $this->unitOfWorkHints);
         }
 
-        if ( ! empty($this->primers)) {
+        if (! empty($this->primers)) {
             $referencePrimer = new ReferencePrimer($this->dm, $uow);
 
             foreach ($this->primers as $fieldName => $primer) {
@@ -293,7 +293,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $cursor = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
 
         // Wrap ODM Cursor with EagerCursor
-        if ( ! empty($this->query['eagerCursor'])) {
+        if (! empty($this->query['eagerCursor'])) {
             $cursor = new EagerCursor($cursor, $this->dm->getUnitOfWork(), $this->class);
         }
 

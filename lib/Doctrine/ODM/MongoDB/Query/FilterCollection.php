@@ -86,11 +86,11 @@ class FilterCollection
      */
     public function enable($name)
     {
-        if ( ! $this->has($name)) {
+        if (! $this->has($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
-        if ( ! $this->isEnabled($name)) {
+        if (! $this->isEnabled($name)) {
             $filterClass = $this->config->getFilterClassName($name);
             $filterParameters = $this->config->getFilterParameters($name);
             $filter = new $filterClass($this->dm);
@@ -135,7 +135,7 @@ class FilterCollection
      */
     public function getFilter($name)
     {
-        if ( ! $this->isEnabled($name)) {
+        if (! $this->isEnabled($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
         }
         return $this->enabledFilters[$name];

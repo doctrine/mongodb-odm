@@ -213,7 +213,7 @@ class DocumentPersister
      */
     public function executeInserts(array $options = array())
     {
-        if ( ! $this->queuedInserts) {
+        if (! $this->queuedInserts) {
             return;
         }
 
@@ -261,7 +261,7 @@ class DocumentPersister
      */
     public function executeUpserts(array $options = array())
     {
-        if ( ! $this->queuedUpserts) {
+        if (! $this->queuedUpserts) {
             return;
         }
 
@@ -351,7 +351,7 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $update = $this->pb->prepareUpdateData($document);
 
-        if ( ! empty($update)) {
+        if (! empty($update)) {
             $id = $this->class->getDatabaseIdentifierValue($id);
             $query = array('_id' => $id);
 
@@ -667,7 +667,7 @@ class DocumentPersister
             $reference = $this->dm->getReference($className, $id);
 
             // no custom sort so add the references right now in the order they are embedded
-            if ( ! $sorted) {
+            if (! $sorted) {
                 if ($mapping['strategy'] === 'set') {
                     $collection->set($key, $reference);
                 } else {
@@ -699,10 +699,10 @@ class DocumentPersister
             if (isset($mapping['skip'])) {
                 $cursor->skip($mapping['skip']);
             }
-            if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
+            if (! empty($hints[Query::HINT_SLAVE_OKAY])) {
                 $cursor->slaveOkay(true);
             }
-            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+            if (! empty($hints[Query::HINT_READ_PREFERENCE])) {
                 $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
             }
             $documents = $cursor->toArray(false);
@@ -759,10 +759,10 @@ class DocumentPersister
         if (isset($mapping['skip'])) {
             $qb->skip($mapping['skip']);
         }
-        if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
+        if (! empty($hints[Query::HINT_SLAVE_OKAY])) {
             $qb->slaveOkay(true);
         }
-        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+        if (! empty($hints[Query::HINT_READ_PREFERENCE])) {
             $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
         }
 
@@ -799,10 +799,10 @@ class DocumentPersister
         if (isset($mapping['skip'])) {
             $cursor->skip($mapping['skip']);
         }
-        if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
+        if (! empty($hints[Query::HINT_SLAVE_OKAY])) {
             $cursor->slaveOkay(true);
         }
-        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+        if (! empty($hints[Query::HINT_READ_PREFERENCE])) {
             $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
         }
 
@@ -947,12 +947,12 @@ class DocumentPersister
             $mapping = $class->fieldMappings[$fieldName];
             $fieldName = $mapping['name'];
 
-            if ( ! $prepareValue) {
+            if (! $prepareValue) {
                 return array($fieldName, $value);
             }
 
             // Prepare mapped, embedded objects
-            if ( ! empty($mapping['embedded']) && is_object($value) &&
+            if (! empty($mapping['embedded']) && is_object($value) &&
                 ! $this->dm->getMetadataFactory()->isTransient(get_class($value))) {
                 return array($fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value));
             }
@@ -965,12 +965,12 @@ class DocumentPersister
             // Additional preparation for one or more simple reference values
             $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
 
-            if ( ! is_array($value)) {
+            if (! is_array($value)) {
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
             // Objects without operators or with DBRef fields can be converted immediately
-            if ( ! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
+            if (! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
@@ -981,16 +981,16 @@ class DocumentPersister
         if (($class->hasField($fieldName) && $class->isIdentifier($fieldName)) || $fieldName === '_id') {
             $fieldName = '_id';
 
-            if ( ! $prepareValue) {
+            if (! $prepareValue) {
                 return array($fieldName, $value);
             }
 
-            if ( ! is_array($value)) {
+            if (! is_array($value)) {
                 return array($fieldName, $class->getDatabaseIdentifierValue($value));
             }
 
             // Objects without operators or with DBRef fields can be converted immediately
-            if ( ! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
+            if (! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
                 return array($fieldName, $class->getDatabaseIdentifierValue($value));
             }
 
@@ -1011,7 +1011,7 @@ class DocumentPersister
         $e = explode('.', $fieldName, 4);
 
         // No further processing for unmapped fields
-        if ( ! isset($class->fieldMappings[$e[0]])) {
+        if (! isset($class->fieldMappings[$e[0]])) {
             return array($fieldName, $value);
         }
 
@@ -1046,7 +1046,7 @@ class DocumentPersister
         }
 
         // No further processing for fields without a targetDocument mapping
-        if ( ! isset($mapping['targetDocument'])) {
+        if (! isset($mapping['targetDocument'])) {
             if ($nextObjectProperty) {
                 $fieldName .= '.'.$nextObjectProperty;
             }
@@ -1057,7 +1057,7 @@ class DocumentPersister
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
 
         // No further processing for unmapped targetDocument fields
-        if ( ! $targetClass->hasField($objectProperty)) {
+        if (! $targetClass->hasField($objectProperty)) {
             if ($nextObjectProperty) {
                 $fieldName .= '.'.$nextObjectProperty;
             }
@@ -1075,16 +1075,16 @@ class DocumentPersister
 
         // Process targetDocument identifier fields
         if ($objectPropertyIsId) {
-            if ( ! $prepareValue) {
+            if (! $prepareValue) {
                 return array($fieldName, $value);
             }
 
-            if ( ! is_array($value)) {
+            if (! is_array($value)) {
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
             // Objects without operators or with DBRef fields can be converted immediately
-            if ( ! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
+            if (! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
                 return array($fieldName, $targetClass->getDatabaseIdentifierValue($value));
             }
 
@@ -1157,7 +1157,7 @@ class DocumentPersister
      */
     private function hasDBRefFields($value)
     {
-        if ( ! is_array($value) && ! is_object($value)) {
+        if (! is_array($value) && ! is_object($value)) {
             return false;
         }
 
@@ -1182,7 +1182,7 @@ class DocumentPersister
      */
     private function hasQueryOperators($value)
     {
-        if ( ! is_array($value) && ! is_object($value)) {
+        if (! is_array($value) && ! is_object($value)) {
             return false;
         }
 

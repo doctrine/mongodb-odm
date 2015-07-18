@@ -192,7 +192,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function validateIdentifier($class)
     {
-        if ( ! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
+        if (! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
             throw MappingException::identifierRequired($class->name);
         }
     }
@@ -250,14 +250,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 $customGenerator = new $idGenOptions['class'];
                 unset($idGenOptions['class']);
-                if ( ! $customGenerator instanceof \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator) {
+                if (! $customGenerator instanceof \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator) {
                     throw MappingException::classIsNotAValidGenerator(get_class($customGenerator));
                 }
 
                 $methods = get_class_methods($customGenerator);
                 foreach ($idGenOptions as $name => $value) {
                     $method = 'set' . ucfirst($name);
-                    if ( ! in_array($method, $methods)) {
+                    if (! in_array($method, $methods)) {
                         throw MappingException::missingGeneratorSetter(get_class($customGenerator), $name);
                     }
 
@@ -281,10 +281,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
-            if ( ! isset($mapping['declared'])) {
+            if (! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
             $subClass->addInheritedFieldMapping($mapping);

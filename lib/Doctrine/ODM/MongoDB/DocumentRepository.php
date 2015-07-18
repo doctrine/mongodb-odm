@@ -210,7 +210,7 @@ class DocumentRepository implements ObjectRepository, Selectable
             );
         }
 
-        if ( ! isset($arguments[0])) {
+        if (! isset($arguments[0])) {
             throw MongoDBException::findByRequiresParameter($method . $by);
         }
 

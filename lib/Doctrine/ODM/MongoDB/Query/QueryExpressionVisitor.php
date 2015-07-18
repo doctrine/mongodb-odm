@@ -122,7 +122,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      */
     public function walkCompositeExpression(CompositeExpression $compositeExpr)
     {
-        if ( ! isset(self::$compositeMethods[$compositeExpr->getType()])) {
+        if (! isset(self::$compositeMethods[$compositeExpr->getType()])) {
             throw new \RuntimeException('Unknown composite ' . $compositeExpr->getType());
         }
 

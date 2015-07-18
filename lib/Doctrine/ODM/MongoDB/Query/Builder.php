@@ -141,7 +141,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     public function prime($primer = true)
     {
-        if ( ! is_bool($primer) && ! is_callable($primer)) {
+        if (! is_bool($primer) && ! is_callable($primer)) {
             throw new \InvalidArgumentException('$primer is not a boolean or callable');
         }
 

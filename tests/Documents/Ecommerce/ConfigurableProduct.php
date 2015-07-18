@@ -66,7 +66,7 @@ class ConfigurableProduct
      */
     public function addOption($name, $price = null, StockItem $item = null)
     {
-        if ( ! $name instanceof Option) {
+        if (! $name instanceof Option) {
             $name = (string) $name;
             if (empty($name)) {
                 throw new \InvalidArgumentException('option name cannot be empty');
@@ -108,7 +108,7 @@ class ConfigurableProduct
     public function selectOption($name)
     {
         $option = $this->_findOption($name);
-        if ( ! isset($option)) {
+        if (! isset($option)) {
             throw new \InvalidArgumentException('specified option: ' . $name . ' doesn\'t exist');
         }
         $this->selectedOption = $option;

@@ -253,7 +253,7 @@ class SchemaManager
                 $keys = $index['keys'];
                 $options = $index['options'];
 
-                if ( ! isset($options['safe']) && ! isset($options['w'])) {
+                if (! isset($options['safe']) && ! isset($options['w'])) {
                     if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
                         $options['safe'] = true;
                     } else {
@@ -267,7 +267,7 @@ class SchemaManager
                     unset($options['safe']);
                 }
 
-                if ( ! isset($options['timeout']) && isset($timeout)) {
+                if (! isset($options['timeout']) && isset($timeout)) {
                     $options['timeout'] = $timeout;
                 }
 
@@ -466,7 +466,7 @@ class SchemaManager
             return false;
         }
 
-        if ( ! empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
+        if (! empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
             ! empty($documentIndexOptions['unique']) && ! empty($documentIndexOptions['dropDups'])) {
             return false;
         }

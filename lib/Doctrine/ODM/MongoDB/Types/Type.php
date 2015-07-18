@@ -143,10 +143,10 @@ abstract class Type
      */
     public static function getType($type)
     {
-        if ( ! isset(self::$typesMap[$type])) {
+        if (! isset(self::$typesMap[$type])) {
             throw new \InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
         }
-        if ( ! isset(self::$typeObjects[$type])) {
+        if (! isset(self::$typeObjects[$type])) {
             $className = self::$typesMap[$type];
             self::$typeObjects[$type] = new $className;
         }
@@ -226,7 +226,7 @@ abstract class Type
      */
     public static function overrideType($name, $className)
     {
-        if ( ! isset(self::$typesMap[$name])) {
+        if (! isset(self::$typesMap[$name])) {
             throw MappingException::typeNotFound($name);
         }
 

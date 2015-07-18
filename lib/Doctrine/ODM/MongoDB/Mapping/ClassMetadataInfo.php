@@ -421,7 +421,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getReflectionClass()
     {
-        if ( ! $this->reflClass) {
+        if (! $this->reflClass) {
             $this->reflClass = new \ReflectionClass($this->name);
         }
 
@@ -672,7 +672,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             if ($this->name == $className) {
                 $this->discriminatorValue = $value;
             } else {
-                if ( ! class_exists($className)) {
+                if (! class_exists($className)) {
                     throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
                 }
                 if (is_subclass_of($className, $this->name)) {
@@ -882,7 +882,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function setCollection($name)
     {
         if (is_array($name)) {
-            if ( ! isset($name['name'])) {
+            if (! isset($name['name'])) {
                 throw new \InvalidArgumentException('A name key is required when passing an array to setCollection()');
             }
             $this->collectionCapped = isset($name['capped']) ? $name['capped'] : false;
@@ -1025,13 +1025,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function mapField(array $mapping)
     {
-        if ( ! isset($mapping['fieldName']) && isset($mapping['name'])) {
+        if (! isset($mapping['fieldName']) && isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
         }
-        if ( ! isset($mapping['fieldName'])) {
+        if (! isset($mapping['fieldName'])) {
             throw MappingException::missingFieldName($this->name);
         }
-        if ( ! isset($mapping['name'])) {
+        if (! isset($mapping['name'])) {
             $mapping['name'] = $mapping['fieldName'];
         }
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
@@ -1107,7 +1107,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 $this->generatorType = $generatorType;
             }
         }
-        if ( ! isset($mapping['nullable'])) {
+        if (! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
         }
 
@@ -1478,7 +1478,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getFieldMapping($fieldName)
     {
-        if ( ! isset($this->fieldMappings[$fieldName])) {
+        if (! isset($this->fieldMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
         return $this->fieldMappings[$fieldName];
@@ -1734,7 +1734,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getAssociationTargetClass($assocName)
     {
-        if ( ! isset($this->associationMappings[$assocName])) {
+        if (! isset($this->associationMappings[$assocName])) {
             throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
         }
 

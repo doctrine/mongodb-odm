@@ -47,7 +47,7 @@ class BinDataType extends Type
             return null;
         }
 
-        if ( ! $value instanceof \MongoBinData) {
+        if (! $value instanceof \MongoBinData) {
             return new \MongoBinData($value, $this->binDataType);
         }
 

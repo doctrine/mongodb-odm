@@ -135,7 +135,7 @@ class ProxyFactory extends AbstractProxyFactory
                 $properties = $proxy->__getLazyProperties();
 
                 foreach ($properties as $propertyName => $property) {
-                    if ( ! isset($proxy->$propertyName)) {
+                    if (! isset($proxy->$propertyName)) {
                         $proxy->$propertyName = $properties[$propertyName];
                     }
                 }
@@ -162,7 +162,7 @@ class ProxyFactory extends AbstractProxyFactory
             $properties = $proxy->__getLazyProperties();
 
             foreach ($properties as $propertyName => $property) {
-                if ( ! isset($proxy->$propertyName)) {
+                if (! isset($proxy->$propertyName)) {
                     $proxy->$propertyName = $properties[$propertyName];
                 }
             }

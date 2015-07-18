@@ -113,7 +113,7 @@ class NativePhpunitTask extends Task
             $result = $runner->doRun($suite, $arguments);
             /* @var $result PHPUnit_Framework_TestResult */
 
-            if ( ($this->haltonfailure && $result->failureCount() > 0) || ($this->haltonerror && $result->errorCount() > 0) ) {
+            if (($this->haltonfailure && $result->failureCount() > 0) || ($this->haltonerror && $result->errorCount() > 0)) {
                 throw new BuildException("PHPUnit: ".$result->failureCount()." Failures and ".$result->errorCount()." Errors, ".
                     "last failure message: ".$printer->getMessages());
             }

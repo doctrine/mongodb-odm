@@ -83,12 +83,12 @@ EOT
 
         $depth = $input->getOption('depth');
 
-        if ( ! is_numeric($depth)) {
+        if (! is_numeric($depth)) {
             throw new \LogicException("Option 'depth' must contain an integer value");
         }
 
         if (($skip = $input->getOption('skip')) !== null) {
-            if ( ! is_numeric($skip)) {
+            if (! is_numeric($skip)) {
                 throw new \LogicException("Option 'skip' must contain an integer value");
             }
 
@@ -96,7 +96,7 @@ EOT
         }
 
         if (($limit = $input->getOption('limit')) !== null) {
-            if ( ! is_numeric($limit)) {
+            if (! is_numeric($limit)) {
                 throw new \LogicException("Option 'limit' must contain an integer value");
             }
 

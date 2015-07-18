@@ -117,7 +117,7 @@ class UuidGenerator extends AbstractIdGenerator
      */
     public function generateV5($namespace, $salt)
     {
-        if ( ! $this->isValid($namespace)) {
+        if (! $this->isValid($namespace)) {
             throw new \Exception('Provided $namespace is invalid: ' . $namespace);
         }
 

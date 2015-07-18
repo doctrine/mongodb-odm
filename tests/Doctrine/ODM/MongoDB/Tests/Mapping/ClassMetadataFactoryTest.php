@@ -90,7 +90,7 @@ class ClassMetadataFactoryTestSubject extends \Doctrine\ODM\MongoDB\Mapping\Clas
     protected function _newClassMetadataInstance($className)
     {
         $this->_requestedClasses[] = $className;
-        if ( ! isset($this->_mockMetadata[$className])) {
+        if (! isset($this->_mockMetadata[$className])) {
             throw new InvalidArgumentException("No mock metadata found for class $className.");
         }
         return $this->_mockMetadata[$className];

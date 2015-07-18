@@ -89,7 +89,7 @@ class PersistenceBuilder
             $value = null;
             if ($new !== null) {
                 // @Field, @String, @Date, etc.
-                if ( ! isset($mapping['association'])) {
+                if (! isset($mapping['association'])) {
                     $value = Type::getType($mapping['type'])->convertToDatabaseValue($new);
 
                 // @ReferenceOne
@@ -135,7 +135,7 @@ class PersistenceBuilder
             $mapping = $class->fieldMappings[$fieldName];
 
             // skip non embedded document identifiers
-            if ( ! $class->isEmbeddedDocument && ! empty($mapping['id'])) {
+            if (! $class->isEmbeddedDocument && ! empty($mapping['id'])) {
                 continue;
             }
 
@@ -156,7 +156,7 @@ class PersistenceBuilder
                 }
 
             // @Field, @String, @Date, etc.
-            } elseif ( ! isset($mapping['association'])) {
+            } elseif (! isset($mapping['association'])) {
                 if (isset($new) || $mapping['nullable'] === true) {
                     $updateData['$set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
                 } else {
@@ -170,7 +170,7 @@ class PersistenceBuilder
                     $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
 
                 // If we don't have a new value then lets unset the embedded document
-                } elseif ( ! $new) {
+                } elseif (! $new) {
                     $updateData['$unset'][$mapping['name']] = true;
 
                 // Update existing embedded document
@@ -187,7 +187,7 @@ class PersistenceBuilder
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY) {
                 if (null !== $new) {
                     foreach ($new as $key => $embeddedDoc) {
-                        if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
+                        if (! $this->uow->isScheduledForInsert($embeddedDoc)) {
                             $update = $this->prepareUpdateData($embeddedDoc);
                             foreach ($update as $cmd => $values) {
                                 foreach ($values as $name => $value) {
@@ -240,7 +240,7 @@ class PersistenceBuilder
                 }
 
             // @Field, @String, @Date, etc.
-            } elseif ( ! isset($mapping['association'])) {
+            } elseif (! isset($mapping['association'])) {
                 if (isset($new) || $mapping['nullable'] === true) {
                     $updateData['$set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
                 }
@@ -252,7 +252,7 @@ class PersistenceBuilder
                     $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
 
                 // If we don't have a new value then do nothing on upsert
-                } elseif ( ! $new) {
+                } elseif (! $new) {
 
                 // Update existing embedded document
                 } else {
@@ -267,7 +267,7 @@ class PersistenceBuilder
             // @EmbedMany
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_MANY && $new) {
                 foreach ($new as $key => $embeddedDoc) {
-                    if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
+                    if (! $this->uow->isScheduledForInsert($embeddedDoc)) {
                         $update = $this->prepareUpsertData($embeddedDoc);
                         foreach ($update as $cmd => $values) {
                             foreach ($values as $name => $value) {
@@ -333,7 +333,7 @@ class PersistenceBuilder
 
         foreach ($class->fieldMappings as $mapping) {
             // Skip notSaved fields
-            if ( ! empty($mapping['notSaved'])) {
+            if (! empty($mapping['notSaved'])) {
                 continue;
             }
 
@@ -390,7 +390,7 @@ class PersistenceBuilder
         /* Add a discriminator value if the embedded document is not mapped
          * explicitly to a targetDocument class.
          */
-        if ( ! isset($embeddedMapping['targetDocument'])) {
+        if (! isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = $embeddedMapping['discriminatorField'];
             $discriminatorValue = isset($embeddedMapping['discriminatorMap'])
                 ? array_search($class->name, $embeddedMapping['discriminatorMap'])

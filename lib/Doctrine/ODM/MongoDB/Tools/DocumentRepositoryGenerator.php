@@ -67,11 +67,11 @@ class <className> extends DocumentRepository
               . str_replace('\\', \DIRECTORY_SEPARATOR, $fullClassName) . '.php';
         $dir = dirname($path);
 
-        if ( ! is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
 
-        if ( ! file_exists($path)) {
+        if (! file_exists($path)) {
             file_put_contents($path, $code);
         }
     }

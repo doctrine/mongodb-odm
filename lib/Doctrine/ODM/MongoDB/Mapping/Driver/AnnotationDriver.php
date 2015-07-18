@@ -103,7 +103,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
-        if ( ! $documentAnnots) {
+        if (! $documentAnnots) {
             throw MappingException::classIsNotAValidDocument($className);
         }
 
@@ -196,7 +196,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $class->registerAlsoLoadMethod($method->getName(), $annot->value);
                 }
 
-                if ( ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks'])) {
+                if (! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks'])) {
                     continue;
                 }
 

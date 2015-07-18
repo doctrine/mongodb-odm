@@ -283,13 +283,13 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
         $this->assertTrue(isset($indexes[0]['keys']['createdAt']));
         $this->assertEquals(1, $indexes[0]['keys']['createdAt']);
-        $this->assertTrue( ! empty($indexes[0]['options']));
+        $this->assertTrue(! empty($indexes[0]['options']));
         $this->assertTrue(isset($indexes[0]['options']['expireAfterSeconds']));
         $this->assertSame(3600, $indexes[0]['options']['expireAfterSeconds']);
 
         $this->assertTrue(isset($indexes[1]['keys']['email']));
         $this->assertEquals(-1, $indexes[1]['keys']['email']);
-        $this->assertTrue( ! empty($indexes[1]['options']));
+        $this->assertTrue(! empty($indexes[1]['options']));
         $this->assertTrue(isset($indexes[1]['options']['unique']));
         $this->assertEquals(true, $indexes[1]['options']['unique']);
         $this->assertTrue(isset($indexes[1]['options']['dropDups']));
@@ -297,7 +297,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
         $this->assertTrue(isset($indexes[2]['keys']['mysqlProfileId']));
         $this->assertEquals(-1, $indexes[2]['keys']['mysqlProfileId']);
-        $this->assertTrue( ! empty($indexes[2]['options']));
+        $this->assertTrue(! empty($indexes[2]['options']));
         $this->assertTrue(isset($indexes[2]['options']['unique']));
         $this->assertEquals(true, $indexes[2]['options']['unique']);
         $this->assertTrue(isset($indexes[2]['options']['dropDups']));

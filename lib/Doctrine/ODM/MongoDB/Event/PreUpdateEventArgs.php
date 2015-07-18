@@ -115,7 +115,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      */
     private function assertValidField($field)
     {
-        if ( ! isset($this->documentChangeSet[$field])) {
+        if (! isset($this->documentChangeSet[$field])) {
             throw new \InvalidArgumentException(sprintf(
                 'Field "%s" is not a valid field of the document "%s" in PreUpdateEventArgs.',
                 $field,

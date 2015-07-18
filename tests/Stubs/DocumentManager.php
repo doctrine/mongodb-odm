@@ -32,7 +32,7 @@ class DocumentManager extends BaseDocumentManager
 
     public function getClassMetadata($className)
     {
-        if ( ! isset($this->classMetadatas[$className])) {
+        if (! isset($this->classMetadatas[$className])) {
             throw new \InvalidArgumentException('Metadata for class ' . $className . ' doesn\'t exist, try calling ->setClassMetadata() first');
         }
         return $this->classMetadatas[$className];

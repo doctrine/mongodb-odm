@@ -59,7 +59,7 @@ EOT
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         $cacheDriver = $dm->getConfiguration()->getMetadataCacheImpl();
 
-        if ( ! $cacheDriver) {
+        if (! $cacheDriver) {
             throw new \InvalidArgumentException('No Metadata cache driver is configured on given DocumentManager.');
         }
 

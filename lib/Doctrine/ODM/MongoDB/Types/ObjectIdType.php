@@ -33,7 +33,7 @@ class ObjectIdType extends Type
         if ($value === null) {
             return null;
         }
-        if ( ! $value instanceof \MongoId) {
+        if (! $value instanceof \MongoId) {
             $value = new \MongoId($value);
         }
         return $value;

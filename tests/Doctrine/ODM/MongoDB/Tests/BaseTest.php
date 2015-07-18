@@ -20,7 +20,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        if ( ! $this->dm) {
+        if (! $this->dm) {
             return;
         }
 

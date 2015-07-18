@@ -75,11 +75,11 @@ class ReferencePrimer
             $qb = $dm->createQueryBuilder($class->name)
                 ->field($class->identifier)->in($ids);
 
-            if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
+            if (! empty($hints[Query::HINT_SLAVE_OKAY])) {
                 $qb->slaveOkay(true);
             }
 
-            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+            if (! empty($hints[Query::HINT_READ_PREFERENCE])) {
                 $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
             }
 
@@ -113,14 +113,14 @@ class ReferencePrimer
         /* Inverse-side references would need to be populated before we can
          * collect references to be primed. This is not supported.
          */
-        if ( ! isset($mapping['reference']) || ! $mapping['isOwningSide']) {
+        if (! isset($mapping['reference']) || ! $mapping['isOwningSide']) {
             throw new \InvalidArgumentException(sprintf('Field "%s" is not the owning side of a reference relationship in class "%s"', $fieldName, $class->name));
         }
 
         /* Simple reference require a target document class so we can construct
          * the priming query.
          */
-        if ( ! empty($mapping['simple']) && empty($mapping['targetDocument'])) {
+        if (! empty($mapping['simple']) && empty($mapping['targetDocument'])) {
             throw new \LogicException(sprintf('Field "%s" is a simple reference without a target document class in class "%s"', $fieldName, $class->name));
         }
 
@@ -137,7 +137,7 @@ class ReferencePrimer
             /* The field will need to be either a Proxy (reference-one) or
              * PersistentCollection (reference-many) in order to prime anything.
              */
-            if ( ! is_object($fieldValue)) {
+            if (! is_object($fieldValue)) {
                 continue;
             }
 
@@ -170,13 +170,13 @@ class ReferencePrimer
     {
         $mapping = $persistentCollection->getMapping();
 
-        if ( ! empty($mapping['simple'])) {
+        if (! empty($mapping['simple'])) {
             $className = $mapping['targetDocument'];
             $class = $this->dm->getClassMetadata($className);
         }
 
         foreach ($persistentCollection->getMongoData() as $reference) {
-            if ( ! empty($mapping['simple'])) {
+            if (! empty($mapping['simple'])) {
                 $id = $reference;
             } else {
                 $id = $reference['$id'];
@@ -186,7 +186,7 @@ class ReferencePrimer
 
             $document = $this->uow->tryGetById($id, $class);
 
-            if ( ! $document || ($document instanceof Proxy && ! $document->__isInitialized())) {
+            if (! $document || ($document instanceof Proxy && ! $document->__isInitialized())) {
                 $id = $class->getPHPIdentifierValue($id);
                 $groupedIds[$className][serialize($id)] = $id;
             }

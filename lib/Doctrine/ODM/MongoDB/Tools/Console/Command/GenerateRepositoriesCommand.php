@@ -72,11 +72,11 @@ EOT
         // Process destination directory
         $destPath = realpath($input->getArgument('dest-path'));
 
-        if ( ! file_exists($destPath)) {
+        if (! file_exists($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } elseif ( ! is_writable($destPath)) {
+        } elseif (! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );

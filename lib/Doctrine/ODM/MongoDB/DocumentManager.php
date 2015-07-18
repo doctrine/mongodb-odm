@@ -333,11 +333,11 @@ class DocumentManager implements ObjectManager
         $metadata = $this->metadataFactory->getMetadataFor($className);
         $collectionName = $metadata->getCollection();
 
-        if ( ! $collectionName) {
+        if (! $collectionName) {
             throw MongoDBException::documentNotMappedToCollection($className);
         }
 
-        if ( ! isset($this->documentCollections[$className])) {
+        if (! isset($this->documentCollections[$className])) {
             $db = $this->getDocumentDatabase($className);
 
             $this->documentCollections[$className] = $metadata->isFile()
@@ -389,7 +389,7 @@ class DocumentManager implements ObjectManager
      */
     public function persist($document)
     {
-        if ( ! is_object($document)) {
+        if (! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
@@ -407,7 +407,7 @@ class DocumentManager implements ObjectManager
      */
     public function remove($document)
     {
-        if ( ! is_object($document)) {
+        if (! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
@@ -423,7 +423,7 @@ class DocumentManager implements ObjectManager
      */
     public function refresh($document)
     {
-        if ( ! is_object($document)) {
+        if (! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
@@ -442,7 +442,7 @@ class DocumentManager implements ObjectManager
      */
     public function detach($document)
     {
-        if ( ! is_object($document)) {
+        if (! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->unitOfWork->detach($document);
@@ -460,7 +460,7 @@ class DocumentManager implements ObjectManager
      */
     public function merge($document)
     {
-        if ( ! is_object($document)) {
+        if (! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
@@ -477,7 +477,7 @@ class DocumentManager implements ObjectManager
      */
     public function lock($document, $lockMode, $lockVersion = null)
     {
-        if ( ! is_object($document)) {
+        if (! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->unitOfWork->lock($document, $lockMode, $lockVersion);
@@ -491,7 +491,7 @@ class DocumentManager implements ObjectManager
      */
     public function unlock($document)
     {
-        if ( ! is_object($document)) {
+        if (! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         $this->unitOfWork->unlock($document);
@@ -654,7 +654,7 @@ class DocumentManager implements ObjectManager
      */
     public function contains($document)
     {
-        if ( ! is_object($document)) {
+        if (! is_object($document)) {
             throw new \InvalidArgumentException(gettype($document));
         }
         return $this->unitOfWork->isScheduledForInsert($document) ||
@@ -683,7 +683,7 @@ class DocumentManager implements ObjectManager
      */
     public function createDBRef($document, array $referenceMapping = null)
     {
-        if ( ! is_object($document)) {
+        if (! is_object($document)) {
             throw new \InvalidArgumentException('Cannot create a DBRef, the document is not an object');
         }
 
@@ -696,7 +696,7 @@ class DocumentManager implements ObjectManager
             );
         }
 
-        if ( ! empty($referenceMapping['simple'])) {
+        if (! empty($referenceMapping['simple'])) {
             return $class->getDatabaseIdentifierValue($id);
         }
 
@@ -760,7 +760,7 @@ class DocumentManager implements ObjectManager
      */
     public function isOpen()
     {
-        return ( ! $this->closed);
+        return (! $this->closed);
     }
 
     /**

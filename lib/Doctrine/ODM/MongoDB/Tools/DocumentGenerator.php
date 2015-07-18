@@ -178,19 +178,19 @@ public function <methodName>()
         $path = $outputDirectory . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name) . $this->extension;
         $dir = dirname($path);
 
-        if ( ! is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
 
         $this->isNew = ! file_exists($path) || (file_exists($path) && $this->regenerateDocumentIfExists);
 
-        if ( ! $this->isNew) {
+        if (! $this->isNew) {
             $this->parseTokensInDocumentFile($path);
         }
 
         if ($this->backupExisting && file_exists($path)) {
             $backupPath = dirname($path) . DIRECTORY_SEPARATOR . basename($path) . '~';
-            if ( ! copy($path, $backupPath)) {
+            if (! copy($path, $backupPath)) {
                 throw new \RuntimeException("Attempt to backup overwritten document file but copy operation failed.");
             }
         }
@@ -200,7 +200,7 @@ public function <methodName>()
             file_put_contents($path, $this->generateDocumentClass($metadata));
 
         // If document exists and we're allowed to update the document class
-        } elseif ( ! $this->isNew && $this->updateDocumentIfExists) {
+        } elseif (! $this->isNew && $this->updateDocumentIfExists) {
             file_put_contents($path, $this->generateUpdatedDocumentClass($metadata, $path));
         }
     }
@@ -509,7 +509,7 @@ public function <methodName>()
             }
 
             $document = array();
-            if ( ! $metadata->isMappedSuperclass && ! $metadata->isEmbeddedDocument) {
+            if (! $metadata->isMappedSuperclass && ! $metadata->isEmbeddedDocument) {
                 if ($metadata->collection) {
                     $document[] = ' *     collection="' . $metadata->collection . '"';
                 }
@@ -544,7 +544,7 @@ public function <methodName>()
                 $lines[] = ' * )';
             }
 
-            if ( ! empty($metadata->lifecycleCallbacks)) {
+            if (! empty($metadata->lifecycleCallbacks)) {
                 $lines[] = ' * @ODM\HasLifecycleCallbacks';
             }
 
@@ -612,7 +612,7 @@ public function <methodName>()
                 if ($code = $code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type'])) {
                     $methods[] = $code;
                 }
-            } elseif ( ! isset($fieldMapping['association'])) {
+            } elseif (! isset($fieldMapping['association'])) {
                 if ($code = $code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
                     $methods[] = $code;
                 }
@@ -670,7 +670,7 @@ public function <methodName>()
                 $metadata->isInheritedField($fieldMapping['fieldName'])) {
                 continue;
             }
-            if ( ! isset($fieldMapping['association'])) {
+            if (! isset($fieldMapping['association'])) {
                 continue;
             }
 

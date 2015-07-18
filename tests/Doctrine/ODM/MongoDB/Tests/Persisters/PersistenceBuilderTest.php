@@ -245,7 +245,7 @@ class PersistenceBuilderTest extends BaseTest
             }
             $this->assertEquals($expectedData[$key], $value);
         }
-        if ( ! isset($preparedData['_id'])) {
+        if (! isset($preparedData['_id'])) {
             $this->fail('insert data should always contain id');
         }
         unset($preparedData['_id']);

@@ -50,7 +50,7 @@ class YamlDriver extends FileDriver
     {
         /* @var $class ClassMetadataInfo */
         $element = $this->getElement($className);
-        if ( ! $element) {
+        if (! $element) {
             return;
         }
         $element['type'] = isset($element['type']) ? $element['type'] : 'document';
@@ -104,7 +104,7 @@ class YamlDriver extends FileDriver
                     $mapping = array();
                     $mapping['type'] = $type;
                 }
-                if ( ! isset($mapping['fieldName'])) {
+                if (! isset($mapping['fieldName'])) {
                     $mapping['fieldName'] = $fieldName;
                 }
                 if (isset($mapping['type']) && $mapping['type'] === 'collection') {
@@ -161,7 +161,7 @@ class YamlDriver extends FileDriver
 
         $class->mapField($mapping);
 
-        if ( ! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
+        if (! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
             return;
         }
 
@@ -268,7 +268,7 @@ class YamlDriver extends FileDriver
             return $discriminatorField;
         }
 
-        if ( ! is_array($discriminatorField)) {
+        if (! is_array($discriminatorField)) {
             throw new \InvalidArgumentException('Expected array or string for discriminatorField; found: ' . gettype($discriminatorField));
         }
 

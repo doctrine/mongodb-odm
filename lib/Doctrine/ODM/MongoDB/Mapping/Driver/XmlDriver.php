@@ -50,7 +50,7 @@ class XmlDriver extends FileDriver
         /* @var $class ClassMetadataInfo */
         /* @var $xmlRoot \SimpleXMLElement */
         $xmlRoot = $this->getElement($className);
-        if ( ! $xmlRoot) {
+        if (! $xmlRoot) {
             return;
         }
 
@@ -189,7 +189,7 @@ class XmlDriver extends FileDriver
         $class->mapField($mapping);
 
         // Index this field if either "index", "unique", or "sparse" are set
-        if ( ! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
+        if (! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
             return;
         }
 

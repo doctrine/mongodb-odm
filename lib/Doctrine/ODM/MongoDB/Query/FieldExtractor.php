@@ -81,7 +81,7 @@ class FieldExtractor
 
     private function isOperator($fieldName, $operator)
     {
-        if ( ! is_array($operator)) {
+        if (! is_array($operator)) {
             $operator = array($operator);
         }
         foreach ($operator as $op) {

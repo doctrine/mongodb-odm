@@ -60,7 +60,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getDocumentNamespace($documentNamespaceAlias)
     {
-        if ( ! isset($this->attributes['documentNamespaces'][$documentNamespaceAlias])) {
+        if (! isset($this->attributes['documentNamespaces'][$documentNamespaceAlias])) {
             throw MongoDBException::unknownDocumentNamespace($documentNamespaceAlias);
         }
 
@@ -315,7 +315,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getClassMetadataFactoryName()
     {
-        if ( ! isset($this->attributes['classMetadataFactoryName'])) {
+        if (! isset($this->attributes['classMetadataFactoryName'])) {
             $this->attributes['classMetadataFactoryName'] = 'Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory';
         }
         return $this->attributes['classMetadataFactoryName'];

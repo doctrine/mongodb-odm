@@ -74,17 +74,17 @@ EOT
             $destPath = $dm->getConfiguration()->getProxyDir();
         }
 
-        if ( ! is_dir($destPath)) {
+        if (! is_dir($destPath)) {
             mkdir($destPath, 0777, true);
         }
 
         $destPath = realpath($destPath);
 
-        if ( ! file_exists($destPath)) {
+        if (! file_exists($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } elseif ( ! is_writable($destPath)) {
+        } elseif (! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );

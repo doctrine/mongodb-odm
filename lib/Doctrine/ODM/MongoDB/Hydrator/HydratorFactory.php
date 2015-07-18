@@ -97,10 +97,10 @@ class HydratorFactory
      */
     public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate)
     {
-        if ( ! $hydratorDir) {
+        if (! $hydratorDir) {
             throw HydratorException::hydratorDirectoryRequired();
         }
-        if ( ! $hydratorNs) {
+        if (! $hydratorNs) {
             throw HydratorException::hydratorNamespaceRequired();
         }
         $this->dm = $dm;
@@ -135,7 +135,7 @@ class HydratorFactory
         $fqn = $this->hydratorNamespace . '\\' . $hydratorClassName;
         $class = $this->dm->getClassMetadata($className);
 
-        if ( ! class_exists($fqn, false)) {
+        if (! class_exists($fqn, false)) {
             $fileName = $this->hydratorDir . DIRECTORY_SEPARATOR . $hydratorClassName . '.php';
             if ($this->autoGenerate) {
                 $this->generateHydratorClass($class, $hydratorClassName, $fileName);
@@ -208,7 +208,7 @@ EOF
                     $mapping['fieldName'],
                     Type::getType($mapping['type'])->closureToPHP()
                 );
-            } elseif ( ! isset($mapping['association'])) {
+            } elseif (! isset($mapping['association'])) {
                 $code .= sprintf(<<<EOF
 
         /** @Field(type="{$mapping['type']}") */
@@ -377,11 +377,11 @@ EOF
 
         $parentDirectory = dirname($fileName);
 
-        if ( ! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
+        if (! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
             throw HydratorException::hydratorDirectoryNotWritable();
         }
 
-        if ( ! is_writable($parentDirectory)) {
+        if (! is_writable($parentDirectory)) {
             throw HydratorException::hydratorDirectoryNotWritable();
         }
 
@@ -402,7 +402,7 @@ EOF
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners
-        if ( ! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
+        if (! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
             $args = array(&$data);
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
@@ -411,7 +411,7 @@ EOF
         }
 
         // alsoLoadMethods may transform the document before hydration
-        if ( ! empty($metadata->alsoLoadMethods)) {
+        if (! empty($metadata->alsoLoadMethods)) {
             foreach ($metadata->alsoLoadMethods as $method => $fieldNames) {
                 foreach ($fieldNames as $fieldName) {
                     // Invoke the method only once for the first field we find
@@ -429,7 +429,7 @@ EOF
         }
 
         // Invoke the postLoad lifecycle callbacks and listeners
-        if ( ! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
+        if (! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
             $metadata->invokeLifecycleCallbacks(Events::postLoad, $document);
         }
         if ($this->evm->hasListeners(Events::postLoad)) {

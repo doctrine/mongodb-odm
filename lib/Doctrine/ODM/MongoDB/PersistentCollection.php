@@ -382,7 +382,7 @@ class PersistentCollection implements BaseCollection
         $this->initialize();
         $removed = $this->coll->remove($key);
 
-        if ( ! $removed) {
+        if (! $removed) {
             return $removed;
         }
 
@@ -403,7 +403,7 @@ class PersistentCollection implements BaseCollection
         $this->initialize();
         $removed = $this->coll->removeElement($element);
 
-        if ( ! $removed) {
+        if (! $removed) {
             return $removed;
         }
 
@@ -646,7 +646,7 @@ class PersistentCollection implements BaseCollection
      */
     public function offsetSet($offset, $value)
     {
-        if ( ! isset($offset)) {
+        if (! isset($offset)) {
             return $this->add($value);
         }
 
