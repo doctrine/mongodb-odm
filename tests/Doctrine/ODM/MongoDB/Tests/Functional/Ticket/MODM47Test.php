@@ -28,11 +28,11 @@ class MODM47A
     public $b = 'tmp';
 
     /** @ODM\AlsoLoad("c") */
-    function renameC($c)
+    public function renameC($c)
     {
         $this->b = $c;
     }
-    function getId()
+    public function getId()
     {
         return $this->id;
     }

@@ -54,16 +54,16 @@ class MODM29Doc
     /** @ODM\EmbedMany(targetDocument="MODM29Embedded", strategy="set") */
     protected $collection;
 
-    function __construct($c)
+    public function __construct($c)
     {
         $this->set($c);
     }
 
-    function set($c)
+    public function set($c)
     {
         $this->collection = $c;
     }
-    function get()
+    public function get()
     {
         return $this->collection;
     }
@@ -75,15 +75,15 @@ class MODM29Embedded
     /** @ODM\String */
     protected $val;
 
-    function __construct($val)
+    public function __construct($val)
     {
         $this->set($val);
     }
-    function get()
+    public function get()
     {
         return $this->val;
     }
-    function set($val)
+    public function set($val)
     {
         $this->val = $val;
     }
