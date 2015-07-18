@@ -185,6 +185,16 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->getDocumentCollection('c');
     }
 
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Cannot create a DBRef for class Documents\User without an identifier. Have you forgotten to persist/merge the document first?
+     */
+    public function testCannotCreateDbRefWithoutId()
+    {
+        $d = new \Documents\User();
+        $this->dm->createDBRef($d);
+    }
+
     private function getMockClassMetadataFactory()
     {
         return $this->getMockBuilder('Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory')
