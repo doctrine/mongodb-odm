@@ -20,15 +20,15 @@ class TargetDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 class TargetDocumentTestDocument
 {
     /** @ODM\Id */
-	public $id;
+    public $id;
 
-	/** @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\TargetDocumentTestReference") */
-	public $reference;
+    /** @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\TargetDocumentTestReference") */
+    public $reference;
 }
 
 /** @ODM\MappedSuperclass */
 abstract class TargetDocumentTestReference
 {
     /** @ODM\Id */
-	public $id;
+    public $id;
 }

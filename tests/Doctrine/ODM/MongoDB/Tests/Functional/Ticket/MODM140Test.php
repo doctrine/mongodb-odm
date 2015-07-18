@@ -123,14 +123,14 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 class Category
 {
     /** @ODM\Id */
-	protected $id;
-	
-	/** @ODM\String */
-	public $name;
-	
-	/** @ODM\EmbedMany(targetDocument="Post") */
-	public $posts;
-	
+    protected $id;
+    
+    /** @ODM\String */
+    public $name;
+    
+    /** @ODM\EmbedMany(targetDocument="Post") */
+    public $posts;
+    
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -141,10 +141,10 @@ class Category
 class Post
 {
     /** @ODM\EmbedMany(targetDocument="PostVersion") */
-	public $versions;
-	
-	/** @ODM\ReferenceMany(targetDocument="Comment") */
-	public $comments;
+    public $versions;
+    
+    /** @ODM\ReferenceMany(targetDocument="Comment") */
+    public $comments;
 
     public function __construct()
     {
@@ -157,8 +157,8 @@ class Post
 class PostVersion
 {
     /** @ODM\String */
-	public $name;
-	
+    public $name;
+    
     public function __construct($name)
     {
         $this->name = $name;
@@ -169,8 +169,8 @@ class PostVersion
 class Comment
 {
     /** @ODM\Id */
-	protected $id;
+    protected $id;
 
-	/** @ODM\String */
-	public $content;
+    /** @ODM\String */
+    public $content;
 }

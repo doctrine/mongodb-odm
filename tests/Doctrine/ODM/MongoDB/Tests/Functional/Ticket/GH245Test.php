@@ -32,15 +32,15 @@ class GH245Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 class GH245Order
 {
     /** @ODM\Id(strategy="NONE") */
-	public $id;
+    public $id;
 }
 
 /** @ODM\Document */
 class GH245OrderLog
 {
     /** @ODM\Id */
-	public $id;
+    public $id;
 
-	/** @ODM\ReferenceOne(targetDocument="GH245Order") */
-	public $order;
+    /** @ODM\ReferenceOne(targetDocument="GH245Order") */
+    public $order;
 }

@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class Document
 {
     /**
-	 * @ODM\Id
-	 */
-	protected $id;
+     * @ODM\Id
+     */
+    protected $id;
 }

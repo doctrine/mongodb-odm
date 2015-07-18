@@ -16,7 +16,7 @@ class MODM70Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($avatar);
 
         $avatar->addAvatarPart(new AvatarPart('#FFF'));
-		
+        
         $this->dm->flush();
         $this->dm->refresh($avatar);
 
@@ -32,30 +32,30 @@ class MODM70Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 class Avatar
 {
     /**
-	 * @ODM\Id
-	 */
-	protected $id;
+     * @ODM\Id
+     */
+    protected $id;
 
-	/**
-	 * @ODM\String(name="na")
-	 * @var string
-	 */
-	protected $name;
+    /**
+     * @ODM\String(name="na")
+     * @var string
+     */
+    protected $name;
 
-	/**
-	 * @ODM\Int(name="sex")
-	 * @var int
-	 */
-	protected $sex;
+    /**
+     * @ODM\Int(name="sex")
+     * @var int
+     */
+    protected $sex;
 
-	/**
-	 * @ODM\EmbedMany(
-	 *	targetDocument="AvatarPart",
-	 *	name="aP"
-	 * )
-	 * @var array AvatarPart
-	 */
-	protected $avatarParts;
+    /**
+     * @ODM\EmbedMany(
+     *	targetDocument="AvatarPart",
+     *	name="aP"
+     * )
+     * @var array AvatarPart
+     */
+    protected $avatarParts;
 
     public function __construct($name, $sex, $avatarParts = null)
     {
@@ -119,10 +119,10 @@ class Avatar
 class AvatarPart
 {
     /**
-	 * @ODM\String(name="col")
-	 * @var string
-	 */
-	protected $color;
+     * @ODM\String(name="col")
+     * @var string
+     */
+    protected $color;
 
     public function __construct($color = null)
     {
