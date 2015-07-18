@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-
 use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\ConfigurableProduct;
 use Documents\CmsArticle;

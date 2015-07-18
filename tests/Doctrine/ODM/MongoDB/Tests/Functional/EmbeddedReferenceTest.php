@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-
 use Doctrine\Common\Collections\ArrayCollection;
 
 class EmbeddedReferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest

@@ -5,7 +5,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\Common\Collections\ArrayCollection;
-
 use Documents\Functional\Ticket\GH683\ParentDocument;
 use Documents\Functional\Ticket\GH683\EmbeddedSubDocument1;
 use Documents\Functional\Ticket\GH683\EmbeddedSubDocument2;
