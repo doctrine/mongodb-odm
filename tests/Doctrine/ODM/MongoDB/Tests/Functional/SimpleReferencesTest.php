@@ -92,7 +92,7 @@ class SimpleReferencesTest extends BaseTest
     {
         $user = $this->dm->getRepository('Documents\User')->findOneBy(array());
         $test = $user->getSimpleReferenceManyInverse()->toArray();
-        $this->assertEquals('test' ,current($test)->getName());
+        $this->assertEquals('test', current($test)->getName());
     }
 
     public function testOneInverseSide()

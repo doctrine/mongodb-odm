@@ -414,11 +414,11 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $vhost->getVHostDirective()->addDirective($directive1);
 
         $directive2 = new VirtualHostDirective('Directory', '/var/www/html');
-        $directive2->addDirective(new VirtualHostDirective('AllowOverride','All'));
+        $directive2->addDirective(new VirtualHostDirective('AllowOverride', 'All'));
         $vhost->getVHostDirective()->addDirective($directive2);
 
         $directive3 = new VirtualHostDirective('Directory', '/var/www/html');
-        $directive3->addDirective(new VirtualHostDirective('RewriteEngine','on'));
+        $directive3->addDirective(new VirtualHostDirective('RewriteEngine', 'on'));
         $vhost->getVHostDirective()->addDirective($directive3);
 
         $this->dm->persist($vhost);
@@ -427,7 +427,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $vhost->getVHostDirective()->removeDirective($directive2);
 
         $directive4 = new VirtualHostDirective('Directory', '/var/www/html');
-        $directive4->addDirective(new VirtualHostDirective('RewriteEngine','on'));
+        $directive4->addDirective(new VirtualHostDirective('RewriteEngine', 'on'));
         $vhost->getVHostDirective()->addDirective($directive4);
 
 
