@@ -29,6 +29,9 @@ class CmsComment
      */
     public $article;
 
+    /** @ODM\String(name="ip") */
+    public $authorIp;
+
     public function setArticle(CmsArticle $article) {
         $this->article = $article;
     }
