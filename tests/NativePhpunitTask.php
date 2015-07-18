@@ -38,7 +38,7 @@ class NativePhpunitTask extends Task
     public function setJunitlogfile($junitlogfile)
     {
         if (strlen($junitlogfile) == 0) {
-            $junitlogfile = NULL;
+            $junitlogfile = null;
         }
 
         $this->junitlogfile = $junitlogfile;
@@ -47,7 +47,7 @@ class NativePhpunitTask extends Task
     public function setConfiguration($configuration)
     {
         if (strlen($configuration) == 0) {
-            $configuration = NULL;
+            $configuration = null;
         }
 
         $this->configuration = $configuration;
@@ -56,7 +56,7 @@ class NativePhpunitTask extends Task
     public function setCoverageClover($coverageClover)
     {
         if (strlen($coverageClover) == 0) {
-            $coverageClover = NULL;
+            $coverageClover = null;
         }
 
         $this->coverageClover = $coverageClover;
