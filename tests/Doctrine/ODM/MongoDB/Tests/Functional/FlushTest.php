@@ -30,7 +30,9 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $userB->addFriend($userC);
 
         // persist all users, flush and clear
-        foreach (array($userA, $userB, $userC) as $user) $this->dm->persist($user);
+        foreach (array($userA, $userB, $userC) as $user) {
+            $this->dm->persist($user);
+        }
         $this->dm->flush();
         $this->dm->clear();
 

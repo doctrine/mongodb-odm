@@ -11,7 +11,6 @@ use Documents\Functional\EmbeddedTestLevel2;
 
 class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-
     public function testInsertingNestedEmbeddedCollections()
     {
         $category = new Category;
@@ -118,13 +117,12 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(2, count($test->level1[0]->level2));
         $this->assertEquals(2, count($test->level1[1]->level2));
     }
-	
 }
 
 /** @ODM\Document */
-class Category 
+class Category
 {
-	/** @ODM\Id */
+    /** @ODM\Id */
 	protected $id;
 	
 	/** @ODM\String */
@@ -133,47 +131,44 @@ class Category
 	/** @ODM\EmbedMany(targetDocument="Post") */
 	public $posts;
 	
-	public function __construct()
-	{
-		$this->posts = new ArrayCollection();
-	}
-	
+    public function __construct()
+    {
+        $this->posts = new ArrayCollection();
+    }
 }
 
 /** @ODM\EmbeddedDocument */
 class Post
 {
-	/** @ODM\EmbedMany(targetDocument="PostVersion") */
+    /** @ODM\EmbedMany(targetDocument="PostVersion") */
 	public $versions;
 	
 	/** @ODM\ReferenceMany(targetDocument="Comment") */
 	public $comments;
 
-	public function __construct()
-	{
-		$this->versions = new ArrayCollection();
-		$this->comments = new ArrayCollection();
-	}
-	
+    public function __construct()
+    {
+        $this->versions = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+    }
 }
 
 /** @ODM\EmbeddedDocument */
 class PostVersion
 {
-	/** @ODM\String */
+    /** @ODM\String */
 	public $name;
 	
-	public function __construct($name)
-	{
-		$this->name = $name;
-	}
-	
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
 }
 
 /** @ODM\Document */
 class Comment
 {
-	/** @ODM\Id */
+    /** @ODM\Id */
 	protected $id;
 
 	/** @ODM\String */

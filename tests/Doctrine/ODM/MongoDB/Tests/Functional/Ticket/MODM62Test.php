@@ -31,5 +31,8 @@ class MODM62Document
     /** @ODM\Collection */
     public $b = array('ok');
 
-    public function setB($b) {$this->b = $b;}
+    public function setB($b)
+    {
+        $this->b = $b;
+    }
 }

@@ -253,7 +253,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
         if (($this->query['type'] === self::TYPE_FIND_AND_UPDATE ||
              $this->query['type'] === self::TYPE_FIND_AND_REMOVE) &&
             is_array($results) && isset($results['_id'])) {
-
             $results = $uow->getOrCreateDocument($this->class->name, $results, $this->unitOfWorkHints);
         }
 

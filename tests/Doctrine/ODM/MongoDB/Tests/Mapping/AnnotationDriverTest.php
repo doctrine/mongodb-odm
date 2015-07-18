@@ -157,7 +157,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 /** @ODM\Document */
 class ColumnWithoutType
 {
-     /** @ODM\Id */
+    /** @ODM\Id */
      public $id;
 }
 

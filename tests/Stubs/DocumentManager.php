@@ -11,7 +11,6 @@ use Doctrine\Common\EventManager;
  */
 class DocumentManager extends BaseDocumentManager
 {
-
     protected $classMetadatas = array();
 
     private $_eventManager;
@@ -38,5 +37,4 @@ class DocumentManager extends BaseDocumentManager
         }
         return $this->classMetadatas[$className];
     }
-
 }

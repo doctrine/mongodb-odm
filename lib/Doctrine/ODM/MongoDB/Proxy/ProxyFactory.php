@@ -123,7 +123,6 @@ class ProxyFactory extends AbstractProxyFactory
         DocumentPersister $documentPersister,
         ReflectionProperty $reflectionId
     ) {
-
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
             return function (BaseProxy $proxy) use ($documentPersister, $reflectionId) {
                 $proxy->__setInitializer(null);

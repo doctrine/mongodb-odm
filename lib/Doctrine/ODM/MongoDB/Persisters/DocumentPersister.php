@@ -352,7 +352,6 @@ class DocumentPersister
         $update = $this->pb->prepareUpdateData($document);
 
         if ( ! empty($update)) {
-
             $id = $this->class->getDatabaseIdentifierValue($id);
             $query = array('_id' => $id);
 

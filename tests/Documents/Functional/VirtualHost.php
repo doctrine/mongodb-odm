@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class VirtualHost
 {
-
     /** @ODM\Id */
     protected $id;
     /**
@@ -39,6 +38,5 @@ class VirtualHost
 
         return $this;
     }
-
 }
 

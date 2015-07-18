@@ -169,7 +169,6 @@ class GeoSpatialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->assertNotNull($city->test);
         }
     }
-
 }
 
 /**

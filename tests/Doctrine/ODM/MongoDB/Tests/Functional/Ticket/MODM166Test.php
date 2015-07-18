@@ -9,7 +9,6 @@ use Documents\User;
 
 class MODM166Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-
     public function setUp()
     {
         parent::setUp();
@@ -38,7 +37,7 @@ class MODM166Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $repository->findOneBy(array('username' => 'lucy'));
 
         $phonenumbers = array();
-        foreach ($test->getPhonenumbers() as $phonenumber){
+        foreach ($test->getPhonenumbers() as $phonenumber) {
             $phonenumbers[] = $phonenumber->getPhonenumber();
         }
         sort($phonenumbers);

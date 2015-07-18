@@ -33,7 +33,10 @@ class MODM50File
     /** @ODM\File */
     public $file;
 
-    function __construct($file) {$this->file = $file;}
+    function __construct($file)
+    {
+        $this->file = $file;
+    }
 }
 
 /** @ODM\Document */

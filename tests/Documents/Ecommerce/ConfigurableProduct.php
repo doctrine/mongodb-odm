@@ -88,7 +88,7 @@ class ConfigurableProduct
 
     public function removeOption($name)
     {
-        if(null === ($option = $this->_findOption($name))) {
+        if (null === ($option = $this->_findOption($name))) {
             throw new \InvalidArgumentException('option ' . $name . ' doesn\'t exist');
         }
         if ($this->options instanceof \Doctrine\Common\Collections\Collection) {
@@ -139,5 +139,4 @@ class ConfigurableProduct
         }
         return $stockItems;
     }
-
 }

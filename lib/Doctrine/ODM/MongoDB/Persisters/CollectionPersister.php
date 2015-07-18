@@ -141,7 +141,7 @@ class CollectionPersister
 
         $callback = isset($mapping['embedded'])
             ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
-            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
+        : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
 
         $setData = $coll->map($callback)->toArray();
 
@@ -214,7 +214,7 @@ class CollectionPersister
 
         $callback = isset($mapping['embedded'])
             ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
-            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
+        : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
 
         $value = array_values(array_map($callback, $insertDiff));
 

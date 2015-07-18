@@ -31,7 +31,7 @@ class MODM65Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
  */
 class MODM65User
 {
-	/**
+    /**
 	 * @ODM\Id
 	 */
 	public $id;
@@ -52,7 +52,7 @@ class MODM65User
  */
 class MODM65SocialNetworkUser
 {
-	/**
+    /**
 	 * @ODM\String(name="fN")
 	 * @var string
 	 */

@@ -7,7 +7,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-
     public function testTest()
     {
         $b1 = new MODM52B('first');
@@ -53,7 +52,6 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $b[0]->getId(), $b[1]->getId()
         ));
     }
-
 }
 
 /** @ODM\Document */
@@ -79,7 +77,6 @@ class MODM52A
 /** @ODM\Document */
 class MODM52B
 {
-
     /** @ODM\Id */
     protected $id;
 
@@ -95,5 +92,4 @@ class MODM52B
     {
         return $this->id;
     }
-
 }

@@ -106,5 +106,4 @@ class CreateCollectionTest
 {
     /** @ODM\Id */
     public $id;
-
 }

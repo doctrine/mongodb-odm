@@ -26,7 +26,6 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testDriver()
     {
-
         $classMetadata = new ClassMetadata('TestDocuments\User');
         $this->driver->loadMetadataForClass('TestDocuments\User', $classMetadata);
 
@@ -227,5 +226,4 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'nullable' => false,
         ), $classMetadata->fieldMappings['name']);
     }
-
 }

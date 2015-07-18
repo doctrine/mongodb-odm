@@ -192,6 +192,12 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-class DocumentGeneratorAuthor {}
-class DocumentGeneratorComment {}
-class DocumentGeneratorSearch {}
+class DocumentGeneratorAuthor
+{
+}
+class DocumentGeneratorComment
+{
+}
+class DocumentGeneratorSearch
+{
+}

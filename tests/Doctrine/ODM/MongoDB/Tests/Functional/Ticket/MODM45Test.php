@@ -30,9 +30,18 @@ class MODM45A
     /** @ODM\EmbedOne(targetDocument="MODM45B") */
     protected $b;
 
-    function getId()  {return $this->id;}
-    function getB()   {return $this->b;}
-    function setB($b) {$this->b = $b;}
+    function getId()
+    {
+        return $this->id;
+    }
+    function getB()
+    {
+        return $this->b;
+    }
+    function setB($b)
+    {
+        $this->b = $b;
+    }
 }
 
 /** @ODM\EmbeddedDocument */
@@ -40,6 +49,12 @@ class MODM45B
 {
     /** @ODM\String */
     protected $val;
-    function setVal($val) {$this->val = $val;}
-    function getVal() {return $this->val;}
+    function setVal($val)
+    {
+        $this->val = $val;
+    }
+    function getVal()
+    {
+        return $this->val;
+    }
 }

@@ -20,8 +20,10 @@ class GH301Test extends BaseTest
         $this->dm->flush($doc);
         $this->dm->clear();
         
-        $docId = $doc->id; unset($doc);
-        $refId = $ref->id; unset($ref);
+        $docId = $doc->id;
+        unset($doc);
+        $refId = $ref->id;
+        unset($ref);
 
         $doc = $this->dm->find(__NAMESPACE__ . '\GH301Document', $docId);
         $this->assertNotNull($doc);

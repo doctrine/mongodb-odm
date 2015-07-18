@@ -91,10 +91,10 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $usernames = array();
 
-        if(isset($tim)) {
+        if (isset($tim)) {
             $usernames[] = $tim->getUsername();
         }
-        if(isset($john)) {
+        if (isset($john)) {
             $usernames[] = $john->getUsername();
         }
 
@@ -194,7 +194,7 @@ class FilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             try {
                 $groupnames[] = $group->getName();
             } catch (\Doctrine\ODM\MongoDB\DocumentNotFoundException $e) {
-               //Proxy object filtered
+                //Proxy object filtered
             }
         }
         sort($groupnames);

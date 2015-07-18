@@ -34,5 +34,7 @@ class LockMode
     const PESSIMISTIC_READ = 2;
     const PESSIMISTIC_WRITE = 4;
 
-    final private function __construct() { }
+    final private function __construct()
+    {
+    }
 }

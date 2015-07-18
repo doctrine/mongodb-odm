@@ -49,7 +49,8 @@ class MODM95TestDocument
     /** @ODM\EmbedMany(targetDocument="MODM95TestEmbeddedDocument") */
     public $embeddedDocuments;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->embeddedDocuments = new ArrayCollection();
     }
 
@@ -64,7 +65,8 @@ class MODM95TestDocument
      *
      * @param array|Traversable $children
      */
-    public function setEmbeddedDocuments($embeddedDocuments) {
+    public function setEmbeddedDocuments($embeddedDocuments)
+    {
         $this->embeddedDocuments->clear();
 
         if (! (is_array($embeddedDocuments) || $embeddedDocuments instanceof \Traversable)) {
@@ -83,7 +85,8 @@ class MODM95TestEmbeddedDocument
     /** @ODM\String */
     public $name;
 
-    public function __construct($name) {
+    public function __construct($name)
+    {
         $this->name = $name;
     }
 }

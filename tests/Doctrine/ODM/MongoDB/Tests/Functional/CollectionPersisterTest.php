@@ -302,7 +302,7 @@ class CollectionPersisterPhonenumber
 /** @ODM\Document(collection="post_collection_persister_test") */
 class CollectionPersisterPost
 {
-  /** @ODM\Id */
+    /** @ODM\Id */
   public $id;
 
   /** @ODM\String */
@@ -311,19 +311,17 @@ class CollectionPersisterPost
   /** @ODM\EmbedMany(targetDocument="CollectionPersisterComment", strategy="set") */
   public $comments = array();
 
-  function __construct($post)
-  {
-    $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
-    $this->post = $post;
-  }
-
-
+    function __construct($post)
+    {
+        $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->post = $post;
+    }
 }
 
 /** @ODM\EmbeddedDocument */
 class CollectionPersisterComment
 {
-  /** @ODM\Id */
+    /** @ODM\Id */
   public $id;
 
   /** @ODM\String */
@@ -335,12 +333,12 @@ class CollectionPersisterComment
   /** @ODM\EmbedMany(targetDocument="CollectionPersisterComment", strategy="set") */
   public $comments = array();
 
-  function __construct($comment, $by)
-  {
-    $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
-    $this->comment = $comment;
-    $this->by = $by;
-  }
+    function __construct($comment, $by)
+    {
+        $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->comment = $comment;
+        $this->by = $by;
+    }
 }
 
 

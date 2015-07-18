@@ -263,7 +263,6 @@ class SchemaManager
 
                 if (isset($options['safe']) && ! isset($options['w']) &&
                     version_compare(phpversion('mongo'), '1.3.0', '>=')) {
-
                     $options['w'] = is_bool($options['safe']) ? (integer) $options['safe'] : $options['safe'];
                     unset($options['safe']);
                 }
@@ -469,7 +468,6 @@ class SchemaManager
 
         if ( ! empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
             ! empty($documentIndexOptions['unique']) && ! empty($documentIndexOptions['dropDups'])) {
-
             return false;
         }
 
@@ -480,7 +478,6 @@ class SchemaManager
 
             if (isset($mongoIndex[$option]) && isset($documentIndexOptions[$option]) &&
                 $mongoIndex[$option] !== $documentIndexOptions[$option]) {
-
                 return false;
             }
         }

@@ -208,8 +208,6 @@ EOF
                     $mapping['fieldName'],
                     Type::getType($mapping['type'])->closureToPHP()
                 );
-
-
             } elseif ( ! isset($mapping['association'])) {
                 $code .= sprintf(<<<EOF
 

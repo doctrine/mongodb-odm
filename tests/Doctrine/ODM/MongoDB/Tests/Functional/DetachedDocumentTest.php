@@ -99,7 +99,8 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         try {
             $this->dm->flush();
             $this->fail();
-        } catch (\Exception $expected) {}
+        } catch (\Exception $expected) {
+        }
     }
 
     public function testUninitializedLazyAssociationsAreIgnoredOnMerge()

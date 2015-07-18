@@ -295,5 +295,4 @@ class User extends BaseDocument
     {
         return $this->posts;
     }
-
 }

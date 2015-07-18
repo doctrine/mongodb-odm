@@ -85,7 +85,9 @@ abstract class Type
     );
 
     /* Prevent instantiation and force use of the factory method. */
-    final private function __construct() {}
+    final private function __construct()
+    {
+    }
 
     /**
      * Converts a value from its PHP representation to its database representation

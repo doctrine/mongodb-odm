@@ -8,18 +8,18 @@ class TargetDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testMappedSuperClassAsTargetDocument()
     {
-    	$test = new TargetDocumentTestDocument();
-    	$test->reference = new TargetDocumentTestReference();
-    	$this->dm->persist($test);
-    	$this->dm->persist($test->reference);
-    	$this->dm->flush();
+        $test = new TargetDocumentTestDocument();
+        $test->reference = new TargetDocumentTestReference();
+        $this->dm->persist($test);
+        $this->dm->persist($test->reference);
+        $this->dm->flush();
     }
 }
 
 /** @ODM\Document */
 class TargetDocumentTestDocument
 {
-	/** @ODM\Id */
+    /** @ODM\Id */
 	public $id;
 
 	/** @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\TargetDocumentTestReference") */
@@ -29,6 +29,6 @@ class TargetDocumentTestDocument
 /** @ODM\MappedSuperclass */
 abstract class TargetDocumentTestReference
 {
-	/** @ODM\Id */
+    /** @ODM\Id */
 	public $id;
 }

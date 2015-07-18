@@ -6,17 +6,17 @@ use Doctrine\ODM\MongoDB\Query\FieldExtractor;
 
 class FieldExtractorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-	/**
+    /**
 	 * @dataProvider getQueriesAndFields
 	 **/
 	public function testFieldExtractor($query, $fields)
 	{
-		$this->assertFieldsExtracted($query, $fields);
+	    $this->assertFieldsExtracted($query, $fields);
 	}
 
-	public function getQueriesAndFields()
-	{
-		return array(
+    public function getQueriesAndFields()
+    {
+        return array(
 			array(
 				array('fieldName' => 1),
 				array('fieldName')
@@ -78,11 +78,11 @@ class FieldExtractorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 				array('fieldName1', 'fieldName2', 'fieldName3')
 			)
 		);
-	}
+    }
 
-	private function assertFieldsExtracted(array $query, array $fields)
-	{
-		$extractor = new FieldExtractor($query);
-		$this->assertEquals($fields, $extractor->getFields());
-	}
+    private function assertFieldsExtracted(array $query, array $fields)
+    {
+        $extractor = new FieldExtractor($query);
+        $this->assertEquals($fields, $extractor->getFields());
+    }
 }

@@ -47,8 +47,18 @@ class CommitOrderCalculatorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-class NodeClass1 {}
-class NodeClass2 {}
-class NodeClass3 {}
-class NodeClass4 {}
-class NodeClass5 {}
+class NodeClass1
+{
+}
+class NodeClass2
+{
+}
+class NodeClass3
+{
+}
+class NodeClass4
+{
+}
+class NodeClass5
+{
+}

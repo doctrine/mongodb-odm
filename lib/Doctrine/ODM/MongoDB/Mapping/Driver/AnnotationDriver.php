@@ -101,7 +101,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {
                 $class->setChangeTrackingPolicy(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::CHANGETRACKING_'.$annot->value));
             }
-
         }
 
         if ( ! $documentAnnots) {

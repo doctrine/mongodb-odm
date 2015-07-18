@@ -102,7 +102,8 @@ class SimpleReferencesTest extends BaseTest
         $this->assertEquals('test', $test->getName());
     }
 
-    public function testQueryForNonIds() {
+    public function testQueryForNonIds()
+    {
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->equals(null);
         $this->assertEquals(array('userId' => null), $qb->getQueryArray());

@@ -74,7 +74,7 @@ class YamlDriver extends FileDriver
             $class->isEmbeddedDocument = true;
         }
         if (isset($element['indexes'])) {
-            foreach($element['indexes'] as $index) {
+            foreach ($element['indexes'] as $index) {
                 $class->addIndex($index['keys'], isset($index['options']) ? $index['options'] : array());
             }
         }

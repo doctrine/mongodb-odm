@@ -29,4 +29,6 @@ use Doctrine\Common\Proxy\Proxy as BaseProxy;
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
-interface Proxy extends BaseProxy {}
+interface Proxy extends BaseProxy
+{
+}

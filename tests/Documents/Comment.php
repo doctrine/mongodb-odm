@@ -34,5 +34,4 @@ class Comment
     {
         return $this->text;
     }
-
 }

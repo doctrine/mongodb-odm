@@ -39,7 +39,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 class AlnumGenerator extends IncrementGenerator
 {
-
     protected $pad = null;
 
     protected $awkwardSafeMode = false;

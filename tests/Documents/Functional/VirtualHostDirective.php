@@ -37,8 +37,9 @@ class VirtualHostDirective
 
     public function setRecId($value=null)
     {
-        if (!$value)
+        if (!$value) {
             $value = uniqid();
+        }
 
         $this->recId = $value;
     }
@@ -67,8 +68,9 @@ class VirtualHostDirective
 
     public function getDirectives()
     {
-        if (!$this->directives)
+        if (!$this->directives) {
             $this->directives = new \Doctrine\Common\Collections\ArrayCollection(array());
+        }
         return $this->directives;
     }
 
@@ -114,5 +116,4 @@ class VirtualHostDirective
 
         return $this;
     }
-
 }

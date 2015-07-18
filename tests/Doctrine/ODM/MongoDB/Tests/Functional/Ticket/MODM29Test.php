@@ -38,7 +38,7 @@ class MODM29Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($doc);
 
         $array = array();
-        foreach($doc->get() as $value) {
+        foreach ($doc->get() as $value) {
             $array[] = $value->get();
         }
         $this->assertEquals(array('1', 'tmp', '2'), $array);
@@ -54,10 +54,19 @@ class MODM29Doc
     /** @ODM\EmbedMany(targetDocument="MODM29Embedded", strategy="set") */
     protected $collection;
 
-    function __construct($c) {$this->set($c);}
+    function __construct($c)
+    {
+        $this->set($c);
+    }
 
-    function set($c) {$this->collection = $c;}
-    function get() {return $this->collection;}
+    function set($c)
+    {
+        $this->collection = $c;
+    }
+    function get()
+    {
+        return $this->collection;
+    }
 }
 
 /** @ODM\EmbeddedDocument */
@@ -66,7 +75,16 @@ class MODM29Embedded
     /** @ODM\String */
     protected $val;
 
-    function __construct($val) {$this->set($val);}
-    function get() {return $this->val;}
-    function set($val) {$this->val = $val;}
+    function __construct($val)
+    {
+        $this->set($val);
+    }
+    function get()
+    {
+        return $this->val;
+    }
+    function set($val)
+    {
+        $this->val = $val;
+    }
 }

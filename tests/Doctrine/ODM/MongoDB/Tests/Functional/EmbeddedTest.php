@@ -436,8 +436,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $vhost = $this->dm->find('Documents\Functional\VirtualHost', $vhost->getId());
 
-        foreach($vhost->getVHostDirective()->getDirectives() as $directive)
-        {
+        foreach ($vhost->getVHostDirective()->getDirectives() as $directive) {
             $this->assertNotEmpty($directive->getName());
         }
     }

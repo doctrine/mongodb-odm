@@ -59,5 +59,4 @@ class GH683Test extends BaseTest
         $this->assertInstanceOf(get_class($sub1), $firstSub);
         $this->assertInstanceOf(get_class($sub2), $secondSub);
     }
-
 }

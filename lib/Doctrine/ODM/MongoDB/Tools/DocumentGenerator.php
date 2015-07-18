@@ -796,11 +796,21 @@ public function <methodName>()
             if (isset($fieldMapping['cascade']) && $fieldMapping['cascade']) {
                 $cascades = array();
 
-                if ($fieldMapping['isCascadePersist']) $cascades[] = '"persist"';
-                if ($fieldMapping['isCascadeRemove']) $cascades[] = '"remove"';
-                if ($fieldMapping['isCascadeDetach']) $cascades[] = '"detach"';
-                if ($fieldMapping['isCascadeMerge']) $cascades[] = '"merge"';
-                if ($fieldMapping['isCascadeRefresh']) $cascades[] = '"refresh"';
+                if ($fieldMapping['isCascadePersist']) {
+                    $cascades[] = '"persist"';
+                }
+                if ($fieldMapping['isCascadeRemove']) {
+                    $cascades[] = '"remove"';
+                }
+                if ($fieldMapping['isCascadeDetach']) {
+                    $cascades[] = '"detach"';
+                }
+                if ($fieldMapping['isCascadeMerge']) {
+                    $cascades[] = '"merge"';
+                }
+                if ($fieldMapping['isCascadeRefresh']) {
+                    $cascades[] = '"refresh"';
+                }
 
                 $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';
             }

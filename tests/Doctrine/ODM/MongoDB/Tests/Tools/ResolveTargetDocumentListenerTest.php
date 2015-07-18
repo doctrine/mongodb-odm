@@ -22,7 +22,7 @@ class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\Base
     {
         parent::setUp();
 
-         $this->listener = new ResolveTargetDocumentListener();
+        $this->listener = new ResolveTargetDocumentListener();
     }
 
     public function testResolveTargetDocumentListenerCanResolveTargetDocument()

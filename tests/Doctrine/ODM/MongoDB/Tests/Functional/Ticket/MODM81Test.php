@@ -110,7 +110,6 @@ class MODM81TestDocument
     {
         $this->embeddedDocuments = new ArrayCollection($documents);
     }
-
 }
 
 /** @ODM\EmbeddedDocument */

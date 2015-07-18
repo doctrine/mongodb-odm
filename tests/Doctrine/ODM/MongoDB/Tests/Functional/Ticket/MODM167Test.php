@@ -8,7 +8,6 @@ use Documents\User;
 
 class MODM167Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-
     public function setUp()
     {
         parent::setUp();
