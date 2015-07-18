@@ -386,7 +386,7 @@ public function <methodName>()
         }
 
         $collections = array();
-        foreach ($metadata->fieldMappings AS $mapping) {
+        foreach ($metadata->fieldMappings as $mapping) {
             if ($mapping['type'] === ClassMetadataInfo::MANY) {
                 $collections[] = '$this->' . $mapping['fieldName'] . ' = new \Doctrine\Common\Collections\ArrayCollection();';
             }
