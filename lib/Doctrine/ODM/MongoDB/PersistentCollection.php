@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -193,7 +194,7 @@ class PersistentCollection implements BaseCollection
         // Reattach any NEW objects added through add()
         if ($newObjects) {
             foreach ($newObjects as $key => $obj) {
-                if ($this->mapping['strategy'] === 'set' || $this->mapping['strategy'] === 'atomicSet') {
+                if (CollectionHelper::isHash($this->mapping['strategy'])) {
                     $this->coll->set($key, $obj);
                 } else {
                     $this->coll->add($obj);
@@ -528,7 +529,7 @@ class PersistentCollection implements BaseCollection
          * uses the appropriate key. Otherwise, we risk overwriting original data
          * when $newObjects are re-added in a later call to initialize().
          */
-        if (isset($this->mapping['strategy']) && ($this->mapping['strategy'] === 'set' || $this->mapping['strategy'] === 'atomicSet')) {
+        if (isset($this->mapping['strategy']) && CollectionHelper::isHash($this->mapping['strategy'])) {
             $this->initialize();
         }
         $this->coll->add($value);

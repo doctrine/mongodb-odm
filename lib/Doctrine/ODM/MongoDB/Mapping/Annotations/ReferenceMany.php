@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+
 /** @Annotation */
 final class ReferenceMany extends AbstractField
 {
@@ -38,5 +40,5 @@ final class ReferenceMany extends AbstractField
     public $criteria = array();
     public $limit;
     public $skip;
-    public $strategy = 'pushAll'; // pushAll, set
+    public $strategy = CollectionHelper::DEFAULT_STRATEGY;
 }

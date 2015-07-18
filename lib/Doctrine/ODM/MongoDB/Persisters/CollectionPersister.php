@@ -20,10 +20,10 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
  * The CollectionPersister is responsible for persisting collections of embedded
@@ -69,19 +69,6 @@ class CollectionPersister
         $this->pb = $pb;
         $this->uow = $uow;
     }
-    
-    /**
-     * INTERNAL:
-     * Prepares $unset query for PersistentCollection removal.
-     * 
-     * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
-     * @return array
-     */
-    public function prepareDeleteQuery(PersistentCollection $coll)
-    {
-        list($propertyPath) = $this->getPathAndParent($coll);
-        return array('$unset' => array($propertyPath => true));
-    }
 
     /**
      * Deletes a PersistentCollection instance completely from a document using $unset.
@@ -95,11 +82,11 @@ class CollectionPersister
         if ($mapping['isInverseSide']) {
             return; // ignore inverse side
         }
-        if ($mapping['strategy'] === "atomicSet" || $mapping['strategy'] === "atomicSetArray") {
+        if (CollectionHelper::isAtomic($mapping['strategy'])) {
             throw new \UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
         }
-        list(, $parent) = $this->getPathAndParent($coll);
-        $query = $this->prepareDeleteQuery($coll);
+        list($propertyPath, $parent) = $this->getPathAndParent($coll);
+        $query = array('$unset' => array($propertyPath => true));
         $this->executeQuery($parent, $query, $options);
     }
 
@@ -139,40 +126,6 @@ class CollectionPersister
                 throw new \UnexpectedValueException('Unsupported collection strategy: ' . $mapping['strategy']);
         }
     }
-    
-    /**
-     * INTERNAL:
-     * Prepares $set query for PersistentCollection update.
-     * 
-     * This method is intended to be used with the "set", "setArray", "atomicSet"
-     * and "atomicSetArray" strategies. The "setArray" and "atomicSetArray" 
-     * strategy will ensure that the collection is set as a BSON array, which 
-     * means the collection elements will be reindexed numerically before storage.
-     * 
-     * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
-     * @return array
-     */
-    public function prepareSetQuery(PersistentCollection $coll)
-    {
-        $coll->initialize();
-        
-        $mapping = $coll->getMapping();
-        list($propertyPath, ) = $this->getPathAndParent($coll);
-
-        $pb = $this->pb;
-
-        $callback = isset($mapping['embedded'])
-            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v, ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')); }
-            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
-
-        $setData = $coll->map($callback)->toArray();
-
-        if ($mapping['strategy'] === 'setArray' || $mapping['strategy'] === 'atomicSetArray') {
-            $setData = array_values($setData);
-        }
-
-        return array('$set' => array($propertyPath => $setData));
-    }
 
     /**
      * Sets a PersistentCollection instance.
@@ -187,8 +140,11 @@ class CollectionPersister
      */
     private function setCollection(PersistentCollection $coll, array $options)
     {
-        list(, $parent) = $this->getPathAndParent($coll);
-        $query = $this->prepareSetQuery($coll);
+        list($propertyPath, $parent) = $this->getPathAndParent($coll);
+        $coll->initialize();
+        $mapping = $coll->getMapping();
+        $setData = $this->pb->prepareAssociatedCollectionValue($coll, CollectionHelper::usesSet($mapping['strategy']));
+        $query = array('$set' => array($propertyPath => $setData));
         $this->executeQuery($parent, $query, $options);
     }
 
@@ -256,7 +212,7 @@ class CollectionPersister
 
         $value = array_values(array_map($callback, $insertDiff));
 
-        if ($mapping['strategy'] !== 'pushAll') {
+        if ($mapping['strategy'] === 'addToSet') {
             $value = array('$each' => $value);
         }
 

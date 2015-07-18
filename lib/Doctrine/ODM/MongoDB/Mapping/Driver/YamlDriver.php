@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Yaml;
 
@@ -109,10 +110,6 @@ class YamlDriver extends FileDriver
                 }
                 if ( ! isset($mapping['fieldName'])) {
                     $mapping['fieldName'] = $fieldName;
-                }
-                if (isset($mapping['type']) && $mapping['type'] === 'collection') {
-                    // Note: this strategy is not actually used
-                    $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
                 }
                 if (isset($mapping['type']) && ! empty($mapping['embedded'])) {
                     $this->addMappingFromEmbed($class, $fieldName, $mapping, $mapping['type']);
@@ -243,7 +240,7 @@ class YamlDriver extends FileDriver
             'embedded'       => true,
             'targetDocument' => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
             'fieldName'      => $fieldName,
-            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : 'pushAll',
+            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
         );
         if (isset($embed['name'])) {
             $mapping['name'] = $embed['name'];
@@ -270,7 +267,7 @@ class YamlDriver extends FileDriver
             'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false,
             'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'fieldName'        => $fieldName,
-            'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : 'pushAll',
+            'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
             'inversedBy'       => isset($reference['inversedBy']) ? (string) $reference['inversedBy'] : null,
             'mappedBy'         => isset($reference['mappedBy']) ? (string) $reference['mappedBy'] : null,
             'repositoryMethod' => isset($reference['repositoryMethod']) ? (string) $reference['repositoryMethod'] : null,

@@ -94,7 +94,6 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['tags']);
 
         $this->assertEquals(array(

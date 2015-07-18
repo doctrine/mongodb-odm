@@ -33,6 +33,7 @@ use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -426,22 +427,8 @@ class UnitOfWork implements PropertyChangedListener
             $this->executeUpdates($class, $options);
         }
 
-        // Collection deletions (deletions of complete collections)
-        foreach ($this->collectionDeletions as $collectionToDelete) {
-            $this->getCollectionPersister()->delete($collectionToDelete, $options);
-        }
-        // Collection updates (deleteRows, updateRows, insertRows)
-        foreach ($this->collectionUpdates as $collectionToUpdate) {
-            $this->getCollectionPersister()->update($collectionToUpdate, $options);
-        }
-
         foreach ($this->getClassesForCommitAction($this->documentDeletions) as $class) {
             $this->executeDeletions($class, $options);
-        }
-
-        // Take new snapshots from visited collections
-        foreach ($this->visitedCollections as $coll) {
-            $coll->takeSnapshot();
         }
 
         // Raise postFlush
@@ -492,8 +479,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($this->documentInsertions as $document) {
             $class = $this->dm->getClassMetadata(get_class($document));
-
-            $this->computeChangeSet($class, $document);
+            if ( ! $class->isEmbeddedDocument) {
+                $this->computeChangeSet($class, $document);
+            }
         }
     }
 
@@ -506,15 +494,16 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($this->documentUpserts as $document) {
             $class = $this->dm->getClassMetadata(get_class($document));
-
-            $this->computeChangeSet($class, $document);
+            if ( ! $class->isEmbeddedDocument) {
+                $this->computeChangeSet($class, $document);
+            }
         }
     }
 
     /**
      * Only flush the given document according to a ruleset that keeps the UoW consistent.
      *
-     * 1. All documents scheduled for insertion, (orphan) removals and changes in collections are processed as well!
+     * 1. All documents scheduled for insertion and (orphan) removals are processed as well!
      * 2. Proxies are skipped.
      * 3. Only if document is properly managed.
      *
@@ -748,7 +737,7 @@ class UnitOfWork implements PropertyChangedListener
                     /* If original collection was exchanged with a non-empty value
                      * and $set will be issued, there is no need to $unset it first
                      */
-                    if ($actualValue && $actualValue->isDirty() && in_array($class->fieldMappings[$propName]['strategy'], array('set', 'setArray', 'atomicSet', 'atomicSetArray'))) {
+                    if ($actualValue && $actualValue->isDirty() && CollectionHelper::usesSet($class->fieldMappings[$propName]['strategy'])) {
                         continue;
                     }
                     if ($orgValue instanceof PersistentCollection) {
@@ -893,15 +882,12 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($value instanceof PersistentCollection && $value->isDirty() && $assoc['isOwningSide']) {
-            if ($topOrExistingDocument || strncmp($assoc['strategy'], 'set', 3) === 0) {
-                if ( ! $this->isCollectionScheduledForUpdate($value)) {
-                    $this->scheduleCollectionUpdate($value);
-                }
+            if ($topOrExistingDocument || CollectionHelper::usesSet($assoc['strategy'])) {
+                $this->scheduleCollectionUpdate($value);
             }
-
-            $this->visitedCollections[] = $value;
+            $topmostOwner = $this->getOwningDocument($value->getOwner());
+            $this->visitedCollections[spl_object_hash($topmostOwner)][] = $value;
         }
-
 
         // Look through the documents, and in any of their associations,
         // for transient (new) documents, recursively. ("Persistence by reachability")
@@ -921,7 +907,7 @@ class UnitOfWork implements PropertyChangedListener
             $state = $this->getDocumentState($entry, self::STATE_NEW);
 
             // Handle "set" strategy for multi-level hierarchy
-            $pathKey = ($assoc['strategy'] !== 'set' && $assoc['strategy'] !== 'atomicSet') ? $count : $key;
+            $pathKey = CollectionHelper::isList($assoc['strategy']) ? $count : $key;
             $path = $assoc['type'] === 'many' ? $assoc['name'] . '.' . $pathKey : $assoc['name'];
 
             $count++;
@@ -1306,7 +1292,6 @@ class UnitOfWork implements PropertyChangedListener
                 } else {
                     if ( ! empty($entryClass->lifecycleCallbacks[Events::postUpdate])) {
                         $entryClass->invokeLifecycleCallbacks(Events::postUpdate, $entry);
-                        $this->recomputeSingleDocumentChangeSet($entryClass, $entry);
                     }
                     if ($hasPostUpdateListeners) {
                         $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($entry, $this->dm));
@@ -2560,10 +2545,12 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function scheduleCollectionDeletion(PersistentCollection $coll)
     {
-        //TODO: if $coll is already scheduled for recreation ... what to do?
-        // Just remove $coll from the scheduled recreations?
-        $this->collectionDeletions[] = $coll;
-        $this->scheduleCollectionOwner($coll);
+        $oid = spl_object_hash($coll);
+        unset($this->collectionUpdates[$oid]);
+        if ( ! isset($this->collectionDeletions[$oid])) {
+            $this->collectionDeletions[$oid] = $coll;
+            $this->scheduleCollectionOwner($coll);
+        }
     }
 
     /**
@@ -2574,26 +2561,22 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
     {
-        return in_array($coll, $this->collectionDeletions, true);
+        return isset($this->collectionDeletions[spl_object_hash($coll)]);
     }
     
     /**
      * INTERNAL:
      * Unschedules a collection from being deleted when this UnitOfWork commits.
-     * This is mainly used for the atomicSet and atomicSetArray strategies and
-     * called from DocumentPersister and PersistenceBuilder.
-     *
-     * This does not remove $coll from $this->hasScheduledCollections because
-     * DocumentPersister will already have called hasScheduledCollections()
-     * before deciding to include any collections with an atomic strategy in its
-     * update query.
      * 
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
     public function unscheduleCollectionDeletion(PersistentCollection $coll)
     {
-        if (($key = array_search($coll, $this->collectionDeletions, true)) !== false) {
-            unset($this->collectionDeletions[$key]);
+        $oid = spl_object_hash($coll);
+        if (isset($this->collectionDeletions[$oid])) {
+            $topmostOwner = $this->getOwningDocument($coll->getOwner());
+            unset($this->collectionDeletions[$oid]);
+            unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
         }
     }
 
@@ -2606,33 +2589,32 @@ class UnitOfWork implements PropertyChangedListener
     public function scheduleCollectionUpdate(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        if (isset($mapping['strategy']) && in_array($mapping['strategy'], array('set', 'setArray', 'atomicSet', 'atomicSetArray'))) {
+        if (CollectionHelper::usesSet($mapping['strategy'])) {
             /* There is no need to $unset collection if it will be $set later
              * This is NOP if collection is not scheduled for deletion
              */
             $this->unscheduleCollectionDeletion($coll);
         }
-        $this->collectionUpdates[] = $coll;
-        $this->scheduleCollectionOwner($coll);
+        $oid = spl_object_hash($coll);
+        if ( ! isset($this->collectionUpdates[$oid])) {
+            $this->collectionUpdates[$oid] = $coll;
+            $this->scheduleCollectionOwner($coll);
+        }
     }
     
     /**
      * INTERNAL:
      * Unschedules a collection from being updated when this UnitOfWork commits.
-     * This is mainly used for the atomicSet and atomicSetArray strategies and
-     * called from DocumentPersister and PersistenceBuilder.
-     *
-     * This does not remove $coll from $this->hasScheduledCollections because
-     * DocumentPersister will already have called hasScheduledCollections()
-     * before deciding to include any collections with an atomic strategy in its
-     * update query.
      * 
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
     public function unscheduleCollectionUpdate(PersistentCollection $coll)
     {
-        if (($key = array_search($coll, $this->collectionUpdates, true)) !== false) {
-            unset($this->collectionUpdates[$key]);
+        $oid = spl_object_hash($coll);
+        if (isset($this->collectionUpdates[$oid])) {
+            $topmostOwner = $this->getOwningDocument($coll->getOwner());
+            unset($this->collectionUpdates[$oid]);
+            unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
         }
     }
     
@@ -2644,7 +2626,23 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function isCollectionScheduledForUpdate(PersistentCollection $coll)
     {
-        return in_array($coll, $this->collectionUpdates, true);
+        return isset($this->collectionUpdates[spl_object_hash($coll)]);
+    }
+
+    /**
+     * INTERNAL:
+     * Gets PersistentCollections that have been visited during computing change
+     * set of $document
+     *
+     * @param object $document
+     * @return PersistentCollection[]
+     */
+    public function getVisitedCollections($document)
+    {
+        $oid = spl_object_hash($document);
+        return isset($this->visitedCollections[$oid])
+                ? $this->visitedCollections[$oid]
+                : array();
     }
     
     /**
@@ -2680,31 +2678,63 @@ class UnitOfWork implements PropertyChangedListener
      *
      * If the owner is not scheduled for any lifecycle action, it will be
      * scheduled for update to ensure that versioning takes place if necessary.
+     *
+     * If the collection is nested within atomic collection, it is immediately
+     * unscheduled and atomic one is scheduled for update instead. This makes
+     * calculating update data way easier.
      * 
      * @param PersistentCollection $coll
      */
     private function scheduleCollectionOwner(PersistentCollection $coll)
     {
-        $document = $coll->getOwner();
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $document = $this->getOwningDocument($coll->getOwner());
+        $this->hasScheduledCollections[spl_object_hash($document)][spl_object_hash($coll)] = $coll;
 
+        if ($document !== $coll->getOwner()) {
+            $parent = $coll->getOwner();
+            while (null !== ($parentAssoc = $this->getParentAssociation($parent))) {
+                list($mapping, $parent, ) = $parentAssoc;
+            }
+            if (CollectionHelper::isAtomic($mapping['strategy'])) {
+                $class = $this->dm->getClassMetadata(get_class($document));
+                $atomicCollection = $class->getFieldValue($document, $mapping['fieldName']);
+                $this->scheduleCollectionUpdate($atomicCollection);
+                $this->unscheduleCollectionDeletion($coll);
+                $this->unscheduleCollectionUpdate($coll);
+            }
+        }
+
+        if ( ! $this->isDocumentScheduled($document)) {
+            $this->scheduleForUpdate($document);
+        }
+    }
+
+    /**
+     * Get the top-most owning document of a given document
+     *
+     * If a top-level document is provided, that same document will be returned.
+     * For an embedded document, we will walk through parent associations until
+     * we find a top-level document.
+     *
+     * @param object $document
+     * @throws \UnexpectedValueException when a top-level document could not be found
+     * @return object
+     */
+    public function getOwningDocument($document)
+    {
+        $class = $this->dm->getClassMetadata(get_class($document));
         while ($class->isEmbeddedDocument) {
             $parentAssociation = $this->getParentAssociation($document);
 
-            if (!$parentAssociation) {
-                return;
+            if ( ! $parentAssociation) {
+                throw new \UnexpectedValueException("Could not determine parent association for " . get_class($document));
             }
 
             list(, $document, ) = $parentAssociation;
             $class = $this->dm->getClassMetadata(get_class($document));
         }
-        $oid = spl_object_hash($document);
 
-        $this->hasScheduledCollections[$oid][] = $coll;
-
-        if ( ! $this->isDocumentScheduled($document)) {
-            $this->scheduleForUpdate($document);
-        }
+        return $document;
     }
 
     /**

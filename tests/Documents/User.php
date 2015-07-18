@@ -3,7 +3,6 @@
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -32,6 +31,9 @@ class User extends BaseDocument
 
     /** @ODM\EmbedMany(targetDocument="Phonenumber") */
     protected $phonenumbers;
+
+    /** @ODM\EmbedMany(targetDocument="Phonebook") */
+    protected $phonebooks;
 
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
     protected $groups;
@@ -71,6 +73,7 @@ class User extends BaseDocument
 
     public function __construct()
     {
+        $this->phonebooks = new ArrayCollection();
         $this->phonenumbers = new ArrayCollection();
         $this->groups = new ArrayCollection();
         $this->sortedGroups = new ArrayCollection();
@@ -299,5 +302,20 @@ class User extends BaseDocument
     public function setPhonenumbers($phonenumbers)
     {
         $this->phonenumbers = $phonenumbers;
+    }
+
+    public function addPhonebook(Phonebook $phonebook)
+    {
+        $this->phonebooks->add($phonebook);
+    }
+
+    public function getPhonebooks()
+    {
+        return $this->phonebooks;
+    }
+
+    public function removePhonebook(Phonebook $phonebook)
+    {
+        $this->phonebooks->removeElement($phonebook);
     }
 }
