@@ -22,6 +22,8 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\MongoDB\Connection;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
@@ -680,6 +682,9 @@ class DocumentManager implements ObjectManager
         }
 
         if ( ! empty($referenceMapping['simple'])) {
+            if ($class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+                throw MappingException::simpleReferenceMustNotTargetDiscriminatedDocument($referenceMapping['targetDocument']);
+            }
             return $class->getDatabaseIdentifierValue($id);
         }
 
