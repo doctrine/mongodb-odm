@@ -73,4 +73,3 @@ class UserNonStringOptions
     protected $profile;
     protected $groups;
 }
-

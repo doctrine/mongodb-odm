@@ -340,6 +340,3 @@ class CollectionPersisterComment
         $this->by = $by;
     }
 }
-
-
-

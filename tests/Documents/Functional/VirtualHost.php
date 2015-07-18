@@ -39,4 +39,3 @@ class VirtualHost
         return $this;
     }
 }
-
