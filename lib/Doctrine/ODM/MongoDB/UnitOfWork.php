@@ -580,7 +580,7 @@ class UnitOfWork implements PropertyChangedListener
     private function executeExtraUpdates(array $options)
     {
         foreach ($this->extraUpdates as $oid => $update) {
-            list ($document, $changeset) = $update;
+            list($document, $changeset) = $update;
             $this->documentChangeSets[$oid] = $changeset;
             $this->getDocumentPersister(get_class($document))->update($document, $options);
         }

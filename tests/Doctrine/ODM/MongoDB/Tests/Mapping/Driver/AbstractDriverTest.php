@@ -21,7 +21,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        unset ($this->driver);
+        unset($this->driver);
     }
 
     public function testDriver()
