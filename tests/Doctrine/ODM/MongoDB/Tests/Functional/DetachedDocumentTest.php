@@ -54,7 +54,7 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $serialized = serialize($user);
 
         $this->dm->clear();
-        $this->assertFalse($this->dm->contains($user));        
+        $this->assertFalse($this->dm->contains($user));
         unset($user);
         
         $user = unserialize($serialized);

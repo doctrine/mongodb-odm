@@ -68,7 +68,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testGetFilterCollection()
     {
         $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Query\FilterCollection', $this->dm->getFilterCollection());
-    }  
+    }
     
     public function testGetPartialReference()
     {
