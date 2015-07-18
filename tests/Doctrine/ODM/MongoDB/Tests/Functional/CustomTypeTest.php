@@ -57,7 +57,7 @@ class DateCollectionType extends Type
 
         $converter = Type::getType('date');
 
-        $value = array_map(function($date) use ($converter) {
+        $value = array_map(function ($date) use ($converter) {
             return $converter->convertToDatabaseValue($date);
         }, array_values($value));
 
@@ -77,7 +77,7 @@ class DateCollectionType extends Type
 
         $converter = Type::getType('date');
 
-        $value = array_map(function($date) use ($converter) {
+        $value = array_map(function ($date) use ($converter) {
             return $converter->convertToPHPValue($date);
         }, array_values($value));
 

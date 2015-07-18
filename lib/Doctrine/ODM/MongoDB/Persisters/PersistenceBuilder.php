@@ -364,7 +364,7 @@ class PersistenceBuilder
                         }
 
                         $pb = $this;
-                        $value = $rawValue->map(function($v) use ($pb, $mapping) {
+                        $value = $rawValue->map(function ($v) use ($pb, $mapping) {
                             return $pb->prepareAssociatedDocumentValue($mapping, $v);
                         })->toArray();
 

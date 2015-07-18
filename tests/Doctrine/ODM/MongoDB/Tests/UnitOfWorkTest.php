@@ -521,7 +521,7 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 
     private $transient; // not persisted
 
-    public function  __construct()
+    public function __construct()
     {
         $this->items = new ArrayCollection();
     }

@@ -29,7 +29,7 @@ class ConfigurableProduct
      */
     protected $selectedOption;
 
-    public function  __construct($name)
+    public function __construct($name)
     {
         $this->setName($name);
     }

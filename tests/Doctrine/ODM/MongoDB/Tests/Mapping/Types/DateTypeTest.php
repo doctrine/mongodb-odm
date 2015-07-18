@@ -71,7 +71,7 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
         $type = Type::getType(Type::DATE);
         $return = null;
 
-        call_user_func(function($value) use ($type, &$return) {
+        call_user_func(function ($value) use ($type, &$return) {
             eval($type->closureToPHP());
         }, $input);
 

@@ -112,9 +112,9 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             new GH453EmbeddedDocument(),
             new GH453EmbeddedDocument(),
         ));
-        $colSet = $colPush->map(function($v) { return clone $v; });
-        $colSetArray = $colPush->map(function($v) { return clone $v; });
-        $colAddToSet = $colPush->map(function($v) { return clone $v; });
+        $colSet = $colPush->map(function ($v) { return clone $v; });
+        $colSetArray = $colPush->map(function ($v) { return clone $v; });
+        $colAddToSet = $colPush->map(function ($v) { return clone $v; });
 
         $doc = new GH453Document();
         $doc->embedManyPush = $colPush;
@@ -156,16 +156,16 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             new GH453ReferencedDocument(),
             new GH453ReferencedDocument(),
         ));
-        $colSet = $colPush->map(function($v) { return clone $v; });
-        $colSetArray = $colPush->map(function($v) { return clone $v; });
-        $colAddToSet = $colPush->map(function($v) { return clone $v; });
+        $colSet = $colPush->map(function ($v) { return clone $v; });
+        $colSetArray = $colPush->map(function ($v) { return clone $v; });
+        $colAddToSet = $colPush->map(function ($v) { return clone $v; });
 
         $dm = $this->dm;
 
-        $colPush->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
-        $colSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
-        $colSetArray->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
-        $colAddToSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colPush->forAll(function ($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colSet->forAll(function ($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colSetArray->forAll(function ($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colAddToSet->forAll(function ($k, $v) use ($dm) { $dm->persist($v); return true; });
 
         $doc = new GH453Document();
         $doc->referenceManyPush = $colPush;

@@ -34,7 +34,7 @@ class StockItem
         return $this->id;
     }
 
-    public function  __construct($name = null, $cost = null, $inventory = null)
+    public function __construct($name = null, $cost = null, $inventory = null)
     {
         if (null !== $name) {
             $this->setName($name);

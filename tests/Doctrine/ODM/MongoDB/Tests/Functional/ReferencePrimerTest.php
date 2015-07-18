@@ -166,7 +166,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->createQueryBuilder('Documents\Group')->getQuery()->toArray();
 
         $invoked = 0;
-        $primer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
+        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
             $invoked++;
         };
 
@@ -201,7 +201,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $invokedArgs = array();
-        $primer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
+        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
             $invokedArgs[] = func_get_args();
         };
 

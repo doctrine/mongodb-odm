@@ -714,7 +714,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function addIndex($keys, array $options = array())
     {
         $this->indexes[] = array(
-            'keys' => array_map(function($value) {
+            'keys' => array_map(function ($value) {
                 if ($value == 1 || $value == -1) {
                     return (int) $value;
                 }

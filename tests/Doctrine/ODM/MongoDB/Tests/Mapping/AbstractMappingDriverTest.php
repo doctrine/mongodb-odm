@@ -277,7 +277,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
         /* Sort indexes by their first fieldname. This is necessary since the
          * index registration order may differ among drivers.
          */
-        $this->assertTrue(usort($indexes, function(array $a, array $b) {
+        $this->assertTrue(usort($indexes, function (array $a, array $b) {
             return strcmp(key($a['keys']), key($b['keys']));
         }));
 

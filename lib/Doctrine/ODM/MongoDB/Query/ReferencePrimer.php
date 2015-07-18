@@ -71,7 +71,7 @@ class ReferencePrimer
         $this->dm = $dm;
         $this->uow = $uow;
 
-        $this->defaultPrimer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
+        $this->defaultPrimer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
             $qb = $dm->createQueryBuilder($class->name)
                 ->field($class->identifier)->in($ids);
 

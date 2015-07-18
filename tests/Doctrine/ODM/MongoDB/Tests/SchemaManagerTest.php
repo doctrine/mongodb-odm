@@ -107,7 +107,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $collection = $this->documentCollections['Documents\CmsArticle'];
         $collection->expects($this->once())
             ->method('ensureIndex')
-            ->with($this->anything(), $this->callback(function($o) {
+            ->with($this->anything(), $this->callback(function ($o) {
                 return isset($o['timeout']) && $o['timeout'] === 10000;
             }));
 
@@ -138,7 +138,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $database = $this->documentDatabases['Documents\CmsArticle'];
         $database->expects($this->once())
             ->method('command')
-            ->with($this->callback(function($c) {
+            ->with($this->callback(function ($c) {
                 return array_key_exists('deleteIndexes', $c);
             }));
 

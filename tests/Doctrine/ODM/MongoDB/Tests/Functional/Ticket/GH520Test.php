@@ -55,7 +55,7 @@ class GH520Test extends BaseTest
         $this->dm->clear();
 
         $primedIds = null;
-        $primer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$primedIds) {
+        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$primedIds) {
             $primedIds = $ids;
         };
 
