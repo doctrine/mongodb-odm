@@ -411,24 +411,24 @@ class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
         }
 
-        foreach ($this->getClassesForCommitAction($this->documentUpserts) as $class) {
-            if ( ! $class->isEmbeddedDocument) {
-                $this->executeUpserts($class, $options);
-            }
+        foreach ($this->getClassesForCommitAction($this->documentUpserts) as $tuple) {
+            list($class, $documents) = $tuple;
+            $this->executeUpserts($class, $documents, $options);
         }
 
-        foreach ($this->getClassesForCommitAction($this->documentInsertions) as $class) {
-            if ( ! $class->isEmbeddedDocument) {
-                $this->executeInserts($class, $options);
-            }
+        foreach ($this->getClassesForCommitAction($this->documentInsertions) as $tuple) {
+            list($class, $documents) = $tuple;
+            $this->executeInserts($class, $documents, $options);
         }
 
-        foreach ($this->getClassesForCommitAction($this->documentUpdates) as $class) {
-            $this->executeUpdates($class, $options);
+        foreach ($this->getClassesForCommitAction($this->documentUpdates) as $tuple) {
+            list($class, $documents) = $tuple;
+            $this->executeUpdates($class, $documents, $options);
         }
 
-        foreach ($this->getClassesForCommitAction($this->documentDeletions) as $class) {
-            $this->executeDeletions($class, $options);
+        foreach ($this->getClassesForCommitAction($this->documentDeletions, false) as $tuple) {
+            list($class, $documents) = $tuple;
+            $this->executeDeletions($class, $documents, $options);
         }
 
         // Raise postFlush
@@ -451,23 +451,43 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Divides given documents by their class name. Returns array of tuples that
+     * is easiest described by:
+     *
+     * list($class, $documents) = array(ClassMetadata, object[])
+     *
      * @param array $documents
-     * @return ClassMetadata[]
+     * @param bool $excludeEmbedded
+     * @return array
      */
-    private function getClassesForCommitAction($documents)
+    private function getClassesForCommitAction($documents, $excludeEmbedded = true)
     {
         if (empty($documents)) {
             return array();
         }
-        $classes = array();
-        foreach ($documents as $d) {
+        $divided = array();
+        $embeds = array();
+        foreach ($documents as $oid => $d) {
             $className = get_class($d);
-            if ( ! isset($classes[$className])) {
-                $class = $this->dm->getClassMetadata($className);
-                $classes[$class->name] = $class;
+            if (isset($embeds[$className])) {
+                continue;
+            }
+            if (isset($divided[$className])) {
+                $divided[$className][1][$oid] = $d;
+                continue;
+            }
+            $class = $this->dm->getClassMetadata($className);
+            if ($class->isEmbeddedDocument && $excludeEmbedded) {
+                $embeds[$className] = true;
+                continue;
+            }
+            if (empty($divided[$class->name])) {
+                $divided[$class->name] = array($class, array($oid => $d));
+            } else {
+                $divided[$class->name][1][$oid] = $d;
             }
         }
-        return $classes;
+        return $divided;
     }
 
     /**
@@ -1073,21 +1093,16 @@ class UnitOfWork implements PropertyChangedListener
      * Executes all document insertions for documents of the specified type.
      *
      * @param ClassMetadata $class
+     * @param array $documents Array of documents to insert
      * @param array $options Array of options to be used with batchInsert()
      */
-    private function executeInserts(ClassMetadata $class, array $options = array())
+    private function executeInserts(ClassMetadata $class, array $documents, array $options = array())
     {
-        $className = $class->name;
-        $persister = $this->getDocumentPersister($className);
+        $persister = $this->getDocumentPersister($class->name);
 
-        $insertedDocuments = array();
-
-        foreach ($this->documentInsertions as $oid => $document) {
-            if (get_class($document) === $className) {
-                $persister->addInsert($document);
-                $insertedDocuments[] = $document;
-                unset($this->documentInsertions[$oid]);
-            }
+        foreach ($documents as $oid => $document) {
+            $persister->addInsert($document);
+            unset($this->documentInsertions[$oid]);
         }
 
         $persister->executeInserts($options);
@@ -1095,7 +1110,7 @@ class UnitOfWork implements PropertyChangedListener
         $hasPostPersistLifecycleCallbacks = ! empty($class->lifecycleCallbacks[Events::postPersist]);
         $hasPostPersistListeners = $this->evm->hasListeners(Events::postPersist);
 
-        foreach ($insertedDocuments as $document) {
+        foreach ($documents as $document) {
             if ($hasPostPersistLifecycleCallbacks) {
                 $class->invokeLifecycleCallbacks(Events::postPersist, $document);
             }
@@ -1110,21 +1125,17 @@ class UnitOfWork implements PropertyChangedListener
      * Executes all document upserts for documents of the specified type.
      *
      * @param ClassMetadata $class
+     * @param array $documents Array of documents to upsert
      * @param array $options Array of options to be used with batchInsert()
      */
-    private function executeUpserts(ClassMetadata $class, array $options = array())
+    private function executeUpserts(ClassMetadata $class, array $documents, array $options = array())
     {
-        $className = $class->name;
-        $persister = $this->getDocumentPersister($className);
+        $persister = $this->getDocumentPersister($class->name);
 
-        $upsertedDocuments = array();
 
-        foreach ($this->documentUpserts as $oid => $document) {
-            if (get_class($document) === $className) {
-                $persister->addUpsert($document);
-                $upsertedDocuments[] = $document;
-                unset($this->documentUpserts[$oid]);
-            }
+        foreach ($documents as $oid => $document) {
+            $persister->addUpsert($document);
+            unset($this->documentUpserts[$oid]);
         }
 
         $persister->executeUpserts($options);
@@ -1132,7 +1143,7 @@ class UnitOfWork implements PropertyChangedListener
         $hasLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postPersist]);
         $hasListeners = $this->evm->hasListeners(Events::postPersist);
 
-        foreach ($upsertedDocuments as $document) {
+        foreach ($documents as $document) {
             if ($hasLifecycleCallbacks) {
                 $class->invokeLifecycleCallbacks(Events::postPersist, $document);
             }
@@ -1147,9 +1158,10 @@ class UnitOfWork implements PropertyChangedListener
      * Executes all document updates for documents of the specified type.
      *
      * @param Mapping\ClassMetadata $class
+     * @param array $documents Array of documents to update
      * @param array $options Array of options to be used with update()
      */
-    private function executeUpdates(ClassMetadata $class, array $options = array())
+    private function executeUpdates(ClassMetadata $class, array $documents, array $options = array())
     {
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
@@ -1159,42 +1171,36 @@ class UnitOfWork implements PropertyChangedListener
         $hasPostUpdateLifecycleCallbacks = ! empty($class->lifecycleCallbacks[Events::postUpdate]);
         $hasPostUpdateListeners = $this->evm->hasListeners(Events::postUpdate);
 
-        foreach ($this->documentUpdates as $oid => $document) {
-            if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
-                if ( ! $class->isEmbeddedDocument) {
-                    if ($hasPreUpdateLifecycleCallbacks) {
-                        $class->invokeLifecycleCallbacks(Events::preUpdate, $document);
-                        $this->recomputeSingleDocumentChangeSet($class, $document);
-                    }
-
-                    if ($hasPreUpdateListeners) {
-                        if ( ! isset($this->documentChangeSets[$oid])) {
-                            // only ReferenceMany collection is scheduled for update
-                            $this->documentChangeSets[$oid] = array();
-                        }
-                        $this->evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
-                            $document, $this->dm, $this->documentChangeSets[$oid])
-                        );
-                    }
-                    $this->cascadePreUpdate($class, $document);
-                }
-
-                if ( ! $class->isEmbeddedDocument && ( ! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document))) {
-                    $persister->update($document, $options);
-                }
-
-                unset($this->documentUpdates[$oid]);
-
-                if ( ! $class->isEmbeddedDocument) {
-                    if ($hasPostUpdateLifecycleCallbacks) {
-                        $class->invokeLifecycleCallbacks(Events::postUpdate, $document);
-                    }
-                    if ($hasPostUpdateListeners) {
-                        $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
-                    }
-                    $this->cascadePostUpdate($class, $document);
-                }
+        foreach ($documents as $oid => $document) {
+            if ($hasPreUpdateLifecycleCallbacks) {
+                $class->invokeLifecycleCallbacks(Events::preUpdate, $document);
+                $this->recomputeSingleDocumentChangeSet($class, $document);
             }
+
+            if ($hasPreUpdateListeners) {
+                if ( ! isset($this->documentChangeSets[$oid])) {
+                    // only ReferenceMany collection is scheduled for update
+                    $this->documentChangeSets[$oid] = array();
+                }
+                $this->evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
+                    $document, $this->dm, $this->documentChangeSets[$oid])
+                );
+            }
+            $this->cascadePreUpdate($class, $document);
+
+            if ( ! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document)) {
+                $persister->update($document, $options);
+            }
+
+            unset($this->documentUpdates[$oid]);
+
+            if ($hasPostUpdateLifecycleCallbacks) {
+                $class->invokeLifecycleCallbacks(Events::postUpdate, $document);
+            }
+            if ($hasPostUpdateListeners) {
+                $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
+            }
+            $this->cascadePostUpdate($class, $document);
         }
     }
 
@@ -1307,47 +1313,46 @@ class UnitOfWork implements PropertyChangedListener
      * Executes all document deletions for documents of the specified type.
      *
      * @param ClassMetadata $class
+     * @param array $documents Array of documents to delete
      * @param array $options Array of options to be used with remove()
      */
-    private function executeDeletions(ClassMetadata $class, array $options = array())
+    private function executeDeletions(ClassMetadata $class, array $documents, array $options = array())
     {
         $hasPostRemoveLifecycleCallbacks = ! empty($class->lifecycleCallbacks[Events::postRemove]);
         $hasPostRemoveListeners = $this->evm->hasListeners(Events::postRemove);
 
-        $className = $class->name;
-        $persister = $this->getDocumentPersister($className);
-        foreach ($this->documentDeletions as $oid => $document) {
-            if (get_class($document) == $className || $document instanceof Proxy && $document instanceof $className) {
-                if ( ! $class->isEmbeddedDocument) {
-                    $persister->delete($document, $options);
-                }
-                unset(
-                    $this->documentDeletions[$oid],
-                    $this->documentIdentifiers[$oid],
-                    $this->originalDocumentData[$oid]
-                );
+        $persister = $this->getDocumentPersister($class->name);
 
-                // Clear snapshot information for any referenced PersistentCollection
-                // http://www.doctrine-project.org/jira/browse/MODM-95
-                foreach ($class->associationMappings as $fieldMapping) {
-                    if (isset($fieldMapping['type']) && $fieldMapping['type'] === ClassMetadata::MANY) {
-                        $value = $class->reflFields[$fieldMapping['fieldName']]->getValue($document);
-                        if ($value instanceof PersistentCollection) {
-                            $value->clearSnapshot();
-                        }
+        foreach ($documents as $oid => $document) {
+            if ( ! $class->isEmbeddedDocument) {
+                $persister->delete($document, $options);
+            }
+            unset(
+                $this->documentDeletions[$oid],
+                $this->documentIdentifiers[$oid],
+                $this->originalDocumentData[$oid]
+            );
+
+            // Clear snapshot information for any referenced PersistentCollection
+            // http://www.doctrine-project.org/jira/browse/MODM-95
+            foreach ($class->associationMappings as $fieldMapping) {
+                if (isset($fieldMapping['type']) && $fieldMapping['type'] === ClassMetadata::MANY) {
+                    $value = $class->reflFields[$fieldMapping['fieldName']]->getValue($document);
+                    if ($value instanceof PersistentCollection) {
+                        $value->clearSnapshot();
                     }
                 }
+            }
 
-                // Document with this $oid after deletion treated as NEW, even if the $oid
-                // is obtained by a new document because the old one went out of scope.
-                $this->documentStates[$oid] = self::STATE_NEW;
+            // Document with this $oid after deletion treated as NEW, even if the $oid
+            // is obtained by a new document because the old one went out of scope.
+            $this->documentStates[$oid] = self::STATE_NEW;
 
-                if ($hasPostRemoveLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::postRemove, $document);
-                }
-                if ($hasPostRemoveListeners) {
-                    $this->evm->dispatchEvent(Events::postRemove, new LifecycleEventArgs($document, $this->dm));
-                }
+            if ($hasPostRemoveLifecycleCallbacks) {
+                $class->invokeLifecycleCallbacks(Events::postRemove, $document);
+            }
+            if ($hasPostRemoveListeners) {
+                $this->evm->dispatchEvent(Events::postRemove, new LifecycleEventArgs($document, $this->dm));
             }
         }
     }
