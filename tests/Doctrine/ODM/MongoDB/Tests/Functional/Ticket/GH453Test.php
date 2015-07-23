@@ -271,10 +271,10 @@ class GH453Document
     /** @ODM\Hash */
     public $hash;
 
-    /** @ODM\Collection(strategy="pushAll")) */
+    /** @ODM\Collection() */
     public $colPush;
 
-    /** @ODM\Collection(strategy="set") */
+    /** @ODM\Collection() */
     public $colSet;
 
     /** @ODM\EmbedMany(strategy="pushAll")) */

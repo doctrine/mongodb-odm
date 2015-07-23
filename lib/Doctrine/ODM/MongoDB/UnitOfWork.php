@@ -907,7 +907,7 @@ class UnitOfWork implements PropertyChangedListener
             $state = $this->getDocumentState($entry, self::STATE_NEW);
 
             // Handle "set" strategy for multi-level hierarchy
-            $pathKey = CollectionHelper::isList($assoc['strategy']) ? $count : $key;
+            $pathKey = ! isset($assoc['strategy']) || CollectionHelper::isList($assoc['strategy']) ? $count : $key;
             $path = $assoc['type'] === 'many' ? $assoc['name'] . '.' . $pathKey : $assoc['name'];
 
             $count++;
@@ -2696,7 +2696,7 @@ class UnitOfWork implements PropertyChangedListener
             while (null !== ($parentAssoc = $this->getParentAssociation($parent))) {
                 list($mapping, $parent, ) = $parentAssoc;
             }
-            if (CollectionHelper::isAtomic($mapping['strategy'])) {
+            if (isset($mapping['strategy']) && CollectionHelper::isAtomic($mapping['strategy'])) {
                 $class = $this->dm->getClassMetadata(get_class($document));
                 $atomicCollection = $class->getFieldValue($document, $mapping['fieldName']);
                 $this->scheduleCollectionUpdate($atomicCollection);

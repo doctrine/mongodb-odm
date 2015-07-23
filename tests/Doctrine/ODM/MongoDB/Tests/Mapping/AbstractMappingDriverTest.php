@@ -40,12 +40,14 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testFieldMappings($class)
     {
-        $this->assertEquals(13, count($class->fieldMappings));
+        $this->assertEquals(14, count($class->fieldMappings));
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['version']));
         $this->assertTrue(isset($class->fieldMappings['lock']));
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertTrue(isset($class->fieldMappings['email']));
+        $this->assertTrue(isset($class->fieldMappings['roles']));
+        $this->assertFalse(isset($class->fieldMappings['roles']['strategy']));
 
         return $class;
     }
@@ -141,7 +143,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testAssocations($class)
     {
-        $this->assertEquals(13, count($class->fieldMappings));
+        $this->assertEquals(14, count($class->fieldMappings));
 
         return $class;
     }
@@ -399,6 +401,11 @@ class AbstractMappingDriverUser
      * @ODM\Date
      */
     public $createdAt;
+
+    /**
+     * @ODM\Collection
+     */
+    public $roles = array();
 
     /**
      * @ODM\PrePersist

@@ -27,5 +27,4 @@ abstract class AbstractField extends Annotation
     public $type = 'string';
     public $nullable = false;
     public $options = array();
-    public $strategy;
 }

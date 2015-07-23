@@ -18,6 +18,7 @@
         <field fieldName="email" type="string" unique="true" drop-dups="true" order="desc" />
         <field fieldName="mysqlProfileId" type="integer" unique="true" drop-dups="true" order="desc" />
         <field fieldName="createdAt" type="date" />
+        <field fieldName="roles" type="collection" />
         <indexes>
             <index unique="true">
                 <key name="username" order="desc" />
