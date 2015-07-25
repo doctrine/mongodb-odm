@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 require_once 'fixtures/User.php';
 require_once 'fixtures/EmbeddedDocument.php';
+require_once 'fixtures/UserCustomId.php';
 
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
@@ -241,6 +242,11 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isOwningSide' => true,
             'nullable' => false,
         ), $classMetadata->fieldMappings['name']);
+
+        $classMetadata = new ClassMetadata('TestDocuments\UserCustomId');
+        $this->driver->loadMetadataForClass('TestDocuments\UserCustomId', $classMetadata);
+
+        $this->assertEquals('string', $classMetadata->fieldMappings['id']['type']);
     }
 
 }
