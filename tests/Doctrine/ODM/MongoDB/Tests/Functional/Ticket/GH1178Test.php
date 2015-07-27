@@ -17,22 +17,50 @@ class GH1178Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public static function setUpBeforeClass()
     {
-        Type::addType('user_id_gh1178', __NAMESPACE__ . '\UserIdType');
+        Type::addType('user_id', __NAMESPACE__ . '\UserIdType');
     }
 
     public function testCustomIdTypeValueConversions()
     {
-        $user = new User($id = new UserId(1));
-        $user->date = new \DateTime();
-
+        $user = new UserGH1178($id = new UserId(1));
         $this->dm->persist($user);
         $this->dm->flush();
 
         $this->dm->clear();
 
-        $user = $this->dm->find(__NAMESPACE__ . '\User', 1);
+        $this->assertEquals($user, $this->dm->find(__NAMESPACE__ . '\UserGH1178', $id));
+    }
 
-        $this->assertEquals('UserIdGH1178', $user->id);
+    public function testRepositoryFindByCustomIdObject()
+    {
+        $user = new UserGH1178($id = new UserId(1));
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->dm->clear();
+
+        $repository = $this->dm->getRepository(UserGH1178::class);
+        $this->assertEquals($user, $repository->findOneBy(array('id' => $id)));
+    }
+
+    public function testFindByReference()
+    {
+        $user = new UserGH1178($id = new UserId(1));
+        $this->dm->persist($user);
+
+        $comment = new CommentGH1178($user);
+        $this->dm->persist($comment);
+
+        $this->dm->flush();
+
+        $query = $this->dm
+            ->createQueryBuilder(CommentGH1178::class)
+            ->find()
+            ->field('user')
+            ->references($user)
+            ->getQuery();
+
+        $this->assertEquals($comment, $query->getSingleResult());
     }
 }
 
@@ -45,22 +73,16 @@ class UserIdType extends Type
 
     public function convertToDatabaseValue($value)
     {
-        if (!$value instanceof UserId) {
-            return $value;
-        }
-
-      //  var_dump($value);
         return $value->value;
     }
 
     public function closureToPHP()
     {
-        return '$return = new Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1178\UserId($value);';
+        return '$return = new \Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1178\UserId($value);';
     }
 
     public function convertToPHPValue($value)
     {
-        var_dump($value);
         if ($value === null) {
             return null;
         }
@@ -70,25 +92,35 @@ class UserIdType extends Type
 }
 
 /** @ODM\Document */
-class User
+class CommentGH1178
 {
     /**
-     * @ODM\Id(strategy="NONE", type="user_id_gh1178")
+     * @ODM\Id
      */
     public $id;
 
     /**
-     * @ODM\Field(type="string");
+     * @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\UserGH1178")
      */
-    public $test;
+    public $user;
 
+    public function __construct(UserGH1178 $user)
+    {
+        $this->user = $user;
+    }
+}
+
+
+/** @ODM\Document */
+class UserGH1178
+{
     /**
-     * @ODM\Field(type="date");
+     * @ODM\Id(strategy="NONE", type="user_id")
      */
-    public $date;
+    public $id;
 
     public function __construct(UserId $id)
     {
-        $this->id = 1;
+        $this->id = $id;
     }
 }

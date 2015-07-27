@@ -140,6 +140,22 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertNotContains($extraneousClassName, $classes);
     }
 
+    /**
+     * @group GH-1178
+     *
+     * @see   https://github.com/doctrine/mongodb-odm/issues/1178
+     */
+    public function testLoadMetadataForDocumentWithCustomIdType()
+    {
+        $cm = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\DocumentCustomIdType');
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
+
+        $annotationDriver->loadMetadataForClass('stdClass', $cm);
+
+        $this->assertEquals('string', $cm->fieldMappings['id']['type']);
+    }
+
     protected function _loadDriverForCMSDocuments()
     {
         $annotationDriver = $this->_loadDriver();
@@ -186,4 +202,15 @@ class AnnotationDriverTestChild extends AnnotationDriverTestParent
 {
     /** @ODM\String */
     public $bar;
+}
+
+/**
+ * @ODM\Document
+ */
+class DocumentCustomIdType
+{
+    /**
+     * @ODM\Id(strategy="NONE", type="string")
+     */
+    public $id;
 }
