@@ -2813,7 +2813,7 @@ class UnitOfWork implements PropertyChangedListener
             unset($data[$class->discriminatorField]);
         }
 
-        $id = $class->getDatabaseIdentifierValue($data['_id']);
+        $id = $data['_id'];
         $serializedId = serialize($id);
 
         if (isset($this->identityMap[$class->name][$serializedId])) {
@@ -2843,6 +2843,7 @@ class UnitOfWork implements PropertyChangedListener
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
             $this->originalDocumentData[$oid] = $data;
         }
+
         return $document;
     }
 

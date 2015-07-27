@@ -1,0 +1,9 @@
+TestDocuments\UserCustomId:
+  db: documents
+  collection: user
+  fields:
+    id:
+      fieldName: id
+      id: true
+      strategy: none
+      type: string
