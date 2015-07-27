@@ -63,6 +63,7 @@ class CreateCommand extends AbstractCommand
         $this->timeout = isset($timeout) ? (int) $timeout : null;
 
         $sm = $this->getSchemaManager();
+        $isErrored = false;
 
         foreach ($create as $option) {
             try {
@@ -79,8 +80,11 @@ class CreateCommand extends AbstractCommand
                 ));
             } catch (\Exception $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');
+                $isErrored = true;
             }
         }
+
+        return ($isErrored) ? 255 : 0;
     }
 
     protected function processDocumentCollection(SchemaManager $sm, $document)

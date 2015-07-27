@@ -11,14 +11,14 @@ class MODM43Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $person = array(
             'name' => 'Jonathan Wage'
         );
-        $this->dm->getConnection()->modm43_test->people->insert($person);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\Person')->insert($person);
         $user = $this->dm->find(__NAMESPACE__.'\Person', $person['_id']);
         $this->assertEquals('Jonathan', $user->firstName);
         $this->assertEquals('Wage', $user->lastName);
     }
 }
 
-/** @ODM\Document(db="modm43_test", collection="people") */
+/** @ODM\Document @ODM\HasLifecycleCallbacks */
 class Person
 {
     /** @ODM\Id */

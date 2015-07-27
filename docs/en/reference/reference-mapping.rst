@@ -1,44 +1,32 @@
 Reference Mapping
 =================
 
-This chapter explains how references between documents are mapped
-with Doctrine.
+This chapter explains how references between documents are mapped with Doctrine.
 
 Collections
 -----------
 
-In all the examples of many-valued references in this manual we
-will make use of a ``Collection`` interface and a corresponding
-default implementation ``ArrayCollection`` that are defined in the
-``Doctrine\Common\Collections`` namespace. Why do we need that?
-Doesn't that couple my domain model to Doctrine? Unfortunately, PHP
-arrays, while being great for many things, do not make up for good
-collections of business objects, especially not in the context of
-an ODM. The reason is that plain PHP arrays can not be
-transparently extended / instrumented in PHP code, which is
-necessary for a lot of advanced ODM features. The classes /
-interfaces that come closest to an OO collection are ArrayAccess
-and ArrayObject but until instances of these types can be used in
-all places where a plain array can be used (something that may
-happen in PHP6) their usability is fairly limited. You "can"
-type-hint on ``ArrayAccess`` instead of ``Collection``, since the
-Collection interface extends ``ArrayAccess``, but this will
-severely limit you in the way you can work with the collection,
-because the ``ArrayAccess`` API is (intentionally) very primitive
-and more importantly because you can not pass this collection to
-all the useful PHP array functions, which makes it very hard to
-work with.
+Examples of many-valued references in this manual make use of a ``Collection``
+interface and a corresponding ``ArrayCollection`` implementation, which are
+defined in the ``Doctrine\Common\Collections`` namespace. These classes have no
+dependencies on ODM, and can therefore be used within your domain model and
+elsewhere without introducing coupling to the persistence layer.
 
-**CAUTION** The Collection interface and ArrayCollection class,
-like everything else in the Doctrine namespace, are neither part of
-the ODM, it is a plain PHP class that has no outside dependencies
-apart from dependencies on PHP itself (and the SPL). Therefore
-using this class in your domain classes and elsewhere does not
-introduce a coupling to the persistence layer. The Collection
-class, like everything else in the Common namespace, is not part of
-the persistence layer. You could even copy that class over to your
-project if you want to remove Doctrine from your project and all
-your domain classes will work the same as before.
+ODM also provides a ``PersistentCollection`` implementation of ``Collection``,
+which incorporates change-tracking functionality; however, this class is
+constructed internally during hydration. As a developer, you should develop with
+the ``Collection`` interface in mind so that your code can operate with any
+implementation.
+
+Why are these classes used over PHP arrays? Native arrays cannot be
+transparently extended in PHP, which is necessary for many advanced features
+provided by the ODM. Although PHP does provide various interfaces that allow
+objects to operate like arrays (e.g. ``Traversable``, ``Countable``,
+``ArrayAccess``), and even a concrete implementation in ``ArrayObject``, these
+objects cannot always be used everywhere that a native array is accepted.
+Doctrine's ``Collection`` interface and ``ArrayCollection`` implementation are
+conceptually very similar to ``ArrayObject``, with some slight differences and
+improvements.
 
 .. _reference_one:
 
@@ -52,8 +40,6 @@ Reference one document:
     .. code-block:: php
 
         <?php
-
-        namespace Documents;
 
         /** @Document */
         class Product
@@ -107,8 +93,6 @@ Reference many documents:
 
         <?php
 
-        namespace Documents;
-
         /** @Document */
         class User
         {
@@ -151,8 +135,8 @@ Reference many documents:
 Mixing Document Types
 ---------------------
 
-If you want to store different types of documents in references you
-can simply omit the ``targetDocument`` option:
+If you want to store different types of documents in references, you can simply
+omit the ``targetDocument`` option:
 
 .. configuration-block::
 
@@ -180,12 +164,10 @@ can simply omit the ``targetDocument`` option:
         referenceMany:
             favorites: ~
 
-Now the ``$favorites`` property can store a reference to any type
-of document! The class name will be automatically added for you in
-a field named ``_doctrine_class_name``.
-
-You can also specify a discriminator map to avoid storing the fully
-qualified class name with each reference:
+Now the ``$favorites`` property can store a reference to any type of document!
+The class name will be automatically stored in a field named
+``_doctrine_class_name`` within the `DBRef`_ object. The field name can be
+customized with the ``discriminatorField`` option:
 
 .. configuration-block::
 
@@ -193,7 +175,39 @@ qualified class name with each reference:
 
         <?php
 
-        namespace Documents;
+        /** @Document */
+        class User
+        {
+            // ..
+
+            /**
+             * @ReferenceMany(discriminatorField="type")
+             */
+            private $favorites = array();
+
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <reference-many fieldName="favorites">
+            <discriminator-field name="type" />
+        </reference-many>
+
+    .. code-block:: yaml
+
+        referenceMany:
+          favorites:
+            discriminatorField: type
+
+You can also specify a discriminator map to avoid storing the fully qualified
+class name with each reference:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
 
         /** @Document */
         class User
@@ -230,9 +244,8 @@ qualified class name with each reference:
               album: Documents\Album
               song: Documents\Song
 
-If you want to store the discriminator value in a field other than
-``_doctrine_class_name`` you can use the ``discriminatorField``
-option:
+If you have references without a discriminator value that need to be treated
+correctly you can optionally specify a default value for the discriminator:
 
 .. configuration-block::
 
@@ -246,7 +259,13 @@ option:
             // ..
 
             /**
-             * @ReferenceMany(discriminatorField="type")
+             * @ReferenceMany(
+             *   discriminatorMap={
+             *     "album"="Album",
+             *     "song"="Song"
+             *   },
+             *   defaultDiscriminatorValue="album"
+             * )
              */
             private $favorites = array();
 
@@ -256,23 +275,32 @@ option:
     .. code-block:: xml
 
         <reference-many fieldName="favorites">
-            <discriminator-field name="type" />
+            <discriminator-map>
+                <discriminator-mapping value="album" class="Documents\Album" />
+                <discriminator-mapping value="song" class="Documents\Song" />
+            </discriminator-map>
+            <default-discriminator-value value="album" />
         </reference-many>
 
     .. code-block:: yaml
 
         referenceMany:
           favorites:
-            discriminatorField: type
+            discriminatorMap:
+              album: Documents\Album
+              song: Documents\Song
+            defaultDiscriminatorValue: album
 
 .. _simple_references:
 
 Simple References
 -----------------
 
-By default all references are stored as a ``DBRef`` with the traditional ``$id``,
-``$db`` and ``$ref`` fields but if you want you can configure your references
-to be simple and only store a ``MongoId``.
+By default all references are stored as a `DBRef`_ object with the traditional
+``$ref``, ``$id``, and ``$db`` fields (in that order). For references to
+documents of a single collection, storing the collection and database names for
+each reference may be redundant. You can use simple references to store the
+referenced document's identifier (e.g. ``MongoId``) instead of a `DBRef`_.
 
 Example:
 
@@ -297,20 +325,19 @@ Example:
           profile:
             simple: true
 
-Now when you create a new reference to a Profile only a ``MongoId`` instance
-will be stored in the ``profile`` field.
+Now, the ``profile`` field will only store the ``MongoId`` of the referenced
+Profile document.
 
-Benefits:
-
-- Smaller amount of storage used.
-- Performance and simple indexing.
+Simple references reduce the amount of storage used, both for the document
+itself and any indexes on the reference field; however, simple references cannot
+be used with discriminators, since there is no `DBRef`_ object in which to store
+a discriminator value.
 
 Cascading Operations
 --------------------
 
-By default Doctrine will not cascade any ``UnitOfWork`` operations
-to referenced documents so if wish to have this functionality you
-must explicitly enable it:
+By default, Doctrine will not cascade any ``UnitOfWork`` operations to
+referenced documents. You must explicitly enable this functionality:
 
 .. configuration-block::
 
@@ -339,9 +366,11 @@ must explicitly enable it:
 
 The valid values are:
 
--  **all** - cascade on all operations by default.
+-  **all** - cascade all operations by default.
 -  **detach** - cascade detach operation to referenced documents.
 -  **merge** - cascade merge operation to referenced documents.
 -  **refresh** - cascade refresh operation to referenced documents.
 -  **remove** - cascade remove operation to referenced documents.
 -  **persist** - cascade persist operation to referenced documents.
+
+.. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbref

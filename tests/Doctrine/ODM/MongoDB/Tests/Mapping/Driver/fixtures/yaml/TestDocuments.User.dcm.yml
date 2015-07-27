@@ -8,6 +8,8 @@ TestDocuments\User:
     username:
       fieldName: username
       type: string
+      unique: true
+      sparse: true
     createdAt:
       fieldName: createdAt
       type: date
@@ -26,6 +28,7 @@ TestDocuments\User:
       simple: true
       targetDocument: Documents\Profile
       cascade: all
+      orphanRemoval: true
     account:
       targetDocument: Documents\Account
       cascade: all
@@ -36,3 +39,6 @@ TestDocuments\User:
   lifecycleCallbacks:
     prePersist: [doStuffOnPrePersist]
     postPersist: [doStuffOnPostPersist, doOtherStuffOnPostPersist]
+  alsoLoadMethods:
+    doStuffOnAlsoLoad: unmappedField
+

@@ -13,7 +13,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
     public function testLoadMapping()
     {
-        $className = __NAMESPACE__.'\User';
+        $className = __NAMESPACE__.'\AbstractMappingDriverUser';
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata($className);
@@ -40,10 +40,14 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testFieldMappings($class)
     {
-        $this->assertEquals(10, count($class->fieldMappings));
+        $this->assertEquals(14, count($class->fieldMappings));
         $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['version']));
+        $this->assertTrue(isset($class->fieldMappings['lock']));
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertTrue(isset($class->fieldMappings['email']));
+        $this->assertTrue(isset($class->fieldMappings['roles']));
+        $this->assertFalse(isset($class->fieldMappings['roles']['strategy']));
 
         return $class;
     }
@@ -110,12 +114,36 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     }
 
     /**
+     * @depends testFieldMappings
+     * @param ClassMetadata $class
+     */
+    public function testVersionFieldMappings($class)
+    {
+        $this->assertEquals('int', $class->fieldMappings['version']['type']);
+        $this->assertTrue(!empty($class->fieldMappings['version']['version']));
+
+        return $class;
+    }
+
+    /**
+    * @depends testFieldMappings
+    * @param ClassMetadata $class
+    */
+    public function testLockFieldMappings($class)
+    {
+        $this->assertEquals('int', $class->fieldMappings['lock']['type']);
+        $this->assertTrue(!empty($class->fieldMappings['lock']['lock']));
+
+        return $class;
+    }
+
+    /**
      * @depends testIdentifier
      * @param ClassMetadata $class
      */
     public function testAssocations($class)
     {
-        $this->assertEquals(10, count($class->fieldMappings));
+        $this->assertEquals(14, count($class->fieldMappings));
 
         return $class;
     }
@@ -144,27 +172,18 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testLifecycleCallbacks($class)
     {
-        $this->assertEquals(count($class->lifecycleCallbacks), 2);
-        $this->assertEquals($class->lifecycleCallbacks['prePersist'][0], 'doStuffOnPrePersist');
-        $this->assertEquals($class->lifecycleCallbacks['postPersist'][0], 'doStuffOnPostPersist');
+        $expectedLifecycleCallbacks = array(
+            'prePersist' => array('doStuffOnPrePersist', 'doOtherStuffOnPrePersistToo'),
+            'postPersist' => array('doStuffOnPostPersist'),
+        );
+
+        $this->assertEquals($expectedLifecycleCallbacks, $class->lifecycleCallbacks);
 
         return $class;
     }
 
     /**
      * @depends testLifecycleCallbacks
-     * @param ClassMetadata $class
-     */
-    public function testLifecycleCallbacksSupportMultipleMethodNames($class)
-    {
-        $this->assertEquals(count($class->lifecycleCallbacks['prePersist']), 2);
-        $this->assertEquals($class->lifecycleCallbacks['prePersist'][1], 'doOtherStuffOnPrePersistToo');
-
-        return $class;
-    }
-
-    /**
-     * @depends testLifecycleCallbacksSupportMultipleMethodNames
      * @param ClassMetadata $class
      */
     public function testCustomFieldName($class)
@@ -207,13 +226,12 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     {
         $this->assertTrue(isset($class->discriminatorField));
         $this->assertTrue(isset($class->discriminatorMap));
+        $this->assertTrue(isset($class->defaultDiscriminatorValue));
+        $this->assertEquals('discr', $class->discriminatorField);
         $this->assertEquals(array(
-            'fieldName' => 'discr',
-            'name' => 'discr',
-        ), $class->discriminatorField);
-        $this->assertEquals(array(
-            'default' => 'Doctrine\ODM\MongoDB\Tests\Mapping\User',
+            'default' => 'Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser',
         ), $class->discriminatorMap);
+        $this->assertEquals('default', $class->defaultDiscriminatorValue);
 
         return $class;
     }
@@ -226,11 +244,13 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     {
         $this->assertTrue(isset($class->fieldMappings['otherPhonenumbers']['discriminatorField']));
         $this->assertTrue(isset($class->fieldMappings['otherPhonenumbers']['discriminatorMap']));
+        $this->assertTrue(isset($class->fieldMappings['otherPhonenumbers']['defaultDiscriminatorValue']));
         $this->assertEquals('discr', $class->fieldMappings['otherPhonenumbers']['discriminatorField']);
         $this->assertEquals(array(
             'home' => 'Doctrine\ODM\MongoDB\Tests\Mapping\HomePhonenumber',
             'work' => 'Doctrine\ODM\MongoDB\Tests\Mapping\WorkPhonenumber'
         ), $class->fieldMappings['otherPhonenumbers']['discriminatorMap']);
+        $this->assertEquals('home', $class->fieldMappings['otherPhonenumbers']['defaultDiscriminatorValue']);
 
         return $class;
     }
@@ -243,11 +263,13 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     {
         $this->assertTrue(isset($class->fieldMappings['phonenumbers']['discriminatorField']));
         $this->assertTrue(isset($class->fieldMappings['phonenumbers']['discriminatorMap']));
+        $this->assertTrue(isset($class->fieldMappings['phonenumbers']['defaultDiscriminatorValue']));
         $this->assertEquals('discr', $class->fieldMappings['phonenumbers']['discriminatorField']);
         $this->assertEquals(array(
             'home' => 'Doctrine\ODM\MongoDB\Tests\Mapping\HomePhonenumber',
             'work' => 'Doctrine\ODM\MongoDB\Tests\Mapping\WorkPhonenumber'
         ), $class->fieldMappings['phonenumbers']['discriminatorMap']);
+        $this->assertEquals('home', $class->fieldMappings['phonenumbers']['defaultDiscriminatorValue']);
 
         return $class;
     }
@@ -258,25 +280,43 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testIndexes($class)
     {
-        $this->assertTrue(isset($class->indexes[0]['keys']['username']));
-        $this->assertEquals(-1, $class->indexes[0]['keys']['username']);
-        $this->assertTrue(isset($class->indexes[0]['options']['unique']));
+        $indexes = $class->indexes;
 
-        $this->assertTrue(isset($class->indexes[1]['keys']['email']));
-        $this->assertEquals(-1, $class->indexes[1]['keys']['email']);
-        $this->assertTrue( ! empty($class->indexes[1]['options']));
-        $this->assertTrue(isset($class->indexes[1]['options']['unique']));
-        $this->assertEquals(true, $class->indexes[1]['options']['unique']);
-        $this->assertTrue(isset($class->indexes[1]['options']['dropDups']));
-        $this->assertEquals(true, $class->indexes[1]['options']['dropDups']);
+        /* Sort indexes by their first fieldname. This is necessary since the
+         * index registration order may differ among drivers.
+         */
+        $this->assertTrue(usort($indexes, function(array $a, array $b) {
+            return strcmp(key($a['keys']), key($b['keys']));
+        }));
 
-        $this->assertTrue(isset($class->indexes[2]['keys']['mysqlProfileId']));
-        $this->assertEquals(-1, $class->indexes[2]['keys']['mysqlProfileId']);
-        $this->assertTrue( ! empty($class->indexes[2]['options']));
-        $this->assertTrue(isset($class->indexes[2]['options']['unique']));
-        $this->assertEquals(true, $class->indexes[2]['options']['unique']);
-        $this->assertTrue(isset($class->indexes[2]['options']['dropDups']));
-        $this->assertEquals(true, $class->indexes[2]['options']['dropDups']);
+        $this->assertTrue(isset($indexes[0]['keys']['createdAt']));
+        $this->assertEquals(1, $indexes[0]['keys']['createdAt']);
+        $this->assertTrue( ! empty($indexes[0]['options']));
+        $this->assertTrue(isset($indexes[0]['options']['expireAfterSeconds']));
+        $this->assertSame(3600, $indexes[0]['options']['expireAfterSeconds']);
+
+        $this->assertTrue(isset($indexes[1]['keys']['email']));
+        $this->assertEquals(-1, $indexes[1]['keys']['email']);
+        $this->assertTrue( ! empty($indexes[1]['options']));
+        $this->assertTrue(isset($indexes[1]['options']['unique']));
+        $this->assertEquals(true, $indexes[1]['options']['unique']);
+        $this->assertTrue(isset($indexes[1]['options']['dropDups']));
+        $this->assertEquals(true, $indexes[1]['options']['dropDups']);
+
+        $this->assertTrue(isset($indexes[2]['keys']['mysqlProfileId']));
+        $this->assertEquals(-1, $indexes[2]['keys']['mysqlProfileId']);
+        $this->assertTrue( ! empty($indexes[2]['options']));
+        $this->assertTrue(isset($indexes[2]['options']['unique']));
+        $this->assertEquals(true, $indexes[2]['options']['unique']);
+        $this->assertTrue(isset($indexes[2]['options']['dropDups']));
+        $this->assertEquals(true, $indexes[2]['options']['dropDups']);
+
+        $this->assertTrue(isset($indexes[3]['keys']['username']));
+        $this->assertEquals(-1, $indexes[3]['keys']['username']);
+        $this->assertTrue(isset($indexes[3]['options']['unique']));
+        $this->assertEquals(true, $indexes[3]['options']['unique']);
+        $this->assertTrue(isset($indexes[3]['options']['dropDups']));
+        $this->assertEquals(false, $indexes[3]['options']['dropDups']);
 
         return $class;
     }
@@ -285,9 +325,12 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 /**
  * @ODM\Document(collection="cms_users")
  * @ODM\DiscriminatorField(fieldName="discr")
- * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\User"})
+ * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser"})
+ * @ODM\DefaultDiscriminatorValue("default")
+ * @ODM\HasLifecycleCallbacks
+ * @ODM\Indexes(@ODM\Index(keys={"createdAt"="asc"},expireAfterSeconds=3600))
  */
-class User
+class AbstractMappingDriverUser
 {
     /**
      * @ODM\Id
@@ -295,8 +338,20 @@ class User
     public $id;
 
     /**
+     * @ODM\Version
+     * @ODM\Int
+     */
+    public $version;
+
+    /**
+     * @ODM\Lock
+     * @ODM\Int
+     */
+    public $lock;
+
+    /**
      * @ODM\String(name="username")
-     * @ODM\Index(order="desc")
+     * @ODM\UniqueIndex(order="desc", dropDups=false)
      */
     public $name;
 
@@ -318,7 +373,7 @@ class User
     public $address;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Phonenumber", cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"})
+     * @ODM\ReferenceMany(targetDocument="Phonenumber", cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"}, defaultDiscriminatorValue="home")
      */
     public $phonenumbers;
 
@@ -338,9 +393,19 @@ class User
     public $embeddedPhonenumber;
 
     /**
-     * @ODM\EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"})
+     * @ODM\EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"}, defaultDiscriminatorValue="home")
      */
     public $otherPhonenumbers;
+
+    /**
+     * @ODM\Date
+     */
+    public $createdAt;
+
+    /**
+     * @ODM\Collection
+     */
+    public $roles = array();
 
     /**
      * @ODM\PrePersist
@@ -376,9 +441,20 @@ class User
         $metadata->setDiscriminatorMap(array(
             'default' => __CLASS__,
         ));
+        $metadata->setDefaultDiscriminatorValue('default');
         $metadata->mapField(array(
             'id' => true,
             'fieldName' => 'id',
+        ));
+        $metadata->mapField(array(
+            'fieldName' => 'version',
+            'type' => 'int',
+            'version' => true,
+        ));
+        $metadata->mapField(array(
+            'fieldName' => 'lock',
+            'type' => 'int',
+            'lock' => true,
         ));
         $metadata->mapField(array(
             'fieldName' => 'name',
@@ -407,6 +483,7 @@ class User
                 'home' => 'HomePhonenumber',
                 'work' => 'WorkPhonenumber'
             ),
+            'defaultDiscriminatorValue' => 'home',
         ));
         $metadata->mapManyReference(array(
             'fieldName' => 'morePhoneNumbers',
@@ -436,9 +513,11 @@ class User
                 'home' => 'HomePhonenumber',
                 'work' => 'WorkPhonenumber',
            ),
+            'defaultDiscriminatorValue' => 'home',
         ));
-        $metadata->addIndex(array('username' => 'desc'), array('unique' => true));
+        $metadata->addIndex(array('username' => 'desc'), array('unique' => true, 'dropDups' => false));
         $metadata->addIndex(array('email' => 'desc'), array('unique' => true, 'dropDups' => true));
         $metadata->addIndex(array('mysqlProfileId' => 'desc'), array('unique' => true, 'dropDups' => true));
+        $metadata->addIndex(array('createdAt' => 'asc'), array('expireAfterSeconds' => 3600));
     }
 }

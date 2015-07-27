@@ -30,7 +30,7 @@ class UnitOfWorkMock extends \Doctrine\ODM\MongoDB\UnitOfWork
     /* MOCK API */
 
     /**
-     * Sets a (mock) persister for an document class that will be returned when
+     * Sets a (mock) persister for a document class that will be returned when
      * getDocumentPersister() is invoked for that class.
      *
      * @param <type> $documentName

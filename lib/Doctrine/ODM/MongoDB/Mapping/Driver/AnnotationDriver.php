@@ -62,8 +62,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
         /** @var $class ClassMetadataInfo */
         $reflClass = $class->getReflectionClass();
 
+        $classAnnotations = $this->reader->getClassAnnotations($reflClass);
+
         $documentAnnots = array();
-        foreach ($this->reader->getClassAnnotations($reflClass) as $annot) {
+        foreach ($classAnnotations as $annot) {
+            $classAnnotations[get_class($annot)] = $annot;
+
             foreach ($this->entityAnnotationClasses as $annotClass => $i) {
                 if ($annot instanceof $annotClass) {
                     $documentAnnots[$i] = $annot;
@@ -82,13 +86,22 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\InheritanceType) {
                 $class->setInheritanceType(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::INHERITANCE_TYPE_'.$annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
-                $class->setDiscriminatorField(array('fieldName' => $annot->fieldName, 'name' => $annot->name));
+                // $fieldName property is deprecated, but fall back for BC
+                if (isset($annot->value)) {
+                    $class->setDiscriminatorField($annot->value);
+                } elseif (isset($annot->name)) {
+                    $class->setDiscriminatorField($annot->name);
+                } elseif (isset($annot->fieldName)) {
+                    $class->setDiscriminatorField($annot->fieldName);
+                }
             } elseif ($annot instanceof ODM\DiscriminatorMap) {
                 $class->setDiscriminatorMap($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
                 $class->setDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {
                 $class->setChangeTrackingPolicy(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::CHANGETRACKING_'.$annot->value));
+            } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
+                $class->setDefaultDiscriminatorValue($annot->value);
             }
 
         }
@@ -112,7 +125,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($documentAnnot->collection)) {
             $class->setCollection($documentAnnot->collection);
         }
-        if (isset($documentAnnot->repositoryClass)) {
+        if (isset($documentAnnot->repositoryClass) && !$class->isEmbeddedDocument) {
             $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
         }
         if (isset($documentAnnot->indexes)) {
@@ -128,7 +141,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         foreach ($reflClass->getProperties() as $property) {
-            if ($class->isMappedSuperclass && ! $property->isPrivate()) {
+            if (($class->isMappedSuperclass && ! $property->isPrivate())
+                ||
+                ($class->isInheritedField($property->name) && $property->getDeclaringClass()->name !== $class->name)) {
                 continue;
             }
 
@@ -170,32 +185,42 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
-        foreach ($reflClass->getMethods() as $method) {
-            if ($method->isPublic()) {
-                foreach ($this->reader->getMethodAnnotations($method) as $annot) {
-                    if ($annot instanceof ODM\AlsoLoad) {
-                        foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $field) {
-                            $class->alsoLoadMethods[$field] = $method->getName();
-                        }
-                    } elseif ($annot instanceof ODM\PrePersist) {
-                        $class->addLifecycleCallback($method->getName(), Events::prePersist);
-                    } elseif ($annot instanceof ODM\PostPersist) {
-                        $class->addLifecycleCallback($method->getName(), Events::postPersist);
-                    } elseif ($annot instanceof ODM\PreUpdate) {
-                        $class->addLifecycleCallback($method->getName(), Events::preUpdate);
-                    } elseif ($annot instanceof ODM\PostUpdate) {
-                        $class->addLifecycleCallback($method->getName(), Events::postUpdate);
-                    } elseif ($annot instanceof ODM\PreRemove) {
-                        $class->addLifecycleCallback($method->getName(), Events::preRemove);
-                    } elseif ($annot instanceof ODM\PostRemove) {
-                        $class->addLifecycleCallback($method->getName(), Events::postRemove);
-                    } elseif ($annot instanceof ODM\PreLoad) {
-                        $class->addLifecycleCallback($method->getName(), Events::preLoad);
-                    } elseif ($annot instanceof ODM\PostLoad) {
-                        $class->addLifecycleCallback($method->getName(), Events::postLoad);
-                    } elseif ($annot instanceof ODM\PreFlush) {
-                        $class->addLifecycleCallback($method->getName(), Events::preFlush);
-                    }
+        /** @var $method \ReflectionMethod */
+        foreach ($reflClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            /* Filter for the declaring class only. Callbacks from parent
+             * classes will already be registered.
+             */
+            if ($method->getDeclaringClass()->name !== $reflClass->name) {
+                continue;
+            }
+
+            foreach ($this->reader->getMethodAnnotations($method) as $annot) {
+                if ($annot instanceof ODM\AlsoLoad) {
+                    $class->registerAlsoLoadMethod($method->getName(), $annot->value);
+                }
+
+                if ( ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks'])) {
+                    continue;
+                }
+
+                if ($annot instanceof ODM\PrePersist) {
+                    $class->addLifecycleCallback($method->getName(), Events::prePersist);
+                } elseif ($annot instanceof ODM\PostPersist) {
+                    $class->addLifecycleCallback($method->getName(), Events::postPersist);
+                } elseif ($annot instanceof ODM\PreUpdate) {
+                    $class->addLifecycleCallback($method->getName(), Events::preUpdate);
+                } elseif ($annot instanceof ODM\PostUpdate) {
+                    $class->addLifecycleCallback($method->getName(), Events::postUpdate);
+                } elseif ($annot instanceof ODM\PreRemove) {
+                    $class->addLifecycleCallback($method->getName(), Events::preRemove);
+                } elseif ($annot instanceof ODM\PostRemove) {
+                    $class->addLifecycleCallback($method->getName(), Events::postRemove);
+                } elseif ($annot instanceof ODM\PreLoad) {
+                    $class->addLifecycleCallback($method->getName(), Events::preLoad);
+                } elseif ($annot instanceof ODM\PostLoad) {
+                    $class->addLifecycleCallback($method->getName(), Events::postLoad);
+                } elseif ($annot instanceof ODM\PreFlush) {
+                    $class->addLifecycleCallback($method->getName(), Events::preFlush);
                 }
             }
         }

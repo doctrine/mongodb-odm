@@ -36,7 +36,6 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'id' => true,
             'name' => '_id',
             'type' => 'id',
-            'isCascadeCallbacks' => false,
             'isCascadeDetach' => false,
             'isCascadeMerge' => false,
             'isCascadePersist' => false,
@@ -51,7 +50,6 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'fieldName' => 'username',
             'name' => 'username',
             'type' => 'string',
-            'isCascadeCallbacks' => false,
             'isCascadeDetach' => false,
             'isCascadeMerge' => false,
             'isCascadePersist' => false,
@@ -59,14 +57,22 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRemove' => false,
             'isInverseSide' => false,
             'isOwningSide' => true,
-            'nullable' => false
+            'nullable' => false,
+            'unique' => true,
+            'sparse' => true
         ), $classMetadata->fieldMappings['username']);
+        
+        $this->assertEquals(array(
+            array(
+                'keys' => array('username' => 1),
+                'options' => array('unique' => true, 'sparse' => true)
+            )
+        ), $classMetadata->getIndexes());
 
         $this->assertEquals(array(
             'fieldName' => 'createdAt',
             'name' => 'createdAt',
             'type' => 'date',
-            'isCascadeCallbacks' => false,
             'isCascadeDetach' => false,
             'isCascadeMerge' => false,
             'isCascadePersist' => false,
@@ -81,7 +87,6 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'fieldName' => 'tags',
             'name' => 'tags',
             'type' => 'collection',
-            'isCascadeCallbacks' => false,
             'isCascadeDetach' => false,
             'isCascadeMerge' => false,
             'isCascadePersist' => false,
@@ -90,7 +95,6 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => 'pushAll',
         ), $classMetadata->fieldMappings['tags']);
 
         $this->assertEquals(array(
@@ -100,12 +104,11 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'type' => 'one',
             'embedded' => true,
             'targetDocument' => 'Documents\Address',
-            'isCascadeCallbacks' => false,
-            'isCascadeDetach' => false,
-            'isCascadeMerge' => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeRemove' => false,
+            'isCascadeDetach' => true,
+            'isCascadeMerge' => true,
+            'isCascadePersist' => true,
+            'isCascadeRefresh' => true,
+            'isCascadeRemove' => true,
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
@@ -119,12 +122,11 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'type' => 'many',
             'embedded' => true,
             'targetDocument' => 'Documents\Phonenumber',
-            'isCascadeCallbacks' => false,
-            'isCascadeDetach' => false,
-            'isCascadeMerge' => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeRemove' => false,
+            'isCascadeDetach' => true,
+            'isCascadeMerge' => true,
+            'isCascadePersist' => true,
+            'isCascadeRefresh' => true,
+            'isCascadeRemove' => true,
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
@@ -139,7 +141,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'reference' => true,
             'simple' => true,
             'targetDocument' => 'Documents\Profile',
-            'isCascadeCallbacks' => true,
+            'cascade' => array('remove', 'persist', 'refresh', 'merge', 'detach'),
             'isCascadeDetach' => true,
             'isCascadeMerge' => true,
             'isCascadePersist' => true,
@@ -154,7 +156,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'repositoryMethod' => null,
             'limit' => null,
             'skip' => null,
-            'orphanRemoval' => false,
+            'orphanRemoval' => true,
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
@@ -165,7 +167,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'reference' => true,
             'simple' => false,
             'targetDocument' => 'Documents\Account',
-            'isCascadeCallbacks' => true,
+            'cascade' => array('remove', 'persist', 'refresh', 'merge', 'detach'),
             'isCascadeDetach' => true,
             'isCascadeMerge' => true,
             'isCascadePersist' => true,
@@ -191,7 +193,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'reference' => true,
             'simple' => false,
             'targetDocument' => 'Documents\Group',
-            'isCascadeCallbacks' => true,
+            'cascade' => array('remove', 'persist', 'refresh', 'merge', 'detach'),
             'isCascadeDetach' => true,
             'isCascadeMerge' => true,
             'isCascadePersist' => true,
@@ -209,11 +211,19 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'orphanRemoval' => false,
         ), $classMetadata->fieldMappings['groups']);
 
-        $this->assertEquals(array(
-            'postPersist' => array('doStuffOnPostPersist', 'doOtherStuffOnPostPersist'),
-            'prePersist' => array('doStuffOnPrePersist')
+        $this->assertEquals(
+            array(
+                'postPersist' => array('doStuffOnPostPersist', 'doOtherStuffOnPostPersist'),
+                'prePersist' => array('doStuffOnPrePersist'),
             ),
             $classMetadata->lifecycleCallbacks
+        );
+
+        $this->assertEquals(
+            array(
+                "doStuffOnAlsoLoad" => array("unmappedField"),
+            ),
+            $classMetadata->alsoLoadMethods
         );
 
         $classMetadata = new ClassMetadata('TestDocuments\EmbeddedDocument');
@@ -223,7 +233,6 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'fieldName' => 'name',
             'name' => 'name',
             'type' => 'string',
-            'isCascadeCallbacks' => false,
             'isCascadeDetach' => false,
             'isCascadeMerge' => false,
             'isCascadePersist' => false,

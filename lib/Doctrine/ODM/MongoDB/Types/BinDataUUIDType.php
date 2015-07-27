@@ -20,31 +20,16 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataUUID type.
+ * The BinData type for binary UUID data.
+ *
+ * Per the BSON specification, this sub-type is deprecated in favor of the
+ * RFC 4122 UUID sub-type (BinDataUUIDRFC4122Type class).
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class BinDataUUIDType extends Type
+class BinDataUUIDType extends BinDataType
 {
-    public function convertToDatabaseValue($value)
-    {
-        return $value !== null ? new \MongoBinData($value, \MongoBinData::UUID) : null;
-    }
-
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? $value->bin : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::UUID) : null;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = $value !== null ? $value->bin : null;';
-    }
+    protected $binDataType = \MongoBinData::UUID;
 }

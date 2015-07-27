@@ -6,6 +6,7 @@ use Documents\CmsUser;
 use Documents\CmsPhonenumber;
 use Documents\CmsAddress;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 
 class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -63,11 +64,18 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->addPhonenumber($ph2);
         $this->assertEquals(2, count($user->getPhonenumbers()));
         $this->assertFalse($this->dm->contains($user));
-        
+
         $this->dm->persist($ph2);
-        
+
         // Merge back in
         $user = $this->dm->merge($user); // merge cascaded to phonenumbers
+
+        $phonenumbers = $user->getPhonenumbers();
+
+        $this->assertEquals(2, count($phonenumbers));
+        $this->assertSame($user, $phonenumbers[0]->getUser());
+        $this->assertSame($user, $phonenumbers[1]->getUser());
+
         $this->dm->flush();
         
         $this->assertTrue($this->dm->contains($user));
@@ -114,15 +122,15 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $address2 = $this->dm->find(get_class($address), $address->id);
-        $this->assertTrue($address2->user instanceof \Doctrine\ODM\MongoDB\Proxy\Proxy);
-        $this->assertFalse($address2->user->__isInitialized__);
+        $this->assertTrue($address2->user instanceof Proxy);
+        $this->assertFalse($address2->user->__isInitialized());
         $detachedAddress2 = unserialize(serialize($address2));
-        $this->assertTrue($detachedAddress2->user instanceof \Doctrine\ODM\MongoDB\Proxy\Proxy);
-        $this->assertFalse($detachedAddress2->user->__isInitialized__);
+        $this->assertTrue($detachedAddress2->user instanceof Proxy);
+        $this->assertFalse($detachedAddress2->user->__isInitialized());
 
         $managedAddress2 = $this->dm->merge($detachedAddress2);
-        $this->assertTrue($managedAddress2->user instanceof \Doctrine\ODM\MongoDB\Proxy\Proxy);
+        $this->assertTrue($managedAddress2->user instanceof Proxy);
         $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
-        $this->assertFalse($managedAddress2->user->__isInitialized__);
+        $this->assertFalse($managedAddress2->user->__isInitialized());
     }
 }

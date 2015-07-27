@@ -4,84 +4,119 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Query;
-use Documents\User;
 use Documents\Group;
+use Documents\User;
 
 class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testSlaveOkayOnPersistentCollection()
+    public function setUp()
     {
+        parent::setUp();
+
         $user = new User();
         $user->addGroup(new Group('Test'));
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
+    }
 
-        $user = $this->dm->getRepository('Documents\User')
-            ->createQueryBuilder()
-            ->slaveOkay(false)
-            ->getQuery()
-            ->getSingleResult();
-
-        $this->assertEquals(array(), $user->getGroups()->getHints());
-
-        $this->dm->clear();
-
-        $users = $this->dm->getRepository('Documents\User')
+    public function testHintIsNotSetByDefault()
+    {
+        $cursor = $this->dm->getRepository('Documents\User')
             ->createQueryBuilder()
             ->getQuery()
             ->execute();
 
-        $this->assertEquals(array(), $users->getHints());
+        $this->assertArrayNotHasKey(Query::HINT_SLAVE_OKAY, $cursor->getHints());
 
-        $users = array_values($users->toArray());
-        $user = $users[0];
-        $this->assertEquals(array(), $user->getGroups()->getHints());
+        $user = $cursor->getSingleResult();
 
-        $this->dm->clear();
-
-        $user = $this->dm->getRepository('Documents\User')
-            ->createQueryBuilder()
-            ->slaveOkay(true)
-            ->getQuery()
-            ->getSingleResult();
-
-        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $user->getGroups()->getHints());
-
-        $this->dm->clear();
-
-        $users = $this->dm->getRepository('Documents\User')
-            ->createQueryBuilder()
-            ->getQuery()
-            ->execute()
-            ->slaveOkay(true);
-
-        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $users->getHints());
-
-        $users = array_values($users->toArray());
-        $user = $users[0];
-        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $user->getGroups()->getHints());
-
-        $this->dm->clear();
-
-        $user = $this->dm->getRepository('Documents\User')
-            ->createQueryBuilder()
-            ->getQuery()
-            ->getSingleResult();
-
-        $groups = $user->getGroups();
-        $groups->setHints(array(Query::HINT_SLAVE_OKAY => true));
-        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $groups->getHints());
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->getGroups());
+        $this->assertArrayNotHasKey(Query::HINT_SLAVE_OKAY, $user->getGroups()->getHints());
     }
 
-    public function testSlaveOkayDocument()
+    /**
+     * @dataProvider provideSlaveOkayHints
+     */
+    public function testHintIsSetOnQuery($slaveOkay)
+    {
+        $cursor = $this->dm->getRepository('Documents\User')
+            ->createQueryBuilder()
+            ->slaveOkay($slaveOkay)
+            ->getQuery()
+            ->execute();
+
+        $this->assertSlaveOkayHint($slaveOkay, $cursor->getHints());
+
+        $user = $cursor->getSingleResult();
+
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->getGroups());
+        $this->assertSlaveOkayHint($slaveOkay, $user->getGroups()->getHints());
+    }
+
+    /**
+     * @dataProvider provideSlaveOkayHints
+     */
+    public function testHintIsSetOnCursor($slaveOkay)
+    {
+        $cursor = $this->dm->getRepository('Documents\User')
+            ->createQueryBuilder()
+            ->getQuery()
+            ->execute();
+
+        $cursor->setHints(array(Query::HINT_SLAVE_OKAY => $slaveOkay));
+
+        $this->assertSlaveOkayHint($slaveOkay, $cursor->getHints());
+
+        $user = $cursor->getSingleResult();
+
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->getGroups());
+        $this->assertSlaveOkayHint($slaveOkay, $user->getGroups()->getHints());
+    }
+
+    /**
+     * @dataProvider provideSlaveOkayHints
+     */
+    public function testHintIsSetOnPersistentCollection($slaveOkay)
+    {
+        $cursor = $this->dm->getRepository('Documents\User')
+            ->createQueryBuilder()
+            ->getQuery()
+            ->execute();
+
+        $this->assertArrayNotHasKey(Query::HINT_SLAVE_OKAY, $cursor->getHints());
+
+        $user = $cursor->getSingleResult();
+        $groups = $user->getGroups();
+
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $groups);
+
+        $groups->setHints(array(Query::HINT_SLAVE_OKAY => $slaveOkay));
+
+        $this->assertSlaveOkayHint($slaveOkay, $groups->getHints());
+    }
+
+    public function provideSlaveOkayHints()
+    {
+        return array(
+            array(true),
+            array(false)
+        );
+    }
+
+    public function testSlaveOkayHintFromClassMetadata()
     {
         $users = $this->dm->getRepository(__NAMESPACE__.'\SlaveOkayDocument')
             ->createQueryBuilder()
             ->getQuery()
             ->execute();
 
-        $this->assertEquals(array(Query::HINT_SLAVE_OKAY => true), $users->getHints());
+        $this->assertSlaveOkayHint(true, $users->getHints());
+    }
+
+    private function assertSlaveOkayHint($slaveOkay, $hints)
+    {
+        $this->assertEquals($slaveOkay, $hints[Query::HINT_SLAVE_OKAY]);
     }
 }
 

@@ -1,102 +1,119 @@
 Migrating Schemas
 =================
 
-Even though MongoDB is schemaless, introducing some kind of object
-mapper means that the definition of your objects become your
-schema. You may have a situation where you rename a property in
-your object and you need to also load the values from older
-documents where the field is still using the old name. Doctrine
-offers a few different methods for dealing with this problem!
+Even though MongoDB is schemaless, introducing some kind of object mapper means
+that your object definitions become your schema. You may have a situation where
+you rename a property in your object model but need to load values from older
+documents where the field is still using the former name. While you could use
+MongoDB's `$rename`_ operator to migrate everything, sometimes a lazy migration
+is preferable. Doctrine offers a few different methods for dealing with this
+problem!
 
 .. note::
 
-    Features in this chapter inspired by Objectify
-    All of the features documented in this chapter were inspired by
-    Objectify which is an object mapper for the AppEngine datastore.
-    You can read more about the project on the
-    `Objectify Wiki <http://code.google.com/p/objectify-appengine/wiki/Concepts?tm=6>`_.
+    The features in this chapter were inspired by `Objectify`_, an object mapper
+    for the Google App Engine datastore. Additional information may be found in
+    the `Objectify schema migration`_ documentation.
 
 Renaming a Field
 ----------------
 
-Lets say you have a document that starts off looking like this:
+Let's say you have a simple document that starts off with the following fields:
 
 .. code-block:: php
 
     <?php
 
+    /** @Document */
     class Person
     {
+        /** @Id */
         public $id;
+
+        /** @String */
         public $name;
     }
 
-Then you want to rename ``name`` to ``fullName`` like this:
+Later on, you need rename ``name`` to ``fullName``; however, you'd like to
+hydrate ``fullName`` from ``name`` if the new field doesn't exist.
 
 .. code-block:: php
 
     <?php
 
+    /** @Document */
     class Person
     {
+        /** @Id */
         public $id;
-    
-        /** @AlsoLoad("name") */
+
+        /** @String @AlsoLoad("name") */
         public $fullName;
     }
 
-When a person is loaded the ``fullName`` field will be populated
-with the value of either ``name`` or ``fullName`` since old
-documents will have the ``name`` field and new ones will have
-``fullName``.
+When a Person is loaded, the ``fullName`` field will be populated with the value
+of ``name`` if ``fullName`` is not found. When the Person is persisted, this
+value will then be stored in the ``fullName`` field.
 
-    **CAUTION** The only caveat of this feature is queries do not know
-    about the rename. If you query for ``fullName`` only the new
-    documents will be returned. You can still query using the ``name``
-    field to find the old documents.
+.. caution::
+
+    A caveat of this feature is that it only affects hydration. Queries will not
+    know about the rename, so a query on ``fullName`` will only match documents
+    with the new field name. You can still query using the ``name`` field to
+    find older documents. The `$or`_ query operator could be used to match both.
 
 Transforming Data
 -----------------
 
-Now you may have a situation where you want to store the persons
-name in separate first and last name fields. This is also possible.
-You can specify the ``@AlsoLoad`` annotation on a method and use it
-to do some more complex logic:
+You may have a situation where you want to migrate a Person's name to separate
+``firstName`` and ``lastName`` fields. This is also possible by specifying the
+``@AlsoLoad`` annotation on a method, which will then be invoked immediately
+before normal hydration.
 
 .. code-block:: php
 
     <?php
 
+    /** @Document @HasLifecycleCallbacks */
     class Person
     {
+        /** @Id */
         public $id;
+
+        /** @String */
         public $firstName;
+
+        /** @String */
         public $lastName;
-    
+
         /** @AlsoLoad({"name", "fullName"}) */
         public function populateFirstAndLastName($fullName)
         {
-            $e = explode(' ', $fullName);
-            $this->firstName = $e[0];
-            $this->lastName = $e[1];
+            list($this->firstName, $this->lastName) = explode(' ', $fullName);
         }
     }
+
+The annotation is defined with one or a list of field names. During hydration,
+these fields will be checked in order and, for each field present, the annotated
+method will be invoked with its value as a single argument. Since the
+``firstName`` and ``lastName`` fields are mapped, they would then be updated
+when the Person was persisted back to MongoDB.
+
+Unlike lifecycle callbacks, the ``@AlsoLoad`` method annotation does not require
+the  :ref:`haslifecyclecallbacks` class annotation to be present.
 
 Moving Fields
 -------------
 
-Migrating your schema can be a difficult task and Doctrine gives
-you a few different methods for dealing with this:
+Migrating your schema can be a difficult task, but Doctrine provides a few
+different methods for dealing with it:
 
-- 
-   **@AlsoLoad** - load values from old fields names or transform some
-   data using methods.
-- 
-   **@NotSaved** - load values into fields without saving them again.
--  **@PostLoad** - execute code after all fields have been loaded.
--  **@PrePersist** - execute code before your document gets saved.
+-  **@AlsoLoad** - load values from old fields or transform data through methods
+-  **@NotSaved** - load values into fields without saving them again
+-  **@PostLoad** - execute code after all fields have been loaded
+-  **@PrePersist** - execute code before your document gets saved
 
-Imagine you have some address fields on a Person document:
+Imagine you have some address-related fields on a Person document:
 
 .. code-block:: php
 
@@ -118,8 +135,7 @@ Imagine you have some address fields on a Person document:
         public $city;
     }
 
-Then later you want to store a persons address in another object as
-an embedded document:
+Later on, you may want to migrate this data into an embedded Address document:
 
 .. code-block:: php
 
@@ -141,7 +157,7 @@ an embedded document:
         }
     }
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Person
     {
         /** @Id */
@@ -169,13 +185,17 @@ an embedded document:
         }
     }
 
-You can also change the data on save if that works better for you:
+Person's ``street`` and ``city`` fields will be hydrated, but not saved. Once
+the Person has loaded, the ``postLoad()`` method will be invoked and construct
+a new Address object, which is mapped and will be persisted.
+
+Alternatively, you could defer this migration until the Person is saved:
 
 .. code-block:: php
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Person
     {
         // ...
@@ -189,3 +209,11 @@ You can also change the data on save if that works better for you:
             }
         }
     }
+
+The :ref:`haslifecyclecallbacks` annotation must be present on the class in
+which the method is declared for the lifecycle callback to be registered.
+
+.. _`$rename`: http://docs.mongodb.org/manual/reference/operator/update/rename/
+.. _`Objectify`: http://code.google.com/p/objectify-appengine/
+.. _`Objectify schema migration`: http://code.google.com/p/objectify-appengine/wiki/SchemaMigration
+.. _`$or`: http://docs.mongodb.org/manual/reference/operator/query/or/

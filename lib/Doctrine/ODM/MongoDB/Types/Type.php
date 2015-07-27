@@ -33,8 +33,10 @@ abstract class Type
     const ID = 'id';
     const INTID = 'int_id';
     const CUSTOMID = 'custom_id';
+    const BOOL = 'bool';
     const BOOLEAN = 'boolean';
-    const INTEGER = 'int';
+    const INT = 'int';
+    const INTEGER = 'integer';
     const FLOAT = 'float';
     const STRING = 'string';
     const DATE = 'date';
@@ -42,7 +44,9 @@ abstract class Type
     const TIMESTAMP = 'timestamp';
     const BINDATA = 'bin';
     const BINDATAFUNC = 'bin_func';
+    const BINDATABYTEARRAY = 'bin_bytearray';
     const BINDATAUUID = 'bin_uuid';
+    const BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
     const BINDATAMD5 = 'bin_md5';
     const BINDATACUSTOM = 'bin_custom';
     const FILE = 'file';
@@ -60,7 +64,9 @@ abstract class Type
         self::ID => 'Doctrine\ODM\MongoDB\Types\IdType',
         self::INTID => 'Doctrine\ODM\MongoDB\Types\IntIdType',
         self::CUSTOMID => 'Doctrine\ODM\MongoDB\Types\CustomIdType',
+        self::BOOL => 'Doctrine\ODM\MongoDB\Types\BooleanType',
         self::BOOLEAN => 'Doctrine\ODM\MongoDB\Types\BooleanType',
+        self::INT => 'Doctrine\ODM\MongoDB\Types\IntType',
         self::INTEGER => 'Doctrine\ODM\MongoDB\Types\IntType',
         self::FLOAT => 'Doctrine\ODM\MongoDB\Types\FloatType',
         self::STRING => 'Doctrine\ODM\MongoDB\Types\StringType',
@@ -69,7 +75,9 @@ abstract class Type
         self::TIMESTAMP => 'Doctrine\ODM\MongoDB\Types\TimestampType',
         self::BINDATA => 'Doctrine\ODM\MongoDB\Types\BinDataType',
         self::BINDATAFUNC => 'Doctrine\ODM\MongoDB\Types\BinDataFuncType',
+        self::BINDATABYTEARRAY => 'Doctrine\ODM\MongoDB\Types\BinDataByteArrayType',
         self::BINDATAUUID => 'Doctrine\ODM\MongoDB\Types\BinDataUUIDType',
+        self::BINDATAUUIDRFC4122 => 'Doctrine\ODM\MongoDB\Types\BinDataUUIDRFC4122Type',
         self::BINDATAMD5 => 'Doctrine\ODM\MongoDB\Types\BinDataMD5Type',
         self::BINDATACUSTOM => 'Doctrine\ODM\MongoDB\Types\BinDataCustomType',
         self::FILE => 'Doctrine\ODM\MongoDB\Types\FileType',

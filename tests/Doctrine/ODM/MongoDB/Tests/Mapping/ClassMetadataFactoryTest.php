@@ -2,19 +2,16 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\ODM\MongoDB\Tests\Mocks\MetadataDriverMock;
-use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
-use Doctrine\ODM\MongoDB\Tests\Mocks\ConnectionMock;
+use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 
 class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testGetMetadataForSingleClass()
     {
-        $mockDriver = new MetadataDriverMock();
-        $documentManager = $this->_createDocumentManager($mockDriver);
-
         // Self-made metadata
         $cm1 = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1');
         $cm1->setCollection('group');
@@ -28,7 +25,6 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // SUT
         $cmf = new ClassMetadataFactoryTestSubject();
-        $cmf->setDocumentManager($documentManager);
         $cmf->setMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1', $cm1);
 
         // Prechecks
@@ -49,39 +45,38 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         require_once __DIR__."/Documents/GlobalNamespaceDocument.php";
 
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $metadataDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
-        $metadataDriver->addPaths(array(__DIR__ . '/../../Documents/'));
+        $driver = AnnotationDriver::create(__DIR__ . '/Documents');
 
-        $documentManager = $this->_createDocumentManager($metadataDriver);
+        $dm = $this->getMockDocumentManager($driver);
 
-        $mf = $documentManager->getMetadataFactory();
-        $m1 = $mf->getMetadataFor("DoctrineGlobal_Article");
-        $h1 = $mf->hasMetadataFor("DoctrineGlobal_Article");
-        $h2 = $mf->hasMetadataFor("\DoctrineGlobal_Article");
-        $m2 = $mf->getMetadataFor("\DoctrineGlobal_Article");
+        $cmf = new ClassMetadataFactory();
+        $cmf->setConfiguration($dm->getConfiguration());
+        $cmf->setDocumentManager($dm);
+
+        $m1 = $cmf->getMetadataFor("DoctrineGlobal_Article");
+        $h1 = $cmf->hasMetadataFor("DoctrineGlobal_Article");
+        $h2 = $cmf->hasMetadataFor("\DoctrineGlobal_Article");
+        $m2 = $cmf->getMetadataFor("\DoctrineGlobal_Article");
 
         $this->assertNotSame($m1, $m2);
         $this->assertFalse($h2);
         $this->assertTrue($h1);
     }
 
-    protected function _createDocumentManager($metadataDriver)
+    protected function getMockDocumentManager($driver)
     {
-        $connMock = new ConnectionMock();
-        $config = new \Doctrine\ODM\MongoDB\Configuration();
+        $config = new Configuration();
+        $config->setMetadataDriverImpl($driver);
 
-        $config->setProxyDir(__DIR__ . '/../../Proxies');
-        $config->setProxyNamespace('Doctrine\ODM\MongoDB\Tests\Proxies');
+        $em = $this->getMockBuilder('Doctrine\Common\EventManager')
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $config->setHydratorDir(__DIR__ . '/../../Hydrators');
-        $config->setHydratorNamespace('Doctrine\ODM\MongoDB\Tests\Hydrators');
+        $dm = new DocumentManagerMock();
+        $dm->config = $config;
+        $dm->eventManager = $em;
 
-        $eventManager = new EventManager();
-        $mockDriver = new MetadataDriverMock();
-        $config->setMetadataDriverImpl($metadataDriver);
-
-        return DocumentManagerMock::create($connMock, $config, $eventManager);
+        return $dm;
     }
 }
 

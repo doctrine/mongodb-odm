@@ -56,13 +56,6 @@ class Cursor extends BaseCursor
     private $class;
 
     /**
-     * Hints for UnitOfWork behavior.
-     *
-     * @var array
-     */
-    private $unitOfWorkHints = array();
-
-    /**
      * Whether or not to hydrate results as document class instances.
      *
      * @var boolean
@@ -78,22 +71,24 @@ class Cursor extends BaseCursor
     private $unitOfWork;
 
     /**
+     * Hints for UnitOfWork behavior.
+     *
+     * @var array
+     */
+    private $unitOfWorkHints = array();
+
+    /**
      * Constructor.
      *
-     * @param Connection    $connection Connection used to create the wrapped Cursor
-     * @param Collection    $collection Collection used to create the wrapped Cursor
-     * @param UnitOfWork    $unitOfWork UnitOfWork for result hydration and query preparation
-     * @param ClassMetadata $class      ClassMetadata for the document being queried
-     * @param BaseCursor    $baseCursor Doctrine\MongoDB\Cursor instance being wrapped
-     * @param array         $query      Query criteria
-     * @param array         $fields     Selected fields (projection)
-     * @param integer       $numRetries Number of times to retry queries
+     * @param BaseCursor    $baseCursor  Doctrine\MongoDB\Cursor instance being wrapped
+     * @param UnitOfWork    $unitOfWork  UnitOfWork for result hydration and query preparation
+     * @param ClassMetadata $class       ClassMetadata for the document class being queried
      */
-    public function __construct(Connection $connection, Collection $collection, UnitOfWork $uow, ClassMetadata $class, BaseCursor $baseCursor, array $query = array(), array $fields = array(), $numRetries = 0)
+    public function __construct(BaseCursor $baseCursor, UnitOfWork $unitOfWork, ClassMetadata $class)
     {
-        parent::__construct($connection, $collection, $baseCursor->getMongoCursor(), $query, $fields, $numRetries);
+        parent::__construct($baseCursor->collection, $baseCursor->getMongoCursor(), $baseCursor->query, $baseCursor->fields, $baseCursor->numRetries);
         $this->baseCursor = $baseCursor;
-        $this->unitOfWork = $uow;
+        $this->unitOfWork = $unitOfWork;
         $this->class = $class;
     }
 
@@ -266,6 +261,35 @@ class Cursor extends BaseCursor
     }
 
     /**
+     * Wrapper method for MongoCursor::getReadPreference().
+     *
+     * @see \Doctrine\MongoDB\Cursor::getReadPreference()
+     * @see http://php.net/manual/en/mongocursor.getreadpreference.php
+     * @return array
+     */
+    public function getReadPreference()
+    {
+        return $this->baseCursor->getReadPreference();
+    }
+
+    /**
+     * Wrapper method for MongoCursor::setReadPreference().
+     *
+     * @see \Doctrine\MongoDB\Cursor::setReadPreference()
+     * @see http://php.net/manual/en/mongocursor.setreadpreference.php
+     * @param string $readPreference
+     * @param array  $tags
+     * @return self
+     */
+    public function setReadPreference($readPreference, array $tags = null)
+    {
+        $this->baseCursor->setReadPreference($readPreference, $tags);
+        $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE] = $readPreference;
+        $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE_TAGS] = $tags;
+        return $this;
+    }
+
+    /**
      * Wrapper method for MongoCursor::hint().
      *
      * This method is intended for setting MongoDB query hints, which are
@@ -276,14 +300,14 @@ class Cursor extends BaseCursor
      * @param array|string $keyPattern
      * @return self
      */
-    public function hint(array $keyPattern)
+    public function hint($keyPattern)
     {
         $this->baseCursor->hint($keyPattern);
         return $this;
     }
 
     /**
-     * Set whether or not to hydrate results as document class instances.
+     * Set whether to hydrate results as document class instances.
      *
      * @param boolean $bool
      * @return self
@@ -323,12 +347,12 @@ class Cursor extends BaseCursor
     }
 
     /**
-     * Set whether or not to refresh hydrated documents that are already in the
+     * Set whether to refresh hydrated documents that are already in the
      * identity map.
      *
      * This option has no effect if hydration is disabled.
      *
-     * @param boolean $bool
+     * @param boolean $refresh
      * @return self
      */
     public function refresh($refresh = true)
@@ -362,8 +386,8 @@ class Cursor extends BaseCursor
     public function slaveOkay($ok = true)
     {
         $ok = (boolean) $ok;
-        $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
         $this->baseCursor->slaveOkay($ok);
+        $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
         return $this;
     }
 

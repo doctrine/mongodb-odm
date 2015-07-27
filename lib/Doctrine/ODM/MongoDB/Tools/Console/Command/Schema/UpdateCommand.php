@@ -30,8 +30,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UpdateCommand extends AbstractCommand
 {
-    private $dropOrder = array(self::INDEX, self::COLLECTION, self::DB);
-
     private $timeout;
 
     protected function configure()
@@ -57,6 +55,7 @@ class UpdateCommand extends AbstractCommand
         $this->timeout = isset($timeout) ? (int) $timeout : null;
 
         $sm = $this->getSchemaManager();
+        $isErrored = false;
 
         try {
             if (isset($class)) {
@@ -68,7 +67,10 @@ class UpdateCommand extends AbstractCommand
             }
         } catch (\Exception $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $isErrored = true;
         }
+
+        return ($isErrored) ? 255 : 0;
     }
 
     /**

@@ -27,4 +27,5 @@ final class Inheritance extends Annotation
     public $type = 'NONE';
     public $discriminatorMap = array();
     public $discriminatorField;
+    public $defaultDiscriminatorValue;
 }

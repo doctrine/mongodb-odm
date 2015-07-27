@@ -62,7 +62,7 @@ Persistent classes
 ------------------
 
 In order to mark a class for object-relational persistence it needs
-to be designated as an document. This can be done through the
+to be designated as a document. This can be done through the
 ``@Document`` marker annotation.
 
 .. configuration-block::
@@ -91,7 +91,7 @@ to be designated as an document. This can be done through the
 
     .. code-block:: yaml
 
-        Doctrine\ODM\MongoDB\Tests\Mapping\User:
+        Documents\User:
           type: document
 
 By default, the document will be persisted to a database named
@@ -142,6 +142,8 @@ to use with the ``setDefaultDB`` method:
 
     $config->setDefaultDB('my_db');
 
+.. _doctrine_mapping_types:
+
 Doctrine Mapping Types
 ----------------------
 
@@ -150,11 +152,12 @@ an MongoDB type. You can even write your own custom mapping types.
 
 Here is a quick overview of the built-in mapping types:
 
--  ``bin_data_custom``
--  ``bin_data_func``
--  ``bin_data_md5``
--  ``bin_data``
--  ``bin_data_uuid``
+-  ``bin``
+-  ``bin_bytearray``
+-  ``bin_custom``
+-  ``bin_func``
+-  ``bin_md5``
+-  ``bin_uuid``
 -  ``boolean``
 -  ``collection``
 -  ``custom_id``
@@ -167,7 +170,7 @@ Here is a quick overview of the built-in mapping types:
 -  ``int``
 -  ``key``
 -  ``object_id``
--  ``raw_type``
+-  ``raw``
 -  ``string``
 -  ``timestamp``
 
@@ -183,17 +186,19 @@ You can read more about the available MongoDB types on `php.net <http://us.php.n
 Generally, the name of each built-in mapping type hints as to how the value will be converted.
 This list explains some of the less obvious mapping types:
 
--  ``bin_data_custom``: string to MongoBinData instance with a "custom" type
--  ``bin_data_func``: string to MongoBinData instance with a "function" type
--  ``bin_data_md5``: string to MongoBinData instance with a "md5" type
--  ``bin_data``: string to MongoBinData instance with a "byte array" type
--  ``bin_data_uuid``: string to MongoBinData instance with a "uuid" type
+-  ``bin``: string to MongoBinData instance with a "generic" type (default)
+-  ``bin_bytearray``: string to MongoBinData instance with a "byte array" type
+-  ``bin_custom``: string to MongoBinData instance with a "custom" type
+-  ``bin_func``: string to MongoBinData instance with a "function" type
+-  ``bin_md5``: string to MongoBinData instance with a "md5" type
+-  ``bin_uuid``: string to MongoBinData instance with a "uuid" type
 -  ``collection``: numerically indexed array to MongoDB array
 -  ``date``: DateTime to MongoDate
 -  ``hash``: associative array to MongoDB object
 -  ``id``: string to MongoId by default, but other formats are possible
 -  ``timestamp``: string to MongoTimestamp
 -  ``increment``: integer in both PHP and MongoDB
+-  ``raw``: any type
 
 .. note::
     
@@ -206,11 +211,13 @@ This list explains some of the less obvious mapping types:
 Property Mapping
 ----------------
 
-After a class has been marked as an document it can specify
+After a class has been marked as a document it can specify
 mappings for its instance fields. Here we will only look at simple
 fields that hold scalar values like strings, numbers, etc.
 References to other objects and embedded objects are covered in the
 chapter "Reference Mapping".
+
+.. _basic_mapping_identifiers:
 
 Identifiers
 ~~~~~~~~~~~
@@ -514,9 +521,9 @@ can use your new type in your mapping like this:
 Multiple Document Types in a Collection
 ---------------------------------------
 
-You can easily store multiple types of documents in a single
-collection. It only requires that you specify the same collection name on
-multiple documents and specify the ``discriminatorMap`` for each document in
+You can easily store multiple types of documents in a single collection. This
+requires specifying the same collection name, ``discriminatorField``, and
+(optionally) ``discriminatorMap`` mapping options for each class that will share
 the collection. Here is an example:
 
 .. code-block:: php
@@ -525,7 +532,7 @@ the collection. Here is an example:
 
     /**
      * @Document(collection="my_documents")
-     * @DiscriminatorField(fieldName="type")
+     * @DiscriminatorField("type")
      * @DiscriminatorMap({"article"="Article", "album"="Album"})
      */
     class Article
@@ -535,7 +542,7 @@ the collection. Here is an example:
     
     /**
      * @Document(collection="my_documents")
-     * @DiscriminatorField(fieldName="type")
+     * @DiscriminatorField("type")
      * @DiscriminatorMap({"article"="Article", "album"="Album"})
      */
     class Album
@@ -544,23 +551,12 @@ the collection. Here is an example:
     }
 
 All instances of ``Article`` and ``Album`` will be stored in the
-``my_documents`` collection. You can query for the documents just
-like you normally would and if you want to and the results will
-automatically be limited for you based on the discriminator map.
+``my_documents`` collection. You can query for the documents of a particular
+class just like you normally would and the results will automatically be limited
+based on the discriminator value for that class.
 
-If you wish to query for multiple types of documents from the
-collection you can simply pass an array of document class names:
-
-.. code-block:: php
-
-    <?php
-
-    $documents = $dm->find(array('Article', 'Album'));
-
-The above will return a ``MongoCursor`` that will allow you to
-iterate over all ``Article`` and ``Album`` instances!
-
-You can also create queries in the same way:
+If you wish to query for multiple types of documents from the collection, you
+may pass an array of document class names when creating a query builder:
 
 .. code-block:: php
 
@@ -568,3 +564,6 @@ You can also create queries in the same way:
 
     $query = $dm->createQuery(array('Article', 'Album'));
     $documents = $query->execute();
+
+The above will return a cursor that will allow you to iterate over all
+``Article`` and ``Album`` documents in the collections.

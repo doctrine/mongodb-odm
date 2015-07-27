@@ -122,19 +122,20 @@ Now test the ``$eventSubscriber`` instance to see if the
         echo 'pre foo invoked!';
     }
 
+.. _lifecycle_events:
+
 Lifecycle Events
 ----------------
 
 The DocumentManager and UnitOfWork trigger several events during
 the life-time of their registered documents.
 
-
 - 
    preRemove - The preRemove event occurs for a given document before
    the respective DocumentManager remove operation for that document
    is executed.
 - 
-   postRemove - The postRemove event occurs for an document after the
+   postRemove - The postRemove event occurs for a document after the
    document has been removed. It will be invoked after the database
    delete operations.
 - 
@@ -142,7 +143,7 @@ the life-time of their registered documents.
    before the respective DocumentManager persist operation for that
    document is executed.
 - 
-   postPersist - The postPersist event occurs for an document after
+   postPersist - The postPersist event occurs for a document after
    the document has been made persistent. It will be invoked after the
    database insert operations. Generated primary key values are
    available in the postPersist event.
@@ -153,7 +154,7 @@ the life-time of their registered documents.
    postUpdate - The postUpdate event occurs after the database update
    operations to document data.
 - 
-   postLoad - The postLoad event occurs for an document after the
+   postLoad - The postLoad event occurs for a document after the
    document has been loaded into the current DocumentManager from the
    database or after the refresh operation has been applied to it.
 - 
@@ -176,7 +177,7 @@ the life-time of their registered documents.
    its state cleared.
 
 You can access the Event constants from the ``Events`` class in the
-ORM package.
+ODM package.
 
 .. code-block:: php
 
@@ -236,7 +237,7 @@ event occurs.
         /** @PrePersist */
         public function doStuffOnPrePersist()
         {
-            $this->createdAt = date('Y-m-d H:m:s');
+            $this->createdAt = date('Y-m-d H:i:s');
         }
     
         /** @PrePersist */
@@ -426,7 +427,7 @@ Define the ``EventTest`` class with a ``onFlush()`` method:
     }
 
 postFlush
-~~~~~~~~
+~~~~~~~~~
 
 .. code-block:: php
 
@@ -476,7 +477,7 @@ Define the ``EventTest`` class with a ``preUpdate()`` method:
             $document = $eventArgs->getDocument();
             $document->setSomething();
             $dm = $eventArgs->getDocumentManager();
-            $class = $dm->getClassMetadata();
+            $class = $dm->getClassMetadata(get_class($document));
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $document);
         }
     }
@@ -556,7 +557,7 @@ Define the ``EventTest`` class with a ``postUpdate()``, ``postRemove()`` and ``p
 Load ClassMetadata Event
 ------------------------
 
-When the mapping information for an document is read, it is
+When the mapping information for a document is read, it is
 populated in to a ``ClassMetadata`` instance. You can hook in to
 this process and manipulate the instance with the ``loadClassMetadata`` event:
 

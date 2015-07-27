@@ -10,7 +10,7 @@ class Strategy
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Collection(strategy="set") */
+    /** @ODM\Collection() */
     public $logs = array();
 
     /** @ODM\EmbedMany(targetDocument="Message", strategy="set") */

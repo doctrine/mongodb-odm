@@ -9,28 +9,21 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ConnectionMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
 use Documents\ForumUser;
 use Documents\ForumAvatar;
 
-class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
+class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    private $dm;
-    private $uow;
-
-    protected function setUp()
+    public function testIsDocumentScheduled()
     {
-        parent::setUp();
-        $this->dm = DocumentManagerMock::create(new ConnectionMock());
-        $this->uow = $this->dm->getUnitOfWork();
-    }
-
-    protected function tearDown()
-    {
-        unset($this->dm, $this->uow);
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
+        $user = new ForumUser();
+        $this->assertFalse($this->uow->isDocumentScheduled($user));
+        $this->uow->scheduleForInsert($class, $user);
+        $this->assertTrue($this->uow->isDocumentScheduled($user));
     }
 
     public function testScheduleForInsert()
@@ -42,27 +35,49 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->uow->isScheduledForInsert($user));
     }
 
-    public function testScheduleForInsertUpsert()
+    public function testScheduleForUpsert()
     {
         $class = $this->dm->getClassMetadata('Documents\ForumUser');
         $user = new ForumUser();
         $user->id = new \MongoId();
         $this->assertFalse($this->uow->isScheduledForInsert($user));
         $this->assertFalse($this->uow->isScheduledForUpsert($user));
-        $this->uow->scheduleForInsert($class, $user);
-        $this->assertTrue($this->uow->isScheduledForInsert($user));
+        $this->uow->scheduleForUpsert($class, $user);
+        $this->assertFalse($this->uow->isScheduledForInsert($user));
         $this->assertTrue($this->uow->isScheduledForUpsert($user));
     }
 
-    public function testScheduleForInsertUpsertWithNonObjectIdValues()
+    public function testGetScheduledDocumentUpserts()
+    {
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
+        $user = new ForumUser();
+        $user->id = new \MongoId();
+        $this->assertEmpty($this->uow->getScheduledDocumentUpserts());
+        $this->uow->scheduleForUpsert($class, $user);
+        $this->assertEquals(array(spl_object_hash($user) => $user), $this->uow->getScheduledDocumentUpserts());
+    }
+
+    public function testScheduleForEmbeddedUpsert()
+    {
+        $class = $this->dm->getClassMetadata('Documents\ForumUser');
+        $test = new EmbeddedUpsertDocument();
+        $test->id = (string) new \MongoId();
+        $this->assertFalse($this->uow->isScheduledForInsert($test));
+        $this->assertFalse($this->uow->isScheduledForUpsert($test));
+        $this->uow->persist($test);
+        $this->assertTrue($this->uow->isScheduledForInsert($test));
+        $this->assertFalse($this->uow->isScheduledForUpsert($test));
+    }
+
+    public function testScheduleForUpsertWithNonObjectIdValues()
     {
         $doc = new UowCustomIdDocument();
         $doc->id = 'string';
         $class = $this->dm->getClassMetadata(get_class($doc));
         $this->assertFalse($this->uow->isScheduledForInsert($doc));
         $this->assertFalse($this->uow->isScheduledForUpsert($doc));
-        $this->uow->scheduleForInsert($class, $doc);
-        $this->assertTrue($this->uow->isScheduledForInsert($doc));
+        $this->uow->scheduleForUpsert($class, $doc);
+        $this->assertFalse($this->uow->isScheduledForInsert($doc));
         $this->assertTrue($this->uow->isScheduledForUpsert($doc));
     }
 
@@ -90,7 +105,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     /* Operational tests */
 
-    public function testSavingSingleEntityWithIdentityColumnForcesInsert()
+    public function testSavingSingleDocumentWithIdentityFieldForcesInsert()
     {
         // Setup fake persister and id generator for identity generation
         $pb = $this->getMockPersistenceBuilder();
@@ -107,7 +122,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
         $this->assertEquals(0, count($userPersister->getDeletes()));
-        $this->assertFalse($this->uow->isInIdentityMap($user));
+        $this->assertTrue($this->uow->isInIdentityMap($user));
         // should no longer be scheduled for insert
         $this->assertTrue($this->uow->isScheduledForInsert($user));
 
@@ -123,7 +138,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, count($userPersister->getDeletes()));
 
         // should have an id
-        $this->assertTrue(is_numeric($user->id));
+        $this->assertNotNull($user->id);
     }
 
     /**
@@ -154,8 +169,8 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
         $this->uow->commit();
 
-        $this->assertTrue(is_numeric($user->id));
-        $this->assertTrue(is_numeric($avatar->id));
+        $this->assertNotNull($user->id);
+        $this->assertNotNull($avatar->id);
 
         $this->assertEquals(1, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
@@ -179,12 +194,13 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->uow->setDocumentPersister($class->name, $itemPersister);
 
         $entity = new NotifyChangedDocument();
+        $entity->setId(1);
         $entity->setData('thedata');
 
         $this->uow->persist($entity);
         $this->uow->commit();
 
-        $this->assertEquals(1, count($persister->getInserts()));
+        $this->assertEquals(1, count($persister->getUpserts()));
         $this->assertTrue($this->uow->isInIdentityMap($entity));
         $this->assertFalse($this->uow->isScheduledForDirtyCheck($entity));
 
@@ -197,13 +213,14 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->uow->getDocumentChangeSet($entity));
 
         $item = new NotifyChangedRelatedItem();
+        $item->setId(1);
         $entity->getItems()->add($item);
         $item->setOwner($entity);
 
         $this->uow->persist($item);
         $this->uow->commit();
 
-        $this->assertEquals(1, count($itemPersister->getInserts()));
+        $this->assertEquals(1, count($itemPersister->getUpserts()));
         $this->assertTrue($this->uow->isInIdentityMap($item));
         $this->assertFalse($this->uow->isScheduledForDirtyCheck($item));
 
@@ -277,19 +294,18 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     public function testPreUpdateTriggeredWithEmptyChangeset()
     {
-        $dm = DocumentManagerMock::create();
-        $evm = $dm->getEventManager()->addEventSubscriber(
+        $this->dm->getEventManager()->addEventSubscriber(
             new \Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock()
         );
         $user = new \Documents\ForumUser();
         $user->username = '12345';
 
-        $dm->persist($user);
-        $dm->flush();
+        $this->dm->persist($user);
+        $this->dm->flush();
 
         $user->username = '1234';
-        $dm->persist($user);
-        $dm->flush();
+        $this->dm->persist($user);
+        $this->dm->flush();
     }
 
     public function testNotSaved()
@@ -317,12 +333,16 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $arrayTest = new ArrayTest($origData);
         $this->uow->persist($arrayTest);
         $this->uow->computeChangeSets();
+        $this->uow->commit();
 
         $arrayTest->data = $updateData;
-        $this->uow->persist($arrayTest);
         $this->uow->computeChangeSets();
 
         $this->assertEquals($shouldInUpdate, $this->uow->isScheduledForUpdate($arrayTest));
+
+        $this->uow->commit();
+
+        $this->assertFalse($this->uow->isScheduledForUpdate($arrayTest));
     }
 
     public function getScheduleForUpdateWithArraysTests()
@@ -376,6 +396,196 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testRegisterManagedEmbeddedDocumentWithMappedIdAndNullValue()
+    {
+        $document = new EmbeddedDocumentWithId();
+        $oid = spl_object_hash($document);
+
+        $this->uow->registerManaged($document, null, array());
+
+        $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
+    }
+
+    public function testRegisterManagedEmbeddedDocumentWithoutMappedId()
+    {
+        $document = new EmbeddedDocumentWithoutId();
+        $oid = spl_object_hash($document);
+
+        $this->uow->registerManaged($document, null, array());
+
+        $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
+    }
+
+    public function testRegisterManagedEmbeddedDocumentWithMappedIdStrategyNoneAndNullValue()
+    {
+        $document = new EmbeddedDocumentWithIdStrategyNone();
+        $oid = spl_object_hash($document);
+
+        $this->uow->registerManaged($document, null, array());
+
+        $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
+    }
+
+    public function testPersistRemovedDocument()
+    {
+        $user = new ForumUser();
+        $user->username = 'jwage';
+
+        $this->uow->persist($user);
+        $this->uow->commit();
+
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user));
+
+        $this->uow->remove($user);
+
+        $this->assertEquals(UnitOfWork::STATE_REMOVED, $this->uow->getDocumentState($user));
+
+        $this->uow->persist($user);
+
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user));
+
+        $this->uow->commit();
+
+        $this->assertNotNull($this->dm->getRepository(get_class($user))->find($user->id));
+    }
+
+    public function testRemovePersistedButNotFlushedDocument()
+    {
+        $user = new ForumUser();
+        $user->username = 'jwage';
+
+        $this->uow->persist($user);
+        $this->uow->remove($user);
+        $this->uow->commit();
+
+        $this->assertNull($this->dm->getRepository(get_class($user))->find($user->id));
+    }
+
+    public function testPersistRemovedEmbeddedDocument()
+    {
+        $test = new PersistRemovedEmbeddedDocument();
+        $test->embedded = new EmbeddedDocumentWithId();
+        $this->uow->persist($test);
+        $this->uow->commit();
+        $this->uow->clear();
+
+        $test = $this->dm->getRepository(get_class($test))->find($test->id);
+
+        $this->uow->remove($test);
+
+        $this->assertEquals(UnitOfWork::STATE_REMOVED, $this->uow->getDocumentState($test));
+        $this->assertTrue($this->uow->isScheduledForDelete($test));
+
+        // removing a top level document should cascade to embedded documents
+        $this->assertEquals(UnitOfWork::STATE_REMOVED, $this->uow->getDocumentState($test->embedded));
+        $this->assertTrue($this->uow->isScheduledForDelete($test->embedded));
+
+        $this->uow->persist($test);
+        $this->uow->commit();
+
+        $this->assertFalse($test->embedded->preRemove);
+
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($test));
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($test->embedded));
+    }
+
+    public function testPersistingEmbeddedDocumentWithoutIdentifier()
+    {
+        $address = new \Documents\Address();
+        $user = new \Documents\User();
+        $user->setAddress($address);
+
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($address));
+        $this->assertFalse($this->uow->isInIdentityMap($address));
+        $this->assertNull($this->uow->getDocumentIdentifier($address));
+
+        $this->uow->persist($user);
+
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->getAddress()));
+        $this->assertTrue($this->uow->isInIdentityMap($address));
+        $this->assertTrue($this->uow->isScheduledForInsert($address));
+        $this->assertEquals(spl_object_hash($address), $this->uow->getDocumentIdentifier($address));
+
+        $this->uow->commit();
+
+        $this->assertTrue($this->uow->isInIdentityMap($address));
+        $this->assertFalse($this->uow->isScheduledForInsert($address));
+    }
+
+    public function testEmbeddedDocumentChangeSets()
+    {
+        $address = new \Documents\Address();
+        $user = new \Documents\User();
+        $user->setAddress($address);
+
+        $this->uow->persist($user);
+
+        $this->uow->computeChangeSets();
+
+        $changeSet = $this->uow->getDocumentChangeSet($address);
+        $this->assertNotEmpty($changeSet);
+
+        $this->uow->commit();
+
+        $address->setCity('Nashville');
+
+        $this->uow->computeChangeSets();
+        $changeSet = $this->uow->getDocumentChangeSet($address);
+
+        $this->assertTrue(isset($changeSet['city']));
+        $this->assertEquals('Nashville', $changeSet['city'][1]);
+    }
+
+    public function testGetClassNameForAssociation()
+    {
+        $mapping = array(
+            'discriminatorField' => 'type',
+            'discriminatorMap' => array(
+                'forum_user' => 'Documents\ForumUser',
+            ),
+            'targetDocument' => 'Documents\User',
+        );
+        $data = array(
+            'type' => 'forum_user',
+        );
+
+        $this->assertEquals('Documents\ForumUser', $this->uow->getClassNameForAssociation($mapping, $data));
+    }
+
+    public function testGetClassNameForAssociationWithClassMetadataDiscriminatorMap()
+    {
+        $dm = $this->getMockDocumentManager();
+        $uow = new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory());
+
+        $mapping = array(
+            'targetDocument' => 'Documents\User',
+        );
+        $data = array(
+            'type' => 'forum_user',
+        );
+
+        $userClassMetadata = new ClassMetadata('Documents\ForumUser');
+        $userClassMetadata->discriminatorField = 'type';
+        $userClassMetadata->discriminatorMap = array(
+            'forum_user' => 'Documents\ForumUser',
+        );
+
+        $dm->expects($this->once())
+            ->method('getClassMetadata')
+            ->with('Documents\User')
+            ->will($this->returnValue($userClassMetadata));
+
+        $this->assertEquals('Documents\ForumUser', $uow->getClassNameForAssociation($mapping, $data));
+    }
+
+    public function testGetClassNameForAssociationReturnsTargetDocumentWithNullData()
+    {
+        $mapping = array(
+            'targetDocument' => 'Documents\User',
+        );
+        $this->assertEquals('Documents\User', $this->uow->getClassNameForAssociation($mapping, null));
+    }
+
     protected function getDocumentManager()
     {
         return new \Stubs\DocumentManager();
@@ -383,7 +593,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
 
     protected function getUnitOfWork(DocumentManager $dm)
     {
-        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory(), '$');
+        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory());
     }
 
     /**
@@ -420,9 +630,17 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
             ->getMock();
     }
 
+    private function getMockDocumentManager()
+    {
+        return $this->getMockBuilder('Doctrine\ODM\MongoDB\DocumentManager')
+            ->disableOriginalClone()
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
     private function getMockDocumentPersister(PersistenceBuilder $pb, ClassMetadata $class)
     {
-        return new DocumentPersisterMock($pb, $this->dm, $this->dm->getEventManager(), $this->uow, $this->dm->getHydratorFactory(), $class, '$');
+        return new DocumentPersisterMock($pb, $this->dm, $this->dm->getEventManager(), $this->uow, $this->dm->getHydratorFactory(), $class);
     }
 
     protected function getClassMetadata($class, $flag)
@@ -448,7 +666,7 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 {
     private $_listeners = array();
 
-    /** @ODM\Id(type="int_id") */
+    /** @ODM\Id(type="int_id", strategy="none") */
     private $id;
 
     /** @ODM\String */
@@ -467,6 +685,11 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     public function getData()
@@ -511,7 +734,7 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 /** @ODM\Document */
 class NotifyChangedRelatedItem
 {
-    /** @ODM\Id(type="int_id") */
+    /** @ODM\Id(type="int_id", strategy="none") */
     private $id;
 
     /** @ODM\ReferenceOne(targetDocument="NotifyChangedDocument") */
@@ -520,6 +743,11 @@ class NotifyChangedRelatedItem
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     public function getOwner()
@@ -553,4 +781,48 @@ class UowCustomIdDocument
 {
     /** @ODM\Id(type="custom_id") */
     public $id;
+}
+
+/** @ODM\EmbeddedDocument */
+class EmbeddedUpsertDocument
+{
+    /** @ODM\Id */
+    public $id;
+}
+
+/** @ODM\EmbeddedDocument */
+class EmbeddedDocumentWithoutId
+{
+}
+
+/** @ODM\EmbeddedDocument */
+class EmbeddedDocumentWithId
+{
+    public $preRemove = false;
+
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\PreRemove */
+    public function preRemove()
+    {
+        $this->preRemove = true;
+    }
+}
+
+/** @ODM\EmbeddedDocument */
+class EmbeddedDocumentWithIdStrategyNone
+{
+    /** @ODM\Id(strategy="none") */
+    public $id;
+}
+
+/** @ODM\Document */
+class PersistRemovedEmbeddedDocument
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithId") */
+    public $embedded;
 }

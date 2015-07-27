@@ -39,9 +39,31 @@ of the constructor, like this:
 
     <?php
 
-    // $config instanceof Doctrine\ORM\Configuration
+    // $config instanceof Doctrine\ODM\MongoDB\Configuration
     $driver = new YamlDriver(array('/path/to/files'));
     $config->setMetadataDriverImpl($driver);
+
+Simplified YAML Driver
+~~~~~~~~~~~~~~~~~~~~~~
+
+The Symfony project sponsored a driver that simplifies usage of the YAML Driver.
+The changes between the original driver are:
+
+1. File Extension is .mongodb-odm.yml
+2. Filenames are shortened, "MyProject\\Documents\\User" will become User.mongodb-odm.yml
+3. You can add a global file and add multiple documents in this file.
+
+Configuration of this client works a little bit different:
+
+.. code-block:: php
+
+    <?php
+    $namespaces = array(
+        '/path/to/files1' => 'MyProject\Documents',
+        '/path/to/files2' => 'OtherProject\Documents'
+    );
+    $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedYamlDriver($namespaces);
+    $driver->setGlobalBasename('global'); // global.mongodb-odm.yml
 
 Example
 -------

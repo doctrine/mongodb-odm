@@ -4,7 +4,7 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(db="my_db", collection="managers") */
+/** @ODM\Document */
 class Manager extends BaseEmployee
 {
     /** @ODM\ReferenceMany(targetDocument="Documents\Project") */

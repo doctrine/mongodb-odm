@@ -19,11 +19,15 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 
 /**
- * An DocumentRepository serves as a repository for documents with generic as well as
+ * A DocumentRepository serves as a repository for documents with generic as well as
  * business specific methods for retrieving documents.
  *
  * This class is designed for inheritance and users can subclass this class to
@@ -33,7 +37,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class DocumentRepository implements ObjectRepository
+class DocumentRepository implements ObjectRepository, Selectable
 {
     /**
      * @var string
@@ -103,18 +107,20 @@ class DocumentRepository implements ObjectRepository
         if ($id === null) {
             return;
         }
+
+        /* TODO: What if the ID object has a field with the same name as the
+         * class' mapped identifier field name?
+         */
         if (is_array($id)) {
             list($identifierFieldName) = $this->class->getIdentifierFieldNames();
 
-            if ( ! isset($id[$identifierFieldName])) {
-                throw MappingException::missingIdentifierField($this->documentName, $identifierFieldName);
+            if (isset($id[$identifierFieldName])) {
+                $id = $id[$identifierFieldName];
             }
-
-            $id = $id[$identifierFieldName];
         }
 
         // Check identity map first
-        if ($document = $this->uow->tryGetById($id, $this->class->rootDocumentName)) {
+        if ($document = $this->uow->tryGetById($id, $this->class)) {
             if ($lockMode != LockMode::NONE) {
                 $this->dm->lock($document, $lockMode, $lockVersion);
             }
@@ -122,28 +128,30 @@ class DocumentRepository implements ObjectRepository
             return $document; // Hit!
         }
 
+        $criteria = array('_id' => $id);
+
         if ($lockMode == LockMode::NONE) {
-            return $this->uow->getDocumentPersister($this->documentName)->load($id);
+            return $this->getDocumentPersister()->load($criteria);
         }
 
         if ($lockMode == LockMode::OPTIMISTIC) {
             if (!$this->class->isVersioned) {
                 throw LockException::notVersioned($this->documentName);
             }
-            $document = $this->uow->getDocumentPersister($this->documentName)->load($id);
-
-            $this->uow->lock($document, $lockMode, $lockVersion);
+            if ($document = $this->getDocumentPersister()->load($criteria)) {
+                $this->uow->lock($document, $lockMode, $lockVersion);
+            }
 
             return $document;
         }
 
-        return $this->uow->getDocumentPersister($this->documentName)->load($id, null, array(), $lockMode);
+        return $this->getDocumentPersister()->load($criteria, null, array(), $lockMode);
     }
 
     /**
      * Finds all documents in the repository.
      *
-     * @return array The entities.
+     * @return array
      */
     public function findAll()
     {
@@ -157,11 +165,12 @@ class DocumentRepository implements ObjectRepository
      * @param array        $sort     Sort array for Cursor::sort()
      * @param integer|null $limit    Limit for Cursor::limit()
      * @param integer|null $skip     Skip for Cursor::skip()
-     * @return Cursor
+     *
+     * @return array
      */
     public function findBy(array $criteria, array $sort = null, $limit = null, $skip = null)
     {
-        return $this->uow->getDocumentPersister($this->documentName)->loadAll($criteria, $sort, $limit, $skip);
+        return $this->getDocumentPersister()->loadAll($criteria, $sort, $limit, $skip)->toArray(false);
     }
 
     /**
@@ -172,7 +181,7 @@ class DocumentRepository implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        return $this->uow->getDocumentPersister($this->documentName)->load($criteria);
+        return $this->getDocumentPersister()->load($criteria);
     }
 
     /**
@@ -244,5 +253,44 @@ class DocumentRepository implements ObjectRepository
     public function getClassName()
     {
         return $this->getDocumentName();
+    }
+
+    /**
+     * Selects all elements from a selectable that match the expression and
+     * returns a new collection containing these elements.
+     *
+     * @see Selectable::matching()
+     * @param Criteria $criteria
+     * @return Collection
+     */
+    public function matching(Criteria $criteria)
+    {
+        $visitor = new QueryExpressionVisitor($this->createQueryBuilder());
+        $queryBuilder = $this->createQueryBuilder();
+
+        if ($criteria->getWhereExpression() !== null) {
+            $expr = $visitor->dispatch($criteria->getWhereExpression());
+            $queryBuilder->setQueryArray($expr->getQuery());
+        }
+
+        if ($criteria->getMaxResults() !== null) {
+            $queryBuilder->limit($criteria->getMaxResults());
+        }
+
+        if ($criteria->getFirstResult() !== null) {
+            $queryBuilder->skip($criteria->getFirstResult());
+        }
+
+        if ($criteria->getOrderings() !== null) {
+            $queryBuilder->sort($criteria->getOrderings());
+        }
+
+        // @TODO: wrap around a specialized Collection for efficient count on large collections
+        return new ArrayCollection($queryBuilder->getQuery()->execute()->toArray(false));
+    }
+
+    protected function getDocumentPersister()
+    {
+        return $this->uow->getDocumentPersister($this->documentName);
     }
 }

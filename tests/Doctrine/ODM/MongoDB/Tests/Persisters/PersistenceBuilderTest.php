@@ -102,7 +102,7 @@ class PersistenceBuilderTest extends BaseTest
          * @var \Doctrine\ODM\MongoDB\Cursor $results
          */
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
         $results = $query->execute();
 
         $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $results);
@@ -147,7 +147,7 @@ class PersistenceBuilderTest extends BaseTest
 
         $expectedData = array(
             'article' => array(
-                '$db' => 'doctrine_odm_tests',
+                '$db' => DOCTRINE_MONGODB_DATABASE,
                 '$id' => new \MongoId($article->id),
                 '$ref' => 'CmsArticle'
             )
@@ -172,7 +172,7 @@ class PersistenceBuilderTest extends BaseTest
 
         $expectedData = array(
             'article' => array(
-                '$db' => 'doctrine_odm_tests',
+                '$db' => DOCTRINE_MONGODB_DATABASE,
                 '$id' => new \MongoId($article->id),
                 '$ref' => 'CmsArticle'
             )
@@ -202,10 +202,11 @@ class PersistenceBuilderTest extends BaseTest
                 'topic' => 'test',
                 'text' => 'text',
                 'article' => array(
-                    '$db' => 'doctrine_odm_tests',
+                    '$db' => DOCTRINE_MONGODB_DATABASE,
                     '$id' => new \MongoId($article->id),
                     '$ref' => 'CmsArticle'
-                )
+                ),
+                '_id' => new \MongoId($comment->id),
             )
         );
         $this->assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
@@ -281,7 +282,6 @@ class PersistenceBuilderTest extends BaseTest
          * @var \Doctrine\ODM\MongoDB\Cursor $results
          */
         $query = $qb->getQuery();
-        $debug = $query->debug();
         $results = $query->execute();
 
         $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $results);

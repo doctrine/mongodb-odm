@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Yaml;
 
@@ -66,6 +67,9 @@ class YamlDriver extends FileDriver
                 $class->setCustomRepositoryClass($element['repositoryClass']);
             }
         } elseif ($element['type'] === 'mappedSuperclass') {
+            $class->setCustomRepositoryClass(
+                isset($element['repositoryClass']) ? $element['repositoryClass'] : null
+            );
             $class->isMappedSuperclass = true;
         } elseif ($element['type'] === 'embeddedDocument') {
             $class->isEmbeddedDocument = true;
@@ -79,13 +83,13 @@ class YamlDriver extends FileDriver
             $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
         }
         if (isset($element['discriminatorField'])) {
-            $class->setDiscriminatorField(array_intersect_key(
-                $element['discriminatorField'],
-                array('fieldName' => 1, 'name' => 1)
-            ));
+            $class->setDiscriminatorField($this->parseDiscriminatorField($element['discriminatorField']));
         }
         if (isset($element['discriminatorMap'])) {
             $class->setDiscriminatorMap($element['discriminatorMap']);
+        }
+        if (isset($element['defaultDiscriminatorValue'])) {
+            $class->setDefaultDiscriminatorValue($element['defaultDiscriminatorValue']);
         }
         if (isset($element['changeTrackingPolicy'])) {
             $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
@@ -106,10 +110,6 @@ class YamlDriver extends FileDriver
                 }
                 if ( ! isset($mapping['fieldName'])) {
                     $mapping['fieldName'] = $fieldName;
-                }
-                if (isset($mapping['type']) && $mapping['type'] === 'collection') {
-                    // Note: this strategy is not actually used
-                    $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
                 }
                 if (isset($mapping['type']) && ! empty($mapping['embedded'])) {
                     $this->addMappingFromEmbed($class, $fieldName, $mapping, $mapping['type']);
@@ -147,6 +147,11 @@ class YamlDriver extends FileDriver
                 }
             }
         }
+        if (isset($element['alsoLoadMethods'])) {
+            foreach ($element['alsoLoadMethods'] as $methodName => $fieldName) {
+                $class->registerAlsoLoadMethod($methodName, $fieldName);
+            }
+        }
     }
 
     private function addFieldMapping(ClassMetadataInfo $class, $mapping)
@@ -165,9 +170,19 @@ class YamlDriver extends FileDriver
             return;
         }
 
+        // Multiple index specifications in one field mapping is ambiguous
+        if ((isset($mapping['index']) && is_array($mapping['index'])) +
+            (isset($mapping['unique']) && is_array($mapping['unique'])) +
+            (isset($mapping['sparse']) && is_array($mapping['sparse'])) > 1) {
+            throw new \InvalidArgumentException('Multiple index specifications found among index, unique, and/or sparse fields');
+        }
+
         // Index this field if either "index", "unique", or "sparse" are set
         $keys = array($name => 'asc');
 
+        /* The "order" option is only used in the index specification and should
+         * not be passed along as an index option.
+         */
         if (isset($mapping['index']['order'])) {
             $keys[$name] = $mapping['index']['order'];
             unset($mapping['index']['order']);
@@ -179,16 +194,40 @@ class YamlDriver extends FileDriver
             unset($mapping['sparse']['order']);
         }
 
+        /* Initialize $options from any array value among index, unique, and
+         * sparse. Any boolean values for unique or sparse should be merged into
+         * the options afterwards to ensure consistent parsing.
+         */
         $options = array();
+        $unique = null;
+        $sparse = null;
 
-        if (isset($mapping['index'])) {
-            $options = is_array($mapping['index']) ? $mapping['index'] : array();
-        } elseif (isset($mapping['unique'])) {
-            $options = is_array($mapping['unique']) ? $mapping['unique'] : array();
-            $options['unique'] = true;
-        } elseif (isset($mapping['sparse'])) {
-            $options = is_array($mapping['sparse']) ? $mapping['sparse'] : array();
-            $options['sparse'] = true;
+        if (isset($mapping['index']) && is_array($mapping['index'])) {
+            $options = $mapping['index'];
+        }
+
+        if (isset($mapping['unique'])) {
+            if (is_array($mapping['unique'])) {
+                $options = $mapping['unique'] + array('unique' => true);
+            } else {
+                $unique = (boolean) $mapping['unique'];
+            }
+        }
+
+        if (isset($mapping['sparse'])) {
+            if (is_array($mapping['sparse'])) {
+                $options = $mapping['sparse'] + array('sparse' => true);
+            } else {
+                $sparse = (boolean) $mapping['sparse'];
+            }
+        }
+
+        if (isset($unique)) {
+            $options['unique'] = $unique;
+        }
+
+        if (isset($sparse)) {
+            $options['sparse'] = $sparse;
         }
 
         $class->addIndex($keys, $options);
@@ -201,16 +240,19 @@ class YamlDriver extends FileDriver
             'embedded'       => true,
             'targetDocument' => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
             'fieldName'      => $fieldName,
-            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : 'pushAll',
+            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
         );
         if (isset($embed['name'])) {
             $mapping['name'] = $embed['name'];
         }
         if (isset($embed['discriminatorField'])) {
-            $mapping['discriminatorField'] = $embed['discriminatorField'];
+            $mapping['discriminatorField'] = $this->parseDiscriminatorField($embed['discriminatorField']);
         }
         if (isset($embed['discriminatorMap'])) {
             $mapping['discriminatorMap'] = $embed['discriminatorMap'];
+        }
+        if (isset($embed['defaultDiscriminatorValue'])) {
+            $mapping['defaultDiscriminatorValue'] = $embed['defaultDiscriminatorValue'];
         }
         $this->addFieldMapping($class, $mapping);
     }
@@ -225,7 +267,7 @@ class YamlDriver extends FileDriver
             'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false,
             'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'fieldName'        => $fieldName,
-            'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : 'pushAll',
+            'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
             'inversedBy'       => isset($reference['inversedBy']) ? (string) $reference['inversedBy'] : null,
             'mappedBy'         => isset($reference['mappedBy']) ? (string) $reference['mappedBy'] : null,
             'repositoryMethod' => isset($reference['repositoryMethod']) ? (string) $reference['repositoryMethod'] : null,
@@ -236,10 +278,13 @@ class YamlDriver extends FileDriver
             $mapping['name'] = $reference['name'];
         }
         if (isset($reference['discriminatorField'])) {
-            $mapping['discriminatorField'] = $reference['discriminatorField'];
+            $mapping['discriminatorField'] = $this->parseDiscriminatorField($reference['discriminatorField']);
         }
         if (isset($reference['discriminatorMap'])) {
             $mapping['discriminatorMap'] = $reference['discriminatorMap'];
+        }
+        if (isset($reference['defaultDiscriminatorValue'])) {
+            $mapping['defaultDiscriminatorValue'] = $reference['defaultDiscriminatorValue'];
         }
         if (isset($reference['sort'])) {
             $mapping['sort'] = $reference['sort'];
@@ -251,10 +296,43 @@ class YamlDriver extends FileDriver
     }
 
     /**
+     * Parses the class or field-level "discriminatorField" option.
+     *
+     * If the value is an array, check the "name" option before falling back to
+     * the deprecated "fieldName" option (for BC). Otherwise, the value must be
+     * a string.
+     *
+     * @param array|string $discriminatorField
+     * @return string
+     * @throws \InvalidArgumentException if the value is neither a string nor an
+     *                                   array with a "name" or "fieldName" key.
+     */
+    private function parseDiscriminatorField($discriminatorField)
+    {
+        if (is_string($discriminatorField)) {
+            return $discriminatorField;
+        }
+
+        if ( ! is_array($discriminatorField)) {
+            throw new \InvalidArgumentException('Expected array or string for discriminatorField; found: ' . gettype($discriminatorField));
+        }
+
+        if (isset($discriminatorField['name'])) {
+            return (string) $discriminatorField['name'];
+        }
+
+        if (isset($discriminatorField['fieldName'])) {
+            return (string) $discriminatorField['fieldName'];
+        }
+
+        throw new \InvalidArgumentException('Expected "name" or "fieldName" key in discriminatorField array; found neither.');
+    }
+
+    /**
      * {@inheritDoc}
      */
     protected function loadMappingFile($file)
     {
-        return Yaml::parse($file);
+        return Yaml::parse(file_get_contents($file));
     }
 }

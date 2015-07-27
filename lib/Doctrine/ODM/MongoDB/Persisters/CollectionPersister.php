@@ -20,10 +20,10 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
  * The CollectionPersister is responsible for persisting collections of embedded
@@ -57,26 +57,17 @@ class CollectionPersister
     private $pb;
 
     /**
-     * Mongo command prefix
-     *
-     * @var string
-     */
-    private $cmd;
-
-    /**
      * Constructs a new CollectionPersister instance.
      *
      * @param DocumentManager $dm
      * @param PersistenceBuilder $pb
      * @param UnitOfWork $uow
-     * @param string $cmd
      */
-    public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow, $cmd)
+    public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
     {
         $this->dm = $dm;
         $this->pb = $pb;
         $this->uow = $uow;
-        $this->cmd = $cmd;
     }
 
     /**
@@ -91,8 +82,11 @@ class CollectionPersister
         if ($mapping['isInverseSide']) {
             return; // ignore inverse side
         }
+        if (CollectionHelper::isAtomic($mapping['strategy'])) {
+            throw new \UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
+        }
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
-        $query = array($this->cmd . 'unset' => array($propertyPath => true));
+        $query = array('$unset' => array($propertyPath => true));
         $this->executeQuery($parent, $query, $options);
     }
 
@@ -112,6 +106,10 @@ class CollectionPersister
         }
 
         switch ($mapping['strategy']) {
+            case 'atomicSet':
+            case 'atomicSetArray':
+                throw new \UnexpectedValueException($mapping['strategy'] . ' update collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
+            
             case 'set':
             case 'setArray':
                 $this->setCollection($coll, $options);
@@ -119,6 +117,7 @@ class CollectionPersister
 
             case 'addToSet':
             case 'pushAll':
+                $coll->initialize();
                 $this->deleteElements($coll, $options);
                 $this->insertElements($coll, $options);
                 break;
@@ -141,23 +140,11 @@ class CollectionPersister
      */
     private function setCollection(PersistentCollection $coll, array $options)
     {
-        $mapping = $coll->getMapping();
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
-
-        $pb = $this->pb;
-
-        $callback = isset($mapping['embedded'])
-            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
-            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
-
-        $setData = $coll->map($callback)->toArray();
-
-        if ($mapping['strategy'] === 'setArray') {
-            $setData = array_values($setData);
-        }
-
-        $query = array($this->cmd.'set' => array($propertyPath => $setData));
-
+        $coll->initialize();
+        $mapping = $coll->getMapping();
+        $setData = $this->pb->prepareAssociatedCollectionValue($coll, CollectionHelper::usesSet($mapping['strategy']));
+        $query = array('$set' => array($propertyPath => $setData));
         $this->executeQuery($parent, $query, $options);
     }
 
@@ -180,10 +167,10 @@ class CollectionPersister
 
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
 
-        $query = array($this->cmd . 'unset' => array());
+        $query = array('$unset' => array());
 
         foreach ($deleteDiff as $key => $document) {
-            $query[$this->cmd . 'unset'][$propertyPath . '.' . $key] = true;
+            $query['$unset'][$propertyPath . '.' . $key] = true;
         }
 
         $this->executeQuery($parent, $query, $options);
@@ -194,7 +181,7 @@ class CollectionPersister
          * in the element being left in the array as null so we have to pull
          * null values.
          */
-        $this->executeQuery($parent, array($this->cmd . 'pull' => array($propertyPath => null)), $options);
+        $this->executeQuery($parent, array('$pull' => array($propertyPath => null)), $options);
     }
 
     /**
@@ -225,25 +212,13 @@ class CollectionPersister
 
         $value = array_values(array_map($callback, $insertDiff));
 
-        if ($mapping['strategy'] !== 'pushAll') {
-            $value = array($this->cmd . 'each' => $value);
+        if ($mapping['strategy'] === 'addToSet') {
+            $value = array('$each' => $value);
         }
 
-        $query = array($this->cmd . $mapping['strategy'] => array($propertyPath => $value));
+        $query = array('$' . $mapping['strategy'] => array($propertyPath => $value));
 
         $this->executeQuery($parent, $query, $options);
-    }
-
-    /**
-     * Gets the document database identifier value for the given document.
-     *
-     * @param object $document
-     * @param ClassMetadata $class
-     * @return mixed $id
-     */
-    private function getDocumentId($document, ClassMetadata $class)
-    {
-        return $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
     }
 
     /**

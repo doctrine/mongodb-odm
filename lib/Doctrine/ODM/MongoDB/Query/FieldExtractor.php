@@ -29,13 +29,11 @@ class FieldExtractor
 {
     private $query;
     private $sort;
-    private $cmd;
 
-    public function __construct(array $query, array $sort = array(), $cmd = '$')
+    public function __construct(array $query, array $sort = array())
     {
         $this->query = $query;
         $this->sort = $sort;
-        $this->cmd = $cmd;
     }
 
     public function getFields()
@@ -43,8 +41,8 @@ class FieldExtractor
         $fields = array();
 
         foreach ($this->query as $k => $v) {
-            if (is_array($v) && isset($v[$this->cmd.'elemMatch'])) {
-                $elemMatchFields = $this->getFieldsFromElemMatch($v[$this->cmd.'elemMatch']);
+            if (is_array($v) && isset($v['$elemMatch']) && is_array($v['$elemMatch'])) {
+                $elemMatchFields = $this->getFieldsFromElemMatch($v['$elemMatch']);
                 foreach ($elemMatchFields as $field) {
                     $fields[] = $k.'.'.$field;
                 }
@@ -53,7 +51,7 @@ class FieldExtractor
                     $test = new self($q);
                     $fields = array_merge($fields, $test->getFields());
                 }
-            } elseif ($k[0] !== $this->cmd) {
+            } elseif ($k[0] !== '$') {
                 $fields[] = $k;
             }
         }
@@ -61,7 +59,7 @@ class FieldExtractor
         return $fields;
     }
 
-    private function getFieldsFromElemMatch($elemMatch)
+    private function getFieldsFromElemMatch(array $elemMatch)
     {
         $fields = array();
         foreach ($elemMatch as $fieldName => $value) {
@@ -87,7 +85,7 @@ class FieldExtractor
             $operator = array($operator);
         }
         foreach ($operator as $op) {
-            if ($fieldName === $this->cmd.$op) {
+            if ($fieldName === '$' . $op) {
                 return true;
             }
         }

@@ -7,12 +7,12 @@
 
     <document name="TestDocuments\User" db="documents" collection="users">
         <field name="id" id="true" />
-        <field name="username" type="string" />
+        <field name="username" type="string" unique="true" sparse="true"/>
         <field name="createdAt" type="date" />
         <field name="tags" type="collection" />
         <embed-one target-document="Documents\Address" field="address" />
         <!--<field name="profile" targetDocument="Documents\Profile" reference="true" type="one" cascade="all" />-->
-        <reference-one target-document="Documents\Profile" field="profile" simple="true">
+        <reference-one target-document="Documents\Profile" field="profile" simple="true" orphan-removal="true">
             <cascade>
                 <all />
             </cascade>
@@ -34,5 +34,8 @@
           <lifecycle-callback method="doStuffOnPostPersist" type="postPersist" />
           <lifecycle-callback method="doOtherStuffOnPostPersist" type="postPersist" />
         </lifecycle-callbacks>
+        <also-load-methods>
+            <also-load-method method="doStuffOnAlsoLoad" field="unmappedField" />
+        </also-load-methods>
     </document>
 </doctrine-mongo-mapping>

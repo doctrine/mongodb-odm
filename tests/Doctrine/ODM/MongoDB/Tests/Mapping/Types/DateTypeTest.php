@@ -16,12 +16,23 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
         $mongoDate = new \MongoDate();
         $this->assertSame($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are not converted');
 
-        $yesterday = strtotime('yesterday');
-        $mongoDate = new \MongoDate($yesterday);
-        $dateTime = new \DateTime('@' . $yesterday);
+        $timestamp = 100000000.123;
+        $dateTime = \DateTime::createFromFormat('U.u', $timestamp);
+        $mongoDate = new \MongoDate(100000000, 123000);
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTime), 'DateTime objects are converted to MongoDate objects');
-        $this->assertEquals($mongoDate, $type->convertToDatabaseValue($yesterday), 'Numeric timestamps are converted to MongoDate objects');
-        $this->assertEquals($mongoDate, $type->convertToDatabaseValue(date('c', $yesterday)), 'String dates are converted to MongoDate objects');
+        $this->assertEquals($mongoDate, $type->convertToDatabaseValue($timestamp), 'Numeric timestamps are converted to MongoDate objects');
+        $this->assertEquals($mongoDate, $type->convertToDatabaseValue('' . $timestamp), 'String dates are converted to MongoDate objects');
+        $this->assertEquals($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are converted to MongoDate objects');
+        $this->assertEquals(null, $type->convertToDatabaseValue(null), 'null are converted to null');
+    }
+
+    public function testConvertOldDate()
+    {
+        $type = Type::getType(Type::DATE);
+
+        $date = new \DateTime('1900-01-01 00:00:00.123', new \DateTimeZone('UTC'));
+        $timestamp = "-2208988800.123";
+        $this->assertEquals($type->convertToDatabaseValue($timestamp), $type->convertToDatabaseValue($date));
     }
 
     /**
@@ -41,6 +52,7 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
             'string' => array('whatever'),
             'bool'   => array(false),
             'object' => array(new \stdClass()),
+            'invalid string' => array('foo'),
         );
     }
 
@@ -86,14 +98,42 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
         $dateTime = new \DateTime('@' . $yesterday);
 
         return array(
+            array($dateTime, $dateTime),
             array($mongoDate, $dateTime),
             array($yesterday, $dateTime),
             array(date('c', $yesterday), $dateTime),
+            array(new \MongoDate(100000000, 123000), \DateTime::createFromFormat('U.u', '100000000.123')),
         );
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function test32bit1900Date()
+    {
+        if (PHP_INT_SIZE === 4) {
+            $type = Type::getType(Type::DATE);
+            $type->convertToDatabaseValue('1900-01-01');
+        } else {
+            $this->markTestSkipped("Platform is not 32-bit");
+        }
+    }
+
+    public function test64bit1900Date()
+    {
+        if (PHP_INT_SIZE === 8) {
+            $type = Type::getType(Type::DATE);
+            $return = $type->convertToDatabaseValue('1900-01-01');
+
+            $this->assertInstanceOf('MongoDate', $return);
+            $this->assertEquals(new \MongoDate(strtotime('1900-01-01')), $return);
+        } else {
+            $this->markTestSkipped("Platform is not 64-bit");
+        }
     }
 
     private function assertTimestampEquals(\DateTime $expected, \DateTime $actual)
     {
-        $this->assertEquals($expected->getTimestamp(), $actual->getTimestamp());
+        $this->assertEquals($expected->format('U.u'), $actual->format('U.u'));
     }
 }

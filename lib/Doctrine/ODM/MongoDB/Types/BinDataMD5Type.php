@@ -20,31 +20,16 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataMD5 type.
+ * The BinData type for binary MD5 data.
+ *
+ * Note: This sub-type is intended to store binary MD5 data. Considering using
+ * the basic string field type for storing hexadecimal MD5 strings.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class BinDataMD5Type extends Type
+class BinDataMD5Type extends BinDataType
 {
-    public function convertToDatabaseValue($value)
-    {
-        return $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;
-    }
-
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? $value->bin : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::MD5) : null;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = $value !== null ? $value->bin : null;';
-    }
+    protected $binDataType = \MongoBinData::MD5;
 }

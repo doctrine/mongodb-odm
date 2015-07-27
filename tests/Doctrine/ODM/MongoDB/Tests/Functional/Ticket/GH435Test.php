@@ -6,28 +6,23 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH435Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testTest()
+    public function testOverridingFieldsType()
     {
-        $a = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH426A');
+        $parent = $this->dm->getClassMetadata(__NAMESPACE__ . '\GH435Parent');
 
-        $aTestFieldMappings = $a->fieldMappings['test'];
-        $this->assertEquals('int', $aTestFieldMappings['type']);
+        $this->assertArrayHasKey('id', $parent->fieldMappings['id']);
+        $this->assertTrue($parent->fieldMappings['id']['id']);
+        $this->assertEquals('id', $parent->fieldMappings['id']['type']);
+        $this->assertEquals('int', $parent->fieldMappings['test']['type']);
 
-        $aIdFieldMappings = $a->fieldMappings['id'];   
-        $this->assertTrue(isset($aIdFieldMappings['id']));
+        $child = $this->dm->getClassMetadata(__NAMESPACE__ . '\GH435Child');
 
-        $b = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH426B');
-
-        $bTestFieldMappings = $b->fieldMappings['test'];
-        $this->assertEquals('string', $bTestFieldMappings['type']);
-
-        $bIdFieldMappings = $b->fieldMappings['id'];
-        $this->assertFalse(isset($bIdFieldMappings['id']));
+        $this->assertEquals('string', $child->fieldMappings['test']['type']);
     }
 }
 
 /** @ODM\Document */
-class GH426A
+class GH435Parent
 {
     /** @ODM\Id */
     protected $id;
@@ -37,11 +32,8 @@ class GH426A
 }
 
 /** @ODM\Document */
-class GH426B extends GH426A
+class GH435Child extends GH435Parent
 {
-    /** @ODM\String */
-    protected $id;
-
     /** @ODM\String */
     protected $test;
 }

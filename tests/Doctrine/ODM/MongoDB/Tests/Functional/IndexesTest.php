@@ -15,20 +15,20 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test->username = 'jwage';
         $test->email = 'jonwage@gmail.com';
         $this->dm->persist($test);
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
         $this->dm->clear();
 
         $test = new $class();
         $test->username = 'jwage';
         $test->email = 'jonathan.wage@sensio.com';
         $this->dm->persist($test);
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
 
         $test = new $class();
         $test->username = 'jwage';
         $test->email = 'jonathan.wage@sensio.com';
         $this->dm->persist($test);
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
     }
 
     public function testEmbeddedIndexes()
@@ -42,6 +42,28 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
         $this->assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
+
+        $this->assertTrue(isset($indexes[2]['keys']['embedded_secondary.name']));
+        $this->assertEquals(1, $indexes[2]['keys']['embedded_secondary.name']);
+
+        $this->assertTrue(isset($indexes[3]['keys']['embedded_secondary.embeddedMany.name']));
+        $this->assertEquals(1, $indexes[3]['keys']['embedded_secondary.embeddedMany.name']);
+    }
+    
+    public function testDiscriminatedEmbeddedIndexes()
+    {
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\DocumentWithIndexInDiscriminatedEmbeds');
+        $sm = $this->dm->getSchemaManager();
+        $indexes = $sm->getDocumentIndexes($class->name);
+        
+        $this->assertTrue(isset($indexes[0]['keys']['embedded.name']));
+        $this->assertEquals(1, $indexes[0]['keys']['embedded.name']);
+        
+        $this->assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
+        $this->assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
+        
+        $this->assertTrue(isset($indexes[2]['keys']['embedded.value']));
+        $this->assertEquals(1, $indexes[2]['keys']['embedded.value']);
     }
 
     public function testDiscriminatorIndexes()
@@ -52,13 +74,6 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertTrue(isset($indexes[0]['keys']['type']));
         $this->assertEquals(1, $indexes[0]['keys']['type']);
-
-        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\DocumentWithRenamedDiscriminatorIndex');
-        $sm = $this->dm->getSchemaManager();
-        $indexes = $sm->getDocumentIndexes($class->name);
-
-        $this->assertTrue(isset($indexes[0]['keys']['typeMongo']));
-        $this->assertEquals(1, $indexes[0]['keys']['typeMongo']);
     }
 
     public function testIndexDefinitions()
@@ -316,32 +331,20 @@ class DocumentWithEmbeddedIndexes
 
     /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
     public $embedded;
+
+    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
+    public $embedded_secondary;
 }
 
 /**
  * @ODM\Document
- * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorField("type")
+ * @ODM\Index(keys={"type"="asc"})
  */
 class DocumentWithDiscriminatorIndex
 {
     /** @ODM\Id */
     public $id;
-
-    /** ODM\String @ODM\Index */
-    public $type;
-}
-
-/**
- * @ODM\Document
- * @ODM\DiscriminatorField(fieldName="typeMongo",name="typePhp")
- */
-class DocumentWithRenamedDiscriminatorIndex
-{
-    /** @ODM\Id */
-    public $id;
-
-    /** ODM\String @ODM\Index */
-    public $typePhp;
 }
 
 /** @ODM\EmbeddedDocument */
@@ -359,4 +362,27 @@ class EmbeddedManyDocumentWithIndexes
 {
     /** @ODM\String @ODM\Index */
     public $name;
+}
+
+/** @ODM\EmbeddedDocument */
+class YetAnotherEmbeddedDocumentWithIndex
+{
+    /** @ODM\String @ODM\Index */
+    public $value;
+}
+
+/** @ODM\Document */
+class DocumentWithIndexInDiscriminatedEmbeds
+{
+    /** @ODM\Id */
+    public $id;
+    
+    /** 
+     * @ODM\EmbedOne(
+     *  discriminatorMap={
+     *   "d1"="EmbeddedDocumentWithIndexes",
+     *   "d2"="YetAnotherEmbeddedDocumentWithIndex",
+     * }) 
+     */
+    public $embedded;
 }

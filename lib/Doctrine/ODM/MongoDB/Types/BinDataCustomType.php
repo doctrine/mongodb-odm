@@ -20,31 +20,13 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataCustom type.
+ * The BinData type for custom binary data.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class BinDataCustomType extends Type
+class BinDataCustomType extends BinDataType
 {
-    public function convertToDatabaseValue($value)
-    {
-        return $value !== null ? new \MongoBinData($value, \MongoBinData::CUSTOM) : null;
-    }
-
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? $value->bin : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::CUSTOM) : null;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = $value !== null ? $value->bin : null;';
-    }
+    protected $binDataType = \MongoBinData::CUSTOM;
 }

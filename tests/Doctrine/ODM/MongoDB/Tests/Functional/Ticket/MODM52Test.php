@@ -12,7 +12,7 @@ class MODM52Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $doc = new MODM52Doc(array($emb), 'a');
 
         $this->dm->persist($doc);
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
 
         $this->dm->refresh($doc);
 
@@ -69,7 +69,7 @@ class MODM52Container
 class MODM52Embedded extends MODM52Container
 {}
 
-/** @ODM\Document(db="tests", collection="tests") */
+/** @ODM\Document */
 class MODM52Doc extends MODM52Container
 {
     /** @ODM\Id */

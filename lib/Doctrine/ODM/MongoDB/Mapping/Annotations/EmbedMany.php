@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+
 /** @Annotation */
 final class EmbedMany extends AbstractField
 {
@@ -27,5 +29,6 @@ final class EmbedMany extends AbstractField
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
-    public $strategy = 'pushAll'; // pushAll, set
+    public $defaultDiscriminatorValue;
+    public $strategy = CollectionHelper::DEFAULT_STRATEGY;
 }

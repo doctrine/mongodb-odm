@@ -23,7 +23,10 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
 .. code-block:: php
 
     <?php
+
+    use Doctrine\Common\Collections\ArrayCollection;
     use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+    use DateTime;
 
     /** @ODM\MappedSuperclass */
     abstract class BaseEmployee
@@ -40,7 +43,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\String */
         private $name;
     
-        /** @ODM\Float */
+        /** @ODM\Int */
         private $salary;
     
         /** @ODM\Date */
@@ -51,8 +54,29 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     
         /** @ODM\EmbedOne(targetDocument="Address") */
         private $address;
-    
-        // ...
+
+        public function getId() { return $this->id; }
+
+        public function getChanges() { return $this->changes; }
+        public function incrementChanges() { $this->changes++; }
+
+        public function getNotes() { return $this->notes; }
+        public function addNote($note) { $this->notes[] = $note; }
+
+        public function getName() { return $this->name; }
+        public function setName($name) { $this->name = $name; }
+
+        public function getSalary() { return $this->salary; }
+        public function setSalary($salary) { $this->salary = (int) $salary; }
+
+        public function getStarted() { return $this->started; }
+        public function setStarted(DateTime $started) { $this->started = $started; }
+
+        public function getLeft() { return $this->left; }
+        public function setLeft(DateTime $left) { $this->left = $left; }
+
+        public function getAddress() { return $this->address; }
+        public function setAddress(Address $address) { $this->address = $address; }
     }
     
     /** @ODM\Document */
@@ -61,16 +85,20 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\ReferenceOne(targetDocument="Documents\Manager") */
         private $manager;
     
-        // ...
+        public function getManager() { return $this->manager; }
+        public function setManager(Manager $manager) { $this->manager = $manager; }
     }
     
     /** @ODM\Document */
     class Manager extends BaseEmployee
     {
         /** @ODM\ReferenceMany(targetDocument="Documents\Project") */
-        private $projects = array();
+        private $projects;
     
-        // ...
+        public __construct() { $this->projects = new ArrayCollection(); }
+
+        public function getProjects() { return $this->projects; }
+        public function addProject(Project $project) { $this->projects[] = $project; }
     }
     
     /** @ODM\EmbeddedDocument */
@@ -87,8 +115,18 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     
         /** @ODM\String */
         private $zipcode;
-    
-        // ...
+
+        public function getAddress() { return $this->address; }
+        public function setAddress($address) { $this->address = $address; }
+
+        public function getCity() { return $this->city; }
+        public function setCity($city) { $this->city = $city; }
+
+        public function getState() { return $this->state; }
+        public function setState($state) { $this->state = $state; }
+
+        public function getZipcode() { return $this->zipcode; }
+        public function setZipcode($zipcode) { $this->zipcode = $zipcode; }
     }
     
     /** @ODM\Document */
@@ -100,12 +138,12 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\String */
         private $name;
     
-        public function __construct($name)
-        {
-            $this->name = $name;
-        }
-    
-        // ...
+        public function __construct($name) { $this->name = $name; }
+
+        public function getId() { return $this->id; }
+
+        public function getName() { return $this->name; }
+        public function setName($name) { $this->name = $name; }
     }
 
 Now those objects can be used just like you weren't using any
@@ -115,11 +153,17 @@ Doctrine:
 .. code-block:: php
 
     <?php
+    
+    use Documents\Employee;
+    use Documents\Address;
+    use Documents\Project;
+    use Documents\Manager;
+    use DateTime;
 
     $employee = new Employee();
     $employee->setName('Employee');
-    $employee->setSalary(50000.00);
-    $employee->setStarted(new \DateTime());
+    $employee->setSalary(50000);
+    $employee->setStarted(new DateTime());
     
     $address = new Address();
     $address->setAddress('555 Doctrine Rd.');
@@ -131,17 +175,16 @@ Doctrine:
     $project = new Project('New Project');
     $manager = new Manager();
     $manager->setName('Manager');
-    $manager->setSalary(100000.00);
-    $manager->setStarted(new \DateTime());
-    $manager->addProject($project);
-    
+    $manager->setSalary(100000);
+    $manager->setStarted(new DateTime());
+
     $dm->persist($employee);
     $dm->persist($address);
     $dm->persist($project);
     $dm->persist($manager);
     $dm->flush();
 
-The above would batch insert the following:
+The above would insert the following:
 
 ::
 
@@ -220,7 +263,7 @@ efficient update query using the atomic operators:
 
     <?php
     $newProject = new Project('Another Project');
-    $manager->setSalary(200000.00);
+    $manager->setSalary(200000);
     $manager->addNote('Gave user 100k a year raise');
     $manager->incrementChanges(2);
     $manager->addProject($newProject);
@@ -281,7 +324,7 @@ its dependencies. The easiest way to do this is with `Composer`_:
 
 ::
 
-    $ composer require "doctrine/mongodb-odm=~1.0.0-BETA9@dev"
+    $ composer require "doctrine/mongodb-odm=~1.0.0-BETA13@dev"
 
 Once ODM and its dependencies have been downloaded, we can begin by creating a
 ``bootstrap.php`` file in our project's root directory, where Composer's

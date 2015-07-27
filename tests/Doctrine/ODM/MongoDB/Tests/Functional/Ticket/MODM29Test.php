@@ -33,7 +33,7 @@ class MODM29Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection[1]->set('tmp');
 
         $this->dm->persist($doc);
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
 
         $this->dm->refresh($doc);
 
@@ -45,7 +45,7 @@ class MODM29Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @ODM\Document(collection="tests", db="tests") */
+/** @ODM\Document */
 class MODM29Doc
 {
     /** @ODM\Id */

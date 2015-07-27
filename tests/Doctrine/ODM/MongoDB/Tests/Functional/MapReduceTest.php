@@ -2,12 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\MongoDB\Connection;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Documents\Ecommerce\ConfigurableProduct;
 use Documents\Ecommerce\StockItem;
 use Documents\Ecommerce\Currency;
@@ -19,26 +13,11 @@ use Documents\Event;
 /**
  * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
-class MapReduceTest extends \PHPUnit_Framework_TestCase
+class MapReduceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    protected $dm;
-
     public function setUp()
     {
-        $config = new Configuration();
-
-        $config->setProxyDir(__DIR__ . '/../../../../../Proxies');
-        $config->setProxyNamespace('Proxies');
-
-        $config->setHydratorDir(__DIR__ . '/../../../../../Hydrators');
-        $config->setHydratorNamespace('Hydrators');
-
-        $config->setDefaultDB('doctrine_odm_tests');
-
-        $reader = new AnnotationReader();
-        $config->setMetadataDriverImpl(new AnnotationDriver($reader, __DIR__ . '/Documents'));
-
-        $this->dm = DocumentManager::create(new Connection(), $config);
+        parent::setUp();
 
         $currencies = array('USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125);
 
@@ -131,22 +110,9 @@ class MapReduceTest extends \PHPUnit_Framework_TestCase
         foreach ($products as $product) {
             $this->dm->persist($product);
         }
+
         $this->dm->flush();
         $this->dm->clear();
-    }
-
-    public function tearDown()
-    {
-        $documents = array(
-            'Documents\Ecommerce\ConfigurableProduct',
-            'Documents\Ecommerce\StockItem',
-            'Documents\Ecommerce\Currency',
-            'Documents\User',
-            'Documents\Event'
-        );
-        foreach ($documents as $document) {
-            $this->dm->getDocumentCollection($document)->drop();
-        }
     }
 
     public function testMapReduce()

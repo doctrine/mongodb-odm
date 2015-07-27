@@ -11,9 +11,8 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->select('id');
         $query = $qb->getQuery();
-        $debug = $query->getQuery();
 
-        $this->assertEquals(array('_id' => 1), $debug['select']);
+        $this->assertEquals(array('_id' => 1), $query->debug('select'));
     }
 
     public function testInIsPrepared()
@@ -24,7 +23,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('groups.id')->in($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
 
         $this->assertInstanceOf('MongoId', $debug['groups.$id']['$in'][0]);
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$in'][0]);
@@ -38,7 +37,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('groups.id')->all($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
 
         $this->assertInstanceOf('MongoId', $debug['groups.$id']['$all'][0]);
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$all'][0]);
@@ -46,16 +45,16 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testNotEqualIsPrepared()
     {
-        $ids = array('4f28aa84acee41388900000a');
+        $id = '4f28aa84acee41388900000a';
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->field('groups.id')->notEqual($ids)
+            ->field('groups.id')->notEqual($id)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
 
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne'][0]);
-        $this->assertEquals($ids[0], (string) $debug['groups.$id']['$ne'][0]);
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne']);
+        $this->assertEquals($id, (string) $debug['groups.$id']['$ne']);
     }
 
     public function testNotInIsPrepared()
@@ -66,7 +65,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('groups.id')->notIn($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
 
         $this->assertInstanceOf('MongoId', $debug['groups.$id']['$nin'][0]);
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$nin'][0]);
@@ -81,7 +80,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->addAnd($qb->expr()->field('groups.id')->in($ids))
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
 
         $this->assertInstanceOf('MongoId', $debug['$and'][0]['groups.$id']['$in'][0]);
         $this->assertEquals($ids[0], (string) $debug['$and'][0]['groups.$id']['$in'][0]);
@@ -96,7 +95,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->addOr($qb->expr()->field('groups.id')->in($ids))
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
 
         $this->assertInstanceOf('MongoId', $debug['$or'][0]['groups.$id']['$in'][0]);
         $this->assertEquals($ids[0], (string) $debug['$or'][0]['groups.$id']['$in'][0]);
@@ -106,7 +105,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $all = array('4f28aa84acee41388900000a');
         $in = array('4f28aa84acee41388900000b');
-        $ne = array('4f28aa84acee41388900000c');
+        $ne = '4f28aa84acee41388900000c';
         $nin = array('4f28aa84acee41388900000d');
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
@@ -116,14 +115,14 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('groups.id')->notIn($nin)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
 
         $this->assertInstanceOf('MongoId', $debug['groups.$id']['$all'][0]);
         $this->assertEquals($all[0], (string) $debug['groups.$id']['$all'][0]);
         $this->assertInstanceOf('MongoId', $debug['groups.$id']['$in'][0]);
         $this->assertEquals($in[0], (string) $debug['groups.$id']['$in'][0]);
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne'][0]);
-        $this->assertEquals($ne[0], (string) $debug['groups.$id']['$ne'][0]);
+        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne']);
+        $this->assertEquals($ne, (string) $debug['groups.$id']['$ne']);
         $this->assertInstanceOf('MongoId', $debug['groups.$id']['$nin'][0]);
         $this->assertEquals($nin[0], (string) $debug['groups.$id']['$nin'][0]);
     }
@@ -133,7 +132,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('address.subAddress.subAddress.subAddress.test')->equals('test');
         $query = $qb->getQuery();
-        $debug = $query->debug();
+        $debug = $query->debug('query');
         $this->assertEquals(array('address.subAddress.subAddress.subAddress.testFieldName' => 'test'), $debug);
     }
 
@@ -166,7 +165,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testNestedWithOperator()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->field('address.subAddress.subAddress.subAddress.test')->notIn('test');
+            ->field('address.subAddress.subAddress.subAddress.test')->notIn(array('test'));
         $query = $qb->getQuery();
         $query = $query->getQuery();
         $this->assertEquals(array('address.subAddress.subAddress.subAddress.testFieldName' => array('$nin' => array('test'))), $query['query']);
@@ -216,7 +215,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->method('getFieldMapping')
             ->will($this->returnValue(array('targetDocument' => 'Foo')));
 
-        $expr = new Expr($dm, '$');
+        $expr = new Expr($dm);
         $expr->setClassMetadata($class);
         $expr->field('foo')->references(new \stdClass());
 
@@ -257,7 +256,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->method('getFieldMapping')
             ->will($this->returnValue(array()));
 
-        $expr = new Expr($dm, '$');
+        $expr = new Expr($dm);
         $expr->setClassMetadata($class);
         $expr->field('foo')->references(new \stdClass());
 

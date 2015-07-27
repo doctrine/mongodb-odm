@@ -20,31 +20,13 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
- * The BinDataFunc type.
+ * The BinData type for function data.
  *
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class BinDataFuncType extends Type
+class BinDataFuncType extends BinDataType
 {
-    public function convertToDatabaseValue($value)
-    {
-        return $value !== null ? new \MongoBinData($value, \MongoBinData::FUNC) : null;
-    }
-
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? $value->bin : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = $value !== null ? new \MongoBinData($value, \MongoBinData::FUNC) : null;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = $value !== null ? $value->bin : null;';
-    }
+    protected $binDataType = \MongoBinData::FUNC;
 }

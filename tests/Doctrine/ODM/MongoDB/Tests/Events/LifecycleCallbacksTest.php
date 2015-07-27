@@ -3,15 +3,16 @@
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 
 class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    private function createUser()
+    private function createUser($name = 'jon', $fullName = 'Jonathan H. Wage')
     {
         $user = new User();
-        $user->name = 'jon';
+        $user->name = $name;
         $user->profile = new Profile();
-        $user->profile->name = 'Jonathan H. Wage';
+        $user->profile->name = $fullName;
         $this->dm->persist($user);
         $this->dm->flush();
         return $user;
@@ -87,6 +88,10 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPreAndPostRemove()
     {
         $user = $this->createUser();
+
+        $this->assertTrue($this->uow->isInIdentityMap($user));
+        $this->assertTrue($this->uow->isInIdentityMap($user->profile));
+
         $this->dm->remove($user);
         $this->dm->flush();
 
@@ -151,6 +156,9 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->profile->profile = $profile;
         $this->dm->flush();
 
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->profile->profile));
+        $this->assertTrue($this->uow->isInIdentityMap($user->profile->profile));
+
         $this->assertTrue($profile->prePersist);
         $this->assertTrue($profile->postPersist);
         $this->assertFalse($profile->preUpdate);
@@ -197,6 +205,21 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($user->profiles[0]->preRemove);
         $this->assertTrue($user->profiles[0]->postRemove);
     }
+    
+    public function testReferences()
+    {
+        $user = $this->createUser();
+        $user2 = $this->createUser('maciej', 'Maciej Malarz');
+        
+        $user->friends[] = $user2;
+        $this->dm->flush();
+
+        $this->assertTrue($user->preFlush);
+        $this->assertTrue($user->preUpdate);
+        $this->assertTrue($user->postUpdate);
+        $this->assertFalse($user2->preUpdate);
+        $this->assertFalse($user2->postUpdate);
+    }
 }
 
 /** @ODM\Document */
@@ -210,6 +233,9 @@ class User extends BaseDocument
 
     /** @ODM\EmbedMany(targetDocument="Profile") */
     public $profiles = array();
+    
+    /** @ODM\ReferenceMany(targetDocument="User") */
+    public $friends = array();
 }
 
 /** @ODM\EmbeddedDocument */
@@ -219,7 +245,7 @@ class Profile extends BaseDocument
     public $profile;
 }
 
-/** @ODM\MappedSuperclass */
+/** @ODM\MappedSuperclass @ODM\HasLifecycleCallbacks */
 abstract class BaseDocument
 {
     /** @ODM\String */

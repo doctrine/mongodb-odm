@@ -19,7 +19,7 @@ class MODM48Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $a->getB()->setVal('test');
 
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
         $this->dm->clear();
 
         $a = $this->dm->find(__NAMESPACE__.'\MODM48A', $a->id);
@@ -27,7 +27,7 @@ class MODM48Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-/** @ODM\Document(db="modm48_tests", collection="a") */
+/** @ODM\Document */
 class MODM48A
 {
     /** @ODM\Id */

@@ -26,13 +26,17 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->setSubclasses(array("One", "Two", "Three"));
         $cm->setParentClasses(array("UserParent"));
         $cm->setCustomRepositoryClass("UserRepository");
-        $cm->setDiscriminatorField(array('name' => 'disc'));
+        $cm->setDiscriminatorField('disc');
         $cm->mapOneEmbedded(array('fieldName' => 'phonenumbers', 'targetDocument' => 'Bar'));
         $cm->setFile('customFileProperty');
         $cm->setDistance('customDistanceProperty');
         $cm->setSlaveOkay(true);
+        $cm->setCollectionCapped(true);
+        $cm->setCollectionMax(1000);
+        $cm->setCollectionSize(500);
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
         $this->assertEquals(1, count($cm->fieldMappings));
+        $this->assertEquals(1, count($cm->associationMappings));
 
         $serialized = serialize($cm);
         $cm = unserialize($serialized);
@@ -45,25 +49,29 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('UserParent', $cm->rootDocumentName);
         $this->assertEquals(array('Documents\One', 'Documents\Two', 'Documents\Three'), $cm->subClasses);
         $this->assertEquals(array('UserParent'), $cm->parentClasses);
-        $this->assertEquals('UserRepository', $cm->customRepositoryClassName);
-        $this->assertEquals(array('name' => 'disc'), $cm->discriminatorField);
+        $this->assertEquals('Documents\UserRepository', $cm->customRepositoryClassName);
+        $this->assertEquals('disc', $cm->discriminatorField);
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
         $this->assertEquals(1, count($cm->fieldMappings));
+        $this->assertEquals(1, count($cm->associationMappings));
         $this->assertEquals('customFileProperty', $cm->file);
         $this->assertEquals('customDistanceProperty', $cm->distance);
         $this->assertTrue($cm->slaveOkay);
         $mapping = $cm->getFieldMapping('phonenumbers');
         $this->assertEquals('Documents\Bar', $mapping['targetDocument']);
+        $this->assertTrue($cm->getCollectionCapped());
+        $this->assertEquals(1000, $cm->getCollectionMax());
+        $this->assertEquals(500, $cm->getCollectionSize());
     }
 
     public function testOwningSideAndInverseSide()
     {
         $cm = new ClassMetadataInfo('Documents\User');
-        $cm->mapManyReference(array('fieldName' => 'articles', 'inversedBy' => 'user'));
+        $cm->mapManyReference(array('fieldName' => 'articles', 'targetDocument' => 'Documents\Article', 'inversedBy' => 'user'));
         $this->assertTrue($cm->fieldMappings['articles']['isOwningSide']);
 
         $cm = new ClassMetadataInfo('Documents\Article');
-        $cm->mapOneReference(array('fieldName' => 'user', 'mappedBy' => 'articles'));
+        $cm->mapOneReference(array('fieldName' => 'user', 'targetDocument' => 'Documents\User', 'mappedBy' => 'articles'));
         $this->assertTrue($cm->fieldMappings['user']['isInverseSide']);
     }
 
@@ -158,13 +166,13 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->mapField(array('fieldName' => 'name'));
 
         $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
-        $cm->setDiscriminatorField(array('name' => 'name'));
+        $cm->setDiscriminatorField('name');
     }
 
     public function testDuplicateFieldName_DiscriminatorColumn2_ThrowsMappingException()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
-        $cm->setDiscriminatorField(array('name' => 'name'));
+        $cm->setDiscriminatorField('name');
 
         $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
         $cm->mapField(array('fieldName' => 'name'));

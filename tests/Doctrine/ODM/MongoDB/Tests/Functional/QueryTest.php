@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Documents\Article;
 use Documents\Account;
 use Documents\Address;
+use Documents\CmsComment;
 use Documents\Group;
 use Documents\Phonenumber;
 use Documents\Profile;
@@ -114,14 +115,34 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')->equals('distinct_test');
         $q = $qb->getQuery();
         $results = $q->execute();
-        $this->assertEquals(new \Doctrine\MongoDB\ArrayIterator(array(1, 2, 3)), $results);
+        $this->assertEquals(array(1, 2, 3), $results->toArray());
 
         $results = $this->dm->createQueryBuilder('Documents\User')
             ->distinct('count')
             ->field('username')->equals('distinct_test')
             ->getQuery()
             ->execute();
-        $this->assertEquals(new \Doctrine\MongoDB\ArrayIterator(array(1, 2, 3)), $results);
+        $this->assertEquals(array(1, 2, 3), $results->toArray());
+    }
+
+    public function testDistinctWithDifferentDbName()
+    {
+        $c1 = new CmsComment();
+        $c1->authorIp = "127.0.0.1";
+        $c2 = new CmsComment();
+        $c3 = new CmsComment();
+        $c2->authorIp = $c3->authorIp = "192.168.0.1";
+        $this->dm->persist($c1);
+        $this->dm->persist($c2);
+        $this->dm->persist($c3);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $results = $this->dm->createQueryBuilder(get_class($c1))
+            ->distinct('authorIp')
+            ->getQuery()
+            ->execute();
+        $this->assertEquals(array("127.0.0.1", "192.168.0.1"), $results->toArray());
     }
 
     public function testFindQuery()
@@ -253,11 +274,11 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testGroup()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->group(array(), array('count' => 0))
+            ->group(array('username' => 1), array('count' => 0))
             ->reduce('function (obj, prev) { prev.count++; }');
         $query = $qb->getQuery();
         $result = $query->execute();
-        $this->assertEquals(1, $result['retval'][0]['count']);
+        $this->assertEquals(array(array('username' => 'boo', 'count' => 1)), $result->toArray());
     }
 
     public function testUnsetField()
@@ -324,7 +345,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $article = new Article();
         $article->setTitle('test');
         $this->dm->persist($article);
-        $this->dm->flush(null, array('safe' => true));
+        $this->dm->flush();
 
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $query = $qb->getQuery();
@@ -376,7 +397,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             )
         );
         $this->assertSame($expected, $qb->getQueryArray());
-        $this->assertSame($expected, $qb->getQuery()->debug());
+        $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
     // search for articles that have the "pet" tag in their tags collection
@@ -388,7 +409,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'tags' => 'pet'
         );
         $this->assertSame($expected, $qb->getQueryArray());
-        $this->assertSame($expected, $qb->getQuery()->debug());
+        $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
     // search for articles where tags exactly equal [pet, blue]
@@ -400,6 +421,6 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'tags' => array('pet', 'blue')
         );
         $this->assertSame($expected, $qb->getQueryArray());
-        $this->assertSame($expected, $qb->getQuery()->debug());
+        $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
 }

@@ -30,6 +30,10 @@ class DocumentNotFoundException extends MongoDBException
 {
     public static function documentNotFound($className, $identifier)
     {
-        return new self(sprintf('The "%s" document with identifier "%s" could not be found.', $className, $identifier));
+        return new self(sprintf(
+            'The "%s" document with identifier %s could not be found.',
+            $className, 
+            json_encode($identifier)
+        ));
     }
 }

@@ -1,0 +1,29 @@
+# This tests alternate syntax for defining embed/reference relations
+Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverAlternateUser:
+  type: document
+  collection: cms_alternate_users
+  fields:
+    id:
+      type: id
+      id: true
+    username:
+      type: string
+      unique: true
+    firstName:
+      type: string
+      index: true
+    middleName:
+      type: string
+      sparse: true
+    address:
+      reference: true
+      type: one
+    phonenumbers:
+      reference: true
+      type: many
+    embeddedPhonenumber:
+      embedded: true
+      type: one
+    otherPhonenumbers:
+      embedded: true
+      type: many

@@ -12,8 +12,7 @@ Doctrine MongoDB ODM don't panic. You can get help from different sources:
 
 -  The `Doctrine Mailing List <http://groups.google.com/group/doctrine-user>`_
 -  Internet Relay Chat (IRC) in `#doctrine on Freenode <irc://irc.freenode.net/doctrine>`_
--  Report a bug on `JIRA <http://www.doctrine-project.org/jira>`_.
--  On `Twitter <https://twitter.com/search/%23doctrine2>`_ with ``#doctrine-mongodb``
+-  Report a bug on `GitHub <https://github.com/doctrine/mongodb-odm/issues>`_.
 -  On `StackOverflow <http://stackoverflow.com/questions/tagged/doctrine-mongodb>`_
 
 Getting Started
@@ -60,6 +59,7 @@ Working with Objects
   :doc:`Geo Spatial Queries <reference/geospatial-queries>` |
   :doc:`Slave Okay Queries <reference/slave-okay-queries>` |
   :doc:`Find and Update <reference/find-and-update>` |
+  :doc:`Filters <reference/filters>` |
   :doc:`Priming References <reference/priming-references>` |
   :doc:`Eager Cursors <reference/eager-cursors>` |
   :doc:`Map Reduce <reference/map-reduce>`
@@ -96,4 +96,5 @@ Cookbook
   :doc:`Notify ChangeTracking Example <cookbook/implementing-the-notify-changetracking-policy>` |
   :doc:`Using Wakeup Or Clone <cookbook/implementing-wakeup-or-clone>` |
   :doc:`Validation <cookbook/validation-of-documents>` |
-  :doc:`Simple Search Engine <cookbook/simple-search-engine>`
+  :doc:`Simple Search Engine <cookbook/simple-search-engine>` |
+  :doc:`Keeping Your Modules Independent <cookbook/resolve-target-document-listener>`

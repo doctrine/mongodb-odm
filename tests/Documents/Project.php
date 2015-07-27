@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @ODM\Document(db="my_db", collection="projects")
+ * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField(fieldName="type")
  * @ODM\DiscriminatorMap({"project"="Documents\Project", "sub-project"="Documents\SubProject", "other-sub-project"="Documents\OtherSubProject"})

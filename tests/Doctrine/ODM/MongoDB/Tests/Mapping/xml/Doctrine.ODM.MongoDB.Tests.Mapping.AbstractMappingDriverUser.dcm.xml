@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                  http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+    <document name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" collection="cms_users">
+        <discriminator-field name="discr" />
+        <discriminator-map>
+            <discriminator-mapping value="default" class="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" />
+        </discriminator-map>
+        <default-discriminator-value value="default" />
+        <field fieldName="id" id="true" />
+        <field fieldName="version" version="true" type="int" />
+        <field fieldName="lock" lock="true" type="int" />
+        <field fieldName="name" name="username" type="string" />
+        <field fieldName="email" type="string" unique="true" drop-dups="true" order="desc" />
+        <field fieldName="mysqlProfileId" type="integer" unique="true" drop-dups="true" order="desc" />
+        <field fieldName="createdAt" type="date" />
+        <field fieldName="roles" type="collection" />
+        <indexes>
+            <index unique="true">
+                <key name="username" order="desc" />
+                <option name="dropDups" value="false" />
+            </index>
+            <index>
+                <key name="createdAt" order="asc" />
+                <option name="expireAfterSeconds" value="3600" />
+            </index>
+        </indexes>
+        <reference-one target-document="Address" field="address">
+            <cascade>
+                <remove />
+            </cascade>
+        </reference-one>
+        <reference-many target-document="Phonenumber" field="phonenumbers">
+            <cascade>
+                <persist />
+            </cascade>
+            <discriminator-field name="discr" />
+            <discriminator-map>
+                <discriminator-mapping value="home" class="HomePhonenumber" />
+                <discriminator-mapping value="work" class="WorkPhonenumber" />
+            </discriminator-map>
+            <default-discriminator-value value="home" />
+        </reference-many>
+        <reference-many target-document="Group" field="groups">
+            <cascade>
+                <all />
+            </cascade>
+        </reference-many>
+        <reference-many target-document="Phonenumber" fieldName="morePhoneNumbers" field="more_phone_numbers">
+        </reference-many>
+        <embed-one target-document="Phonenumber" fieldName="embeddedPhonenumber" field="embedded_phone_number">
+        </embed-one>
+        <embed-many target-document="Phonenumber" field="otherPhonenumbers">
+            <discriminator-field name="discr" />
+            <discriminator-map>
+                <discriminator-mapping value="home" class="HomePhonenumber" />
+                <discriminator-mapping value="work" class="WorkPhonenumber" />
+            </discriminator-map>
+            <default-discriminator-value value="home" />
+        </embed-many>
+        <lifecycle-callbacks>
+            <lifecycle-callback method="doStuffOnPrePersist" type="prePersist" />
+            <lifecycle-callback method="doOtherStuffOnPrePersistToo" type="prePersist" />
+            <lifecycle-callback method="doStuffOnPostPersist" type="postPersist" />
+        </lifecycle-callbacks>
+    </document>
+</doctrine-mongo-mapping>

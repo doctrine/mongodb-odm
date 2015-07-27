@@ -31,7 +31,7 @@ class CmsUser
     public $name;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="CmsPhonenumber", cascade={"persist", "remove", "merge"})
+     * @ODM\ReferenceMany(targetDocument="CmsPhonenumber", mappedBy="user", cascade={"persist", "remove", "merge"})
      */
     public $phonenumbers;
 

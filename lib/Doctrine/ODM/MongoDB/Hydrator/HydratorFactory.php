@@ -28,6 +28,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Configuration;
 
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
@@ -60,9 +61,9 @@ class HydratorFactory
     private $evm;
 
     /**
-     * Whether to automatically (re)generate hydrator classes.
+     * Which algorithm to use to automatically (re)generate hydrator classes.
      *
-     * @var boolean
+     * @var integer
      */
     private $autoGenerate;
 
@@ -88,22 +89,14 @@ class HydratorFactory
     private $hydrators = array();
 
     /**
-     * Mongo command prefix
-     *
-     * @var string
-     */
-    private $cmd;
-
-    /**
      * @param DocumentManager $dm
      * @param EventManager $evm
      * @param string $hydratorDir
      * @param string $hydratorNs
-     * @param boolean $autoGenerate
-     * @param string $cmd
+     * @param integer $autoGenerate
      * @throws HydratorException
      */
-    public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate, $cmd)
+    public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate)
     {
         if ( ! $hydratorDir) {
             throw HydratorException::hydratorDirectoryRequired();
@@ -116,7 +109,6 @@ class HydratorFactory
         $this->hydratorDir = $hydratorDir;
         $this->hydratorNamespace = $hydratorNs;
         $this->autoGenerate = $autoGenerate;
-        $this->cmd = $cmd;
     }
 
     /**
@@ -146,10 +138,27 @@ class HydratorFactory
 
         if ( ! class_exists($fqn, false)) {
             $fileName = $this->hydratorDir . DIRECTORY_SEPARATOR . $hydratorClassName . '.php';
-            if ($this->autoGenerate) {
-                $this->generateHydratorClass($class, $hydratorClassName, $fileName);
+            switch ($this->autoGenerate) {
+                case Configuration::AUTOGENERATE_NEVER:
+                    require $fileName;
+                    break;
+                    
+                case Configuration::AUTOGENERATE_ALWAYS:
+                    $this->generateHydratorClass($class, $hydratorClassName, $fileName);
+                    require $fileName;
+                    break;
+                    
+                case Configuration::AUTOGENERATE_FILE_NOT_EXISTS:
+                    if (!file_exists($fileName)) {
+                        $this->generateHydratorClass($class, $hydratorClassName, $fileName);
+                    }
+                    require $fileName;
+                    break;
+                    
+                case Configuration::AUTOGENERATE_EVAL:
+                    $this->generateHydratorClass($class, $hydratorClassName, false);
+                    break;
             }
-            require $fileName;
         }
         $this->hydrators[$className] = new $fqn($this->dm, $this->unitOfWork, $class);
         return $this->hydrators[$className];
@@ -246,7 +255,7 @@ EOF
                 \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
                 \$mongoId = \$reference;
             } else {
-                \$className = \$this->dm->getClassNameFromDiscriminatorValue(\$this->class->fieldMappings['%2\$s'], \$reference);
+                \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$reference);
                 \$mongoId = \$reference['\$id'];
             }
             \$targetMetadata = \$this->dm->getClassMetadata(\$className);
@@ -304,7 +313,7 @@ EOF
 
         /** @Many */
         \$mongoData = isset(\$data['%1\$s']) ? \$data['%1\$s'] : null;
-        \$return = new \Doctrine\ODM\MongoDB\PersistentCollection(new \Doctrine\Common\Collections\ArrayCollection(), \$this->dm, \$this->unitOfWork, '$');
+        \$return = new \Doctrine\ODM\MongoDB\PersistentCollection(new \Doctrine\Common\Collections\ArrayCollection(), \$this->dm, \$this->unitOfWork);
         \$return->setHints(\$hints);
         \$return->setOwner(\$document, \$this->class->fieldMappings['%2\$s']);
         \$return->setInitialized(false);
@@ -325,13 +334,16 @@ EOF
         /** @EmbedOne */
         if (isset(\$data['%1\$s'])) {
             \$embeddedDocument = \$data['%1\$s'];
-            \$className = \$this->dm->getClassNameFromDiscriminatorValue(\$this->class->fieldMappings['%2\$s'], \$embeddedDocument);
+            \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$embeddedDocument);
             \$embeddedMetadata = \$this->dm->getClassMetadata(\$className);
             \$return = \$embeddedMetadata->newInstance();
 
-            \$embeddedData = \$this->dm->getHydratorFactory()->hydrate(\$return, \$embeddedDocument, \$hints);
-            \$this->unitOfWork->registerManaged(\$return, null, \$embeddedData);
             \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
+
+            \$embeddedData = \$this->dm->getHydratorFactory()->hydrate(\$return, \$embeddedDocument, \$hints);
+            \$embeddedId = \$embeddedMetadata->identifier && isset(\$embeddedData[\$embeddedMetadata->identifier]) ? \$embeddedData[\$embeddedMetadata->identifier] : null;
+
+            \$this->unitOfWork->registerManaged(\$return, \$embeddedId, \$embeddedData);
 
             \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
             \$hydratedData['%2\$s'] = \$return;
@@ -384,19 +396,25 @@ EOF
             $code
         );
 
-        $parentDirectory = dirname($fileName);
+        if ($fileName === false) {
+            if ( ! class_exists($namespace . '\\' . $hydratorClassName)) {
+                eval(substr($code, 5));
+            }
+        } else {
+            $parentDirectory = dirname($fileName);
 
-        if ( ! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
-            throw HydratorException::hydratorDirectoryNotWritable();
+            if ( ! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
+                throw HydratorException::hydratorDirectoryNotWritable();
+            }
+
+            if ( ! is_writable($parentDirectory)) {
+                throw HydratorException::hydratorDirectoryNotWritable();
+            }
+
+            $tmpFileName = $fileName . '.' . uniqid('', true);
+            file_put_contents($tmpFileName, $code);
+            rename($tmpFileName, $fileName);
         }
-
-        if ( ! is_writable($parentDirectory)) {
-            throw HydratorException::hydratorDirectoryNotWritable();
-        }
-
-        $tmpFileName = $fileName . '.' . uniqid('', true);
-        file_put_contents($tmpFileName, $code);
-        rename($tmpFileName, $fileName);
     }
 
     /**
@@ -411,7 +429,7 @@ EOF
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners
-        if (isset($metadata->lifecycleCallbacks[Events::preLoad])) {
+        if ( ! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
             $args = array(&$data);
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
@@ -419,11 +437,15 @@ EOF
             $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
         }
 
-        // Use the alsoLoadMethods on the document object to transform the data before hydration
-        if (isset($metadata->alsoLoadMethods)) {
-            foreach ($metadata->alsoLoadMethods as $fieldName => $method) {
-                if (isset($data[$fieldName])) {
-                    $document->$method($data[$fieldName]);
+        // alsoLoadMethods may transform the document before hydration
+        if ( ! empty($metadata->alsoLoadMethods)) {
+            foreach ($metadata->alsoLoadMethods as $method => $fieldNames) {
+                foreach ($fieldNames as $fieldName) {
+                    // Invoke the method only once for the first field we find
+                    if (array_key_exists($fieldName, $data)) {
+                        $document->$method($data[$fieldName]);
+                        continue 2;
+                    }
                 }
             }
         }
@@ -434,7 +456,7 @@ EOF
         }
 
         // Invoke the postLoad lifecycle callbacks and listeners
-        if (isset($metadata->lifecycleCallbacks[Events::postLoad])) {
+        if ( ! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
             $metadata->invokeLifecycleCallbacks(Events::postLoad, $document);
         }
         if ($this->evm->hasListeners(Events::postLoad)) {

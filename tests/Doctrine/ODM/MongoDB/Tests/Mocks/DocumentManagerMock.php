@@ -2,113 +2,43 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
-use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
-use Doctrine\MongoDB\Connection;
-use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\Common\EventManager;
-use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\MongoDB\Collection;
-use Doctrine\MongoDB\Database;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
-class DocumentManagerMock extends \Doctrine\ODM\MongoDB\DocumentManager
+class DocumentManagerMock extends DocumentManager
 {
-    private $uowMock;
-    private $proxyFactoryMock;
-    private $metadataFactory;
-    private $schemaManager;
-    private $documentCollections = array();
-    private $documentDatabases = array();
-    private $documentMetadatas = array();
+    private $reflectionClass;
 
-    public function getUnitOfWork()
+    public function __construct()
     {
-        return isset($this->uowMock) ? $this->uowMock : parent::getUnitOfWork();
+        $this->reflectionClass = new \ReflectionClass(get_parent_class($this));
     }
 
-    public function setUnitOfWork(UnitOfWork $uow)
+    /**
+     * Set private properties declared in the DocumentManager class.
+     *
+     * @param string $name
+     * @param mixed  $value
+     * @throws \ReflectionException if the property does not exist
+     */
+    public function __set($name, $value)
     {
-        $this->uowMock = $uow;
+        $property = $this->reflectionClass->getProperty($name);
+        $property->setAccessible(true);
+        $property->setValue($this, $value);
     }
 
-    public function setProxyFactory(ProxyFactory $proxyFactory)
+    /**
+     * Get private properties declared in the DocumentManager class.
+     *
+     * @param string $name
+     * @return mixed
+     * @throws \ReflectionException if the property does not exist
+     */
+    public function __get($name)
     {
-        $this->proxyFactoryMock = $proxyFactory;
-    }
+        $property = $this->reflectionClass->getProperty($name);
+        $property->setAccessible(true);
 
-    public function getProxyFactory()
-    {
-        return isset($this->proxyFactoryMock) ? $this->proxyFactoryMock : parent::getProxyFactory();
-    }
-
-    public function setMetadataFactory(ClassMetadataFactory $metadataFactory)
-    {
-        $this->metadataFactory = $metadataFactory;
-    }
-
-    public function getMetadataFactory()
-    {
-        return isset($this->metadataFactory) ? $this->metadataFactory : parent::getMetadataFactory();
-    }
-
-    public function setSchemaManager(SchemaManager $schemaManager)
-    {
-        $this->schemaManager = $schemaManager;
-    }
-
-    public function getSchemaManager()
-    {
-        return isset($this->schemaManager) ? $this->schemaManager : parent::getSchemaManager();
-    }
-
-    public function setDocumentCollection($documentName, Collection $collection)
-    {
-        $this->documentCollections[$documentName] = $collection;
-    }
-
-    public function getDocumentCollection($documentName)
-    {
-        return isset($this->documentCollections[$documentName]) ? $this->documentCollections[$documentName] : parent::getDocumentCollection($documentName);
-    }
-
-    public function setDocumentDatabase($documentName, Database $database)
-    {
-        $this->documentDatabases[$documentName] = $database;
-    }
-
-    public function getDocumentDatabase($documentName)
-    {
-        return isset($this->documentDatabases[$documentName]) ? $this->documentDatabases[$documentName] : parent::getDocumentDatabase($documentName);
-    }
-
-
-    public function setClassMetadata($documentName, ClassMetadata $metadata)
-    {
-        $this->documentMetadatas[$documentName] = $metadata;
-    }
-
-    public function getClassMetadata($documentName)
-    {
-        return isset($this->documentMetadatas[$documentName]) ? $this->documentMetadatas[$documentName] : parent::getClassMetadata($documentName);
-    }
-
-    public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
-    {
-        if (is_null($config)) {
-            $config = new \Doctrine\ODM\MongoDB\Configuration();
-            $config->setProxyDir(__DIR__ . '/../Proxies');
-            $config->setProxyNamespace('Doctrine\Tests\Proxies');
-
-            $config->setHydratorDir(__DIR__ . '/../Hydrators');
-            $config->setHydratorNamespace('Doctrine\Tests\Hydrators');
-
-            $config->setMetadataDriverImpl(\Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver::create());
-        }
-        if (is_null($eventManager)) {
-            $eventManager = new \Doctrine\Common\EventManager();
-        }
-        return new DocumentManagerMock($conn, $config, $eventManager);   
+        return $property->getValue($this);
     }
 }

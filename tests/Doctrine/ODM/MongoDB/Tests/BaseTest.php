@@ -2,82 +2,69 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use Doctrine\ODM\MongoDB\Tests\Mocks\MetadataDriverMock;
-use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
-use Doctrine\ODM\MongoDB\Tests\Mocks\ConnectionMock;
-use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Connection;
 
 abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
+     */
     protected $dm;
+    
+    /**
+     * @var \Doctrine\ODM\MongoDB\UnitOfWork
+     */
     protected $uow;
 
     public function setUp()
+    {
+        $this->dm = $this->createTestDocumentManager();
+        $this->uow = $this->dm->getUnitOfWork();
+    }
+
+    public function tearDown()
+    {
+        if ( ! $this->dm) {
+            return;
+        }
+
+        $collections = $this->dm->getConnection()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
+
+        foreach ($collections as $collection) {
+            $collection->drop();
+        }
+    }
+
+    protected function getConfiguration()
     {
         $config = new Configuration();
 
         $config->setProxyDir(__DIR__ . '/../../../../Proxies');
         $config->setProxyNamespace('Proxies');
-
         $config->setHydratorDir(__DIR__ . '/../../../../Hydrators');
         $config->setHydratorNamespace('Hydrators');
-
-        $config->setDefaultDB('doctrine_odm_tests');
-
-        /*
-        $config->setLoggerCallable(function(array $log) {
-            print_r($log);
-        });
-        $config->setMetadataCacheImpl(new ApcCache());
-        */
+        $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
+        $config->setMetadataDriverImpl($this->createMetadataDriverImpl());
 
         $config->addFilter('testFilter', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
         $config->addFilter('testFilter2', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
 
-        $reader = new AnnotationReader();
-        $this->annotationDriver = new AnnotationDriver($reader, __DIR__ . '/../../../../Documents');
-        $config->setMetadataDriverImpl($this->annotationDriver);
-
-        $conn = new Connection(null, array(), $config);
-        $this->dm = DocumentManager::create($conn, $config);
-        $this->uow = $this->dm->getUnitOfWork();
+        return $config;
     }
 
-    protected function getTestDocumentManager($metadataDriver = null)
+    protected function createMetadataDriverImpl()
     {
-        if ($metadataDriver === null) {
-            $metadataDriver = new MetadataDriverMock();
-        }
-        $mongoMock = new ConnectionMock();
-        $config = new \Doctrine\ODM\MongoDB\Configuration();
-        $config->setProxyDir(__DIR__ . '/../../Proxies');
-        $config->setProxyNamespace('Doctrine\ODM\MongoDB\Tests\Proxies');
-        $eventManager = new EventManager();
-        $mockDriver = new MetadataDriverMock();
-        $config->setMetadataDriverImpl($metadataDriver);
-
-        return DocumentManagerMock::create($mongoMock, $config, $eventManager);
+        return AnnotationDriver::create(__DIR__ . '/../../../../Documents');
     }
 
-    public function tearDown()
+    protected function createTestDocumentManager()
     {
-        if ($this->dm) {
-            $collections = $this->dm->getConnection()->selectDatabase('doctrine_odm_tests')->listCollections();
-            foreach ($collections as $collection) {
-                $collection->drop();
-            }
-        }
-    }
+        $config = $this->getConfiguration();
+        $conn = new Connection(DOCTRINE_MONGODB_SERVER, array(), $config);
 
-    public function escape($command)
-    {
-        return $this->dm->getConfiguration()->getMongoCmd() . $command;
+        return DocumentManager::create($conn, $config);
     }
 }

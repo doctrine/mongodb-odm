@@ -33,6 +33,8 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user = $this->dm->find('Documents\CustomUser', $user->getId());
 
+        $this->assertNotNull($user);
+
         $this->assertEquals('userId', $user->getId());
 
         $this->dm->clear();
@@ -77,7 +79,7 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $users = $this->dm->getRepository("Documents\User")->findAll();
 
-        $this->assertEquals(2, $users->count());
+        $this->assertCount(2, $users);
 
         $results = array();
         foreach ($users as $user) {
@@ -90,7 +92,7 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $users = $this->dm->getRepository("Documents\CustomUser")->findAll();
 
-        $this->assertEquals(1, $users->count());
+        $this->assertCount(1, $users);
 
         foreach ($users as $user) {
             if ($user->getId() === 'userId') {

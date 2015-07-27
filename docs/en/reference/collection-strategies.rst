@@ -45,12 +45,38 @@ strategy, but will first numerically reindex the collection to ensure that it is
 stored as a BSON array.
 
 ``pushAll``
-------------
+-----------
 
 The ``pushAll`` strategy uses MongoDB's `$pushAll`_ operator to insert
 elements into the array. MongoDB does not allow elements to be added and removed
 from an array in a single operation, so this strategy relies on multiple update
 queries to remove and insert elements (in that order).
+
+``atomicSet``
+-------------
+
+The ``atomicSet`` strategy uses MongoDB's `$set`_ operator to update the entire
+collection with a single update query. Unlike with ``set`` strategy there will
+be only one query for updating both parent document and collection itself. This
+strategy can be especially useful when dealing with high concurrency and 
+:ref:`versioned documents <annotations_reference_version>`.
+
+.. note::
+
+    The ``atomicSet`` and ``atomicSetArray`` strategies may only be used for 
+    collections mapped directly in a top-level document.
+
+``atomicSetArray``
+------------------
+
+The ``atomicSetArray`` strategy works exactly like ``atomicSet`` strategy,  but 
+will first numerically reindex the collection to ensure that it is stored as a 
+BSON array.
+
+.. note::
+
+    The ``atomicSet`` and ``atomicSetArray`` strategies may only be used for 
+    collections mapped directly in a top-level document.
 
 .. _`$addToSet`: http://docs.mongodb.org/manual/reference/operator/addToSet/
 .. _`$pushAll`: http://docs.mongodb.org/manual/reference/operator/pushAll/

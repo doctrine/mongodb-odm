@@ -1,0 +1,83 @@
+Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
+  type: document
+  collection: cms_users
+  discriminatorField:
+    fieldName: discr
+  discriminatorMap:
+    default: Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser
+  defaultDiscriminatorValue: default
+  fields:
+    id:
+      type: id
+      id: true
+    version:
+      type: int
+      version: true
+    lock:
+      type: int
+      lock: true
+    name:
+      type: string
+      name: username
+    email:
+      type: string
+    mysqlProfileId:
+      type: integer
+      unique:
+        dropDups: true
+        order: desc
+    createdAt:
+      type: date
+      index:
+        order: asc
+        expireAfterSeconds: 3600
+    roles:
+      type: collection
+  indexes:
+    index1:
+      keys:
+        username: desc
+      options:
+        unique: true
+        dropDups: false
+    index2:
+      keys:
+        email: desc
+      options:
+        unique: true
+        dropDups: true
+  referenceOne:
+    address:
+      targetDocument: Address
+      cascade: [ remove ]
+  referenceMany:
+    phonenumbers:
+      targetDocument: Phonenumber
+      cascade: [ persist ]
+      discriminatorField: discr
+      discriminatorMap:
+        home: HomePhonenumber
+        work: WorkPhonenumber
+      defaultDiscriminatorValue: home
+    groups:
+      targetDocument: Group
+      cascade: [ all ]
+    morePhoneNumbers:
+      targetDocument: Phonenumber
+      name: more_phone_numbers
+  embedOne:
+    embeddedPhonenumber:
+      targetDocument: Phonenumber
+      name: embedded_phone_number
+  embedMany:
+    otherPhonenumbers:
+      targetDocument: Phonenumber
+      discriminatorField: discr
+      discriminatorMap:
+        home: HomePhonenumber
+        work: WorkPhonenumber
+      defaultDiscriminatorValue: home
+
+  lifecycleCallbacks:
+    prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ]
+    postPersist: [ doStuffOnPostPersist ]

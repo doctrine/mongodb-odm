@@ -16,26 +16,57 @@ Mapping
 You can configure the collection in the ``collection`` attribute of
 the ``@Document`` annotation:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
+    .. code-block:: php
 
-    /**
-     * @Document(collection={
-     *   "name"="collname",
-     *   "capped"=true,
-     *   "size"=100000,
-     *   "max"=1000
-     * })
-     */
-    class Category
-    {
-        /** @Id */
-        public $id;
-    
-        /** @String */
-        public $name;
-    }
+        <?php
+
+        /**
+         * @Document(collection={
+         *   "name"="collname",
+         *   "capped"=true,
+         *   "size"=100000,
+         *   "max"=1000
+         * })
+         */
+        class Category
+        {
+            /** @Id */
+            public $id;
+
+            /** @String */
+            public $name;
+        }
+
+    .. code-block:: xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                          http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+            <document name="Documents\Category" collection="collname" capped-collection="true" capped-collection-size="100000" capped-collection-max="1000">
+                <field fieldName="id" id="true" />
+                <field fieldName="name" type="string" />
+            </document>
+        </doctrine-mongo-mapping>
+
+    .. code-block:: yaml
+
+        Documents\Category:
+          type: document
+          collection:
+            name: collname
+            capped: true
+            size: 100000
+            max: 1000
+          fields:
+            id:
+              type: id
+              id: true
+            name:
+              type: string
 
 Creating
 --------

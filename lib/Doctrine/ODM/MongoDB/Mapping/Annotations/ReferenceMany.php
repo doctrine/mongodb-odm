@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+
 /** @Annotation */
 final class ReferenceMany extends AbstractField
 {
@@ -28,6 +30,7 @@ final class ReferenceMany extends AbstractField
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
+    public $defaultDiscriminatorValue;
     public $cascade;
     public $orphanRemoval;
     public $inversedBy;
@@ -37,5 +40,5 @@ final class ReferenceMany extends AbstractField
     public $criteria = array();
     public $limit;
     public $skip;
-    public $strategy = 'pushAll'; // pushAll, set
+    public $strategy = CollectionHelper::DEFAULT_STRATEGY;
 }

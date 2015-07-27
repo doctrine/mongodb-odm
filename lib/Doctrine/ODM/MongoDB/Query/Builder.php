@@ -86,14 +86,12 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Construct a Builder
      *
      * @param DocumentManager $dm
-     * @param string $cmd
      * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
      */
-    public function __construct(DocumentManager $dm, $cmd, $documentName = null)
+    public function __construct(DocumentManager $dm, $documentName = null)
     {
         $this->dm = $dm;
-        $this->expr = new Expr($dm, $cmd);
-        $this->cmd = $cmd;
+        $this->expr = new Expr($dm);
         if ($documentName !== null) {
             $this->setDocumentName($documentName);
         }
@@ -120,25 +118,56 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function field($field)
     {
         $this->currentField = $field;
-        return parent::field($field);
+        parent::field($field);
+
+        return $this;
     }
 
     /**
-     * Use a primer to load the current fields referenced data efficiently.
+     * Use a primer to eagerly load all references in the current field.
      *
-     *     $qb->field('user')->prime(true);
-     *     $qb->field('user')->prime(function(DocumentManager $dm) {
-     *         // do something that will prime all the associated users in one query
-     *     });
+     * If $primer is true or a callable is provided, referenced documents for
+     * this field will loaded into UnitOfWork immediately after the query is
+     * executed. This will avoid multiple queries due to lazy initialization of
+     * Proxy objects.
      *
-     * @param \Closure|boolean $primer
+     * If $primer is false, no priming will take place. That is also the default
+     * behavior.
+     *
+     * If a custom callable is used, its signature should conform to the default
+     * Closure defined in {@link ReferencePrimer::__construct()}.
+     *
+     * @param boolean|callable $primer
      * @return Builder
+     * @throws \InvalidArgumentException If $primer is not boolean or callable
      */
     public function prime($primer = true)
     {
+        if ( ! is_bool($primer) && ! is_callable($primer)) {
+            throw new \InvalidArgumentException('$primer is not a boolean or callable');
+        }
+
+        if (array_key_exists('eagerCursor', $this->query) && !$this->query['eagerCursor']) {
+            throw new \BadMethodCallException("Can't call prime() when setting eagerCursor to false");
+        }
+
+        $this->eagerCursor(true);
         $this->primers[$this->currentField] = $primer;
         return $this;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function eagerCursor($bool = true)
+    {
+        if ( ! $bool && ! empty($this->primers)) {
+            throw new \BadMethodCallException("Can't set eagerCursor to false when using reference primers");
+        }
+
+        return parent::eagerCursor($bool);
+    }
+
 
     /**
      * @param bool $bool
@@ -169,7 +198,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function find($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::find();
+        parent::find();
+
+        return $this;
     }
 
     /**
@@ -179,7 +210,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function findAndUpdate($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::findAndUpdate();
+        parent::findAndUpdate();
+
+        return $this;
     }
 
     /**
@@ -189,7 +222,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function returnNew($bool = true)
     {
         $this->refresh(true);
-        return parent::returnNew($bool);
+        parent::returnNew($bool);
+
+        return $this;
     }
 
     /**
@@ -199,7 +234,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function findAndRemove($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::findAndRemove();
+        parent::findAndRemove();
+
+        return $this;
     }
 
     /**
@@ -209,7 +246,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function update($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::update();
+        parent::update();
+
+        return $this;
     }
 
     /**
@@ -219,7 +258,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function insert($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::insert();
+        parent::insert();
+
+        return $this;
     }
 
     /**
@@ -229,7 +270,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function remove($documentName = null)
     {
         $this->setDocumentName($documentName);
-        return parent::remove();
+        parent::remove();
+
+        return $this;
     }
 
     /**
@@ -274,9 +317,17 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         $query['newObj'] = $this->expr->getNewObj();
 
-        $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
+        if (isset($query['distinct'])) {
+            $query['distinct'] = $documentPersister->prepareFieldName($query['distinct']);
+        }
 
-        $query['sort'] = $documentPersister->prepareSortOrProjection($query['sort']);
+        if (isset($query['select'])) {
+            $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
+        }
+
+        if (isset($query['sort'])) {
+            $query['sort'] = $documentPersister->prepareSortOrProjection($query['sort']);
+        }
 
         if ($this->class->slaveOkay) {
             $query['slaveOkay'] = $this->class->slaveOkay;
@@ -285,11 +336,9 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         return new Query(
             $this->dm,
             $this->class,
-            $this->database,
             $this->collection,
             $query,
             $options,
-            $this->cmd,
             $this->hydrate,
             $this->refresh,
             $this->primers,
@@ -304,7 +353,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     public function expr()
     {
-        $expr = new Expr($this->dm, $this->cmd);
+        $expr = new Expr($this->dm);
         $expr->setClassMetadata($this->class);
 
         return $expr;
@@ -319,14 +368,20 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $documentNames = $documentName;
             $documentName = $documentNames[0];
 
-            $discriminatorField = $this->dm->getClassMetadata($documentName)->discriminatorField['name'];
+            $metadata = $this->dm->getClassMetadata($documentName);
+            $discriminatorField = $metadata->discriminatorField;
             $discriminatorValues = $this->getDiscriminatorValues($documentNames);
+
+            // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list
+            if ($metadata->defaultDiscriminatorValue && (array_search($metadata->defaultDiscriminatorValue, $discriminatorValues)) !== false) {
+                $discriminatorValues[] = null;
+            }
+
             $this->field($discriminatorField)->in($discriminatorValues);
         }
 
         if ($documentName !== null) {
             $this->collection = $this->dm->getDocumentCollection($documentName);
-            $this->database = $this->collection->getDatabase();
             $this->class = $this->dm->getClassMetadata($documentName);
 
             // Expr also needs to know

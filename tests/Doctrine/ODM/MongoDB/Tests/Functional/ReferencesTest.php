@@ -4,10 +4,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Documents\Address;
 use Documents\Profile;
+use Documents\ProfileNotify;
 use Documents\Phonenumber;
 use Documents\Account;
 use Documents\Group;
 use Documents\User;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 
 class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -69,6 +71,31 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals('Jonathan', $profile->getFirstName());
         $this->assertEquals('Wage', $profile->getLastName());
+    }
+
+    public function testLazyLoadedWithNotifyPropertyChanged()
+    {
+        $user = new User();
+        $profile = new ProfileNotify();
+        $profile->setFirstName('Maciej');
+        $user->setProfileNotify($profile);
+        $user->setUsername('malarzm');
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->find(get_class($user), $user->getId());
+        $this->assertTrue($user->getProfileNotify() instanceof \Doctrine\Common\Persistence\Proxy);
+        $this->assertFalse($user->getProfileNotify()->__isInitialized());
+
+        $user->getProfileNotify()->setLastName('Malarz');
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $profile = $this->dm->find(get_class($profile), $profile->getProfileId());
+        $this->assertEquals('Maciej', $profile->getFirstName());
+        $this->assertEquals('Malarz', $profile->getLastName());
     }
 
     public function testOneEmbedded()
@@ -190,6 +217,49 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('test', $groups[0]->getName());
         $this->assertEquals(1, count($groups));
     }
+    
+    public function testFlushInitializesEmptyPersistentCollection()
+    {
+        $user = new User();
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository('Documents\User')->find($user->getId());
+
+        $user->addGroup(new Group('Group 1'));
+        $user->addGroup(new Group('Group 2'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->assertTrue($user->getGroups()->isInitialized(), 'A flushed collection should be initialized');
+        $this->assertCount(2, $user->getGroups());
+        $this->assertCount(2, $user->getGroups()->toArray());
+    }
+
+    public function testFlushInitializesNotEmptyPersistentCollection()
+    {
+        $user = new User();
+        $user->addGroup(new Group('Group'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+        
+        $user = $this->dm->getRepository('Documents\User')->find($user->getId());
+
+        $user->addGroup(new Group('Group 1'));
+        $user->addGroup(new Group('Group 2'));
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->assertTrue($user->getGroups()->isInitialized(), 'A flushed collection should be initialized');
+        $this->assertCount(3, $user->getGroups());
+        $this->assertCount(3, $user->getGroups()->toArray());
+    }
 
     public function testManyReferenceWithAddToSetStrategy()
     {
@@ -269,4 +339,128 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Group 2', $groups[0]->getName());
         $this->assertEquals('Group 1', $groups[1]->getName());
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     * @expectedExceptionMessage The "Proxies\__CG__\Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier {"identifier":2} could not be found.
+     */
+    public function testDocumentNotFoundExceptionWithArrayId()
+    {
+        $test = new DocumentWithArrayReference();
+        $test->referenceOne = new DocumentWithArrayId();
+        $test->referenceOne->id = array('identifier' => 1);
+
+        $this->dm->persist($test);
+        $this->dm->persist($test->referenceOne);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $collection = $this->dm->getDocumentCollection(get_class($test));
+
+        $collection->update(
+            array('_id' => new \MongoId($test->id)),
+            array('$set' => array(
+                'referenceOne.$id' => array('identifier' => 2),
+            ))
+        );
+
+        $test = $this->dm->find(get_class($test), $test->id);
+        $test->referenceOne->__load();
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     * @expectedExceptionMessage The "Proxies\__CG__\Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.
+     */
+    public function testDocumentNotFoundExceptionWithMongoId()
+    {
+        $profile = new Profile();
+        $user = new User();
+        $user->setProfile($profile);
+
+        $this->dm->persist($profile);
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $collection = $this->dm->getDocumentCollection(get_class($user));
+
+        $invalidId = new \MongoId('abcdefabcdefabcdefabcdef');
+
+        $collection->update(
+            array('_id' => new \MongoId($user->getId())),
+            array('$set' => array(
+                'profile.$id' => $invalidId,
+            ))
+        );
+
+        $user = $this->dm->find(get_class($user), $user->getId());
+        $profile = $user->getProfile();
+        $profile->__load();
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     * @expectedExceptionMessage The "Proxies\__CG__\Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier "testbindata" could not be found.
+     */
+    public function testDocumentNotFoundExceptionWithMongoBinDataId()
+    {
+        $test = new DocumentWithMongoBinDataReference();
+        $test->referenceOne = new DocumentWithMongoBinDataId();
+        $test->referenceOne->id = 'test';
+
+        $this->dm->persist($test);
+        $this->dm->persist($test->referenceOne);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $collection = $this->dm->getDocumentCollection(get_class($test));
+
+        $invalidBinData = new \MongoBinData('testbindata', \MongoBinData::BYTE_ARRAY);
+
+        $collection->update(
+            array('_id' => new \MongoId($test->id)),
+            array('$set' => array(
+                'referenceOne.$id' => $invalidBinData,
+            ))
+        );
+
+        $test = $this->dm->find(get_class($test), $test->id);
+        $test->referenceOne->__load();
+    }
+}
+
+/** @ODM\Document */
+class DocumentWithArrayReference
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\ReferenceOne(targetDocument="DocumentWithArrayId") */
+    public $referenceOne;
+}
+
+/** @ODM\Document */
+class DocumentWithArrayId
+{
+    /** @ODM\Id(strategy="none", options={"type"="hash"}) */
+    public $id;
+}
+
+
+/** @ODM\Document */
+class DocumentWithMongoBinDataReference
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\ReferenceOne(targetDocument="DocumentWithMongoBinDataId") */
+    public $referenceOne;
+}
+
+/** @ODM\Document */
+class DocumentWithMongoBinDataId
+{
+    /** @ODM\Id(strategy="none", options={"type"="bin"}) */
+    public $id;
 }

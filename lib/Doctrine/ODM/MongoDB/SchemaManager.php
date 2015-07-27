@@ -160,19 +160,33 @@ class SchemaManager
 
         $class = $this->dm->getClassMetadata($documentName);
         $indexes = $this->prepareIndexes($class);
+        $embeddedDocumentIndexes = array();
 
         // Add indexes from embedded & referenced documents
         foreach ($class->fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['embedded']) && isset($fieldMapping['targetDocument'])) {
-                $embeddedIndexes = $this->doGetDocumentIndexes($fieldMapping['targetDocument'], $visited);
-                foreach ($embeddedIndexes as $embeddedIndex) {
-                    foreach ($embeddedIndex['keys'] as $key => $value) {
-                        $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
-                        unset($embeddedIndex['keys'][$key]);
-                    }
-                    $indexes[] = $embeddedIndex;
+            if (isset($fieldMapping['embedded'])) {
+                if (isset($fieldMapping['targetDocument'])) {
+                    $possibleEmbeds = array($fieldMapping['targetDocument']);
+                } elseif (isset($fieldMapping['discriminatorMap'])) {
+                    $possibleEmbeds = array_unique($fieldMapping['discriminatorMap']);
+                } else {
+                    continue;
                 }
-
+                foreach ($possibleEmbeds as $embed) {
+                    if (isset($embeddedDocumentIndexes[$embed])) {
+                        $embeddedIndexes = $embeddedDocumentIndexes[$embed];
+                    } else {
+                        $embeddedIndexes = $this->doGetDocumentIndexes($embed, $visited);
+                        $embeddedDocumentIndexes[$embed] = $embeddedIndexes;
+                    }
+                    foreach ($embeddedIndexes as $embeddedIndex) {
+                        foreach ($embeddedIndex['keys'] as $key => $value) {
+                            $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
+                            unset($embeddedIndex['keys'][$key]);
+                        }
+                        $indexes[] = $embeddedIndex;
+                    }
+                }
             } elseif (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
                 foreach ($indexes as $idx => $index) {
                     $newKeys = array();
@@ -206,10 +220,7 @@ class SchemaManager
             );
             foreach ($index['keys'] as $key => $value) {
                 $key = $persister->prepareFieldName($key);
-                if (isset($class->discriminatorField) && $key === $class->discriminatorField['name']) {
-                    // The discriminator field may have its own mapping
-                    $newIndex['keys'][$class->discriminatorField['fieldName']] = $value;
-                } elseif ($class->hasField($key)) {
+                if ($class->hasField($key)) {
                     $mapping = $class->getFieldMapping($key);
                     $newIndex['keys'][$mapping['name']] = $value;
                 } else {
@@ -239,14 +250,29 @@ class SchemaManager
         if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
-                // TODO: Use "w" for driver versions >= 1.3.0
-                if ( ! isset($index['options']['safe'])) {
-                    $index['options']['safe'] = true;
+                $keys = $index['keys'];
+                $options = $index['options'];
+
+                if ( ! isset($options['safe']) && ! isset($options['w'])) {
+                    if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
+                        $options['safe'] = true;
+                    } else {
+                        $options['w'] = 1;
+                    }
                 }
-                if ( ! isset($index['options']['timeout']) && isset($timeout)) {
-                    $index['options']['timeout'] = $timeout;
+
+                if (isset($options['safe']) && ! isset($options['w']) &&
+                    version_compare(phpversion('mongo'), '1.3.0', '>=')) {
+
+                    $options['w'] = is_bool($options['safe']) ? (integer) $options['safe'] : $options['safe'];
+                    unset($options['safe']);
                 }
-                $collection->ensureIndex($index['keys'], $index['options']);
+
+                if ( ! isset($options['timeout']) && isset($timeout)) {
+                    $options['timeout'] = $timeout;
+                }
+
+                $collection->ensureIndex($keys, $options);
             }
         }
     }

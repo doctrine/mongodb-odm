@@ -7,25 +7,42 @@ given with short explanations on their context and usage.
 @AlsoLoad
 ---------
 
-Specify an additional mongodb field to check for and load data from it if it exists.
+Specify one or more MongoDB fields to use for loading data if the original field
+does not exist.
 
 .. code-block:: php
 
     <?php
 
-    /** @Field @AlsoLoad("oldFieldName")*/
-    private $fieldName;
+    /** @String @AlsoLoad("name") */
+    public $fullName;
 
-The above ``$fieldName`` will be loaded from ``fieldName`` if it exists and will fallback to ``oldFieldName``
-if it does not exist.
+The ``$fullName`` property will be loaded from ``fullName`` if it exists, but
+fall back to ``name`` if it does not exist. If multiple fall back fields are
+specified, ODM will consider them in order until the first is found.
+
+Additionally, `@AlsoLoad`_ may annotate a method with one or more field names.
+Before normal hydration, the field(s) will be considered in order and the method
+will be invoked with the first value found as its single argument.
+
+.. code-block:: php
+
+    <?php
+
+    /** @AlsoLoad({"name", "fullName"}) */
+    public function populateFirstAndLastName($name)
+    {
+        list($this->firstName, $this->lastName) = explode(' ', $name);
+    }
+
+For additional information on using `@AlsoLoad`_, see
+:doc:`Migrations <migrating-schemas>`.
 
 @Bin
 ----
 
-Alias of @Field, with "type" attribute set to
-"bin". Converts value to
-MongoBinData http://www.php.net/manual/en/class.mongobindata.php,
-using MongoBinData::BYTE\_ARRAY type.
+Alias of `@Field`_, with "type" attribute set to "bin". Converts value to
+`MongoBinData`_ with ``MongoBinData::GENERIC`` sub-type.
 
 .. code-block:: php
 
@@ -37,10 +54,8 @@ using MongoBinData::BYTE\_ARRAY type.
 @BinCustom
 ----------
 
-Alias of @Field, with "type" attribute set to
-"bin\_custom". Converts value to
-MongoBinData http://www.php.net/manual/en/class.mongobindata.php,
-using MongoBinData::CUSTOM type.
+Alias of `@Field`_, with "type" attribute set to "bin\_custom". Converts
+value to `MongoBinData`_ with ``MongoBinData::CUSTOM`` sub-type.
 
 .. code-block:: php
 
@@ -52,10 +67,8 @@ using MongoBinData::CUSTOM type.
 @BinFunc
 --------
 
-Alias of @Field, with "type" attribute set to
-"bin\_func". Converts value to
-MongoBinData http://www.php.net/manual/en/class.mongobindata.php,
-using MongoBinData::FUNC type.
+Alias of `@Field`_, with "type" attribute set to "bin\_func". Converts value to
+`MongoBinData`_ with ``MongoBinData::FUNC`` sub-type.
 
 .. code-block:: php
 
@@ -67,10 +80,8 @@ using MongoBinData::FUNC type.
 @BinMD5
 -------
 
-Alias of @Field, with "type" attribute set to
-"bin\_md5". Converts value to
-MongoBinData http://www.php.net/manual/en/class.mongobindata.php,
-using MongoBinData::MD5 type.
+Alias of `@Field`_, with "type" attribute set to "bin\_md5". Converts value to
+`MongoBinData`_ with ``MongoBinData::MD5`` sub-type.
 
 .. code-block:: php
 
@@ -82,10 +93,8 @@ using MongoBinData::MD5 type.
 @BinUUID
 --------
 
-Alias of @Field, with "type" attribute set to
-"bin\_uuid". Converts value to
-MongoBinData http://www.php.net/manual/en/class.mongobindata.php,
-using MongoBinData::UUID type.
+Alias of `@Field`_, with "type" attribute set to "bin\_uuid". Converts value to
+`MongoBinData`_ with ``MongoBinData::UUID`` sub-type.
 
 .. code-block:: php
 
@@ -94,11 +103,46 @@ using MongoBinData::UUID type.
     /** @BinUUID */
     private $uuid;
 
+.. note::
+
+    Per the `BSON specification`_, this sub-type is deprecated in favor of the
+    RFC 4122 UUID sub-type. Consider using `@BinUUIDRFC4122`_ instead.
+
+@BinUUIDRFC4122
+---------------
+
+Alias of `@Field`_, with "type" attribute set to "bin\_uuid\_rfc4122". Converts
+value to `MongoBinData`_ with ``MongoBinData::UUID_RFC4122`` sub-type.
+
+.. code-block:: php
+
+    <?php
+
+    /** @BinUUIDRFC4122 */
+    private $uuid;
+
+.. note::
+
+    RFC 4122 UUIDs must be 16 bytes. The PHP driver will throw an exception if
+    the binary data's size is invalid.
+
+@Bool
+--------
+
+Alias of `@Field`_, with "type" attribute set to "bool". Internally it uses
+exactly same logic as `@Boolean`_ annotation and "boolean" type.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Bool */
+    private $active;
+
 @Boolean
 --------
 
-Alias of @Field, with "type" attribute set to
-"boolean"
+Alias of `@Field`_, with "type" attribute set to "boolean".
 
 .. code-block:: php
 
@@ -110,11 +154,8 @@ Alias of @Field, with "type" attribute set to
 @Collection
 -----------
 
-Alias of @Field, with "type" attribute set to
-"collection". Stores and retrieves the value as numeric indexed
-array.
-
-Example:
+Alias of `@Field`_, with "type" attribute set to "collection". Stores and
+retrieves the value as a numerically indexed array.
 
 .. code-block:: php
 
@@ -126,9 +167,9 @@ Example:
 @Date
 -----
 
-Alias of @Field, with "type" attribute set to
-"date" Converts value to
-MongoDate http://www.php.net/manual/en/class.mongodate.php.
+Alias of `@Field`_, with "type" attribute set to "date". Values of any type
+(e.g. integer, string, DateTime) will be converted to `MongoDate`_ for storage
+in MongoDB. The property will be a DateTime when loaded from the database.
 
 .. code-block:: php
 
@@ -137,44 +178,12 @@ MongoDate http://www.php.net/manual/en/class.mongodate.php.
     /** @Date */
     private $createdAt;
 
-@DiscriminatorField
--------------------
+@DefaultDiscriminatorValue
+--------------------------
 
-This annotation is a required annotation for the topmost/super
-class of an inheritance hierarchy. It specifies the details of the
-field which saves the name of the class, which the document is
-actually instantiated as.
-
-Required attributes:
-
-- 
-   fieldName - The field name of the discriminator. This name is also
-   used during Array hydration as key to specify the class-name.
-
-Example:
-
-.. code-block:: php
-
-    <?php
-
-    /**
-     * @Document
-     * @DiscriminatorField(fieldName="type")
-     */
-    class SuperUser
-    {
-        // ...
-    }
-
-@DiscriminatorMap
------------------
-
-The discriminator map is a required annotation on the top-most/super
-class in an inheritance hierarchy. It takes an array as only
-argument which defines which class should be saved under which name
-in the database. Keys are the database value and values are the
-classes, either as fully- or as unqualified class names depending
-if the classes are in the namespace or not.
+This annotation can be used when using `@DiscriminatorField`_. It will be used
+as a fallback value if a document has no discriminator field set. This must
+correspond to a value from the configured discriminator map.
 
 .. code-block:: php
 
@@ -183,24 +192,76 @@ if the classes are in the namespace or not.
     /**
      * @Document
      * @InheritanceType("SINGLE_COLLECTION")
-     * @DiscriminatorField(fieldName="discr")
+     * @DiscriminatorField("type")
+     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+     * @DefaultDiscriminatorValue("person")
+     */
+    class Person
+    {
+        // ...
+    }
+
+@DiscriminatorField
+-------------------
+
+This annotation is required for the top-most class in a
+:ref:`single collection inheritance <single_collection_inheritance>` hierarchy.
+It takes a string as its only argument, which specifies the database field to
+store a class name or key (if a discriminator map is used). ODM uses this field
+during hydration to select the instantiation class.
+
+.. code-block:: php
+
+    <?php
+
+    /**
+     * @Document
+     * @InheritanceType("SINGLE_COLLECTION")
+     * @DiscriminatorField("type")
+     */
+    class SuperUser
+    {
+        // ...
+    }
+
+.. note::
+
+    For backwards compatibility, the discriminator field may also be specified
+    via either the ``name`` or ``fieldName`` annotation attributes.
+
+@DiscriminatorMap
+-----------------
+
+This annotation is required for the top-most class in a
+:ref:`single collection inheritance <single_collection_inheritance>` hierarchy.
+It takes an array as its only argument, which maps keys to class names. The
+class names may be fully qualified or relative to the current namespace. When
+a document is persisted to the database, its class name key will be stored in
+the discriminator field instead of the fully qualified class name.
+
+.. code-block:: php
+
+    <?php
+
+    /**
+     * @Document
+     * @InheritanceType("SINGLE_COLLECTION")
+     * @DiscriminatorField("type")
      * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
      */
     class Person
     {
-        /**
-         * @Field(type="string")
-         */
-        private $discr;
         // ...
     }
+
+.. _annotation_distance:
 
 @Distance
 ---------
 
-Use the @Distance annotation in combination with geospatial
-indexes and when running $near queries the property will be
-populated with a distance value.
+This annotation can be used in combination with geospatial indexes and the
+:ref:`geoNear() <geonear>` query method to populate the property with the
+calculated distance value.
 
 .. code-block:: php
 
@@ -232,15 +293,16 @@ populated with a distance value.
         public $longitude;
     }
 
-Now you can run a near() query and access the distance. Get the
-closest city to a set of coordinates:
+Now you can run a `geoNear command`_ and access the computed distance. The
+following example would return the distance of the city nearest the query
+coordinates:
 
 .. code-block:: php
 
     <?php
 
     $city = $this->dm->createQuery('City')
-        ->field('coordinates')->near(50, 60)
+        ->geoNear(50, 60)
         ->limit(1)
         ->getQuery()
         ->getSingleResult();
@@ -249,26 +311,25 @@ closest city to a set of coordinates:
 @Document
 ---------
 
-Required annotation to mark a PHP class as Document. Doctrine ODM
-manages the persistence of all classes marked as document.
+Required annotation to mark a PHP class as a document, whose peristence will be
+managed by ODM.
 
 Optional attributes:
 
-- 
-   db - Document Manager uses the default mongo db database, unless it
-   has database name to use set, this value can be specified to
-   override database to use on per document basis.
-- 
-   collection - By default collection name is extracted from the
-   document's class name, but this attribute can be used to override.
-- 
-   repositoryClass - Specifies custom repository class to use.
+-
+   db - By default, the document manager will use the MongoDB database defined
+   in the configuration, but this option may be used to override the database
+   for a particular document class.
+-
+   collection - By default, the collection name is derived from the document's
+   class name, but this option may be used to override that behavior.
+-
+   repositoryClass - Specifies a custom repository class to use.
 -
    indexes - Specifies an array of indexes for this document.
 -
-   requireIndexes - Specifies whether or not queries should require indexes.
-
-Example:
+   requireIndexes - Specifies whether or not queries for this document should
+   require indexes by default. This may also be specified per query.
 
 .. code-block:: php
 
@@ -293,24 +354,25 @@ Example:
 @EmbedMany
 ----------
 
-This annotation is similar to @EmbedOne, but
-instead of embedding one document, it informs MongoDB to embed a
-collection of documents
+This annotation is similar to `@EmbedOne`_, but instead of embedding one
+document, it embeds a collection of documents.
 
 Optional attributes:
 
 -
     targetDocument - A full class name of the target document.
 -
-    discriminatorField - The field name to store the discriminator value in.
+    discriminatorField - The database field name to store the discriminator
+    value within the embedded document.
 -
     discriminatorMap - Map of discriminator values to class names.
+-
+    defaultDiscriminatorValue - A default value for discriminatorField if no value
+    has been set in the embedded document.
 -
     strategy - The strategy used to persist changes to the collection. Possible
     values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
     is the default. See :ref:`collection_strategies` for more information.
-
-Example:
 
 .. code-block:: php
 
@@ -323,44 +385,45 @@ Example:
      *     discriminatorMap={
      *         "book"="Documents\BookTag",
      *         "song"="Documents\SongTag"
-     *     }
+     *     },
+     *     defaultDiscriminatorValue="book"
      * )
      */
     private $tags = array();
 
-Depending on the type of Document a value of ``user`` or ``author`` will be stored in a field named ``type``
-and will be used to properly reconstruct the right class during hydration.
+Depending on the embedded document's class, a value of ``user`` or ``author``
+will be stored in the ``type`` field and used to reconstruct the proper class
+during hydration. The ``type`` field need not be mapped on the embedded
+document classes.
 
 @EmbedOne
 ---------
 
-The @EmbedOne annotation works almost exactly as the
-@ReferenceOne, except that internally, the
-document is embedded in the parent document in MongoDB. From
-MongoDB docs:
+The `@EmbedOne`_ annotation works similarly to `@ReferenceOne`_, except that
+that document will be embedded within the parent document. Consider the
+following excerpt from the MongoDB documentation:
 
-    The key question in Mongo schema design is "does this object merit
-    its own collection, or rather should it embed in objects in other
-    collections?" In relational databases, each sub-item of interest
-    typically becomes a separate table (unless denormalizing for
-    performance). In Mongo, this is not recommended - embedding objects
-    is much more efficient. Data is then collocated on disk;
-    client-server turnarounds to the database are eliminated. So in
-    general the question to ask is, "why would I not want to embed this
-    object?"
+    The key question in MongoDB schema design is "does this object merit its own
+    collection, or rather should it be embedded within objects in other
+    collections?" In relational databases, each sub-item of interest typically
+    becomes a separate table (unless you are denormalizing for performance). In
+    MongoDB, this is not recommended – embedding objects is much more efficient.
+    Data is then collocated on disk; client-server turnarounds to the database
+    are eliminated. So in general, the question to ask is, "why would I not want
+    to embed this object?"
 
 Optional attributes:
 
-- 
+-
     targetDocument - A full class name of the target document.
-- 
-    discriminatorField - The field name to store the discriminator value in.
+-
+    discriminatorField - The database field name to store the discriminator
+    value within the embedded document.
 -
     discriminatorMap - Map of discriminator values to class names.
 -
-    strategy - The strategy to use to persist the reference. Possible values are ``set`` and ``pushAll``; ``pushAll`` is the default.
-
-Example:
+    defaultDiscriminatorValue - A default value for discriminatorField if no value
+    has been set in the embedded document.
 
 .. code-block:: php
 
@@ -368,35 +431,36 @@ Example:
 
     /**
      * @EmbedOne(
-     *     strategy="set",
      *     discriminatorField="type",
      *     discriminatorMap={
-     *         "book"="Documents\BookTag",
-     *         "song"="Documents\SongTag"
-     *     }
+     *         "user"="Documents\User",
+     *         "author"="Documents\Author"
+     *     },
+     *     defaultDiscriminatorValue="user"
      * )
      */
-    private $tags = array();
+    private $creator;
 
-Depending on the type of Document a value of ``user`` or ``author`` will be stored in a field named ``type``
-and will be used to properly reconstruct the right class during hydration.
+Depending on the embedded document's class, a value of ``user`` or ``author``
+will be stored in the ``type`` field and used to reconstruct the proper class
+during hydration. The ``type`` field need not be mapped on the embedded
+document classes.
 
 @EmbeddedDocument
 -----------------
 
-Marks the document as embeddable. Without this annotation, you
-cannot embed non-document objects.
+Marks the document as embeddable. This annotation is required for any documents
+to be stored within an `@EmbedOne`_ or `@EmbedMany`_ relationship.
 
 .. code-block:: php
 
     <?php
 
+    /** @EmbeddedDocument */
     class Money
     {
-        /**
-         * @Float
-         */
-        protected $amount
+        /** @Float */
+        private $amount;
     
         public function __construct($amount)
         {
@@ -405,15 +469,11 @@ cannot embed non-document objects.
         //...
     }
     
-    /**
-     * @Document(db="finance", collection="wallets")
-     */
+    /** @Document(db="finance", collection="wallets") */
     class Wallet
     {
-        /**
-         * @EmbedOne(targetDocument="Money")
-         */
-        protected $money;
+        /** @EmbedOne(targetDocument="Money") */
+        private $money;
     
         public function setMoney(Money $money)
         {
@@ -427,62 +487,36 @@ cannot embed non-document objects.
     $dm->persist($wallet);
     $dm->flush();
 
-The code above wouldn't store the money object. In order for the
-above code to work, you should have:
+Unlike normal documents, embedded documents cannot specify their own database or
+collection. That said, a single embedded document class may be used with
+multiple document classes, and even other embedded documents!
 
-.. code-block:: php
+Optional attributes:
 
-    <?php
-
-    /**
-     * @Document
-     */
-    class Money
-    {
-    //...
-    }
-
-or
-
-.. code-block:: php
-
-    <?php
-
-    /**
-     * @EmbeddedDocument
-     */
-    class Money
-    {
-    //...
-    }
-
-The difference is that @EmbeddedDocument cannot be stored without a
-parent @Document and cannot specify its own db or collection
-attributes.
+-
+   indexes - Specifies an array of indexes for this embedded document, to be
+   included in the schemas of any embedding documents.
 
 @Field
 ------
 
-Marks an annotated instance variable as "persistent". It has to be
-inside the instance variables PHP DocBlock comment. Any value hold
-inside this variable will be saved to and loaded from the document
-store as part of the lifecycle of the instance variables
-document-class.
-
-Required attributes:
-
-- 
-   type - Name of the Doctrine ODM Type which is converted between PHP
-   and Database representation. Can be one of: string, boolean, int,
-   float, hash, date, key, timestamp, bin, bin\_func, bin\_uuid,
-   bin\_md5, bin\_custom
+Marks an annotated instance variable for persistence. Values for this field will
+be saved to and loaded from the document store as part of the document class'
+lifecycle.
 
 Optional attributes:
 
-- 
-   name - By default the property name is used for the mongodb field
-   name also, however the 'name' attribute allows you to specify the
-   field name.
+-
+   type - Name of the ODM type, which will determine the value's representation
+   in PHP and BSON (i.e. MongoDB). See :ref:`doctrine_mapping_types` for a list
+   of types. Defaults to "string".
+-
+   name - By default, the property name is used for the field name in MongoDB;
+   however, this option may be used to specify a database field name.
+-
+   nullable - By default, ODM will ``$unset`` fields in MongoDB if the PHP value
+   is null. Specify true for this option to force ODM to store a null value in
+   the database instead of unsetting the field.
 
 Examples:
 
@@ -496,7 +530,7 @@ Examples:
     protected $username;
     
     /**
-     * @Field(type="string" name="origin")
+     * @Field(type="string", name="co")
      */
     protected $country;
     
@@ -508,52 +542,103 @@ Examples:
 @File
 -----
 
-Tells ODM that the property is a file, must be set to a existing
-file path before saving to MongoDB Will be instantiated as instance
-of
-MongoGridFSFile http://www.php.net/manual/en/class.mongogridfsfile.php
-class upon retrieval
+Marks an annotated instance variable as a file. Additionally, this instructs ODM
+to store the entire document in `GridFS`_. Only a single field in a document may
+be mapped as a file.
 
-@Float
-------
-
-Alias of @Field, with "type" attribute set to
-"float"
-
-@Hash
------
-
-Alias of @Field, with "type" attribute set to
-"hash". Stores and retrieves the value as associative array.
-
-@Id
----
-
-The annotated instance variable will be marked as document
-identifier. This annotation is a marker only and has no required or
-optional attributes.
-
-Example:
+The instance variable will be an ``Doctrine\MongoDB\GridFSFile`` object, which
+is a wrapper class for `MongoGridFSFile`_ and facilitates access to the file
+data in GridFS. If the variable is a file path string when the document is first
+persisted, ODM will convert it to GridFSFile object automatically.
 
 .. code-block:: php
 
     <?php
 
-    /**
-     * @Document
-     */
+    /** @File */
+    private $file;
+
+Additional fields can be mapped in GridFS documents like any other, but metadata
+fields set by the driver (e.g. ``length``) should be mapped with `@NotSaved`_ so
+as not to inadvertently overwrite them. Some metadata fields, such as
+``filename`` may be modified and do not require `@NotSaved`_. In the following
+example, we also add a custom field to refer to the corresponding User document
+that created the file.
+
+.. code-block:: php
+
+    <?php
+
+    /** @String */
+    private $filename;
+
+    /** @NotSaved(type="int") */
+    private $length;
+
+    /** @NotSaved(type="string") */
+    private $md5;
+
+    /** @NotSaved(type="date") */
+    private $uploadDate;
+
+    /** @ReferenceOne(targetDocument="Documents\User") */
+    private $uploadedBy;
+
+@Float
+------
+
+Alias of `@Field`_, with "type" attribute set to "float".
+
+.. _haslifecyclecallbacks:
+
+@HasLifecycleCallbacks
+----------------------
+
+This annotation must be set on the document class to instruct Doctrine to check
+for lifecycle callback annotations on public methods. Using `@PreFlush`_,
+`@PreLoad`_, `@PostLoad`_, `@PrePersist`_, `@PostPersist`_, `@PreRemove`_,
+`@PostRemove`_, `@PreUpdate`_, or `@PostUpdate`_ on methods without this
+annotation will cause Doctrine to ignore the callbacks.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Document @HasLifecycleCallbacks */
     class User
     {
-        /**
-         * @Id
-         */
+        /** @PostPersist */
+        public function sendWelcomeEmail() {}
+    }
+
+@Hash
+-----
+
+Alias of `@Field`_, with "type" attribute set to "hash". Stores and retrieves
+the value as an associative array.
+
+@Id
+---
+
+The annotated instance variable will be marked as the document identifier. The
+default behavior is to store a `MongoId`_ instance, but you may customize this
+via the :ref:`strategy <basic_mapping_identifiers>` attribute.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Document */
+    class User
+    {
+        /** @Id */
         protected $id;
     }
 
 @Increment
 ----------
 
-The increment type is just like an integer field except that it will be updated
+The increment type is just like an integer field, except that it will be updated
 using the ``$inc`` operator instead of ``$set``:
 
 .. code-block:: php
@@ -562,10 +647,8 @@ using the ``$inc`` operator instead of ``$set``:
 
     class Package
     {
-        // ...
-
         /** @Increment */
-        protected $downloads = 0;
+        private $downloads = 0;
 
         public function incrementDownloads()
         {
@@ -575,7 +658,7 @@ using the ``$inc`` operator instead of ``$set``:
         // ...
     }
 
-Now update a Package instance like the following:
+Now, update a Package instance like so:
 
 .. code-block:: php
 
@@ -584,31 +667,38 @@ Now update a Package instance like the following:
     $package->incrementDownloads();
     $dm->flush();
 
-The query sent to Mongo would be something like the following:
+The query sent to Mongo would resemble the following:
 
-::
+.. code-block:: json
 
-    array(
-        '$inc' => array(
-            'downloads' => 1
-        )
-    )
+    { "$inc": { "downloads": 1 } }
 
 The field will be incremented by the difference between the new and old values.
+This is useful if many requests are attempting to update the field concurrently.
 
 @Index
 ------
 
-Annotation is used inside the @Document
-annotation on the class level. It allows to hint the MongoDB to
-generate a database index on the specified document fields.
+This annotation is used inside of the class-level `@Document`_ or
+`@EmbeddedDocument`_ annotations to specify indexes to be created on the
+collection (or embedding document's collection in the case of
+`@EmbeddedDocument`_). It may also be used at the property-level to define
+single-field indexes.
 
-Required attributes:
+Optional attributes:
 
--  keys - Fields to index
--  options - Array of MongoCollection options.
+-
+    keys - Mapping of indexed fields to their ordering or index type. ODM will
+    allow "asc" and "desc" to be used in place of ``1`` and ``-1``,
+    respectively. Special index types (e.g. "2dsphere") should be specified as
+    strings. This is required when `@Index`_ is used at the class level.
+-
+    options - Options for creating the index
 
-Example:
+The ``keys`` and ``options`` attributes correspond to the arguments for
+`MongoCollection::createIndex() <http://php.net/manual/en/mongocollection.createindex.php>`_.
+ODM allows mapped field names (i.e. PHP property names) to be used when defining
+``keys``.
 
 .. code-block:: php
 
@@ -616,8 +706,6 @@ Example:
 
     /**
      * @Document(
-     *   db="my_database",
-     *   collection="users",
      *   indexes={
      *     @Index(keys={"username"="desc"}, options={"unique"=true})
      *   }
@@ -628,27 +716,44 @@ Example:
         //...
     }
 
-You can also simply specify an @Index or @UniqueIndex on a
-property:
+If you are creating a single-field index, you can simply specify an `@Index`_ or
+`@UniqueIndex`_ on a mapped property:
 
 .. code-block:: php
 
     <?php
 
-    /** @String @UniqueIndex(safe="true") */
+    /** @String @UniqueIndex */
     private $username;
+
+@Indexes
+--------
+
+This annotation may be used at the class level to specify an array of `@Index`_
+annotations. It is functionally equivalent to using the ``indexes`` option for
+the `@Document`_ or `@EmbeddedDocument`_ annotations.
+
+.. code-block:: php
+
+    <?php
+
+    /**
+     * @Document
+     * @Indexes({
+     *   @Index(keys={"username"="desc"}, options={"unique"=true})
+     * })
+     */
+    class User
+    {
+        //...
+    }
 
 @InheritanceType
 ----------------
 
-In an inheritance hierarchy you have to use this annotation on the
-topmost/super class to define which strategy should be used for
-inheritance. Currently SINGLE\_COLLECTION and
-COLLECTION\_PER\_CLASS are supported.
-
-This annotation has always been used in conjunction with the
-@DiscriminatorMap and
-@DiscriminatorField annotations.
+This annotation must appear on the top-most class in an
+:ref:`inheritance hierarchy <inheritance_mapping>`. ``SINGLE_COLLECTION`` and
+``COLLECTION_PER_CLASS`` are currently supported.
 
 Examples:
 
@@ -659,7 +764,6 @@ Examples:
     /**
      * @Document
      * @InheritanceType("COLLECTION_PER_CLASS")
-     * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
      */
     class Person
     {
@@ -669,6 +773,7 @@ Examples:
     /**
      * @Document
      * @InheritanceType("SINGLE_COLLECTION")
+     * @DiscriminatorField("type")
      * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
      */
     class Person
@@ -679,25 +784,46 @@ Examples:
 @Int
 ----
 
-Alias of @Field, with "type" attribute set to
-"int"
+Alias of `@Field`_, with "type" attribute set to "int".
+
+.. code-block:: php
+
+    <?php
+
+    /** @Int */
+    private $columns;
+
+@Integer
+--------
+
+Alias of `@Field`_, with "type" attribute set to "integer". Internally it uses
+exactly same logic as `@Int`_ annotation and "int" type.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Integer */
+    private $columns;
 
 @Key
 ----
 
-Alias of @Field, with "type" attribute set to "key"
-It is then converted to
-MongoMaxKey http://www.php.net/manual/en/class.mongomaxkey.php
-or
-MongoMinKey http://www.php.net/manual/en/class.mongominkey.php,
-if the value evaluates to true or false respectively.
+Alias of `@Field`_, with "type" attribute set to "key". The value will be
+converted to `MongoMaxKey`_ or `MongoMinKey`_ if it is true or false,
+respectively.
+
+.. note::
+
+    The BSON MaxKey and MinKey types are internally used by MongoDB for indexing
+    and sharding. There is generally no reason to use these in an application.
 
 @MappedSuperclass
 -----------------
 
-The annotation is used to specify classes that are parents of
-document classes and should not be managed
-read more at http://www.doctrine-project.org/projects/mongodb_odm/1.0/docs/reference/inheritance/en>
+The annotation is used to specify classes that are parents of document classes
+and should not be managed directly. See
+:ref:`inheritance mapping <inheritance_mapping>` for additional information.
 
 .. code-block:: php
 
@@ -712,8 +838,8 @@ read more at http://www.doctrine-project.org/projects/mongodb_odm/1.0/docs/refer
 @NotSaved
 ---------
 
-The annotation is used to specify properties that are loaded if
-they exist but never saved.
+The annotation is used to specify properties that are loaded if they exist in
+MongoDB; however, ODM will not save the property value back to the database.
 
 .. code-block:: php
 
@@ -725,13 +851,15 @@ they exist but never saved.
 @PostLoad
 ---------
 
-Marks a method on the document to be called as a @PostLoad event.
+Marks a method on the document class to be called on the ``postLoad`` event. The
+`@HasLifecycleCallbacks`_ annotation must be present on the same class for the
+method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Article
     {
         // ...
@@ -743,17 +871,20 @@ Marks a method on the document to be called as a @PostLoad event.
         }
     }
 
+See :ref:`lifecycle_events` for more information.
+
 @PostPersist
 ------------
 
-Marks a method on the document to be called as a @PostPersist
-event.
+Marks a method on the document class to be called on the ``postPersist`` event.
+The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Article
     {
         // ...
@@ -765,16 +896,20 @@ event.
         }
     }
 
+See :ref:`lifecycle_events` for more information.
+
 @PostRemove
 -----------
 
-Marks a method on the document to be called as a @PostRemove event.
+Marks a method on the document class to be called on the ``postRemove`` event.
+The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Article
     {
         // ...
@@ -786,16 +921,20 @@ Marks a method on the document to be called as a @PostRemove event.
         }
     }
 
+See :ref:`lifecycle_events` for more information.
+
 @PostUpdate
 -----------
 
-Marks a method on the document to be called as a @PostUpdate event.
+Marks a method on the document class to be called on the ``postUpdate`` event.
+The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Article
     {
         // ...
@@ -807,16 +946,45 @@ Marks a method on the document to be called as a @PostUpdate event.
         }
     }
 
-@PreLoad
---------
+See :ref:`lifecycle_events` for more information.
 
-Marks a method on the document to be called as a @PreLoad event.
+@PreFlush
+---------
+
+Marks a method on the document class to be called on the ``preFlush`` event. The
+`@HasLifecycleCallbacks`_ annotation must be present on the same class for the
+method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
+    class Article
+    {
+        // ...
+    
+        /** @PreFlush */
+        public function preFlush()
+        {
+            // ...
+        }
+    }
+
+See :ref:`lifecycle_events` for more information.
+
+@PreLoad
+--------
+
+Marks a method on the document class to be called on the ``preLoad`` event. The
+`@HasLifecycleCallbacks`_ annotation must be present on the same class for the
+method to be registered.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Document @HasLifecycleCallbacks */
     class Article
     {
         // ...
@@ -828,16 +996,20 @@ Marks a method on the document to be called as a @PreLoad event.
         }
     }
 
+See :ref:`lifecycle_events` for more information.
+
 @PrePersist
 -----------
 
-Marks a method on the document to be called as a @PrePersist event.
+Marks a method on the document class to be called on the ``prePersist`` event.
+The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Article
     {
         // ...
@@ -849,16 +1021,20 @@ Marks a method on the document to be called as a @PrePersist event.
         }
     }
 
+See :ref:`lifecycle_events` for more information.
+
 @PreRemove
 ----------
 
-Marks a method on the document to be called as a @PreRemove event.
+Marks a method on the document class to be called on the ``preRemove`` event.
+The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Article
     {
         // ...
@@ -870,16 +1046,20 @@ Marks a method on the document to be called as a @PreRemove event.
         }
     }
 
+See :ref:`lifecycle_events` for more information.
+
 @PreUpdate
 ----------
 
-Marks a method on the document to be called as a @PreUpdate event.
+Marks a method on the document class to be called on the ``preUpdate`` event.
+The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document */
+    /** @Document @HasLifecycleCallbacks */
     class Article
     {
         // ...
@@ -891,24 +1071,34 @@ Marks a method on the document to be called as a @PreUpdate event.
         }
     }
 
+See :ref:`lifecycle_events` for more information.
+
+.. _annotations_reference_reference_many:
+
 @ReferenceMany
 --------------
 
-Defines that the annotated instance variable holds a collection of
-referenced documents.
+Defines that the annotated instance variable holds a collection of referenced
+documents.
 
 Optional attributes:
 
 -
     targetDocument - A full class name of the target document.
 -
-    simple - Create simple references and only store a ``MongoId`` instead of a ``DBRef``.
+    simple - Create simple references and only store the referenced document's
+    identifier (e.g. ``MongoId``) instead of a `DBRef`_. Note that simple
+    references are not compatible with the discriminators.
 -
     cascade - Cascade Option
-- 
-    discriminatorField - The field name to store the discriminator value in.
+-
+    discriminatorField - The field name to store the discriminator value within
+    the `DBRef`_ object.
 -
     discriminatorMap - Map of discriminator values to class names.
+-
+    defaultDiscriminatorValue - A default value for discriminatorField if no value
+    has been set in the embedded document.
 -
     inversedBy - The field name of the inverse side. Only allowed on owning side.
 -
@@ -927,8 +1117,6 @@ Optional attributes:
     strategy - The strategy used to persist changes to the collection. Possible
     values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
     is the default. See :ref:`collection_strategies` for more information.
-
-Example:
 
 .. code-block:: php
 
@@ -944,10 +1132,13 @@ Example:
      *     discriminatorMap={
      *         "book"="Documents\BookItem",
      *         "song"="Documents\SongItem"
-     *     }
+     *     },
+     *     defaultDiscriminatorValue="book"
      * )
      */
     private $cart;
+
+.. _annotations_reference_reference_one:
 
 @ReferenceOne
 -------------
@@ -959,13 +1150,19 @@ Optional attributes:
 -
     targetDocument - A full class name of the target document.
 -
-    simple - Create simple references and only store a ``MongoId`` instead of a ``DBRef``.
+    simple - Create simple references and only store the referenced document's
+    identifier (e.g. ``MongoId``) instead of a `DBRef`_. Note that simple
+    references are not compatible with the discriminators.
 -
     cascade - Cascade Option
-- 
-    discriminatorField - The field name to store the discriminator value in.
+-
+    discriminatorField - The field name to store the discriminator value within
+    the `DBRef`_ object.
 -
     discriminatorMap - Map of discriminator values to class names.
+-
+    defaultDiscriminatorValue - A default value for discriminatorField if no value
+    has been set in the embedded document.
 -
     inversedBy - The field name of the inverse side. Only allowed on owning side.
 -
@@ -981,8 +1178,6 @@ Optional attributes:
 -
     skip - Skip for the query that loads the reference.
 
-Example:
-
 .. code-block:: php
 
     <?php
@@ -995,7 +1190,8 @@ Example:
      *     discriminatorMap={
      *         "book"="Documents\BookItem",
      *         "song"="Documents\SongItem"
-     *     }
+     *     },
+     *     defaultDiscriminatorValue="book"
      * )
      */
     private $cart;
@@ -1003,7 +1199,7 @@ Example:
 @String
 -------
 
-Defines that the annotated instance variable holds a string.
+Alias of `@Field`_, with "type" attribute set to "string".
 
 .. code-block:: php
 
@@ -1015,19 +1211,19 @@ Defines that the annotated instance variable holds a string.
 @Timestamp
 ----------
 
-Defines that the annotated instance variable holds a timestamp.
+Alias of `@Field`_, with "type" attribute set to "timestamp". The value will be
+converted to `MongoTimestamp`_ for storage in MongoDB.
 
-.. code-block:: php
+.. note::
 
-    <?php
-
-    /** @Timestamp */
-    private $created;
+    The BSON timestamp type is an internal type used for MongoDB's replication
+    and sharding. If you need to store dates in your application, you should use
+    the `@Date`_ annotation instead.
 
 @UniqueIndex
 ------------
 
-Defines a unique index on the given document.
+Alias of `@Index`_, with the ``unique`` option set by default.
 
 .. code-block:: php
 
@@ -1036,3 +1232,30 @@ Defines a unique index on the given document.
     /** @String @UniqueIndex */
     private $email;
 
+.. _annotations_reference_version:
+
+@Version
+--------
+
+The annotated instance variable will be used to store version information, which
+is used for pessimistic and optimistic locking. This is only compatible with
+`@Int`_ and `@Date`_ field types, and cannot be combined with `@Id`_.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Int @Version */
+    private $version;
+
+.. _BSON specification: http://bsonspec.org/spec.html
+.. _DBRef: http://docs.mongodb.org/manual/reference/database-references/#dbrefs
+.. _geoNear command: http://docs.mongodb.org/manual/reference/command/geoNear/
+.. _GridFS: http://docs.mongodb.org/manual/core/gridfs/
+.. _MongoBinData: http://php.net/manual/en/class.mongobindata.php
+.. _MongoDate: http://php.net/manual/en/class.mongodate.php
+.. _MongoGridFSFile: http://php.net/manual/en/class.mongogridfsfile.php
+.. _MongoId: http://php.net/manual/en/class.mongoid.php
+.. _MongoMaxKey: http://php.net/manual/en/class.mongomaxkey.php
+.. _MongoMinKey: http://php.net/manual/en/class.mongominkey.php
+.. _MongoTimestamp: http://php.net/manual/en/class.mongotimestamp.php

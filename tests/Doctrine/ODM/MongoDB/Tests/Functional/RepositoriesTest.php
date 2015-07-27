@@ -2,12 +2,10 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Criteria;
 use Documents\Account;
 use Documents\Address;
-use Documents\Group;
 use Documents\Phonenumber;
-use Documents\Profile;
-use Documents\File;
 use Documents\User;
 
 class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -35,8 +33,8 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $users = $this->repository->findAll();
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Cursor', $users);
-        $this->assertEquals(1, count($users));
+        $this->assertInternalType('array', $users);
+        $this->assertCount(1, $users);
     }
 
     public function testFind()
@@ -46,5 +44,19 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user3 = $this->repository->findOneBy(array('username' => 'w00ting'));
         $this->assertTrue($user2 === $user3);
+    }
+
+    public function testCriteria()
+    {
+        $exprBuilder = Criteria::expr();
+        $expr = $exprBuilder->eq('username', 'lolcat');
+
+        $users = $this->repository->matching(new Criteria($expr));
+        $this->assertCount(0, $users);
+
+        $expr = $exprBuilder->eq('username', 'w00ting');
+
+        $users = $this->repository->matching(new Criteria($expr));
+        $this->assertCount(1, $users);
     }
 }
