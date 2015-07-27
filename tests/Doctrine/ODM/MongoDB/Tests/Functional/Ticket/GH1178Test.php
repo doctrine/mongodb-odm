@@ -9,8 +9,6 @@ use Doctrine\ODM\MongoDB\Types\Type;
 /**
  * @author Marcos Passos <marcos@croct.com>
  *
- * @group GH-1178
- *
  * @see   https://github.com/doctrine/mongodb-odm/issues/GH1178
  */
 class GH1178Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -39,7 +37,7 @@ class GH1178Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->clear();
 
-        $repository = $this->dm->getRepository(UserGH1178::class);
+        $repository = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\UserGH1178');
         $this->assertEquals($user, $repository->findOneBy(array('id' => $id)));
     }
 
@@ -54,7 +52,7 @@ class GH1178Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $query = $this->dm
-            ->createQueryBuilder(CommentGH1178::class)
+            ->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\CommentGH1178')
             ->find()
             ->field('user')
             ->references($user)
@@ -62,6 +60,23 @@ class GH1178Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals($comment, $query->getSingleResult());
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Tests\Functional\Ticket\ConversionException
+     */
+    public function testIdTypeMismatchShouldThrowAnError()
+    {
+        $user = new UserGH1178($id = new UserId(1));
+        $this->dm->persist($user);
+
+        $this->dm->flush();
+
+        $repository = $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\UserGH1178');
+        $repository->findOneBy(array('id' => 1));
+    }
+}
+
+class ConversionException extends \Exception {
 }
 
 class UserIdType extends Type
@@ -73,6 +88,10 @@ class UserIdType extends Type
 
     public function convertToDatabaseValue($value)
     {
+        if (!$value instanceof UserId) {
+            throw new ConversionException;
+        }
+
         return $value->value;
     }
 
@@ -109,7 +128,6 @@ class CommentGH1178
         $this->user = $user;
     }
 }
-
 
 /** @ODM\Document */
 class UserGH1178
