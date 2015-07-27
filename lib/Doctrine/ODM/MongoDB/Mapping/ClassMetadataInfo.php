@@ -1137,7 +1137,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                     } elseif ($generatorType === ClassMetadata::GENERATOR_TYPE_INCREMENT) {
                         $mapping['type'] = 'int_id';
                     } else {
-                        $mapping['type'] = 'custom_id';
+                        $mapping['type'] = $mapping['type']  == 'id' ? 'custom_id' : $mapping['type'];
                     }
 
                     unset($this->generatorOptions['type']);
