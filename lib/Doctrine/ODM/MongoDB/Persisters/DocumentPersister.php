@@ -978,6 +978,10 @@ class DocumentPersister
 
             // No further preparation unless we're dealing with a simple reference
             if (empty($mapping['reference']) || empty($mapping['simple'])) {
+                if (empty($mapping['embedded']) && $mapping['type'] !== Type::HASH && $mapping['type'] !== Type::RAW) {
+                    return array($fieldName, is_object($value) ? (string) $value : $value);
+                }
+
                 return array($fieldName, $value);
             }
 
