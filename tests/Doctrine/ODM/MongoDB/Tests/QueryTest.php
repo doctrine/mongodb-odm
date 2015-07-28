@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\QueryBuilder;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 class QueryTest extends BaseTest
 {
@@ -237,6 +238,25 @@ class QueryTest extends BaseTest
         $this->assertInstanceOf('Documents\SubProject', $test);
         $this->assertNull($test->getName());
     }
+
+    public function testQueryUsingObject()
+    {
+        Type::addType('account_code', __NAMESPACE__ . '\AccountCodeType');
+
+        $account = new Account();
+        $account->code = new AccountCode(10);
+        $this->dm->persist($account);
+        $this->dm->flush();
+
+        $this->dm->clear();
+
+        $qb = $this->dm
+            ->createQueryBuilder(__NAMESPACE__ . '\Account')
+            ->field('code')
+            ->equals($account->code);
+
+        $this->assertEquals($account, $qb->getQuery()->getSingleResult());
+    }
 }
 
 /** @ODM\Document(collection="people") */
@@ -284,4 +304,46 @@ class EmbedTest
 
     /** @ODM\EmbedOne(name="eP", targetDocument="Doctrine\ODM\MongoDB\Tests\Pet") */
     public $pet;
+}
+
+class AccountCodeType extends Type
+{
+    public function convertToDatabaseValue($value)
+    {
+        return $value->code;
+    }
+
+    public function convertToPHPValue($value)
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return new AccountCode($value);
+    }
+}
+
+class AccountCode
+{
+    public $code;
+
+    public function __construct($code)
+    {
+        $this->code = (string) $code;
+    }
+
+    public function __toString()
+    {
+        return (string) $this->code;
+    }
+}
+
+/** @ODM\Document */
+class Account
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\Field(type="account_code") */
+    public $code;
 }
