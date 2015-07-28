@@ -170,6 +170,73 @@ class QueryTest extends BaseTest
         $this->assertTrue(array_key_exists('eO.eO.e1.eO.eP.pO._id', $debug));
         $this->assertEquals($mongoId, $debug['eO.eO.e1.eO.eP.pO._id']);
     }
+
+    public function testSelectVsSingleCollectionInheritance()
+    {
+        $p = new \Documents\SubProject('SubProject');
+        $this->dm->persist($p);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->createQueryBuilder()
+                ->find('Documents\Project')
+                ->select(array('name'))
+                ->field('id')->equals($p->getId())
+                ->getQuery()->getSingleResult();
+        $this->assertNotNull($test);
+        $this->assertInstanceOf('Documents\SubProject', $test);
+        $this->assertEquals('SubProject', $test->getName());
+    }
+
+    public function testEmptySelectVsSingleCollectionInheritance()
+    {
+        $p = new \Documents\SubProject('SubProject');
+        $this->dm->persist($p);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->createQueryBuilder()
+                ->find('Documents\Project')
+                ->select(array())
+                ->field('id')->equals($p->getId())
+                ->getQuery()->getSingleResult();
+        $this->assertNotNull($test);
+        $this->assertInstanceOf('Documents\SubProject', $test);
+        $this->assertEquals('SubProject', $test->getName());
+    }
+
+    public function testDiscriminatorFieldNotAddedWithoutHydration()
+    {
+        $p = new \Documents\SubProject('SubProject');
+        $this->dm->persist($p);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->createQueryBuilder()
+                ->find('Documents\Project')->hydrate(false)
+                ->select(array('name'))
+                ->field('id')->equals($p->getId())
+                ->getQuery()->getSingleResult();
+        $this->assertNotNull($test);
+        $this->assertEquals(array('_id', 'name'), array_keys($test));
+    }
+
+    public function testExcludeVsSingleCollectionInheritance()
+    {
+        $p = new \Documents\SubProject('SubProject');
+        $this->dm->persist($p);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $test = $this->dm->createQueryBuilder()
+                ->find('Documents\SubProject')
+                ->exclude(array('name', 'issues'))
+                ->field('id')->equals($p->getId())
+                ->getQuery()->getSingleResult();
+        $this->assertNotNull($test);
+        $this->assertInstanceOf('Documents\SubProject', $test);
+        $this->assertNull($test->getName());
+    }
 }
 
 /** @ODM\Document(collection="people") */
