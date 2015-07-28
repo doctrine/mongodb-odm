@@ -411,23 +411,23 @@ class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
         }
 
-        foreach ($this->getClassesForCommitAction($this->documentUpserts) as $tuple) {
-            list($class, $documents) = $tuple;
+        foreach ($this->getClassesForCommitAction($this->documentUpserts) as $classAndDocuments) {
+            list($class, $documents) = $classAndDocuments;
             $this->executeUpserts($class, $documents, $options);
         }
 
-        foreach ($this->getClassesForCommitAction($this->documentInsertions) as $tuple) {
-            list($class, $documents) = $tuple;
+        foreach ($this->getClassesForCommitAction($this->documentInsertions) as $classAndDocuments) {
+            list($class, $documents) = $classAndDocuments;
             $this->executeInserts($class, $documents, $options);
         }
 
-        foreach ($this->getClassesForCommitAction($this->documentUpdates) as $tuple) {
-            list($class, $documents) = $tuple;
+        foreach ($this->getClassesForCommitAction($this->documentUpdates) as $classAndDocuments) {
+            list($class, $documents) = $classAndDocuments;
             $this->executeUpdates($class, $documents, $options);
         }
 
-        foreach ($this->getClassesForCommitAction($this->documentDeletions, false) as $tuple) {
-            list($class, $documents) = $tuple;
+        foreach ($this->getClassesForCommitAction($this->documentDeletions, true) as $classAndDocuments) {
+            list($class, $documents) = $classAndDocuments;
             $this->executeDeletions($class, $documents, $options);
         }
 
@@ -451,16 +451,13 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Divides given documents by their class name. Returns array of tuples that
-     * is easiest described by:
+     * Groups a list of scheduled documents by their class.
      *
-     * list($class, $documents) = array(ClassMetadata, object[])
-     *
-     * @param array $documents
-     * @param bool $excludeEmbedded
-     * @return array
+     * @param array $documents Scheduled documents (e.g. $this->documentInsertions)
+     * @param bool $includeEmbedded
+     * @return array Tuples of ClassMetadata and a corresponding array of objects
      */
-    private function getClassesForCommitAction($documents, $excludeEmbedded = true)
+    private function getClassesForCommitAction($documents, $includeEmbedded = false)
     {
         if (empty($documents)) {
             return array();
@@ -477,7 +474,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $class = $this->dm->getClassMetadata($className);
-            if ($class->isEmbeddedDocument && $excludeEmbedded) {
+            if ($class->isEmbeddedDocument && ! $includeEmbedded) {
                 $embeds[$className] = true;
                 continue;
             }
