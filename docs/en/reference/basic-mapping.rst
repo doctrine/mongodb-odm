@@ -469,6 +469,11 @@ Restrictions to keep in mind:
 - 
    The ``UnitOfWork`` never passes values to the database convert
    method that did not change in the request.
+-
+   The ``UnitOfWork`` internally assumes that entity identifiers
+   are castable to ``string``. Hence, when using custom types that
+   map to PHP objects as IDs, such objects must implement the
+   ``__toString()`` magic method.
 
 When you have implemented the type you still need to let Doctrine
 know about it. This can be achieved through the
