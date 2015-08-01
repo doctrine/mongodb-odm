@@ -1022,7 +1022,7 @@ class UnitOfWork implements PropertyChangedListener
             $idValue = $class->getIdentifierValue($document);
             $upsert = ! $class->isEmbeddedDocument && $idValue !== null;
 
-            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null && ! $class->isEmbeddedDocument) {
+            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null) {
                 throw new \InvalidArgumentException(sprintf(
                     "%s uses NONE identifier generation strategy but no identifier was provided when persisting.",
                     get_class($document)
