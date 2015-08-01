@@ -99,7 +99,7 @@ class GH852Test extends BaseTest
 /** @ODM\Document */
 class GH852Document
 {
-    /** @ODM\Id(type="custom_id") */
+    /** @ODM\Id(strategy="NONE", type="custom_id") */
     public $id;
 
     /** @ODM\String */

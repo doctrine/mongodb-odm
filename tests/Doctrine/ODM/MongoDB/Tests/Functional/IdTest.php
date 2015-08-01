@@ -312,6 +312,27 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         );
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\CustomIdUser uses NONE identifier generation strategy but no identifier was provided when persisting.
+     */
+    public function testStrategyNoneAndNoIdThrowsException()
+    {
+        $this->dm->persist(new CustomIdUser('Maciej'));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\TestIdTypesIdAutoUser uses AUTO identifier generation strategy but provided identifier is not valid MongoId.
+     */
+    public function testStrategyAutoWithNotValidIdThrowsException()
+    {
+        $this->createIdTestClass('id', 'auto');
+        $user = new TestIdTypesIdAutoUser();
+        $user->id = 1;
+        $this->dm->persist($user);
+    }
+
     private function createIdTestClass($type, $strategy)
     {
         $shortClassName = sprintf('TestIdTypes%s%sUser', ucfirst($type), ucfirst($strategy));

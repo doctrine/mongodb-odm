@@ -22,21 +22,6 @@ class GH529Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($mongoId, $doc->id);
     }
 
-    public function testAutoIdWithInconsistentValues()
-    {
-        $doc = new GH529AutoIdDocument();
-        $doc->id = 'foo';
-
-        $this->dm->persist($doc);
-        $this->dm->flush();
-        $this->dm->clear();
-
-        $doc = $this->dm->getRepository(get_class($doc))->findOneBy(array());
-
-        $this->assertNotNull($doc);
-        $this->assertNotEquals('foo', $doc->id);
-    }
-
     public function testCustomIdType()
     {
         /* All values are consistent for CustomIdType, since the PHP and DB
@@ -96,13 +81,13 @@ class GH529AutoIdDocument
 /** @ODM\Document */
 class GH529CustomIdDocument
 {
-    /** @ODM\Id(type="custom_id") */
+    /** @ODM\Id(strategy="none", type="custom_id") */
     public $id;
 }
 
 /** @ODM\Document */
 class GH529IntIdDocument
 {
-    /** @ODM\Id(type="int") */
+    /** @ODM\Id(strategy="none", type="int") */
     public $id;
 }
