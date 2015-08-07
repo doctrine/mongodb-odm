@@ -44,10 +44,10 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}, strategy="addToSet") */
     protected $uniqueGroups;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="asc"}) */
+    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="asc"}, strategy="setArray") */
     protected $sortedAscGroups;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="desc"}) */
+    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="desc"}, strategy="setArray") */
     protected $sortedDescGroups;
 
     /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
