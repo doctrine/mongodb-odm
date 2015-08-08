@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -260,15 +261,22 @@ class CollectionPersister
      * Executes a query updating the given document.
      *
      * @param object $document
-     * @param array $query
+     * @param array $newObj
      * @param array $options
      */
-    private function executeQuery($document, array $query, array $options)
+    private function executeQuery($document, array $newObj, array $options)
     {
         $className = get_class($document);
         $class = $this->dm->getClassMetadata($className);
         $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
+        $query = array('_id' => $id);
+        if ($class->isVersioned) {
+            $query[$class->versionField] = $class->reflFields[$class->versionField]->getValue($document);
+        }
         $collection = $this->dm->getDocumentCollection($className);
-        $collection->update(array('_id' => $id), $query, $options);
+        $result = $collection->update($query, $newObj, $options);
+        if (($class->isVersioned) && ! $result['n']) {
+            throw LockException::lockFailed($document);
+        }
     }
 }
