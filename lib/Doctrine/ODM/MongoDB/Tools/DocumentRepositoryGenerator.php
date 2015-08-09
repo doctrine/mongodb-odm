@@ -59,12 +59,20 @@ class <className> extends DocumentRepository
         return str_replace(array_keys($variables), array_values($variables), self::$template);
     }
 
-    public function writeDocumentRepositoryClass($fullClassName, $outputDirectory)
+    public function writeDocumentRepositoryClass($fullClassName, $outputDirectory, $outputDirectoryNamespace = null)
     {
         $code = $this->generateDocumentRepositoryClass($fullClassName);
-
+        
+        if (null === $outputDirectoryNamespace) {
+            $relativeClassName = $fullClassName;
+        } else {
+            $relativeClassName = preg_replace(
+                '/^'.str_replace('\\', '\\\\', $outputDirectoryNamespace).'\\\\/', '', $fullClassName
+            );
+        }
+        
         $path = $outputDirectory . DIRECTORY_SEPARATOR
-              . str_replace('\\', \DIRECTORY_SEPARATOR, $fullClassName) . '.php';
+              . str_replace('\\', \DIRECTORY_SEPARATOR, $relativeClassName) . '.php';
         $dir = dirname($path);
 
         if ( ! is_dir($dir)) {
