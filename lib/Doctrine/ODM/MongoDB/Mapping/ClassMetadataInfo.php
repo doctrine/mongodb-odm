@@ -1070,7 +1070,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ( ! isset($mapping['name'])) {
             $mapping['name'] = $mapping['fieldName'];
         }
-        if ($this->identifier === $mapping['name'] && $mapping['type'] !== 'id') {
+        if ($this->identifier === $mapping['name'] && empty($mapping['id'])) {
             throw MappingException::mustNotChangeIdentifierFieldsType($this->name, $mapping['name']);
         }
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
@@ -1125,26 +1125,23 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         }
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $mapping['name'] = '_id';
-            $mapping['type'] = isset($mapping['type']) ? $mapping['type'] : 'id';
             $this->identifier = $mapping['fieldName'];
             if (isset($mapping['strategy'])) {
-                $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : array();
-
-                $generatorType = constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
-                if ($generatorType !== self::GENERATOR_TYPE_AUTO) {
-                    if (isset($this->generatorOptions['type'])) {
-                        $mapping['type'] = $this->generatorOptions['type'];
-                    } elseif ($generatorType === ClassMetadata::GENERATOR_TYPE_INCREMENT) {
-                        $mapping['type'] = 'int_id';
-                    } elseif (empty($mapping['type']) || $mapping['type'] === 'id') {
-                        $mapping['type'] = 'custom_id';
-                    }
-
-                    unset($this->generatorOptions['type']);
-                }
-
-                $this->generatorType = $generatorType;
+                $this->generatorType = constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
             }
+            $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : array();
+            switch ($this->generatorType) {
+                case self::GENERATOR_TYPE_AUTO:
+                    $mapping['type'] = 'id';
+                    break;
+                default:
+                    if ( ! empty($this->generatorOptions['type'])) {
+                        $mapping['type'] = $this->generatorOptions['type'];
+                    } elseif (empty($mapping['type'])) {
+                        $mapping['type'] = $this->generatorType === self::GENERATOR_TYPE_INCREMENT ? 'int_id' : 'custom_id';
+                    }
+            }
+            unset($this->generatorOptions['type']);
         }
         if ( ! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
