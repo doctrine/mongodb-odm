@@ -2,9 +2,12 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
-use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
+use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tools\DocumentRepositoryGenerator;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Stubs\DocumentManager;
 
 class DocumentRepositoryGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -58,13 +61,36 @@ class DocumentRepositoryGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTe
         }
     }
 
+    /**
+     * Checks if class files have been generated, and if is possible to load the classes.
+     * @param string $fullClassName
+     */
+    private function tryLoadingRepositoryClass($fullClassName)
+    {
+        $classNameParts = explode('\\', $fullClassName);
+        $simpleClassName = $classNameParts[count($classNameParts)-1];
+
+        $path = $this->testBucketPath . DIRECTORY_SEPARATOR . $simpleClassName .'.php';
+
+        $this->assertFileExists($path);
+
+        require_once $path;
+
+        $dm = new DocumentManager();
+        $em = new EventManager();
+        $hf = new HydratorFactory($dm, $em, $this->testBucketPath, $this->testBucket, 0);
+        $uow = new UnitOfWork($dm, $em, $hf);
+
+        return new $fullClassName($dm, $uow, new ClassMetadata($fullClassName));
+    }
+
     public function testPersistedDocumentRepositoryClassWithSimpleNamespaceMapping()
     {
         $namespace = $this->testBucket;
 
         $this->generator->writeDocumentRepositoryClass($namespace . '\\TestDocumentRepository', $this->tmpDir);
 
-        $this->assertFileExists($this->testBucketPath . DIRECTORY_SEPARATOR ."TestDocumentRepository.php");
+        $this->tryLoadingRepositoryClass($namespace . '\\TestDocumentRepository');
     }
 
     public function testPersistedDocumentRepositoryClassWithArbitraryNamespaceMapping()
@@ -75,6 +101,6 @@ class DocumentRepositoryGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTe
             $namespace . '\\TestDocumentRepository', $this->testBucketPath, $namespace
         );
 
-        $this->assertFileExists($this->testBucketPath . DIRECTORY_SEPARATOR ."TestDocumentRepository.php");
+        $this->tryLoadingRepositoryClass($namespace . '\\TestDocumentRepository');
     }
 }
