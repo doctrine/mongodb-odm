@@ -23,6 +23,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Id extends AbstractField
 {
     public $id = true;
-    public $type = 'id';
+    public $type;
     public $strategy = 'auto';
 }

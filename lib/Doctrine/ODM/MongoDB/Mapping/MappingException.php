@@ -242,6 +242,6 @@ class MappingException extends BaseMappingException
      */
     public static function mustNotChangeIdentifierFieldsType($className, $fieldName)
     {
-        return new self("You must not change identifier field's type: $className::$fieldName");
+        return new self("$className::$fieldName was declared an identifier and must stay this way.");
     }
 }

@@ -1003,10 +1003,11 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * @param $class
+     * @param ClassMetadata $class
      * @param object $document
+     * @throws \InvalidArgumentException If there is something wrong with document's identifier.
      */
-    private function persistNew($class, $document)
+    private function persistNew(ClassMetadata $class, $document)
     {
         $oid = spl_object_hash($document);
         if ( ! empty($class->lifecycleCallbacks[Events::prePersist])) {
@@ -1019,7 +1020,22 @@ class UnitOfWork implements PropertyChangedListener
         $upsert = false;
         if ($class->identifier) {
             $idValue = $class->getIdentifierValue($document);
-            $upsert = !$class->isEmbeddedDocument && $idValue !== null;
+            $upsert = ! $class->isEmbeddedDocument && $idValue !== null;
+
+            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null) {
+                throw new \InvalidArgumentException(sprintf(
+                    "%s uses NONE identifier generation strategy but no identifier was provided when persisting.",
+                    get_class($document)
+                ));
+            }
+
+            // \MongoId::isValid($idValue) was introduced in 1.5.0 so it's no good
+            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! preg_match('/^[0-9a-f]{24}$/', $idValue)) {
+                throw new \InvalidArgumentException(sprintf(
+                    "%s uses AUTO identifier generation strategy but provided identifier is not valid MongoId.",
+                    get_class($document)
+                ));
+            }
 
             if ($class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null) {
                 $idValue = $class->idGenerator->generate($this->dm, $document);
@@ -1775,6 +1791,8 @@ class UnitOfWork implements PropertyChangedListener
      * Persists a document as part of the current unit of work.
      *
      * @param object $document The document to persist.
+     * @throws MongoDBException If trying to persist MappedSuperclass.
+     * @throws \InvalidArgumentException If there is something wrong with document's identifier.
      */
     public function persist($document)
     {

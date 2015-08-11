@@ -301,9 +301,9 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage You must not change identifier field's type: stdClass::id
+     * @expectedExceptionMessage stdClass::id was declared an identifier and must stay this way.
      */
-    public function testIdFieldsTypeMustNotBeOverrriden()
+    public function testIdFieldsTypeMustNotBeOverridden()
     {
         $cm = new ClassMetadataInfo('stdClass');
         $cm->setIdentifier('id');
