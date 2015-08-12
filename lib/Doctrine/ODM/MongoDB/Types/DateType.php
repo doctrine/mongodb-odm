@@ -41,7 +41,7 @@ class DateType extends Type
         $datetime = false;
         $exception = null;
 
-        if ($value instanceof \DateTime) {
+        if ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
             return $value;
         } elseif ($value instanceof \MongoDate) {
             $datetime = self::craftDateTime($value->sec, $value->usec);
