@@ -57,4 +57,28 @@ class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->assertEquals($username, $cursor->getNext()->getUsername());
         }
     }
+
+    public function testGetSingleResultPreservesLimit()
+    {
+        $usernames = array('David', 'Xander', 'Alex', 'Kris', 'Jon');
+
+        foreach ($usernames as $username){
+            $user = new User();
+            $user->setUsername($username);
+            $this->dm->persist($user);
+        }
+
+        $this->dm->flush();
+
+        $cursor = $this->dm->createQueryBuilder('Documents\User')
+            ->sort('username', 'asc')
+            ->limit(2)
+            ->getQuery()
+            ->execute();
+
+        $user = $cursor->getSingleResult();
+
+        $users = $cursor->toArray();
+        $this->assertCount(2, $users);
+    }
 }

@@ -41,7 +41,7 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $users = $query->execute();
 
-        $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $users);
+        $this->assertInstanceOf('Doctrine\MongoDB\CursorInterface', $users);
         $this->assertEquals(2, count($users));
     }
 
