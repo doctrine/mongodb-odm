@@ -255,4 +255,15 @@ class MappingException extends BaseMappingException
     {
         return new self("ReferenceMany's sort can not be used with addToSet and pushAll strategies, $strategy used in $className::$fieldName");
     }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @param string $strategy
+     * @return MappingException
+     */
+    public static function referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($className, $fieldName, $strategy)
+    {
+        return new self("ReferenceMany's sort can not be used with addToSet and pushAll strategies, $strategy used in $className::$fieldName");
+    }
 }
