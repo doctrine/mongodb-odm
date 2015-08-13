@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\ODM\MongoDB\Tests\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
