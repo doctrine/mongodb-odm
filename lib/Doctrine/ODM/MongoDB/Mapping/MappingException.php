@@ -244,4 +244,15 @@ class MappingException extends BaseMappingException
     {
         return new self("$className::$fieldName was declared an identifier and must stay this way.");
     }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @param string $strategy
+     * @return MappingException
+     */
+    public static function referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($className, $fieldName, $strategy)
+    {
+        return new self("ReferenceMany's sort can not be used with addToSet and pushAll strategies, $strategy used in $className::$fieldName");
+    }
 }

@@ -312,6 +312,22 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'type' => 'string'
         ));
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage ReferenceMany's sort can not be used with addToSet and pushAll strategies, pushAll used in stdClass::ref
+     */
+    public function testReferenceManySortMustNotBeUsedWithNonSetCollectionStrategy()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->mapField(array(
+            'fieldName' => 'ref',
+            'reference' => true,
+            'strategy' => 'pushAll',
+            'type' => 'many',
+            'sort' => array('foo' => 1)
+        ));
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository
