@@ -39,14 +39,43 @@ no longer accepts unused `strategy` property.
 must not target discriminated documents.
  * [#1155](https://github.com/doctrine/mongodb-odm/pull/1155) Collection updates
 takes place immediately after owning document therefore modifications done with
-`post*` events will no longer be saved to database.
+`post*` events will no longer be saved to database. This also ensures
+that events are fired when they are meant to ([#1145](https://github.com/doctrine/mongodb-odm/issues/1145))
  * [#1147](https://github.com/doctrine/mongodb-odm/pull/1147) Identifier field
 must not be changed to non-identifier field (its type can be changed though)
  * [#1136](https://github.com/doctrine/mongodb-odm/pull/1136) Owning/inverse
-sides of reference must specify `targetDocument`
+sides of reference must specify `targetDocument`.
  * [#1130](https://github.com/doctrine/mongodb-odm/pull/1130) `EmbedMany` and
 `ReferenceMany` collections using `pushAll` and `addToSet` strategies are reindexed
 after database synchronization to ensure consistency between database and document.
+
+#### Parent association is available in `postLoad` events
+
+[#1152](https://github.com/doctrine/mongodb-odm/pull/1152) makes it possible to
+get embedded documents' parent association. Effectively this allows you to have
+parent aware embedded documents.
+
+#### Performance optimizations
+
+[#1112](https://github.com/doctrine/mongodb-odm/pull/1112) fixes a potential
+performance and consistency issue by ensuring queries using priming will use
+eager cursor.
+
+[#1086](https://github.com/doctrine/mongodb-odm/pull/1086) improves `count()`
+performance for uninitialized inverse side references by avoiding full document 
+hydration and utilizing count provided by Mongo's cursor.
+
+[#1175](https://github.com/doctrine/mongodb-odm/pull/1175) optimized `UnitOfWork`'s
+`commit()` performance which is good news for people having large number of
+managed documents. As a technical detail we have reduced complexity from O(n^2) 
+to O(n) where n is number of documents scheduled for synchronizing. Additionally
+we removed unneeded overhead for embedded documents 
+([#782](https://github.com/doctrine/mongodb-odm/pull/782)) and general tidying up
+([#1146](https://github.com/doctrine/mongodb-odm/pull/1146)).
+
+[#1155](https://github.com/doctrine/mongodb-odm/pull/1155) has reduced number of
+queries issued to database for document insertion, deletion and when clearing
+collections.
 
 1.0.0-BETA13 (2015-05-21)
 -------------------------
