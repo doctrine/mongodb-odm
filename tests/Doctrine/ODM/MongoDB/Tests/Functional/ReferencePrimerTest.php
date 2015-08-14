@@ -80,6 +80,15 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->eagerCursor(false);
     }
 
+    public function testFieldPrimingCanBeToggled()
+    {
+        $this->dm->createQueryBuilder('Documents\User')
+            ->field('account')
+            ->prime(true)
+            ->prime(false)
+            ->eagerCursor(false);
+    }
+
     /**
      * @expectedException BadMethodCallException
      */
