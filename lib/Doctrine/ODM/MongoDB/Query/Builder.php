@@ -152,7 +152,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             throw new \BadMethodCallException("Can't call prime() when setting eagerCursor to false");
         }
 
-        $this->eagerCursor(true);
         $this->primers[$this->currentField] = $primer;
         return $this;
     }

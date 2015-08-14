@@ -100,11 +100,17 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
     {
+        $primers = array_filter($primers);
+
+        if ( ! empty($primers)) {
+            $query['eagerCursor'] = true;
+        }
+
         parent::__construct($collection, $query, $options);
         $this->dm = $dm;
         $this->class = $class;
         $this->hydrate = $hydrate;
-        $this->primers = array_filter($primers);
+        $this->primers = $primers;
         $this->requireIndexes = $requireIndexes;
 
         $this->setRefresh($refresh);
