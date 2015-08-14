@@ -15,6 +15,39 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
+1.0.0 (2015-08-18)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.0.0 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.0).
+
+#### More strict mapping and slightly changed behaviour
+
+For the stable release we introduced few additional checks for document mapping,
+sanity checks during runtime and had to slightly modify `UnitOfWork` behaviour
+to ensure consistency with database. Please see the list below for all such
+changes to ensure your update to ODM 1.0 is smooth.
+
+ * [#1191](https://github.com/doctrine/mongodb-odm/pull/1191) `ReferenceMany`'s
+`sort` can be used only with inverse side references or references using `set`,
+`setArray`, `atomicSet` and `atomicSetArray` strategies.
+ * [#1190](https://github.com/doctrine/mongodb-odm/pull/1190) Identifiers using
+`AUTO` strategy must use valid `MongoId` (either object or valid strings).
+ * [#1177](https://github.com/doctrine/mongodb-odm/pull/1177) `Collection` field
+no longer accepts unused `strategy` property.
+ * [#1162](https://github.com/doctrine/mongodb-odm/pull/1162) Simple references
+must not target discriminated documents.
+ * [#1155](https://github.com/doctrine/mongodb-odm/pull/1155) Collection updates
+takes place immediately after owning document therefore modifications done with
+`post*` events will no longer be saved to database.
+ * [#1147](https://github.com/doctrine/mongodb-odm/pull/1147) Identifier field
+must not be changed to non-identifier field (its type can be changed though)
+ * [#1136](https://github.com/doctrine/mongodb-odm/pull/1136) Owning/inverse
+sides of reference must specify `targetDocument`
+ * [#1130](https://github.com/doctrine/mongodb-odm/pull/1130) `EmbedMany` and
+`ReferenceMany` collections using `pushAll` and `addToSet` strategies are reindexed
+after database synchronization to ensure consistency between database and document.
+
 1.0.0-BETA13 (2015-05-21)
 -------------------------
 
