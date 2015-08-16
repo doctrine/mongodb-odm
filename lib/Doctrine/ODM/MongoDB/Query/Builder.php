@@ -148,11 +148,16 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             throw new \InvalidArgumentException('$primer is not a boolean or callable');
         }
 
+        if ($primer === false) {
+            unset($this->primers[$this->currentField]);
+
+            return $this;
+        }
+
         if (array_key_exists('eagerCursor', $this->query) && !$this->query['eagerCursor']) {
             throw new \BadMethodCallException("Can't call prime() when setting eagerCursor to false");
         }
 
-        $this->eagerCursor(true);
         $this->primers[$this->currentField] = $primer;
         return $this;
     }
