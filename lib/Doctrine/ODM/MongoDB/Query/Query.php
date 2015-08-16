@@ -106,6 +106,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
             $query['eagerCursor'] = true;
         }
 
+        if ( ! empty($query['eagerCursor'])) {
+            $query['useIdentifierKeys'] = false;
+        }
+
         parent::__construct($collection, $query, $options);
         $this->dm = $dm;
         $this->class = $class;
@@ -290,18 +294,8 @@ class Query extends \Doctrine\MongoDB\Query\Query
     {
         $cursor = parent::prepareCursor($cursor);
 
-        // Unwrap a base EagerCursor
-        if ($cursor instanceof BaseEagerCursor) {
-            $cursor = $cursor->getCursor();
-        }
-
         // Convert the base Cursor into an ODM Cursor
         $cursor = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
-
-        // Wrap ODM Cursor with EagerCursor
-        if ( ! empty($this->query['eagerCursor'])) {
-            $cursor = new EagerCursor($cursor, $this->dm->getUnitOfWork(), $this->class);
-        }
 
         $cursor->hydrate($this->hydrate);
         $cursor->setHints($this->unitOfWorkHints);

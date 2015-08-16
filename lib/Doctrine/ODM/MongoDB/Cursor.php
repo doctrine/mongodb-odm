@@ -22,8 +22,10 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Connection;
 use Doctrine\MongoDB\CursorInterface;
+use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 
 /**
  * Wrapper for the Doctrine\MongoDB\Cursor class.
@@ -76,6 +78,27 @@ class Cursor implements CursorInterface
      * @var array
      */
     private $unitOfWorkHints = array();
+
+    /**
+     * ReferencePrimer object for priming references
+     *
+     * @var ReferencePrimer
+     */
+    private $referencePrimer;
+
+    /**
+     * Primers
+     *
+     * @var array
+     */
+    private $primers = array();
+
+    /**
+     * Whether references have been primed
+     *
+     * @var bool
+     */
+    private $referencesPrimed = false;
 
     /**
      * Constructor.
@@ -220,6 +243,8 @@ class Cursor implements CursorInterface
      */
     public function current()
     {
+        $this->primeReferences();
+
         return $this->hydrateDocument($this->baseCursor->current());
     }
 
@@ -273,6 +298,8 @@ class Cursor implements CursorInterface
      */
     public function getNext()
     {
+        $this->primeReferences();
+
         return $this->hydrateDocument($this->baseCursor->getNext());
     }
 
@@ -316,7 +343,10 @@ class Cursor implements CursorInterface
      */
     public function getSingleResult()
     {
-        return $this->hydrateDocument($this->baseCursor->getSingleResult());
+        $document = $this->hydrateDocument($this->baseCursor->getSingleResult());
+        $this->primeReferencesForSingleResult($document);
+
+        return $document;
     }
 
     /**
@@ -632,5 +662,58 @@ class Cursor implements CursorInterface
     public function valid()
     {
         return $this->baseCursor->valid();
+    }
+
+    /**
+     * @param array $primers
+     * @param ReferencePrimer $referencePrimer
+     * @return self
+     */
+    public function enableReferencePriming(array $primers, ReferencePrimer $referencePrimer)
+    {
+        if ( ! $this->baseCursor instanceof BaseEagerCursor) {
+            throw new \BadMethodCallException("Can't enable reference priming when not using eager cursors.");
+        }
+
+        $this->referencePrimer = $referencePrimer;
+        $this->primers = $primers;
+        return $this;
+    }
+
+    /**
+     * Prime references
+     */
+    protected function primeReferences()
+    {
+        if ($this->referencesPrimed || ! $this->hydrate || empty($this->primers)) {
+            return;
+        }
+
+        $this->referencesPrimed = true;
+
+        foreach ($this->primers as $fieldName => $primer) {
+            $primer = is_callable($primer) ? $primer : null;
+            $this->referencePrimer->primeReferences($this->class, $this, $fieldName, $this->unitOfWorkHints, $primer);
+        }
+
+        $this->rewind();
+    }
+
+    /**
+     * Primes all references for a single document only. This avoids iterating
+     * over the entire cursor when getSingleResult() is called.
+     *
+     * @param object $document
+     */
+    protected function primeReferencesForSingleResult($document)
+    {
+        if ($this->referencesPrimed || ! $this->hydrate || empty($this->primers)) {
+            return;
+        }
+
+        foreach ($this->primers as $fieldName => $primer) {
+            $primer = is_callable($primer) ? $primer : null;
+            $this->referencePrimer->primeReferences($this->class, array($document), $fieldName, $this->unitOfWorkHints, $primer);
+        }
     }
 }

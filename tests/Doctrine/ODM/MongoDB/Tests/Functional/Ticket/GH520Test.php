@@ -28,22 +28,8 @@ class GH520Test extends BaseTest
         $this->assertTrue($document->ref->__isInitialized());
     }
 
-    public function testPrimeWithGetSingleResultWillPrimeEntireResultSet()
+    public function testPrimeWithGetSingleResultWillNotPrimeEntireResultSet()
     {
-        /* Since Query::getSingleResult() exists for Doctrine MongoDB's
-         * IteratorAggregate interface, it executes the query and obtains an
-         * iterator before calling Iterator::getSingleResult(). Since priming
-         * implies an EagerCursor, all documents will be fetched and all of
-         * their references will be primed (not simply the first document and
-         * its references). As a result, users that wish to combine
-         * getSingleResult() with priming should also specify a limit on their
-         * queries.
-         *
-         * This behavior is not ideal, but a workaround would further complicate
-         * ODM's Query class. A userland solution would be to simply enforce a
-         * limit on the query with Builder::limit(). That limit can then be
-         * applied to both queries and commands (where applicable).
-         */
         $document1 = new GH520Document();
         $document2 = new GH520Document();
         $document3 = new GH520Document();
@@ -69,7 +55,7 @@ class GH520Test extends BaseTest
         $result = $query->getSingleResult();
 
         $this->assertContains($document2->id, $primedIds);
-        $this->assertContains($document4->id, $primedIds, 'The entire dataset is fetched and primed');
+        $this->assertNotContains($document4->id, $primedIds, 'getSingleResult() does not prime the entire dataset');
     }
 }
 

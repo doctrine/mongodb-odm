@@ -81,4 +81,14 @@ class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $users = $cursor->toArray();
         $this->assertCount(2, $users);
     }
+
+    public function runningEagerQueryWrapsEagerCursor()
+    {
+        $qb = $this->dm->createQueryBuilder('Documents\User')
+            ->eagerCursor(true);
+
+        $cursor = $qb->getQuery()->execute();
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\EagerCursor', $cursor);
+        $this->assertInstanceOf('Doctrine\MongoDB\EagerCursor', $cursor->getBaseCursor());
+    }
 }
