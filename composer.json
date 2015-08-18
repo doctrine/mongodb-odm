@@ -22,7 +22,7 @@
         "doctrine/cache": "~1.0",
         "doctrine/inflector": "~1.0",
         "doctrine/instantiator": "~1.0.1",
-        "doctrine/mongodb": ">=1.1.5,<2.0"
+        "doctrine/mongodb": "~1.2"
     },
     "require-dev": {
         "symfony/yaml": "~2.3|~3.0"
@@ -33,7 +33,6 @@
     "autoload": {
         "psr-0": { "Doctrine\\ODM\\MongoDB": "lib/" }
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
