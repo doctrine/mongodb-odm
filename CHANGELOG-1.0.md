@@ -49,7 +49,7 @@ review the list of relevant changes below to ensure a smooth upgrade to 1.0.0:
    must always have an `id` field type; however, the field's data type (e.g.
    string, integer) may vary based on the strategy option.
  * [#1136](https://github.com/doctrine/mongodb-odm/pull/1136): Owning and inverse
-   sides of reference relationship must specify `targetDocument`.
+   sides of reference relationship must specify `targetDocument` or `discriminatorMap`.
  * [#1130](https://github.com/doctrine/mongodb-odm/pull/1130): `EmbedMany` and
    `ReferenceMany` collections using `pushAll` and `addToSet` strategies are
    re-indexed after database synchronization to ensure consistency between the
