@@ -48,6 +48,10 @@ sides of reference must specify `targetDocument`.
  * [#1130](https://github.com/doctrine/mongodb-odm/pull/1130) `EmbedMany` and
 `ReferenceMany` collections using `pushAll` and `addToSet` strategies are reindexed
 after database synchronization to ensure consistency between database and document.
+ * [#1206](https://github.com/doctrine/mongodb-odm/pull/1206) ODM's `Cursor` no longer extends
+`Doctrine\MongoDB\Cursor` but is implementing new `Doctrine\MongoDB\CursorInterface`.
+ODM's `EagerCursor` is now deprecated in favour of using `Cursor`, extends `Cursor`
+instead of `Doctrine\MongoDB\EagerCursor`, and will be removed in 2.0.
 
 #### Parent association is available in `postLoad` events
 
