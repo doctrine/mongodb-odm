@@ -110,7 +110,7 @@ Embed many documents:
         Phonenumber:
           type: embeddedDocument
           
-.. _mixing_document_types:
+.. _embed_mixing_document_types:
 
 Mixing Document Types
 ---------------------

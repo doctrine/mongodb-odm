@@ -323,7 +323,7 @@ Also, for your convenience you can create the indexes for your mapped documents 
 
 .. note::
 
-    If you are :ref:`mixing document types <mixing_document_types>` for your
+    If you are :ref:`mixing document types <embed_mixing_document_types>` for your
     embedded documents, ODM will not be able to create indexes for their fields
     unless you specify a discriminator map for the :ref:`embed-one <embed_one>`
     or :ref:`embed-many <embed_many>` relationship.
