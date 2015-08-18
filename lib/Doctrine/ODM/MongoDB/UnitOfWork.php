@@ -989,6 +989,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function recomputeSingleDocumentChangeSet(ClassMetadata $class, $document)
     {
+        // Ignore uninitialized proxy objects
+        if ($document instanceof Proxy && ! $document->__isInitialized__) {
+            return;
+        }
+
         $oid = spl_object_hash($document);
 
         if ( ! isset($this->documentStates[$oid]) || $this->documentStates[$oid] != self::STATE_MANAGED) {
