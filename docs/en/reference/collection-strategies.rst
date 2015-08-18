@@ -52,6 +52,8 @@ elements into the array. MongoDB does not allow elements to be added and removed
 from an array in a single operation, so this strategy relies on multiple update
 queries to remove and insert elements (in that order).
 
+.. _atomic_set:
+
 ``atomicSet``
 -------------
 
@@ -65,6 +67,8 @@ strategy can be especially useful when dealing with high concurrency and
 
     The ``atomicSet`` and ``atomicSetArray`` strategies may only be used for 
     collections mapped directly in a top-level document.
+
+.. _atomic_set_array:
 
 ``atomicSetArray``
 ------------------

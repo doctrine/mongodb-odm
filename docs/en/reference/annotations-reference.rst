@@ -1248,6 +1248,14 @@ is used for pessimistic and optimistic locking. This is only compatible with
     /** @Int @Version */
     private $version;
 
+By default, Doctrine ODM processes updates :ref:`embed-many <embed_many>` and
+:ref:`reference-many <reference_many>` collections in separate write operations,
+which do not bump the document version. Users employing document versioning are
+encouraged to use the :ref:`atomicSet <atomic_set>` or
+:ref:`atomicSetArray <atomic_set_array>` strategies for such collections, which
+will ensure that collections are updated in the same write operation as the
+versioned document.
+
 .. _BSON specification: http://bsonspec.org/spec.html
 .. _DBRef: http://docs.mongodb.org/manual/reference/database-references/#dbrefs
 .. _geoNear command: http://docs.mongodb.org/manual/reference/command/geoNear/
