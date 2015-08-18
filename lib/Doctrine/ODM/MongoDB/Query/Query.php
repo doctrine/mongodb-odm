@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\CursorInterface;
 use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
 use Doctrine\MongoDB\Iterator;
 use Doctrine\ODM\MongoDB\Cursor;
@@ -288,14 +289,15 @@ class Query extends \Doctrine\MongoDB\Query\Query
      *
      * @see \Doctrine\MongoDB\Cursor::prepareCursor()
      * @param BaseCursor $cursor
-     * @return Cursor|EagerCursor
+     * @return CursorInterface
      */
     protected function prepareCursor(BaseCursor $cursor)
     {
         $cursor = parent::prepareCursor($cursor);
 
         // Convert the base Cursor into an ODM Cursor
-        $cursor = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
+        $cursorClass = ( ! empty($this->query['eagerCursor'])) ? 'Doctrine\ODM\MongoDB\EagerCursor' : 'Doctrine\ODM\MongoDB\Cursor';
+        $cursor = new $cursorClass($cursor, $this->dm->getUnitOfWork(), $this->class);
 
         $cursor->hydrate($this->hydrate);
         $cursor->setHints($this->unitOfWorkHints);
