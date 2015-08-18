@@ -4,6 +4,8 @@ Embedded Mapping
 This chapter explains how embedded documents are mapped in
 Doctrine.
 
+.. _embed_one:
+
 Embed One
 ---------
 
@@ -108,6 +110,8 @@ Embed many documents:
         Phonenumber:
           type: embeddedDocument
           
+.. _mixing_document_types:
+
 Mixing Document Types
 ---------------------
 
