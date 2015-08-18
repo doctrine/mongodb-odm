@@ -2,8 +2,11 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Documents\Issue;
 
 class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -365,6 +368,45 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->setExpectedException('Doctrine\ODM\MongoDB\MongoDBException', 'Invalid version field type string. Version field must be int or date.');
         $this->dm->getClassMetadata(__NAMESPACE__.'\InvalidVersionDocument');
     }
+
+    /**
+     * @expectedException Doctrine\ODM\MongoDB\LockException
+     */
+    public function testUpdatingCollectionRespectsVersionNumber()
+    {
+        $d = new LockInt('test');
+        $d->issues->add(new Issue('hi', 'ohai'));
+        $this->dm->persist($d);
+        $this->dm->flush();
+
+        // simulate another request updating document in the meantime
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\LockInt')->update(
+            array('_id' => new \MongoId($d->id)),
+            array('$set' => array('version' => 2))
+        );
+
+        $d->issues->add(new Issue('oops', 'version mismatch'));
+        $this->uow->getCollectionPersister()->update($d->issues, array());
+    }
+
+    /**
+     * @expectedException Doctrine\ODM\MongoDB\LockException
+     */
+    public function testDeletingCollectionRespectsVersionNumber()
+    {
+        $d = new LockInt('test');
+        $d->issues->add(new Issue('hi', 'ohai'));
+        $this->dm->persist($d);
+        $this->dm->flush();
+
+        // simulate another request updating document in the meantime
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\LockInt')->update(
+            array('_id' => new \MongoId($d->id)),
+            array('$set' => array('version' => 2))
+        );
+
+        $this->uow->getCollectionPersister()->delete($d->issues, array());
+    }
 }
 
 /** @ODM\MappedSuperclass */
@@ -379,8 +421,14 @@ abstract class AbstractVersionBase
     /** @ODM\Lock @ODM\Int */
     public $locked;
 
+    /**
+     * @ODM\EmbedMany(targetDocument="Documents\Issue")
+     */
+    public $issues;
+
     public function __construct($title = null)
     {
+        $this->issues = new ArrayCollection();
         $this->title = $title;
     }
 
@@ -391,7 +439,7 @@ abstract class AbstractVersionBase
 
     public function getTitle()
     {
-        return $title;
+        return $this->title;
     }
 
     public function getVersion()
