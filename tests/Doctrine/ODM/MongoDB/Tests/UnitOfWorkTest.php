@@ -586,6 +586,31 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Documents\User', $this->uow->getClassNameForAssociation($mapping, null));
     }
 
+    public function testRecomputeChangesetForUninitializedProxyDoesNotCreateChangeset()
+    {
+        $user = new \Documents\ForumUser();
+        $user->username = '12345';
+        $user->setAvatar(new \Documents\ForumAvatar());
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $id = $user->getId();
+        $this->dm->clear();
+
+        $user = $this->dm->find('\Documents\ForumUser', $id);
+        $this->assertInstanceOf('\Documents\ForumUser', $user);
+
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user->getAvatar());
+
+        $classMetadata = $this->dm->getClassMetadata('Documents\ForumAvatar');
+
+        $this->uow->recomputeSingleDocumentChangeSet($classMetadata, $user->getAvatar());
+
+        $this->assertEquals(array(), $this->uow->getDocumentChangeSet($user->getAvatar()));
+    }
+
+
     protected function getDocumentManager()
     {
         return new \Stubs\DocumentManager();
