@@ -182,6 +182,32 @@ method:
 
 The above would give you an ``ArrayCollection`` of all the distinct user ages!
 
+Refreshing Documents
+~~~~~~~~~~~~~~~~~~~~
+
+When a query (e.g. geoNear, find) returns one or more hydrated documents whose
+identifiers are already in the identity map, ODM returns the managed document
+instances for those results. In this case, a managed document's data may differ
+from whatever was just returned by the database query.
+
+The query builder's ``refresh()`` method may be used to instruct ODM to override
+the managed document with data from the query result. This is comparable to
+calling ``DocumentManager::refresh()`` for a managed document. The document's
+changeset will be reset in the process.
+
+.. code-block:: php
+
+    <?php
+
+    $user = $dm->createQueryBuilder('User')
+        ->field('username')->equals('jwage')
+        ->getQuery()
+        ->getSingleResult();
+
+    // Jon's user will have the latest data, even if it was already managed
+
+Refreshing is not applicable if hydration is disabled.
+
 Disabling Hydration
 ~~~~~~~~~~~~~~~~~~~
 
