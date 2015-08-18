@@ -23,63 +23,74 @@ All issues and pull requests in this release may be found under the
 
 #### More strict mapping and slightly changed behaviour
 
-For the stable release we introduced few additional checks for document mapping,
-sanity checks during runtime and had to slightly modify `UnitOfWork` behaviour
-to ensure consistency with database. Please see the list below for all such
-changes to ensure your update to ODM 1.0 is smooth.
+For this stable release we introduced more checks while parsing of document
+mappings as well as additional runtime sanity checks. This entailed some
+modifications to UnitOfWork's previous behavior; however, it should ensure more
+consistency with the database. If upgrading from a previous beta release, please
+review the list of relevant changes below to ensure a smooth upgrade to 1.0.0:
 
- * [#1191](https://github.com/doctrine/mongodb-odm/pull/1191) `ReferenceMany`'s
-`sort` can be used only with inverse side references or references using `set`,
-`setArray`, `atomicSet` and `atomicSetArray` strategies.
- * [#1190](https://github.com/doctrine/mongodb-odm/pull/1190) Identifiers using
-`AUTO` strategy must use valid `MongoId` (either object or valid strings).
- * [#1177](https://github.com/doctrine/mongodb-odm/pull/1177) `Collection` field
-no longer accepts unused `strategy` property.
- * [#1162](https://github.com/doctrine/mongodb-odm/pull/1162) Simple references
-must not target discriminated documents.
- * [#1155](https://github.com/doctrine/mongodb-odm/pull/1155) Collection updates
-takes place immediately after owning document therefore modifications done with
-`post*` events will no longer be saved to database. This also ensures
-that events are fired when they are meant to ([#1145](https://github.com/doctrine/mongodb-odm/issues/1145))
- * [#1147](https://github.com/doctrine/mongodb-odm/pull/1147) Identifier field
-must not be changed to non-identifier field (its type can be changed though)
- * [#1136](https://github.com/doctrine/mongodb-odm/pull/1136) Owning/inverse
-sides of reference must specify `targetDocument`.
- * [#1130](https://github.com/doctrine/mongodb-odm/pull/1130) `EmbedMany` and
-`ReferenceMany` collections using `pushAll` and `addToSet` strategies are reindexed
-after database synchronization to ensure consistency between database and document.
- * [#1206](https://github.com/doctrine/mongodb-odm/pull/1206) ODM's `Cursor` no longer extends
-`Doctrine\MongoDB\Cursor` but is implementing new `Doctrine\MongoDB\CursorInterface`.
-ODM's `EagerCursor` is now deprecated in favour of using `Cursor`, extends `Cursor`
-instead of `Doctrine\MongoDB\EagerCursor`, and will be removed in 2.0.
+ * [#1191](https://github.com/doctrine/mongodb-odm/pull/1191): ReferenceMany's
+   `sort` option may only be used with inverse-side references or references
+   using the `set`, `setArray`, `atomicSet`, and `atomicSetArray` strategies.
+ * [#1190](https://github.com/doctrine/mongodb-odm/pull/1190): Identifiers using
+   the `AUTO` strategy must be a valid ObjectId (either a `MongoId` object or a
+   24-character hexadecimal string).
+ * [#1177](https://github.com/doctrine/mongodb-odm/pull/1177): The `collection`
+   field mapping no longer accepts a `strategy` property, which was previously
+   unused.
+ * [#1162](https://github.com/doctrine/mongodb-odm/pull/1162): Simple references
+   must not target discriminated (also known as mixed type) documents.
+ * [#1155](https://github.com/doctrine/mongodb-odm/pull/1155): Collection
+   updates take place immediately after the owning document. Therefore,
+   modifications done via `post*` events will no longer be saved to database.
+   This change ensures that events are fired when they are meant to (as
+   discussed in [#1145](https://github.com/doctrine/mongodb-odm/issues/1145)).
+ * [#1147](https://github.com/doctrine/mongodb-odm/pull/1147): Identifier fields
+   must always have an `id` field type; however, the field's data type (e.g.
+   string, integer) may vary based on the strategy option.
+ * [#1136](https://github.com/doctrine/mongodb-odm/pull/1136): Owning and inverse
+   sides of reference relationship must specify `targetDocument`.
+ * [#1130](https://github.com/doctrine/mongodb-odm/pull/1130): `EmbedMany` and
+   `ReferenceMany` collections using `pushAll` and `addToSet` strategies are
+   re-indexed after database synchronization to ensure consistency between the
+   database and in-memory document.
+ * [#1206](https://github.com/doctrine/mongodb-odm/pull/1206): ODM's Cursor
+   class no longer extends `Doctrine\MongoDB\Cursor`. Instead, it implements the
+   new `Doctrine\MongoDB\CursorInterface` interface, which was introduced in
+   Doctrine MongoDB 1.2.0. Eager cursor behavior is now fully handled by
+   Doctrine MongoDB, so the ODM EagerCursor class has been deprecated (to be
+   removed in 2.0).
 
 #### Parent association is available in `postLoad` events
 
 [#1152](https://github.com/doctrine/mongodb-odm/pull/1152) makes it possible to
-get embedded documents' parent association. Effectively this allows you to have
-parent aware embedded documents.
+access an embedded document's parent association through the UnitOfWork. This
+effectively allows you to set a reference to the parent document on an embedded
+document field.
 
 #### Performance optimizations
 
 [#1112](https://github.com/doctrine/mongodb-odm/pull/1112) fixes a potential
-performance and consistency issue by ensuring queries using priming will use
-eager cursor.
+performance and consistency issue by ensuring that reference-primed queries
+always use an eager cursor.
 
 [#1086](https://github.com/doctrine/mongodb-odm/pull/1086) improves `count()`
-performance for uninitialized inverse side references by avoiding full document 
-hydration and utilizing count provided by Mongo's cursor.
+performance for uninitialized, inverse-side references by avoiding full document
+hydration and calculating the count via the database command
+(e.g. `MongoCursor::count()`).
 
-[#1175](https://github.com/doctrine/mongodb-odm/pull/1175) optimized `UnitOfWork`'s
-`commit()` performance which is good news for people having large number of
-managed documents. As a technical detail we have reduced complexity from O(n^2) 
-to O(n) where n is number of documents scheduled for synchronizing. Additionally
-we removed unneeded overhead for embedded documents 
-([#782](https://github.com/doctrine/mongodb-odm/pull/782)) and general tidying up
-([#1146](https://github.com/doctrine/mongodb-odm/pull/1146)).
+[#1175](https://github.com/doctrine/mongodb-odm/pull/1175) optimized the
+performance of `UnitOfWork::commit()`, which is good news for those working with
+a large number of managed documents. As a technical detail, we reduced the
+complexity from O(n^2) to to O(n), where n is number of documents scheduled for
+synchronization. Additionally, we removed unneeded overhead for embedded
+documents and did some general code cleanup in
+[#782](https://github.com/doctrine/mongodb-odm/pull/782) and
+[#1146](https://github.com/doctrine/mongodb-odm/pull/1146), respectively.
 
-[#1155](https://github.com/doctrine/mongodb-odm/pull/1155) has reduced number of
-queries issued to database for document insertion, deletion and when clearing
-collections.
+[#1155](https://github.com/doctrine/mongodb-odm/pull/1155) reduced the number of
+queries issued to the database for document insertions, deletions, and clearing
+of collections.
 
 1.0.0-BETA13 (2015-05-21)
 -------------------------
