@@ -21,7 +21,7 @@ To generate a changelog summary since the last version, run
 All issues and pull requests in this release may be found under the
 [1.0.0 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.0).
 
-#### More strict mapping and slightly changed behaviour
+#### Stricter mapping and slightly changed behaviour
 
 For this stable release we introduced more checks while parsing of document
 mappings as well as additional runtime sanity checks. This entailed some
