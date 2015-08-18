@@ -20,10 +20,9 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\Common\EventManager;
-use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
@@ -507,22 +506,15 @@ class DocumentPersister
         $baseCursor = $this->collection->find($criteria);
         $cursor = $this->wrapCursor($baseCursor);
 
-        /* The wrapped cursor may be used if the ODM cursor becomes wrapped with
-         * an EagerCursor, so we should apply the same sort, limit, and skip
-         * options to both cursors.
-         */
         if (null !== $sort) {
-            $baseCursor->sort($this->prepareSortOrProjection($sort));
             $cursor->sort($sort);
         }
 
         if (null !== $limit) {
-            $baseCursor->limit($limit);
             $cursor->limit($limit);
         }
 
         if (null !== $skip) {
-            $baseCursor->skip($skip);
             $cursor->skip($skip);
         }
 
@@ -532,10 +524,10 @@ class DocumentPersister
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
      *
-     * @param BaseCursor $cursor
+     * @param CursorInterface $baseCursor
      * @return Cursor
      */
-    private function wrapCursor(BaseCursor $baseCursor)
+    private function wrapCursor(CursorInterface $baseCursor)
     {
         return new Cursor($baseCursor, $this->dm->getUnitOfWork(), $this->class);
     }
@@ -795,7 +787,7 @@ class DocumentPersister
     /**
      * @param PersistentCollection $collection
      *
-     * @return Cursor|EagerCursor
+     * @return CursorInterface
      */
     public function createReferenceManyWithRepositoryMethodCursor(PersistentCollection $collection)
     {
@@ -804,25 +796,24 @@ class DocumentPersister
         $cursor = $this->dm->getRepository($mapping['targetDocument'])
             ->$mapping['repositoryMethod']($collection->getOwner());
 
-        $wrappedCursor = $cursor;
-        if ($cursor instanceof EagerCursor) {
-            $wrappedCursor = $cursor->getCursor();
+        if ( ! $cursor instanceof CursorInterface) {
+            throw new \BadMethodCallException("Expected repository method {$mapping['repositoryMethod']} to return a CursorInterface");
         }
 
         if (isset($mapping['sort'])) {
-            $wrappedCursor->sort($mapping['sort']);
+            $cursor->sort($mapping['sort']);
         }
         if (isset($mapping['limit'])) {
-            $wrappedCursor->limit($mapping['limit']);
+            $cursor->limit($mapping['limit']);
         }
         if (isset($mapping['skip'])) {
-            $wrappedCursor->skip($mapping['skip']);
+            $cursor->skip($mapping['skip']);
         }
         if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-            $wrappedCursor->slaveOkay(true);
+            $cursor->slaveOkay(true);
         }
         if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-            $wrappedCursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+            $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
         }
 
         return $cursor;
