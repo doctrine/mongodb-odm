@@ -321,8 +321,12 @@ Also, for your convenience you can create the indexes for your mapped documents 
 
     $ php mongodb.php mongodb:schema:create --index
 
-**Important note**: If you are mixing types for your embedded documents, the indexes will not be
-created unless you specify the ``@discriminatorMap`` annotation on the main document.  See more at :doc:`Embedded mapping <embedded-mapping>`.
+.. note::
+
+    If you are :ref:`mixing document types <mixing_document_types>` for your
+    embedded documents, ODM will not be able to create indexes for their fields
+    unless you specify a discriminator map for the :ref:`embed-one <embed_one>`
+    or :ref:`embed-many <embed_many>` relationship.
 
 Geospatial Indexing
 -------------------
