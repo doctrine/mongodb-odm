@@ -168,8 +168,18 @@ omit the ``targetDocument`` option:
 
 Now the ``$favorites`` property can store a reference to any type of document!
 The class name will be automatically stored in a field named
-``_doctrine_class_name`` within the `DBRef`_ object. The field name can be
-customized with the ``discriminatorField`` option:
+``_doctrine_class_name`` within the `DBRef`_ object.
+
+.. note::
+
+    The MongoDB shell tends to ignore fields other than ``$id`` and ``$ref``
+    when displaying `DBRef`_ objects. You can verify the presence of any ``$db``
+    and discriminator fields by querying and examining the document with a
+    driver. See `SERVER-10777 <https://jira.mongodb.org/browse/SERVER-10777>`_ 
+    for additional discussion on this issue.
+
+The name of the field within the DBRef object can be customized via the
+``discriminatorField`` option:
 
 .. configuration-block::
 
@@ -203,7 +213,7 @@ customized with the ``discriminatorField`` option:
             discriminatorField: type
 
 You can also specify a discriminator map to avoid storing the fully qualified
-class name with each reference:
+class name in each `DBRef`_ object:
 
 .. configuration-block::
 
@@ -246,8 +256,8 @@ class name with each reference:
               album: Documents\Album
               song: Documents\Song
 
-If you have references without a discriminator value that need to be treated
-correctly you can optionally specify a default value for the discriminator:
+If you have references without a discriminator value that should be considered
+a certain class, you can optionally specify a default discriminator value:
 
 .. configuration-block::
 
