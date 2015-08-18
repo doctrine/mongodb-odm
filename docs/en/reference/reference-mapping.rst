@@ -132,6 +132,8 @@ Reference many documents:
             accounts:
               targetDocument: Documents\Account
 
+.. _reference_mixing_document_types:
+
 Mixing Document Types
 ---------------------
 
