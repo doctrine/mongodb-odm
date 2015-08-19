@@ -15,6 +15,12 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
+1.0.1 (2015-08-19)
+------------------
+
+[#1211](https://github.com/doctrine/mongodb-odm/pull/1211) fixes a regression
+where running `count` returned the wrong count for the query.
+
 1.0.0 (2015-08-18)
 ------------------
 
