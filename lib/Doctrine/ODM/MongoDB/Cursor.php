@@ -707,7 +707,7 @@ class Cursor implements CursorInterface
      */
     protected function primeReferencesForSingleResult($document)
     {
-        if ($this->referencesPrimed || ! $this->hydrate || empty($this->primers)) {
+        if ($this->referencesPrimed || ! $this->hydrate || empty($this->primers) || null === $document) {
             return;
         }
 

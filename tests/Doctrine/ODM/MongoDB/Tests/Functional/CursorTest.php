@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use Documents\User;
 
 class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -112,5 +113,18 @@ class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals(5, $cursor->count());
         $this->assertEquals(2, $cursor->count(true));
+    }
+
+    public function testPrimeEmptySingleResult()
+    {
+        /* @var Cursor $cursor */
+        $cursor = $this->dm->createQueryBuilder('Documents\User')
+            ->field('groups')->prime(true)
+            ->getQuery()
+            ->execute();
+
+        $result = $cursor->getSingleResult();
+
+        $this->assertNull($result);
     }
 }
