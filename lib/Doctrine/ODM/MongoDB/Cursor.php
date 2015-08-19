@@ -226,7 +226,7 @@ class Cursor implements CursorInterface
      * @param boolean $foundOnly
      * @return integer
      */
-    public function count($foundOnly = true)
+    public function count($foundOnly = false)
     {
         return $this->baseCursor->count($foundOnly);
     }
