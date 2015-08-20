@@ -44,7 +44,7 @@ class DateType extends Type
         if ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
             return $value;
         } elseif ($value instanceof \MongoDate) {
-            $datetime = self::craftDateTime($value->sec, $value->usec);
+            $datetime = static::craftDateTime($value->sec, $value->usec);
         } elseif (is_numeric($value)) {
             $seconds = $value;
             $microseconds = 0;
@@ -54,7 +54,7 @@ class DateType extends Type
                 $microseconds = (int) str_pad((int) $microseconds, 6, '0'); // ensure microseconds
             }
 
-            $datetime = self::craftDateTime($seconds, $microseconds);
+            $datetime = static::craftDateTime($seconds, $microseconds);
         } elseif (is_string($value)) {
             try {
                 $datetime = new \DateTime($value);
@@ -87,7 +87,7 @@ class DateType extends Type
             return $value;
         }
 
-        $datetime = self::getDateTime($value);
+        $datetime = static::getDateTime($value);
 
         return new \MongoDate($datetime->format('U'), $datetime->format('u'));
     }
@@ -98,16 +98,16 @@ class DateType extends Type
             return null;
         }
 
-        return self::getDateTime($value);
+        return static::getDateTime($value);
     }
 
     public function closureToMongo()
     {
-        return 'if ($value === null || $value instanceof \MongoDate) { $return = $value; } else { $datetime = \\'.__CLASS__.'::getDateTime($value); $return = new \MongoDate($datetime->format(\'U\'), $datetime->format(\'u\')); }';
+        return 'if ($value === null || $value instanceof \MongoDate) { $return = $value; } else { $datetime = \\'.get_class($this).'::getDateTime($value); $return = new \MongoDate($datetime->format(\'U\'), $datetime->format(\'u\')); }';
     }
 
     public function closureToPHP()
     {
-        return 'if ($value === null) { $return = null; } else { $return = \\'.__CLASS__.'::getDateTime($value); }';
+        return 'if ($value === null) { $return = null; } else { $return = \\'.get_class($this).'::getDateTime($value); }';
     }
 }
