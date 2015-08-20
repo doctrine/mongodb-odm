@@ -21,6 +21,8 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionTrait;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
