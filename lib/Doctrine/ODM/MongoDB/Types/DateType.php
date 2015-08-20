@@ -103,11 +103,11 @@ class DateType extends Type
 
     public function closureToMongo()
     {
-        return 'if ($value === null || $value instanceof \MongoDate) { $return = $value; } else { $datetime = \\'.static::class.'::getDateTime($value); $return = new \MongoDate($datetime->format(\'U\'), $datetime->format(\'u\')); }';
+        return 'if ($value === null || $value instanceof \MongoDate) { $return = $value; } else { $datetime = \\'.get_class($this).'::getDateTime($value); $return = new \MongoDate($datetime->format(\'U\'), $datetime->format(\'u\')); }';
     }
 
     public function closureToPHP()
     {
-        return 'if ($value === null) { $return = null; } else { $return = \\'.static::class.'::getDateTime($value); }';
+        return 'if ($value === null) { $return = null; } else { $return = \\'.get_class($this).'::getDateTime($value); }';
     }
 }
