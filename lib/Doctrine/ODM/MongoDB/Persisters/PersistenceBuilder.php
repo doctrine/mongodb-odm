@@ -21,7 +21,7 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -279,7 +279,7 @@ class PersistenceBuilder
 
             // @ReferenceMany, @EmbedMany
             } elseif ($mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
-                    && $new instanceof PersistentCollection && $new->isDirty()
+                    && $new instanceof PersistentCollectionInterface && $new->isDirty()
                     && CollectionHelper::isAtomic($mapping['strategy'])) {
                 $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
             }
@@ -363,7 +363,7 @@ class PersistenceBuilder
                     case ClassMetadata::EMBED_MANY:
                     case ClassMetadata::REFERENCE_MANY:
                         // Skip PersistentCollections already scheduled for deletion
-                        if ( ! $includeNestedCollections && $rawValue instanceof PersistentCollection
+                        if ( ! $includeNestedCollections && $rawValue instanceof PersistentCollectionInterface
                             && $this->uow->isCollectionScheduledForDeletion($rawValue)) {
                             break;
                         }
@@ -454,11 +454,11 @@ class PersistenceBuilder
     /**
      * Returns the collection representation to be stored and unschedules it afterwards.
      *
-     * @param PersistentCollection $coll
+     * @param PersistentCollectionInterface $coll
      * @param bool $includeNestedCollections
      * @return array
      */
-    public function prepareAssociatedCollectionValue(PersistentCollection $coll, $includeNestedCollections = false)
+    public function prepareAssociatedCollectionValue(PersistentCollectionInterface $coll, $includeNestedCollections = false)
     {
         $mapping = $coll->getMapping();
         $pb = $this;

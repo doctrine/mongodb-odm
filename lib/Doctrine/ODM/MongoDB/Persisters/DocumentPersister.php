@@ -29,7 +29,7 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\Query;
@@ -605,9 +605,9 @@ class DocumentPersister
     /**
      * Loads a PersistentCollection data. Used in the initialize() method.
      *
-     * @param PersistentCollection $collection
+     * @param PersistentCollectionInterface $collection
      */
-    public function loadCollection(PersistentCollection $collection)
+    public function loadCollection(PersistentCollectionInterface $collection)
     {
         $mapping = $collection->getMapping();
         switch ($mapping['association']) {
@@ -629,7 +629,7 @@ class DocumentPersister
         }
     }
 
-    private function loadEmbedManyCollection(PersistentCollection $collection)
+    private function loadEmbedManyCollection(PersistentCollectionInterface $collection)
     {
         $embeddedDocuments = $collection->getMongoData();
         $mapping = $collection->getMapping();
@@ -657,7 +657,7 @@ class DocumentPersister
         }
     }
 
-    private function loadReferenceManyCollectionOwningSide(PersistentCollection $collection)
+    private function loadReferenceManyCollectionOwningSide(PersistentCollectionInterface $collection)
     {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
@@ -730,7 +730,7 @@ class DocumentPersister
         }
     }
 
-    private function loadReferenceManyCollectionInverseSide(PersistentCollection $collection)
+    private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection)
     {
         $query = $this->createReferenceManyInverseSideQuery($collection);
         $documents = $query->execute()->toArray(false);
@@ -740,11 +740,11 @@ class DocumentPersister
     }
 
     /**
-     * @param PersistentCollection $collection
+     * @param PersistentCollectionInterface $collection
      *
      * @return Query
      */
-    public function createReferenceManyInverseSideQuery(PersistentCollection $collection)
+    public function createReferenceManyInverseSideQuery(PersistentCollectionInterface $collection)
     {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
@@ -781,7 +781,7 @@ class DocumentPersister
         return $qb->getQuery();
     }
 
-    private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
+    private function loadReferenceManyWithRepositoryMethod(PersistentCollectionInterface $collection)
     {
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
         $mapping = $collection->getMapping();
@@ -796,11 +796,11 @@ class DocumentPersister
     }
 
     /**
-     * @param PersistentCollection $collection
+     * @param PersistentCollectionInterface $collection
      *
      * @return CursorInterface
      */
-    public function createReferenceManyWithRepositoryMethodCursor(PersistentCollection $collection)
+    public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection)
     {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();

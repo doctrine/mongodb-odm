@@ -22,7 +22,7 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
@@ -71,10 +71,10 @@ class CollectionPersister
     /**
      * Deletes a PersistentCollection instance completely from a document using $unset.
      *
-     * @param PersistentCollection $coll
+     * @param PersistentCollectionInterface $coll
      * @param array $options
      */
-    public function delete(PersistentCollection $coll, array $options)
+    public function delete(PersistentCollectionInterface $coll, array $options)
     {
         $mapping = $coll->getMapping();
         if ($mapping['isInverseSide']) {
@@ -92,10 +92,10 @@ class CollectionPersister
      * Updates a PersistentCollection instance deleting removed rows and
      * inserting new rows.
      *
-     * @param PersistentCollection $coll
+     * @param PersistentCollectionInterface $coll
      * @param array $options
      */
-    public function update(PersistentCollection $coll, array $options)
+    public function update(PersistentCollectionInterface $coll, array $options)
     {
         $mapping = $coll->getMapping();
 
@@ -133,10 +133,10 @@ class CollectionPersister
      * set as a BSON array, which means the collection elements will be
      * reindexed numerically before storage.
      *
-     * @param PersistentCollection $coll
+     * @param PersistentCollectionInterface $coll
      * @param array $options
      */
-    private function setCollection(PersistentCollection $coll, array $options)
+    private function setCollection(PersistentCollectionInterface $coll, array $options)
     {
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
         $coll->initialize();
@@ -152,10 +152,10 @@ class CollectionPersister
      * This method is intended to be used with the "pushAll" and "addToSet"
      * strategies.
      *
-     * @param PersistentCollection $coll
+     * @param PersistentCollectionInterface $coll
      * @param array $options
      */
-    private function deleteElements(PersistentCollection $coll, array $options)
+    private function deleteElements(PersistentCollectionInterface $coll, array $options)
     {
         $deleteDiff = $coll->getDeleteDiff();
 
@@ -188,10 +188,10 @@ class CollectionPersister
      * This method is intended to be used with the "pushAll" and "addToSet"
      * strategies.
      *
-     * @param PersistentCollection $coll
+     * @param PersistentCollectionInterface $coll
      * @param array $options
      */
-    private function insertElements(PersistentCollection $coll, array $options)
+    private function insertElements(PersistentCollectionInterface $coll, array $options)
     {
         $insertDiff = $coll->getInsertDiff();
 
@@ -230,10 +230,10 @@ class CollectionPersister
      *     list($path, $parent) = $this->getPathAndParent($coll)
      *     </code>
      *
-     * @param PersistentCollection $coll
+     * @param PersistentCollectionInterface $coll
      * @return array $pathAndParent
      */
-    private function getPathAndParent(PersistentCollection $coll)
+    private function getPathAndParent(PersistentCollectionInterface $coll)
     {
         $mapping = $coll->getMapping();
         $fields = array();

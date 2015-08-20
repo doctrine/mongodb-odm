@@ -28,7 +28,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
  *
  * @since       1.0
  */
-class PersistentCollection implements BaseCollection
+class PersistentCollection implements PersistentCollectionInterface
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
