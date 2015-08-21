@@ -49,8 +49,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl($this->createMetadataDriverImpl());
 
-        $config->addFilter('testFilter', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
-        $config->addFilter('testFilter2', 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter');
+        $config->addFilter('testFilter', array('class' => 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter'));
+        $config->addFilter('testFilter2', array('class' => 'Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter', 'options'=> array('enabled' => true)));
 
         return $config;
     }

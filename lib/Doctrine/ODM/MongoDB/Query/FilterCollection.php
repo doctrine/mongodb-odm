@@ -63,8 +63,31 @@ class FilterCollection
         $this->cm = $cm ?: new CriteriaMerger();
 
         $this->config = $dm->getConfiguration();
+        $this->parseConfiguration();
     }
 
+    /**
+     * Parses the configuration
+     */
+    private function parseConfiguration()
+    {
+        $this->parseFilterOptions();
+    }
+
+    /**
+     * Pareses the filter options from configuration
+     */
+    private function parseFilterOptions()
+    {
+        foreach ($this->config->getFilters() as $filterName => $filterParameters) {
+            if(isset($filterParameters['options'])) {
+                $filterOptions = $filterParameters['options'];
+                if (isset($filterOptions['enabled']) && $filterOptions['enabled'] === true) {
+                    $this->enable($filterName);
+                }
+            }
+        }
+    }
     /**
      * Get all the enabled filters.
      *

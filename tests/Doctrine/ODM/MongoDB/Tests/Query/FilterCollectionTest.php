@@ -4,19 +4,34 @@ namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function testEnableFilterByConfiguration()
+    {
+        $filterCollection = $this->dm->getFilterCollection();
+
+        $this->assertCount(1, $filterCollection->getEnabledFilters());
+        $filterCollection->isEnabled('testFilter');
+    }
+
     public function testEnable()
     {
         $filterCollection = $this->dm->getFilterCollection();
 
-        $this->assertCount(0, $filterCollection->getEnabledFilters());
+        $this->assertCount(1, $filterCollection->getEnabledFilters());
 
         $filterCollection->enable('testFilter');
 
         $enabledFilters = $filterCollection->getEnabledFilters();
-        $this->assertCount(1, $enabledFilters);
+        $this->assertCount(2, $enabledFilters);
         $this->assertContainsOnly('Doctrine\ODM\MongoDB\Query\Filter\BsonFilter', $enabledFilters);
+    }
 
-        $filterCollection->disable('testFilter');
+    public function testDisable()
+    {
+        $filterCollection = $this->dm->getFilterCollection();
+
+        $this->assertCount(1, $filterCollection->getEnabledFilters());
+
+        $filterCollection->disable('testFilter2');
         $this->assertCount(0, $filterCollection->getEnabledFilters());
     }
 
@@ -92,8 +107,8 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $testFilter->setParameter('value', 'John');
 
         $expectedCriteria = array('$and' => array(
-            array('username' => 'Tim'),
             array('username' => 'John'),
+            array('username' => 'Tim'),
         ));
 
         $this->assertSame($expectedCriteria, $filterCollection->getFilterCriteria($class));
