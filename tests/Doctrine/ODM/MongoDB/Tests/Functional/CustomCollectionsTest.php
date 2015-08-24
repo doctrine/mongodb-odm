@@ -31,7 +31,7 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         ));
     }
 
-    public function testFunctional()
+    public function testEmbedMany()
     {
         $d = new DocumentWithCustomCollection();
         $d->coll->add(new EmbeddedDocumentInCustomCollection('#1', true));
@@ -43,6 +43,7 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertNotInstanceOf('Doctrine\\ODM\\MongoDB\\PersistentCollection', $d->coll);
         $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\Tests\\Functional\\MyEmbedsCollection', $d->coll->unwrap());
+        $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\PersistentCollection', $d->boring);
 
         $this->dm->clear();
         $d = $this->dm->find(get_class($d), $d->id);
@@ -51,6 +52,30 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\Tests\\Functional\\MyEmbedsCollection', $d->coll->unwrap());
         $this->assertCount(1, $d->coll->getEnabled());
         $this->assertCount(1, $d->coll->getByName('#1'));
+        
+        $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\PersistentCollection', $d->boring);
+        $this->assertCount(2, $d->boring);
+    }
+
+    public function testReferenceMany()
+    {
+        $d = new DocumentWithCustomCollection();
+        $d->coll->add(new EmbeddedDocumentInCustomCollection('#1', true));
+        $this->dm->persist($d);
+        $d2 = new DocumentWithCustomCollection();
+        $d2->refMany->add($d);
+        $this->dm->persist($d2);
+        $d3 = new DocumentWithCustomCollection();
+        $this->dm->persist($d3);
+        $d2->refMany->add($d3);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $d2 = $this->dm->find(get_class($d2), $d2->id);
+        $this->assertNotInstanceOf('Doctrine\\ODM\\MongoDB\\PersistentCollection', $d2->refMany);
+        $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\Tests\\Functional\\MyDocumentsCollection', $d2->refMany->unwrap());
+        $this->assertCount(2, $d2->refMany);
+        $this->assertCount(1, $d2->refMany->havingEmbeds());
     }
 }
 
@@ -77,10 +102,19 @@ class DocumentWithCustomCollection
      */
     public $boring;
 
+    /**
+     * @ODM\ReferenceMany(
+     *   collectionClass="MyDocumentsCollection",
+     *   targetDocument="DocumentWithCustomCollection"
+     * )
+     */
+    public $refMany;
+
     public function __construct()
     {
         $this->boring = new ArrayCollection();
         $this->coll = new MyEmbedsCollection();
+        $this->refMany = new MyDocumentsCollection();
     }
 }
 
@@ -115,6 +149,16 @@ class MyEmbedsCollection extends ArrayCollection
     {
         return $this->filter(function($item) {
             return $item->enabled;
+        });
+    }
+}
+
+class MyDocumentsCollection extends ArrayCollection
+{
+    public function havingEmbeds()
+    {
+        return $this->filter(function($item) {
+            return $item->coll->count();
         });
     }
 }
