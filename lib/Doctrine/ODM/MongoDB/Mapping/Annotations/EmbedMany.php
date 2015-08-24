@@ -35,4 +35,5 @@ final class EmbedMany extends AbstractField
     public $discriminatorMap;
     public $defaultDiscriminatorValue;
     public $strategy = CollectionHelper::DEFAULT_STRATEGY;
+    public $collectionClass;
 }

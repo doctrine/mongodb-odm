@@ -43,8 +43,75 @@ final class DefaultPersistentCollectionFactory implements PersistentCollectionFa
     public function create(array $mapping, BaseCollection $coll = null)
     {
         if ($coll === null) {
-            $coll = new ArrayCollection();
+            $coll = ! empty($mapping['collectionClass'])
+                    ? new $mapping['collectionClass']
+                    : new ArrayCollection();
         }
-        return new PersistentCollection($coll, $this->dm, $this->uow);
+        if (empty($mapping['collectionClass'])) {
+            return new PersistentCollection($coll, $this->dm, $this->uow);
+        }
+        $className = 'PersistentCollections\\' . $mapping['collectionClass'];
+        if ( ! class_exists($className)) {
+            $this->generateCollectionClass($mapping['collectionClass'], $className);
+        }
+        $className = '\\' . $className;
+        return new $className($coll, $this->dm, $this->uow);
+    }
+
+    private function generateCollectionClass($for, $targetFqcn)
+    {
+        $exploded = explode('\\', $targetFqcn);
+        $class = array_pop($exploded);
+        $namespace = join('\\', $exploded);
+        $code = <<<CODE
+namespace $namespace;
+
+use Doctrine\Common\Collections\Collection as BaseCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+
+class $class extends \\$for implements \\Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionInterface
+{
+    use \\Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionTrait;
+
+    /**
+     * @param BaseCollection \$coll
+     * @param DocumentManager \$dm
+     * @param UnitOfWork \$uow
+     */
+    public function __construct(BaseCollection \$coll, DocumentManager \$dm, UnitOfWork \$uow)
+    {
+        \$this->coll = \$coll;
+        \$this->dm = \$dm;
+        \$this->uow = \$uow;
+    }
+
+CODE;
+        $rc = new \ReflectionClass($for);
+        $rt = new \ReflectionClass('Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionTrait');
+        foreach ($rc->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            // @todo harden this
+            if (
+                $rt->hasMethod($method->getName()) ||
+                $method->isConstructor() ||
+                $method->getName() === 'matching'
+            ) {
+                continue;
+            }
+            // @todo obviously this works only for functions with no args
+            $code .= <<<CODE
+    public function {$method->getName()}()
+    {
+        \$this->initialize();
+        return \$this->coll->{$method->getName()}();
+    }
+
+CODE;
+        }
+        $code .= "\n}";
+        eval($code);
     }
 }

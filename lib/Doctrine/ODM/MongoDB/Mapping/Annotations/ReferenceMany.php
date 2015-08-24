@@ -45,4 +45,5 @@ final class ReferenceMany extends AbstractField
     public $limit;
     public $skip;
     public $strategy = CollectionHelper::DEFAULT_STRATEGY;
+    public $collectionClass;
 }
