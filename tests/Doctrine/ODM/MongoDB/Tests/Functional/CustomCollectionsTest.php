@@ -4,10 +4,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
-/**
- * @todo add check for collectionClass implementing Collection
- */
 class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testMappingNamespaceIsAdded()
@@ -15,6 +13,22 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $d = new DocumentWithCustomCollection();
         $cm = $this->dm->getClassMetadata(get_class($d));
         $this->assertSame('Doctrine\\ODM\\MongoDB\\Tests\\Functional\\MyEmbedsCollection', $cm->fieldMappings['coll']['collectionClass']);
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage stdClass used as custom collection class for stdClass::assoc has to implement Doctrine\Common\Collections\Collection interface.
+     */
+    public function testCollectionClassHasToImplementCommonInterface()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+
+        $cm->mapField(array(
+            'fieldName' => 'assoc',
+            'reference' => true,
+            'type' => 'many',
+            'collectionClass' => 'stdClass',
+        ));
     }
 
     public function testFunctional()

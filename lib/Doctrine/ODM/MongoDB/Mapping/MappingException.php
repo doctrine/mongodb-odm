@@ -287,4 +287,15 @@ class MappingException extends BaseMappingException
     {
         return new self("Invalid strategy $strategy used in $className::$fieldName with type $type");
     }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @param string $collectionClass
+     * @return MappingException
+     */
+    public static function collectionClassDoesNotImplementCommonInterface($className, $fieldName, $collectionClass)
+    {
+        return new self("$collectionClass used as custom collection class for $className::$fieldName has to implement Doctrine\\Common\\Collections\\Collection interface.");
+    }
 }
