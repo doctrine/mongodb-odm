@@ -50,6 +50,7 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNotInstanceOf('Doctrine\\ODM\\MongoDB\\PersistentCollection', $d->coll);
         $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\Tests\\Functional\\MyEmbedsCollection', $d->coll->unwrap());
         $this->assertCount(1, $d->coll->getEnabled());
+        $this->assertCount(1, $d->coll->getByName('#1'));
     }
 }
 
@@ -103,6 +104,13 @@ class EmbeddedDocumentInCustomCollection
 
 class MyEmbedsCollection extends ArrayCollection
 {
+    public function getByName($name)
+    {
+        return $this->filter(function($item) use ($name) {
+            return $item->name === $name;
+        });
+    }
+
     public function getEnabled()
     {
         return $this->filter(function($item) {
