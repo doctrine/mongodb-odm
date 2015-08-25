@@ -5,9 +5,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-class _Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest {
+class GH971Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+{
 
-    public function testUpdateOfInheritedDocumentUsingFindAndUpdate() {
+    public function testUpdateOfInheritedDocumentUsingFindAndUpdate()
+    {
         $name = "Ferrari";
         $features = array(
             "Super Engine",
