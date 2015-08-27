@@ -67,4 +67,21 @@ class ReferenceRepositoryMethodTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertNull($post1->user);
     }
+
+    public function testSetStrategy()
+    {
+        $repo = $this->dm->getRepository('Documents\BlogPost');
+
+        $blogPost = new \Documents\BlogPost('Test');
+
+        $blogPost->addComment(new \Documents\Comment('Comment', new \DateTime()));
+        $this->dm->persist($blogPost);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
+                  ->getQuery()
+                  ->getSingleResult();
+        $this->assertEquals('Comment', $blogPost->repoCommentsSet[0]->getText());
+    }
 }
