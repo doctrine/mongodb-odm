@@ -38,6 +38,9 @@ class BlogPost
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyComments") */
     public $repoComments;
 
+    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", strategy="set", repositoryMethod="findManyComments") */
+    public $repoCommentsSet;
+
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyCommentsEager") */
     public $repoCommentsEager;
 

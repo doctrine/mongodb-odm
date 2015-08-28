@@ -778,9 +778,14 @@ class DocumentPersister
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
     {
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
+        $mapping = $collection->getMapping();        
         $documents = $cursor->toArray(false);
-        foreach ($documents as $document) {
-            $collection->add($document);
+        foreach ($documents as $key => $obj) {
+            if (CollectionHelper::isHash($mapping['strategy'])) {
+                $collection->set($key, $obj);
+            } else {
+                $collection->add($obj);
+            }
         }
     }
 
