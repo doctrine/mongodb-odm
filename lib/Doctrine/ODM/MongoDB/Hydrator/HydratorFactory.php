@@ -431,7 +431,7 @@ EOF
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners
         if ( ! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
-            $args = array(&$data);
+            $args = array(new PreLoadEventArgs($document, $this->dm, $data));
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
         if ($this->evm->hasListeners(Events::preLoad)) {
@@ -458,7 +458,7 @@ EOF
 
         // Invoke the postLoad lifecycle callbacks and listeners
         if ( ! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
-            $metadata->invokeLifecycleCallbacks(Events::postLoad, $document);
+            $metadata->invokeLifecycleCallbacks(Events::postLoad, $document, array(new LifecycleEventArgs($document, $this->dm)));
         }
         if ($this->evm->hasListeners(Events::postLoad)) {
             $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));

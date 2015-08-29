@@ -651,7 +651,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Fire PreFlush lifecycle callbacks
         if ( ! empty($class->lifecycleCallbacks[Events::preFlush])) {
-            $class->invokeLifecycleCallbacks(Events::preFlush, $document);
+            $class->invokeLifecycleCallbacks(Events::preFlush, $document, array(new Event\PreFlushEventArgs($this->dm)));
         }
 
         $this->computeOrRecomputeChangeSet($class, $document);
@@ -1034,7 +1034,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
         if ( ! empty($class->lifecycleCallbacks[Events::prePersist])) {
-            $class->invokeLifecycleCallbacks(Events::prePersist, $document);
+            $class->invokeLifecycleCallbacks(Events::prePersist, $document, array(new LifecycleEventArgs($document, $this->dm)));
         }
         if ($this->evm->hasListeners(Events::prePersist)) {
             $this->evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($document, $this->dm));
@@ -1114,7 +1114,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 if ( ! empty($embeddedClass->lifecycleCallbacks[Events::postPersist])) {
-                    $embeddedClass->invokeLifecycleCallbacks(Events::postPersist, $embeddedDocument);
+                    $embeddedClass->invokeLifecycleCallbacks(Events::postPersist, $embeddedDocument, array(new LifecycleEventArgs($document, $this->dm)));
                 }
                 if ($hasPostPersistListeners) {
                     $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($embeddedDocument, $this->dm));
@@ -1147,7 +1147,7 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($documents as $document) {
             if ($hasPostPersistLifecycleCallbacks) {
-                $class->invokeLifecycleCallbacks(Events::postPersist, $document);
+                $class->invokeLifecycleCallbacks(Events::postPersist, $document, array(new LifecycleEventArgs($document, $this->dm)));
             }
             if ($hasPostPersistListeners) {
                 $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
@@ -1180,7 +1180,7 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($documents as $document) {
             if ($hasLifecycleCallbacks) {
-                $class->invokeLifecycleCallbacks(Events::postPersist, $document);
+                $class->invokeLifecycleCallbacks(Events::postPersist, $document, array(new LifecycleEventArgs($document, $this->dm)));
             }
             if ($hasListeners) {
                 $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
@@ -1207,16 +1207,18 @@ class UnitOfWork implements PropertyChangedListener
         $hasPostUpdateListeners = $this->evm->hasListeners(Events::postUpdate);
 
         foreach ($documents as $oid => $document) {
+            if ( ! isset($this->documentChangeSets[$oid])) {
+                // only ReferenceMany collection is scheduled for update
+                $this->documentChangeSets[$oid] = array();
+            }
             if ($hasPreUpdateLifecycleCallbacks) {
-                $class->invokeLifecycleCallbacks(Events::preUpdate, $document);
+                $class->invokeLifecycleCallbacks(Events::preUpdate, $document, array(
+                    new Event\PreUpdateEventArgs($document, $this->dm, $this->documentChangeSets[$oid])
+                ));
                 $this->recomputeSingleDocumentChangeSet($class, $document);
             }
 
             if ($hasPreUpdateListeners) {
-                if ( ! isset($this->documentChangeSets[$oid])) {
-                    // only ReferenceMany collection is scheduled for update
-                    $this->documentChangeSets[$oid] = array();
-                }
                 $this->evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
                     $document, $this->dm, $this->documentChangeSets[$oid])
                 );
@@ -1230,7 +1232,7 @@ class UnitOfWork implements PropertyChangedListener
             unset($this->documentUpdates[$oid]);
 
             if ($hasPostUpdateLifecycleCallbacks) {
-                $class->invokeLifecycleCallbacks(Events::postUpdate, $document);
+                $class->invokeLifecycleCallbacks(Events::postUpdate, $document, array(new LifecycleEventArgs($document, $this->dm)));
             }
             if ($hasPostUpdateListeners) {
                 $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
@@ -1276,7 +1278,9 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 if ( ! empty($entryClass->lifecycleCallbacks[Events::preUpdate])) {
-                    $entryClass->invokeLifecycleCallbacks(Events::preUpdate, $entry);
+                    $entryClass->invokeLifecycleCallbacks(Events::preUpdate, $entry, array(
+                        new Event\PreUpdateEventArgs($entry, $this->dm, $this->documentChangeSets[$entryOid])
+                    ));
                     $this->recomputeSingleDocumentChangeSet($entryClass, $entry);
                 }
                 if ($hasPreUpdateListeners) {
@@ -1325,14 +1329,18 @@ class UnitOfWork implements PropertyChangedListener
 
                 if (isset($this->documentInsertions[$entryOid])) {
                     if ( ! empty($entryClass->lifecycleCallbacks[Events::postPersist])) {
-                        $entryClass->invokeLifecycleCallbacks(Events::postPersist, $entry);
+                        $entryClass->invokeLifecycleCallbacks(Events::postPersist, $entry, array(
+                            new LifecycleEventArgs($entry, $this->dm)
+                        ));
                     }
                     if ($hasPostPersistListeners) {
                         $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($entry, $this->dm));
                     }
                 } else {
                     if ( ! empty($entryClass->lifecycleCallbacks[Events::postUpdate])) {
-                        $entryClass->invokeLifecycleCallbacks(Events::postUpdate, $entry);
+                        $entryClass->invokeLifecycleCallbacks(Events::postUpdate, $entry, array(
+                            new LifecycleEventArgs($entry, $this->dm)
+                        ));
                     }
                     if ($hasPostUpdateListeners) {
                         $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($entry, $this->dm));
@@ -1384,7 +1392,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->documentStates[$oid] = self::STATE_NEW;
 
             if ($hasPostRemoveLifecycleCallbacks) {
-                $class->invokeLifecycleCallbacks(Events::postRemove, $document);
+                $class->invokeLifecycleCallbacks(Events::postRemove, $document, array(new LifecycleEventArgs($document, $this->dm)));
             }
             if ($hasPostRemoveListeners) {
                 $this->evm->dispatchEvent(Events::postRemove, new LifecycleEventArgs($document, $this->dm));
@@ -1926,7 +1934,7 @@ class UnitOfWork implements PropertyChangedListener
                 break;
             case self::STATE_MANAGED:
                 if ( ! empty($class->lifecycleCallbacks[Events::preRemove])) {
-                    $class->invokeLifecycleCallbacks(Events::preRemove, $document);
+                    $class->invokeLifecycleCallbacks(Events::preRemove, $document, array(new LifecycleEventArgs($document, $this->dm)));
                 }
                 if ($this->evm->hasListeners(Events::preRemove)) {
                     $this->evm->dispatchEvent(Events::preRemove, new LifecycleEventArgs($document, $this->dm));
