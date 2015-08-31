@@ -18,8 +18,11 @@ To generate a changelog summary since the last version, run
 1.0.1 (2015-08-19)
 ------------------
 
+All issues and pull requests in this release may be found under the
+[1.0.1 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.1).
+
 [#1211](https://github.com/doctrine/mongodb-odm/pull/1211) fixes a regression
-where running `count` returned the wrong count for the query.
+where `Cursor::count()` returned the wrong count for the query by default.
 
 1.0.0 (2015-08-18)
 ------------------
