@@ -76,7 +76,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->dir = sys_get_temp_dir().'/abstract_driver_test';
-        @mkdir($this->dir, 0777, true);
+        @mkdir($this->dir, 0775, true);
     }
 
     protected function tearDown()
