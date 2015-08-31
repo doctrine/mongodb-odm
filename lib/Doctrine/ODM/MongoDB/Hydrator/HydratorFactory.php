@@ -414,7 +414,7 @@ EOF
             $tmpFileName = $fileName . '.' . uniqid('', true);
             file_put_contents($tmpFileName, $code);
             rename($tmpFileName, $fileName);
-            chmod($fieldName, 0664);
+            chmod($fileName, 0664);
         }
     }
 
