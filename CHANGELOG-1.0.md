@@ -15,6 +15,20 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
+1.0.2 (2015-08-31)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.0.1 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.2).
+
+[#1223](https://github.com/doctrine/mongodb-odm/pull/1223) resolved a security
+vulnerability related to file and directory creation in ODM. Doctrine Common and
+ORM are also affected, so users are encouraged to update all libraries and
+dependencies. The vulnerability has been assigned
+[CVE-2015-5723](http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-5723)
+and additional information on the issue may be found in
+[this blog post](http://www.doctrine-project.org/2015/08/31/security_misconfiguration_vulnerability_in_various_doctrine_projects.html).
+
 1.0.1 (2015-08-19)
 ------------------
 
