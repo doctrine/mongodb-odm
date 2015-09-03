@@ -5,12 +5,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1225Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testAddOnUninitializedCollection()
     {
-        $doc = new GHXXXXDocument();
-        $mySubDoc = new GHXXXXEmbeddedDocument('foo');
+        $doc = new GH1225Document();
+        $mySubDoc = new GH1225EmbeddedDocument('foo');
         $doc->embeds->add($mySubDoc);
         $this->dm->persist($doc);
         $this->dm->flush();
@@ -32,12 +32,12 @@ class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
  * @ODM\Document
  * @ODM\HasLifecycleCallbacks
  */
-class GHXXXXDocument
+class GH1225Document
 {
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="GHXXXXEmbeddedDocument") */
+    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="GH1225EmbeddedDocument") */
     public $embeds;
 
     public function __construct()
@@ -56,7 +56,7 @@ class GHXXXXDocument
 /**
  * @ODM\EmbeddedDocument
  */
-class GHXXXXEmbeddedDocument
+class GH1225EmbeddedDocument
 {
     /** @ODM\String */
     public $value;
