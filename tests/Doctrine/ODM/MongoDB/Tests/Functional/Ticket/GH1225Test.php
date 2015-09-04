@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH1225Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testAddOnUninitializedCollection()
+    public function testRemoveAddEmbeddedDocToExistingDocumentWithPreUpdateHook()
     {
         $doc = new GH1225Document();
         $doc->embeds->add(new GH1225EmbeddedDocument('foo'));
