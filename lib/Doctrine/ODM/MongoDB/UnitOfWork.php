@@ -951,9 +951,19 @@ class UnitOfWork implements PropertyChangedListener
                     break;
 
                 case self::STATE_REMOVED:
-                    // Consume the $value as array (it's either an array or an ArrayAccess)
-                    // and remove the element from Collection.
-                    if ($assoc['type'] === ClassMetadata::MANY) {
+                    if ($targetClass->isEmbeddedDocument) {
+                        // embedded document becomes managed again
+                        $oid = spl_object_hash($entry);
+                        unset(
+                            $this->documentDeletions[$oid],
+                            $this->orphanRemovals[$oid]
+                        );
+                        $this->documentStates[$oid] = self::STATE_MANAGED;
+                        $this->setParentAssociation($entry, $assoc, $parentDocument, $path);
+                        $this->computeChangeSet($targetClass, $entry);
+                    } elseif ($assoc['type'] === ClassMetadata::MANY) {
+                        // Consume the $value as array (it's either an array or
+                        // an ArrayAccess) and remove the element from Collection.
                         unset($value[$key]);
                     }
                     break;
