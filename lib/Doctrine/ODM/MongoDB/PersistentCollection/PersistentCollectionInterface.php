@@ -24,6 +24,12 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 
+/**
+ * Interface for persistent collection classes.
+ *
+ * @since  1.1
+ * @author Maciej Malarz <malarzm@gmail.com>
+ */
 interface PersistentCollectionInterface extends BaseCollection
 {
     /**

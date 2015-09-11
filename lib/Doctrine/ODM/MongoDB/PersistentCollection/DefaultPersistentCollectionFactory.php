@@ -27,6 +27,12 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
+/**
+ * Default factory class for persistent collection classes.
+ *
+ * @since  1.1
+ * @author Maciej Malarz <malarzm@gmail.com>
+ */
 final class DefaultPersistentCollectionFactory implements PersistentCollectionFactory
 {
     /**
@@ -70,7 +76,6 @@ final class DefaultPersistentCollectionFactory implements PersistentCollectionFa
      * @param string $collectionDir
      * @param string $collectionNs
      * @param int $autoGenerate
-     * @throws PersistentCollectionException
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow, $collectionDir, $collectionNs, $autoGenerate)
     {
@@ -81,6 +86,9 @@ final class DefaultPersistentCollectionFactory implements PersistentCollectionFa
         $this->autoGenerate = $autoGenerate;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function create(array $mapping, BaseCollection $coll = null)
     {
         if ($coll === null) {

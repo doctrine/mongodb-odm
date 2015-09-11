@@ -26,6 +26,12 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
+/**
+ * Trait with methods needed to implement PersistentCollectionInterface.
+ *
+ * @since  1.1
+ * @author Maciej Malarz <malarzm@gmail.com>
+ */
 trait PersistentCollectionTrait
 {
     /**
