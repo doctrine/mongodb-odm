@@ -137,6 +137,17 @@ final class DefaultPersistentCollectionFactory implements PersistentCollectionFa
         return new $className($coll, $this->dm, $this->uow);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function generateClass($class, $dir)
+    {
+        $collClassName = str_replace('\\', '', $class) . 'Persistent';
+        $className = $this->collectionNamespace . '\\' . $collClassName;
+        $fileName = $dir . DIRECTORY_SEPARATOR . $collClassName . '.php';
+        $this->generateCollectionClass($class, $className, $fileName);
+    }
+
     private function generateCollectionClass($for, $targetFqcn, $fileName)
     {
         $exploded = explode('\\', $targetFqcn);

@@ -34,6 +34,16 @@ interface PersistentCollectionFactory
      *
      * @param array $mapping Mapping of field holding collection
      * @param BaseCollection $coll Collection to be decorated
+     * @return PersistentCollectionInterface
      */
     public function create(array $mapping, BaseCollection $coll = null);
+
+    /**
+     * Generates persistent collection class.
+     *
+     * @param string $class
+     * @param string $dir
+     * @return void
+     */
+    public function generateClass($class, $dir);
 }
