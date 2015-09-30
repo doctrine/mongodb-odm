@@ -612,6 +612,9 @@ class DocumentPersister
         $owner = $collection->getOwner();
         if ($embeddedDocuments) {
             foreach ($embeddedDocuments as $key => $embeddedDocument) {
+                if (!is_array($embeddedDocument)) {
+                    continue;
+                }
                 $className = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $embeddedDocumentObject = $embeddedMetadata->newInstance();
