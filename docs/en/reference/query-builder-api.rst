@@ -201,6 +201,7 @@ changeset will be reset in the process.
 
     $user = $dm->createQueryBuilder('User')
         ->field('username')->equals('jwage')
+        ->refresh()
         ->getQuery()
         ->getSingleResult();
 
