@@ -21,7 +21,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * Collection class for all the query filters.

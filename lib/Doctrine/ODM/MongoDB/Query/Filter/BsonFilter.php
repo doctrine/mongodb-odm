@@ -20,7 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Query\Filter;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * The base class that user defined filters should extend.
