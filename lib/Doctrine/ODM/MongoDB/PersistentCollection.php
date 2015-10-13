@@ -61,6 +61,13 @@ class PersistentCollection implements BaseCollection
     private $isDirty = false;
 
     /**
+     * Whether the collection is cleared. This is to correctly calculate the diff when updating collections
+     *
+     * @var boolean
+     */
+    private $isCleared = false;
+
+    /**
      * Whether the collection has already been initialized.
      *
      * @var boolean
@@ -250,6 +257,17 @@ class PersistentCollection implements BaseCollection
     }
 
     /**
+     * Gets a boolean flag indicating whether this collection is cleared which means
+     * the collection has been cleared before.
+     *
+     * @return boolean TRUE if the collection was cleared, FALSE otherwise.
+     */
+    public function isCleared()
+    {
+        return $this->isCleared;
+    }
+
+    /**
      * INTERNAL:
      * Sets the collection's owning entity together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
@@ -285,6 +303,7 @@ class PersistentCollection implements BaseCollection
         }
         $this->snapshot = $this->coll->toArray();
         $this->isDirty = false;
+        $this->isCleared = false;
     }
 
     /**
@@ -296,6 +315,7 @@ class PersistentCollection implements BaseCollection
     {
         $this->snapshot = array();
         $this->isDirty = $this->count() ? true : false;
+        $this->isCleared = false;
     }
 
     /**
@@ -318,7 +338,7 @@ class PersistentCollection implements BaseCollection
     public function getDeleteDiff()
     {
         return array_udiff_assoc(
-            $this->snapshot,
+            ($this->isCleared) ? array() : $this->snapshot,
             $this->coll->toArray(),
             function ($a, $b) { return $a === $b ? 0 : 1; }
         );
@@ -334,7 +354,7 @@ class PersistentCollection implements BaseCollection
     {
         return array_udiff_assoc(
             $this->coll->toArray(),
-            $this->snapshot,
+            ($this->isCleared) ? array() : $this->snapshot,
             function ($a, $b) { return $a === $b ? 0 : 1; }
         );
     }
@@ -621,7 +641,8 @@ class PersistentCollection implements BaseCollection
      */
     public function clear()
     {
-        if ($this->initialized && $this->isEmpty()) {
+        $this->initialize();
+        if ($this->isEmpty()) {
             return;
         }
 
@@ -644,9 +665,9 @@ class PersistentCollection implements BaseCollection
             return;
         }
 
+        $this->isCleared = true;
         $this->changed();
         $this->uow->scheduleCollectionDeletion($this);
-        $this->takeSnapshot();
     }
 
     /**
@@ -759,6 +780,7 @@ class PersistentCollection implements BaseCollection
 
         $this->owner = null;
         $this->snapshot = array();
+        $this->isCleared = false;
 
         $this->changed();
     }
