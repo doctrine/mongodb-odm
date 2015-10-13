@@ -182,7 +182,7 @@ method:
 
 The above would give you an ``ArrayCollection`` of all the distinct user ages!
 
-.. note:: Please note that you can not combined distinct with ``sort()`` due to `mongo driver limitations <http://php.net/manual/fr/mongocollection.distinct.php>`_.
+.. note:: Please note that you can not combined distinct with ``sort()`` due to `mongo driver limitations <http://php.net/manual/en/mongocollection.distinct.php>`_. ``distinct()`` method only accept two parameters ($key and $query). We can't provide a sort.
 
 Refreshing Documents
 ~~~~~~~~~~~~~~~~~~~~
