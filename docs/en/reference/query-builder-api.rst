@@ -182,6 +182,13 @@ method:
 
 The above would give you an ``ArrayCollection`` of all the distinct user ages!
 
+.. note::
+
+    MongoDB's `distinct command <http://docs.mongodb.org/manual/reference/command/distinct/>`_
+    does not support sorting, so you cannot combine ``distinct()`` with
+    ``sort()``. If you would like to sort the results of a distinct query, you
+    will need to do so in PHP after executing the query.
+
 Refreshing Documents
 ~~~~~~~~~~~~~~~~~~~~
 
