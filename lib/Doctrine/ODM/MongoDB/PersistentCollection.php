@@ -295,7 +295,7 @@ class PersistentCollection implements BaseCollection
     public function clearSnapshot()
     {
         $this->snapshot = array();
-        $this->isDirty = $this->count() ? true : false;
+        $this->isDirty = $this->coll->count() ? true : false;
     }
 
     /**
