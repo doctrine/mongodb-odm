@@ -171,6 +171,25 @@ class OrphanRemovalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNotNull($this->getProfileRepository()->find($profile3->id), 'Profile 3 should have been created');
     }
 
+    public function testOrphanRemovalWhenRemovingAndAddingSameElement()
+    {
+        $profile = new OrphanRemovalProfile();
+
+        $user = new OrphanRemovalUser();
+        $user->profileMany[] = $profile;
+        $this->dm->persist($user);
+        $this->dm->persist($profile);
+        $this->dm->flush();
+
+        $user->profileMany->removeElement($profile);
+        $user->profileMany->add($profile);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $this->assertNotNull($this->getProfileRepository()->find($profile->id), 'Profile 1 should not have been removed');
+    }
+
     /**
      * @return \Doctrine\ODM\MongoDB\DocumentRepository
      */

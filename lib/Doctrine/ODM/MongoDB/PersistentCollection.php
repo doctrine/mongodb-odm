@@ -551,6 +551,11 @@ class PersistentCollection implements BaseCollection
         }
         $this->coll->add($value);
         $this->changed();
+
+        if ($this->uow !== null && $this->isOrphanRemovalEnabled()) {
+            $this->uow->unscheduleOrphanRemoval($value);
+        }
+
         return true;
     }
 

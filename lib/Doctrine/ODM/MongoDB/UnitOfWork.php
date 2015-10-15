@@ -2480,6 +2480,21 @@ class UnitOfWork implements PropertyChangedListener
         $this->orphanRemovals[spl_object_hash($document)] = $document;
     }
 
+    /**
+     * INTERNAL:
+     * Unschedules an embedded or referenced object for removal.
+     *
+     * @ignore
+     * @param object $document
+     */
+    public function unscheduleOrphanRemoval($document)
+    {
+        $oid = spl_object_hash($document);
+        if (isset($this->orphanRemovals[$oid])) {
+            unset($this->orphanRemovals[$oid]);
+        }
+    }
+
     private function fixPersistentCollectionOwnership(PersistentCollection $coll, $document, $class, $propName)
     {
         $owner = $coll->getOwner();
