@@ -95,8 +95,8 @@ did not find a way yet, if you did, please contact us).
 The DocumentManager
 -------------------
 
-The ``DocumentManager`` class is a central access point to the ORM
-functionality provided by Doctrine 2. The ``DocumentManager`` API is
+The ``DocumentManager`` class is a central access point to the ODM
+functionality provided by Doctrine. The ``DocumentManager`` API is
 used to manage the persistence of your objects and to query for
 persistent objects.
 
