@@ -23,7 +23,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
@@ -35,6 +34,7 @@ use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -443,9 +443,12 @@ class DocumentPersister
     /**
      * Refreshes a managed document.
      *
+     * @param string $id
      * @param object $document The document to refresh.
+     *
+     * @deprecated The first argument is deprecated.
      */
-    public function refresh($document)
+    public function refresh($id, $document)
     {
         $query = $this->getQueryForDocument($document);
         $data = $this->collection->findOne($query);
