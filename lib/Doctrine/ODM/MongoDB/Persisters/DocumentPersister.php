@@ -451,9 +451,12 @@ class DocumentPersister
     /**
      * Refreshes a managed document.
      *
+     * @param string $id
      * @param object $document The document to refresh.
+     *
+     * @deprecated The first argument is deprecated.
      */
-    public function refresh($document)
+    public function refresh($id, $document)
     {
         $query = $this->getQueryForDocument($document);
         $data = $this->collection->findOne($query);
