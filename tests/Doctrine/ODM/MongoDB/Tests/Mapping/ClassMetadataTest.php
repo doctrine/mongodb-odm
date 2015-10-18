@@ -4,7 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-use Doctrine\ODM\MongoDB\Events;
 
 class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

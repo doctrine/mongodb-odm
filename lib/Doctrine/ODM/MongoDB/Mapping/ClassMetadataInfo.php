@@ -19,10 +19,10 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use InvalidArgumentException;
 
 /**
@@ -522,7 +522,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ($this->isEmbeddedDocument) {
             return;
         }
-        
+
         if ($repositoryClassName && strpos($repositoryClassName, '\\') === false && strlen($this->namespace)) {
             $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
         }
@@ -818,6 +818,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
         if ($this->isEmbeddedDocument) {
             throw MappingException::embeddedDocumentCantHaveShardKey($this->getName());
+        }
+
+        foreach ($keys as $field) {
+            if ($this->getTypeOfField($field) == 'increment') {
+                throw MappingException::noIncrementFieldsAllowedInShardKey($this->getName());
+            }
         }
 
         $this->shardKey = array(
@@ -1219,7 +1225,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
             throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
         }
-        
+
         if ($this->isEmbeddedDocument && $mapping['type'] === 'many' && CollectionHelper::isAtomic($mapping['strategy'])) {
             throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
         }

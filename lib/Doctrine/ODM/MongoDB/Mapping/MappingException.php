@@ -283,4 +283,13 @@ class MappingException extends BaseMappingException
     {
         return new self("Embedded document can't have shard key: $className");
     }
+
+    /**
+     * @param string $className
+     * @return MappingException
+     */
+    public static function noIncrementFieldsAllowedInShardKey($className)
+    {
+        return new self("No increment fields allowed in the shard key: $className");
+    }
 }

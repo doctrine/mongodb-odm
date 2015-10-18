@@ -399,6 +399,20 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->isEmbeddedDocument = true;
         $cm->setShardKey(array('id' => 'asc'));
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage No increment fields allowed in the shard key
+     */
+    public function testNoIncrementFieldsAllowedInShardKey()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->mapField(array(
+            'fieldName' => 'inc',
+            'type' => 'increment'
+        ));
+        $cm->setShardKey(array('inc'));
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository
