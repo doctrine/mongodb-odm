@@ -846,6 +846,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::embeddedDocumentCantHaveShardKey($this->getName());
         }
 
+        foreach ($keys as $field) {
+            if ($this->getTypeOfField($field) == 'increment') {
+                throw MappingException::noIncrementFieldsAllowedInShardKey($this->getName());
+            }
+        }
+
         $this->shardKey = array(
             'keys' => array_map(function($value) {
                 if ($value == 1 || $value == -1) {
