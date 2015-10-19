@@ -187,9 +187,13 @@ class PersistentCollection implements BaseCollection
             $newObjects = $this->coll->toArray();
         }
 
+        $this->initialized = true;
+
         $this->coll->clear();
         $this->uow->loadCollection($this);
         $this->takeSnapshot();
+
+        $this->mongoData = array();
 
         // Reattach any NEW objects added through add()
         if ($newObjects) {
@@ -203,9 +207,6 @@ class PersistentCollection implements BaseCollection
 
             $this->isDirty = true;
         }
-
-        $this->mongoData = array();
-        $this->initialized = true;
     }
 
     /**
@@ -533,7 +534,18 @@ class PersistentCollection implements BaseCollection
      */
     public function set($key, $value)
     {
+        $oldValue = $this->get($key);
         $this->coll->set($key, $value);
+
+        // Handle orphanRemoval
+        if ($this->uow !== null && $this->isOrphanRemovalEnabled()) {
+            if ($oldValue !== null) {
+                $this->uow->scheduleOrphanRemoval($oldValue);
+            }
+
+            $this->uow->unscheduleOrphanRemoval($value);
+        }
+
         $this->changed();
     }
 
@@ -551,6 +563,11 @@ class PersistentCollection implements BaseCollection
         }
         $this->coll->add($value);
         $this->changed();
+
+        if ($this->uow !== null && $this->isOrphanRemovalEnabled()) {
+            $this->uow->unscheduleOrphanRemoval($value);
+        }
+
         return true;
     }
 
