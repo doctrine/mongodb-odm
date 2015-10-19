@@ -185,6 +185,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
+        // Set shard key after all fields to ensure we mapped all its keys
+        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey'])) {
+            $this->setShardKey($class, $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey']);
+        }
+
         /** @var $method \ReflectionMethod */
         foreach ($reflClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
             /* Filter for the declaring class only. Callbacks from parent
@@ -238,6 +243,25 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
         $options = array_merge($options, $index->options);
         $class->addIndex($keys, $options);
+    }
+
+    /**
+     * @param ClassMetadataInfo $class
+     * @param ODM\ShardKey      $shardKey
+     *
+     * @throws MappingException
+     */
+    private function setShardKey(ClassMetadataInfo $class, ODM\ShardKey $shardKey)
+    {
+        $options = array();
+        $allowed = array('unique', 'numInitialChunks');
+        foreach ($allowed as $name) {
+            if (isset($shardKey->$name)) {
+                $options[$name] = $shardKey->$name;
+            }
+        }
+
+        $class->setShardKey($shardKey->keys, $options);
     }
 
     /**

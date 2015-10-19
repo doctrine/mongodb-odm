@@ -234,7 +234,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'simple' => true,
         ));
     }
-    
+
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
      * @expectedExceptionMessage atomicSet collection strategy can be used only in top level document, used in stdClass::many
@@ -328,6 +328,91 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'sort' => array('foo' => 1)
         ));
     }
+
+    public function testSetShardKeyForClassWithoutInheritance()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->setShardKey(array('id' => 'asc'));
+
+        $shardKey = $cm->getShardKey();
+
+        $this->assertEquals(array('id' => 1), $shardKey['keys']);
+    }
+
+    public function testSetShardKeyForClassWithSingleCollectionInheritance()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->inheritanceType = ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION;
+        $cm->setShardKey(array('id' => 'asc'));
+
+        $shardKey = $cm->getShardKey();
+
+        $this->assertEquals(array('id' => 1), $shardKey['keys']);
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Shard key overriding in subclass is forbidden for single collection inheritance
+     */
+    public function testSetShardKeyForClassWithSingleCollectionInheritanceWhichAlreadyHasIt()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->setShardKey(array('id' => 'asc'));
+        $cm->inheritanceType = ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION;
+
+        $cm->setShardKey(array('foo' => 'asc'));
+    }
+
+    public function testSetShardKeyForClassWithCollPerClassInheritance()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->inheritanceType = ClassMetadataInfo::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
+        $cm->setShardKey(array('id' => 'asc'));
+
+        $shardKey = $cm->getShardKey();
+
+        $this->assertEquals(array('id' => 1), $shardKey['keys']);
+    }
+
+    public function testIsNotShardedIfThereIsNoShardKey()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+
+        $this->assertFalse($cm->isSharded());
+    }
+
+    public function testIsShardedIfThereIsAShardKey()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->setShardKey(array('id' => 'asc'));
+
+        $this->assertTrue($cm->isSharded());
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Embedded document can't have shard key: stdClass
+     */
+    public function testEmbeddedDocumentCantHaveShardKey()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->isEmbeddedDocument = true;
+        $cm->setShardKey(array('id' => 'asc'));
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage No increment fields allowed in the shard key
+     */
+    public function testNoIncrementFieldsAllowedInShardKey()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->mapField(array(
+            'fieldName' => 'inc',
+            'type' => 'increment'
+        ));
+        $cm->setShardKey(array('inc'));
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository
@@ -344,7 +429,7 @@ class EmbeddedAssociationsCascadeTest
 {
     /** @ODM\Id */
     public $id;
- 
+
     /** @ODM\EmbedOne(targetDocument="Documents\Address") */
     public $address;
 

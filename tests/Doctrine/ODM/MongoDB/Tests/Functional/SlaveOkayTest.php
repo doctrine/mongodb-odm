@@ -20,6 +20,9 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
     }
 
+    /**
+     * @group replication_lag
+     */
     public function testHintIsNotSetByDefault()
     {
         $cursor = $this->dm->getRepository('Documents\User')
@@ -36,6 +39,7 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
+     * @group replication_lag
      * @dataProvider provideSlaveOkayHints
      */
     public function testHintIsSetOnQuery($slaveOkay)
@@ -55,6 +59,7 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
+     * @group replication_lag
      * @dataProvider provideSlaveOkayHints
      */
     public function testHintIsSetOnCursor($slaveOkay)
@@ -75,6 +80,7 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
+     * @group replication_lag
      * @dataProvider provideSlaveOkayHints
      */
     public function testHintIsSetOnPersistentCollection($slaveOkay)

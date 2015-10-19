@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
@@ -140,6 +139,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertNotContains($extraneousClassName, $classes);
     }
 
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Embedded document can't have shard key
+     */
+    public function testEmbeddedClassCantHaveShardKey()
+    {
+        $this->dm->getClassMetadata(__NAMESPACE__ . '\AnnotationDriverEmbeddedWithShardKey');
+    }
+
     protected function _loadDriverForCMSDocuments()
     {
         $annotationDriver = $this->_loadDriver();
@@ -186,4 +194,14 @@ class AnnotationDriverTestChild extends AnnotationDriverTestParent
 {
     /** @ODM\String */
     public $bar;
+}
+
+/**
+ * @ODM\EmbeddedDocument
+ * @ODM\ShardKey(keys={"foo"="asc"})
+ */
+class AnnotationDriverEmbeddedWithShardKey
+{
+    /** @ODM\String */
+    public $foo;
 }

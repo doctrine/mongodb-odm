@@ -46,6 +46,12 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
       options:
         unique: true
         dropDups: true
+  shardKey:
+    keys:
+      name: asc
+    options:
+      unique: true
+      numInitialChunks: 4096
   referenceOne:
     address:
       targetDocument: Address

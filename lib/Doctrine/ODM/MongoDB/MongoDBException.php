@@ -144,4 +144,50 @@ class MongoDBException extends \Exception
         }
         return new self(sprintf('%s type requires value of type %s, %s given', $type, $expected, $gotType));
     }
+
+    /**
+     * @param string $field
+     * @param string $className
+     * @return MongoDBException
+     */
+    public static function shardKeyFieldCannotBeChanged($field, $className)
+    {
+        return new self(sprintf('Shard key field "%s" cannot be changed. Class: %s', $field, $className));
+    }
+
+    /**
+     * @param string $field
+     * @param string $className
+     * @return MongoDBException
+     */
+    public static function shardKeyFieldMissing($field, $className)
+    {
+        return new self(sprintf('Shard key field "%s" is missing. Class: %s.', $field, $className));
+    }
+
+    /**
+     * @param string $dbName
+     * @param string $errorMessage
+     * @return MongoDBException
+     */
+    public static function failedToEnableSharding($dbName, $errorMessage)
+    {
+        return new self(sprintf('Failed to enable sharding for database "%s". Error from MongoDB: %s',
+            $dbName,
+            $errorMessage
+        ));
+    }
+
+    /**
+     * @param string $className
+     * @param string $errorMessage
+     * @return MongoDBException
+     */
+    public static function failedToEnsureDocumentSharding($className, $errorMessage)
+    {
+        return new self(sprintf('Failed to ensure sharding for document "%s". Error from MongoDB: %s',
+            $className,
+            $errorMessage
+        ));
+    }
 }

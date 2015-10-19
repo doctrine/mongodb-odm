@@ -58,6 +58,16 @@ class MappingException extends BaseMappingException
     }
 
     /**
+     * @param string $className
+     * @param string $dbFieldName
+     * @return MappingException
+     */
+    public static function mappingNotFoundByDbName($className, $dbFieldName)
+    {
+        return new self("No mapping found for field by DB name '$dbFieldName' in class '$className'.");
+    }
+
+    /**
      * @param string $document
      * @param string $fieldName
      * @return MappingException
@@ -254,5 +264,32 @@ class MappingException extends BaseMappingException
     public static function referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($className, $fieldName, $strategy)
     {
         return new self("ReferenceMany's sort can not be used with addToSet and pushAll strategies, $strategy used in $className::$fieldName");
+    }
+
+    /**
+     * @param $subclassName
+     * @return MappingException
+     */
+    public static function shardKeyInSingleCollInheritanceSubclass($subclassName)
+    {
+        return new self("Shard key overriding in subclass is forbidden for single collection inheritance: $subclassName");
+    }
+
+    /**
+     * @param $className
+     * @return MappingException
+     */
+    public static function embeddedDocumentCantHaveShardKey($className)
+    {
+        return new self("Embedded document can't have shard key: $className");
+    }
+
+    /**
+     * @param string $className
+     * @return MappingException
+     */
+    public static function noIncrementFieldsAllowedInShardKey($className)
+    {
+        return new self("No increment fields allowed in the shard key: $className");
     }
 }
