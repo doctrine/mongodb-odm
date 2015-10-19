@@ -41,6 +41,9 @@ class BlogPost
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", strategy="set", repositoryMethod="findManyComments") */
     public $repoCommentsSet;
 
+    /** @ODM\ReferenceMany(targetDocument="Comment", repositoryMethod="findManyComments") */
+    public $repoCommentsWithoutMappedBy;
+
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyCommentsEager") */
     public $repoCommentsEager;
 
