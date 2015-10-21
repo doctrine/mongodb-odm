@@ -84,4 +84,20 @@ class ReferenceRepositoryMethodTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                   ->getSingleResult();
         $this->assertEquals('Comment', $blogPost->repoCommentsSet[0]->getText());
     }
+
+    public function testRepositoryMethodWithoutMappedBy()
+    {
+        $blogPost = new \Documents\BlogPost('Test');
+
+        $blogPost->addComment(new \Documents\Comment('Comment', new \DateTime()));
+        $this->dm->persist($blogPost);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
+            ->getQuery()
+            ->getSingleResult();
+        $this->assertCount(1, $blogPost->repoCommentsWithoutMappedBy);
+        $this->assertEquals('Comment', $blogPost->repoCommentsWithoutMappedBy[0]->getText());
+    }
 }

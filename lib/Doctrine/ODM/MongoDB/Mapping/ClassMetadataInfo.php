@@ -1155,11 +1155,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 (isset($mapping['mappedBy']) || isset($mapping['inversedBy']))) {
             throw MappingException::owningAndInverseReferencesRequireTargetDocument($this->name, $mapping['fieldName']);
         }
-
-        if (isset($mapping['reference']) && $mapping['type'] === 'many' && ! isset($mapping['mappedBy'])
-            && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
-            throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
-        }
         
         if ($this->isEmbeddedDocument && $mapping['type'] === 'many' && CollectionHelper::isAtomic($mapping['strategy'])) {
             throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
@@ -1206,9 +1201,18 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 $mapping['isInverseSide'] = true;
                 $mapping['isOwningSide'] = false;
             }
+            if (isset($mapping['repositoryMethod'])) {
+                $mapping['isInverseSide'] = true;
+                $mapping['isOwningSide'] = false;
+            }
             if (!isset($mapping['orphanRemoval'])) {
                 $mapping['orphanRemoval'] = false;
             }
+        }
+
+        if (isset($mapping['reference']) && $mapping['type'] === 'many' && $mapping['isOwningSide']
+            && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
+            throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
         }
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
