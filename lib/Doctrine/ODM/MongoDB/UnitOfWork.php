@@ -945,6 +945,11 @@ class UnitOfWork implements PropertyChangedListener
 
                 case self::STATE_MANAGED:
                     if ($targetClass->isEmbeddedDocument) {
+                        list(, $knownParent, ) = $this->getParentAssociation($entry);
+                        if ($knownParent && $knownParent !== $parentDocument) {
+                            $entry = clone $entry;
+                            $this->persistNew($targetClass, $entry);
+                        }
                         $this->setParentAssociation($entry, $assoc, $parentDocument, $path);
                         $this->computeChangeSet($targetClass, $entry);
                     }
