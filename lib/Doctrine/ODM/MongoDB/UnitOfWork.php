@@ -948,6 +948,12 @@ class UnitOfWork implements PropertyChangedListener
                         list(, $knownParent, ) = $this->getParentAssociation($entry);
                         if ($knownParent && $knownParent !== $parentDocument) {
                             $entry = clone $entry;
+                            if ($assoc['type'] === ClassMetadata::ONE) {
+                                $class->setFieldValue($parentDocument, $assoc['name'], $entry);
+                            } else {
+                                // must use unwrapped value to not trigger orphan removal
+                                $unwrappedValue[$key] = $entry;
+                            }
                             $this->persistNew($targetClass, $entry);
                         }
                         $this->setParentAssociation($entry, $assoc, $parentDocument, $path);
