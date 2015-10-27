@@ -550,6 +550,24 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals(1, count($test1->embedMany));
     }
+
+    public function testReusedEmbeddedDocumentsAreClonedInFact()
+    {
+        $test1 = new ChangeEmbeddedIdTest();
+        $test2 = new ChangeEmbeddedIdTest();
+
+        $embedded = new EmbeddedDocumentWithId();
+        $embedded->id = (string) new \MongoId();
+
+        $test1->embed = $embedded;
+        $test2->embed = $embedded;
+
+        $this->dm->persist($test1);
+        $this->dm->persist($test2);
+        $this->dm->flush();
+
+        $this->assertNotSame($test1->embed, $test2->embed);
+    }
 }
 
 /**

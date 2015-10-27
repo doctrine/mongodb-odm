@@ -62,6 +62,12 @@ class GH1229Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $secondParent->addChild($child);
 
             $this->dm->flush();
+            $actualChildren = $secondParent->getChildren();
+
+            $this->assertNotSame($actualChildren, $child);
+
+            list(, $parent, ) = $this->uow->getParentAssociation(end($actualChildren));
+            $this->assertSame($this->secondParentId, $parent->id);
         }
 
         $this->dm->clear();
