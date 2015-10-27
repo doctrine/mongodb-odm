@@ -524,6 +524,32 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNotSame($test->embed, $test->embedMany[0]);
         $this->assertNotSame($test->embed, $test->embedMany[1]);
     }
+
+    public function testWhenCopyingManyEmbedSubDocumentsFromOneDocumentToAnotherWillNotAffectTheSourceDocument()
+    {
+        $test1 = new ChangeEmbeddedIdTest();
+
+        $embedded = new EmbeddedDocumentWithId();
+        $embedded->id = (string) new \MongoId();;
+        $test1->embedMany = array($embedded);
+
+        $this->dm->persist($test1);
+        $this->dm->flush();
+
+        $test2 = new ChangeEmbeddedIdTest();
+        $test2->embedMany = $test1->embedMany; //using clone will work
+        $this->dm->persist($test2);
+        $this->dm->flush();
+
+        //do some operations on test1
+        $this->dm->persist($test1);
+        $this->dm->flush();
+
+        $this->dm->clear(); //get clean results from mongo
+        $test1 = $this->dm->find(get_class($test1), $test1->id);
+
+        $this->assertEquals(1, count($test1->embedMany));
+    }
 }
 
 /**
