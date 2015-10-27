@@ -745,7 +745,7 @@ class UnitOfWork implements PropertyChangedListener
                 // created one. This can only mean it was cloned and replaced
                 // on another document.
                 if ($actualValue instanceof PersistentCollection && $actualValue->getOwner() !== $document) {
-                    $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
+                    $actualValue = $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
                 }
 
                 // if embed-many or reference-many relationship
@@ -2512,6 +2512,8 @@ class UnitOfWork implements PropertyChangedListener
             $newValue = clone $coll;
             $newValue->setOwner($document, $class->fieldMappings[$propName]);
             $class->reflFields[$propName]->setValue($document, $newValue);
+            // @todo following line should be superfluous once collections are stored in change sets
+            $this->setOriginalDocumentProperty(spl_object_hash($document), $propName, $newValue);
             return $newValue;
         }
         return $coll;
