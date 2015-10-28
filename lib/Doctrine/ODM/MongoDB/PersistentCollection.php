@@ -538,12 +538,14 @@ class PersistentCollection implements BaseCollection
         $this->coll->set($key, $value);
 
         // Handle orphanRemoval
-        if ($this->uow !== null && $this->isOrphanRemovalEnabled()) {
+        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $oldValue !== $value) {
             if ($oldValue !== null) {
                 $this->uow->scheduleOrphanRemoval($oldValue);
             }
 
-            $this->uow->unscheduleOrphanRemoval($value);
+            if ($value !== null) {
+                $this->uow->unscheduleOrphanRemoval($value);
+            }
         }
 
         $this->changed();
@@ -564,7 +566,7 @@ class PersistentCollection implements BaseCollection
         $this->coll->add($value);
         $this->changed();
 
-        if ($this->uow !== null && $this->isOrphanRemovalEnabled()) {
+        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $value !== null) {
             $this->uow->unscheduleOrphanRemoval($value);
         }
 
