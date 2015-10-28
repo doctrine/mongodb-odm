@@ -745,7 +745,7 @@ class UnitOfWork implements PropertyChangedListener
                 // created one. This can only mean it was cloned and replaced
                 // on another document.
                 if ($actualValue instanceof PersistentCollection && $actualValue->getOwner() !== $document) {
-                    $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
+                    $actualValue = $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
                 }
 
                 // if embed-many or reference-many relationship
@@ -945,6 +945,18 @@ class UnitOfWork implements PropertyChangedListener
 
                 case self::STATE_MANAGED:
                     if ($targetClass->isEmbeddedDocument) {
+                        list(, $knownParent, ) = $this->getParentAssociation($entry);
+                        if ($knownParent && $knownParent !== $parentDocument) {
+                            $entry = clone $entry;
+                            if ($assoc['type'] === ClassMetadata::ONE) {
+                                $class->setFieldValue($parentDocument, $assoc['name'], $entry);
+                                $this->setOriginalDocumentProperty(spl_object_hash($parentDocument), $assoc['name'], $entry);
+                            } else {
+                                // must use unwrapped value to not trigger orphan removal
+                                $unwrappedValue[$key] = $entry;
+                            }
+                            $this->persistNew($targetClass, $entry);
+                        }
                         $this->setParentAssociation($entry, $assoc, $parentDocument, $path);
                         $this->computeChangeSet($targetClass, $entry);
                     }
@@ -2507,6 +2519,8 @@ class UnitOfWork implements PropertyChangedListener
             $newValue = clone $coll;
             $newValue->setOwner($document, $class->fieldMappings[$propName]);
             $class->reflFields[$propName]->setValue($document, $newValue);
+            // @todo following line should be superfluous once collections are stored in change sets
+            $this->setOriginalDocumentProperty(spl_object_hash($document), $propName, $newValue);
             return $newValue;
         }
         return $coll;
