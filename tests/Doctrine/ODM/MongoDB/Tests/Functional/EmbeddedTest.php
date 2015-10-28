@@ -567,6 +567,11 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $this->assertNotSame($test1->embed, $test2->embed);
+
+        $originalTest1 = $this->uow->getOriginalDocumentData($test1);
+        $this->assertSame($originalTest1['embed'], $test1->embed);
+        $originalTest2 = $this->uow->getOriginalDocumentData($test2);
+        $this->assertSame($originalTest2['embed'], $test2->embed);
     }
 }
 
