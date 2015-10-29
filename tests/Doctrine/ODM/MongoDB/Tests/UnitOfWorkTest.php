@@ -253,9 +253,18 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->persist($entity);
 
         $this->uow->commit($entity);
-        @$this->uow->commit($entity);
 
-        $this->assertNull(error_get_last(), 'Expected not to get an error after committing an entity multiple times using the NOTIFY change tracking policy.');
+        // Use a custom error handler that will fail the test if the next commit() call raises a notice error
+        set_error_handler(function() {
+            restore_error_handler();
+
+            $this->fail('Expected not to get a notice error after committing an entity multiple times using the NOTIFY change tracking policy.');
+        }, E_NOTICE);
+
+        $this->uow->commit($entity);
+
+        // Restore previous error handler if no errors have been raised
+        restore_error_handler();
     }
 
     public function testGetDocumentStateWithAssignedIdentity()
