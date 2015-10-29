@@ -686,7 +686,10 @@ class ParentAssociationTest
     }
 }
 
-/** @ODM\Document */
+/**
+ * @ODM\Document
+ * @ODM\ChangeTrackingPolicy("NOTIFY")
+ */
 class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 {
     private $_listeners = array();
