@@ -240,6 +240,24 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($updates[0] === $item);
     }
 
+    public function testDoubleCommitWithChangeTrackingNotify()
+    {
+        $pb = $this->getMockPersistenceBuilder();
+
+        $class = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument');
+        $persister = $this->getMockDocumentPersister($pb, $class);
+        $this->uow->setDocumentPersister($class->name, $persister);
+
+        $entity = new NotifyChangedDocument();
+        $entity->setId(2);
+        $this->uow->persist($entity);
+
+        $this->uow->commit($entity);
+        @$this->uow->commit($entity);
+
+        $this->assertNull(error_get_last(), 'Expected not to get an error after committing an entity multiple times using the NOTIFY change tracking policy.');
+    }
+
     public function testGetDocumentStateWithAssignedIdentity()
     {
         $pb = $this->getMockPersistenceBuilder();
