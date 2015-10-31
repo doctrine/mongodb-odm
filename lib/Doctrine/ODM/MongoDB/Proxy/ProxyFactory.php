@@ -88,7 +88,7 @@ class ProxyFactory extends AbstractProxyFactory
     public function skipClass(BaseClassMetadata $class)
     {
         /* @var $class \Doctrine\ODM\Mongodb\Mapping\ClassMetadataInfo */
-        return $class->isMappedSuperclass || $class->getReflectionClass()->isAbstract();
+        return $class->isMappedSuperclass || $class->isAggregationResultDocument || $class->getReflectionClass()->isAbstract();
     }
 
     /**
