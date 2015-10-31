@@ -86,6 +86,16 @@ class DocumentRepository implements ObjectRepository, Selectable
     }
 
     /**
+     * Create a new Aggregation\Builder instance that is prepopulated for this document name
+     *
+     * @return Aggregation\Builder
+     */
+    public function createAggregationBuilder()
+    {
+        return $this->dm->createAggregationBuilder($this->documentName);
+    }
+
+    /**
      * Clears the repository, causing all managed documents to become detached.
      */
     public function clear()

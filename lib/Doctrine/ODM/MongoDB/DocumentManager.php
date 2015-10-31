@@ -376,6 +376,17 @@ class DocumentManager implements ObjectManager
     }
 
     /**
+     * Create a new aggregation builder instance for a class.
+     *
+     * @param string $documentName The document class name.
+     * @return Aggregation\Builder
+     */
+    public function createAggregationBuilder($documentName)
+    {
+        return new Aggregation\Builder($this, $documentName);
+    }
+
+    /**
      * Tells the DocumentManager to make an instance managed and persistent.
      *
      * The document will be entered into the database at or before transaction
