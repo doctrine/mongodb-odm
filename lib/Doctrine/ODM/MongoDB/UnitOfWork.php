@@ -2332,7 +2332,6 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $document
      * @param array $visited
-     * @param array $insertNow
      */
     private function cascadePersist($document, array &$visited)
     {
@@ -2348,14 +2347,35 @@ class UnitOfWork implements PropertyChangedListener
 
             if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 if ($relatedDocuments instanceof PersistentCollection) {
+                    if ($relatedDocuments->getOwner() !== $document) {
+                        $relatedDocuments = $this->fixPersistentCollectionOwnership($relatedDocuments, $document, $class, $mapping['name']);
+                    }
                     // Unwrap so that foreach() does not initialize
                     $relatedDocuments = $relatedDocuments->unwrap();
                 }
 
-                foreach ($relatedDocuments as $relatedDocument) {
+                $count = 0;
+                foreach ($relatedDocuments as $relatedKey => $relatedDocument) {
+                    if ( ! empty($mapping['embedded'])) {
+                        list(, $knownParent, ) = $this->getParentAssociation($relatedDocument);
+                        if ($knownParent && $knownParent !== $document) {
+                            $relatedDocument = clone $relatedDocument;
+                            $relatedDocuments[$relatedKey] = $relatedDocument;
+                        }
+                        $pathKey = ! isset($mapping['strategy']) || CollectionHelper::isList($mapping['strategy']) ? $count++ : $relatedKey;
+                        $this->setParentAssociation($relatedDocument, $mapping, $document, $mapping['name'] . '.' . $pathKey);
+                    }
                     $this->doPersist($relatedDocument, $visited);
                 }
             } elseif ($relatedDocuments !== null) {
+                if ( ! empty($mapping['embedded'])) {
+                    list(, $knownParent, ) = $this->getParentAssociation($relatedDocuments);
+                    if ($knownParent && $knownParent !== $document) {
+                        $relatedDocuments = clone $relatedDocuments;
+                        $class->setFieldValue($document, $mapping['name'], $relatedDocuments);
+                    }
+                    $this->setParentAssociation($relatedDocuments, $mapping, $document, $mapping['name']);
+                }
                 $this->doPersist($relatedDocuments, $visited);
             }
         }
@@ -2507,7 +2527,20 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
-    private function fixPersistentCollectionOwnership(PersistentCollection $coll, $document, $class, $propName)
+    /**
+     * Fixes PersistentCollection state if it wasn't used exactly as we had in mind:
+     *  1) sets owner if it was cloned
+     *  2) clones collection, sets owner, updates document's property and, if necessary, updates originalData
+     *  3) NOP if state is OK
+     * Returned collection should be used from now on (only important with 2nd point)
+     *
+     * @param PersistentCollection $coll
+     * @param object $document
+     * @param ClassMetadata $class
+     * @param string $propName
+     * @return PersistentCollection
+     */
+    private function fixPersistentCollectionOwnership(PersistentCollection $coll, $document, ClassMetadata $class, $propName)
     {
         $owner = $coll->getOwner();
         if ($owner === null) { // cloned
@@ -2519,8 +2552,10 @@ class UnitOfWork implements PropertyChangedListener
             $newValue = clone $coll;
             $newValue->setOwner($document, $class->fieldMappings[$propName]);
             $class->reflFields[$propName]->setValue($document, $newValue);
-            // @todo following line should be superfluous once collections are stored in change sets
-            $this->setOriginalDocumentProperty(spl_object_hash($document), $propName, $newValue);
+            if ($this->isScheduledForUpdate($document)) {
+                // @todo following line should be superfluous once collections are stored in change sets
+                $this->setOriginalDocumentProperty(spl_object_hash($document), $propName, $newValue);
+            }
             return $newValue;
         }
         return $coll;

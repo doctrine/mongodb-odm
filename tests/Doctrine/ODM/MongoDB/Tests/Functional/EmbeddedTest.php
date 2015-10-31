@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Documents\Address;
 use Documents\Profile;
 use Documents\Phonenumber;
@@ -539,7 +540,11 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test2 = new ChangeEmbeddedIdTest();
         $test2->embedMany = $test1->embedMany; //using clone will work
         $this->dm->persist($test2);
+
+        $this->assertNotSame($test1->embedMany->first(), $test2->embedMany->first());
+
         $this->dm->flush();
+
 
         //do some operations on test1
         $this->dm->persist($test1);
@@ -564,6 +569,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->persist($test1);
         $this->dm->persist($test2);
+
+        $this->assertNotSame($test1->embed, $test2->embed);
+
         $this->dm->flush();
 
         $this->assertNotSame($test1->embed, $test2->embed);
@@ -593,7 +601,12 @@ class ChangeEmbeddedIdTest
     /**
      * @ODM\EmbedMany(targetDocument="EmbeddedDocumentWithId")
      */
-    public $embedMany = array();
+    public $embedMany;
+
+    public function __construct()
+    {
+        $this->embedMany = new ArrayCollection();
+    }
 }
 
 /**
