@@ -9,6 +9,7 @@ require_once 'fixtures/InvalidPartialFilterDocument.php';
 require_once 'fixtures/PartialFilterDocument.php';
 require_once 'fixtures/User.php';
 require_once 'fixtures/EmbeddedDocument.php';
+require_once 'fixtures/QueryResultDocument.php';
 
 abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {
@@ -253,6 +254,39 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'nullable' => false,
             'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['name']);
+
+        $classMetadata = new ClassMetadata('TestDocuments\QueryResultDocument');
+        $this->driver->loadMetadataForClass('TestDocuments\QueryResultDocument', $classMetadata);
+
+        $this->assertEquals(array(
+            'fieldName' => 'name',
+            'name' => 'name',
+            'type' => 'string',
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => false,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+        ), $classMetadata->fieldMappings['name']);
+
+        $this->assertEquals(array(
+            'fieldName' => 'count',
+            'name' => 'count',
+            'type' => 'integer',
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => false,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+        ), $classMetadata->fieldMappings['count']);
     }
 
     public function testPartialFilterExpressions()
