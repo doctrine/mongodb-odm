@@ -403,6 +403,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $isEmbeddedDocument = false;
 
     /**
+     * READ-ONLY: Whether this class describes the mapping of an aggregation result document.
+     *
+     * @var boolean
+     */
+    public $isQueryResultDocument = false;
+
+    /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
      *
      * @var integer
@@ -548,7 +555,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
-        if ($this->isEmbeddedDocument) {
+        if ($this->isEmbeddedDocument || $this->isQueryResultDocument) {
             return;
         }
 
