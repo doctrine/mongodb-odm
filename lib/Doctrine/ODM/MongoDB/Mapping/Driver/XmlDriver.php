@@ -65,6 +65,8 @@ class XmlDriver extends FileDriver
             $class->isMappedSuperclass = true;
         } elseif ($xmlRoot->getName() == 'embedded-document') {
             $class->isEmbeddedDocument = true;
+        } elseif ($xmlRoot->getName() == 'aggregation-result-document') {
+            $class->isAggregationResultDocument = true;
         }
         if (isset($xmlRoot['db'])) {
             $class->setDatabase((string) $xmlRoot['db']);
@@ -485,7 +487,7 @@ class XmlDriver extends FileDriver
         $result = array();
         $xmlElement = simplexml_load_file($file);
 
-        foreach (array('document', 'embedded-document', 'mapped-superclass') as $type) {
+        foreach (array('document', 'embedded-document', 'mapped-superclass', 'aggregation-result-document') as $type) {
             if (isset($xmlElement->$type)) {
                 foreach ($xmlElement->$type as $documentElement) {
                     $documentName = (string) $documentElement['name'];

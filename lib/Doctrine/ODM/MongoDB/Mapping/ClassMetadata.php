@@ -140,6 +140,10 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'isEmbeddedDocument';
         }
 
+        if ($this->isAggregationResultDocument) {
+            $serialized[] = 'isAggregationResultDocument';
+        }
+
         if ($this->isVersioned) {
             $serialized[] = 'isVersioned';
             $serialized[] = 'versionField';

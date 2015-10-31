@@ -553,12 +553,14 @@ public function <methodName>()
                 $lines[] = ' * @ODM\\MappedSuperclass';
             } elseif ($metadata->isEmbeddedDocument) {
                 $lines[] = ' * @ODM\\EmbeddedDocument';
+            } elseif ($metadata->isAggregationResultDocument) {
+                $lines[] = ' * @ODM\\AggregationResultDocument';
             } else {
                 $lines[] = ' * @ODM\\Document';
             }
 
             $document = array();
-            if ( ! $metadata->isMappedSuperclass && ! $metadata->isEmbeddedDocument) {
+            if ( ! $metadata->isMappedSuperclass && ! $metadata->isEmbeddedDocument && ! $metadata->isAggregationResultDocument) {
                 if ($metadata->collection) {
                     $document[] = ' *     collection="' . $metadata->collection . '"';
                 }
