@@ -21,17 +21,16 @@ To generate a changelog summary since the last version, run
 All issues and pull requests in this release may be found under the
 [1.0.3 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.3).
 
-[#1259](https://github.com/doctrine/mongodb-odm/pull/1259) makes it possible to access an embedded document's parent
-association through the UnitOfWork as soon as it's owning document is persisted.
-[#1259](https://github.com/doctrine/mongodb-odm/pull/1259) and [#1252](https://github.com/doctrine/mongodb-odm/pull/1252)
+ * [#1259](https://github.com/doctrine/mongodb-odm/pull/1259) makes it possible to access an embedded document's     parent association through the UnitOfWork as soon as it's owning document is persisted.
+ * [#1259](https://github.com/doctrine/mongodb-odm/pull/1259) and [#1252](https://github.com/doctrine/mongodb-odm/pull/1252)
 make it possible to simply reuse embedded documents and collections without manually cloning them. For more information
 please see the [1.0.3 release blog post](http://www.doctrine-project.org/2015/11/03/doctrine-mongodb-odm-release-1-0-3.html).
-[#1248](https://github.com/doctrine/mongodb-odm/pull/1248) fixes the state of an embedded document that is added back
+ * [#1248](https://github.com/doctrine/mongodb-odm/pull/1248) fixes the state of an embedded document that is added back
 into a collection after being removed. Also, documents overwritten by `set` method are now properly handled by orphan
 removal.
-[#1251](https://github.com/doctrine/mongodb-odm/pull/1251) ensures that references mapped with a `repositoryMethod` are
+ * [#1251](https://github.com/doctrine/mongodb-odm/pull/1251) ensures that references mapped with a `repositoryMethod` are
 considered inverse-side relations.
-[#1261](https://github.com/doctrine/mongodb-odm/pull/1261) adds a missing `--no-backup` option for the
+ * [#1261](https://github.com/doctrine/mongodb-odm/pull/1261) adds a missing `--no-backup` option for the
 `odm:generate:documents` command.
 
 1.0.2 (2015-08-31)
