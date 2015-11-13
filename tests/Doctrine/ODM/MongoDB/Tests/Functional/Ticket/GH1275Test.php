@@ -7,9 +7,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    /**
-     *
-     */
     public function testResortAtomicCollectionsSwitch()
     {
         $getNameCallback = function (Item $item) {
@@ -38,7 +35,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array_map($getNameCallback, $container->items->toArray())
         );
 
-        $container->flip(1,2);
+        $container->flip(1, 2);
 
         $this->dm->persist($container);
         $this->dm->flush();
@@ -50,9 +47,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array_map($getNameCallback, $container->items->toArray())
         );
     }
-    /**
-     *
-     */
+
     public function testResortAtomicCollections()
     {
         $getNameCallback = function (Item $item) {
@@ -81,11 +76,8 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array_map($getNameCallback, $container->items->toArray())
         );
 
-        $this->dm->refresh($container);
-
         $container->move($itemOne, -1);
 
-        $this->dm->persist($container);
         $this->dm->flush();
         $this->dm->refresh($container);
 
@@ -96,8 +88,8 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $container->move($itemOne, 1);
 
-        $this->dm->persist($container);
         $this->dm->flush();
+        $this->dm->refresh($container);
 
         $this->assertSame(
             array('Number Two', 'Number One', 'Number Three'),
@@ -106,8 +98,8 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $container->move($itemTwo, 2);
 
-        $this->dm->persist($container);
         $this->dm->flush();
+        $this->dm->refresh($container);
 
         $this->assertSame(
             array('Number One', 'Number Three', 'Number Two'),
@@ -116,8 +108,8 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $container->move($itemTwo, 2);
 
-        $this->dm->persist($container);
         $this->dm->flush();
+        $this->dm->refresh($container);
 
         $this->assertSame(
             array('Number One', 'Number Three', 'Number Two'),
@@ -126,7 +118,8 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $container->move($itemThree, -1);
 
-        $this->dm->persist($container);
+        $this->dm->flush();
+        $this->dm->refresh($container);
 
         $this->assertSame(
             array('Number Three', 'Number One', 'Number Two'),
