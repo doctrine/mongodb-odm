@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testResortAtomicCollectionsSwitch()
+    public function testResortAtomicCollectionsFlipItems()
     {
         $getNameCallback = function (Item $item) {
             return $item->name;
@@ -128,12 +128,44 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertCount(3, $container->items);
     }
+
+    public function testResortEmbedManyCollection()
+    {
+        $getNameCallback = function (Element $element) {
+            return $element->name;
+        };
+
+        $container = new Container();
+        $container->elements->add(new Element('one'));
+        $container->elements->add(new Element('two'));
+        $container->elements->add(new Element('three'));
+
+        $this->dm->persist($container);
+        $this->dm->flush();
+        $this->dm->refresh($container);
+
+        $this->assertSame(
+            array('one', 'two', 'three'),
+            array_map($getNameCallback, $container->elements->toArray())
+        );
+
+        $two = $container->elements->get(1);
+        $three = $container->elements->get(2);
+        $container->items->set(1, $three);
+        $container->items->set(2, $two);
+
+        $this->dm->flush();
+        $this->dm->refresh($container);
+
+        $this->assertSame(
+            array('one', 'three', 'two'),
+            array_map($getNameCallback, $container->elements->toArray())
+        );
+    }
 }
 
 /**
  * @ODM\Document(collection="item")
- * @ODM\DiscriminatorField("type")
- * @ODM\InheritanceType("SINGLE_COLLECTION")
  */
 class Item {
     /** @ODM\Id */
@@ -150,6 +182,22 @@ class Item {
     public function __construct(Container $c, $name)
     {
         $this->container = $c;
+        $this->name = $name;
+    }
+}
+
+/**
+ * @ODM\EmbeddedDocument
+ */
+class Element {
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\String */
+    public $name;
+
+    public function __construct($name)
+    {
         $this->name = $name;
     }
 }
@@ -178,9 +226,17 @@ class Container {
      */
     public $firstItem;
 
+    /**
+     * @ODM\EmbedMany(
+     *     targetDocument="Element"
+     * )
+     */
+    public $elements;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
+        $this->elements = new ArrayCollection();
     }
 
     public function add(Item $item)
@@ -200,7 +256,8 @@ class Container {
         $this->items->set($a, $itemB);
     }
 
-    public function move(Item $item, $move) {
+    public function move(Item $item, $move)
+    {
         if ($move === 0) {
             return $this;
         }
