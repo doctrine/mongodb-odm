@@ -34,7 +34,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $container->add($itemThree);
 
         $this->assertSame(
-            ['Number One', 'Number Two', 'Number Three'],
+            array('Number One', 'Number Two', 'Number Three'),
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -46,7 +46,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            ['Number One','Number Three', 'Number Two'],
+            array('Number One','Number Three', 'Number Two'),
             array_map($getNameCallback, $container->items->toArray())
         );
     }
@@ -77,7 +77,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $container->add($itemThree);
 
         $this->assertSame(
-            ['Number One', 'Number Two', 'Number Three'],
+            array('Number One', 'Number Two', 'Number Three'),
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -90,7 +90,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            ['Number One', 'Number Two', 'Number Three'],
+            array('Number One', 'Number Two', 'Number Three'),
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -100,7 +100,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $this->assertSame(
-            ['Number Two', 'Number One', 'Number Three'],
+            array('Number Two', 'Number One', 'Number Three'),
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -110,7 +110,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $this->assertSame(
-            ['Number One', 'Number Three', 'Number Two'],
+            array('Number One', 'Number Three', 'Number Two'),
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -120,7 +120,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $this->assertSame(
-            ['Number One', 'Number Three', 'Number Two'],
+            array('Number One', 'Number Three', 'Number Two'),
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -129,7 +129,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($container);
 
         $this->assertSame(
-            ['Number Three', 'Number One', 'Number Two'],
+            array('Number Three', 'Number One', 'Number Two'),
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -163,8 +163,6 @@ class Item {
 
 /**
  * @ODM\Document(collection="container")
- * @ODM\DiscriminatorField("type")
- * @ODM\InheritanceType("SINGLE_COLLECTION")
  */
 class Container {
     /** @ODM\Id */
