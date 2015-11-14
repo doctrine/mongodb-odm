@@ -129,16 +129,31 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(3, $container->items);
     }
 
-    public function testResortEmbedManyCollection()
+    public static function getCollectionStrategies()
+    {
+        return array(
+            'testResortWithStrategyAddToSet' => array('addToSet'),
+            'testResortWithStrategySet' => array('set'),
+            'testResortWithStrategySetArray' => array('setArray'),
+            'testResortWithStrategyPushAll' => array('pushAll'),
+            'testResortWithStrategyAtomicSet' => array('atomicSet'),
+            'testResortWithStrategyAtomicSetArray' => array('atomicSetArray'),
+        );
+    }
+
+    /**
+     * @dataProvider getCollectionStrategies
+     */
+    public function testResortEmbedManyCollection($strategy)
     {
         $getNameCallback = function (Element $element) {
             return $element->name;
         };
 
         $container = new Container();
-        $container->elements->add(new Element('one'));
-        $container->elements->add(new Element('two'));
-        $container->elements->add(new Element('three'));
+        $container->$strategy->add(new Element('one'));
+        $container->$strategy->add(new Element('two'));
+        $container->$strategy->add(new Element('three'));
 
         $this->dm->persist($container);
         $this->dm->flush();
@@ -146,11 +161,11 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertSame(
             array('one', 'two', 'three'),
-            array_map($getNameCallback, $container->elements->toArray())
+            array_map($getNameCallback, $container->$strategy->toArray())
         );
 
-        $two = $container->elements->get(1);
-        $three = $container->elements->get(2);
+        $two = $container->$strategy->get(1);
+        $three = $container->$strategy->get(2);
         $container->items->set(1, $three);
         $container->items->set(2, $two);
 
@@ -159,7 +174,7 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertSame(
             array('one', 'three', 'two'),
-            array_map($getNameCallback, $container->elements->toArray())
+            array_map($getNameCallback, $container->$strategy->toArray())
         );
     }
 }
@@ -228,15 +243,61 @@ class Container {
 
     /**
      * @ODM\EmbedMany(
-     *     targetDocument="Element"
+     *     targetDocument="Element",
+     *     strategy="addToSet"
      * )
      */
-    public $elements;
+    public $addToSet;
+
+    /**
+     * @ODM\EmbedMany(
+     *     targetDocument="Element",
+     *     strategy="set"
+     * )
+     */
+    public $set;
+
+    /**
+     * @ODM\EmbedMany(
+     *     targetDocument="Element",
+     *     strategy="setArray"
+     * )
+     */
+    public $setArray;
+
+    /**
+     * @ODM\EmbedMany(
+     *     targetDocument="Element",
+     *     strategy="pushAll"
+     * )
+     */
+    public $pushAll;
+
+    /**
+     * @ODM\EmbedMany(
+     *     targetDocument="Element",
+     *     strategy="atomicSet"
+     * )
+     */
+    public $atomicSet;
+
+    /**
+     * @ODM\EmbedMany(
+     *     targetDocument="Element",
+     *     strategy="atomicSetArray"
+     * )
+     */
+    public $atomicSetArray;
 
     public function __construct()
     {
         $this->items = new ArrayCollection();
-        $this->elements = new ArrayCollection();
+        $this->addToSet = new ArrayCollection();
+        $this->set = new ArrayCollection();
+        $this->setArray = new ArrayCollection();
+        $this->pushAll = new ArrayCollection();
+        $this->atomicSet = new ArrayCollection();
+        $this->atomicSetArray = new ArrayCollection();
     }
 
     public function add(Item $item)
