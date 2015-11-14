@@ -581,6 +581,24 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $originalTest2 = $this->uow->getOriginalDocumentData($test2);
         $this->assertSame($originalTest2['embed'], $test2->embed);
     }
+
+    public function testEmbeddedDocumentWithDifferentFieldNameAnnotation()
+    {
+        $test1 = new ChangeEmbeddedWithNameAnnotationTest();
+
+        $embedded = new EmbeddedDocumentWithId();
+        $embedded->id = (string) new \MongoId();
+
+        $firstEmbedded = new EmbedDocumentWithAnotherEmbed();
+        $firstEmbedded->embed = $embedded;
+
+        $secondEmbedded = clone $firstEmbedded;
+
+        $test1->embedOne = $firstEmbedded;
+        $test1->embedTwo = $secondEmbedded;
+
+        $this->dm->persist($test1);
+    }
 }
 
 /**
@@ -616,4 +634,36 @@ class EmbeddedDocumentWithId
 {
     /** @ODM\Id */
     public $id;
+}
+
+/**
+ * @ODM\Document
+ */
+class ChangeEmbeddedWithNameAnnotationTest
+{
+    /**
+     * @ODM\Id
+     */
+    public $id;
+
+    /**
+     * @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithAnotherEmbedded")
+     */
+    public $embedOne;
+
+    /**
+     * @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithAnotherEmbedded")
+     */
+    public $embedTwo;
+}
+
+/**
+ * @ODM\EmbeddedDocument
+ */
+class EmbedDocumentWithAnotherEmbed
+{
+    /**
+     * @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithId", name="m_id")
+     */
+    public $embed;
 }

@@ -2348,7 +2348,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 if ($relatedDocuments instanceof PersistentCollection) {
                     if ($relatedDocuments->getOwner() !== $document) {
-                        $relatedDocuments = $this->fixPersistentCollectionOwnership($relatedDocuments, $document, $class, $mapping['name']);
+                        $relatedDocuments = $this->fixPersistentCollectionOwnership($relatedDocuments, $document, $class, $mapping['fieldName']);
                     }
                     // Unwrap so that foreach() does not initialize
                     $relatedDocuments = $relatedDocuments->unwrap();
@@ -2363,7 +2363,7 @@ class UnitOfWork implements PropertyChangedListener
                             $relatedDocuments[$relatedKey] = $relatedDocument;
                         }
                         $pathKey = ! isset($mapping['strategy']) || CollectionHelper::isList($mapping['strategy']) ? $count++ : $relatedKey;
-                        $this->setParentAssociation($relatedDocument, $mapping, $document, $mapping['name'] . '.' . $pathKey);
+                        $this->setParentAssociation($relatedDocument, $mapping, $document, $mapping['fieldName'] . '.' . $pathKey);
                     }
                     $this->doPersist($relatedDocument, $visited);
                 }
@@ -2372,9 +2372,9 @@ class UnitOfWork implements PropertyChangedListener
                     list(, $knownParent, ) = $this->getParentAssociation($relatedDocuments);
                     if ($knownParent && $knownParent !== $document) {
                         $relatedDocuments = clone $relatedDocuments;
-                        $class->setFieldValue($document, $mapping['name'], $relatedDocuments);
+                        $class->setFieldValue($document, $mapping['fieldName'], $relatedDocuments);
                     }
-                    $this->setParentAssociation($relatedDocuments, $mapping, $document, $mapping['name']);
+                    $this->setParentAssociation($relatedDocuments, $mapping, $document, $mapping['fieldName']);
                 }
                 $this->doPersist($relatedDocuments, $visited);
             }
