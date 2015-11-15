@@ -441,7 +441,7 @@ class PersistentCollection implements BaseCollection
 
         $this->changed();
 
-        if ($this->isOrphanRemovalEnabled()) {
+        if ($this->isOrphanRemovalEnabled() && ! $this->contains($element)) {
             $this->uow->scheduleOrphanRemoval($element);
         }
 
@@ -539,7 +539,7 @@ class PersistentCollection implements BaseCollection
 
         // Handle orphanRemoval
         if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $oldValue !== $value) {
-            if ($oldValue !== null) {
+            if ($oldValue !== null && ! $this->contains($oldValue)) {
                 $this->uow->scheduleOrphanRemoval($oldValue);
             }
 
