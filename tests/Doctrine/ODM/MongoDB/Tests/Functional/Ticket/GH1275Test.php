@@ -5,7 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testResortAtomicCollectionsFlipItems()
     {
@@ -166,10 +166,11 @@ class GH41275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $two = $container->$strategy->get(1);
         $three = $container->$strategy->get(2);
-        $container->items->set(1, $three);
-        $container->items->set(2, $two);
+        $container->$strategy->set(1, $three);
+        $container->$strategy->set(2, $two);
 
         $this->dm->flush();
+
         $this->dm->refresh($container);
 
         $this->assertSame(
