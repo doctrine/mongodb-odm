@@ -218,6 +218,7 @@ class Element {
 }
 
 /**
+ * @ODM\HasLifecycleCallbacks
  * @ODM\Document(collection="container")
  */
 class Container {
@@ -346,5 +347,12 @@ class Container {
         }
 
         $this->items->set($newPosition, $item);
+    }
+
+    /**
+     * @ODM\PreUpdate
+     */
+    public function preUpdate()
+    {
     }
 }
