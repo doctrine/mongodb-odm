@@ -77,11 +77,11 @@ may be used to enabled and return a filter, after which you may set parameters.
 
     <?php
 
-    $filter = $dm->getFilters()->enable("locale");
+    $filter = $dm->getFilterCollection()->enable("locale");
     $filter->setParameter('locale', array('$in' => array('en', 'fr'));
 
     // Disable the filter (perhaps temporarily to run an unfiltered query)
-    $filter = $dm->getFilters()->disable("locale");
+    $filter = $dm->getFilterCollection()->disable("locale");
 
 .. warning::
 
