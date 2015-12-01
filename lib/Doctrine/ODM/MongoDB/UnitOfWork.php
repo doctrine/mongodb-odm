@@ -1512,7 +1512,8 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * @deprecated
+     * @deprecated to be removed in 2.0
+     * @since 1.1
      */
     public function isScheduledForDirtyCheck($document)
     {
@@ -1759,7 +1760,8 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * @deprecated
+     * @deprecated to be removed in 2.0
+     * @since 1.1
      */
     public function scheduleForDirtyCheck($document)
     {
