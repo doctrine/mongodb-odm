@@ -1505,10 +1505,18 @@ class UnitOfWork implements PropertyChangedListener
         return isset($this->documentUpdates[spl_object_hash($document)]);
     }
 
-    public function isScheduledForDirtyCheck($document)
+    public function isScheduledForSynchronization($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         return isset($this->scheduledForSynchronization[$class->name][spl_object_hash($document)]);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function isScheduledForDirtyCheck($document)
+    {
+        return $this->isScheduledForSynchronization($document);
     }
 
     /**
