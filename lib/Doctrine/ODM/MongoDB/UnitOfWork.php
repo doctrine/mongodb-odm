@@ -1751,12 +1751,19 @@ class UnitOfWork implements PropertyChangedListener
      * Schedules a document for dirty-checking at commit-time.
      *
      * @param object $document The document to schedule for dirty-checking.
-     * @todo Rename: scheduleForSynchronization
      */
-    public function scheduleForDirtyCheck($document)
+    public function scheduleForSynchronization($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         $this->scheduledForSynchronization[$class->name][spl_object_hash($document)] = $document;
+    }
+
+    /**
+     * @deprecated
+     */
+    public function scheduleForDirtyCheck($document)
+    {
+        $this->scheduleForSynchronization($document);
     }
 
     /**
@@ -1857,7 +1864,7 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_MANAGED:
                 // Nothing to do, except if policy is "deferred explicit"
                 if ($class->isChangeTrackingDeferredExplicit()) {
-                    $this->scheduleForDirtyCheck($document);
+                    $this->scheduleForSynchronization($document);
                 }
                 break;
             case self::STATE_NEW:
@@ -2108,7 +2115,7 @@ class UnitOfWork implements PropertyChangedListener
                                 $managedCol->setDirty(true);
 
                                 if ($assoc2['isOwningSide'] && $class->isChangeTrackingNotify()) {
-                                    $this->scheduleForDirtyCheck($managedCopy);
+                                    $this->scheduleForSynchronization($managedCopy);
                                 }
                             }
                         }
@@ -2122,7 +2129,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($class->isChangeTrackingDeferredExplicit()) {
-                $this->scheduleForDirtyCheck($document);
+                $this->scheduleForSynchronization($document);
             }
         }
 
@@ -3035,7 +3042,7 @@ class UnitOfWork implements PropertyChangedListener
         // Update changeset and mark document for synchronization
         $this->documentChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
         if ( ! isset($this->scheduledForSynchronization[$class->name][$oid])) {
-            $this->scheduleForDirtyCheck($document);
+            $this->scheduleForSynchronization($document);
         }
     }
 
