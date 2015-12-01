@@ -880,7 +880,7 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
-   /**
+    /**
      * Computes the changes of an association.
      *
      * @param object $parentDocument
