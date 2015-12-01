@@ -130,9 +130,8 @@ class UnitOfWork implements PropertyChangedListener
      * policy of DEFERRED_EXPLICIT.
      *
      * @var array
-     * @todo rename: scheduledForSynchronization
      */
-    private $scheduledForDirtyCheck = array();
+    private $scheduledForSynchronization = array();
 
     /**
      * A list of all pending document insertions.
@@ -445,7 +444,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionUpdates =
         $this->collectionDeletions =
         $this->visitedCollections =
-        $this->scheduledForDirtyCheck =
+        $this->scheduledForSynchronization =
         $this->orphanRemovals = 
         $this->hasScheduledCollections = array();
     }
@@ -853,8 +852,8 @@ class UnitOfWork implements PropertyChangedListener
                     $documentsToProcess = $documents;
                     break;
 
-                case (isset($this->scheduledForDirtyCheck[$className])):
-                    $documentsToProcess = $this->scheduledForDirtyCheck[$className];
+                case (isset($this->scheduledForSynchronization[$className])):
+                    $documentsToProcess = $this->scheduledForSynchronization[$className];
                     break;
 
                 default:
@@ -1509,7 +1508,7 @@ class UnitOfWork implements PropertyChangedListener
     public function isScheduledForDirtyCheck($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-        return isset($this->scheduledForDirtyCheck[$class->name][spl_object_hash($document)]);
+        return isset($this->scheduledForSynchronization[$class->name][spl_object_hash($document)]);
     }
 
     /**
@@ -1749,7 +1748,7 @@ class UnitOfWork implements PropertyChangedListener
     public function scheduleForDirtyCheck($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-        $this->scheduledForDirtyCheck[$class->name][spl_object_hash($document)] = $document;
+        $this->scheduledForSynchronization[$class->name][spl_object_hash($document)] = $document;
     }
 
     /**
@@ -2472,7 +2471,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->originalDocumentData =
             $this->documentChangeSets =
             $this->documentStates =
-            $this->scheduledForDirtyCheck =
+            $this->scheduledForSynchronization =
             $this->documentInsertions =
             $this->documentUpserts =
             $this->documentUpdates =
@@ -3027,7 +3026,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Update changeset and mark document for synchronization
         $this->documentChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
-        if ( ! isset($this->scheduledForDirtyCheck[$class->name][$oid])) {
+        if ( ! isset($this->scheduledForSynchronization[$class->name][$oid])) {
             $this->scheduleForDirtyCheck($document);
         }
     }
