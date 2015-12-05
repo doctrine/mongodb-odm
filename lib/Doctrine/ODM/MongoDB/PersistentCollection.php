@@ -332,10 +332,16 @@ class PersistentCollection implements BaseCollection
      */
     public function getDeletedDocuments()
     {
+        $compare = function ($a, $b) {
+            $compareA = is_object($a) ? spl_object_hash($a) : $a;
+            $compareb = is_object($b) ? spl_object_hash($b) : $b;
+            return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
+        };
+
         return array_udiff(
             $this->snapshot,
             $this->coll->toArray(),
-            function ($a, $b) { return $a === $b ? 0 : ($a > $b ? 1 : -1); }
+            $compare
         );
     }
 
