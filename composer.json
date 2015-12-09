@@ -14,7 +14,8 @@
         { "name": "Andreas Braun", "email": "alcaeus@alcaeus.org" }
     ],
     "require": {
-        "php": ">=5.5",
+        "php": "^5.5",
+        "ext-mongo": "^1.5",
         "symfony/console": "~2.3|~3.0",
         "doctrine/annotations": "~1.0",
         "doctrine/collections": "~1.1",

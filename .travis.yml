@@ -6,16 +6,8 @@ php:
   - 5.6
 
 env:
+  - MONGO_VERSION=1.5.8
   - MONGO_VERSION=stable
-  
-matrix:
-  include:
-    - php: 5.5
-      env: MONGO_VERSION=1.2.12
-    - php: 5.5
-      env: MONGO_VERSION=1.3.7
-    - php: 5.5
-      env: MONGO_VERSION=1.4.5
 
 services: mongodb
 
