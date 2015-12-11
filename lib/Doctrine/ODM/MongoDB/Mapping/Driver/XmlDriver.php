@@ -373,6 +373,21 @@ class XmlDriver extends FileDriver
             }
         }
 
+        if (isset($xmlIndex->{'partialFilterExpression'})) {
+            foreach ($xmlIndex->{'partialFilterExpression'} as $partialFilterExpression) {
+                $operator = (string) $partialFilterExpression['comparison'] ?: 'eq';
+                $value = (string) $partialFilterExpression['value'];
+                if ($value === 'true') {
+                    $value = true;
+                } elseif ($value === 'false') {
+                    $value = false;
+                } elseif (is_numeric($value)) {
+                    $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
+                }
+                $options['partialFilterExpression'][(string) $partialFilterExpression['field']] = array('$' . $operator => $value);
+            }
+        }
+
         $class->addIndex($keys, $options);
     }
 

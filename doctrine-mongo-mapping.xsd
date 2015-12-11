@@ -256,10 +256,29 @@
     <xs:attribute name="value" type="xs:NMTOKEN" use="required" />
   </xs:complexType>
 
+  <xs:simpleType name="partial-filter-expression-comparison">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="eq"/>
+      <xs:enumeration value="exists"/>
+      <xs:enumeration value="gt"/>
+      <xs:enumeration value="gte"/>
+      <xs:enumeration value="lt"/>
+      <xs:enumeration value="lte"/>
+      <xs:enumeration value="type"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="partial-filter-expression">
+    <xs:attribute name="field" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="comparison" type="odm:partial-filter-expression-comparison" use="optional" default="eq"/>
+    <xs:attribute name="value" type="xs:string" use="required" />
+  </xs:complexType>
+
   <xs:complexType name="index">
     <xs:sequence>
       <xs:element name="key" type="odm:index-key" minOccurs="1" maxOccurs="unbounded"/>
       <xs:element name="option" type="odm:index-option" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="partialFilterExpression" type="odm:partial-filter-expression" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN"/>
     <xs:attribute name="drop-dups" type="xs:boolean"/>

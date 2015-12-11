@@ -439,6 +439,7 @@ class SchemaManager
      *   (c) Mongo index is unique without dropDups and mapped index is unique
      *       with dropDups
      *   (d) Geospatial options differ (bits, max, min)
+     *   (e) The partialFilterExpression differs
      *
      * Regarding (c), the inverse case is not a reason to delete and
      * recreate the index, since dropDups only affects creation of
@@ -467,7 +468,7 @@ class SchemaManager
             return false;
         }
 
-        foreach (array('bits', 'max', 'min') as $option) {
+        foreach (array('bits', 'max', 'min', 'partialFilterExpression') as $option) {
             if (isset($mongoIndex[$option]) xor isset($documentIndexOptions[$option])) {
                 return false;
             }

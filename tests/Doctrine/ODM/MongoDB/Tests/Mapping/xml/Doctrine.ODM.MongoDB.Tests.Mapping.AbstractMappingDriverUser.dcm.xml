@@ -28,6 +28,11 @@
                 <key name="createdAt" order="asc" />
                 <option name="expireAfterSeconds" value="3600" />
             </index>
+            <index>
+                <key name="lock" order="asc" />
+                <partialFilterExpression field="version" comparison="gt" value="1" />
+                <partialFilterExpression field="discr" value="default" />
+            </index>
         </indexes>
         <reference-one target-document="Address" field="address">
             <cascade>

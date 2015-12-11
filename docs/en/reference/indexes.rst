@@ -72,6 +72,13 @@ You can customize the index with some additional options:
    **sparse** - Create a sparse index. If a unique index is being created
    the sparse option will allow duplicate null entries, but the field must be
    unique otherwise.
+-
+   **partialFilterExpression** - Create a partial index. Partial indexes only
+   index the documents in a collection that meet a specified filter expression.
+   By indexing a subset of the documents in a collection, partial indexes have
+   lower storage requirements and reduced performance costs for index creation
+   and maintenance. This feature was introduced with MongoDB 3.2 and is not
+   available on older versions.
 
 Unique Index
 ------------

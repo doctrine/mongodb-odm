@@ -303,20 +303,26 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
         $this->assertTrue(isset($indexes[1]['options']['dropDups']));
         $this->assertEquals(true, $indexes[1]['options']['dropDups']);
 
-        $this->assertTrue(isset($indexes[2]['keys']['mysqlProfileId']));
-        $this->assertEquals(-1, $indexes[2]['keys']['mysqlProfileId']);
+        $this->assertTrue(isset($indexes[2]['keys']['lock']));
+        $this->assertEquals(1, $indexes[2]['keys']['lock']);
         $this->assertTrue( ! empty($indexes[2]['options']));
-        $this->assertTrue(isset($indexes[2]['options']['unique']));
-        $this->assertEquals(true, $indexes[2]['options']['unique']);
-        $this->assertTrue(isset($indexes[2]['options']['dropDups']));
-        $this->assertEquals(true, $indexes[2]['options']['dropDups']);
+        $this->assertTrue(isset($indexes[2]['options']['partialFilterExpression']));
+        $this->assertSame(array('version' => array('$gt' => 1), 'discr' => array('$eq' => 'default')), $indexes[2]['options']['partialFilterExpression']);
 
-        $this->assertTrue(isset($indexes[3]['keys']['username']));
-        $this->assertEquals(-1, $indexes[3]['keys']['username']);
+        $this->assertTrue(isset($indexes[3]['keys']['mysqlProfileId']));
+        $this->assertEquals(-1, $indexes[3]['keys']['mysqlProfileId']);
+        $this->assertTrue( ! empty($indexes[3]['options']));
         $this->assertTrue(isset($indexes[3]['options']['unique']));
         $this->assertEquals(true, $indexes[3]['options']['unique']);
         $this->assertTrue(isset($indexes[3]['options']['dropDups']));
-        $this->assertEquals(false, $indexes[3]['options']['dropDups']);
+        $this->assertEquals(true, $indexes[3]['options']['dropDups']);
+
+        $this->assertTrue(isset($indexes[4]['keys']['username']));
+        $this->assertEquals(-1, $indexes[4]['keys']['username']);
+        $this->assertTrue(isset($indexes[4]['options']['unique']));
+        $this->assertEquals(true, $indexes[4]['options']['unique']);
+        $this->assertTrue(isset($indexes[4]['options']['dropDups']));
+        $this->assertEquals(false, $indexes[4]['options']['dropDups']);
 
         return $class;
     }
@@ -328,7 +334,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
  * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser"})
  * @ODM\DefaultDiscriminatorValue("default")
  * @ODM\HasLifecycleCallbacks
- * @ODM\Indexes(@ODM\Index(keys={"createdAt"="asc"},expireAfterSeconds=3600))
+ * @ODM\Indexes(@ODM\Index(keys={"createdAt"="asc"},expireAfterSeconds=3600),@ODM\Index(keys={"lock"="asc"},partialFilterExpression={"version"={"$gt"=1},"discr"={"$eq"="default"}}))
  */
 class AbstractMappingDriverUser
 {
