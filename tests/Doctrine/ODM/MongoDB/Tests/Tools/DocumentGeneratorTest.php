@@ -195,9 +195,6 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testTraitPropertiesAndMethodsAreNotDuplicated()
     {
-        if (PHP_VERSION_ID < 50400) {
-            $this->markTestSkipped('Traits are not available before php 5.4.');
-        }
         $cmf = $this->dm->getMetadataFactory();
         $user = new \Doctrine\ODM\MongoDB\Tests\Tools\GH297\User();
         $metadata = $cmf->getMetadataFor(get_class($user));
@@ -214,9 +211,6 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses()
     {
-        if (PHP_VERSION_ID < 50400) {
-            $this->markTestSkipped('Traits are not available before php 5.4.');
-        }
         $cmf = $this->dm->getMetadataFactory();
         $user = new \Doctrine\ODM\MongoDB\Tests\Tools\GH297\Admin();
         $metadata = $cmf->getMetadataFor(get_class($user));

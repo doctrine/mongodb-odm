@@ -254,16 +254,10 @@ class SchemaManager
                 $options = $index['options'];
 
                 if ( ! isset($options['safe']) && ! isset($options['w'])) {
-                    if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
-                        $options['safe'] = true;
-                    } else {
-                        $options['w'] = 1;
-                    }
+                    $options['w'] = 1;
                 }
 
-                if (isset($options['safe']) && ! isset($options['w']) &&
-                    version_compare(phpversion('mongo'), '1.3.0', '>=')) {
-
+                if (isset($options['safe']) && ! isset($options['w'])) {
                     $options['w'] = is_bool($options['safe']) ? (integer) $options['safe'] : $options['safe'];
                     unset($options['safe']);
                 }

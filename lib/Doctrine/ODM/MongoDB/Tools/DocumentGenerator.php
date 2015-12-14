@@ -522,7 +522,7 @@ public function <methodName>()
      */
     protected function getTraits(ClassMetadataInfo $metadata)
     {
-        if (PHP_VERSION_ID >= 50400 && ($metadata->reflClass !== null || class_exists($metadata->name))) {
+        if ($metadata->reflClass !== null || class_exists($metadata->name)) {
             $reflClass = $metadata->reflClass === null ? new \ReflectionClass($metadata->name) : $metadata->reflClass;
             $traits = array();
             while ($reflClass !== false) {
