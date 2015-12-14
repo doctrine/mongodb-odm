@@ -30,7 +30,7 @@ class StringType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (string) $value : null;
+        return ($value === null || $value instanceof \MongoRegex) ? $value : (string) $value;
     }
 
     public function convertToPHPValue($value)

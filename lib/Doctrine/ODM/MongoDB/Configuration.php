@@ -364,7 +364,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Gets array of default commit options.
      *
-     * @return boolean
+     * @return array
      */
     public function getDefaultCommitOptions()
     {
