@@ -326,6 +326,26 @@ class PersistentCollection implements BaseCollection
     }
 
     /**
+     * INTERNAL: get objects that were removed, unlike getDeleteDiff this doesn't care about indices.
+     *
+     * @return array
+     */
+    public function getDeletedDocuments()
+    {
+        $compare = function ($a, $b) {
+            $compareA = is_object($a) ? spl_object_hash($a) : $a;
+            $compareb = is_object($b) ? spl_object_hash($b) : $b;
+            return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
+        };
+
+        return array_udiff(
+            $this->snapshot,
+            $this->coll->toArray(),
+            $compare
+        );
+    }
+
+    /**
      * INTERNAL:
      * getInsertDiff
      *
@@ -420,10 +440,6 @@ class PersistentCollection implements BaseCollection
 
         $this->changed();
 
-        if ($this->isOrphanRemovalEnabled()) {
-            $this->uow->scheduleOrphanRemoval($removed);
-        }
-
         return $removed;
     }
 
@@ -440,10 +456,6 @@ class PersistentCollection implements BaseCollection
         }
 
         $this->changed();
-
-        if ($this->isOrphanRemovalEnabled()) {
-            $this->uow->scheduleOrphanRemoval($element);
-        }
 
         return $removed;
     }
@@ -534,18 +546,11 @@ class PersistentCollection implements BaseCollection
      */
     public function set($key, $value)
     {
-        $oldValue = $this->get($key);
         $this->coll->set($key, $value);
 
         // Handle orphanRemoval
-        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $oldValue !== $value) {
-            if ($oldValue !== null) {
-                $this->uow->scheduleOrphanRemoval($oldValue);
-            }
-
-            if ($value !== null) {
-                $this->uow->unscheduleOrphanRemoval($value);
-            }
+        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $value !== null) {
+            $this->uow->unscheduleOrphanRemoval($value);
         }
 
         $this->changed();

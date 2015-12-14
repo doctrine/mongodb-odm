@@ -207,7 +207,7 @@ class UnitOfWork implements PropertyChangedListener
     private $evm;
 
     /**
-     * Embedded documents that are scheduled for removal.
+     * Additional documents that are scheduled for removal.
      *
      * @var array
      */
@@ -898,12 +898,18 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        if ($value instanceof PersistentCollection && $value->isDirty() && $assoc['isOwningSide']) {
+        if ($value instanceof PersistentCollection && $value->isDirty() && ($assoc['isOwningSide'] || isset($assoc['embedded']))) {
             if ($topOrExistingDocument || CollectionHelper::usesSet($assoc['strategy'])) {
                 $this->scheduleCollectionUpdate($value);
             }
             $topmostOwner = $this->getOwningDocument($value->getOwner());
             $this->visitedCollections[spl_object_hash($topmostOwner)][] = $value;
+            if ( ! empty($assoc['orphanRemoval']) || isset($assoc['embedded'])) {
+                $value->initialize();
+                foreach ($value->getDeletedDocuments() as $orphan) {
+                    $this->scheduleOrphanRemoval($orphan);
+                }
+            }
         }
 
         // Look through the documents, and in any of their associations,
