@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class MODM43Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -31,8 +32,9 @@ class Person
     public $lastName;
 
     /** @ODM\PreLoad */
-    public function preLoad(array &$data)
+    public function preLoad(PreLoadEventArgs $e)
     {
+        $data =& $e->getData();
         if (isset($data['name'])) {
             $e = explode(' ', $data['name']);
             $data['firstName'] = $e[0];

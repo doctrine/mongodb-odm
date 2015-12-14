@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
+use Doctrine\ODM\MongoDB\Event;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
@@ -268,57 +269,57 @@ abstract class BaseDocument
     public $preFlush = false;
 
     /** @ODM\PrePersist */
-    public function prePersist()
+    public function prePersist(Event\LifecycleEventArgs $e)
     {
         $this->prePersist = true;
         $this->createdAt = new \DateTime();
     }
 
     /** @ODM\PostPersist */
-    public function postPersist()
+    public function postPersist(Event\LifecycleEventArgs $e)
     {
         $this->postPersist = true;
     }
 
     /** @ODM\PreUpdate */
-    public function preUpdate()
+    public function preUpdate(Event\PreUpdateEventArgs $e)
     {
         $this->preUpdate = true;
         $this->updatedAt = new \DateTime();
     }
 
     /** @ODM\PostUpdate */
-    public function postUpdate()
+    public function postUpdate(Event\LifecycleEventArgs $e)
     {
         $this->postUpdate = true;
     }
 
     /** @ODM\PreRemove */
-    public function preRemove()
+    public function preRemove(Event\LifecycleEventArgs $e)
     {
         $this->preRemove = true;
     }
 
     /** @ODM\PostRemove */
-    public function postRemove()
+    public function postRemove(Event\LifecycleEventArgs $e)
     {
         $this->postRemove = true;
     }
 
     /** @ODM\PreLoad */
-    public function preLoad()
+    public function preLoad(Event\PreLoadEventArgs $e)
     {
         $this->preLoad = true;
     }
 
     /** @ODM\PostLoad */
-    public function postLoad()
+    public function postLoad(Event\LifecycleEventArgs $e)
     {
         $this->postLoad = true;
     }
     
     /** @ODM\PreFlush */
-    public function preFlush()
+    public function preFlush(Event\PreFlushEventArgs $e)
     {
         $this->preFlush = true;
     }
