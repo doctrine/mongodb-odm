@@ -372,10 +372,6 @@ class Configuration extends \Doctrine\MongoDB\Configuration
             return $this->attributes['defaultCommitOptions'];
         }
 
-        if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
-            return array('safe' => true);
-        }
-
         return array('w' => 1);
     }
 

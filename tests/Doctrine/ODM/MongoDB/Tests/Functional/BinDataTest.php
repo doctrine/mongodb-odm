@@ -25,13 +25,6 @@ class BinDataTest extends BaseTest
 
     public function provideData()
     {
-        /* In driver versions before 1.2.11, the custom binary data type is
-         * incorrectly returned as -128.
-         *
-         * See: https://jira.mongodb.org/browse/PHP-408
-         */
-        $expectedBinCustom = version_compare(phpversion('mongo'), '1.2.11', '<') ? -128 : \MongoBinData::CUSTOM;
-
         return array(
             array('bin', 'test', 0), // MongoBinData::GENERIC is only defined in driver 1.5+
             array('binFunc', 'test', \MongoBinData::FUNC),
@@ -39,7 +32,7 @@ class BinDataTest extends BaseTest
             array('binUUID', 'test', \MongoBinData::UUID),
             array('binUUIDRFC4122', '1234567890ABCDEF', 4), // MongoBinData::UUID_RFC4122 is only defined in driver 1.5+
             array('binMD5', 'test', \MongoBinData::MD5),
-            array('binCustom', 'test', $expectedBinCustom),
+            array('binCustom', 'test', \MongoBinData::CUSTOM),
         );
     }
 }

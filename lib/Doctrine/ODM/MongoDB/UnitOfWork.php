@@ -1052,8 +1052,7 @@ class UnitOfWork implements PropertyChangedListener
                 ));
             }
 
-            // \MongoId::isValid($idValue) was introduced in 1.5.0 so it's no good
-            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! preg_match('/^[0-9a-f]{24}$/', $idValue)) {
+            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! \MongoId::isValid($idValue)) {
                 throw new \InvalidArgumentException(sprintf(
                     "%s uses AUTO identifier generation strategy but provided identifier is not valid MongoId.",
                     get_class($document)
