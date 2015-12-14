@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 
 /**
@@ -78,7 +79,7 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return Doctrine\ODM\MongoDB\DocumentManager
+     * @return \Doctrine\ODM\MongoDB\DocumentManager
      */
     private function getMockDocumentManager()
     {
@@ -88,7 +89,7 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return Doctrine\ODM\MongoDB\UnitOfWork
+     * @return \Doctrine\ODM\MongoDB\UnitOfWork
      */
     private function getMockUnitOfWork()
     {
@@ -98,7 +99,7 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection
      */
     private function getMockCollection()
     {
