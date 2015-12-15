@@ -778,7 +778,7 @@ class UnitOfWork implements PropertyChangedListener
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
             if ($changeSet) {
-                $this->documentChangeSets[$oid] = ($recompute && isset($this->documentChangeSets[$oid]))
+                $this->documentChangeSets[$oid] = (isset($this->documentChangeSets[$oid]))
                     ? $changeSet + $this->documentChangeSets[$oid]
                     : $changeSet;
 
@@ -2916,7 +2916,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function setOriginalDocumentData($document, array $data)
     {
-        $this->originalDocumentData[spl_object_hash($document)] = $data;
+        $oid = spl_object_hash($document);
+        $this->originalDocumentData[$oid] = $data;
+        unset($this->documentChangeSets[$oid]);
     }
 
     /**
