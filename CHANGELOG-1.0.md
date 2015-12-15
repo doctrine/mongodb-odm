@@ -15,8 +15,21 @@ To generate a changelog summary since the last version, run
 1.0.x-dev
 ---------
 
-1.0.3 (2015-11-03)
+1.0.4 (2015-12-15)
 ------------------
+
+All issues and pull requests in this release may be found under the
+[1.0.4 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.4).
+
+* [#1276](https://github.com/doctrine/mongodb-odm/pull/1276) fixes a bug when the property name and database field name of an embedded document were different.
+* [#1281](https://github.com/doctrine/mongodb-odm/pull/1281) fixes orphanRemoval in PersistentCollection objects when moving items within the collection.
+* [#1298](https://github.com/doctrine/mongodb-odm/pull/1298) ensures that \MongoRegex instances are not converted to string when running queries.
+* [#1300](https://github.com/doctrine/mongodb-odm/pull/1300) ensures that inherited properties and methods are not duplicated to child classes when generating documents.
+* [#1306](https://github.com/doctrine/mongodb-odm/pull/1306) fixes an issue where changesets computed manually before flush could have been lost.
+
+
+1.0.3 (2015-11-03)
+-----------------
 
 All issues and pull requests in this release may be found under the
 [1.0.3 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.3).
