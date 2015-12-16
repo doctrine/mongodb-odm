@@ -26,8 +26,8 @@
         "doctrine/mongodb": "~1.2"
     },
     "require-dev": {
-        "symfony/yaml": "~2.3|~3.0",
-        "phpunit/phpunit": "~4.0"
+        "phpunit/phpunit": "~4.8",
+        "symfony/yaml": "~2.3|~3.0"
     },
     "suggest": {
         "symfony/yaml": "Enables the YAML metadata mapping driver"
