@@ -533,7 +533,7 @@ class UnitOfWork implements PropertyChangedListener
         $state = $this->getDocumentState($document);
 
         if ($state !== self::STATE_MANAGED && $state !== self::STATE_REMOVED) {
-            throw new \InvalidArgumentException("Document has to be managed or scheduled for removal for single computation " . self::objToStr($document));
+            throw new \InvalidArgumentException("Document has to be managed or scheduled for removal for single computation " . $this->objToStr($document));
         }
 
         $class = $this->dm->getClassMetadata(get_class($document));
@@ -939,7 +939,7 @@ class UnitOfWork implements PropertyChangedListener
                 case self::STATE_NEW:
                     if ( ! $assoc['isCascadePersist']) {
                         throw new \InvalidArgumentException("A new document was found through a relationship that was not"
-                            . " configured to cascade persist operations: " . self::objToStr($entry) . "."
+                            . " configured to cascade persist operations: " . $this->objToStr($entry) . "."
                             . " Explicitly persist the new document or configure cascading persist operations"
                             . " on the relationship.");
                     }
@@ -3122,7 +3122,7 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
-    private static function objToStr($obj)
+    private function objToStr($obj)
     {
         return method_exists($obj, '__toString') ? (string)$obj : get_class($obj) . '@' . spl_object_hash($obj);
     }
