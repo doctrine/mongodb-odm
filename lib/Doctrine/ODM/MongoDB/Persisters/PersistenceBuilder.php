@@ -454,7 +454,7 @@ class PersistenceBuilder
         }
 
         if (isset($mapping['reference'])) {
-            return $this->prepareReferencedDocumentValue($mapping, $document, false);
+            return $this->prepareReferencedDocumentValue($mapping, $document);
         }
 
         throw new \InvalidArgumentException('Mapping is neither embedded nor reference.');
@@ -486,15 +486,5 @@ class PersistenceBuilder
         $this->uow->unscheduleCollectionUpdate($coll);
 
         return $setData;
-    }
-
-    /**
-     * @param object $document
-     * @return boolean
-     */
-    private function isScheduledForInsert($document)
-    {
-        return $this->uow->isScheduledForInsert($document)
-            || $this->uow->getDocumentPersister(get_class($document))->isQueuedForInsert($document);
     }
 }
