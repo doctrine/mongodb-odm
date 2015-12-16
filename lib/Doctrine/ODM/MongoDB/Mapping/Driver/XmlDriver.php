@@ -236,10 +236,6 @@ class XmlDriver extends FileDriver
 
     private function addEmbedMapping(ClassMetadataInfo $class, $embed, $type)
     {
-        $cascade = array_keys((array) $embed->cascade);
-        if (1 === count($cascade)) {
-            $cascade = current($cascade) ?: next($cascade);
-        }
         $attributes = $embed->attributes();
         $mapping = array(
             'type'           => $type,

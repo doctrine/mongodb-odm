@@ -534,7 +534,7 @@ public function <methodName>()
         return array();
     }
 
-    private function generateDocumentImports(ClassMetadataInfo $metadata)
+    private function generateDocumentImports()
     {
         if ($this->generateAnnotations) {
             return 'use Doctrine\\ODM\\MongoDB\\Mapping\\Annotations as ODM;';
@@ -833,7 +833,7 @@ public function <methodName>()
         return $this->prefixCodeWithSpaces($method);
     }
 
-    private function generateAssociationMappingPropertyDocBlock(array $fieldMapping, ClassMetadataInfo $metadata)
+    private function generateAssociationMappingPropertyDocBlock(array $fieldMapping)
     {
         $lines = array();
         $lines[] = $this->spaces . '/**';
