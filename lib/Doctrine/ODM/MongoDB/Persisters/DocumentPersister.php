@@ -973,7 +973,7 @@ class DocumentPersister
             }
 
             // No further preparation unless we're dealing with a simple reference
-            if (empty($mapping['reference']) || empty($mapping['simple'])) {
+            if (empty($mapping['reference']) || empty($mapping['simple']) || empty((array) $value)) {
                 return array($fieldName, $value);
             }
 
