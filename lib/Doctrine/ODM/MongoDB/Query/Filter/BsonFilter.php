@@ -32,7 +32,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 abstract class BsonFilter
 {
     /**
-     * The entity manager.
+     * The document manager.
      * @var DocumentManager
      */
     protected $dm;
