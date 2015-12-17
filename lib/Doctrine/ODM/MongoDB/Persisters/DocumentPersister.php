@@ -972,7 +972,9 @@ class DocumentPersister
             }
 
             // No further preparation unless we're dealing with a simple reference
-            if (empty($mapping['reference']) || empty($mapping['simple']) || empty((array) $value)) {
+            // We can't have expressions in empty() with PHP < 5.5, so store it in a variable
+            $arrayValue = (array) $value;
+            if (empty($mapping['reference']) || empty($mapping['simple']) || empty($arrayValue)) {
                 return array($fieldName, $value);
             }
 
