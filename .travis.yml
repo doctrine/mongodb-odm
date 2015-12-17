@@ -23,10 +23,11 @@ services: mongodb
 
 before_script:
   - yes '' | pecl -q install -f mongo-${MONGO_VERSION} && echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - composer self-update
   - composer install --dev
 
 script:
-    - phpunit --coverage-clover=coverage.clover
+    - ./vendor/bin/phpunit --coverage-clover=coverage.clover
 
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
