@@ -357,7 +357,6 @@ EOF
             }
         }
 
-        $className = $class->name;
         $namespace = $this->hydratorNamespace;
         $code = sprintf(<<<EOF
 <?php

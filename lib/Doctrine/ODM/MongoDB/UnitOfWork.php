@@ -981,7 +981,6 @@ class UnitOfWork implements PropertyChangedListener
                     // so the exception will be raised from the DBAL layer (constraint violation).
                     throw new \InvalidArgumentException("A detached document was found through a "
                         . "relationship during cascading a persist operation.");
-                    break;
 
                 default:
                     // MANAGED associated documents are already taken into account
@@ -1880,7 +1879,6 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_DETACHED:
                 throw new \InvalidArgumentException(
                     "Behavior of persist() for a detached document is not yet defined.");
-                break;
 
             default:
                 throw MongoDBException::invalidDocumentState($documentState);
@@ -2500,7 +2498,7 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($this->identityMap as $className => $documents) {
                 if ($className === $documentName) {
                     foreach ($documents as $document) {
-                        $this->doDetach($document, $visited, true);
+                        $this->doDetach($document, $visited);
                     }
                 }
             }

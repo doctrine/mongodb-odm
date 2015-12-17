@@ -438,7 +438,6 @@ class DocumentPersister
      */
     public function refresh($id, $document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
         $data = $this->collection->findOne(array('_id' => $id));
         $data = $this->hydratorFactory->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
@@ -973,7 +972,7 @@ class DocumentPersister
             }
 
             // No further preparation unless we're dealing with a simple reference
-            if (empty($mapping['reference']) || empty($mapping['simple'])) {
+            if (empty($mapping['reference']) || empty($mapping['simple']) || empty((array) $value)) {
                 return array($fieldName, $value);
             }
 
