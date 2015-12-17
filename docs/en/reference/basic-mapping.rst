@@ -271,7 +271,7 @@ The available strategies are:
 - ``UUID`` - Generates a UUID identifier.
 - ``NONE`` - Do not generate any identifier. ID must be manually set.
 
-Here is how you can configure the strategy for the different configuration formats:
+Here is an example how to manually set a string identifier for your documents:
 
 .. configuration-block::
 
@@ -282,7 +282,7 @@ Here is how you can configure the strategy for the different configuration forma
         /** Document */
         class MyPersistentClass
         {
-            /** @Id(strategy="NONE") */
+            /** @Id(strategy="NONE", type="string") */
             private $id;
     
             public function setId($id)
@@ -301,7 +301,7 @@ Here is how you can configure the strategy for the different configuration forma
                                                     http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
     
             <document name="MyPersistentClass">
-                <field name="id" id="true" strategy="NONE" />
+                <field name="id" id="true" strategy="NONE" type="string" />
             </document>
         </doctrine-mongo-mapping>
     
@@ -310,6 +310,7 @@ Here is how you can configure the strategy for the different configuration forma
         MyPersistentClass:
           fields:
             id:
+              type: string
               id: true
               strategy: NONE
 
