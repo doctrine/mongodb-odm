@@ -438,7 +438,6 @@ class DocumentPersister
      */
     public function refresh($id, $document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
         $data = $this->collection->findOne(array('_id' => $id));
         $data = $this->hydratorFactory->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);

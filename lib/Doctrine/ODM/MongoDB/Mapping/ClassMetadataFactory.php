@@ -215,10 +215,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $idGenOptions = $class->generatorOptions;
         switch ($class->generatorType) {
             case ClassMetadata::GENERATOR_TYPE_AUTO:
-                $class->setIdGenerator(new \Doctrine\ODM\MongoDB\Id\AutoGenerator($class));
+                $class->setIdGenerator(new \Doctrine\ODM\MongoDB\Id\AutoGenerator());
                 break;
             case ClassMetadata::GENERATOR_TYPE_INCREMENT:
-                $incrementGenerator = new \Doctrine\ODM\MongoDB\Id\IncrementGenerator($class);
+                $incrementGenerator = new \Doctrine\ODM\MongoDB\Id\IncrementGenerator();
                 if (isset($idGenOptions['key'])) {
                     $incrementGenerator->setKey($idGenOptions['key']);
                 }
@@ -228,12 +228,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setIdGenerator($incrementGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:
-                $uuidGenerator = new \Doctrine\ODM\MongoDB\Id\UuidGenerator($class);
+                $uuidGenerator = new \Doctrine\ODM\MongoDB\Id\UuidGenerator();
                 isset($idGenOptions['salt']) && $uuidGenerator->setSalt($idGenOptions['salt']);
                 $class->setIdGenerator($uuidGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_ALNUM:
-                $alnumGenerator = new \Doctrine\ODM\MongoDB\Id\AlnumGenerator($class);
+                $alnumGenerator = new \Doctrine\ODM\MongoDB\Id\AlnumGenerator();
                 if (isset($idGenOptions['pad'])) {
                     $alnumGenerator->setPad($idGenOptions['pad']);
                 }
