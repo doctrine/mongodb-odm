@@ -115,4 +115,15 @@ class SimpleReferencesTest extends BaseTest
         $qb->field('user')->exists(true);
         $this->assertEquals(array('userId' => array('$exists' => true)), $qb->getQueryArray());
     }
+
+    public function testRemoveDocumentByEmptyRefMany()
+    {
+        $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
+        $qb->field('users')->equals(array());
+        $this->assertEquals(array('users' => array()), $qb->getQueryArray());
+
+        $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
+        $qb->field('users')->equals(new \stdClass());
+        $this->assertEquals(array('users' => new \stdClass()), $qb->getQueryArray());
+    }
 }
