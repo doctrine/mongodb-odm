@@ -19,7 +19,10 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+/**
+ * @Annotation
+ * @deprecated This class will be removed in ODM 2.0
+ */
 final class Collection extends AbstractField
 {
     public $type = 'collection';
