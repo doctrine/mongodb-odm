@@ -539,6 +539,69 @@ account.
     $qb = $dm->createQueryBuilder('User')
         ->field('accounts')->includesReferenceTo($account);
 
+Text Search
+~~~~~~~~~~~
+
+You can use the
+`$text operator <https://docs.mongodb.org/manual/reference/operator/query/text/>`_
+to run a text search against a field with a text index. To do so, create a
+document with a text index:
+
+.. code-block:: php
+
+        <?php
+
+        /**
+         * @Document
+         * @Index(keys={"description"="text"})
+         */
+        class Document
+        {
+            /** @Id */
+            public $id;
+
+            /** @Field(type="string") */
+            public $description;
+
+            /** @Field(type="float") @NotSaved */
+            public $score;
+        }
+
+You can then run queries using the text operator:
+
+.. code-block:: php
+
+    <?php
+
+    // Run a text search against the index
+    $qb = $dm->createQueryBuilder('Document')
+        ->text('words you are looking for');
+
+To fetch the calculated score for the text search, use the ``selectMeta()``
+method:
+
+.. code-block:: php
+
+    <?php
+
+    // Run a text search against the index
+    $qb = $dm->createQueryBuilder('Document')
+        ->selectMeta('score', 'textScore')
+        ->text('words you are looking for');
+
+You can also change the language used for stemming using the ``language()``
+method:
+
+.. code-block:: php
+
+    <?php
+
+    // Run a text search against the index
+    $qb = $dm->createQueryBuilder('Document')
+        ->language('it')
+        ->text('parole che stai cercando');
+
+
 Update Queries
 ~~~~~~~~~~~~~~
 
