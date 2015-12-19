@@ -32,13 +32,13 @@ named ``Event`` and it was related to a ``User`` document:
         /** @ReferenceOne(targetDocument="Documents\User") */
         private $user;
     
-        /** @String */
+        /** @Field(type="string") */
         private $type;
     
-        /** @Date */
+        /** @Field(type="date") */
         private $date;
     
-        /** @String */
+        /** @Field(type="string") */
         private $description;
     
         // getters and setters

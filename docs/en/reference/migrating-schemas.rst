@@ -30,7 +30,7 @@ Let's say you have a simple document that starts off with the following fields:
         /** @Id */
         public $id;
 
-        /** @String */
+        /** @Field(type="string") */
         public $name;
     }
 
@@ -47,7 +47,7 @@ hydrate ``fullName`` from ``name`` if the new field doesn't exist.
         /** @Id */
         public $id;
 
-        /** @String @AlsoLoad("name") */
+        /** @Field(type="string") @AlsoLoad("name") */
         public $fullName;
     }
 
@@ -80,10 +80,10 @@ before normal hydration.
         /** @Id */
         public $id;
 
-        /** @String */
+        /** @Field(type="string") */
         public $firstName;
 
-        /** @String */
+        /** @Field(type="string") */
         public $lastName;
 
         /** @AlsoLoad({"name", "fullName"}) */
@@ -125,13 +125,13 @@ Imagine you have some address-related fields on a Person document:
         /** @Id */
         public $id;
 
-        /** @String */
+        /** @Field(type="string") */
         public $name;
 
-        /** @String */
+        /** @Field(type="string") */
         public $street;
 
-        /** @String */
+        /** @Field(type="string") */
         public $city;
     }
 
@@ -144,10 +144,10 @@ Later on, you may want to migrate this data into an embedded Address document:
     /** @EmbeddedDocument */
     class Address
     {
-        /** @String */
+        /** @Field(type="string") */
         public $street;
 
-        /** @String */
+        /** @Field(type="string") */
         public $city;
     
         public function __construct($street, $city)
@@ -163,7 +163,7 @@ Later on, you may want to migrate this data into an embedded Address document:
         /** @Id */
         public $id;
 
-        /** @String */
+        /** @Field(type="string") */
         public $name;
     
         /** @NotSaved */

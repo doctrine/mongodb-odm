@@ -35,7 +35,7 @@ the ``@Document`` annotation:
             /** @Id */
             public $id;
 
-            /** @String */
+            /** @Field(type="string") */
             public $name;
         }
 

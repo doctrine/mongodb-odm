@@ -34,22 +34,22 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\Id */
         private $id;
     
-        /** @ODM\Increment */
+        /** @ODM\Field(type="increment") */
         private $changes = 0;
     
-        /** @ODM\Collection */
+        /** @ODM\Field(type="collection") */
         private $notes = array();
     
-        /** @ODM\String */
+        /** @ODM\Field(type="string") */
         private $name;
     
-        /** @ODM\Int */
+        /** @ODM\Field(type="int") */
         private $salary;
     
-        /** @ODM\Date */
+        /** @ODM\Field(type="date") */
         private $started;
     
-        /** @ODM\Date */
+        /** @ODM\Field(type="date") */
         private $left;
     
         /** @ODM\EmbedOne(targetDocument="Address") */
@@ -104,16 +104,16 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     /** @ODM\EmbeddedDocument */
     class Address
     {
-        /** @ODM\String */
+        /** @ODM\Field(type="string") */
         private $address;
     
-        /** @ODM\String */
+        /** @ODM\Field(type="string") */
         private $city;
     
-        /** @ODM\String */
+        /** @ODM\Field(type="string") */
         private $state;
     
-        /** @ODM\String */
+        /** @ODM\Field(type="string") */
         private $zipcode;
 
         public function getAddress() { return $this->address; }
@@ -135,7 +135,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\Id */
         private $id;
     
-        /** @ODM\String */
+        /** @ODM\Field(type="string") */
         private $name;
     
         public function __construct($name) { $this->name = $name; }
