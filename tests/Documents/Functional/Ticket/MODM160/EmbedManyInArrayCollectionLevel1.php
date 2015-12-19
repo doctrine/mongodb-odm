@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /** @ODM\EmbeddedDocument */
 class EmbedManyInArrayCollectionLevel1
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
     /** @ODM\EmbedMany(targetDocument="MODM160Level2") */
     public $level2;

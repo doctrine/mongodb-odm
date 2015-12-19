@@ -42,10 +42,10 @@ class GH880Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $status;
 
-    /** @ODM\Int */
+    /** @ODM\Field(type="int") */
     public $category;
 
     public function __construct($status = "", $category = 0)

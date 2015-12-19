@@ -48,7 +48,7 @@ class Post
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $title;
 
     /** @ODM\EmbedMany(targetDocument="Comment", strategy="set") */
@@ -61,6 +61,6 @@ class Comment
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $subject;
 }

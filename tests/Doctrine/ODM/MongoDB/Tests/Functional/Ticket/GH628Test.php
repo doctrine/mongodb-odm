@@ -25,6 +25,6 @@ class GH628Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Raw(name="f") */
+    /** @ODM\Field(name="f", type="raw") */
     public $foo;
 }

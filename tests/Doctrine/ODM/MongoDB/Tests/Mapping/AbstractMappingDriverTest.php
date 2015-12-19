@@ -339,30 +339,30 @@ class AbstractMappingDriverUser
 
     /**
      * @ODM\Version
-     * @ODM\Int
+     * @ODM\Field(type="int")
      */
     public $version;
 
     /**
      * @ODM\Lock
-     * @ODM\Int
+     * @ODM\Field(type="int")
      */
     public $lock;
 
     /**
-     * @ODM\String(name="username")
+     * @ODM\Field(name="username", type="string")
      * @ODM\UniqueIndex(order="desc", dropDups=false)
      */
     public $name;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      * @ODM\UniqueIndex(order="desc", dropDups=true)
      */
     public $email;
 
     /**
-     * @ODM\Int
+     * @ODM\Field(type="int")
      * @ODM\UniqueIndex(order="desc", dropDups=true)
      */
     public $mysqlProfileId;
@@ -398,12 +398,12 @@ class AbstractMappingDriverUser
     public $otherPhonenumbers;
 
     /**
-     * @ODM\Date
+     * @ODM\Field(type="date")
      */
     public $createdAt;
 
     /**
-     * @ODM\Collection
+     * @ODM\Field(type="collection")
      */
     public $roles = array();
 

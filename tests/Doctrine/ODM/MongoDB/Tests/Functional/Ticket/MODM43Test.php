@@ -25,10 +25,10 @@ class Person
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $firstName;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $lastName;
 
     /** @ODM\PreLoad */

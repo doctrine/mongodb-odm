@@ -181,7 +181,7 @@ class City
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedOne(targetDocument="Coordinates") */
@@ -194,9 +194,9 @@ class City
 /** @ODM\EmbeddedDocument */
 class Coordinates
 {
-    /** @ODM\Float */
+    /** @ODM\Field(type="float") */
     public $latitude;
 
-    /** @ODM\Float */
+    /** @ODM\Field(type="float") */
     public $longitude;
 }

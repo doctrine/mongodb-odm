@@ -42,7 +42,7 @@ class GH897A
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }
 
@@ -52,7 +52,7 @@ class GH897B
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\ReferenceOne(targetDocument="GH897A") */

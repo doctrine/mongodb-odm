@@ -10,10 +10,10 @@ class Customer
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\String(name="cart") */
+    /** @ODM\Field(name="cart", type="string") */
     public $cartTest;
 
     /**

@@ -11,13 +11,13 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Chapter
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="Page") */
     public $pages;
 
-    /** @ODM\Int */
+    /** @ODM\Field(type="int") */
     public $nbPages = 0;
 
     public function __construct($name = null)

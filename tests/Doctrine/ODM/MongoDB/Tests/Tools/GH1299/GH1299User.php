@@ -8,6 +8,6 @@ use Doctrine\ODM\MongoDB\Tests\Tools\GH1299\BaseUser;
 /** @ODM\Document */
 class GH1299User extends BaseUser
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $lastname;
 }

@@ -13,7 +13,7 @@ class Book
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Int @ODM\Version */
+    /** @ODM\Field(type="int") @ODM\Version */
     public $version = 1;
 
     /** @ODM\EmbedMany(targetDocument="Chapter", strategy="atomicSet") */

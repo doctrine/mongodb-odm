@@ -26,7 +26,7 @@ class GH1107ParentClass
     /** @ODM\Id(strategy="NONE") */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }
 

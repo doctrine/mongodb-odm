@@ -9,7 +9,7 @@ class ParentDocument
 {
     /** @ODM\Id */
     public $id;
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
     /** @ODM\EmbedOne(targetDocument="AbstractEmbedded") */
     public $embedOne;

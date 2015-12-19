@@ -104,7 +104,7 @@ class GH602User
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Boolean(name="user_deleted") */
+    /** @ODM\Field(name="user_deleted", type="bool") */
     public $deleted = false;
 
     /** @ODM\ReferenceMany(targetDocument="GH602Thing", inversedBy="likedBy", simple=true) */
@@ -128,7 +128,7 @@ class GH602Thing
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Boolean(name="thing_deleted") */
+    /** @ODM\Field(name="thing_deleted", type="bool") */
     public $deleted = false;
 
     /** @ODM\ReferenceMany(targetDocument="GH602User", mappedBy="likes") */

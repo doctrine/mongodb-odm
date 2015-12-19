@@ -63,7 +63,7 @@ class GH561EmbeddedDocument
 /** @ODM\EmbeddedDocument */
 class GH561AnotherEmbeddedDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)

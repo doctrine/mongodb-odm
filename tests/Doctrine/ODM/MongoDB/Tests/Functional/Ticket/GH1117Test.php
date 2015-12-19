@@ -49,7 +49,7 @@ class GH1117Document
  */
 class GH1117EmbeddedDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $value;
 
     public function __construct($value)

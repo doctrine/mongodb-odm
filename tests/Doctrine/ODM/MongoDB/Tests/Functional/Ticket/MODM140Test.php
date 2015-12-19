@@ -127,7 +127,7 @@ class Category
 	/** @ODM\Id */
 	protected $id;
 	
-	/** @ODM\String */
+	/** @ODM\Field(type="string") */
 	public $name;
 	
 	/** @ODM\EmbedMany(targetDocument="Post") */
@@ -160,7 +160,7 @@ class Post
 /** @ODM\EmbeddedDocument */
 class PostVersion
 {
-	/** @ODM\String */
+	/** @ODM\Field(type="string") */
 	public $name;
 	
 	public function __construct($name)
@@ -176,6 +176,6 @@ class Comment
 	/** @ODM\Id */
 	protected $id;
 
-	/** @ODM\String */
+	/** @ODM\Field(type="string") */
 	public $content;
 }

@@ -39,7 +39,7 @@ class MODM116Parent
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     /** @ODM\ReferenceOne(targetDocument="MODM116Child") **/

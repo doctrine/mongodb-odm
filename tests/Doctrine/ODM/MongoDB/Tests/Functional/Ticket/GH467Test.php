@@ -30,7 +30,7 @@ class GH467Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Collection */
+    /** @ODM\Field(type="collection") */
     public $col;
 
     /** @ODM\EmbedMany(targetDocument="GH467EmbeddedDocument") */

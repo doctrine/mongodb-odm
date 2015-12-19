@@ -13,13 +13,13 @@ class Article
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $title;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $body;
 
-    /** @ODM\Date */
+    /** @ODM\Field(type="date") */
     private $createdAt;
 
     /** @ODM\Field(type="collection") */

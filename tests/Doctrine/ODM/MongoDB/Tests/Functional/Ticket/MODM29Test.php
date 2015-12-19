@@ -63,7 +63,7 @@ class MODM29Doc
 /** @ODM\EmbeddedDocument */
 class MODM29Embedded
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $val;
 
     function __construct($val) {$this->set($val);}

@@ -352,7 +352,7 @@ class DocumentPersisterTestDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String(name="dbName") */
+    /** @ODM\Field(name="dbName", type="string") */
     public $name;
 
     /**

@@ -245,7 +245,7 @@ class Person
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $firstName;
 
     /** @ODM\ReferenceOne */
@@ -276,7 +276,7 @@ class EmbedTest
     /** @ODM\EmbedMany(name="e1", targetDocument="Doctrine\ODM\MongoDB\Tests\EmbedTest") */
     public $embeddedMany;
 
-    /** @ODM\String(name="n") */
+    /** @ODM\Field(name="n", type="string") */
     public $name;
 
     /** @ODM\ReferenceOne(name="p", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
