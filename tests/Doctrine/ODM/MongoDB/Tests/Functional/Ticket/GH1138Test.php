@@ -52,7 +52,7 @@ class GH1138Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }
 

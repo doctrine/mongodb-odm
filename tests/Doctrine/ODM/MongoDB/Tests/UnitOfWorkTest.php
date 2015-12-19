@@ -724,7 +724,7 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
     /** @ODM\Id(type="int_id", strategy="none") */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $data;
 
     /** @ODM\ReferenceMany(targetDocument="NotifyChangedRelatedItem") */
@@ -822,7 +822,7 @@ class ArrayTest
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\Hash */
+    /** @ODM\Field(type="hash") */
     public $data;
 
     public function __construct($data)

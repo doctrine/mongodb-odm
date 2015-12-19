@@ -27,13 +27,13 @@ class GH435Parent
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\Int */
+    /** @ODM\Field(type="int") */
     protected $test;
 }
 
 /** @ODM\Document */
 class GH435Child extends GH435Parent
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $test;
 }

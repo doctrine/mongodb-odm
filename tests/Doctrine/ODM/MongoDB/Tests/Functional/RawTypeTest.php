@@ -42,6 +42,6 @@ class RawType
 	/** @ODM\Id */
 	public $id;
 
-	/** @ODM\Raw */
+	/** @ODM\Field(type="raw") */
 	public $raw;
 }

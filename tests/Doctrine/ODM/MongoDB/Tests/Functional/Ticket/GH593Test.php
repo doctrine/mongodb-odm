@@ -102,7 +102,7 @@ class GH593User
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Boolean(name="d") */
+    /** @ODM\Field(name="d", type="bool") */
     public $deleted = false;
 
     /** @ODM\ReferenceMany(targetDocument="GH593User", inversedBy="followedBy", simple=true) */

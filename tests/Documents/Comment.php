@@ -11,16 +11,16 @@ class Comment
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $text;
 
     /** @ODM\ReferenceOne(targetDocument="BlogPost", inversedBy="comments", cascade={"all"}) */
     public $parent;
 
-    /** @ODM\Date @ODM\Index(order="1") */
+    /** @ODM\Field(type="date") @ODM\Index(order="1") */
     public $date;
 
-    /** @ODM\Boolean */
+    /** @ODM\Field(type="bool") */
     public $isByAdmin = false;
 
     public function __construct($text, DateTime $date, $isByAdmin = false)

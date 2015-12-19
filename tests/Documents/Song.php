@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument */
 class Song
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     public function __construct($name)

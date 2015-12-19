@@ -65,7 +65,7 @@ class GH944Document
  */
 class GH944Embedded
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $text;
 
     public function __construct($text)

@@ -56,10 +56,10 @@ class GH977TestDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $value1;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $value2;
 }
 

@@ -10,7 +10,7 @@ class Page
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Integer */
+    /** @ODM\Field(type="int") */
     public $number;
 
     public function __construct($number)

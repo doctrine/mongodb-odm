@@ -66,7 +66,7 @@ class GH878Document
 /** @ODM\EmbeddedDocument */
 class GH878SubDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $some = '2';
 }
 

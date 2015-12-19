@@ -19,13 +19,13 @@ class UserUpsert
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $username;
 
-    /** @ODM\Int */
+    /** @ODM\Field(type="int") */
     public $hits;
 
-    /** @ODM\Increment */
+    /** @ODM\Field(type="increment") */
     public $count;
 
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */

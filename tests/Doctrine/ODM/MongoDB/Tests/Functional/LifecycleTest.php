@@ -58,7 +58,7 @@ class ParentObject
     /** @ODM\ReferenceMany(targetDocument="ChildObject", cascade="all") */
     private $children;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     /** @ODM\EmbedOne(targetDocument="ChildEmbeddedObject") */
@@ -117,7 +117,7 @@ class ChildObject
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     public function __construct($name)
@@ -139,7 +139,7 @@ class ChildObject
 /** @ODM\EmbeddedDocument */
 class ChildEmbeddedObject
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     public function __construct($name)

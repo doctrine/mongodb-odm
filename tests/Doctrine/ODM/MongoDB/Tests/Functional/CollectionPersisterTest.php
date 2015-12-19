@@ -259,7 +259,7 @@ class CollectionPersisterUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $username;
 
     /** @ODM\EmbedMany(targetDocument="CollectionPersisterCategory") */
@@ -272,7 +272,7 @@ class CollectionPersisterUser
 /** @ODM\EmbeddedDocument */
 class CollectionPersisterCategory
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="CollectionPersisterCategory") */
@@ -290,7 +290,7 @@ class CollectionPersisterPhonenumber
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $phonenumber;
 
     public function __construct($phonenumber)
@@ -305,7 +305,7 @@ class CollectionPersisterPost
   /** @ODM\Id */
   public $id;
 
-  /** @ODM\String */
+  /** @ODM\Field(type="string") */
   public $post;
 
   /** @ODM\EmbedMany(targetDocument="CollectionPersisterComment", strategy="set") */
@@ -326,10 +326,10 @@ class CollectionPersisterComment
   /** @ODM\Id */
   public $id;
 
-  /** @ODM\String */
+  /** @ODM\Field(type="string") */
   public $comment;
 
-  /** @ODM\String */
+  /** @ODM\Field(type="string") */
   public $by;
 
   /** @ODM\EmbedMany(targetDocument="CollectionPersisterComment", strategy="set") */

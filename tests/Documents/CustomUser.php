@@ -10,10 +10,10 @@ class CustomUser
     /** @ODM\Id(strategy="none") */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $password;
 
     /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */

@@ -102,7 +102,7 @@ class GH852Document
     /** @ODM\Id(strategy="NONE", type="custom_id") */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /**

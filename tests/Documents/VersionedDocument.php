@@ -14,6 +14,6 @@ class VersionedDocument extends BaseDocument
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\Version @ODM\Int */
+    /** @ODM\Version @ODM\Field(type="int") */
     public $version;
 }

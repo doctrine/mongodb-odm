@@ -276,10 +276,10 @@ class RequireIndexesDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String @ODM\Index */
+    /** @ODM\Field(type="string") @ODM\Index */
     public $indexed;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $notIndexed;
 
     /** @ODM\EmbedOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesEmbeddedDocument") */
@@ -303,19 +303,19 @@ class DoesNotRequireIndexesDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String @ODM\Index */
+    /** @ODM\Field(type="string") @ODM\Index */
     public $indexed;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $notIndexed;
 }
 
 /** @ODM\EmbeddedDocument */
 class RequireIndexesEmbeddedDocument
 {
-    /** @ODM\String @ODM\Index */
+    /** @ODM\Field(type="string") @ODM\Index */
     public $indexed;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $notIndexed;
 }

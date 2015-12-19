@@ -61,7 +61,7 @@ class GH921User
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     /** @ODM\ReferenceMany(targetDocument="GH921Post") */
@@ -81,7 +81,7 @@ class GH921Post
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     public function getId() { return $this->id; }

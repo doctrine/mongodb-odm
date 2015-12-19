@@ -98,7 +98,7 @@ class Action
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $type;
 
     public function __construct($type)
@@ -121,7 +121,7 @@ class Action
 class CommentableAction extends Action
 {
     /**
-     * @ODM\Collection
+     * @ODM\Field(type="collection")
      **/
     protected $comments = array();
 
@@ -168,7 +168,7 @@ abstract class ActivityStreamItem
  */
 abstract class GroupActivityStreamItem extends ActivityStreamItem
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $groupId;
 
     public function __construct(Action $action, $groupId)
@@ -199,7 +199,7 @@ class GroupMembersActivityStreamItem extends GroupActivityStreamItem
  */
 abstract class UserActivityStreamItem extends ActivityStreamItem
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $userId;
 
     public function __construct(Action $action, $userId)

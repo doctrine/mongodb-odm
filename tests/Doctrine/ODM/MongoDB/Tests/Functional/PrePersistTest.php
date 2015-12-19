@@ -34,7 +34,7 @@ class PrePersistTestDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $field;
 
     /** @ODM\PrePersist */

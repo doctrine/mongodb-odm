@@ -7,11 +7,11 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument */
 class VirtualHostDirective
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $recId;
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $name;
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $value;
     /**
      * @ODM\EmbedMany(targetDocument="Documents\Functional\VirtualHostDirective")

@@ -214,7 +214,7 @@ class AlsoLoadDocument
     public $id;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      * @ODM\AlsoLoad({"bar", "zip"})
      */
     public $foo;
@@ -232,7 +232,7 @@ class AlsoLoadDocument
     public $zip;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      * @ODM\AlsoLoad("zip")
      */
     public $zap = 'zap';
@@ -243,14 +243,14 @@ class AlsoLoadDocument
     /** @ODM\NotSaved */
     public $fullName;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $firstName;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $lastName;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      * @ODM\AlsoLoad("testNew")
      */
     public $test = 'test';
@@ -280,7 +280,7 @@ class AlsoLoadDocument
 /** @ODM\Document */
 class AlsoLoadChild extends AlsoLoadDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $fizz;
 
     /** @ODM\AlsoLoad("buzz") */

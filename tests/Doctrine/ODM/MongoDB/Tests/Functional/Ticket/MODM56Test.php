@@ -35,10 +35,10 @@ class MODM56Parent
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\Date */
+    /** @ODM\Field(type="date") */
     public $updatedAt;
 
     /** @ODM\EmbedMany(targetDocument="MODM56Child") */
@@ -62,7 +62,7 @@ class MODM56Child
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)

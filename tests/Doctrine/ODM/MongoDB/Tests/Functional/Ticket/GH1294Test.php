@@ -41,7 +41,7 @@ class GH1294User
     /** @ODM\Id(strategy="UUID", type="string") */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name = false;
 
     // Return the identifier without triggering Proxy initialization

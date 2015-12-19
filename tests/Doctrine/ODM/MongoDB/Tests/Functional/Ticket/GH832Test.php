@@ -45,7 +45,7 @@ class GH832Document
     public $file;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      * @ODM\UniqueIndex
      */
     public $unique;

@@ -19,6 +19,6 @@ class MODM72User
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String(options={"test"="test"}) */
+    /** @ODM\Field(type="string", options={"test"="test"}) */
     public $name;
 }

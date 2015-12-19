@@ -546,13 +546,13 @@ class AtomicSetUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\Int @ODM\Version */
+    /** @ODM\Field(type="int") @ODM\Version */
     public $version = 1;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $surname;
 
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="Documents\Phonenumber") */
@@ -585,7 +585,7 @@ class AtomicSetUser
  */
 class AtomicSetInception
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $value;
 
     /** @ODM\EmbedOne(targetDocument="AtomicSetInception") */

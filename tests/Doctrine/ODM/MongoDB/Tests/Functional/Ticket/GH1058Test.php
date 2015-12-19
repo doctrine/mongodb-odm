@@ -44,7 +44,7 @@ class GH1058PersistDocument
 {
     /** @ODM\Id */
     private $id;
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $value;
     public function getId()
     {
@@ -60,7 +60,7 @@ class GH1058UpsertDocument
 {
     /** @ODM\Id */
     private $id;
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $value;
     public function getId()
     {

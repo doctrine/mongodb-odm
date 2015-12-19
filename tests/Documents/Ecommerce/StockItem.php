@@ -15,12 +15,12 @@ class StockItem
     private $id;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     private $name;
 
     /**
-     * @ODM\Int
+     * @ODM\Field(type="int")
      */
     private $inventory;
 

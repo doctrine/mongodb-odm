@@ -15,7 +15,7 @@ class ConfigurableProduct
     protected $id;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $name;
 

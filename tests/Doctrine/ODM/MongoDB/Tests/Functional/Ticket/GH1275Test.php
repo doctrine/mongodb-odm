@@ -187,7 +187,7 @@ class Item {
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /**
@@ -209,7 +209,7 @@ class Element {
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)

@@ -81,16 +81,16 @@ class DocumentSubClass extends TransientBaseClass
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 }
 
 /** @ODM\MappedSuperclass */
 class MappedSuperclassBase
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $mapped1;
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $mapped2;
 
     /**
@@ -107,6 +107,6 @@ class DocumentSubClass2 extends MappedSuperclassBase
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 }

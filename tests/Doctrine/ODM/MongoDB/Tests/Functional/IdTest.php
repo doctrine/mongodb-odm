@@ -343,7 +343,7 @@ class %s
     /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(strategy="%s", options={"type"="%s"}) **/
     public $id;
 
-    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\String **/
+    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Field("type=string") **/
     public $test = "test";
 }', $shortClassName, $strategy, $type);
 
@@ -360,7 +360,7 @@ class UuidUser
     /** @ODM\Id(strategy="uuid", options={"salt"="test"}) */
     public $id;
 
-    /** @ODM\String(name="t") */
+    /** @ODM\Field(name="t", type="string") */
     public $name;
 
     public function __construct($name)
@@ -375,7 +375,7 @@ class CollectionIdUser
     /** @ODM\Id(strategy="increment") */
     public $id;
 
-    /** @ODM\String(name="t") */
+    /** @ODM\Field(name="t", type="string") */
     public $name;
 
     /** @ODM\ReferenceOne(targetDocument="ReferencedCollectionId", cascade={"persist"}) */
@@ -396,7 +396,7 @@ class ReferencedCollectionId
     /** @ODM\Id(strategy="increment") */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)
@@ -416,7 +416,7 @@ class EmbeddedCollectionId
     /** @ODM\Id(strategy="increment") */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)
@@ -436,7 +436,7 @@ class AlnumCharsUser
     /** @ODM\Id(strategy="alnum", options={"chars"="zyxwvutsrqponmlkjihgfedcba"}) */
     public $id;
 
-    /** @ODM\String(name="t") */
+    /** @ODM\Field(name="t", type="string") */
     public $name;
 
     public function __construct($name)
@@ -451,7 +451,7 @@ class CustomIdUser
     /** @ODM\Id(strategy="none",nullable=true) */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)
