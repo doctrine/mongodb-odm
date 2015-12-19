@@ -22,7 +22,7 @@ First lets define our `Product` document:
         /** @Id */
         private $id;
 
-        /** @String */
+        /** @Field(type="string") */
         private $title;
 
         public function getId()

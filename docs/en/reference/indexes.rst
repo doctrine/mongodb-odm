@@ -23,7 +23,7 @@ property:
             /** @Id */
             public $id;
     
-            /** @String @Index */
+            /** @Field(type="string") @Index */
             public $username;
         }
 
@@ -90,7 +90,7 @@ Unique Index
             /** @Id */
             public $id;
     
-            /** @String @Index(unique=true, order="asc") */
+            /** @Field(type="string") @Index(unique=true, order="asc") */
             public $username;
         }
 
@@ -123,7 +123,7 @@ For your convenience you can quickly specify a unique index with
             /** @Id */
             public $id;
     
-            /** @String @UniqueIndex(order="asc") */
+            /** @Field(type="string") @UniqueIndex(order="asc") */
             public $username;
         }
 
@@ -158,10 +158,10 @@ you can specify them on the class doc block:
             /** @Id */
             public $id;
     
-            /** @Integer */
+            /** @Field(type="int") */
             public $accountId;
     
-            /** @String */
+            /** @Field(type="string") */
             public $username;
         }
 
@@ -217,10 +217,10 @@ annotation:
             /** @Id */
             public $id;
     
-            /** @Integer */
+            /** @Field(type="int") */
             public $accountId;
     
-            /** @String */
+            /** @Field(type="string") */
             public $username;
         }
 
@@ -272,7 +272,7 @@ documents.
     /** @EmbeddedDocument */
     class Comment
     {
-        /** @Date @Index */
+        /** @Field(type="date") @Index */
         private $date;
 
         // ...
@@ -356,10 +356,10 @@ options structures manually:
         /** @EmbeddedDocument */
         class Coordinates
         {
-            /** @Float */
+            /** @Field(type="float") */
             public $latitude;
     
-            /** @Float */
+            /** @Field(type="float") */
             public $longitude;
         }
 
@@ -399,7 +399,7 @@ make it to the database and cause performance problems.
             /** @Id */
             public $id;
     
-            /** @String @Index */
+            /** @Field(type="string") @Index */
             public $city;
         }
 
