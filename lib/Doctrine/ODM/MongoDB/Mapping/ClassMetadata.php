@@ -79,11 +79,9 @@ class ClassMetadata extends ClassMetadataInfo
     {
         $mapping = parent::mapField($mapping);
 
-        if ($this->reflClass->hasProperty($mapping['fieldName'])) {
-            $reflProp = $this->reflClass->getProperty($mapping['fieldName']);
-            $reflProp->setAccessible(true);
-            $this->reflFields[$mapping['fieldName']] = $reflProp;
-        }
+        $reflProp = $this->reflClass->getProperty($mapping['fieldName']);
+        $reflProp->setAccessible(true);
+        $this->reflFields[$mapping['fieldName']] = $reflProp;
     }
 
     /**

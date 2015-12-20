@@ -151,13 +151,13 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testDuplicateFieldMapping()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
-        $a1 = array('reference' => true, 'type' => 'many', 'fieldName' => 'foo', 'targetDocument' => 'stdClass');
-        $a2 = array('type' => 'string', 'fieldName' => 'foo');
+        $a1 = array('reference' => true, 'type' => 'many', 'fieldName' => 'name', 'targetDocument' => 'stdClass');
+        $a2 = array('type' => 'string', 'fieldName' => 'name');
 
         $cm->mapField($a1);
         $cm->mapField($a2);
 
-        $this->assertEquals('string', $cm->fieldMappings['foo']['type']);
+        $this->assertEquals('string', $cm->fieldMappings['name']['type']);
     }
 
     public function testDuplicateColumnName_DiscriminatorColumn_ThrowsMappingException()
@@ -194,5 +194,14 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name', 'type' => 'string'));
 
         $this->assertEquals('string', $cm->fieldMappings['name']['type']);
+    }
+
+    /**
+     * @expectedException \ReflectionException
+     */
+    public function testMapNotExistingFieldThrowsException()
+    {
+        $cm = new ClassMetadata('Documents\CmsUser');
+        $cm->mapField(array('fieldName' => 'namee', 'columnName' => 'name', 'type' => 'string'));
     }
 }
