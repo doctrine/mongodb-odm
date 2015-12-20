@@ -871,7 +871,7 @@ class DocumentPersister
          */
         if ($this->class->hasDiscriminator() && ! isset($preparedQuery[$this->class->discriminatorField])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
-            if((count($discriminatorValues) == 1)) {
+            if ((count($discriminatorValues) === 1)) {
                 $preparedQuery[$this->class->discriminatorField] = $discriminatorValues[0];
             } else {
                 $preparedQuery[$this->class->discriminatorField] = array('$in' => $discriminatorValues);
