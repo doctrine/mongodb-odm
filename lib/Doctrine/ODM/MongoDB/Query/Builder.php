@@ -327,6 +327,12 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $query['distinct'] = $documentPersister->prepareFieldName($query['distinct']);
         }
 
+        if ($this->class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION && ! empty($query['upsert']) &&
+            (empty($query['query'][$this->class->discriminatorField]) || is_array($query['query'][$this->class->discriminatorField]))) {
+            throw new \InvalidArgumentException('Upsert query that is to be performed on discriminated document does not have single ' .
+                'discriminator. Either not use base class or set \'' . $this->class->discriminatorField . '\' field manually.');
+        }
+
         if ( ! empty($query['select'])) {
             $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
             if ($this->hydrate && $this->class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION
