@@ -26,10 +26,6 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\MappedSuperclass;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -44,9 +40,9 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 class AnnotationDriver extends AbstractAnnotationDriver
 {
     protected $entityAnnotationClasses = array(
-        Document::class         => 1,
-        MappedSuperclass::class => 2,
-        EmbeddedDocument::class => 3,
+        ODM\Document::class         => 1,
+        ODM\MappedSuperclass::class => 2,
+        ODM\EmbeddedDocument::class => 3,
     );
 
     /**
@@ -119,9 +115,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         ksort($documentAnnots);
         $documentAnnot = reset($documentAnnots);
 
-        if ($documentAnnot instanceof MappedSuperclass) {
+        if ($documentAnnot instanceof ODM\MappedSuperclass) {
             $class->isMappedSuperclass = true;
-        } elseif ($documentAnnot instanceof EmbeddedDocument) {
+        } elseif ($documentAnnot instanceof ODM\EmbeddedDocument) {
             $class->isEmbeddedDocument = true;
         }
         if (isset($documentAnnot->db)) {
@@ -204,7 +200,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $class->registerAlsoLoadMethod($method->getName(), $annot->value);
                 }
 
-                if ( ! isset($classAnnotations[HasLifecycleCallbacks::class])) {
+                if ( ! isset($classAnnotations[ODM\HasLifecycleCallbacks::class])) {
                     continue;
                 }
 
