@@ -28,7 +28,6 @@ use Doctrine\ODM\MongoDB\Types;
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
- * @author      Jefersson Nathan <malukenho@phpse.net>
  */
 abstract class Type
 {

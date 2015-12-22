@@ -31,7 +31,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
- * @author      Jefersson Nathan <malukenho@phpse.net>
  */
 class XmlDriver extends FileDriver
 {
