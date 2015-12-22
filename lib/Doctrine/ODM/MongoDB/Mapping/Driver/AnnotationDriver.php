@@ -26,6 +26,11 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\MappedSuperclass;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
@@ -35,13 +40,14 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * @since       1.0
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Jefersson Nathan <malukenho@phpse.net>
  */
 class AnnotationDriver extends AbstractAnnotationDriver
 {
     protected $entityAnnotationClasses = array(
-        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\Document' => 1,
-        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\MappedSuperclass' => 2,
-        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\EmbeddedDocument' => 3,
+        Document::class         => 1,
+        MappedSuperclass::class => 2,
+        EmbeddedDocument::class => 3,
     );
 
     /**
@@ -84,7 +90,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $this->addIndex($class, $index);
                 }
             } elseif ($annot instanceof ODM\InheritanceType) {
-                $class->setInheritanceType(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::INHERITANCE_TYPE_'.$annot->value));
+                $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_'.$annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
                 // $fieldName property is deprecated, but fall back for BC
                 if (isset($annot->value)) {
@@ -99,7 +105,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
                 $class->setDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {
-                $class->setChangeTrackingPolicy(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::CHANGETRACKING_'.$annot->value));
+                $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_'.$annot->value));
             } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
                 $class->setDefaultDiscriminatorValue($annot->value);
             }
@@ -114,9 +120,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         ksort($documentAnnots);
         $documentAnnot = reset($documentAnnots);
 
-        if ($documentAnnot instanceof ODM\MappedSuperclass) {
+        if ($documentAnnot instanceof MappedSuperclass) {
             $class->isMappedSuperclass = true;
-        } elseif ($documentAnnot instanceof ODM\EmbeddedDocument) {
+        } elseif ($documentAnnot instanceof EmbeddedDocument) {
             $class->isEmbeddedDocument = true;
         }
         if (isset($documentAnnot->db)) {
@@ -199,7 +205,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $class->registerAlsoLoadMethod($method->getName(), $annot->value);
                 }
 
-                if ( ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks'])) {
+                if ( ! isset($classAnnotations[HasLifecycleCallbacks::class])) {
                     continue;
                 }
 

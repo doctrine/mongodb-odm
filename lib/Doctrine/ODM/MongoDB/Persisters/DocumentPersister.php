@@ -931,7 +931,7 @@ class DocumentPersister
             list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
 
             $preparedQuery[$key] = is_array($value)
-                ? array_map('Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $value)
+                ? array_map('\Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $value)
                 : Type::convertPHPToDatabaseValue($value);
         }
 

@@ -22,6 +22,9 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
@@ -356,7 +359,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getClassMetadataFactoryName()
     {
         if ( ! isset($this->attributes['classMetadataFactoryName'])) {
-            $this->attributes['classMetadataFactoryName'] = 'Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory';
+            $this->attributes['classMetadataFactoryName'] = ClassMetadataFactory::class;
         }
         return $this->attributes['classMetadataFactoryName'];
     }
@@ -441,7 +444,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         $reflectionClass = new \ReflectionClass($className);
 
-        if ( ! $reflectionClass->implementsInterface('Doctrine\Common\Persistence\ObjectRepository')) {
+        if ( ! $reflectionClass->implementsInterface(ObjectRepository::class)) {
             throw MongoDBException::invalidDocumentRepository($className);
         }
 
@@ -457,7 +460,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         return isset($this->attributes['defaultRepositoryClassName'])
             ? $this->attributes['defaultRepositoryClassName']
-            : 'Doctrine\ODM\MongoDB\DocumentRepository';
+            : DocumentRepository::class;
     }
 
     /**
