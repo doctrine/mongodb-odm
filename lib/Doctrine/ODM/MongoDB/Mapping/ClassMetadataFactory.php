@@ -300,8 +300,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited association mappings to the subclass mapping.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param \Doctrine\ODM\MongoDB\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ODM\MongoDB\Mapping\ClassMetadata $parentClass
      *
      * @return void
      *
