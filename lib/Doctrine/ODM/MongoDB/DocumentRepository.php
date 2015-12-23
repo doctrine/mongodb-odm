@@ -34,8 +34,6 @@ use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
  * write their own repositories with business-specific methods to locate documents.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class DocumentRepository implements ObjectRepository, Selectable
 {

@@ -6,9 +6,6 @@ use Doctrine\ODM\MongoDB\DocumentManager as BaseDocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Common\EventManager;
 
-/**
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
- */
 class DocumentManager extends BaseDocumentManager
 {
 

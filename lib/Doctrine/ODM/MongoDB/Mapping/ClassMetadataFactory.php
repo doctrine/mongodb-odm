@@ -34,8 +34,6 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * to a document database.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {

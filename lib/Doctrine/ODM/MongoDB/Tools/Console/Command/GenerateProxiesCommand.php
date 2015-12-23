@@ -28,10 +28,6 @@ use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
  * Command to (re)generate the proxy classes used by doctrine.
  *
  * @since   1.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class GenerateProxiesCommand extends Console\Command\Command
 {

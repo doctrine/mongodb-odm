@@ -22,9 +22,6 @@ namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Command\Command;
 
-/**
- * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
- */
 abstract class AbstractCommand extends Command
 {
     const DB = 'db';

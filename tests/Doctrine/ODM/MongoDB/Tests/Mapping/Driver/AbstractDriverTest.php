@@ -7,9 +7,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 require_once 'fixtures/User.php';
 require_once 'fixtures/EmbeddedDocument.php';
 
-/**
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
- */
 abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {
     protected $driver;

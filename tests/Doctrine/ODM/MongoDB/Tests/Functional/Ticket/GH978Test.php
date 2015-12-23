@@ -9,8 +9,6 @@ use Documents\Ecommerce\StockItem;
 
 /**
  * Test for UnitOfWork::detach()
- *
- * @author Fridolin Koch <info@fridokoch.de>
  */
 class GH978Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

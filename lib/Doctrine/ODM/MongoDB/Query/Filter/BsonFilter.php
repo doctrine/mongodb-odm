@@ -26,8 +26,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * The base class that user defined filters should extend.
  *
  * Handles the setting and escaping of parameters.
- *
- * @author Tim Roediger <superdweebie@gmail.com>
  */
 abstract class BsonFilter
 {

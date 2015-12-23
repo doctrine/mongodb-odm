@@ -26,7 +26,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * UuidGenerator generates a uuid for the id.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class UuidGenerator extends AbstractIdGenerator
 {

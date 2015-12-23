@@ -26,8 +26,6 @@ namespace Doctrine\ODM\MongoDB\Types;
  * RFC 4122 UUID sub-type (BinDataUUIDRFC4122Type class).
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class BinDataUUIDType extends BinDataType
 {

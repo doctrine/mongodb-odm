@@ -23,9 +23,6 @@ namespace Doctrine\ODM\MongoDB;
  * Contains all MongoDB ODM LockModes
  *
  * @since       1.0
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
- * @author      Roman Borschel <roman@code-factory.org>
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class LockMode
 {

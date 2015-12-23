@@ -26,8 +26,6 @@ namespace Doctrine\ODM\MongoDB\Types;
  * the basic string field type for storing hexadecimal MD5 strings.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class BinDataMD5Type extends BinDataType
 {

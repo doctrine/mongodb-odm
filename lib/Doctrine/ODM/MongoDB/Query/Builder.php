@@ -29,7 +29,6 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
  * Query builder for ODM.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Builder extends \Doctrine\MongoDB\Query\Builder
 {

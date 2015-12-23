@@ -25,7 +25,6 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  * MongoDB ODM Hydrator Exception
  *
  * @since  1.0
- * @author Jonathan H. Wage <jonwage@gmail.com>
  */
 class HydratorException extends MongoDBException
 {

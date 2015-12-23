@@ -39,8 +39,6 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
  * The DocumentPersister is responsible for persisting documents.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
 class DocumentPersister
 {

@@ -23,8 +23,6 @@ namespace Doctrine\ODM\MongoDB\Types;
  * The File type.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class FileType extends Type
 {

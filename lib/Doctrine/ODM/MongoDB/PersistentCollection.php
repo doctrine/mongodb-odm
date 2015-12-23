@@ -27,8 +27,6 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
  * A PersistentCollection represents a collection of elements that have persistent state.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class PersistentCollection implements BaseCollection
 {
