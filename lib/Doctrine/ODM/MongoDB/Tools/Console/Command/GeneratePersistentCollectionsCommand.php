@@ -89,7 +89,7 @@ EOT
         }
 
         if (count($metadatas)) {
-            $collFactory = $dm->getUnitOfWork()->getPersistentCollectionFactory();
+            $collectionGenerator = $dm->getConfiguration()->getPersistentCollectionGenerator();
             foreach ($metadatas as $metadata) {
                 $output->write(
                     sprintf('Processing document "<info>%s</info>"', $metadata->name) . PHP_EOL
@@ -102,7 +102,7 @@ EOT
                     $output->write(
                         sprintf('Generating class for "<info>%s</info>"', $mapping['collectionClass']) . PHP_EOL
                     );
-                    $collFactory->generateClass($mapping['collectionClass'], $destPath);
+                    $collectionGenerator->generateClass($mapping['collectionClass'], $destPath);
                 }
             }
 

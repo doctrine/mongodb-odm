@@ -274,15 +274,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->evm = $evm;
         $this->hydratorFactory = $hydratorFactory;
         $this->lifecycleEventManager = new LifecycleEventManager($dm, $this, $evm);
-        $this->persistentCollectionFactory = new PersistentCollection\DefaultPersistentCollectionFactory($dm, $this);
-        $config = $dm->getConfiguration() ?: new Configuration();
-        $this->persistentCollectionFactory = new DefaultPersistentCollectionFactory(
-                $dm,
-                $this,
-                $config->getPersistentCollectionDir(),
-                $config->getPersistentCollectionNamespace(),
-                $config->getAutoGeneratePersistentCollectionClasses()
-        );
+        $this->persistentCollectionFactory = new DefaultPersistentCollectionFactory();
     }
 
     /**
@@ -651,7 +643,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // Inject PersistentCollection
-                $coll = $this->persistentCollectionFactory->create($mapping, $value);
+                $coll = $this->persistentCollectionFactory->create($this->dm, $mapping, $value);
                 $coll->setOwner($document, $mapping);
                 $coll->setDirty( ! $value->isEmpty());
                 $class->reflFields[$name]->setValue($document, $coll);
@@ -1927,7 +1919,7 @@ class UnitOfWork implements PropertyChangedListener
                         $managedCol = $prop->getValue($managedCopy);
 
                         if ( ! $managedCol) {
-                            $managedCol = $this->persistentCollectionFactory->create($assoc2, null);
+                            $managedCol = $this->persistentCollectionFactory->create($this->dm, $assoc2, null);
                             $managedCol->setOwner($managedCopy, $assoc2);
                             $prop->setValue($managedCopy, $managedCol);
                             $this->originalDocumentData[$oid][$name] = $managedCol;

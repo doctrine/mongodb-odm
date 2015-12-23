@@ -19,24 +19,23 @@
 
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
-use Doctrine\Common\Collections\Collection as BaseCollection;
-use Doctrine\ODM\MongoDB\DocumentManager;
-
-/**
- * Interface for persistent collection classes factory.
- *
- * @since  1.1
- * @author Maciej Malarz <malarzm@gmail.com>
- */
-interface PersistentCollectionFactory
+interface PersistentCollectionGenerator
 {
     /**
-     * Creates specified persistent collection to work with given collection class.
+     * Loads persistent collection class.
      *
-     * @param DocumentManager $dm DocumentManager with which collection is associated
-     * @param array $mapping Mapping of field holding collection
-     * @param BaseCollection $coll Collection to be decorated
-     * @return PersistentCollectionInterface
+     * @param string $collectionClass FQCN of base collection class
+     * @param int $autoGenerate
+     * @return string FQCN of generated class
      */
-    public function create(DocumentManager $dm, array $mapping, BaseCollection $coll = null);
+    public function loadClass($collectionClass, $autoGenerate);
+
+    /**
+     * Generates persistent collection class.
+     *
+     * @param string $class
+     * @param string $dir
+     * @return void
+     */
+    public function generateClass($class, $dir);
 }

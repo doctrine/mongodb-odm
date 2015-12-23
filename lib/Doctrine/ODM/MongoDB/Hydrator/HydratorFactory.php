@@ -312,7 +312,7 @@ EOF
 
         /** @Many */
         \$mongoData = isset(\$data['%1\$s']) ? \$data['%1\$s'] : null;
-        \$return = \$this->unitOfWork->getPersistentCollectionFactory()->create(\$this->class->fieldMappings['%2\$s']);
+        \$return = \$this->unitOfWork->getPersistentCollectionFactory()->create(\$this->dm, \$this->class->fieldMappings['%2\$s']);
         \$return->setHints(\$hints);
         \$return->setOwner(\$document, \$this->class->fieldMappings['%2\$s']);
         \$return->setInitialized(false);
