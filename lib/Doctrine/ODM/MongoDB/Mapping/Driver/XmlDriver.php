@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
@@ -87,10 +88,10 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
-            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
+            $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_' . $inheritanceType));
         }
         if (isset($xmlRoot['change-tracking-policy'])) {
-            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_' . strtoupper((string) $xmlRoot['change-tracking-policy'])));
+            $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_' . strtoupper((string) $xmlRoot['change-tracking-policy'])));
         }
         if (isset($xmlRoot->{'discriminator-field'})) {
             $discrField = $xmlRoot->{'discriminator-field'};

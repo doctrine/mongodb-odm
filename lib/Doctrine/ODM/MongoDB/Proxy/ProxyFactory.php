@@ -30,6 +30,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy as BaseProxy;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use ReflectionProperty;
 
 /**
@@ -75,7 +76,7 @@ class ProxyFactory extends AbstractProxyFactory
         $this->proxyNamespace  = $proxyNamespace;
         $proxyGenerator        = new ProxyGenerator($proxyDir, $proxyNamespace);
 
-        $proxyGenerator->setPlaceholder('baseProxyInterface', 'Doctrine\ODM\MongoDB\Proxy\Proxy');
+        $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
 
         parent::__construct($proxyGenerator, $this->metadataFactory, $autoGenerate);
     }

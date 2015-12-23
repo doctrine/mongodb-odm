@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Types;
 
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Type interface.
@@ -61,31 +62,31 @@ abstract class Type
 
     /** The map of supported doctrine mapping types. */
     private static $typesMap = array(
-        self::ID => 'Doctrine\ODM\MongoDB\Types\IdType',
-        self::INTID => 'Doctrine\ODM\MongoDB\Types\IntIdType',
-        self::CUSTOMID => 'Doctrine\ODM\MongoDB\Types\CustomIdType',
-        self::BOOL => 'Doctrine\ODM\MongoDB\Types\BooleanType',
-        self::BOOLEAN => 'Doctrine\ODM\MongoDB\Types\BooleanType',
-        self::INT => 'Doctrine\ODM\MongoDB\Types\IntType',
-        self::INTEGER => 'Doctrine\ODM\MongoDB\Types\IntType',
-        self::FLOAT => 'Doctrine\ODM\MongoDB\Types\FloatType',
-        self::STRING => 'Doctrine\ODM\MongoDB\Types\StringType',
-        self::DATE => 'Doctrine\ODM\MongoDB\Types\DateType',
-        self::KEY => 'Doctrine\ODM\MongoDB\Types\KeyType',
-        self::TIMESTAMP => 'Doctrine\ODM\MongoDB\Types\TimestampType',
-        self::BINDATA => 'Doctrine\ODM\MongoDB\Types\BinDataType',
-        self::BINDATAFUNC => 'Doctrine\ODM\MongoDB\Types\BinDataFuncType',
-        self::BINDATABYTEARRAY => 'Doctrine\ODM\MongoDB\Types\BinDataByteArrayType',
-        self::BINDATAUUID => 'Doctrine\ODM\MongoDB\Types\BinDataUUIDType',
-        self::BINDATAUUIDRFC4122 => 'Doctrine\ODM\MongoDB\Types\BinDataUUIDRFC4122Type',
-        self::BINDATAMD5 => 'Doctrine\ODM\MongoDB\Types\BinDataMD5Type',
-        self::BINDATACUSTOM => 'Doctrine\ODM\MongoDB\Types\BinDataCustomType',
-        self::FILE => 'Doctrine\ODM\MongoDB\Types\FileType',
-        self::HASH => 'Doctrine\ODM\MongoDB\Types\HashType',
-        self::COLLECTION => 'Doctrine\ODM\MongoDB\Types\CollectionType',
-        self::INCREMENT => 'Doctrine\ODM\MongoDB\Types\IncrementType',
-        self::OBJECTID => 'Doctrine\ODM\MongoDB\Types\ObjectIdType',
-        self::RAW => 'Doctrine\ODM\MongoDB\Types\RawType',
+        self::ID => Types\IdType::class,
+        self::INTID => Types\IntIdType::class,
+        self::CUSTOMID => Types\CustomIdType::class,
+        self::BOOL => Types\BooleanType::class,
+        self::BOOLEAN => Types\BooleanType::class,
+        self::INT => Types\IntType::class,
+        self::INTEGER => Types\IntType::class,
+        self::FLOAT => Types\FloatType::class,
+        self::STRING => Types\StringType::class,
+        self::DATE => Types\DateType::class,
+        self::KEY => Types\KeyType::class,
+        self::TIMESTAMP => Types\TimestampType::class,
+        self::BINDATA => Types\BinDataType::class,
+        self::BINDATAFUNC => Types\BinDataFuncType::class,
+        self::BINDATABYTEARRAY => Types\BinDataByteArrayType::class,
+        self::BINDATAUUID => Types\BinDataUUIDType::class,
+        self::BINDATAUUIDRFC4122 => Types\BinDataUUIDRFC4122Type::class,
+        self::BINDATAMD5 => Types\BinDataMD5Type::class,
+        self::BINDATACUSTOM => Types\BinDataCustomType::class,
+        self::FILE => Types\FileType::class,
+        self::HASH => Types\HashType::class,
+        self::COLLECTION => Types\CollectionType::class,
+        self::INCREMENT => Types\IncrementType::class,
+        self::OBJECTID => Types\ObjectIdType::class,
+        self::RAW => Types\RawType::class,
     );
 
     /* Prevent instantiation and force use of the factory method. */
