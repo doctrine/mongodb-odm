@@ -23,8 +23,6 @@ namespace Doctrine\ODM\MongoDB\Types;
  * The Int type.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class IntType extends Type
 {

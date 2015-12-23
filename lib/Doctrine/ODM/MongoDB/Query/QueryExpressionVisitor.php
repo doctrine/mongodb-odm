@@ -28,8 +28,6 @@ use Doctrine\Common\Collections\Expr\Value;
  * Converts Collection expressions to query expressions.
  *
  * @since  1.0
- * @author Michaël Gallego <mic.gallego@gmail.com>
- * @author Jeremy Mikola <jmikola@gmail.com>
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {

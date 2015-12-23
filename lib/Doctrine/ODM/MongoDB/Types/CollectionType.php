@@ -25,9 +25,6 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  * The Collection type.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
- * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
 class CollectionType extends Type
 {

@@ -29,10 +29,6 @@ use Doctrine\ODM\MongoDB\Tools\DocumentRepositoryGenerator;
  * Command to generate repository classes for mapping information.
  *
  * @since   1.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class GenerateRepositoriesCommand extends Console\Command\Command
 {

@@ -35,7 +35,6 @@ use Doctrine\ODM\MongoDB\Configuration;
  * type based on document's ClassMetadata
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class HydratorFactory
 {

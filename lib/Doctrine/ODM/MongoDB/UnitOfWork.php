@@ -41,8 +41,6 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
  * in the correct order.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class UnitOfWork implements PropertyChangedListener
 {

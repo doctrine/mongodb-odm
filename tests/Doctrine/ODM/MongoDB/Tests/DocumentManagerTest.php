@@ -6,9 +6,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 
-/**
- * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
- */
 class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testCustomRepository()

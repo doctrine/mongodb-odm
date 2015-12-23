@@ -28,8 +28,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class XmlDriver extends FileDriver
 {

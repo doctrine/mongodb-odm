@@ -26,7 +26,6 @@ use Symfony\Component\Console\Helper\Helper;
  * Symfony console component helper for accessing a DocumentManager instance.
  *
  * @since  1.0
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
 class DocumentManagerHelper extends Helper
 {

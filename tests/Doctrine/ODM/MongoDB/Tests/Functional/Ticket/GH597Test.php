@@ -6,9 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @author Jordan Stout <j@jrdn.org>
- */
 class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testEmbedManyGetsUnset()

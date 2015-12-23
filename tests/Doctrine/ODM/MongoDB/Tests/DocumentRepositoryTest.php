@@ -5,9 +5,6 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\LockMode;
 
-/**
- * @author Rudolph Gottesheim <r.gottesheim@loot.at>
- */
 class DocumentRepositoryTest extends BaseTest
 {
     public function testMatchingAcceptsCriteriaWithNullWhereExpression()

@@ -25,8 +25,6 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * The Type interface.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 abstract class Type
 {

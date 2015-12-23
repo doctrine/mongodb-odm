@@ -8,9 +8,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 
-/**
- * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
- */
 class SchemaManagerTest extends \PHPUnit_Framework_TestCase
 {
     private $indexedClasses = array(

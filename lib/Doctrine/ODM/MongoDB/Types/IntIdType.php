@@ -23,7 +23,6 @@ namespace Doctrine\ODM\MongoDB\Types;
  * The Integer Id type.
  *
  * @since       1.0
- * @author      Pavel Volokitin <pavelvolokitin@gmail.com>
  */
 class IntIdType extends IntType
 {

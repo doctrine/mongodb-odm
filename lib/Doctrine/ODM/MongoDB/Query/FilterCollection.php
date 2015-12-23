@@ -25,8 +25,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * Collection class for all the query filters.
- *
- * @author Tim Roediger <superdweebie@gmail.com>
  */
 class FilterCollection
 {

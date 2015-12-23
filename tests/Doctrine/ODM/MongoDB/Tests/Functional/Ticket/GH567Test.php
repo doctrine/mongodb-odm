@@ -4,9 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @author Tyler Stroud <tyler@tylerstroud.com>
- */
 class GH567Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     protected $repository;

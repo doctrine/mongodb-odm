@@ -37,8 +37,6 @@ use Doctrine\ODM\MongoDB\LockException;
  *    the serialized representation).
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class ClassMetadata extends ClassMetadataInfo
 {

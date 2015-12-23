@@ -24,10 +24,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @author Chris Jones <leeked@gmail.com>
- * @author Michał Dąbrowski <dabrowski@brillante.pl>
- */
 class UpdateCommand extends AbstractCommand
 {
     private $timeout;

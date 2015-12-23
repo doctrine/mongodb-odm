@@ -37,9 +37,6 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
  * mapping strategy.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Bulat Shakirzyanov <bulat@theopenskyproject.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class CollectionPersister
 {

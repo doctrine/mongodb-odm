@@ -24,7 +24,6 @@ namespace Doctrine\ODM\MongoDB;
  * initialization.
  *
  * @since  1.0
- * @author Jonathan H. Wage <jonwage@gmail.com>
  * @deprecated Deprecated in favor of using Cursor; will be removed in 2.0
  */
 class EagerCursor extends Cursor

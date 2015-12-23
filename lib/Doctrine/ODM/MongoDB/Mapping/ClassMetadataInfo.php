@@ -41,8 +41,6 @@ use InvalidArgumentException;
  *    the serialized representation).
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMetadata
 {

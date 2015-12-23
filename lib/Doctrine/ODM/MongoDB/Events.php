@@ -25,8 +25,6 @@ namespace Doctrine\ODM\MongoDB;
  * This class cannot be instantiated.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 final class Events
 {

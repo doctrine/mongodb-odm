@@ -36,7 +36,6 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
  * the referenced identifiers are not immediately available on an inverse side.
  *
  * @since  1.0
- * @author Jeremy Mikola <jmikola@gmail.com>
  */
 class ReferencePrimer
 {

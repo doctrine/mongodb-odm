@@ -26,7 +26,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * Query expression builder for ODM.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Expr extends \Doctrine\MongoDB\Query\Expr
 {
