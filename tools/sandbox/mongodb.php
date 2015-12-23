@@ -8,7 +8,7 @@ if (isset($helperSet)) {
     $app->setHelperSet($helperSet);
 }
 
-$app->addCommands(array(
+$app->addCommands([
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateDocumentsCommand(),
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateHydratorsCommand(),
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateProxiesCommand(),
@@ -18,6 +18,6 @@ $app->addCommands(array(
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\CreateCommand(),
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\DropCommand(),
     new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\UpdateCommand(),
-));
+]);
 
 $app->run();

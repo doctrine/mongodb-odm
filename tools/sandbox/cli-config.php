@@ -5,6 +5,6 @@ use Symfony\Component\Console\Helper\HelperSet;
 
 require_once __DIR__ . '/config.php';
 
-$helperSet = new HelperSet(array(
+$helperSet = new HelperSet([
     'dm' => new DocumentManagerHelper($dm),
-));
+]);
