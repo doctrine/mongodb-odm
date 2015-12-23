@@ -24,6 +24,10 @@ class User
 
     protected $account;
 
+    protected $tags = array();
+
+    protected $test;
+
     public function __construct()
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
