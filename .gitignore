@@ -3,5 +3,4 @@ tools/sandbox/Hydrators/*
 tests/Proxies/*
 tests/Hydrators/*
 phpunit.xml
-composer.lock
 vendor/
