@@ -9,7 +9,7 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testHashWithStringKeys()
     {
-        $hash = array('a' => 'x', 'b' => 'y', 'c' => 'z');
+        $hash = ['a' => 'x', 'b' => 'y', 'c' => 'z'];
 
         $doc = new GH453Document();
         $doc->hash = $hash;
@@ -40,7 +40,7 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testHashWithNumericKeys()
     {
-        $hash = array(0 => 'x', 1 => 'y', 2 => 'z');
+        $hash = [0 => 'x', 1 => 'y', 2 => 'z'];
 
         $doc = new GH453Document();
         $doc->hash = $hash;
@@ -71,7 +71,7 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testCollection()
     {
-        $col = array('x', 'y', 'z');
+        $col = ['x', 'y', 'z'];
 
         $doc = new GH453Document();
         $doc->colPush = $col;
@@ -107,11 +107,11 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbedMany()
     {
-        $colPush = new ArrayCollection(array(
+        $colPush = new ArrayCollection([
             new GH453EmbeddedDocument(),
             new GH453EmbeddedDocument(),
             new GH453EmbeddedDocument(),
-        ));
+        ]);
         $colSet = $colPush->map(function($v) { return clone $v; });
         $colSetArray = $colPush->map(function($v) { return clone $v; });
         $colAddToSet = $colPush->map(function($v) { return clone $v; });
@@ -151,11 +151,11 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testReferenceMany()
     {
-        $colPush = new ArrayCollection(array(
+        $colPush = new ArrayCollection([
             new GH453ReferencedDocument(),
             new GH453ReferencedDocument(),
             new GH453ReferencedDocument(),
-        ));
+        ]);
         $colSet = $colPush->map(function($v) { return clone $v; });
         $colSetArray = $colPush->map(function($v) { return clone $v; });
         $colAddToSet = $colPush->map(function($v) { return clone $v; });
@@ -216,13 +216,13 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     private function assertBsonType($bsonType, $documentId, $fieldName)
     {
-        $criteria = array('_id' => $documentId);
+        $criteria = ['_id' => $documentId];
 
         if (4 === $bsonType) {
             // See: https://jira.mongodb.org/browse/SERVER-1475
             $criteria['$where'] = sprintf('Array.isArray(this.%s)', $fieldName);
         } else {
-            $criteria[$fieldName] = array('$type' => $bsonType);
+            $criteria[$fieldName] = ['$type' => $bsonType];
         }
 
         $this->assertNotNull($this->dm->getRepository(__NAMESPACE__ . '\GH453Document')->findOneBy($criteria));
@@ -246,16 +246,16 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $expectedValue = (object) $expectedValue;
         }
 
-        $criteria = array(
+        $criteria = [
             '_id' => $documentId,
-            '$and' => array(array($fieldName => $expectedValue)),
-        );
+            '$and' => [[$fieldName => $expectedValue]],
+        ];
 
         if (4 === $bsonType) {
             // See: https://jira.mongodb.org/browse/SERVER-1475
-            $criteria['$and'][] = array('$where' => sprintf('Array.isArray(this.%s)', $fieldName));
+            $criteria['$and'][] = ['$where' => sprintf('Array.isArray(this.%s)', $fieldName)];
         } else {
-            $criteria['$and'][] = array($fieldName => array('$type' => $bsonType));
+            $criteria['$and'][] = [$fieldName => ['$type' => $bsonType]];
         }
 
         $this->assertNotNull($this->dm->getRepository(__NAMESPACE__ . '\GH453Document')->findOneBy($criteria));

@@ -64,7 +64,7 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->execute();
 
-        $cursor->setHints(array(Query::HINT_SLAVE_OKAY => $slaveOkay));
+        $cursor->setHints([Query::HINT_SLAVE_OKAY => $slaveOkay]);
 
         $this->assertSlaveOkayHint($slaveOkay, $cursor->getHints());
 
@@ -91,17 +91,17 @@ class SlaveOkayTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $groups);
 
-        $groups->setHints(array(Query::HINT_SLAVE_OKAY => $slaveOkay));
+        $groups->setHints([Query::HINT_SLAVE_OKAY => $slaveOkay]);
 
         $this->assertSlaveOkayHint($slaveOkay, $groups->getHints());
     }
 
     public function provideSlaveOkayHints()
     {
-        return array(
-            array(true),
-            array(false)
-        );
+        return [
+            [true],
+            [false]
+        ];
     }
 
     public function testSlaveOkayHintFromClassMetadata()

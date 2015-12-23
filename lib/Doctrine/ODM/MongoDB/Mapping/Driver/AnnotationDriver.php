@@ -39,11 +39,11 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  */
 class AnnotationDriver extends AbstractAnnotationDriver
 {
-    protected $entityAnnotationClasses = array(
+    protected $entityAnnotationClasses = [
         ODM\Document::class         => 1,
         ODM\MappedSuperclass::class => 2,
         ODM\EmbeddedDocument::class => 3,
-    );
+    ];
 
     /**
      * Registers annotation classes to the common registry.
@@ -65,7 +65,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
 
-        $documentAnnots = array();
+        $documentAnnots = [];
         foreach ($classAnnotations as $annot) {
             $classAnnotations[get_class($annot)] = $annot;
 
@@ -81,7 +81,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $this->addIndex($class, $annot);
             }
             if ($annot instanceof ODM\Indexes) {
-                foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $index) {
+                foreach (is_array($annot->value) ? $annot->value : [$annot->value] as $index) {
                     $this->addIndex($class, $index);
                 }
             } elseif ($annot instanceof ODM\InheritanceType) {
@@ -148,8 +148,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 continue;
             }
 
-            $indexes = array();
-            $mapping = array('fieldName' => $property->getName());
+            $indexes = [];
+            $mapping = ['fieldName' => $property->getName()];
             $fieldAnnot = null;
 
             foreach ($this->reader->getPropertyAnnotations($property) as $annot) {
@@ -160,7 +160,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $indexes[] = $annot;
                 }
                 if ($annot instanceof ODM\Indexes) {
-                    foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $index) {
+                    foreach (is_array($annot->value) ? $annot->value : [$annot->value] as $index) {
                         $indexes[] = $index;
                     }
                 } elseif ($annot instanceof ODM\AlsoLoad) {
@@ -180,7 +180,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if ($indexes) {
                 foreach ($indexes as $index) {
                     $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
-                    $keys = array($name => $index->order ?: 'asc');
+                    $keys = [$name => $index->order ?: 'asc'];
                     $this->addIndex($class, $index, $keys);
                 }
             }
@@ -227,11 +227,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
     }
 
-    private function addIndex(ClassMetadataInfo $class, $index, array $keys = array())
+    private function addIndex(ClassMetadataInfo $class, $index, array $keys = [])
     {
         $keys = array_merge($keys, $index->keys);
-        $options = array();
-        $allowed = array('name', 'dropDups', 'background', 'safe', 'unique', 'sparse', 'expireAfterSeconds');
+        $options = [];
+        $allowed = ['name', 'dropDups', 'background', 'safe', 'unique', 'sparse', 'expireAfterSeconds'];
         foreach ($allowed as $name) {
             if (isset($index->$name)) {
                 $options[$name] = $index->$name;
@@ -248,7 +248,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * @param Reader $reader
      * @return AnnotationDriver
      */
-    public static function create($paths = array(), Reader $reader = null)
+    public static function create($paths = [], Reader $reader = null)
     {
         if ($reader === null) {
             $reader = new AnnotationReader();

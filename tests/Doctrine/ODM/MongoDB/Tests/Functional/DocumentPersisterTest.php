@@ -18,8 +18,8 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection = $this->dm->getDocumentCollection($this->class);
         $collection->drop();
 
-        foreach (array('a', 'b', 'c', 'd') as $name) {
-            $document = array('dbName' => $name);
+        foreach (['a', 'b', 'c', 'd'] as $name) {
+            $document = ['dbName' => $name];
             $collection->insert($document);
         }
 
@@ -36,15 +36,15 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $updatedData = $this->dm->getDocumentCollection($this->class)->findOne(array('_id' => $originalData['_id']));
+        $updatedData = $this->dm->getDocumentCollection($this->class)->findOne(['_id' => $originalData['_id']]);
 
         $this->assertEquals($originalData, $updatedData);
     }
 
     public function testExistsReturnsTrueForExistentDocuments()
     {
-        foreach (array('a', 'b', 'c', 'd') as $name) {
-            $document = $this->documentPersister->load(array('name' => $name));
+        foreach (['a', 'b', 'c', 'd'] as $name) {
+            $document = $this->documentPersister->load(['name' => $name]);
             $this->assertTrue($this->documentPersister->exists($document));
         }
     }
@@ -59,10 +59,10 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLoadPreparesCriteriaAndSort()
     {
-        $criteria = array('name' => array('$in' => array('a', 'b')));
-        $sort = array('name' => -1);
+        $criteria = ['name' => ['$in' => ['a', 'b']]];
+        $sort = ['name' => -1];
 
-        $document = $this->documentPersister->load($criteria, null, array(), 0, $sort);
+        $document = $this->documentPersister->load($criteria, null, [], 0, $sort);
 
         $this->assertInstanceOf($this->class, $document);
         $this->assertEquals('b', $document->name);
@@ -70,8 +70,8 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLoadAllPreparesCriteriaAndSort()
     {
-        $criteria = array('name' => array('$in' => array('a', 'b')));
-        $sort = array('name' => -1);
+        $criteria = ['name' => ['$in' => ['a', 'b']]];
+        $sort = ['name' => -1];
 
         $cursor = $this->documentPersister->loadAll($criteria, $sort);
         $documents = iterator_to_array($cursor, false);
@@ -84,9 +84,9 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLoadAllWithSortLimitAndSkip()
     {
-        $sort = array('name' => -1);
+        $sort = ['name' => -1];
 
-        $cursor = $this->documentPersister->loadAll(array(), $sort, 1, 2);
+        $cursor = $this->documentPersister->loadAll([], $sort, 1, 2);
         $documents = iterator_to_array($cursor, false);
 
         $this->assertInstanceOf($this->class, $documents[0]);
@@ -96,9 +96,9 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLoadAllWithSortLimitAndSkipAndRecreatedCursor()
     {
-        $sort = array('name' => -1);
+        $sort = ['name' => -1];
 
-        $cursor = $this->documentPersister->loadAll(array(), $sort, 1, 2);
+        $cursor = $this->documentPersister->loadAll([], $sort, 1, 2);
 
         $cursor = clone $cursor;
         $cursor->recreate();
@@ -120,18 +120,18 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function getTestPrepareFieldNameData()
     {
-        return array(
-            array('name', 'dbName'),
-            array('association', 'associationName'),
-            array('association.id', 'associationName._id'),
-            array('association.nested', 'associationName.nestedName'),
-            array('association.nested.$id', 'associationName.nestedName.$id'),
-            array('association.nested._id', 'associationName.nestedName._id'),
-            array('association.nested.id', 'associationName.nestedName._id'),
-            array('association.nested.association.nested.$id', 'associationName.nestedName.associationName.nestedName.$id'),
-            array('association.nested.association.nested.id', 'associationName.nestedName.associationName.nestedName._id'),
-            array('association.nested.association.nested.firstName', 'associationName.nestedName.associationName.nestedName.firstName'),
-        );
+        return [
+            ['name', 'dbName'],
+            ['association', 'associationName'],
+            ['association.id', 'associationName._id'],
+            ['association.nested', 'associationName.nestedName'],
+            ['association.nested.$id', 'associationName.nestedName.$id'],
+            ['association.nested._id', 'associationName.nestedName._id'],
+            ['association.nested.id', 'associationName.nestedName._id'],
+            ['association.nested.association.nested.$id', 'associationName.nestedName.associationName.nestedName.$id'],
+            ['association.nested.association.nested.id', 'associationName.nestedName.associationName.nestedName._id'],
+            ['association.nested.association.nested.firstName', 'associationName.nestedName.associationName.nestedName.firstName'],
+        ];
     }
 
     /**
@@ -142,8 +142,8 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = array('_id' => $hashId);
-        $expected = array('_id' => (object) $hashId);
+        $value = ['_id' => $hashId];
+        $expected = ['_id' => (object) $hashId];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
@@ -156,39 +156,39 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = array('_id' => array('$exists' => true));
-        $expected = array('_id' => array('$exists' => true));
+        $value = ['_id' => ['$exists' => true]];
+        $expected = ['_id' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('_id' => array('$elemMatch' => $hashId));
-        $expected = array('_id' => array('$elemMatch' => (object) $hashId));
+        $value = ['_id' => ['$elemMatch' => $hashId]];
+        $expected = ['_id' => ['$elemMatch' => (object) $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('_id' => array('$in' => array($hashId)));
-        $expected = array('_id' => array('$in' => array((object) $hashId)));
+        $value = ['_id' => ['$in' => [$hashId]]];
+        $expected = ['_id' => ['$in' => [(object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('_id' => array('$not' => array('$elemMatch' => $hashId)));
-        $expected = array('_id' => array('$not' => array('$elemMatch' => (object) $hashId)));
+        $value = ['_id' => ['$not' => ['$elemMatch' => $hashId]]];
+        $expected = ['_id' => ['$not' => ['$elemMatch' => (object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('_id' => array('$not' => array('$in' => array($hashId))));
-        $expected = array('_id' => array('$not' => array('$in' => array((object) $hashId))));
+        $value = ['_id' => ['$not' => ['$in' => [$hashId]]]];
+        $expected = ['_id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
     public function provideHashIdentifiers()
     {
-        return array(
-            array(array('key' => 'value')),
-            array(array(0 => 'first', 1 => 'second')),
-            array(array('$ref' => 'ref', '$id' => 'id')),
-        );
+        return [
+            [['key' => 'value']],
+            [[0 => 'first', 1 => 'second']],
+            [['$ref' => 'ref', '$id' => 'id']],
+        ];
     }
 
     public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithNormalIdType()
@@ -198,33 +198,33 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $id = new \MongoId();
 
-        $value = array('simpleRef' => (string) $id);
-        $expected = array('simpleRef' => $id);
+        $value = ['simpleRef' => (string) $id];
+        $expected = ['simpleRef' => $id];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('simpleRef' => array('$exists' => true));
-        $expected = array('simpleRef' => array('$exists' => true));
+        $value = ['simpleRef' => ['$exists' => true]];
+        $expected = ['simpleRef' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('simpleRef' => array('$elemMatch' => (string) $id));
-        $expected = array('simpleRef' => array('$elemMatch' => $id));
+        $value = ['simpleRef' => ['$elemMatch' => (string) $id]];
+        $expected = ['simpleRef' => ['$elemMatch' => $id]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('simpleRef' => array('$in' => array((string) $id)));
-        $expected = array('simpleRef' => array('$in' => array($id)));
+        $value = ['simpleRef' => ['$in' => [(string) $id]]];
+        $expected = ['simpleRef' => ['$in' => [$id]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('simpleRef' => array('$not' => array('$elemMatch' => (string) $id)));
-        $expected = array('simpleRef' => array('$not' => array('$elemMatch' => $id)));
+        $value = ['simpleRef' => ['$not' => ['$elemMatch' => (string) $id]]];
+        $expected = ['simpleRef' => ['$not' => ['$elemMatch' => $id]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('simpleRef' => array('$not' => array('$in' => array((string) $id))));
-        $expected = array('simpleRef' => array('$not' => array('$in' => array($id))));
+        $value = ['simpleRef' => ['$not' => ['$in' => [(string) $id]]]];
+        $expected = ['simpleRef' => ['$not' => ['$in' => [$id]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
@@ -237,33 +237,33 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = array('simpleRef' => $hashId);
-        $expected = array('simpleRef' => (object) $hashId);
+        $value = ['simpleRef' => $hashId];
+        $expected = ['simpleRef' => (object) $hashId];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('simpleRef' => array('$exists' => true));
-        $expected = array('simpleRef' => array('$exists' => true));
+        $value = ['simpleRef' => ['$exists' => true]];
+        $expected = ['simpleRef' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('simpleRef' => array('$elemMatch' => $hashId));
-        $expected = array('simpleRef' => array('$elemMatch' => (object) $hashId));
+        $value = ['simpleRef' => ['$elemMatch' => $hashId]];
+        $expected = ['simpleRef' => ['$elemMatch' => (object) $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('simpleRef' => array('$in' => array($hashId)));
-        $expected = array('simpleRef' => array('$in' => array((object) $hashId)));
+        $value = ['simpleRef' => ['$in' => [$hashId]]];
+        $expected = ['simpleRef' => ['$in' => [(object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('simpleRef' => array('$not' => array('$elemMatch' => $hashId)));
-        $expected = array('simpleRef' => array('$not' => array('$elemMatch' => (object) $hashId)));
+        $value = ['simpleRef' => ['$not' => ['$elemMatch' => $hashId]]];
+        $expected = ['simpleRef' => ['$not' => ['$elemMatch' => (object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('simpleRef' => array('$not' => array('$in' => array($hashId))));
-        $expected = array('simpleRef' => array('$not' => array('$in' => array((object) $hashId))));
+        $value = ['simpleRef' => ['$not' => ['$in' => [$hashId]]]];
+        $expected = ['simpleRef' => ['$not' => ['$in' => [(object) $hashId]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
@@ -275,33 +275,33 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $id = new \MongoId();
 
-        $value = array('complexRef.id' => (string) $id);
-        $expected = array('complexRef.$id' => $id);
+        $value = ['complexRef.id' => (string) $id];
+        $expected = ['complexRef.$id' => $id];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('complexRef.id' => array('$exists' => true));
-        $expected = array('complexRef.$id' => array('$exists' => true));
+        $value = ['complexRef.id' => ['$exists' => true]];
+        $expected = ['complexRef.$id' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('complexRef.id' => array('$elemMatch' => (string) $id));
-        $expected = array('complexRef.$id' => array('$elemMatch' => $id));
+        $value = ['complexRef.id' => ['$elemMatch' => (string) $id]];
+        $expected = ['complexRef.$id' => ['$elemMatch' => $id]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('complexRef.id' => array('$in' => array((string) $id)));
-        $expected = array('complexRef.$id' => array('$in' => array($id)));
+        $value = ['complexRef.id' => ['$in' => [(string) $id]]];
+        $expected = ['complexRef.$id' => ['$in' => [$id]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('complexRef.id' => array('$not' => array('$elemMatch' => (string) $id)));
-        $expected = array('complexRef.$id' => array('$not' => array('$elemMatch' => $id)));
+        $value = ['complexRef.id' => ['$not' => ['$elemMatch' => (string) $id]]];
+        $expected = ['complexRef.$id' => ['$not' => ['$elemMatch' => $id]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('complexRef.id' => array('$not' => array('$in' => array((string) $id))));
-        $expected = array('complexRef.$id' => array('$not' => array('$in' => array($id))));
+        $value = ['complexRef.id' => ['$not' => ['$in' => [(string) $id]]]];
+        $expected = ['complexRef.$id' => ['$not' => ['$in' => [$id]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
@@ -314,33 +314,33 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = array('complexRef.id' => $hashId);
-        $expected = array('complexRef.$id' => (object) $hashId);
+        $value = ['complexRef.id' => $hashId];
+        $expected = ['complexRef.$id' => (object) $hashId];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('complexRef.id' => array('$exists' => true));
-        $expected = array('complexRef.$id' => array('$exists' => true));
+        $value = ['complexRef.id' => ['$exists' => true]];
+        $expected = ['complexRef.$id' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('complexRef.id' => array('$elemMatch' => $hashId));
-        $expected = array('complexRef.$id' => array('$elemMatch' => (object) $hashId));
+        $value = ['complexRef.id' => ['$elemMatch' => $hashId]];
+        $expected = ['complexRef.$id' => ['$elemMatch' => (object) $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('complexRef.id' => array('$in' => array($hashId)));
-        $expected = array('complexRef.$id' => array('$in' => array((object) $hashId)));
+        $value = ['complexRef.id' => ['$in' => [$hashId]]];
+        $expected = ['complexRef.$id' => ['$in' => [(object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('complexRef.id' => array('$not' => array('$elemMatch' => $hashId)));
-        $expected = array('complexRef.$id' => array('$not' => array('$elemMatch' => (object) $hashId)));
+        $value = ['complexRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
+        $expected = ['complexRef.$id' => ['$not' => ['$elemMatch' => (object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = array('complexRef.id' => array('$not' => array('$in' => array($hashId))));
-        $expected = array('complexRef.$id' => array('$not' => array('$in' => array((object) $hashId))));
+        $value = ['complexRef.id' => ['$not' => ['$in' => [$hashId]]]];
+        $expected = ['complexRef.$id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }

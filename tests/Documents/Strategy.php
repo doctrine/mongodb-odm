@@ -11,11 +11,11 @@ class Strategy
     public $id;
 
     /** @ODM\Collection() */
-    public $logs = array();
+    public $logs = [];
 
     /** @ODM\EmbedMany(targetDocument="Message", strategy="set") */
-    public $messages = array();
+    public $messages = [];
 
     /** @ODM\ReferenceMany(targetDocument="Task", strategy="set") */
-    public $tasks = array();
+    public $tasks = [];
 }

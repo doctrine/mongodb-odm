@@ -15,7 +15,7 @@ class MemoryUsageTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testMemoryUsage()
     {
-        $memoryUsage = array();
+        $memoryUsage = [];
         for ($i = 0; $i < 100; $i++) {
             $ph1 = new CmsPhonenumber();
             $ph1->phonenumber = '12345';
@@ -46,7 +46,7 @@ class MemoryUsageTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     private function formatMemory($size)
     {
-        $unit = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
+        $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
         return round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
     }
 }

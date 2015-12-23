@@ -18,12 +18,12 @@ class GH665Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH665Document')
-            ->findOne(array('embeddedPushAll.name' => 'foo'));
+            ->findOne(['embeddedPushAll.name' => 'foo']);
         $this->assertNotNull($check);
         $this->assertSame($document->id, (string) $check['_id']);
 
         $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH665Document')
-            ->findOne(array('embeddedAddToSet.name' => 'bar'));
+            ->findOne(['embeddedAddToSet.name' => 'bar']);
         $this->assertNotNull($check);
         $this->assertSame($document->id, (string) $check['_id']);
 
@@ -33,11 +33,11 @@ class GH665Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->getSingleResult();
 
-        $expected = array(
+        $expected = [
             '_id' => $document->id,
-            'embeddedPushAll' => array(array('name' => 'foo')),
-            'embeddedAddToSet' => array(array('name' => 'bar'))
-        );
+            'embeddedPushAll' => [['name' => 'foo']],
+            'embeddedAddToSet' => [['name' => 'bar']]
+        ];
 
         $this->assertEquals($expected, $persisted);
     }

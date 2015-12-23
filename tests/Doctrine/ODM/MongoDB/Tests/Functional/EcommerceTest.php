@@ -22,7 +22,7 @@ class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         parent::setUp();
 
-        $currencies = array('USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125);
+        $currencies = ['USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125];
 
         foreach ($currencies as $name => &$multiplier) {
             $multiplier = new Currency($name, $multiplier);
@@ -53,7 +53,7 @@ class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(3, count($product->getOptions()));
         $this->assertEquals(12.99, $product->getOption('small')->getPrice());
 
-        $usdCurrency = $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(array('name' => 'USD'));
+        $usdCurrency = $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(['name' => 'USD']);
         $this->assertNotNull($usdCurrency);
         $usdCurrency->setMultiplier('2');
 
@@ -69,7 +69,7 @@ class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $currency = $price->getCurrency();
         $this->assertTrue($currency instanceof Currency);
         $this->assertNotNull($currency->getId());
-        $this->assertEquals($currency, $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(array('name' => Currency::USD)));
+        $this->assertEquals($currency, $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(['name' => Currency::USD]));
     }
 
     public function testRemoveOption()

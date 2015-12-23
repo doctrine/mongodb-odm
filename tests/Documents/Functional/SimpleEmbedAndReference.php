@@ -11,10 +11,10 @@ class SimpleEmbedAndReference
     public $id;
 
     /** @ODM\EmbedMany(targetDocument="Reference") */
-    public $embedMany = array();
+    public $embedMany = [];
 
     /** @ODM\ReferenceMany(targetDocument="Embedded") */
-    public $referenceMany = array();
+    public $referenceMany = [];
 
     /** @ODM\EmbedOne(targetDocument="Reference") */
     public $embedOne;

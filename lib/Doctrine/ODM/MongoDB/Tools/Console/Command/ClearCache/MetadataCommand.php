@@ -44,7 +44,7 @@ class MetadataCommand extends Command
         $this
         ->setName('odm:clear-cache:metadata')
         ->setDescription('Clear all metadata cache of the various cache drivers.')
-        ->setDefinition(array())
+        ->setDefinition([])
         ->setHelp(<<<EOT
 Clear all metadata cache of the various cache drivers.
 EOT

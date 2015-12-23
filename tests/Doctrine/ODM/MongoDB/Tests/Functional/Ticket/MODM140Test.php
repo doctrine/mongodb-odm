@@ -74,7 +74,7 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(array('name' => 'test'));
+        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(['name' => 'test']);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
 
         $level1 = new EmbeddedTestLevel1();
@@ -93,7 +93,7 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(array('name' => 'test'));
+        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(['name' => 'test']);
         $this->assertEquals(1, count($test->level1));
         $this->assertEquals(2, count($test->level1[0]->level2));
 
@@ -113,7 +113,7 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(array('name' => 'test'));
+        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(['name' => 'test']);
         $this->assertEquals(2, count($test->level1));
         $this->assertEquals(2, count($test->level1[0]->level2));
         $this->assertEquals(2, count($test->level1[1]->level2));

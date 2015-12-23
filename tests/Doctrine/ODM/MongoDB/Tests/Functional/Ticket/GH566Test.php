@@ -27,10 +27,10 @@ class GH566Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $embeddedDoc2->parent = $doc2;
 
         $doc3->version = $embeddedDoc2;
-        $doc3->versions = new ArrayCollection(array(
+        $doc3->versions = new ArrayCollection([
             $embeddedDoc1,
             $embeddedDoc2,
-        ));
+        ]);
 
         $this->dm->flush();
 

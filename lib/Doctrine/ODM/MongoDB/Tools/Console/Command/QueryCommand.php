@@ -39,7 +39,7 @@ class QueryCommand extends Console\Command\Command
         $this
         ->setName('odm:query')
         ->setDescription('Query mongodb and inspect the outputted results from your document classes.')
-        ->setDefinition(array(
+        ->setDefinition([
             new InputArgument(
                 'class', InputArgument::REQUIRED,
                 'The class to query.'
@@ -64,7 +64,7 @@ class QueryCommand extends Console\Command\Command
                 'depth', null, InputOption::VALUE_REQUIRED,
                 'Dumping depth of Document graph.', 7
             )
-        ))
+        ])
         ->setHelp(<<<EOT
 Execute a query and output the results.
 EOT

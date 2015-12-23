@@ -18,7 +18,7 @@ class Tournament
     private $name;
 
     /** @ODM\ReferenceMany(targetDocument="Participant", cascade={"all"}) */
-    protected $participants = array();
+    protected $participants = [];
 
     public function __construct($name)
     {

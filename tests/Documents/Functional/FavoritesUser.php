@@ -22,10 +22,10 @@ class FavoritesUser
      *   }
      * )
      */
-    private $favorites = array();
+    private $favorites = [];
 
     /** @ODM\EmbedMany */
-    private $embedded = array();
+    private $embedded = [];
 
     /** @ODM\ReferenceOne */
     private $favorite;

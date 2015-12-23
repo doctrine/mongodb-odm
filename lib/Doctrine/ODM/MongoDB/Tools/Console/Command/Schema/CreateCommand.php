@@ -29,7 +29,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class CreateCommand extends AbstractCommand
 {
-    private $createOrder = array(self::DB, self::COLLECTION, self::INDEX);
+    private $createOrder = [self::DB, self::COLLECTION, self::INDEX];
 
     private $timeout;
 
@@ -119,7 +119,7 @@ class CreateCommand extends AbstractCommand
 
     protected function processDocumentProxy(SchemaManager $sm, $document)
     {
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses(array($this->getMetadataFactory()->getMetadataFor($document)));
+        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$this->getMetadataFactory()->getMetadataFor($document)]);
     }
 
     protected function processProxy(SchemaManager $sm)

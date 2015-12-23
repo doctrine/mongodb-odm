@@ -14,7 +14,7 @@ class DefaultRepositoryFactory implements RepositoryFactory
      *
      * @var array<\Doctrine\Common\Persistence\ObjectRepository>
      */
-    private $repositoryList = array();
+    private $repositoryList = [];
 
     /**
      * {@inheritdoc}

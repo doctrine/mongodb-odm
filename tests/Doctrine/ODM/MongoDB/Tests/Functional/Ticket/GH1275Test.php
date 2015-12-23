@@ -31,7 +31,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $container->add($itemThree);
 
         $this->assertSame(
-            array('Number One', 'Number Two', 'Number Three'),
+            ['Number One', 'Number Two', 'Number Three'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -43,7 +43,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number One','Number Three', 'Number Two'),
+            ['Number One','Number Three', 'Number Two'],
             array_map($getNameCallback, $container->items->toArray())
         );
     }
@@ -72,7 +72,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $container->add($itemThree);
 
         $this->assertSame(
-            array('Number One', 'Number Two', 'Number Three'),
+            ['Number One', 'Number Two', 'Number Three'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -82,7 +82,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number One', 'Number Two', 'Number Three'),
+            ['Number One', 'Number Two', 'Number Three'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -92,7 +92,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number Two', 'Number One', 'Number Three'),
+            ['Number Two', 'Number One', 'Number Three'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -102,7 +102,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number One', 'Number Three', 'Number Two'),
+            ['Number One', 'Number Three', 'Number Two'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -112,7 +112,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number One', 'Number Three', 'Number Two'),
+            ['Number One', 'Number Three', 'Number Two'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -122,7 +122,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number Three', 'Number One', 'Number Two'),
+            ['Number Three', 'Number One', 'Number Two'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -131,14 +131,14 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public static function getCollectionStrategies()
     {
-        return array(
-            'testResortWithStrategyAddToSet' => array('addToSet'),
-            'testResortWithStrategySet' => array('set'),
-            'testResortWithStrategySetArray' => array('setArray'),
-            'testResortWithStrategyPushAll' => array('pushAll'),
-            'testResortWithStrategyAtomicSet' => array('atomicSet'),
-            'testResortWithStrategyAtomicSetArray' => array('atomicSetArray'),
-        );
+        return [
+            'testResortWithStrategyAddToSet' => ['addToSet'],
+            'testResortWithStrategySet' => ['set'],
+            'testResortWithStrategySetArray' => ['setArray'],
+            'testResortWithStrategyPushAll' => ['pushAll'],
+            'testResortWithStrategyAtomicSet' => ['atomicSet'],
+            'testResortWithStrategyAtomicSetArray' => ['atomicSetArray'],
+        ];
     }
 
     /**
@@ -160,7 +160,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('one', 'two', 'three'),
+            ['one', 'two', 'three'],
             array_map($getNameCallback, $container->$strategy->toArray())
         );
 
@@ -174,7 +174,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('one', 'three', 'two'),
+            ['one', 'three', 'two'],
             array_map($getNameCallback, $container->$strategy->toArray())
         );
     }

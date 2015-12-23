@@ -87,7 +87,7 @@ class CollectionPersister
             throw new \UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
         }
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
-        $query = array('$unset' => array($propertyPath => true));
+        $query = ['$unset' => [$propertyPath => true]];
         $this->executeQuery($parent, $query, $options);
     }
 
@@ -145,7 +145,7 @@ class CollectionPersister
         $coll->initialize();
         $mapping = $coll->getMapping();
         $setData = $this->pb->prepareAssociatedCollectionValue($coll, CollectionHelper::usesSet($mapping['strategy']));
-        $query = array('$set' => array($propertyPath => $setData));
+        $query = ['$set' => [$propertyPath => $setData]];
         $this->executeQuery($parent, $query, $options);
     }
 
@@ -168,7 +168,7 @@ class CollectionPersister
 
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
 
-        $query = array('$unset' => array());
+        $query = ['$unset' => []];
 
         foreach ($deleteDiff as $key => $document) {
             $query['$unset'][$propertyPath . '.' . $key] = true;
@@ -182,7 +182,7 @@ class CollectionPersister
          * in the element being left in the array as null so we have to pull
          * null values.
          */
-        $this->executeQuery($parent, array('$pull' => array($propertyPath => null)), $options);
+        $this->executeQuery($parent, ['$pull' => [$propertyPath => null]], $options);
     }
 
     /**
@@ -214,10 +214,10 @@ class CollectionPersister
         $value = array_values(array_map($callback, $insertDiff));
 
         if ($mapping['strategy'] === 'addToSet') {
-            $value = array('$each' => $value);
+            $value = ['$each' => $value];
         }
 
-        $query = array('$' . $mapping['strategy'] => array($propertyPath => $value));
+        $query = ['$' . $mapping['strategy'] => [$propertyPath => $value]];
 
         $this->executeQuery($parent, $query, $options);
     }
@@ -239,7 +239,7 @@ class CollectionPersister
     private function getPathAndParent(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $fields = array();
+        $fields = [];
         $parent = $coll->getOwner();
         while (null !== ($association = $this->uow->getParentAssociation($parent))) {
             list($m, $owner, $field) = $association;
@@ -254,7 +254,7 @@ class CollectionPersister
         if ($propertyPath) {
             $path = $propertyPath . '.' . $path;
         }
-        return array($path, $parent);
+        return [$path, $parent];
     }
 
     /**
@@ -269,7 +269,7 @@ class CollectionPersister
         $className = get_class($document);
         $class = $this->dm->getClassMetadata($className);
         $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
-        $query = array('_id' => $id);
+        $query = ['_id' => $id];
         if ($class->isVersioned) {
             $query[$class->versionField] = $class->reflFields[$class->versionField]->getValue($document);
         }

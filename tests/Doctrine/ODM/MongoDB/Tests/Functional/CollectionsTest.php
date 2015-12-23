@@ -74,7 +74,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $sm->createDocumentCollection(__NAMESPACE__.'\CreateCollectionTest');
 
         $coll = $this->dm->getDocumentCollection(__NAMESPACE__.'\CreateCollectionTest');
-        $insert = array(array(1), array(2), array(3));
+        $insert = [[1], [2], [3]];
         $coll->batchInsert($insert);
 
         $data = iterator_to_array($coll->find());

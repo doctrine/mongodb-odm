@@ -31,8 +31,8 @@ class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
 
         $embedded = new MODM81TestEmbeddedDocument($doc1, $doc2, 'Test1');
-        $doc1->setEmbeddedDocuments(array($embedded));
-        $doc2->setEmbeddedDocuments(array($embedded));
+        $doc1->setEmbeddedDocuments([$embedded]);
+        $doc2->setEmbeddedDocuments([$embedded]);
 
         $dm->flush();
         $dm->clear();

@@ -31,7 +31,7 @@ class XmlDriverTest extends AbstractDriverTest
         return '.mongodb-odm.xml';
     }
 
-    protected function getDriver(array $paths = array())
+    protected function getDriver(array $paths = [])
     {
         $driver = new SimplifiedXmlDriver(array_flip($paths));
 

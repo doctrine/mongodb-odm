@@ -10,22 +10,22 @@ class GH816Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $d=new GH816Document();
         $d->_id=new \MongoId();
-        $this->assertSame(array(), $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
+        $this->assertSame([], $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);
         $this->dm->flush();
-        $this->assertSame(array(), $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
+        $this->assertSame([], $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
     }
     
     public function testPersistAfterDetachWithTitleSet()
     {
         $d=new GH816Document();
         $d->title="Test";
-        $this->assertSame(array(), $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
+        $this->assertSame([], $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);
         $this->dm->flush();
-        $this->assertSame(array(), $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
+        $this->assertSame([], $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
     }
 }
 

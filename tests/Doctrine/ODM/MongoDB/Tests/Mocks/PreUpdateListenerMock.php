@@ -10,10 +10,10 @@ class PreUpdateListenerMock implements EventSubscriber
 {
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             'onFlush',
             'preUpdate'
-        );
+        ];
     }
 
     public function onFlush(OnFlushEventArgs $args)

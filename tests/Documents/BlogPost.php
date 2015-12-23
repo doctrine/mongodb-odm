@@ -15,10 +15,10 @@ class BlogPost
     public $name;
 
     /** @ODM\ReferenceMany(targetDocument="Tag", inversedBy="blogPosts", cascade={"all"}) */
-    public $tags = array();
+    public $tags = [];
 
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", cascade={"all"}) */
-    public $comments = array();
+    public $comments = [];
 
     /** @ODM\ReferenceOne(targetDocument="Comment", mappedBy="parent", sort={"date"="asc"}) */
     public $firstComment;
@@ -27,10 +27,10 @@ class BlogPost
     public $latestComment;
 
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", sort={"date"="desc"}, limit=5) */
-    public $last5Comments = array();
+    public $last5Comments = [];
 
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", criteria={"isByAdmin"=true}, sort={"date"="desc"}) */
-    public $adminComments = array();
+    public $adminComments = [];
 
     /** @ODM\ReferenceOne(targetDocument="Comment", mappedBy="parent", repositoryMethod="findOneComment") */
     public $repoComment;

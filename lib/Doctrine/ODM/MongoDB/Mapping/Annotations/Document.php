@@ -25,7 +25,7 @@ final class Document extends AbstractDocument
     public $db;
     public $collection;
     public $repositoryClass;
-    public $indexes = array();
+    public $indexes = [];
     public $requireIndexes = false;
     public $slaveOkay;
 }

@@ -22,7 +22,7 @@ class ProfileNotify implements NotifyPropertyChanged
     private $image;
 
     /** @var PropertyChangedListener[] */
-    private $listeners = array();
+    private $listeners = [];
 
     public function addPropertyChangedListener(PropertyChangedListener $listener)
     {

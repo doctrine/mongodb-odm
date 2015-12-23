@@ -9,7 +9,7 @@ class MODM95Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testDocumentWithEmbeddedDocuments()
     {
-        $embeddedDocuments = array(new MODM95TestEmbeddedDocument('foo'));
+        $embeddedDocuments = [new MODM95TestEmbeddedDocument('foo')];
 
         $testDoc = new MODM95TestDocument();
         $testDoc->setEmbeddedDocuments($embeddedDocuments);

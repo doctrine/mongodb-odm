@@ -8,8 +8,8 @@ class MODM52Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $emb = new MODM52Embedded(array(new MODM52Embedded(null, 'c1'), new MODM52Embedded(null, 'c2')), 'b');
-        $doc = new MODM52Doc(array($emb), 'a');
+        $emb = new MODM52Embedded([new MODM52Embedded(null, 'c1'), new MODM52Embedded(null, 'c2')], 'b');
+        $doc = new MODM52Doc([$emb], 'a');
 
         $this->dm->persist($doc);
         $this->dm->flush();
@@ -39,7 +39,7 @@ class MODM52Container
     public $value;
 
     /** @ODM\EmbedMany(targetDocument="MODM52Embedded", strategy="set") */
-    public $items = array();
+    public $items = [];
 
     public function __construct($items = null, $value = null)
     {

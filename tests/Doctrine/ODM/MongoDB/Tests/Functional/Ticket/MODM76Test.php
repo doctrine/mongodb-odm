@@ -13,7 +13,7 @@ class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $c2 = new MODM76C;
 
         $b = new MODM76B($c1);
-        $a = new MODM76A(array($b), array($c1));
+        $a = new MODM76A([$b], [$c1]);
 
         $this->dm->persist($a);
         $this->dm->persist($b);
@@ -35,10 +35,10 @@ class MODM76A
     protected $test = 'test';
 
     /** @ODM\EmbedMany(targetDocument="MODM76B") */
-    protected $b = array();
+    protected $b = [];
 
     /** @ODM\ReferenceMany(targetDocument="MODM76C") */
-    protected $c = array();
+    protected $c = [];
 
     public function __construct($b, $c)
     {

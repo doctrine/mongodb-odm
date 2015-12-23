@@ -17,7 +17,7 @@ class SimpleReferenceUser
     public $user;
 
     /** @ODM\ReferenceMany(targetDocument="Documents\User", simple=true) */
-    public $users = array();
+    public $users = [];
 
     /** @ODM\String */
     public $name;

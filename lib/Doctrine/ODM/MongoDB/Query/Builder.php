@@ -74,7 +74,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      *
      * @var array
      */
-    private $primers = array();
+    private $primers = [];
 
     /**
      * Whether or not to require indexes.
@@ -307,7 +307,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * @param array $options
      * @return Query $query
      */
-    public function getQuery(array $options = array())
+    public function getQuery(array $options = [])
     {
         if ($this->query['type'] === Query::TYPE_MAP_REDUCE) {
             $this->hydrate = false;
@@ -411,8 +411,8 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     private function getDiscriminatorValues($classNames)
     {
-        $discriminatorValues = array();
-        $collections = array();
+        $discriminatorValues = [];
+        $collections = [];
         foreach ($classNames as $className) {
             $class = $this->dm->getClassMetadata($className);
             $discriminatorValues[] = $class->discriminatorValue;

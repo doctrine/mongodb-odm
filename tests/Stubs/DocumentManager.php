@@ -12,7 +12,7 @@ use Doctrine\Common\EventManager;
 class DocumentManager extends BaseDocumentManager
 {
 
-    protected $classMetadatas = array();
+    protected $classMetadatas = [];
 
     private $_eventManager;
 

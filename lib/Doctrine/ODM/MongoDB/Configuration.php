@@ -149,7 +149,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * @param array $paths
      * @return Mapping\Driver\AnnotationDriver
      */
-    public function newDefaultAnnotationDriver($paths = array())
+    public function newDefaultAnnotationDriver($paths = [])
     {
         $reader = new AnnotationReader();
 
@@ -375,7 +375,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
             return $this->attributes['defaultCommitOptions'];
         }
 
-        return array('w' => 1);
+        return ['w' => 1];
     }
 
     /**
@@ -395,12 +395,12 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * @param string $className  The class name of the filter.
      * @param array  $parameters The parameters for the filter.
      */
-    public function addFilter($name, $className, array $parameters = array())
+    public function addFilter($name, $className, array $parameters = [])
     {
-        $this->attributes['filters'][$name] = array(
+        $this->attributes['filters'][$name] = [
             'class' => $className,
             'parameters' => $parameters
-        );
+        ];
     }
 
     /**

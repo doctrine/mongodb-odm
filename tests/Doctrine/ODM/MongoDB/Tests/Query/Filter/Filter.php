@@ -10,7 +10,7 @@ class Filter extends BsonFilter
     public function addFilterCriteria(ClassMetadata $class)
     {
         return ($class->name == $this->parameters['class'])
-            ? array($this->parameters['field'] => $this->parameters['value'])
-            : array();
+            ? [$this->parameters['field'] => $this->parameters['value']]
+            : [];
     }
 }

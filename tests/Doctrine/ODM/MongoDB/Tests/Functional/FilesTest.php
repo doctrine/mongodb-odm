@@ -182,5 +182,5 @@ class TestFile
     public $theFile;
 
     /** @ODM\ReferenceMany(targetDocument="Documents\Profile") */
-    public $profiles = array();
+    public $profiles = [];
 }

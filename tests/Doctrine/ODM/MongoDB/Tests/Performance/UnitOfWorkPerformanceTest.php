@@ -14,7 +14,7 @@ class UnitOfWorkPerformanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testComputeChanges()
     {
-        $users = array();
+        $users = [];
         for ($i = 1; $i <= 10000; ++$i) {
             $user = new CmsUser;
             $user->status = 'user';

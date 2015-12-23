@@ -110,7 +110,7 @@ abstract class HasLifecycleCallbacksSuper
     /** @ODM\Id */
     public $id;
 
-    public $invoked = array();
+    public $invoked = [];
 
     /** @ODM\PrePersist */
     public function prePersist()
@@ -125,7 +125,7 @@ abstract class HasLifecycleCallbacksSuperAnnotated
     /** @ODM\Id */
     public $id;
 
-    public $invoked = array();
+    public $invoked = [];
 
     /** @ODM\PrePersist */
     public function prePersist()

@@ -8,7 +8,7 @@ class GH880Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function test880()
     {
-        $docs = array();
+        $docs = [];
         $docs[] = new GH880Document('hello', 1);
         $docs[] = new GH880Document('world', 1);
         foreach ($docs as $doc) {

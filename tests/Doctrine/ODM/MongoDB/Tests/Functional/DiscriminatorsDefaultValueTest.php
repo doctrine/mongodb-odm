@@ -20,7 +20,7 @@ class ReferenceDiscriminatorsDefaultValueTest extends \Doctrine\ODM\MongoDB\Test
         $this->dm->persist($firstChildWithoutDiscriminator = new ChildDocumentWithoutDiscriminator('firstWithoutDiscriminator'));
         $this->dm->persist($secondChildWithoutDiscriminator = new ChildDocumentWithoutDiscriminator('firstWithoutDiscriminator'));
 
-        $children = array($firstChildWithoutDiscriminator, $secondChildWithoutDiscriminator);
+        $children = [$firstChildWithoutDiscriminator, $secondChildWithoutDiscriminator];
         $this->dm->persist($parentWithoutDiscriminator = new ParentDocumentWithoutDiscriminator($children));
 
         $this->dm->flush();
@@ -52,7 +52,7 @@ class ReferenceDiscriminatorsDefaultValueTest extends \Doctrine\ODM\MongoDB\Test
         $this->dm->persist($firstChildWithDiscriminator = new ChildDocumentWithDiscriminatorComplex('firstWithDiscriminator', 'veryComplex'));
         $this->dm->persist($secondChildWithDiscriminator = new ChildDocumentWithDiscriminatorSimple('secondWithDiscriminator'));
 
-        $children = array($firstChildWithDiscriminator, $secondChildWithDiscriminator);
+        $children = [$firstChildWithDiscriminator, $secondChildWithDiscriminator];
         $this->dm->persist($parentWithDiscriminator = new ParentDocumentWithDiscriminator($children));
 
         $this->dm->flush();

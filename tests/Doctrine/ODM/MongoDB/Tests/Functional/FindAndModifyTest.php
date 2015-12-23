@@ -9,7 +9,7 @@ class FindAndModifyTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testFindAndModify()
     {
         $coll = $this->dm->getDocumentCollection('Documents\User');
-        $docs = array(array('count' => 0), array('count' => 0));
+        $docs = [['count' => 0], ['count' => 0]];
         $coll->batchInsert($docs);
 
         // test update findAndModify

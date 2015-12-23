@@ -86,7 +86,7 @@ class HydratorFactory
      *
      * @var array
      */
-    private $hydrators = array();
+    private $hydrators = [];
 
     /**
      * @param DocumentManager $dm
@@ -425,12 +425,12 @@ EOF
      * @param array $hints Any hints to account for during reconstitution/lookup of the document.
      * @return array $values The array of hydrated values.
      */
-    public function hydrate($document, $data, array $hints = array())
+    public function hydrate($document, $data, array $hints = [])
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners
         if ( ! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
-            $args = array(new PreLoadEventArgs($document, $this->dm, $data));
+            $args = [new PreLoadEventArgs($document, $this->dm, $data)];
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
         if ($this->evm->hasListeners(Events::preLoad)) {
@@ -457,7 +457,7 @@ EOF
 
         // Invoke the postLoad lifecycle callbacks and listeners
         if ( ! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
-            $metadata->invokeLifecycleCallbacks(Events::postLoad, $document, array(new LifecycleEventArgs($document, $this->dm)));
+            $metadata->invokeLifecycleCallbacks(Events::postLoad, $document, [new LifecycleEventArgs($document, $this->dm)]);
         }
         if ($this->evm->hasListeners(Events::postLoad)) {
             $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));

@@ -68,7 +68,7 @@ class VirtualHostDirective
     public function getDirectives()
     {
         if (!$this->directives)
-            $this->directives = new \Doctrine\Common\Collections\ArrayCollection(array());
+            $this->directives = new \Doctrine\Common\Collections\ArrayCollection([]);
         return $this->directives;
     }
 

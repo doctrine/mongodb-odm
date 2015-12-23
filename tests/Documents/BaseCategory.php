@@ -11,7 +11,7 @@ abstract class BaseCategory
      protected $name;
 
      /** @ODM\EmbedMany(targetDocument="SubCategory") */
-     protected $children = array();
+     protected $children = [];
 
      public function __construct($name = null)
      {

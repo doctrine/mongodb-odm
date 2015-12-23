@@ -149,7 +149,7 @@ class ProxyFactory extends AbstractProxyFactory
 
                 $id = $reflectionId->getValue($proxy);
 
-                if (null === $documentPersister->load(array('_id' => $id), $proxy)) {
+                if (null === $documentPersister->load(['_id' => $id], $proxy)) {
                     throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
                 }
 
@@ -179,7 +179,7 @@ class ProxyFactory extends AbstractProxyFactory
 
             $id = $reflectionId->getValue($proxy);
 
-            if (null === $documentPersister->load(array('_id' => $id), $proxy)) {
+            if (null === $documentPersister->load(['_id' => $id], $proxy)) {
                 throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
             }
 
@@ -214,7 +214,7 @@ class ProxyFactory extends AbstractProxyFactory
             $proxy->__setInitializer(null);
 
             $id       = $reflectionId->getValue($proxy);
-            $original = $documentPersister->load(array('_id' => $id));
+            $original = $documentPersister->load(['_id' => $id]);
 
             if (null === $original) {
                 throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);

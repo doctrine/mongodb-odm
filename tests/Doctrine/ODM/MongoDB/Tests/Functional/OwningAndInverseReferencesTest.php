@@ -84,7 +84,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(get_class($node))->findOne(array('parent' => array('$exists' => false)));
+        $check = $this->dm->getDocumentCollection(get_class($node))->findOne(['parent' => ['$exists' => false]]);
         $this->assertNotNull($check);
         $this->assertFalse(isset($check['children']));
 

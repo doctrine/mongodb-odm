@@ -19,14 +19,14 @@ class MapReduceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         parent::setUp();
 
-        $currencies = array('USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125);
+        $currencies = ['USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125];
 
         foreach ($currencies as $name => &$multiplier) {
             $multiplier = new Currency($name, $multiplier);
             $this->dm->persist($multiplier);
         }
 
-        $stockItems = array(
+        $stockItems = [
             new StockItem('stock_item_0', new Money(9.99 * 0 + 5, $currencies['USD']), 5),
             new StockItem('stock_item_1', new Money(9.99 * 1 + 5, $currencies['USD']), 15 * 1 - 4),
             new StockItem('stock_item_2', new Money(9.99 * 2 + 5, $currencies['USD']), 15 * 2 - 4),
@@ -37,9 +37,9 @@ class MapReduceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             new StockItem('stock_item_7', new Money(9.99 * 7 + 5, $currencies['USD']), 15 * 7 - 4),
             new StockItem('stock_item_8', new Money(9.99 * 8 + 5, $currencies['USD']), 15 * 8 - 4),
             new StockItem('stock_item_9', new Money(9.99 * 9 + 5, $currencies['USD']), 15 * 9 - 4),
-        );
+        ];
 
-        $options = array(
+        $options = [
             new Option('option_0', new Money(13.99, $currencies['USD']), $stockItems[0]),
             new Option('option_1', new Money(14.99, $currencies['USD']), $stockItems[1]),
             new Option('option_2', new Money(15.99, $currencies['USD']), $stockItems[2]),
@@ -50,9 +50,9 @@ class MapReduceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             new Option('option_7', new Money(20.99, $currencies['USD']), $stockItems[7]),
             new Option('option_8', new Money(21.99, $currencies['USD']), $stockItems[8]),
             new Option('option_9', new Money(22.99, $currencies['USD']), $stockItems[9]),
-        );
+        ];
 
-        $products = array(
+        $products = [
             new ConfigurableProduct('product_0'),
             new ConfigurableProduct('product_1'),
             new ConfigurableProduct('product_2'),
@@ -63,7 +63,7 @@ class MapReduceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             new ConfigurableProduct('product_7'),
             new ConfigurableProduct('product_8'),
             new ConfigurableProduct('product_9'),
-        );
+        ];
 
         $products[0]->addOption($options[0]);
         $products[0]->addOption($options[4]);

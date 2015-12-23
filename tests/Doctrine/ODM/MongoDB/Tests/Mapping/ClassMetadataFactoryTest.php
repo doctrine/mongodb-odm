@@ -16,19 +16,19 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm1 = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1');
         $cm1->setCollection('group');
         // Add a mapped field
-        $cm1->mapField(array('fieldName' => 'name', 'type' => 'string'));
+        $cm1->mapField(['fieldName' => 'name', 'type' => 'string']);
         // Add a mapped field
-        $cm1->mapField(array('fieldName' => 'id', 'id' => true));
+        $cm1->mapField(['fieldName' => 'id', 'id' => true]);
         // and a mapped association
-        $cm1->mapOneEmbedded(array('fieldName' => 'other', 'targetDocument' => 'Other'));
-        $cm1->mapOneEmbedded(array('fieldName' => 'association', 'targetDocument' => 'Other'));
+        $cm1->mapOneEmbedded(['fieldName' => 'other', 'targetDocument' => 'Other']);
+        $cm1->mapOneEmbedded(['fieldName' => 'association', 'targetDocument' => 'Other']);
 
         // SUT
         $cmf = new ClassMetadataFactoryTestSubject();
         $cmf->setMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1', $cm1);
 
         // Prechecks
-        $this->assertEquals(array(), $cm1->parentClasses);
+        $this->assertEquals([], $cm1->parentClasses);
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm1->inheritanceType);
         $this->assertTrue($cm1->hasField('name'));
         $this->assertEquals(4, count($cm1->fieldMappings));
@@ -37,7 +37,7 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm1 = $cmf->getMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1');
 
         $this->assertEquals('group', $cm1->collection);
-        $this->assertEquals(array(), $cm1->parentClasses);
+        $this->assertEquals([], $cm1->parentClasses);
         $this->assertTrue($cm1->hasField('name'));
     }
 
@@ -83,8 +83,8 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /* Test subject class with overriden factory method for mocking purposes */
 class ClassMetadataFactoryTestSubject extends \Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
 {
-    private $_mockMetadata = array();
-    private $_requestedClasses = array();
+    private $_mockMetadata = [];
+    private $_requestedClasses = [];
 
     /** @override */
     protected function _newClassMetadataInstance($className)

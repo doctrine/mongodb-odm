@@ -19,28 +19,28 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         // default behavior on inserts already leaves out embedded documents
-        $expectedDocument = array('_id' => new \MongoId($post->getId()));
+        $expectedDocument = ['_id' => new \MongoId($post->getId())];
         $this->assertPostDocument($expectedDocument, $post);
 
         // fill documents with comments
         $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
-        $post->comments = new ArrayCollection(array(
+        $post->comments = new ArrayCollection([
             new GH597Comment('Comment 1'),
             new GH597Comment('Comment 2'),
             new GH597Comment('Comment 3')
-        ));
+        ]);
         $this->dm->persist($post);
         $this->dm->flush($post);
         $this->dm->clear();
 
-        $expectedDocument = array(
+        $expectedDocument = [
             '_id' => new \MongoId($post->getId()),
-            'comments' => array(
-                array('comment' => 'Comment 1'),
-                array('comment' => 'Comment 2'),
-                array('comment' => 'Comment 3')
-            )
-        );
+            'comments' => [
+                ['comment' => 'Comment 1'],
+                ['comment' => 'Comment 2'],
+                ['comment' => 'Comment 3']
+            ]
+        ];
         $this->assertPostDocument($expectedDocument, $post);
 
         // trigger update
@@ -54,7 +54,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(0, $post->getComments());
 
         // make sure embedded documents got unset
-        $expectedDocument = array('_id' => new \MongoId($post->getId()));
+        $expectedDocument = ['_id' => new \MongoId($post->getId())];
         $this->assertPostDocument($expectedDocument, $post);
     }
 
@@ -66,7 +66,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         // default behavior on inserts already leaves out referenced documents
-        $expectedDocument = array('_id' => new \MongoId($post->getId()));
+        $expectedDocument = ['_id' => new \MongoId($post->getId())];
         $this->assertPostDocument($expectedDocument, $post);
 
         // associate post with many GH597ReferenceMany documents
@@ -77,18 +77,18 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $referenceMany2 = new GH597ReferenceMany('two');
         $this->dm->persist($referenceMany2);
 
-        $post->referenceMany = new ArrayCollection(array($referenceMany1, $referenceMany2));
+        $post->referenceMany = new ArrayCollection([$referenceMany1, $referenceMany2]);
         $this->dm->persist($post);
         $this->dm->flush($post);
         $this->dm->clear();
 
-        $expectedDocument = array(
+        $expectedDocument = [
             '_id' => new \MongoId($post->getId()),
-            'referenceMany' => array(
+            'referenceMany' => [
                 new \MongoId($referenceMany1->getId()),
                 new \MongoId($referenceMany2->getId())
-            )
-        );
+            ]
+        ];
         $this->assertPostDocument($expectedDocument, $post);
 
         // trigger update
@@ -102,7 +102,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(0, $post->getReferenceMany());
 
         // make sure reference-many documents got unset
-        $expectedDocument = array('_id' => new \MongoId($post->getId()));
+        $expectedDocument = ['_id' => new \MongoId($post->getId())];
         $this->assertPostDocument($expectedDocument, $post);
     }
 
@@ -115,7 +115,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     private function assertPostDocument(array $expected, GH597Post $post)
     {
         $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH597Post');
-        $document = $collection->findOne(array('_id' => new \MongoId($post->getId())));
+        $document = $collection->findOne(['_id' => new \MongoId($post->getId())]);
         $this->assertEquals($expected, $document);
     }
 }

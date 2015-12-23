@@ -63,14 +63,14 @@ class NestedCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function provideStrategy()
     {
-        return array(
-            array('atomicSet'),
-            array('atomicSetArray'),
-            array('set'),
-            array('setArray'),
-            array('pushAll'),
-            array('addToSet'),
-        );
+        return [
+            ['atomicSet'],
+            ['atomicSetArray'],
+            ['set'],
+            ['setArray'],
+            ['pushAll'],
+            ['addToSet'],
+        ];
     }
 }
 

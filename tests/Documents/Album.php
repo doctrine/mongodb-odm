@@ -14,7 +14,7 @@ class Album
     private $name;
 
     /** @ODM\EmbedMany(targetDocument="Song") */
-    private $songs = array();
+    private $songs = [];
 
     public function __construct($name)
     {

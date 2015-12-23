@@ -71,6 +71,6 @@ class CollectionHelper
      */
     public static function usesSet($strategy)
     {
-        return in_array($strategy, array('set', 'setArray', 'atomicSet', 'atomicSetArray'));
+        return in_array($strategy, ['set', 'setArray', 'atomicSet', 'atomicSetArray']);
     }
 }

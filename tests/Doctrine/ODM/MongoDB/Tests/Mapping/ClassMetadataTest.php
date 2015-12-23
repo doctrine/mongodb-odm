@@ -17,17 +17,17 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
         $this->assertEquals('Documents\CmsUser', $cm->name);
         $this->assertEquals('Documents\CmsUser', $cm->rootDocumentName);
-        $this->assertEquals(array(), $cm->subClasses);
-        $this->assertEquals(array(), $cm->parentClasses);
+        $this->assertEquals([], $cm->subClasses);
+        $this->assertEquals([], $cm->parentClasses);
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
 
         // Customize state
         $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION);
-        $cm->setSubclasses(array("One", "Two", "Three"));
-        $cm->setParentClasses(array("UserParent"));
+        $cm->setSubclasses(["One", "Two", "Three"]);
+        $cm->setParentClasses(["UserParent"]);
         $cm->setCustomRepositoryClass("UserRepository");
         $cm->setDiscriminatorField('disc');
-        $cm->mapOneEmbedded(array('fieldName' => 'phonenumbers', 'targetDocument' => 'Bar'));
+        $cm->mapOneEmbedded(['fieldName' => 'phonenumbers', 'targetDocument' => 'Bar']);
         $cm->setFile('customFileProperty');
         $cm->setDistance('customDistanceProperty');
         $cm->setSlaveOkay(true);
@@ -47,8 +47,8 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
         $this->assertEquals('Documents\CmsUser', $cm->name);
         $this->assertEquals('UserParent', $cm->rootDocumentName);
-        $this->assertEquals(array('Documents\One', 'Documents\Two', 'Documents\Three'), $cm->subClasses);
-        $this->assertEquals(array('UserParent'), $cm->parentClasses);
+        $this->assertEquals(['Documents\One', 'Documents\Two', 'Documents\Three'], $cm->subClasses);
+        $this->assertEquals(['UserParent'], $cm->parentClasses);
         $this->assertEquals('Documents\UserRepository', $cm->customRepositoryClassName);
         $this->assertEquals('disc', $cm->discriminatorField);
         $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
@@ -67,11 +67,11 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testOwningSideAndInverseSide()
     {
         $cm = new ClassMetadataInfo('Documents\User');
-        $cm->mapManyReference(array('fieldName' => 'articles', 'targetDocument' => 'Documents\Article', 'inversedBy' => 'user'));
+        $cm->mapManyReference(['fieldName' => 'articles', 'targetDocument' => 'Documents\Article', 'inversedBy' => 'user']);
         $this->assertTrue($cm->fieldMappings['articles']['isOwningSide']);
 
         $cm = new ClassMetadataInfo('Documents\Article');
-        $cm->mapOneReference(array('fieldName' => 'user', 'targetDocument' => 'Documents\User', 'mappedBy' => 'articles'));
+        $cm->mapOneReference(['fieldName' => 'user', 'targetDocument' => 'Documents\User', 'mappedBy' => 'articles']);
         $this->assertTrue($cm->fieldMappings['user']['isInverseSide']);
     }
 
@@ -80,15 +80,15 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm = new ClassMetadata('Documents\CmsUser');
 
         // Explicit Nullable
-        $cm->mapField(array('fieldName' => 'status', 'nullable' => true, 'type' => 'string', 'length' => 50));
+        $cm->mapField(['fieldName' => 'status', 'nullable' => true, 'type' => 'string', 'length' => 50]);
         $this->assertTrue($cm->isNullable('status'));
 
         // Explicit Not Nullable
-        $cm->mapField(array('fieldName' => 'username', 'nullable' => false, 'type' => 'string', 'length' => 50));
+        $cm->mapField(['fieldName' => 'username', 'nullable' => false, 'type' => 'string', 'length' => 50]);
         $this->assertFalse($cm->isNullable('username'));
 
         // Implicit Not Nullable
-        $cm->mapField(array('fieldName' => 'name', 'type' => 'string', 'length' => 50));
+        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
         $this->assertFalse($cm->isNullable('name'), "By default a field should not be nullable.");
     }
 
@@ -100,10 +100,10 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         require_once __DIR__."/Documents/GlobalNamespaceDocument.php";
 
         $cm = new ClassMetadata('DoctrineGlobal_Article');
-        $cm->mapManyEmbedded(array(
+        $cm->mapManyEmbedded([
             'fieldName' => 'author',
             'targetDocument' => 'DoctrineGlobal_User',
-        ));
+        ]);
 
         $this->assertEquals("DoctrineGlobal_User", $cm->fieldMappings['author']['targetDocument']);
     }
@@ -112,10 +112,10 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $cm = new ClassMetadata('Documents\CmsUser');
         $cm->mapManyEmbedded(
-            array(
+            [
             'fieldName' => 'groups',
             'targetDocument' => 'CmsGroup'
-        ));
+            ]);
 
         $assoc = $cm->fieldMappings['groups'];
         $this->assertTrue(is_array($assoc));
@@ -129,7 +129,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         require_once __DIR__."/Documents/GlobalNamespaceDocument.php";
 
         $cm = new ClassMetadata('DoctrineGlobal_User');
-        $cm->setDiscriminatorMap(array('descr' => 'DoctrineGlobal_Article', 'foo' => 'DoctrineGlobal_User'));
+        $cm->setDiscriminatorMap(['descr' => 'DoctrineGlobal_Article', 'foo' => 'DoctrineGlobal_User']);
 
         $this->assertEquals("DoctrineGlobal_Article", $cm->discriminatorMap['descr']);
         $this->assertEquals("DoctrineGlobal_User", $cm->discriminatorMap['foo']);
@@ -143,7 +143,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         require_once __DIR__."/Documents/GlobalNamespaceDocument.php";
 
         $cm = new ClassMetadata('DoctrineGlobal_User');
-        $cm->setSubclasses(array('DoctrineGlobal_Article'));
+        $cm->setSubclasses(['DoctrineGlobal_Article']);
 
         $this->assertEquals("DoctrineGlobal_Article", $cm->subClasses[0]);
     }
@@ -151,8 +151,8 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testDuplicateFieldMapping()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
-        $a1 = array('reference' => true, 'type' => 'many', 'fieldName' => 'foo', 'targetDocument' => 'stdClass');
-        $a2 = array('type' => 'string', 'fieldName' => 'foo');
+        $a1 = ['reference' => true, 'type' => 'many', 'fieldName' => 'foo', 'targetDocument' => 'stdClass'];
+        $a2 = ['type' => 'string', 'fieldName' => 'foo'];
 
         $cm->mapField($a1);
         $cm->mapField($a2);
@@ -163,7 +163,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testDuplicateColumnName_DiscriminatorColumn_ThrowsMappingException()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
-        $cm->mapField(array('fieldName' => 'name'));
+        $cm->mapField(['fieldName' => 'name']);
 
         $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
         $cm->setDiscriminatorField('name');
@@ -175,14 +175,14 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->setDiscriminatorField('name');
 
         $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
-        $cm->mapField(array('fieldName' => 'name'));
+        $cm->mapField(['fieldName' => 'name']);
     }
 
     public function testDuplicateFieldAndAssocationMapping1()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
-        $cm->mapField(array('fieldName' => 'name'));
-        $cm->mapOneEmbedded(array('fieldName' => 'name', 'targetDocument' => 'CmsUser'));
+        $cm->mapField(['fieldName' => 'name']);
+        $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => 'CmsUser']);
 
         $this->assertEquals('one', $cm->fieldMappings['name']['type']);
     }
@@ -190,8 +190,8 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testDuplicateFieldAndAssocationMapping2()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
-        $cm->mapOneEmbedded(array('fieldName' => 'name', 'targetDocument' => 'CmsUser'));
-        $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name', 'type' => 'string'));
+        $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => 'CmsUser']);
+        $cm->mapField(['fieldName' => 'name', 'columnName' => 'name', 'type' => 'string']);
 
         $this->assertEquals('string', $cm->fieldMappings['name']['type']);
     }

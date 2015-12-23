@@ -11,24 +11,24 @@ class HydratorTest extends BaseTest
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\HydrationClosureUser');
 
         $user = new HydrationClosureUser();
-        $this->dm->getHydratorFactory()->hydrate($user, array(
+        $this->dm->getHydratorFactory()->hydrate($user, [
             '_id' => 1,
             'name' => 'jon',
             'birthdate' => new \DateTime('1961-01-01'),
-            'referenceOne' => array('$id' => '1'),
-            'referenceMany' => array(
-                array(
+            'referenceOne' => ['$id' => '1'],
+            'referenceMany' => [
+                [
                     '$id' => '1'
-                ),
-                array(
+                ],
+                [
                     '$id' => '2'
-                )
-            ),
-            'embedOne' => array('name' => 'jon'),
-            'embedMany' => array(
-                array('name' => 'jon')
-            )
-        ));
+                ]
+            ],
+            'embedOne' => ['name' => 'jon'],
+            'embedMany' => [
+                ['name' => 'jon']
+            ]
+        ]);
 
         $this->assertEquals(1, $user->id);
         $this->assertEquals('jon', $user->name);
@@ -59,13 +59,13 @@ class HydrationClosureUser
     public $referenceOne;
 
     /** @ODM\ReferenceMany(targetDocument="HydrationClosureReferenceMany") */
-    public $referenceMany = array();
+    public $referenceMany = [];
 
     /** @ODM\EmbedOne(targetDocument="HydrationClosureEmbedOne") */
     public $embedOne;
 
     /** @ODM\EmbedMany(targetDocument="HydrationClosureEmbedMany") */
-    public $embedMany = array();
+    public $embedMany = [];
 }
 
 /** @ODM\Document */

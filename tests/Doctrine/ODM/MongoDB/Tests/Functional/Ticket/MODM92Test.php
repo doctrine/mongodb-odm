@@ -9,7 +9,7 @@ class MODM92Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testDocumentWithEmbeddedDocuments()
     {
-        $embeddedDocuments = array(new MODM92TestEmbeddedDocument('foo'));
+        $embeddedDocuments = [new MODM92TestEmbeddedDocument('foo')];
 
         $testDoc = new MODM92TestDocument();
         $testDoc->setEmbeddedDocuments($embeddedDocuments);
@@ -20,7 +20,7 @@ class MODM92Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $testDoc = $this->dm->find(__NAMESPACE__.'\MODM92TestDocument', $testDoc->id);
         $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
 
-        $embeddedDocuments = array(new MODM92TestEmbeddedDocument('bar'));
+        $embeddedDocuments = [new MODM92TestEmbeddedDocument('bar')];
 
         $testDoc->setEmbeddedDocuments($embeddedDocuments);
         $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());

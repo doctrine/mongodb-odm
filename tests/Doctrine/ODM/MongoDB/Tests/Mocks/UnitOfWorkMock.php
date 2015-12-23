@@ -4,7 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
 class UnitOfWorkMock extends \Doctrine\ODM\MongoDB\UnitOfWork
 {
-    private $_mockDataChangeSets = array();
+    private $_mockDataChangeSets = [];
     private $_persisterMock;
 
     /**

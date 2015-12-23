@@ -17,7 +17,7 @@ class GH942Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $doc = $this->dm->getDocumentCollection(GH942Document::CLASSNAME)
-            ->findOne(array('_id' => new MongoId($doc->id)));
+            ->findOne(['_id' => new MongoId($doc->id)]);
 
         $this->assertSame('foo', $doc['name']);
         $this->assertSame(GH942Document::CLASSNAME, $doc['type']);
@@ -36,13 +36,13 @@ class GH942Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $parent = $this->dm->getDocumentCollection(GH942DocumentParent::CLASSNAME)
-            ->findOne(array('_id' => new MongoId($parent->id)));
+            ->findOne(['_id' => new MongoId($parent->id)]);
 
         $this->assertSame('parent', $parent['name']);
         $this->assertSame('p', $parent['type']);
 
         $child = $this->dm->getDocumentCollection(GH942DocumentChild::CLASSNAME)
-            ->findOne(array('_id' => new MongoId($child->id)));
+            ->findOne(['_id' => new MongoId($child->id)]);
 
         $this->assertSame('child', $child['name']);
         $this->assertSame(GH942DocumentChild::CLASSNAME, $child['type']);

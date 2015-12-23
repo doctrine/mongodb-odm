@@ -72,7 +72,7 @@ class PersistenceBuilder
         $class = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
-        $insertData = array();
+        $insertData = [];
         foreach ($class->fieldMappings as $mapping) {
 
             $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
@@ -130,7 +130,7 @@ class PersistenceBuilder
         $class = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
-        $updateData = array();
+        $updateData = [];
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
@@ -241,7 +241,7 @@ class PersistenceBuilder
         $class = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
-        $updateData = array();
+        $updateData = [];
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
@@ -342,7 +342,7 @@ class PersistenceBuilder
      */
     public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false)
     {
-        $embeddedDocumentValue = array();
+        $embeddedDocumentValue = [];
         $class = $this->dm->getClassMetadata(get_class($embeddedDocument));
 
         foreach ($class->fieldMappings as $mapping) {

@@ -24,14 +24,14 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         $class = new ClassMetadata($className);
         $mappingDriver->loadMetadataForClass($className, $class);
 
-        foreach (array('address', 'phonenumbers') as $referencedField) {
-            foreach (array('inversedBy', 'limit', 'mappedBy', 'repositoryMethod', 'simple', 'skip', 'strategy', 'targetDocument') as $key) {
+        foreach (['address', 'phonenumbers'] as $referencedField) {
+            foreach (['inversedBy', 'limit', 'mappedBy', 'repositoryMethod', 'simple', 'skip', 'strategy', 'targetDocument'] as $key) {
                 $this->assertArrayHasKey($key, $class->fieldMappings[$referencedField]);
             }
         }
 
-        foreach (array('embeddedPhonenumber', 'otherPhonenumbers') as $embeddedField) {
-            foreach (array('strategy', 'targetDocument') as $key) {
+        foreach (['embeddedPhonenumber', 'otherPhonenumbers'] as $embeddedField) {
+            foreach (['strategy', 'targetDocument'] as $key) {
                 $this->assertArrayHasKey($key, $class->fieldMappings[$embeddedField]);
             }
         }

@@ -61,7 +61,7 @@ class CustomFieldNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository(__NAMESPACE__.'\CustomFieldName')->findOneBy(array('username' => 'test'));
+        $test = $this->dm->getRepository(__NAMESPACE__.'\CustomFieldName')->findOneBy(['username' => 'test']);
         $this->assertNotNull($test);
         $this->assertEquals('test', $test->username);
     }
@@ -75,7 +75,7 @@ class CustomFieldNameTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository(__NAMESPACE__.'\CustomFieldName')->findOneBy(array('username' => 'test'));
+        $test = $this->dm->getRepository(__NAMESPACE__.'\CustomFieldName')->findOneBy(['username' => 'test']);
         $this->assertNotNull($test);
         $this->assertEquals('test', $test->username);
     }

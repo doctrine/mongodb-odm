@@ -23,7 +23,7 @@ class Article
     private $createdAt;
 
     /** @ODM\Field(type="collection") */
-    private $tags = array();
+    private $tags = [];
 
     public function getId()
     {

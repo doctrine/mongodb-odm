@@ -19,11 +19,11 @@ class GH385Test extends BaseTest
 
         $debug = $qb->getQuery()->getQuery();
 
-        $this->assertEquals(array('$inc' => array('foo.bar.level3a' => 1, 'foo.bar.level3b' => 1)), $debug['newObj']);
+        $this->assertEquals(['$inc' => ['foo.bar.level3a' => 1, 'foo.bar.level3b' => 1]], $debug['newObj']);
 
         $qb->getQuery()->execute();
 
-        $check = $this->dm->getDocumentCollection('Documents\User')->findOne(array('_id' => $mongoId));
+        $check = $this->dm->getDocumentCollection('Documents\User')->findOne(['_id' => $mongoId]);
         $this->assertNotNull($check);
         $this->assertTrue(isset($check['foo']['bar']['level3a']));
         $this->assertTrue(isset($check['foo']['bar']['level3b']));

@@ -26,10 +26,10 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {
     public function testFindMappingFile()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             'MyNamespace\MySubnamespace\DocumentFoo' => 'foo',
             'MyNamespace\MySubnamespace\Document' => $this->dir,
-        ));
+        ]);
 
         touch($filename = $this->dir.'/Foo'.$this->getFileExtension());
         $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Document\Foo'));
@@ -37,9 +37,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindMappingFileInSubnamespace()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             'MyNamespace\MySubnamespace\Document' => $this->dir,
-        ));
+        ]);
 
         touch($filename = $this->dir.'/Foo.Bar'.$this->getFileExtension());
         $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Document\Foo\Bar'));
@@ -52,9 +52,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             "No mapping file found named '".$this->dir."/Foo".$this->getFileExtension()."' for class 'MyNamespace\MySubnamespace\Document\Foo'."
         );
 
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             'MyNamespace\MySubnamespace\Document' => $this->dir,
-        ));
+        ]);
 
         $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Document\Foo');
     }
@@ -66,9 +66,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             "No mapping file found named 'Foo".$this->getFileExtension()."' for class 'MyOtherNamespace\MySubnamespace\Document\Foo'."
         );
 
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             'MyNamespace\MySubnamespace\Document' => $this->dir,
-        ));
+        ]);
 
         $driver->getLocator()->findMappingFile('MyOtherNamespace\MySubnamespace\Document\Foo');
     }
@@ -95,7 +95,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
     }
 
     abstract protected function getFileExtension();
-    abstract protected function getDriver(array $paths = array());
+    abstract protected function getDriver(array $paths = []);
 
     private function setField($obj, $field, $value)
     {
@@ -104,7 +104,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         $ref->setValue($obj, $value);
     }
 
-    private function invoke($obj, $method, array $args = array())
+    private function invoke($obj, $method, array $args = [])
     {
         $ref = new \ReflectionMethod($obj, $method);
         $ref->setAccessible(true);

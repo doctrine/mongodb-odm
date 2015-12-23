@@ -89,13 +89,13 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function dataMethodsAffectedByNoObjectArguments()
     {
-        return array(
-            array('persist'),
-            array('remove'),
-            array('merge'),
-            array('refresh'),
-            array('detach')
-        );
+        return [
+            ['persist'],
+            ['remove'],
+            ['merge'],
+            ['refresh'],
+            ['detach']
+        ];
     }
 
     /**
@@ -110,13 +110,13 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function dataAffectedByErrorIfClosedException()
     {
-        return array(
-            array('flush'),
-            array('persist'),
-            array('remove'),
-            array('merge'),
-            array('refresh'),
-        );
+        return [
+            ['flush'],
+            ['persist'],
+            ['remove'],
+            ['merge'],
+            ['refresh'],
+        ];
     }
 
     /**
@@ -148,11 +148,11 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm3->collection = 'c';
         $cm3->slaveOkay = false;
 
-        $map = array(
-            array('a', $cm1),
-            array('b', $cm2),
-            array('c', $cm3),
-        );
+        $map = [
+            ['a', $cm1],
+            ['b', $cm2],
+            ['c', $cm3],
+        ];
 
         $metadataFactory = $this->getMockClassMetadataFactory();
         $metadataFactory->expects($this->any())
@@ -175,11 +175,11 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $dm = new DocumentManagerMock();
         $dm->metadataFactory = $metadataFactory;
-        $dm->documentCollections = array(
+        $dm->documentCollections = [
             'a' => $coll1,
             'b' => $coll2,
             'c' => $coll3,
-        );
+        ];
 
         $dm->getDocumentCollection('a');
         $dm->getDocumentCollection('b');

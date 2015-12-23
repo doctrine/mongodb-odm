@@ -54,7 +54,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->id = new \MongoId();
         $this->assertEmpty($this->uow->getScheduledDocumentUpserts());
         $this->uow->scheduleForUpsert($class, $user);
-        $this->assertEquals(array(spl_object_hash($user) => $user), $this->uow->getScheduledDocumentUpserts());
+        $this->assertEquals([spl_object_hash($user) => $user], $this->uow->getScheduledDocumentUpserts());
     }
 
     public function testScheduleForEmbeddedUpsert()
@@ -210,7 +210,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $entity->setTransient('newtransientvalue');
 
         $this->assertTrue($this->uow->isScheduledForDirtyCheck($entity));
-        $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->uow->getDocumentChangeSet($entity));
+        $this->assertEquals(['data' => ['thedata', 'newdata']], $this->uow->getDocumentChangeSet($entity));
 
         $item = new NotifyChangedRelatedItem();
         $item->setId(1);
@@ -283,7 +283,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $persister->reset();
 
         // if the document is already managed the exists() check should be skipped
-        $this->uow->registerManaged($ph, '12345', array());
+        $this->uow->registerManaged($ph, '12345', []);
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($ph));
         $this->assertFalse($persister->isExistsCalled());
         $ph2 = new \Documents\CmsPhonenumber();
@@ -312,11 +312,11 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $documentManager = $this->getDocumentManager();
         $unitOfWork = $this->getUnitOfWork($documentManager);
-        $unitOfWork->setParentAssociation($b, array('name' => 'b'), $a, 'b');
-        $unitOfWork->setParentAssociation($c, array('name' => 'c'), $b, 'b.c');
-        $unitOfWork->setParentAssociation($d, array('name' => 'd'), $c, 'b.c.d');
+        $unitOfWork->setParentAssociation($b, ['name' => 'b'], $a, 'b');
+        $unitOfWork->setParentAssociation($c, ['name' => 'c'], $b, 'b.c');
+        $unitOfWork->setParentAssociation($d, ['name' => 'd'], $c, 'b.c.d');
 
-        $this->assertEquals(array(array('name' => 'd'), $c, 'b.c.d'), $unitOfWork->getParentAssociation($d));
+        $this->assertEquals([['name' => 'd'], $c, 'b.c.d'], $unitOfWork->getParentAssociation($d));
     }
 
     public function testPreUpdateTriggeredWithEmptyChangeset()
@@ -374,53 +374,53 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function getScheduleForUpdateWithArraysTests()
     {
-        return array(
-            array(
+        return [
+            [
                 null,
-                array('bar' => 'foo'),
+                ['bar' => 'foo'],
                 true
-            ),
-            array(
-                array('foo' => 'bar'),
+            ],
+            [
+                ['foo' => 'bar'],
                 null,
                 true
-            ),
-            array(
-                array('foo' => 'bar'),
-                array('bar' => 'foo'),
+            ],
+            [
+                ['foo' => 'bar'],
+                ['bar' => 'foo'],
                 true
-            ),
-            array(
-                array('foo' => 'bar'),
-                array('foo' => 'foo'),
+            ],
+            [
+                ['foo' => 'bar'],
+                ['foo' => 'foo'],
                 true
-            ),
-            array(
-                array('foo' => 'bar'),
-                array('foo' => 'bar'),
+            ],
+            [
+                ['foo' => 'bar'],
+                ['foo' => 'bar'],
                 false
-            ),
-            array(
-                array('foo' => 'bar'),
-                array('foo' => true),
+            ],
+            [
+                ['foo' => 'bar'],
+                ['foo' => true],
                 true
-            ),
-            array(
-                array('foo' => 'bar'),
-                array('foo' => 99),
+            ],
+            [
+                ['foo' => 'bar'],
+                ['foo' => 99],
                 true
-            ),
-            array(
-                array('foo' => 99),
-                array('foo' => true),
+            ],
+            [
+                ['foo' => 99],
+                ['foo' => true],
                 true
-            ),
-            array(
-                array('foo' => true),
-                array('foo' => true),
+            ],
+            [
+                ['foo' => true],
+                ['foo' => true],
                 false
-            ),
-        );
+            ],
+        ];
     }
 
     public function testRegisterManagedEmbeddedDocumentWithMappedIdAndNullValue()
@@ -428,7 +428,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = new EmbeddedDocumentWithId();
         $oid = spl_object_hash($document);
 
-        $this->uow->registerManaged($document, null, array());
+        $this->uow->registerManaged($document, null, []);
 
         $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
     }
@@ -438,7 +438,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = new EmbeddedDocumentWithoutId();
         $oid = spl_object_hash($document);
 
-        $this->uow->registerManaged($document, null, array());
+        $this->uow->registerManaged($document, null, []);
 
         $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
     }
@@ -448,7 +448,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = new EmbeddedDocumentWithIdStrategyNone();
         $oid = spl_object_hash($document);
 
-        $this->uow->registerManaged($document, null, array());
+        $this->uow->registerManaged($document, null, []);
 
         $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
     }
@@ -565,16 +565,16 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetClassNameForAssociation()
     {
-        $mapping = array(
+        $mapping = [
             'discriminatorField' => 'type',
-            'discriminatorMap' => array(
+            'discriminatorMap' => [
                 'forum_user' => 'Documents\ForumUser',
-            ),
+            ],
             'targetDocument' => 'Documents\User',
-        );
-        $data = array(
+        ];
+        $data = [
             'type' => 'forum_user',
-        );
+        ];
 
         $this->assertEquals('Documents\ForumUser', $this->uow->getClassNameForAssociation($mapping, $data));
     }
@@ -584,18 +584,18 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm = $this->getMockDocumentManager();
         $uow = new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory());
 
-        $mapping = array(
+        $mapping = [
             'targetDocument' => 'Documents\User',
-        );
-        $data = array(
+        ];
+        $data = [
             'type' => 'forum_user',
-        );
+        ];
 
         $userClassMetadata = new ClassMetadata('Documents\ForumUser');
         $userClassMetadata->discriminatorField = 'type';
-        $userClassMetadata->discriminatorMap = array(
+        $userClassMetadata->discriminatorMap = [
             'forum_user' => 'Documents\ForumUser',
-        );
+        ];
 
         $dm->expects($this->once())
             ->method('getClassMetadata')
@@ -607,9 +607,9 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetClassNameForAssociationReturnsTargetDocumentWithNullData()
     {
-        $mapping = array(
+        $mapping = [
             'targetDocument' => 'Documents\User',
-        );
+        ];
         $this->assertEquals('Documents\User', $this->uow->getClassNameForAssociation($mapping, null));
     }
 
@@ -634,7 +634,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->uow->recomputeSingleDocumentChangeSet($classMetadata, $user->getAvatar());
 
-        $this->assertEquals(array(), $this->uow->getDocumentChangeSet($user->getAvatar()));
+        $this->assertEquals([], $this->uow->getDocumentChangeSet($user->getAvatar()));
     }
 
 
@@ -719,7 +719,7 @@ class ParentAssociationTest
  */
 class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 {
-    private $_listeners = array();
+    private $_listeners = [];
 
     /** @ODM\Id(type="int_id", strategy="none") */
     private $id;

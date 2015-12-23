@@ -55,7 +55,7 @@ class DisconnectedClassMetadataFactory extends ClassMetadataFactory
      */
     protected function getParentClasses($name)
     {
-        return array();
+        return [];
     }
 
     /**

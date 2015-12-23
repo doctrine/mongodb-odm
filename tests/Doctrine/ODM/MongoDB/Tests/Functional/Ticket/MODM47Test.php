@@ -8,9 +8,9 @@ class MODM47Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $a = array(
+        $a = [
             'c' => 'c value'
-        );
+        ];
         $this->dm->getDocumentCollection(__NAMESPACE__.'\MODM47A')->insert($a);
 
         $a = $this->dm->find(__NAMESPACE__.'\MODM47A', $a['_id']);

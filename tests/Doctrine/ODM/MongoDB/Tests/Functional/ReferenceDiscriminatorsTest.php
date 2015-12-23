@@ -123,9 +123,9 @@ class CommentableAction extends Action
     /**
      * @ODM\Collection
      **/
-    protected $comments = array();
+    protected $comments = [];
 
-    public function __construct($type, array $comments = array())
+    public function __construct($type, array $comments = [])
     {
         parent::__construct($type);
         $this->comments = $comments;

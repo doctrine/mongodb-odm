@@ -49,7 +49,7 @@ class FilterCollection
      *
      * @var array
      */
-    private $enabledFilters = array();
+    private $enabledFilters = [];
 
     /**
      * Constructor.
@@ -172,11 +172,11 @@ class FilterCollection
     public function getFilterCriteria(ClassMetadata $class)
     {
         if (empty($this->enabledFilters)) {
-            return array();
+            return [];
         }
 
         return call_user_func_array(
-            array($this->cm, 'merge'),
+            [$this->cm, 'merge'],
             array_map(
                 function($filter) use ($class) { return $filter->addFilterCriteria($class); },
                 $this->enabledFilters

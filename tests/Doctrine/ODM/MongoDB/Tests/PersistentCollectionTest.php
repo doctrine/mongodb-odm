@@ -12,7 +12,7 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
 {
     public function testSlice()
     {
-        list ($start, $limit) = array(0, 25);
+        list ($start, $limit) = [0, 25];
         $collection = $this->getMockCollection();
         $collection->expects($this->once())
             ->method('slice')
@@ -49,33 +49,33 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
         $one = new \stdClass();
         $two = new \stdClass();
 
-        return array(
-            'sameItems' => array(
-                array(),
-                array($one),
+        return [
+            'sameItems' => [
+                [],
+                [$one],
                 function ($collection) {}
-            ),
-            'added' => array(
-                array(),
-                array($one),
+            ],
+            'added' => [
+                [],
+                [$one],
                 function ($collection) use ($two) { $collection->add($two); }
-            ),
-            'removed' => array(
-                array(0 => $one),
-                array($one, $two),
+            ],
+            'removed' => [
+                [0 => $one],
+                [$one, $two],
                 function ($collection) use ($one) { $collection->removeElement($one); }
-            ),
-            'replaced' => array(
-                array(0 => $one),
-                array($one),
+            ],
+            'replaced' => [
+                [0 => $one],
+                [$one],
                 function ($collection) use ($one, $two) { $collection->removeElement($one); $collection->add($two); }
-            ),
-            'orderChanged' => array(
-                array(),
-                array($one, $two),
+            ],
+            'orderChanged' => [
+                [],
+                [$one, $two],
                 function ($collection) use ($one, $two) { $collection->removeElement($one); $collection->removeElement($two); $collection->add($two); $collection->add($one); }
-            ),
-        );
+            ],
+        ];
     }
 
     /**

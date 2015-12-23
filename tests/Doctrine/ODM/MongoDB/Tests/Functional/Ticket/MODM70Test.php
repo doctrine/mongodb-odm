@@ -9,7 +9,7 @@ class MODM70Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-		$avatar = new Avatar('Test', 1, array(new AvatarPart('#000')));
+		$avatar = new Avatar('Test', 1, [new AvatarPart('#000')]);
 
 		$this->dm->persist($avatar);
 		$this->dm->flush();

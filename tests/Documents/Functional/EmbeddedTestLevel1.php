@@ -10,7 +10,7 @@ class EmbeddedTestLevel1
     /** @ODM\String */
     public $name;
     /** @ODM\EmbedMany(targetDocument="EmbeddedTestLevel2") */
-    public $level2 = array();
+    public $level2 = [];
 
     public $preRemove = false;
     public $postRemove = false;

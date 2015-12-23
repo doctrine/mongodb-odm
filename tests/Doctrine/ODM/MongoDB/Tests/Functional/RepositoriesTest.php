@@ -42,7 +42,7 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user2 = $this->repository->find($this->user->getId());
         $this->assertTrue($this->user === $user2);
 
-        $user3 = $this->repository->findOneBy(array('username' => 'w00ting'));
+        $user3 = $this->repository->findOneBy(['username' => 'w00ting']);
         $this->assertTrue($user2 === $user3);
     }
 

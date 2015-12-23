@@ -125,10 +125,10 @@ class SchemaManager
                 /* Note: MongoCollection::deleteIndex() cannot delete
                  * custom-named indexes, so use the deleteIndexes command.
                  */
-                $collection->getDatabase()->command(array(
+                $collection->getDatabase()->command([
                     'deleteIndexes' => $collection->getName(),
                     'index' => $mongoIndex['name'],
-                ));
+                ]);
             }
         }
 
@@ -141,7 +141,7 @@ class SchemaManager
      */
     public function getDocumentIndexes($documentName)
     {
-        $visited = array();
+        $visited = [];
         return $this->doGetDocumentIndexes($documentName, $visited);
     }
 
@@ -153,20 +153,20 @@ class SchemaManager
     private function doGetDocumentIndexes($documentName, array &$visited)
     {
         if (isset($visited[$documentName])) {
-            return array();
+            return [];
         }
 
         $visited[$documentName] = true;
 
         $class = $this->dm->getClassMetadata($documentName);
         $indexes = $this->prepareIndexes($class);
-        $embeddedDocumentIndexes = array();
+        $embeddedDocumentIndexes = [];
 
         // Add indexes from embedded & referenced documents
         foreach ($class->fieldMappings as $fieldMapping) {
             if (isset($fieldMapping['embedded'])) {
                 if (isset($fieldMapping['targetDocument'])) {
-                    $possibleEmbeds = array($fieldMapping['targetDocument']);
+                    $possibleEmbeds = [$fieldMapping['targetDocument']];
                 } elseif (isset($fieldMapping['discriminatorMap'])) {
                     $possibleEmbeds = array_unique($fieldMapping['discriminatorMap']);
                 } else {
@@ -189,7 +189,7 @@ class SchemaManager
                 }
             } elseif (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
                 foreach ($indexes as $idx => $index) {
-                    $newKeys = array();
+                    $newKeys = [];
                     foreach ($index['keys'] as $key => $v) {
                         if ($key == $fieldMapping['name']) {
                             $key = $fieldMapping['simple'] ? $key : $key . '.$id';
@@ -211,13 +211,13 @@ class SchemaManager
     {
         $persister = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
         $indexes = $class->getIndexes();
-        $newIndexes = array();
+        $newIndexes = [];
 
         foreach ($indexes as $index) {
-            $newIndex = array(
-                'keys' => array(),
+            $newIndex = [
+                'keys' => [],
                 'options' => $index['options']
-            );
+            ];
             foreach ($index['keys'] as $key => $value) {
                 $key = $persister->prepareFieldName($key);
                 if ($class->hasField($key)) {
@@ -467,7 +467,7 @@ class SchemaManager
             return false;
         }
 
-        foreach (array('bits', 'max', 'min') as $option) {
+        foreach (['bits', 'max', 'min'] as $option) {
             if (isset($mongoIndex[$option]) xor isset($documentIndexOptions[$option])) {
                 return false;
             }

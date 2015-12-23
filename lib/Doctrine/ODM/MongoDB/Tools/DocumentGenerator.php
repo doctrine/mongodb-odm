@@ -55,7 +55,7 @@ class DocumentGenerator
     /** Whether or not the current ClassMetadataInfo instance is new or old */
     private $isNew = true;
 
-    private $staticReflection = array();
+    private $staticReflection = [];
 
     /** Number of spaces to use for indention in generated code */
     private $numSpaces = 4;
@@ -214,21 +214,21 @@ public function <methodName>()
      */
     public function generateDocumentClass(ClassMetadataInfo $metadata)
     {
-        $placeHolders = array(
+        $placeHolders = [
             '<namespace>',
             '<imports>',
             '<documentAnnotation>',
             '<documentClassName>',
             '<documentBody>'
-        );
+        ];
 
-        $replacements = array(
+        $replacements = [
             $this->generateDocumentNamespace($metadata),
             $this->generateDocumentImports($metadata),
             $this->generateDocumentDocBlock($metadata),
             $this->generateDocumentClassName($metadata),
             $this->generateDocumentBody($metadata)
-        );
+        ];
 
         $code = str_replace($placeHolders, $replacements, self::$classTemplate);
         return str_replace('<spaces>', $this->spaces, $code);
@@ -357,7 +357,7 @@ public function <methodName>()
         $stubMethods = $this->generateDocumentStubMethods ? $this->generateDocumentStubMethods($metadata) : null;
         $lifecycleCallbackMethods = $this->generateDocumentLifecycleCallbackMethods($metadata);
 
-        $code = array();
+        $code = [];
 
         if ($fieldMappingProperties) {
             $code[] = $fieldMappingProperties;
@@ -386,7 +386,7 @@ public function <methodName>()
             return '';
         }
 
-        $collections = array();
+        $collections = [];
         foreach ($metadata->fieldMappings AS $mapping) {
             if ($mapping['type'] === ClassMetadataInfo::MANY) {
                 $collections[] = '$this->' . $mapping['fieldName'] . ' = new \Doctrine\Common\Collections\ArrayCollection();';
@@ -416,21 +416,21 @@ public function <methodName>()
                 while (isset($tokens[++$peek])) {
                     if (';' == $tokens[$peek]) {
                         break;
-                    } elseif (is_array($tokens[$peek]) && in_array($tokens[$peek][0], array(T_STRING, T_NS_SEPARATOR))) {
+                    } elseif (is_array($tokens[$peek]) && in_array($tokens[$peek][0], [T_STRING, T_NS_SEPARATOR])) {
                         $lastSeenNamespace .= $tokens[$peek][1];
                     }
                 }
             } elseif ($token[0] == T_CLASS) {
                 $lastSeenClass = $lastSeenNamespace . '\\' . $tokens[$i + 2][1];
-                $this->staticReflection[$lastSeenClass]['properties'] = array();
-                $this->staticReflection[$lastSeenClass]['methods'] = array();
+                $this->staticReflection[$lastSeenClass]['properties'] = [];
+                $this->staticReflection[$lastSeenClass]['methods'] = [];
             } elseif ($token[0] == T_FUNCTION) {
                 if ($tokens[$i + 2][0] == T_STRING) {
                     $this->staticReflection[$lastSeenClass]['methods'][] = $tokens[$i + 2][1];
                 } elseif ($tokens[$i + 2][0] == '&' && $tokens[$i + 3][0] == T_STRING) {
                     $this->staticReflection[$lastSeenClass]['methods'][] = $tokens[$i + 3][1];
                 }
-            } elseif (in_array($token[0], array(T_VAR, T_PUBLIC, T_PRIVATE, T_PROTECTED)) && $tokens[$i + 2][0] != T_FUNCTION) {
+            } elseif (in_array($token[0], [T_VAR, T_PUBLIC, T_PRIVATE, T_PROTECTED]) && $tokens[$i + 2][0] != T_FUNCTION) {
                 $this->staticReflection[$lastSeenClass]['properties'][] = substr($tokens[$i + 2][1], 1);
             }
         }
@@ -524,14 +524,14 @@ public function <methodName>()
     {
         if ($metadata->reflClass !== null || class_exists($metadata->name)) {
             $reflClass = $metadata->reflClass === null ? new \ReflectionClass($metadata->name) : $metadata->reflClass;
-            $traits = array();
+            $traits = [];
             while ($reflClass !== false) {
                 $traits = array_merge($traits, $reflClass->getTraits());
                 $reflClass = $reflClass->getParentClass();
             }
             return $traits;
         }
-        return array();
+        return [];
     }
 
     private function generateDocumentImports()
@@ -543,7 +543,7 @@ public function <methodName>()
 
     private function generateDocumentDocBlock(ClassMetadataInfo $metadata)
     {
-        $lines = array();
+        $lines = [];
         $lines[] = '/**';
         $lines[] = ' * ' . $metadata->name;
 
@@ -558,7 +558,7 @@ public function <methodName>()
                 $lines[] = ' * @ODM\\Document';
             }
 
-            $document = array();
+            $document = [];
             if ( ! $metadata->isMappedSuperclass && ! $metadata->isEmbeddedDocument) {
                 if ($metadata->collection) {
                     $document[] = ' *     collection="' . $metadata->collection . '"';
@@ -568,15 +568,15 @@ public function <methodName>()
                 }
             }
             if ($metadata->indexes) {
-                $indexes = array();
-                $indexLines = array();
+                $indexes = [];
+                $indexLines = [];
                 $indexLines[] = " *     indexes={";
                 foreach ($metadata->indexes as $index) {
-                    $keys = array();
+                    $keys = [];
                     foreach ($index['keys'] as $key => $value) {
                         $keys[] = '"' . $key . '"="' . $value . '"';
                     }
-                    $options = array();
+                    $options = [];
                     foreach ($index['options'] as $key => $value) {
                         $options[] = '"' . $key . '"="' . $value . '"';
                     }
@@ -598,13 +598,13 @@ public function <methodName>()
                 $lines[] = ' * @ODM\HasLifecycleCallbacks';
             }
 
-            $methods = array(
+            $methods = [
                 'generateInheritanceAnnotation',
                 'generateDiscriminatorFieldAnnotation',
                 'generateDiscriminatorMapAnnotation',
                 'generateDefaultDiscriminatorValueAnnotation',
                 'generateChangeTrackingPolicyAnnotation'
-            );
+            ];
 
             foreach ($methods as $method) {
                 if ($code = $this->$method($metadata)) {
@@ -634,7 +634,7 @@ public function <methodName>()
     private function generateDiscriminatorMapAnnotation(ClassMetadataInfo $metadata)
     {
         if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
-            $inheritanceClassMap = array();
+            $inheritanceClassMap = [];
 
             foreach ($metadata->discriminatorMap as $type => $class) {
                 $inheritanceClassMap[] .= '"' . $type . '" = "' . $class . '"';
@@ -658,7 +658,7 @@ public function <methodName>()
 
     private function generateDocumentStubMethods(ClassMetadataInfo $metadata)
     {
-        $methods = array();
+        $methods = [];
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
             if (isset($fieldMapping['id'])) {
@@ -717,7 +717,7 @@ public function <methodName>()
             return '';
         }
 
-        $methods = array();
+        $methods = [];
 
         foreach ($metadata->lifecycleCallbacks as $event => $callbacks) {
             foreach ($callbacks as $callback) {
@@ -732,7 +732,7 @@ public function <methodName>()
 
     private function generateDocumentAssociationMappingProperties(ClassMetadataInfo $metadata)
     {
-        $lines = array();
+        $lines = [];
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
             if ($this->hasProperty($fieldMapping['fieldName'], $metadata) ||
@@ -753,7 +753,7 @@ public function <methodName>()
 
     private function generateDocumentFieldMappingProperties(ClassMetadataInfo $metadata)
     {
-        $lines = array();
+        $lines = [];
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
             if ($this->hasProperty($fieldMapping['fieldName'], $metadata) ||
@@ -775,7 +775,7 @@ public function <methodName>()
     private function generateDocumentStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null, $defaultValue = null)
     {
         // Add/remove methods should use the singular form of the field name
-        $formattedFieldName = in_array($type, array('add', 'remove'))
+        $formattedFieldName = in_array($type, ['add', 'remove'])
             ? Inflector::singularize($fieldName)
             : $fieldName;
 
@@ -792,7 +792,7 @@ public function <methodName>()
         $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
         $variableType = $typeHint ? $typeHint . ' ' : null;
 
-        $replacements = array(
+        $replacements = [
             '<description>'         => $description,
             '<methodTypeHint>'      => $methodTypeHint,
             '<variableType>'        => $variableType,
@@ -800,7 +800,7 @@ public function <methodName>()
             '<methodName>'          => $methodName,
             '<fieldName>'           => $fieldName,
             '<variableDefault>'     => ($defaultValue !== null ) ? (' = ' . $defaultValue) : '',
-        );
+        ];
 
         $templateVar = sprintf('%sMethodTemplate', $type);
 
@@ -819,10 +819,10 @@ public function <methodName>()
             return;
         }
 
-        $replacements = array(
+        $replacements = [
             '<comment>'    => $this->generateAnnotations ? '/** @ODM\\' . ucfirst($name) . ' */' : '',
             '<methodName>' => $methodName,
-        );
+        ];
 
         $method = str_replace(
             array_keys($replacements),
@@ -835,7 +835,7 @@ public function <methodName>()
 
     private function generateAssociationMappingPropertyDocBlock(array $fieldMapping)
     {
-        $lines = array();
+        $lines = [];
         $lines[] = $this->spaces . '/**';
         $lines[] = $this->spaces . ' * @var ' . (isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : 'object');
 
@@ -857,14 +857,14 @@ public function <methodName>()
                     $type = 'ReferenceMany';
                     break;
             }
-            $typeOptions = array();
+            $typeOptions = [];
 
             if (isset($fieldMapping['targetDocument'])) {
                 $typeOptions[] = 'targetDocument="' . $fieldMapping['targetDocument'] . '"';
             }
 
             if (isset($fieldMapping['cascade']) && $fieldMapping['cascade']) {
-                $cascades = array();
+                $cascades = [];
 
                 if ($fieldMapping['isCascadePersist']) $cascades[] = '"persist"';
                 if ($fieldMapping['isCascadeRemove']) $cascades[] = '"remove"';
@@ -885,7 +885,7 @@ public function <methodName>()
 
     private function generateFieldMappingPropertyDocBlock(array $fieldMapping, ClassMetadataInfo $metadata)
     {
-        $lines = array();
+        $lines = [];
         $lines[] = $this->spaces . '/**';
         if (isset($fieldMapping['id']) && $fieldMapping['id']) {
             $fieldMapping['strategy'] = isset($fieldMapping['strategy']) ? $fieldMapping['strategy'] : ClassMetadataInfo::GENERATOR_TYPE_AUTO;
@@ -907,7 +907,7 @@ public function <methodName>()
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
 
-            $field = array();
+            $field = [];
             if (isset($fieldMapping['id']) && $fieldMapping['id']) {
                 if (isset($fieldMapping['strategy'])) {
                     $field[] = 'strategy="' . $this->getIdGeneratorTypeString($metadata->generatorType) . '"';
@@ -926,7 +926,7 @@ public function <methodName>()
                     $field[] = 'nullable=' . var_export($fieldMapping['nullable'], true);
                 }
                 if (isset($fieldMapping['options'])) {
-                    $options = array();
+                    $options = [];
                     foreach ($fieldMapping['options'] as $key => $value) {
                         $options[] = '"' . $key . '" = "' . $value . '"';
                     }

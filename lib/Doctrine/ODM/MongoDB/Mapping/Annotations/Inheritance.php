@@ -25,7 +25,7 @@ use Doctrine\Common\Annotations\Annotation;
 final class Inheritance extends Annotation
 {
     public $type = 'NONE';
-    public $discriminatorMap = array();
+    public $discriminatorMap = [];
     public $discriminatorField;
     public $defaultDiscriminatorValue;
 }

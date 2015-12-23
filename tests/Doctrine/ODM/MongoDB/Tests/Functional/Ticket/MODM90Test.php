@@ -11,10 +11,10 @@ class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->listener = new MODM90EventListener();
         $evm = $this->dm->getEventManager();
-        $events = array(
+        $events = [
             Events::preUpdate,
             Events::postUpdate,
-        );
+        ];
         $evm->addEventListener($events, $this->listener);
         return $this->dm;
     }
@@ -38,7 +38,7 @@ class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->clear();
 
         // no update events should be called
-        $called = array();
+        $called = [];
         $this->assertEquals($called, $this->listener->called);
     }
 
@@ -66,7 +66,7 @@ class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 class MODM90EventListener
 {
-    public $called = array();
+    public $called = [];
     public function __call($method, $args)
     {
         $document = $args[0]->getDocument();

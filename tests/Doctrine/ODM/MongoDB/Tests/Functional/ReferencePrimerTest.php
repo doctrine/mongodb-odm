@@ -261,7 +261,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $invokedArgs = array();
+        $invokedArgs = [];
         $primer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
             $invokedArgs[] = func_get_args();
         };
@@ -277,8 +277,8 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertArrayHasKey(Query::HINT_SLAVE_OKAY, $invokedArgs[0][3], 'Primer was invoked with UnitOfWork hints from original query.');
         $this->assertTrue($invokedArgs[0][3][Query::HINT_SLAVE_OKAY], 'Primer was invoked with UnitOfWork hints from original query.');
 
-        $accountIds = array($account->getId());
-        $groupIds = array($group1->getId(), $group2->getId());
+        $accountIds = [$account->getId()];
+        $groupIds = [$group1->getId(), $group2->getId()];
 
         $this->assertEquals($accountIds, $invokedArgs[0][2]);
         $this->assertEquals($groupIds, $invokedArgs[1][2]);

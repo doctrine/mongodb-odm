@@ -11,7 +11,7 @@ class GH999Test extends BaseTest
 {
     public function testModifyingInFlushHandler()
     {
-        $this->dm->getEventManager()->addEventListener(array(Events::onFlush), new GH999Listener());
+        $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH999Listener());
 
         $document = new GH999Document('name');
         $this->dm->persist($document);

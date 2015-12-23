@@ -35,15 +35,15 @@ class MODM166Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $repository = $this->dm->getRepository(get_class($test));
-        $test = $repository->findOneBy(array('username' => 'lucy'));
+        $test = $repository->findOneBy(['username' => 'lucy']);
 
-        $phonenumbers = array();
+        $phonenumbers = [];
         foreach ($test->getPhonenumbers() as $phonenumber){
             $phonenumbers[] = $phonenumber->getPhonenumber();
         }
         sort($phonenumbers);
 
-        $this->assertEquals(array('1111', '2222'), $phonenumbers);
+        $this->assertEquals(['1111', '2222'], $phonenumbers);
     }
 }
 

@@ -77,7 +77,7 @@ class Cursor implements CursorInterface
      *
      * @var array
      */
-    private $unitOfWorkHints = array();
+    private $unitOfWorkHints = [];
 
     /**
      * ReferencePrimer object for priming references
@@ -91,7 +91,7 @@ class Cursor implements CursorInterface
      *
      * @var array
      */
-    private $primers = array();
+    private $primers = [];
 
     /**
      * Whether references have been primed
@@ -713,7 +713,7 @@ class Cursor implements CursorInterface
 
         foreach ($this->primers as $fieldName => $primer) {
             $primer = is_callable($primer) ? $primer : null;
-            $this->referencePrimer->primeReferences($this->class, array($document), $fieldName, $this->unitOfWorkHints, $primer);
+            $this->referencePrimer->primeReferences($this->class, [$document], $fieldName, $this->unitOfWorkHints, $primer);
         }
     }
 }

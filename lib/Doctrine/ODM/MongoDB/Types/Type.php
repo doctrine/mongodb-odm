@@ -58,10 +58,10 @@ abstract class Type
     const RAW = 'raw';
 
     /** Map of already instantiated type objects. One instance per type (flyweight). */
-    private static $typeObjects = array();
+    private static $typeObjects = [];
 
     /** The map of supported doctrine mapping types. */
-    private static $typesMap = array(
+    private static $typesMap = [
         self::ID => Types\IdType::class,
         self::INTID => Types\IntIdType::class,
         self::CUSTOMID => Types\CustomIdType::class,
@@ -87,7 +87,7 @@ abstract class Type
         self::INCREMENT => Types\IncrementType::class,
         self::OBJECTID => Types\ObjectIdType::class,
         self::RAW => Types\RawType::class,
-    );
+    ];
 
     /* Prevent instantiation and force use of the factory method. */
     final private function __construct() {}

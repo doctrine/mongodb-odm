@@ -143,7 +143,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     protected function _loadDriverForCMSDocuments()
     {
         $annotationDriver = $this->_loadDriver();
-        $annotationDriver->addPaths(array(__DIR__ . '/../../../../../Documents'));
+        $annotationDriver->addPaths([__DIR__ . '/../../../../../Documents']);
         return $annotationDriver;
     }
 

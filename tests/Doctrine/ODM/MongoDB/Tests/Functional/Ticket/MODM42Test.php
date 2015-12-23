@@ -10,7 +10,7 @@ class MODM42Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $file1 = new File(__DIR__ . '/MODM42/test1.txt');
         $file2 = new File(__DIR__ . '/MODM42/test2.txt');
-        $dir = new Directory(array($file1, $file2));
+        $dir = new Directory([$file1, $file2]);
 
         $this->dm->persist($file1);
         $this->dm->persist($file2);
@@ -42,7 +42,7 @@ class Directory
     protected $test = 'test';
 
     /** @ODM\ReferenceMany(targetDocument="File") */
-    protected $files = array();
+    protected $files = [];
 
     public function __construct($files)
     {
