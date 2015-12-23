@@ -27,8 +27,6 @@ use Doctrine\Common\PropertyChangedListener;
 use Doctrine\MongoDB\GridFSFile;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionFactory;
-use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
@@ -255,13 +253,6 @@ class UnitOfWork implements PropertyChangedListener
     private $lifecycleEventManager;
 
     /**
-     * Factory class for persistent collections.
-     *
-     * @var PersistentCollectionFactory
-     */
-    private $persistentCollectionFactory;
-
-    /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
      *
      * @param DocumentManager $dm
@@ -274,7 +265,6 @@ class UnitOfWork implements PropertyChangedListener
         $this->evm = $evm;
         $this->hydratorFactory = $hydratorFactory;
         $this->lifecycleEventManager = new LifecycleEventManager($dm, $this, $evm);
-        $this->persistentCollectionFactory = new DefaultPersistentCollectionFactory();
     }
 
     /**
@@ -289,16 +279,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->persistenceBuilder = new PersistenceBuilder($this->dm, $this);
         }
         return $this->persistenceBuilder;
-    }
-
-    /**
-     * Factory for returning specialized PersistentCollection instances.
-     *
-     * @return PersistentCollectionFactory
-     */
-    public function getPersistentCollectionFactory()
-    {
-        return $this->persistentCollectionFactory;
     }
 
     /**
@@ -643,7 +623,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // Inject PersistentCollection
-                $coll = $this->persistentCollectionFactory->create($this->dm, $mapping, $value);
+                $coll = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create($this->dm, $mapping, $value);
                 $coll->setOwner($document, $mapping);
                 $coll->setDirty( ! $value->isEmpty());
                 $class->reflFields[$name]->setValue($document, $coll);
@@ -1919,7 +1899,7 @@ class UnitOfWork implements PropertyChangedListener
                         $managedCol = $prop->getValue($managedCopy);
 
                         if ( ! $managedCol) {
-                            $managedCol = $this->persistentCollectionFactory->create($this->dm, $assoc2, null);
+                            $managedCol = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create($this->dm, $assoc2, null);
                             $managedCol->setOwner($managedCopy, $assoc2);
                             $prop->setValue($managedCopy, $managedCol);
                             $this->originalDocumentData[$oid][$name] = $managedCol;

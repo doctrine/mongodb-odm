@@ -25,7 +25,9 @@ use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionGenerator;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
 use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
@@ -547,6 +549,28 @@ class Configuration extends \Doctrine\MongoDB\Configuration
         return isset($this->attributes['repositoryFactory'])
             ? $this->attributes['repositoryFactory']
             : new DefaultRepositoryFactory();
+    }
+
+    /**
+     * Set the persistent collection factory.
+     *
+     * @param PersistentCollectionFactory $persistentCollectionFactory
+     */
+    public function setPersistentCollectionFactory(PersistentCollectionFactory $persistentCollectionFactory)
+    {
+        $this->attributes['persistentCollectionFactory'] = $persistentCollectionFactory;
+    }
+
+    /**
+     * Get the persistent collection factory.
+     *
+     * @return DefaultPersistentCollectionFactory
+     */
+    public function getPersistentCollectionFactory()
+    {
+        return isset($this->attributes['persistentCollectionFactory'])
+            ? $this->attributes['persistentCollectionFactory']
+            : new DefaultPersistentCollectionFactory();
     }
 
     /**
