@@ -81,7 +81,7 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertCount(2, $users);
 
-        $results = array();
+        $results = [];
         foreach ($users as $user) {
             if ($user->getId() === 'userId') {
                 $results['userId'] = true;

@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class Manager extends BaseEmployee
 {
     /** @ODM\ReferenceMany(targetDocument="Documents\Project") */
-    private $projects = array();
+    private $projects = [];
 
     public function getProjects()
     {

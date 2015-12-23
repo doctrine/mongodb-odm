@@ -10,7 +10,7 @@ class CommentRepository extends DocumentRepository
     public function findOneComment()
     {
         return $this->getDocumentPersister()->loadAll()
-            ->sort(array('date' => 'desc'))
+            ->sort(['date' => 'desc'])
             ->limit(1)
             ->getSingleResult();
     }

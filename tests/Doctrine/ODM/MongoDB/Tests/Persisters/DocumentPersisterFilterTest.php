@@ -17,12 +17,12 @@ class DocumentPersisterFilterTest extends BaseTest
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'Tim');
 
-        $preparedQuery = array('username' => 'Toby');
+        $preparedQuery = ['username' => 'Toby'];
 
-        $expectedCriteria = array('$and' => array(
-            array('username' => 'Toby'),
-            array('username' => 'Tim'),
-        ));
+        $expectedCriteria = ['$and' => [
+            ['username' => 'Toby'],
+            ['username' => 'Tim'],
+        ]];
 
         $this->assertSame($expectedCriteria, $persister->addFilterToPreparedQuery($preparedQuery));
     }

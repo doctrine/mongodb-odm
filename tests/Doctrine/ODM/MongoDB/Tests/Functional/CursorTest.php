@@ -27,12 +27,12 @@ class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame($user, $cursor->getSingleResult());
 
         $cursor->reset();
-        $this->assertSame(array($user), $cursor->toArray(false));
+        $this->assertSame([$user], $cursor->toArray(false));
     }
 
     public function testRecreateShouldPreserveSorting()
     {
-        $usernames = array('David', 'Xander', 'Alex', 'Kris', 'Jon');
+        $usernames = ['David', 'Xander', 'Alex', 'Kris', 'Jon'];
 
         foreach ($usernames as $username){
             $user = new User();
@@ -61,7 +61,7 @@ class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetSingleResultPreservesLimit()
     {
-        $usernames = array('David', 'Xander', 'Alex', 'Kris', 'Jon');
+        $usernames = ['David', 'Xander', 'Alex', 'Kris', 'Jon'];
 
         foreach ($usernames as $username){
             $user = new User();
@@ -95,7 +95,7 @@ class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testCountFoundOnlyBehavior()
     {
-        $usernames = array('David', 'Xander', 'Alex', 'Kris', 'Jon');
+        $usernames = ['David', 'Xander', 'Alex', 'Kris', 'Jon'];
 
         foreach ($usernames as $username){
             $user = new User();

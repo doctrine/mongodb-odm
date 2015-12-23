@@ -163,7 +163,7 @@ class OrphanRemovalCascadeUser
     public $profile;
 
     /** @ODM\EmbedMany(targetDocument="OrphanRemovalCascadeProfile") */
-    public $profileMany = array();
+    public $profileMany = [];
 }
 
 /** @ODM\EmbeddedDocument */

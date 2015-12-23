@@ -10,15 +10,15 @@ class GeoSpatialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->geoNear(0, 0);
-        $this->assertEquals(array('near' => array(0, 0), 'options' => array('spherical' => false)), $qb->debug('geoNear'));
+        $this->assertEquals(['near' => [0, 0], 'options' => ['spherical' => false]], $qb->debug('geoNear'));
 
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->withinBox(41, 41, 72, 72);
-        $this->assertEquals(array(
-            'coordinates' => array(
-                '$within' => array('$box' => array(array(41, 41), array(72, 72)))
-            )
-        ), $qb->getQueryArray());
+        $this->assertEquals([
+            'coordinates' => [
+                '$within' => ['$box' => [[41, 41], [72, 72]]]
+            ]
+        ], $qb->getQueryArray());
     }
 
     public function testGetFieldsInCoordinatesQuery()
@@ -26,7 +26,7 @@ class GeoSpatialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\City');
         $qb->field('coordinates')->withinBox(41, 41, 72, 72);
         $query = $qb->getQuery();
-        $this->assertEquals(array('coordinates'), $query->getFieldsInQuery());
+        $this->assertEquals(['coordinates'], $query->getFieldsInQuery());
     }
 
     public function testGeoSpatial1()
@@ -160,7 +160,7 @@ class GeoSpatialTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $query = $this->dm->createQueryBuilder(__NAMESPACE__.'\City')
             ->field('coordinates')->geoNear(35, 35)
-            ->field('id')->in(array($city1->id))
+            ->field('id')->in([$city1->id])
             ->getQuery();
 
         foreach ($query as $city) {

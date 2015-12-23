@@ -17,7 +17,7 @@ class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testCustomTypeValueConversions()
     {
         $country = new Country();
-        $country->nationalHolidays = array(new \DateTime(), new \DateTime());
+        $country->nationalHolidays = [new \DateTime(), new \DateTime()];
 
         $this->dm->persist($country);
         $this->dm->flush();

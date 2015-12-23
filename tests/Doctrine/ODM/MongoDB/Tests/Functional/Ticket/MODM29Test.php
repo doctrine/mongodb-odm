@@ -8,11 +8,11 @@ class MODM29Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $collection = new \Doctrine\Common\Collections\ArrayCollection(array(
+        $collection = new \Doctrine\Common\Collections\ArrayCollection([
             new MODM29Embedded('0'),
             new MODM29Embedded('1'),
             new MODM29Embedded('2')
-        ));
+        ]);
 
         // TEST CASE:
         $doc = new MODM29Doc($collection);
@@ -21,11 +21,11 @@ class MODM29Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         // place element '0' after '1'
-        $collection = new \Doctrine\Common\Collections\ArrayCollection(array(
+        $collection = new \Doctrine\Common\Collections\ArrayCollection([
             $collection[1],
             $collection[0],
             $collection[2]
-        ));
+        ]);
 
         $doc->set($collection);
 
@@ -37,11 +37,11 @@ class MODM29Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->refresh($doc);
 
-        $array = array();
+        $array = [];
         foreach($doc->get() as $value) {
             $array[] = $value->get();
         }
-        $this->assertEquals(array('1', 'tmp', '2'), $array);
+        $this->assertEquals(['1', 'tmp', '2'], $array);
     }
 }
 

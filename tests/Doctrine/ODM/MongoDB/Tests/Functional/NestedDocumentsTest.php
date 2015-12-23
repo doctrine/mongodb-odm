@@ -101,7 +101,7 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(array('name' => 'Root'));
+        $test = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(['name' => 'Root']);
  
         $this->assertNotNull($test);
         $child1 = $test->getChild('Child 1')->setName('Child 1 Changed');
@@ -118,16 +118,16 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Child 1 Changed', $test->getChild(0)->getName());
         $this->assertEquals('Child 2 Changed', $test->getChild(1)->getName());
 
-        $child3 = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(array('name' => 'Child 3'));
+        $child3 = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(['name' => 'Child 3']);
         $this->assertNotNull($child3);
         $child3->setName('Child 3 Changed');
         $this->dm->flush();
 
-        $child3 = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(array('name' => 'Child 3 Changed'));
+        $child3 = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(['name' => 'Child 3 Changed']);
         $this->assertNotNull($child3);
         $this->assertEquals('Child 3 Changed', $child3->getName());
 
-        $test = $this->dm->getDocumentCollection(__NAMESPACE__.'\Hierarchy')->findOne(array('name' => 'Child 1 Changed'));
+        $test = $this->dm->getDocumentCollection(__NAMESPACE__.'\Hierarchy')->findOne(['name' => 'Child 1 Changed']);
         $this->assertFalse(isset($test['children']), 'Test empty array is not stored');
     }
 }
@@ -142,7 +142,7 @@ class Hierarchy
     private $name;
 
     /** @ODM\ReferenceMany(targetDocument="Hierarchy") */
-    private $children = array();
+    private $children = [];
 
     public function __construct($name)
     {

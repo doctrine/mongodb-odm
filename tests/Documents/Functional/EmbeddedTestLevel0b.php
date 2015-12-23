@@ -14,5 +14,5 @@ class EmbeddedTestLevel0b
     /** @ODM\EmbedOne(targetDocument="EmbeddedTestLevel1") */
     public $oneLevel1;
     /** @ODM\EmbedMany(targetDocument="EmbeddedTestLevel1") */
-    public $level1 = array();
+    public $level1 = [];
 }

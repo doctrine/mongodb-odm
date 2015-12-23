@@ -30,7 +30,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         $classMetadata = new ClassMetadata('TestDocuments\User');
         $this->driver->loadMetadataForClass('TestDocuments\User', $classMetadata);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'fieldName' => 'id',
             'id' => true,
             'name' => '_id',
@@ -43,9 +43,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false
-        ), $classMetadata->fieldMappings['id']);
+        ], $classMetadata->fieldMappings['id']);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'fieldName' => 'username',
             'name' => 'username',
             'type' => 'string',
@@ -59,16 +59,16 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'nullable' => false,
             'unique' => true,
             'sparse' => true
-        ), $classMetadata->fieldMappings['username']);
+        ], $classMetadata->fieldMappings['username']);
         
-        $this->assertEquals(array(
-            array(
-                'keys' => array('username' => 1),
-                'options' => array('unique' => true, 'sparse' => true)
-            )
-        ), $classMetadata->getIndexes());
+        $this->assertEquals([
+            [
+                'keys' => ['username' => 1],
+                'options' => ['unique' => true, 'sparse' => true]
+            ]
+        ], $classMetadata->getIndexes());
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'fieldName' => 'createdAt',
             'name' => 'createdAt',
             'type' => 'date',
@@ -80,9 +80,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false
-        ), $classMetadata->fieldMappings['createdAt']);
+        ], $classMetadata->fieldMappings['createdAt']);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'fieldName' => 'tags',
             'name' => 'tags',
             'type' => 'collection',
@@ -94,9 +94,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-        ), $classMetadata->fieldMappings['tags']);
+        ], $classMetadata->fieldMappings['tags']);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'association' => 3,
             'fieldName' => 'address',
             'name' => 'address',
@@ -112,9 +112,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
-        ), $classMetadata->fieldMappings['address']);
+        ], $classMetadata->fieldMappings['address']);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'association' => 4,
             'fieldName' => 'phonenumbers',
             'name' => 'phonenumbers',
@@ -130,9 +130,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'strategy' => 'pushAll',
-        ), $classMetadata->fieldMappings['phonenumbers']);
+        ], $classMetadata->fieldMappings['phonenumbers']);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'association' => 1,
             'fieldName' => 'profile',
             'name' => 'profile',
@@ -140,7 +140,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'reference' => true,
             'simple' => true,
             'targetDocument' => 'Documents\Profile',
-            'cascade' => array('remove', 'persist', 'refresh', 'merge', 'detach'),
+            'cascade' => ['remove', 'persist', 'refresh', 'merge', 'detach'],
             'isCascadeDetach' => true,
             'isCascadeMerge' => true,
             'isCascadePersist' => true,
@@ -156,9 +156,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'limit' => null,
             'skip' => null,
             'orphanRemoval' => true,
-        ), $classMetadata->fieldMappings['profile']);
+        ], $classMetadata->fieldMappings['profile']);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'association' => 1,
             'fieldName' => 'account',
             'name' => 'account',
@@ -166,7 +166,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'reference' => true,
             'simple' => false,
             'targetDocument' => 'Documents\Account',
-            'cascade' => array('remove', 'persist', 'refresh', 'merge', 'detach'),
+            'cascade' => ['remove', 'persist', 'refresh', 'merge', 'detach'],
             'isCascadeDetach' => true,
             'isCascadeMerge' => true,
             'isCascadePersist' => true,
@@ -182,9 +182,9 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'limit' => null,
             'skip' => null,
             'orphanRemoval' => false,
-        ), $classMetadata->fieldMappings['account']);
+        ], $classMetadata->fieldMappings['account']);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'association' => 2,
             'fieldName' => 'groups',
             'name' => 'groups',
@@ -192,7 +192,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'reference' => true,
             'simple' => false,
             'targetDocument' => 'Documents\Group',
-            'cascade' => array('remove', 'persist', 'refresh', 'merge', 'detach'),
+            'cascade' => ['remove', 'persist', 'refresh', 'merge', 'detach'],
             'isCascadeDetach' => true,
             'isCascadeMerge' => true,
             'isCascadePersist' => true,
@@ -208,27 +208,27 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'limit' => null,
             'skip' => null,
             'orphanRemoval' => false,
-        ), $classMetadata->fieldMappings['groups']);
+        ], $classMetadata->fieldMappings['groups']);
 
         $this->assertEquals(
-            array(
-                'postPersist' => array('doStuffOnPostPersist', 'doOtherStuffOnPostPersist'),
-                'prePersist' => array('doStuffOnPrePersist'),
-            ),
+            [
+                'postPersist' => ['doStuffOnPostPersist', 'doOtherStuffOnPostPersist'],
+                'prePersist' => ['doStuffOnPrePersist'],
+            ],
             $classMetadata->lifecycleCallbacks
         );
 
         $this->assertEquals(
-            array(
-                "doStuffOnAlsoLoad" => array("unmappedField"),
-            ),
+            [
+                "doStuffOnAlsoLoad" => ["unmappedField"],
+            ],
             $classMetadata->alsoLoadMethods
         );
 
         $classMetadata = new ClassMetadata('TestDocuments\EmbeddedDocument');
         $this->driver->loadMetadataForClass('TestDocuments\EmbeddedDocument', $classMetadata);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'fieldName' => 'name',
             'name' => 'name',
             'type' => 'string',
@@ -240,7 +240,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-        ), $classMetadata->fieldMappings['name']);
+        ], $classMetadata->fieldMappings['name']);
     }
 
 }

@@ -67,10 +67,10 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->execute();
 
-        $cursor->setHints(array(
+        $cursor->setHints([
             Query::HINT_READ_PREFERENCE => $readPreference,
             Query::HINT_READ_PREFERENCE_TAGS => $tags,
-        ));
+        ]);
 
         $this->assertReadPreferenceHint($readPreference, $cursor->getHints());
         $this->assertReadPreferenceTagsHint($tags, $cursor->getHints());
@@ -100,10 +100,10 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $groups);
 
-        $groups->setHints(array(
+        $groups->setHints([
             Query::HINT_READ_PREFERENCE => $readPreference,
             Query::HINT_READ_PREFERENCE_TAGS => $tags,
-        ));
+        ]);
 
         $this->assertReadPreferenceHint($readPreference, $user->getGroups()->getHints());
         $this->assertReadPreferenceTagsHint($tags, $user->getGroups()->getHints());
@@ -111,11 +111,11 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function provideReadPreferenceHints()
     {
-        return array(
-            array('primary', null),
-            array('secondaryPreferred', array()),
-            array('secondary', array(array('dc' => 'east'), array())),
-        );
+        return [
+            ['primary', null],
+            ['secondaryPreferred', []],
+            ['secondary', [['dc' => 'east'], []]],
+        ];
     }
 
     private function assertReadPreferenceHint($readPreference, $hints)

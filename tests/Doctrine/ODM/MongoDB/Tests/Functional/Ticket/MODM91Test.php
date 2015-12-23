@@ -11,10 +11,10 @@ class MODM91Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->listener = new MODM91EventListener();
         $evm = $this->dm->getEventManager();
-        $events = array(
+        $events = [
             Events::preUpdate,
             Events::postUpdate,
-        );
+        ];
         $evm->addEventListener($events, $this->listener);
         return $this->dm;
     }
@@ -35,14 +35,14 @@ class MODM91Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
         $dm->clear();
 
-        $called = array();
+        $called = [];
         $this->assertEquals($called, $this->listener->called);
     }
 }
 
 class MODM91EventListener
 {
-    public $called = array();
+    public $called = [];
     public function __call($method, $args)
     {
         $document = $args[0]->getDocument();

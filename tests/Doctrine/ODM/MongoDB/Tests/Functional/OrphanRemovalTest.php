@@ -245,10 +245,10 @@ class OrphanRemovalUser
     public $profileNoOrphanRemoval;
 
     /** @ODM\ReferenceMany(targetDocument="OrphanRemovalProfile", orphanRemoval=true) */
-    public $profileMany = array();
+    public $profileMany = [];
 
     /** @ODM\ReferenceMany(targetDocument="OrphanRemovalProfile", orphanRemoval=false) */
-    public $profileManyNoOrphanRemoval = array();
+    public $profileManyNoOrphanRemoval = [];
 }
 
 /** @ODM\Document */

@@ -20,10 +20,10 @@ class ClassMetadataLoadEventTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function loadClassMetadata(\Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs $eventArgs)
     {
         $classMetadata = $eventArgs->getClassMetadata();
-        $field = array(
+        $field = [
             'fieldName' => 'about',
             'type' => 'string'
-        );
+        ];
         $classMetadata->mapField($field);
     }
 }

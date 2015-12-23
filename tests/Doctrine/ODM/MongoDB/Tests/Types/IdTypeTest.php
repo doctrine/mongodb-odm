@@ -28,12 +28,12 @@ class IdTypeTest extends \PHPUnit_Framework_TestCase
 
     public function provideInvalidMongoIdConstructorArguments()
     {
-        return array(
-            'integer' => array(1),
-            'float'   => array(3.14),
-            'string'  => array('string'),
-            'bool'    => array(true),
-            'object'  => array(array('x' => 1, 'y' => 2)),
-        );
+        return [
+            'integer' => [1],
+            'float'   => [3.14],
+            'string'  => ['string'],
+            'bool'    => [true],
+            'object'  => [['x' => 1, 'y' => 2]],
+        ];
     }
 }

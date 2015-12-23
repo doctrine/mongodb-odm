@@ -14,7 +14,7 @@ class Bar
     private $name;
 
     /** @ODM\EmbedMany(targetDocument="Documents\Bars\Location") */
-    private $locations = array();
+    private $locations = [];
 
     public function __construct($name = null)
     {

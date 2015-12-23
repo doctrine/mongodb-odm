@@ -36,18 +36,18 @@ class QueryExpressionVisitorTest extends BaseTest
     {
         $builder = new ExpressionBuilder();
 
-        return array(
-            array($builder->eq('field', 'value'), array('field' => 'value')),
-            array($builder->contains('field', 'value'), array('field' => new \MongoRegex('/value/'))),
-            array($builder->gt('field', 'value'), array('field' => array('$gt' => 'value'))),
-            array($builder->gte('field', 'value'), array('field' => array('$gte' => 'value'))),
-            array($builder->in('field', array(1, 2)), array('field' => array('$in' => array(1, 2)))),
-            array($builder->isNull('field'), array('field' => null)),
-            array($builder->lt('field', 'value'), array('field' => array('$lt' => 'value'))),
-            array($builder->lte('field', 'value'), array('field' => array('$lte' => 'value'))),
-            array($builder->neq('field', 'value'), array('field' => array('$ne' => 'value'))),
-            array($builder->notIn('field', array(1, 2)), array('field' => array('$nin' => array(1, 2)))),
-        );
+        return [
+            [$builder->eq('field', 'value'), ['field' => 'value']],
+            [$builder->contains('field', 'value'), ['field' => new \MongoRegex('/value/')]],
+            [$builder->gt('field', 'value'), ['field' => ['$gt' => 'value']]],
+            [$builder->gte('field', 'value'), ['field' => ['$gte' => 'value']]],
+            [$builder->in('field', [1, 2]), ['field' => ['$in' => [1, 2]]]],
+            [$builder->isNull('field'), ['field' => null]],
+            [$builder->lt('field', 'value'), ['field' => ['$lt' => 'value']]],
+            [$builder->lte('field', 'value'), ['field' => ['$lte' => 'value']]],
+            [$builder->neq('field', 'value'), ['field' => ['$ne' => 'value']]],
+            [$builder->notIn('field', [1, 2]), ['field' => ['$nin' => [1, 2]]]],
+        ];
     }
 
     /**
@@ -69,11 +69,11 @@ class QueryExpressionVisitorTest extends BaseTest
             $builder->eq('b', 3)
         );
 
-        $expectedQuery = array('$and' => array(
-            array('a' => 1),
-            array('a' => array('$ne' => 2)),
-            array('b' => 3),
-        ));
+        $expectedQuery = ['$and' => [
+            ['a' => 1],
+            ['a' => ['$ne' => 2]],
+            ['b' => 3],
+        ]];
 
         $expr = $this->visitor->dispatch($compositeExpr);
 
@@ -86,7 +86,7 @@ class QueryExpressionVisitorTest extends BaseTest
      */
     public function testWalkCompositeExpressionShouldThrowExceptionForUnsupportedComposite()
     {
-        $compositeExpr = new CompositeExpression('invalidComposite', array());
+        $compositeExpr = new CompositeExpression('invalidComposite', []);
         $expr = $this->visitor->dispatch($compositeExpr);
     }
 

@@ -48,7 +48,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(array('name' => 'test'));
+        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(['name' => 'test']);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
 
         // Adding this flush here makes level1 not to be inserted.
@@ -532,7 +532,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $embedded = new EmbeddedDocumentWithId();
         $embedded->id = (string) new \MongoId();;
-        $test1->embedMany = array($embedded);
+        $test1->embedMany = [$embedded];
 
         $this->dm->persist($test1);
         $this->dm->flush();

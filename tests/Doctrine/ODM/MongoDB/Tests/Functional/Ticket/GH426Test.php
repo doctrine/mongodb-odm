@@ -33,7 +33,7 @@ class GH426Form
     public $id;
 
     /** @ODM\ReferenceMany(targetDocument="GH426Field", mappedBy="form", cascade={"all"}) */
-    public $fields = array();
+    public $fields = [];
 
     /** @ODM\ReferenceOne(targetDocument="GH426Field", mappedBy="form", sort={"_id":1}) */
     public $firstField;

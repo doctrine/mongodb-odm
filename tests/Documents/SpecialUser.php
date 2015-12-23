@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class SpecialUser extends User
 {
     /** @ODM\Field(type="collection") */
-    private $rules = array();
+    private $rules = [];
 
     public function setRules(array $rules)
     {

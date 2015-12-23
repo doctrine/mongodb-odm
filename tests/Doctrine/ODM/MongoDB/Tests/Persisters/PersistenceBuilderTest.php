@@ -64,11 +64,11 @@ class PersistenceBuilderTest extends BaseTest
         $sameCollection1 = new SameCollection1();
         $sameCollection2a = new SameCollection2();
         $sameCollection2b = new SameCollection2();
-        $ids = array(
+        $ids = [
             '4f28aa84acee413889000001',
             '4f28aa84acee41388900002a',
             '4f28aa84acee41388900002b'
-        );
+        ];
 
         $sameCollection1->id = $ids[0];
         $sameCollection1->name = 'First entry in SameCollection1';
@@ -145,13 +145,13 @@ class PersistenceBuilderTest extends BaseTest
         $this->dm->persist($comment);
         $this->uow->computeChangeSets();
 
-        $expectedData = array(
-            'article' => array(
+        $expectedData = [
+            'article' => [
                 '$db' => DOCTRINE_MONGODB_DATABASE,
                 '$id' => new \MongoId($article->id),
                 '$ref' => 'CmsArticle'
-            )
-        );
+            ]
+        ];
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
 
@@ -170,13 +170,13 @@ class PersistenceBuilderTest extends BaseTest
         $this->dm->persist($comment);
         $this->uow->computeChangeSets();
 
-        $expectedData = array(
-            'article' => array(
+        $expectedData = [
+            'article' => [
                 '$db' => DOCTRINE_MONGODB_DATABASE,
                 '$id' => new \MongoId($article->id),
                 '$ref' => 'CmsArticle'
-            )
-        );
+            ]
+        ];
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
 
@@ -197,18 +197,18 @@ class PersistenceBuilderTest extends BaseTest
         $this->dm->persist($comment);
         $this->uow->computeChangeSets();
 
-        $expectedData = array(
-            '$set' => array(
+        $expectedData = [
+            '$set' => [
                 'topic' => 'test',
                 'text' => 'text',
-                'article' => array(
+                'article' => [
                     '$db' => DOCTRINE_MONGODB_DATABASE,
                     '$id' => new \MongoId($article->id),
                     '$ref' => 'CmsArticle'
-                ),
+                ],
                 '_id' => new \MongoId($comment->id),
-            )
-        );
+            ]
+        ];
         $this->assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
     }
 
@@ -230,10 +230,10 @@ class PersistenceBuilderTest extends BaseTest
      */
     public function getDocumentsAndExpectedData()
     {
-        return array(
-            array(new ConfigurableProduct('Test Product'), array('name' => 'Test Product')),
-            array(new Currency('USD', 1), array('name' => 'USD', 'multiplier' => 1)),
-        );
+        return [
+            [new ConfigurableProduct('Test Product'), ['name' => 'Test Product']],
+            [new Currency('USD', 1), ['name' => 'USD', 'multiplier' => 1]],
+        ];
     }
 
     private function assertDocumentInsertData(array $expectedData, array $preparedData = null)
@@ -276,7 +276,7 @@ class PersistenceBuilderTest extends BaseTest
          */
         $qb = $this->dm->createQueryBuilder('Documents\CmsComment');
         $qb
-            ->field('article.id')->in(array($articleId));
+            ->field('article.id')->in([$articleId]);
         /**
          * @var \Doctrine\ODM\MongoDB\Query\Query $query
          * @var \Doctrine\ODM\MongoDB\Cursor $results

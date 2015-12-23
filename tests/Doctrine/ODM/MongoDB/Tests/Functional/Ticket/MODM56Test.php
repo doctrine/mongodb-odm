@@ -42,7 +42,7 @@ class MODM56Parent
     public $updatedAt;
 
     /** @ODM\EmbedMany(targetDocument="MODM56Child") */
-    public $children = array();
+    public $children = [];
 
     public function __construct($name)
     {

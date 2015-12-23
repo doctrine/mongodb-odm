@@ -48,10 +48,10 @@ class Product
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="Price") */
-    public $prices = array();
+    public $prices = [];
 
     /** @ODM\EmbedMany(targetDocument="SubProduct") */
-    public $subproducts = array();
+    public $subproducts = [];
 
     public function __construct($name)
     {
@@ -64,7 +64,7 @@ class Product
 class SubProduct
 {
     /** @ODM\EmbedMany(targetDocument="Price") */
-    public $prices = array();
+    public $prices = [];
 
     public function __construct()
     {

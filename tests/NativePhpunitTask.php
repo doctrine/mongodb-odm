@@ -92,12 +92,12 @@ class NativePhpunitTask extends Task
 
         $printer = new NativePhpunitPrinter();
 
-        $arguments = array(
+        $arguments = [
             'configuration' => $this->configuration,
             'coverageClover' => $this->coverageClover,
             'junitLogfile' => $this->junitlogfile,
             'printer' => $printer,
-        );
+        ];
 
         require_once "PHPUnit/TextUI/TestRunner.php";
         $runner = new PHPUnit_TextUI_TestRunner();
@@ -132,7 +132,7 @@ class NativePhpunitTask extends Task
 
 class NativePhpunitPrinter extends PHPUnit_Util_Printer implements PHPUnit_Framework_TestListener
 {
-    private $_messages = array();
+    private $_messages = [];
 
     public function write($buffer)
     {

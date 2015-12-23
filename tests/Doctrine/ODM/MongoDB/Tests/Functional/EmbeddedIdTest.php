@@ -62,7 +62,7 @@ class EmbeddedIdTestUser
     public $embedOne;
 
     /** @ODM\EmbedMany(targetDocument="DefaultIdEmbeddedDocument") */
-    public $embedMany = array();
+    public $embedMany = [];
 }
 
 /** @ODM\Document */
@@ -75,7 +75,7 @@ class EmbeddedStrategyNoneIdTestUser
     public $embedOne;
 
     /** @ODM\EmbedMany(targetDocument="DefaultIdStrategyNoneEmbeddedDocument") */
-    public $embedMany = array();
+    public $embedMany = [];
 }
 
 /** @ODM\EmbeddedDocument */

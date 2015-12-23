@@ -27,7 +27,7 @@ class User
     public function __construct()
     {
         $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groups = array();
+        $this->groups = [];
         $this->createdAt = new \DateTime();
     }
 

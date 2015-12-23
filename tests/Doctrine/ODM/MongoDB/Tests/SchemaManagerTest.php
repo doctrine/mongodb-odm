@@ -13,22 +13,22 @@ use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
  */
 class SchemaManagerTest extends \PHPUnit_Framework_TestCase
 {
-    private $indexedClasses = array(
+    private $indexedClasses = [
         'Documents\CmsAddress',
         'Documents\CmsArticle',
         'Documents\CmsComment',
         'Documents\CmsProduct',
         'Documents\Comment',
         'Documents\SimpleReferenceUser',
-    );
+    ];
 
-    private $someNonIndexedClasses = array(
+    private $someNonIndexedClasses = [
         'Documents\CmsGroup',
         'Documents\CmsPhonenumber',
         'Documents\CmsUser',
-    );
+    ];
 
-    private $someMappedSuperclassAndEmbeddedClasses = array(
+    private $someMappedSuperclassAndEmbeddedClasses = [
         'Documents/CmsContent',
         'Documents/CmsPage',
         'Documents/Issue',
@@ -36,11 +36,11 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         'Documents/Phonenumber',
         'Documents/Song',
         'Documents/SubCategory',
-    );
+    ];
 
-    private $classMetadatas = array();
-    private $documentCollections = array();
-    private $documentDatabases = array();
+    private $classMetadatas = [];
+    private $documentCollections = [];
+    private $documentDatabases = [];
     private $schemaManager;
 
     public function setUp()
@@ -51,7 +51,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $cmf->setConfiguration($this->dm->getConfiguration());
         $cmf->setDocumentManager($this->dm);
 
-        $map = array();
+        $map = [];
 
         foreach ($cmf->getAllMetadata() as $cm) {
             $this->documentCollections[$cm->name] = $this->getMockCollection();
@@ -123,7 +123,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $collection = $this->documentCollections['Documents\CmsArticle'];
         $collection->expects($this->once())
             ->method('getIndexInfo')
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue([]));
         $collection->expects($this->once())
             ->method('ensureIndex');
         $collection->expects($this->any())
@@ -145,11 +145,11 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $collection = $this->documentCollections['Documents\CmsArticle'];
         $collection->expects($this->once())
             ->method('getIndexInfo')
-            ->will($this->returnValue(array(array(
+            ->will($this->returnValue([[
                 'v' => 1,
-                'key' => array('topic' => -1),
+                'key' => ['topic' => -1],
                 'name' => 'topic_-1'
-            ))));
+            ]]));
         $collection->expects($this->once())
             ->method('ensureIndex');
         $collection->expects($this->any())

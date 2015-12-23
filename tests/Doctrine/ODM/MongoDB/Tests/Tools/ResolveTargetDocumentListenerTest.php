@@ -32,13 +32,13 @@ class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\Base
         $this->listener->addResolveTargetDocument(
             'Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface',
             'Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetDocument',
-            array()
+            []
         );
 
         $this->listener->addResolveTargetDocument(
             'Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface',
             'Doctrine\ODM\MongoDB\Tests\Tools\TargetDocument',
-            array()
+            []
         );
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);

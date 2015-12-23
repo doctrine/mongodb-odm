@@ -14,7 +14,7 @@ abstract class BaseEmployee
     protected $changes = 0;
 
     /** @ODM\Collection */
-    protected $notes = array();
+    protected $notes = [];
 
     /** @ODM\String */
     protected $name;

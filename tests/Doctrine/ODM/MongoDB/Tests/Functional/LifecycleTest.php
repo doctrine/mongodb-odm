@@ -86,7 +86,7 @@ class ParentObject
     /** @ODM\PrePersist @ODM\PreUpdate */
     public function prePersistPreUpdate()
     {
-        $this->children = array($this->child);
+        $this->children = [$this->child];
     }
 
     /** @ODM\PreUpdate */

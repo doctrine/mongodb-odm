@@ -136,16 +136,16 @@ class CommitImprovementTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 class PhonenumberMachine implements EventSubscriber
 {
-    private $numbers = array('12345678', '87654321');
+    private $numbers = ['12345678', '87654321'];
 
     private $numberId = 0;
 
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::postPersist,
             Events::postUpdate,
-        );
+        ];
     }
 
     public function __call($eventName, $args)

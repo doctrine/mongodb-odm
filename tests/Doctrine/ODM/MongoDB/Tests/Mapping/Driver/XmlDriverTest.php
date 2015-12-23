@@ -19,13 +19,13 @@ class XmlDriverTest extends AbstractDriverTest
     {
         $classMetadata = new ClassMetadata('TestDocuments\UserCustomIdGenerator');
         $this->driver->loadMetadataForClass('TestDocuments\UserCustomIdGenerator', $classMetadata);
-        $this->assertEquals(array(
+        $this->assertEquals([
             'fieldName' => 'id',
             'strategy' => 'custom',
-            'options' => array(
+            'options' => [
                 'class' => 'TestDocuments\CustomIdGenerator',
                 'someOption' => 'some-option'
-            ),
+            ],
             'id' => true,
             'name' => '_id',
             'type' => 'custom_id',
@@ -37,7 +37,7 @@ class XmlDriverTest extends AbstractDriverTest
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false
-        ), $classMetadata->fieldMappings['id']);
+        ], $classMetadata->fieldMappings['id']);
     }
 
     public function testDriverShouldParseNonStringAttributes()

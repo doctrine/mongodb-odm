@@ -62,13 +62,13 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
 
     public function provideInvalidDateValues()
     {
-        return array(
-            'array'  => array(array()),
-            'string' => array('whatever'),
-            'bool'   => array(false),
-            'object' => array(new \stdClass()),
-            'invalid string' => array('foo'),
-        );
+        return [
+            'array'  => [[]],
+            'string' => ['whatever'],
+            'bool'   => [false],
+            'object' => [new \stdClass()],
+            'invalid string' => ['foo'],
+        ];
     }
 
     /**
@@ -112,13 +112,13 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
         $mongoDate = new \MongoDate($yesterday);
         $dateTime = new \DateTime('@' . $yesterday);
 
-        return array(
-            array($dateTime, $dateTime),
-            array($mongoDate, $dateTime),
-            array($yesterday, $dateTime),
-            array(date('c', $yesterday), $dateTime),
-            array(new \MongoDate(100000000, 123000), \DateTime::createFromFormat('U.u', '100000000.123')),
-        );
+        return [
+            [$dateTime, $dateTime],
+            [$mongoDate, $dateTime],
+            [$yesterday, $dateTime],
+            [date('c', $yesterday), $dateTime],
+            [new \MongoDate(100000000, 123000), \DateTime::createFromFormat('U.u', '100000000.123')],
+        ];
     }
 
     /**

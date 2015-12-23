@@ -11,7 +11,7 @@ class PreLoadEventArgsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $document = new Group('test');
         $dm = $this->dm;
-        $data = array('id' => '1234', 'name' => 'test');
+        $data = ['id' => '1234', 'name' => 'test'];
 
         $eventArgs = new PreLoadEventArgs($document, $dm, $data);
         $eventArgsData =& $eventArgs->getData();

@@ -44,18 +44,18 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $metadata->customRepositoryClassName = $this->namespace  . '\DocumentGeneratorBookRepository';
 
         $metadata->collection = 'book';
-        $metadata->mapField(array('fieldName' => 'name', 'type' => 'string'));
-        $metadata->mapField(array('fieldName' => 'status', 'type' => 'string'));
-        $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
-        $metadata->mapOneReference(array('fieldName' => 'author', 'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorAuthor'));
-        $metadata->mapManyReference(array(
+        $metadata->mapField(['fieldName' => 'name', 'type' => 'string']);
+        $metadata->mapField(['fieldName' => 'status', 'type' => 'string']);
+        $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
+        $metadata->mapOneReference(['fieldName' => 'author', 'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorAuthor']);
+        $metadata->mapManyReference([
             'fieldName' => 'comments',
             'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorComment'
-        ));
-        $metadata->mapManyReference(array(
+        ]);
+        $metadata->mapManyReference([
                 'fieldName' => 'searches',
                 'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorSearch'
-        ));
+        ]);
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
@@ -108,15 +108,15 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $comment = new DocumentGeneratorComment();
         $book->addComment($comment);
         $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $book->getComments());
-        $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection(array($comment)), $book->getComments());
+        $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection([$comment]), $book->getComments());
         $book->removeComment($comment);
-        $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection(array()), $book->getComments());
+        $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection([]), $book->getComments());
     }
 
     public function testDocumentUpdatingWorks()
     {
         $metadata = $this->generateBookDocumentFixture();
-        $metadata->mapField(array('fieldName' => 'test', 'type' => 'string'));
+        $metadata->mapField(['fieldName' => 'test', 'type' => 'string']);
 
         $this->generator->writeDocumentClass($metadata, $this->tmpDir);
 

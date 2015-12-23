@@ -24,7 +24,7 @@ class GH499Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH499Document');
 
-        $a = $collection->findOne(array('_id' => new \MongoId($a->getId())));
+        $a = $collection->findOne(['_id' => new \MongoId($a->getId())]);
 
         $this->assertEquals(new \MongoId($b->getId()), $a['refMany'][$b->getId()]);
         $this->assertEquals(new \MongoId($c->getId()), $a['refMany'][$c->getId()]);

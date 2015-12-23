@@ -26,17 +26,17 @@ class QueryTest extends BaseTest
         $this->dm->flush();
 
         $class = __NAMESPACE__.'\Person';
-        $expression1 = array('firstName' => 'Kris');
-        $expression2 = array('firstName' => 'Chris');
+        $expression1 = ['firstName' => 'Kris'];
+        $expression2 = ['firstName' => 'Chris'];
 
         $qb = $this->dm->createQueryBuilder($class);
         $qb->addOr($qb->expr()->field('firstName')->equals('Kris'));
         $qb->addOr($qb->expr()->field('firstName')->equals('Chris'));
 
-        $this->assertEquals(array('$or' => array(
-            array('firstName' => 'Kris'),
-            array('firstName' => 'Chris')
-        )), $qb->getQueryArray());
+        $this->assertEquals(['$or' => [
+            ['firstName' => 'Kris'],
+            ['firstName' => 'Chris']
+        ]], $qb->getQueryArray());
 
         $query = $qb->getQuery();
         $users = $query->execute();
@@ -61,11 +61,11 @@ class QueryTest extends BaseTest
         $qb->field('bestFriend')->references($jon);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals(array(
+        $this->assertEquals([
             'bestFriend.$ref' => 'people',
             'bestFriend.$id' => new \MongoId($jon->id),
             'bestFriend.$db' => DOCTRINE_MONGODB_DATABASE,
-        ), $queryArray);
+        ], $queryArray);
 
         $query = $qb->getQuery();
 
@@ -89,15 +89,15 @@ class QueryTest extends BaseTest
         $qb->field('friends')->includesReferenceTo($kris);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals(array(
-            'friends' => array(
-                '$elemMatch' => array(
+        $this->assertEquals([
+            'friends' => [
+                '$elemMatch' => [
                     '$ref' => 'people',
                     '$id' => new \MongoId($kris->id),
                     '$db' => DOCTRINE_MONGODB_DATABASE,
-                ),
-            ),
-        ), $queryArray);
+                ],
+            ],
+        ], $queryArray);
 
         $query = $qb->getQuery();
 
@@ -113,7 +113,7 @@ class QueryTest extends BaseTest
         $this->dm->flush();
 
         $mongoId = new \MongoId($user->getId());
-        $ids = array($mongoId);
+        $ids = [$mongoId];
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('_id')->in($ids);
@@ -129,7 +129,7 @@ class QueryTest extends BaseTest
             ->field('testInt')->set('0')
             ->field('intfields.intone')->set('1')
             ->field('intfields.inttwo')->set('2');
-        $this->assertEquals(array('testInt' => 0, 'intfields' => array('intone' => 1, 'inttwo' => 2)), $qb->getNewObj());
+        $this->assertEquals(['testInt' => 0, 'intfields' => ['intone' => 1, 'inttwo' => 2]], $qb->getNewObj());
     }
 
     public function testElemMatch()
@@ -144,7 +144,7 @@ class QueryTest extends BaseTest
         );
         $query = $qb->getQuery();
 
-        $expectedQuery = array('phonenumbers' => array('$elemMatch' => array('lastCalledBy.$id' => new \MongoId($refId))));
+        $expectedQuery = ['phonenumbers' => ['$elemMatch' => ['lastCalledBy.$id' => new \MongoId($refId)]]];
         $this->assertEquals($expectedQuery, $query->debug('query'));
     }
 
@@ -154,7 +154,7 @@ class QueryTest extends BaseTest
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.name')->equals('Foo');
         $query = $qb->getQuery();
-        $this->assertEquals(array('eO.eO.e1.eO.n' => 'Foo'), $query->debug('query'));
+        $this->assertEquals(['eO.eO.e1.eO.n' => 'Foo'], $query->debug('query'));
     }
 
     public function testQueryWithMultipleEmbeddedDocumentsAndReference()
@@ -180,7 +180,7 @@ class QueryTest extends BaseTest
 
         $test = $this->dm->createQueryBuilder()
                 ->find('Documents\Project')
-                ->select(array('name'))
+                ->select(['name'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
@@ -197,7 +197,7 @@ class QueryTest extends BaseTest
 
         $test = $this->dm->createQueryBuilder()
                 ->find('Documents\Project')
-                ->select(array())
+                ->select([])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
@@ -214,11 +214,11 @@ class QueryTest extends BaseTest
 
         $test = $this->dm->createQueryBuilder()
                 ->find('Documents\Project')->hydrate(false)
-                ->select(array('name'))
+                ->select(['name'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
-        $this->assertEquals(array('_id', 'name'), array_keys($test));
+        $this->assertEquals(['_id', 'name'], array_keys($test));
     }
 
     public function testExcludeVsSingleCollectionInheritance()
@@ -230,7 +230,7 @@ class QueryTest extends BaseTest
 
         $test = $this->dm->createQueryBuilder()
                 ->find('Documents\SubProject')
-                ->exclude(array('name', 'issues'))
+                ->exclude(['name', 'issues'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
@@ -252,7 +252,7 @@ class Person
     public $bestFriend;
 
     /** @ODM\ReferenceMany */
-    public $friends = array();
+    public $friends = [];
 
     public function __construct($firstName)
     {

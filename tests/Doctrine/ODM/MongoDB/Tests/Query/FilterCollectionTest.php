@@ -63,7 +63,7 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = $this->dm->getClassMetadata('Documents\User');
         $filterCollection = $this->dm->getFilterCollection();
 
-        $this->assertSame(array(), $filterCollection->getFilterCriteria($class));
+        $this->assertSame([], $filterCollection->getFilterCriteria($class));
 
         $filterCollection->enable('testFilter');
         $testFilter = $filterCollection->getFilter('testFilter');
@@ -71,7 +71,7 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'Tim');
 
-        $this->assertSame(array('username' => 'Tim'), $filterCollection->getFilterCriteria($class));
+        $this->assertSame(['username' => 'Tim'], $filterCollection->getFilterCriteria($class));
     }
 
     public function testGetFilterCriteriaMergesCriteria()
@@ -91,10 +91,10 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'John');
 
-        $expectedCriteria = array('$and' => array(
-            array('username' => 'Tim'),
-            array('username' => 'John'),
-        ));
+        $expectedCriteria = ['$and' => [
+            ['username' => 'Tim'],
+            ['username' => 'John'],
+        ]];
 
         $this->assertSame($expectedCriteria, $filterCollection->getFilterCriteria($class));
     }

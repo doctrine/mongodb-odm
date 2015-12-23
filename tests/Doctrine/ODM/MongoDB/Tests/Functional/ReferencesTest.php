@@ -348,7 +348,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $test = new DocumentWithArrayReference();
         $test->referenceOne = new DocumentWithArrayId();
-        $test->referenceOne->id = array('identifier' => 1);
+        $test->referenceOne->id = ['identifier' => 1];
 
         $this->dm->persist($test);
         $this->dm->persist($test->referenceOne);
@@ -358,10 +358,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection = $this->dm->getDocumentCollection(get_class($test));
 
         $collection->update(
-            array('_id' => new \MongoId($test->id)),
-            array('$set' => array(
-                'referenceOne.$id' => array('identifier' => 2),
-            ))
+            ['_id' => new \MongoId($test->id)],
+            ['$set' => [
+                'referenceOne.$id' => ['identifier' => 2],
+            ]]
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
@@ -388,10 +388,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $invalidId = new \MongoId('abcdefabcdefabcdefabcdef');
 
         $collection->update(
-            array('_id' => new \MongoId($user->getId())),
-            array('$set' => array(
+            ['_id' => new \MongoId($user->getId())],
+            ['$set' => [
                 'profile.$id' => $invalidId,
-            ))
+            ]]
         );
 
         $user = $this->dm->find(get_class($user), $user->getId());
@@ -419,10 +419,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $invalidBinData = new \MongoBinData('testbindata', \MongoBinData::BYTE_ARRAY);
 
         $collection->update(
-            array('_id' => new \MongoId($test->id)),
-            array('$set' => array(
+            ['_id' => new \MongoId($test->id)],
+            ['$set' => [
                 'referenceOne.$id' => $invalidBinData,
-            ))
+            ]]
         );
 
         $test = $this->dm->find(get_class($test), $test->id);

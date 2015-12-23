@@ -72,7 +72,7 @@ class User extends BaseDocument
     protected $simpleReferenceManyInverse;
 
     /** @ODM\Collection */
-    private $logs = array();
+    private $logs = [];
 
     public function __construct()
     {

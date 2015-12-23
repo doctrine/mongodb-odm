@@ -70,10 +70,10 @@ class Currency
 
     public static function getAll()
     {
-        return array(
+        return [
             self::USD,
             self::EURO,
             self::JPN,
-        );
+        ];
     }
 }

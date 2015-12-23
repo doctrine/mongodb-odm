@@ -43,7 +43,7 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $coll = $this->dm->getDocumentCollection('Documents\SubProject');
-        $document = $coll->findOne(array('name' => 'Sub Project'));
+        $document = $coll->findOne(['name' => 'Sub Project']);
         $this->assertEquals('sub-project', $document['type']);
 
         $project = new \Documents\OtherSubProject('Other Sub Project');
@@ -51,18 +51,18 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $coll = $this->dm->getDocumentCollection('Documents\OtherSubProject');
-        $document = $coll->findOne(array('name' => 'Other Sub Project'));
+        $document = $coll->findOne(['name' => 'Other Sub Project']);
         $this->assertEquals('other-sub-project', $document['type']);
 
         $this->dm->clear();
 
-        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(array('name' => 'Sub Project'));
+        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(['name' => 'Sub Project']);
         $this->assertInstanceOf('Documents\SubProject', $document);
 
-        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(array('name' => 'Sub Project'));
+        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(['name' => 'Sub Project']);
         $this->assertInstanceOf('Documents\SubProject', $document);
 
-        $document = $this->dm->getRepository('Documents\Project')->findOneBy(array('name' => 'Sub Project'));
+        $document = $this->dm->getRepository('Documents\Project')->findOneBy(['name' => 'Sub Project']);
         $this->assertInstanceOf('Documents\SubProject', $document);
         $this->dm->clear();
 
@@ -70,7 +70,7 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = $this->dm->find('Documents\Project', $id);
         $this->assertInstanceOf('Documents\SubProject', $document);
 
-        $document = $this->dm->getRepository('Documents\Project')->findOneBy(array('name' => 'Other Sub Project'));
+        $document = $this->dm->getRepository('Documents\Project')->findOneBy(['name' => 'Other Sub Project']);
         $this->assertInstanceOf('Documents\OtherSubProject', $document);
     }
 

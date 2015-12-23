@@ -54,7 +54,7 @@ class VersionedDocument
     public $name;
     
     /** @ODM\EmbedMany(targetDocument="VersionedEmbeddedDocument") */
-    public $embedMany = array();
+    public $embedMany = [];
     
     public function __construct()
     {

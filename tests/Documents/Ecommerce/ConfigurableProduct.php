@@ -22,7 +22,7 @@ class ConfigurableProduct
     /**
      * @ODM\EmbedMany(targetDocument="Documents\Ecommerce\Option")
      */
-    protected $options = array();
+    protected $options = [];
 
     /**
      * @var Documents\Option
@@ -133,7 +133,7 @@ class ConfigurableProduct
 
     protected function _getStockItems()
     {
-        $stockItems = array();
+        $stockItems = [];
         foreach ($this->getOptions() as $option) {
             $stockItems[] = $option->getStockItem();
         }

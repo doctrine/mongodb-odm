@@ -14,10 +14,10 @@ class GH560Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPersistListenersAreCalled($id)
     {
-        $listener = new GH560EventSubscriber(array(
+        $listener = new GH560EventSubscriber([
             Events::prePersist,
             Events::postPersist,
-        ));
+        ]);
 
         $this->dm->getEventManager()->addEventSubscriber($listener);
 
@@ -26,10 +26,10 @@ class GH560Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $called = array(
-            array(Events::prePersist, __NAMESPACE__ . '\GH560Document'),
-            array(Events::postPersist, __NAMESPACE__ . '\GH560Document'),
-        );
+        $called = [
+            [Events::prePersist, __NAMESPACE__ . '\GH560Document'],
+            [Events::postPersist, __NAMESPACE__ . '\GH560Document'],
+        ];
 
         $this->assertEquals($called, $listener->called);
     }
@@ -53,10 +53,10 @@ class GH560Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testUpdateListenersAreCalled($id)
     {
-        $listener = new GH560EventSubscriber(array(
+        $listener = new GH560EventSubscriber([
             Events::preUpdate,
             Events::postUpdate,
-        ));
+        ]);
 
         $this->dm->getEventManager()->addEventSubscriber($listener);
 
@@ -68,20 +68,20 @@ class GH560Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $called = array(
-            array(Events::preUpdate, __NAMESPACE__ . '\GH560Document'),
-            array(Events::postUpdate, __NAMESPACE__ . '\GH560Document'),
-        );
+        $called = [
+            [Events::preUpdate, __NAMESPACE__ . '\GH560Document'],
+            [Events::postUpdate, __NAMESPACE__ . '\GH560Document'],
+        ];
 
         $this->assertEquals($called, $listener->called);
     }
 
     public function provideDocumentIds()
     {
-        return array(
-            array(123456),
-            array('516ee7636803faea5600090a:path10421'),
-        );
+        return [
+            [123456],
+            ['516ee7636803faea5600090a:path10421'],
+        ];
     }
 }
 
@@ -92,7 +92,7 @@ class GH560EventSubscriber implements EventSubscriber
 
     public function __construct(array $events)
     {
-        $this->called = array();
+        $this->called = [];
         $this->events = $events;
     }
 
@@ -103,7 +103,7 @@ class GH560EventSubscriber implements EventSubscriber
 
     public function __call($eventName, $args)
     {
-        $this->called[] = array($eventName, get_class($args[0]->getDocument()));
+        $this->called[] = [$eventName, get_class($args[0]->getDocument())];
     }
 }
 

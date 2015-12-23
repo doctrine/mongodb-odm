@@ -31,7 +31,7 @@ class SimpleReferencesTest extends BaseTest
     public function testIndexes()
     {
         $indexes = $this->dm->getSchemaManager()->getDocumentIndexes('Documents\SimpleReferenceUser');
-        $this->assertEquals(array('userId' => 1), $indexes[0]['keys']);
+        $this->assertEquals(['userId' => 1], $indexes[0]['keys']);
     }
 
     public function testStorage()
@@ -44,28 +44,28 @@ class SimpleReferencesTest extends BaseTest
 
     public function testQuery()
     {
-        $this->user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jwage'));
+        $this->user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jwage']);
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->references($this->user);
-        $this->assertEquals(array('userId' => new \MongoId($this->user->getId())), $qb->getQuery()->debug('query'));
+        $this->assertEquals(['userId' => new \MongoId($this->user->getId())], $qb->getQuery()->debug('query'));
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->equals($this->user->getId());
-        $this->assertEquals(array('userId' => new \MongoId($this->user->getId())), $qb->getQuery()->debug('query'));
+        $this->assertEquals(['userId' => new \MongoId($this->user->getId())], $qb->getQuery()->debug('query'));
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
-        $qb->field('user')->in(array($this->user->getId()));
-        $this->assertEquals(array('userId' => array('$in' => array(new \MongoId($this->user->getId())))), $qb->getQuery()->debug('query'));
+        $qb->field('user')->in([$this->user->getId()]);
+        $this->assertEquals(['userId' => ['$in' => [new \MongoId($this->user->getId())]]], $qb->getQuery()->debug('query'));
     }
 
     public function testProxy()
     {
-        $this->user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jwage'));
+        $this->user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jwage']);
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->references($this->user);
-        $this->assertEquals(array('userId' => new \MongoId($this->user->getId())), $qb->getQuery()->debug('query'));
+        $this->assertEquals(['userId' => new \MongoId($this->user->getId())], $qb->getQuery()->debug('query'));
 
         $this->dm->clear();
 
@@ -81,7 +81,7 @@ class SimpleReferencesTest extends BaseTest
 
     public function testPersistentCollectionOwningSide()
     {
-        $test = $this->dm->getRepository('Documents\SimpleReferenceUser')->findOneBy(array());
+        $test = $this->dm->getRepository('Documents\SimpleReferenceUser')->findOneBy([]);
         $users = $test->getUsers()->toArray();
         $this->assertEquals(2, $test->getUsers()->count());
         $this->assertEquals('jwage', current($users)->getUsername());
@@ -90,14 +90,14 @@ class SimpleReferencesTest extends BaseTest
 
     public function testPersistentCollectionInverseSide()
     {
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(array());
+        $user = $this->dm->getRepository('Documents\User')->findOneBy([]);
         $test = $user->getSimpleReferenceManyInverse()->toArray();
         $this->assertEquals('test' ,current($test)->getName());
     }
 
     public function testOneInverseSide()
     {
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(array());
+        $user = $this->dm->getRepository('Documents\User')->findOneBy([]);
         $test = $user->getSimpleReferenceOneInverse();
         $this->assertEquals('test', $test->getName());
     }
@@ -105,25 +105,25 @@ class SimpleReferencesTest extends BaseTest
     public function testQueryForNonIds() {
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->equals(null);
-        $this->assertEquals(array('userId' => null), $qb->getQueryArray());
+        $this->assertEquals(['userId' => null], $qb->getQueryArray());
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->notEqual(null);
-        $this->assertEquals(array('userId' => array('$ne' => null)), $qb->getQueryArray());
+        $this->assertEquals(['userId' => ['$ne' => null]], $qb->getQueryArray());
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('user')->exists(true);
-        $this->assertEquals(array('userId' => array('$exists' => true)), $qb->getQueryArray());
+        $this->assertEquals(['userId' => ['$exists' => true]], $qb->getQueryArray());
     }
 
     public function testRemoveDocumentByEmptyRefMany()
     {
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
-        $qb->field('users')->equals(array());
-        $this->assertEquals(array('users' => array()), $qb->getQueryArray());
+        $qb->field('users')->equals([]);
+        $this->assertEquals(['users' => []], $qb->getQueryArray());
 
         $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser');
         $qb->field('users')->equals(new \stdClass());
-        $this->assertEquals(array('users' => new \stdClass()), $qb->getQueryArray());
+        $this->assertEquals(['users' => new \stdClass()], $qb->getQueryArray());
     }
 }

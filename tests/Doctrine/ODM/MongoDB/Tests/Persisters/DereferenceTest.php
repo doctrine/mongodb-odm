@@ -34,7 +34,7 @@ class DereferenceTest extends BaseTest
         $comment = new Comment();
         $comment->subject = 'test';
 
-        $post->comments = array();
+        $post->comments = [];
         $post->comments[] = $comment;
 
         $this->dm->flush();
@@ -52,7 +52,7 @@ class Post
     public $title;
 
     /** @ODM\EmbedMany(targetDocument="Comment", strategy="set") */
-    public $comments = array();
+    public $comments = [];
 }
 
 /** @ODM\EmbeddedDocument */

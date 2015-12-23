@@ -233,10 +233,10 @@ class User extends BaseDocument
     public $profile;
 
     /** @ODM\EmbedMany(targetDocument="Profile") */
-    public $profiles = array();
+    public $profiles = [];
     
     /** @ODM\ReferenceMany(targetDocument="User") */
-    public $friends = array();
+    public $friends = [];
 }
 
 /** @ODM\EmbeddedDocument */

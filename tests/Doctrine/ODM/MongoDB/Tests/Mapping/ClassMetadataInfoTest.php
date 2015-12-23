@@ -23,25 +23,25 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $cm = new ClassMetadataInfo('stdClass');
 
-        $cm->mapField(array(
+        $cm->mapField([
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-        ));
+        ]);
 
-        $cm->mapField(array(
+        $cm->mapField([
             'fieldName' => 'assocWithTargetDocument',
             'reference' => true,
             'type' => 'one',
             'targetDocument' => 'stdClass',
-        ));
+        ]);
 
-        $cm->mapField(array(
+        $cm->mapField([
             'fieldName' => 'assocWithDiscriminatorField',
             'reference' => true,
             'type' => 'one',
             'discriminatorField' => 'type',
-        ));
+        ]);
 
         $mapping = $cm->getFieldMapping('assoc');
 
@@ -173,11 +173,11 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testEmbedWithCascadeThrowsMappingException()
     {
         $class = new ClassMetadataInfo(__NAMESPACE__ . '\EmbedWithCascadeTest');
-        $class->mapOneEmbedded(array(
+        $class->mapOneEmbedded([
             'fieldName' => 'address',
             'targetDocument' => 'Documents\Address',
             'cascade' => 'all',
-        ));
+        ]);
     }
 
     /**
@@ -227,12 +227,12 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $cm = new ClassMetadataInfo('stdClass');
 
-        $cm->mapField(array(
+        $cm->mapField([
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
             'simple' => true,
-        ));
+        ]);
     }
     
     /**
@@ -244,12 +244,12 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm = new ClassMetadataInfo('stdClass');
         $cm->isEmbeddedDocument = true;
 
-        $cm->mapField(array(
+        $cm->mapField([
             'fieldName' => 'many',
             'reference' => true,
             'type' => 'many',
             'strategy' => 'atomicSet',
-        ));
+        ]);
     }
 
     /**
@@ -258,11 +258,11 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testOwningAndInversedRefsNeedTargetDocument($config)
     {
-        $config = array_merge($config, array(
+        $config = array_merge($config, [
             'fieldName' => 'many',
             'reference' => true,
             'strategy' => 'atomicSet',
-        ));
+        ]);
 
         $cm = new ClassMetadataInfo('stdClass');
         $cm->isEmbeddedDocument = true;
@@ -271,30 +271,30 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function provideOwningAndInversedRefsNeedTargetDocument()
     {
-        return array(
-            array(array('type' => 'one', 'mappedBy' => 'post')),
-            array(array('type' => 'one', 'inversedBy' => 'post')),
-            array(array('type' => 'many', 'mappedBy' => 'post')),
-            array(array('type' => 'many', 'inversedBy' => 'post')),
-        );
+        return [
+            [['type' => 'one', 'mappedBy' => 'post']],
+            [['type' => 'one', 'inversedBy' => 'post']],
+            [['type' => 'many', 'mappedBy' => 'post']],
+            [['type' => 'many', 'inversedBy' => 'post']],
+        ];
     }
 
     public function testAddInheritedAssociationMapping()
     {
         $cm = new ClassMetadataInfo('stdClass');
 
-        $mapping = array(
+        $mapping = [
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
             'simple' => true,
-        );
+        ];
 
         $cm->addInheritedAssociationMapping($mapping);
 
-        $expected = array(
+        $expected = [
             'assoc' => $mapping,
-        );
+        ];
 
         $this->assertEquals($expected, $cm->associationMappings);
     }
@@ -307,10 +307,10 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $cm = new ClassMetadataInfo('stdClass');
         $cm->setIdentifier('id');
-        $cm->mapField(array(
+        $cm->mapField([
             'fieldName' => 'id',
             'type' => 'string'
-        ));
+        ]);
     }
 
     /**
@@ -320,13 +320,13 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testReferenceManySortMustNotBeUsedWithNonSetCollectionStrategy()
     {
         $cm = new ClassMetadataInfo('stdClass');
-        $cm->mapField(array(
+        $cm->mapField([
             'fieldName' => 'ref',
             'reference' => true,
             'strategy' => 'pushAll',
             'type' => 'many',
-            'sort' => array('foo' => 1)
-        ));
+            'sort' => ['foo' => 1]
+        ]);
     }
 }
 

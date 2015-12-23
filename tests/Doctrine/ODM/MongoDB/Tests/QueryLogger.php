@@ -4,7 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 class QueryLogger implements \Countable
 {
-    private $queries = array();
+    private $queries = [];
 
     /**
      * Log a query.
@@ -21,7 +21,7 @@ class QueryLogger implements \Countable
      */
     public function clear()
     {
-        $this->queries = array();
+        $this->queries = [];
     }
 
     /**

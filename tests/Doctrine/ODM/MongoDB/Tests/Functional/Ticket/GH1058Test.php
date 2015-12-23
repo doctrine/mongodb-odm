@@ -8,7 +8,7 @@ class GH1058Test extends BaseTest
 {
     public function testModifyingDuringOnFlushEventNewDocument()
     {
-        $this->dm->getEventManager()->addEventListener(array(Events::onFlush), new GH1058Listener());
+        $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH1058Listener());
         $document = new GH1058PersistDocument();
         $document->setValue('value 1');
         $this->dm->persist($document);
@@ -16,7 +16,7 @@ class GH1058Test extends BaseTest
     }
     public function testModifyingDuringOnFlushEventNewDocumentWithId()
     {
-        $this->dm->getEventManager()->addEventListener(array(Events::onFlush), new GH1058Listener());
+        $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH1058Listener());
         $document = new GH1058UpsertDocument();
         $document->generateId();
         $document->setValue('value 1');

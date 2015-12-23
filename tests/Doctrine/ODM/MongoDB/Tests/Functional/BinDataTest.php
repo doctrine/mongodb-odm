@@ -17,7 +17,7 @@ class BinDataTest extends BaseTest
         $this->dm->persist($test);
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(get_class($test))->findOne(array());
+        $check = $this->dm->getDocumentCollection(get_class($test))->findOne([]);
         $this->assertInstanceOf('MongoBinData', $check[$field]);
         $this->assertEquals($type, $check[$field]->type);
         $this->assertEquals($data, $check[$field]->bin);
@@ -25,15 +25,15 @@ class BinDataTest extends BaseTest
 
     public function provideData()
     {
-        return array(
-            array('bin', 'test', 0), // MongoBinData::GENERIC is only defined in driver 1.5+
-            array('binFunc', 'test', \MongoBinData::FUNC),
-            array('binByteArray', 'test', \MongoBinData::BYTE_ARRAY),
-            array('binUUID', 'test', \MongoBinData::UUID),
-            array('binUUIDRFC4122', '1234567890ABCDEF', 4), // MongoBinData::UUID_RFC4122 is only defined in driver 1.5+
-            array('binMD5', 'test', \MongoBinData::MD5),
-            array('binCustom', 'test', \MongoBinData::CUSTOM),
-        );
+        return [
+            ['bin', 'test', 0], // MongoBinData::GENERIC is only defined in driver 1.5+
+            ['binFunc', 'test', \MongoBinData::FUNC],
+            ['binByteArray', 'test', \MongoBinData::BYTE_ARRAY],
+            ['binUUID', 'test', \MongoBinData::UUID],
+            ['binUUIDRFC4122', '1234567890ABCDEF', 4], // MongoBinData::UUID_RFC4122 is only defined in driver 1.5+
+            ['binMD5', 'test', \MongoBinData::MD5],
+            ['binCustom', 'test', \MongoBinData::CUSTOM],
+        ];
     }
 }
 

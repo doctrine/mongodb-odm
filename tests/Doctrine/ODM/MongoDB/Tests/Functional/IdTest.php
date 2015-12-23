@@ -14,7 +14,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $id = $user->id;
 
         $this->dm->clear();
-        $check1 = $this->dm->getRepository(__NAMESPACE__.'\UuidUser')->findOneBy(array('id' => $id));
+        $check1 = $this->dm->getRepository(__NAMESPACE__.'\UuidUser')->findOneBy(['id' => $id]);
         $this->assertNotNull($check1);
 
         $check2 = $this->dm->createQueryBuilder(__NAMESPACE__.'\UuidUser')
@@ -37,7 +37,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $this->dm->clear();
-        $check1 = $this->dm->getRepository(__NAMESPACE__.'\AlnumCharsUser')->findOneBy(array('id' => 'x'));
+        $check1 = $this->dm->getRepository(__NAMESPACE__.'\AlnumCharsUser')->findOneBy(['id' => 'x']);
         $this->assertNotNull($check1);
 
         $check2 = $this->dm->createQueryBuilder(__NAMESPACE__.'\AlnumCharsUser')
@@ -73,8 +73,8 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($reference1->id, 1);
         $this->assertEquals($reference2->id, 2);
 
-        $check1 = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->findOneBy(array('id' => $user1->id));
-        $check2 = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->findOneBy(array('id' => $user2->id));
+        $check1 = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->findOneBy(['id' => $user1->id]);
+        $check2 = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->findOneBy(['id' => $user2->id]);
         $this->assertNotNull($check1);
         $this->assertNotNull($check2);
 
@@ -114,7 +114,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\UuidUser');
         $this->assertEquals(\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
-        $this->assertEquals(array('salt' => 'test'), $class->generatorOptions);
+        $this->assertEquals(['salt' => 'test'], $class->generatorOptions);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Id\UuidGenerator', $class->idGenerator);
         $this->assertEquals('test', $class->idGenerator->getSalt());
 
@@ -122,7 +122,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = unserialize($serialized);
 
         $this->assertEquals(\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
-        $this->assertEquals(array('salt' => 'test'), $class->generatorOptions);
+        $this->assertEquals(['salt' => 'test'], $class->generatorOptions);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Id\UuidGenerator', $class->idGenerator);
         $this->assertEquals('test', $class->idGenerator->getSalt());
     }
@@ -168,12 +168,12 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
          *
          * See: http://docs.mongodb.org/manual/faq/developers/#what-is-the-compare-order-for-bson-types
          */
-        return array(
-            array('123', 123),
-            array('123', 123.0),
-            array('', 0),
-            array('0', 0),
-        );
+        return [
+            ['123', 123],
+            ['123', 123.0],
+            ['', 0],
+            ['0', 0],
+        ];
     }
 
     /**
@@ -193,7 +193,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNotNull($object->id);
 
         if ($expectedMongoType !== null) {
-            $check = $this->dm->getDocumentCollection(get_class($object))->findOne(array());
+            $check = $this->dm->getDocumentCollection(get_class($object))->findOne([]);
             $this->assertEquals($expectedMongoType, is_object($check['_id']) ? get_class($check['_id']) : gettype($check['_id']));
         }
 
@@ -220,57 +220,57 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $mongoId = new \MongoId();
 
-        return array(
+        return [
             // boolean
-            array('boolean', 'none', true,  true, 'boolean'),
-            array('boolean', 'none', 1,  true, 'boolean'),
-            array('boolean', 'none', false, false, 'boolean'),
+            ['boolean', 'none', true,  true, 'boolean'],
+            ['boolean', 'none', 1,  true, 'boolean'],
+            ['boolean', 'none', false, false, 'boolean'],
 
             // integer
-            array('int', 'none', 0, 0, 'integer'),
-            array('int', 'none', 1, 1, 'integer'),
-            array('int', 'none', '1', 1, 'integer'),
-            array('int', 'increment', null, 1, 'integer'),
+            ['int', 'none', 0, 0, 'integer'],
+            ['int', 'none', 1, 1, 'integer'],
+            ['int', 'none', '1', 1, 'integer'],
+            ['int', 'increment', null, 1, 'integer'],
 
             // raw
-            array('raw', 'none', 0, 0, 'integer'),
-            array('raw', 'none', '1', '1', 'string'),
-            array('raw', 'none', true, true, 'boolean'),
-            array('raw', 'increment', null, 1, 'integer'),
+            ['raw', 'none', 0, 0, 'integer'],
+            ['raw', 'none', '1', '1', 'string'],
+            ['raw', 'none', true, true, 'boolean'],
+            ['raw', 'increment', null, 1, 'integer'],
 
             // float
-            array('float', 'none', 1.1, 1.1, 'double'),
-            array('float', 'none', '1.1', 1.1, 'double'),
+            ['float', 'none', 1.1, 1.1, 'double'],
+            ['float', 'none', '1.1', 1.1, 'double'],
 
             // string
-            array('string', 'none', '', '', 'string'),
-            array('string', 'none', 1, '1', 'string'),
-            array('string', 'none', 'test', 'test', 'string'),
-            array('string', 'increment', null, '1', 'string'),
+            ['string', 'none', '', '', 'string'],
+            ['string', 'none', 1, '1', 'string'],
+            ['string', 'none', 'test', 'test', 'string'],
+            ['string', 'increment', null, '1', 'string'],
 
             // custom_id
-            array('custom_id', 'none', 0, 0, 'integer'),
-            array('custom_id', 'none', '1', '1', 'string'),
-            array('custom_id', 'increment', null, 1, 'integer'),
+            ['custom_id', 'none', 0, 0, 'integer'],
+            ['custom_id', 'none', '1', '1', 'string'],
+            ['custom_id', 'increment', null, 1, 'integer'],
 
             // object_id
-            array('object_id', 'none', (string) $mongoId, (string) $mongoId, 'MongoId'),
+            ['object_id', 'none', (string) $mongoId, (string) $mongoId, 'MongoId'],
 
             // date
-            array('date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), 'MongoDate'),
+            ['date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), 'MongoDate'],
 
             // bin
-            array('bin', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
-            array('bin', 'uuid', null, null, 'MongoBinData'),
-            array('bin_func', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
-            array('bin_bytearray', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
-            array('bin_uuid', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
-            array('bin_md5', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
-            array('bin_custom', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
+            ['bin', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'],
+            ['bin', 'uuid', null, null, 'MongoBinData'],
+            ['bin_func', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'],
+            ['bin_bytearray', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'],
+            ['bin_uuid', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'],
+            ['bin_md5', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'],
+            ['bin_custom', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'],
 
             // hash
-            array('hash', 'none', array('key' => 'value'), array('key' => 'value'), 'array'),
-        );
+            ['hash', 'none', ['key' => 'value'], ['key' => 'value'], 'array'],
+        ];
     }
 
     /**
@@ -287,7 +287,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(get_class($object))->findOne(array());
+        $check = $this->dm->getDocumentCollection(get_class($object))->findOne([]);
 
         $this->assertEquals('MongoBinData', get_class($check['_id']));
         $this->assertEquals($expectedMongoBinDataType, $check['_id']->type);
@@ -295,14 +295,14 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function getTestBinIdsData()
     {
-        return array(
-            array('bin', 0),
-            array('bin_func', \MongoBinData::FUNC),
-            array('bin_bytearray', \MongoBinData::BYTE_ARRAY),
-            array('bin_uuid', \MongoBinData::UUID),
-            array('bin_md5', \MongoBinData::MD5),
-            array('bin_custom', \MongoBinData::CUSTOM),
-        );
+        return [
+            ['bin', 0],
+            ['bin_func', \MongoBinData::FUNC],
+            ['bin_bytearray', \MongoBinData::BYTE_ARRAY],
+            ['bin_uuid', \MongoBinData::UUID],
+            ['bin_md5', \MongoBinData::MD5],
+            ['bin_custom', \MongoBinData::CUSTOM],
+        ];
     }
 
     /**
@@ -382,7 +382,7 @@ class CollectionIdUser
     public $reference;
 
     /** @ODM\EmbedMany(targetDocument="EmbeddedCollectionId") */
-    public $embedded = array();
+    public $embedded = [];
 
     public function __construct($name)
     {

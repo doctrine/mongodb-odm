@@ -24,15 +24,15 @@ class ReferenceEmbeddedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         $subProject1 = new SubProject('Sub Project #1');
         $subProject2 = new SubProject('Sub Project #2');
 
-        $subProject1->setIssues(new ArrayCollection(array(
+        $subProject1->setIssues(new ArrayCollection([
             new Issue('Issue #1', 'Issue #1 on Sub Project #1'),
             new Issue('Issue #2', 'Issue #2 on Sub Project #1')
-        )));
+        ]));
 
-        $subProject2->setIssues(new ArrayCollection(array(
+        $subProject2->setIssues(new ArrayCollection([
             new Issue('Issue #1', 'Issue #1 on Sub Project #2'),
             new Issue('Issue #2', 'Issue #2 on Sub Project #2')
-        )));
+        ]));
 
         $subProjects->add($subProject1);
         $subProjects->add($subProject2);

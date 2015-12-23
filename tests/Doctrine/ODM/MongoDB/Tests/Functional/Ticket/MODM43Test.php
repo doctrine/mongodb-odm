@@ -9,9 +9,9 @@ class MODM43Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
-        $person = array(
+        $person = [
             'name' => 'Jonathan Wage'
-        );
+        ];
         $this->dm->getDocumentCollection(__NAMESPACE__.'\Person')->insert($person);
         $user = $this->dm->find(__NAMESPACE__.'\Person', $person['_id']);
         $this->assertEquals('Jonathan', $user->firstName);
