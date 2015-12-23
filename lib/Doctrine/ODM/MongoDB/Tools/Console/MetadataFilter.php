@@ -46,7 +46,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
     /**
      * @var array
      */
-    private $_filter = array();
+    private $_filter = [];
 
     /**
      * @param \ArrayIterator $metadata

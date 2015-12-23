@@ -47,7 +47,7 @@ class ClassMetadata extends ClassMetadataInfo
      *
      * @var \ReflectionProperty[]
      */
-    public $reflFields = array();
+    public $reflFields = [];
 
     /**
      * @var \Doctrine\Instantiator\InstantiatorInterface|null
@@ -102,7 +102,7 @@ class ClassMetadata extends ClassMetadataInfo
     public function __sleep()
     {
         // This metadata is always serialized/cached.
-        $serialized = array(
+        $serialized = [
             'fieldMappings',
             'associationMappings',
             'identifier',
@@ -115,7 +115,7 @@ class ClassMetadata extends ClassMetadataInfo
             'generatorOptions',
             'idGenerator',
             'indexes',
-        );
+        ];
 
         // The rest of the metadata is only serialized if necessary.
         if ($this->changeTrackingPolicy != self::CHANGETRACKING_DEFERRED_IMPLICIT) {

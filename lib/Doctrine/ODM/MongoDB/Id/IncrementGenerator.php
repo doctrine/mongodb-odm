@@ -60,10 +60,10 @@ class IncrementGenerator extends AbstractIdGenerator
         $coll = $this->collection ?: 'doctrine_increment_ids';
         $key = $this->key ?: $dm->getDocumentCollection($className)->getName();
         
-        $query = array('_id' => $key);
-        $newObj = array('$inc' => array('current_id' => 1));
+        $query = ['_id' => $key];
+        $newObj = ['$inc' => ['current_id' => 1]];
 
-        $command = array();
+        $command = [];
         $command['findandmodify'] = $coll;
         $command['query'] = $query;
         $command['update'] = $newObj;

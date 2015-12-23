@@ -17,7 +17,7 @@ class ResolveTargetDocumentListener
     /**
      * @var array
      */
-    private $resolveTargetDocuments = array();
+    private $resolveTargetDocuments = [];
 
     /**
      * Add a target-document class name to resolve to a new class name.

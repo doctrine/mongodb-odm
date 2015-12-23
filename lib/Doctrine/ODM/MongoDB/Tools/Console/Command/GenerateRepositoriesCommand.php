@@ -44,7 +44,7 @@ class GenerateRepositoriesCommand extends Console\Command\Command
         $this
         ->setName('odm:generate:repositories')
         ->setDescription('Generate repository classes from your mapping information.')
-        ->setDefinition(array(
+        ->setDefinition([
             new InputOption(
                 'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match documents that should be processed.'
@@ -52,7 +52,7 @@ class GenerateRepositoriesCommand extends Console\Command\Command
             new InputArgument(
                 'dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.'
             )
-        ))
+        ])
         ->setHelp(<<<EOT
 Generate repository classes from your mapping information.
 EOT

@@ -52,10 +52,10 @@ class <className> extends DocumentRepository
         $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
         $className = substr($fullClassName, strrpos($fullClassName, '\\') + 1, strlen($fullClassName));
 
-        $variables = array(
+        $variables = [
             '<namespace>' => $namespace,
             '<className>' => $className
-        );
+        ];
         return str_replace(array_keys($variables), array_values($variables), self::$template);
     }
 

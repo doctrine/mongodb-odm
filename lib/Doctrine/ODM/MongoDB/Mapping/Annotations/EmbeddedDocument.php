@@ -22,5 +22,5 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 /** @Annotation */
 final class EmbeddedDocument extends AbstractDocument
 {
-    public $indexes = array();
+    public $indexes = [];
 }

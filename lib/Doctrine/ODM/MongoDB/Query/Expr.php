@@ -66,7 +66,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
             if (isset($mapping['simple']) && $mapping['simple']) {
                 $this->query[$mapping['name']] = $dbRef;
             } else {
-                $keys = array('ref' => true, 'id' => true, 'db' => true);
+                $keys = ['ref' => true, 'id' => true, 'db' => true];
 
                 if (isset($mapping['targetDocument'])) {
                     unset($keys['ref'], $keys['db']);
@@ -96,7 +96,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
             if (isset($mapping['simple']) && $mapping['simple']) {
                 $this->query[$mapping['name']]['$elemMatch'] = $dbRef;
             } else {
-                $keys = array('ref' => true, 'id' => true, 'db' => true);
+                $keys = ['ref' => true, 'id' => true, 'db' => true];
 
                 if (isset($mapping['targetDocument'])) {
                     unset($keys['ref'], $keys['db']);

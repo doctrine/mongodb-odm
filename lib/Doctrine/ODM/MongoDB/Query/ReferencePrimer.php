@@ -106,7 +106,7 @@ class ReferencePrimer
      * @throws \LogicException If the mapped field is a simple reference and is
      *                         missing a target document class.
      */
-    public function primeReferences(ClassMetadata $class, $documents, $fieldName, array $hints = array(), $primer = null)
+    public function primeReferences(ClassMetadata $class, $documents, $fieldName, array $hints = [], $primer = null)
     {
         $data = $this->parseDotSyntaxForPrimer($fieldName, $class, $documents);
         $mapping = $data['mapping'];
@@ -133,7 +133,7 @@ class ReferencePrimer
         }
 
         $primer = $primer ?: $this->defaultPrimer;
-        $groupedIds = array();
+        $groupedIds = [];
 
         /* @var $document PersistentCollection */
         foreach ($documents as $document) {
@@ -179,7 +179,7 @@ class ReferencePrimer
     {
         // Recursion passthrough:
         if ($mapping != null) {
-            return array('fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping);
+            return ['fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping];
         }
 
         // Gather mapping data:
@@ -202,7 +202,7 @@ class ReferencePrimer
                 throw new \InvalidArgumentException(sprintf('No target document class has been specified for this embedded document. However, targetDocument mapping must be specified in order for prime to work on fieldName "%s" for mapping of field "%s".', $fieldName, $mapping['fieldName']));
             }
 
-            $childDocuments = array();
+            $childDocuments = [];
 
             foreach ($documents as $document) {
                 $fieldValue = $class->getFieldValue($document, $e[0]);
@@ -235,7 +235,7 @@ class ReferencePrimer
                 throw new \InvalidArgumentException(sprintf('Cannot prime more than one layer deep but field "%s" is a reference and has children in fieldName "%s".', $e[0], $fieldName));
             }
 
-            return array('fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping);
+            return ['fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping];
         }
     }
 

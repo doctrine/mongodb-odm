@@ -112,14 +112,14 @@ class DocumentManager implements ObjectManager
      *
      * @var array
      */
-    private $documentDatabases = array();
+    private $documentDatabases = [];
 
     /**
      * Array of cached document collection instances that are lazily loaded.
      *
      * @var array
      */
-    private $documentCollections = array();
+    private $documentCollections = [];
 
     /**
      * Whether the DocumentManager is closed or not.
@@ -147,7 +147,7 @@ class DocumentManager implements ObjectManager
     {
         $this->config = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
-        $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
+        $this->connection = $conn ?: new Connection(null, [], $this->config, $this->eventManager);
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
@@ -519,7 +519,7 @@ class DocumentManager implements ObjectManager
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
      * @throws \InvalidArgumentException
      */
-    public function flush($document = null, array $options = array())
+    public function flush($document = null, array $options = [])
     {
         if (null !== $document && ! is_object($document) && ! is_array($document)) {
             throw new \InvalidArgumentException(gettype($document));
@@ -550,8 +550,8 @@ class DocumentManager implements ObjectManager
             return $document;
         }
 
-        $document = $this->proxyFactory->getProxy($class->name, array($class->identifier => $identifier));
-        $this->unitOfWork->registerManaged($document, $identifier, array());
+        $document = $this->proxyFactory->getProxy($class->name, [$class->identifier => $identifier]);
+        $this->unitOfWork->registerManaged($document, $identifier, []);
 
         return $document;
     }
@@ -585,7 +585,7 @@ class DocumentManager implements ObjectManager
         }
         $document = $class->newInstance();
         $class->setIdentifierValue($document, $identifier);
-        $this->unitOfWork->registerManaged($document, $identifier, array());
+        $this->unitOfWork->registerManaged($document, $identifier, []);
 
         return $document;
     }
@@ -688,11 +688,11 @@ class DocumentManager implements ObjectManager
             return $class->getDatabaseIdentifierValue($id);
         }
 
-        $dbRef = array(
+        $dbRef = [
             '$ref' => $class->getCollection(),
             '$id'  => $class->getDatabaseIdentifierValue($id),
             '$db'  => $this->getDocumentDatabase($class->name)->getName(),
-        );
+        ];
 
         /* If the class has a discriminator (field and value), use it. A child
          * class that is not defined in the discriminator map may only have a

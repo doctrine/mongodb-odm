@@ -43,7 +43,7 @@ class GenerateProxiesCommand extends Console\Command\Command
         $this
         ->setName('odm:generate:proxies')
         ->setDescription('Generates proxy classes for document classes.')
-        ->setDefinition(array(
+        ->setDefinition([
             new InputOption(
                 'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match documents that should be processed.'
@@ -52,7 +52,7 @@ class GenerateProxiesCommand extends Console\Command\Command
                 'dest-path', InputArgument::OPTIONAL,
                 'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.'
             ),
-        ))
+        ])
         ->setHelp(<<<EOT
 Generates proxy classes for document classes.
 EOT

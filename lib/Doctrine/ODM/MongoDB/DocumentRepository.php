@@ -128,7 +128,7 @@ class DocumentRepository implements ObjectRepository, Selectable
             return $document; // Hit!
         }
 
-        $criteria = array('_id' => $id);
+        $criteria = ['_id' => $id];
 
         if ($lockMode == LockMode::NONE) {
             return $this->getDocumentPersister()->load($criteria);
@@ -145,7 +145,7 @@ class DocumentRepository implements ObjectRepository, Selectable
             return $document;
         }
 
-        return $this->getDocumentPersister()->load($criteria, null, array(), $lockMode);
+        return $this->getDocumentPersister()->load($criteria, null, [], $lockMode);
     }
 
     /**
@@ -155,7 +155,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      */
     public function findAll()
     {
-        return $this->findBy(array());
+        return $this->findBy([]);
     }
 
     /**
@@ -217,7 +217,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
 
         if ($this->class->hasField($fieldName)) {
-            return $this->$method(array($fieldName => $arguments[0]));
+            return $this->$method([$fieldName => $arguments[0]]);
         } else {
             throw MongoDBException::invalidFindByCall($this->documentName, $fieldName, $method . $by);
         }

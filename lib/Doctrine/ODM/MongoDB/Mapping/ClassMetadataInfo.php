@@ -193,7 +193,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * READ-ONLY: The array of indexes for the document collection.
      */
-    public $indexes = array();
+    public $indexes = [];
 
     /**
      * READ-ONLY: Whether or not queries on this document should require indexes.
@@ -235,21 +235,21 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @var array
      */
-    public $parentClasses = array();
+    public $parentClasses = [];
 
     /**
      * READ-ONLY: The names of all subclasses (descendants).
      *
      * @var array
      */
-    public $subClasses = array();
+    public $subClasses = [];
 
     /**
      * The ReflectionProperty instances of the mapped class.
      *
      * @var \ReflectionProperty[]
      */
-    public $reflFields = array();
+    public $reflFields = [];
 
     /**
      * READ-ONLY: The inheritance mapping type used by the class.
@@ -270,7 +270,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @var array
      */
-    public $generatorOptions = array();
+    public $generatorOptions = [];
 
     /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
@@ -294,7 +294,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @var array
      */
-    public $fieldMappings = array();
+    public $fieldMappings = [];
 
     /**
      * READ-ONLY: The association mappings of the class.
@@ -302,21 +302,21 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @var array
      */
-    public $associationMappings = array();
+    public $associationMappings = [];
 
     /**
      * READ-ONLY: Array of fields to also load with a given method.
      *
      * @var array
      */
-    public $alsoLoadMethods = array();
+    public $alsoLoadMethods = [];
 
     /**
      * READ-ONLY: The registered lifecycle callbacks for documents of this class.
      *
      * @var array
      */
-    public $lifecycleCallbacks = array();
+    public $lifecycleCallbacks = [];
 
     /**
      * READ-ONLY: The discriminator value of this class.
@@ -338,7 +338,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * @var mixed
      * @see discriminatorField
      */
-    public $discriminatorMap = array();
+    public $discriminatorMap = [];
 
     /**
      * READ-ONLY: The definition of the discriminator field used in SINGLE_COLLECTION
@@ -465,7 +465,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getIdentifier()
     {
-        return array($this->identifier);
+        return [$this->identifier];
     }
 
     /**
@@ -476,7 +476,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getIdentifierFieldNames()
     {
-        return array($this->identifier);
+        return [$this->identifier];
     }
 
     /**
@@ -545,7 +545,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
         foreach ($this->lifecycleCallbacks[$event] as $callback) {
             if ($arguments !== null) {
-                call_user_func_array(array($document, $callback), $arguments);
+                call_user_func_array([$document, $callback], $arguments);
             } else {
                 $document->$callback();
             }
@@ -572,7 +572,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getLifecycleCallbacks($event)
     {
-        return isset($this->lifecycleCallbacks[$event]) ? $this->lifecycleCallbacks[$event] : array();
+        return isset($this->lifecycleCallbacks[$event]) ? $this->lifecycleCallbacks[$event] : [];
     }
 
     /**
@@ -615,7 +615,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function registerAlsoLoadMethod($method, $fields)
     {
-        $this->alsoLoadMethods[$method] = is_array($fields) ? $fields : array($fields);
+        $this->alsoLoadMethods[$method] = is_array($fields) ? $fields : [$fields];
     }
 
     /**
@@ -748,9 +748,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * @param array $keys Array of keys for the index.
      * @param array $options Array of options for the index.
      */
-    public function addIndex($keys, array $options = array())
+    public function addIndex($keys, array $options = [])
     {
-        $this->indexes[] = array(
+        $this->indexes[] = [
             'keys' => array_map(function($value) {
                 if ($value == 1 || $value == -1) {
                     return (int) $value;
@@ -766,7 +766,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 return $value;
             }, $keys),
             'options' => $options
-        );
+        ];
     }
 
     /**
@@ -1096,10 +1096,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::cascadeOnEmbeddedNotAllowed($this->name, $mapping['fieldName']);
         }
 
-        $cascades = isset($mapping['cascade']) ? array_map('strtolower', (array) $mapping['cascade']) : array();
+        $cascades = isset($mapping['cascade']) ? array_map('strtolower', (array) $mapping['cascade']) : [];
 
         if (in_array('all', $cascades) || isset($mapping['embedded'])) {
-            $cascades = array('remove', 'persist', 'refresh', 'merge', 'detach');
+            $cascades = ['remove', 'persist', 'refresh', 'merge', 'detach'];
         }
 
         if (isset($mapping['embedded'])) {
@@ -1130,7 +1130,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             if (isset($mapping['strategy'])) {
                 $this->generatorType = constant(ClassMetadata::class . '::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
             }
-            $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : array();
+            $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : [];
             switch ($this->generatorType) {
                 case self::GENERATOR_TYPE_AUTO:
                     $mapping['type'] = 'id';
@@ -1490,7 +1490,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getIdentifierValues($object)
     {
-        return array($this->identifier => $this->getIdentifierValue($object));
+        return [$this->identifier => $this->getIdentifierValue($object)];
     }
 
     /**

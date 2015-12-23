@@ -45,7 +45,7 @@ class GenerateDocumentsCommand extends Console\Command\Command
         $this
         ->setName('odm:generate:documents')
         ->setDescription('Generate document classes and method stubs from your mapping information.')
-        ->setDefinition(array(
+        ->setDefinition([
             new InputOption(
                 'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match documents that should be processed.'
@@ -81,7 +81,7 @@ class GenerateDocumentsCommand extends Console\Command\Command
                 'no-backup', null, InputOption::VALUE_NONE,
                 'Flag to define if the generator should provide a backup file of exisiting code.'
             )
-        ))
+        ])
         ->setHelp(<<<EOT
 Generate document classes and method stubs from your mapping information.
 
@@ -156,10 +156,10 @@ EOT
             $documentGenerator->generate($metadatas, $destPath);
 
             // Outputting information message
-            $output->writeln(array(
+            $output->writeln([
                 '',
                 sprintf('Document classes have been generated to "<info>%s</info>".', $destPath)
-            ));
+            ]);
         } else {
             $output->writeln('No Metadata Classes to process.');
         }

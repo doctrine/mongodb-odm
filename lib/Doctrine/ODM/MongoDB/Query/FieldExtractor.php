@@ -30,7 +30,7 @@ class FieldExtractor
     private $query;
     private $sort;
 
-    public function __construct(array $query, array $sort = array())
+    public function __construct(array $query, array $sort = [])
     {
         $this->query = $query;
         $this->sort = $sort;
@@ -38,7 +38,7 @@ class FieldExtractor
 
     public function getFields()
     {
-        $fields = array();
+        $fields = [];
 
         foreach ($this->query as $k => $v) {
             if (is_array($v) && isset($v['$elemMatch']) && is_array($v['$elemMatch'])) {
@@ -46,7 +46,7 @@ class FieldExtractor
                 foreach ($elemMatchFields as $field) {
                     $fields[] = $k.'.'.$field;
                 }
-            } elseif ($this->isOperator($k, array('and', 'or'))) {
+            } elseif ($this->isOperator($k, ['and', 'or'])) {
                 foreach ($v as $q) {
                     $test = new self($q);
                     $fields = array_merge($fields, $test->getFields());
@@ -61,13 +61,13 @@ class FieldExtractor
 
     private function getFieldsFromElemMatch(array $elemMatch)
     {
-        $fields = array();
+        $fields = [];
         foreach ($elemMatch as $fieldName => $value) {
             if ($this->isOperator($fieldName, 'where')) {
                 continue;
             }
 
-            if ($this->isOperator($fieldName, array('and', 'or'))) {
+            if ($this->isOperator($fieldName, ['and', 'or'])) {
                 foreach ($value as $q) {
                     $test = new self($q);
                     $fields = array_merge($fields, $test->getFields());
@@ -82,7 +82,7 @@ class FieldExtractor
     private function isOperator($fieldName, $operator)
     {
         if ( ! is_array($operator)) {
-            $operator = array($operator);
+            $operator = [$operator];
         }
         foreach ($operator as $op) {
             if ($fieldName === '$' . $op) {

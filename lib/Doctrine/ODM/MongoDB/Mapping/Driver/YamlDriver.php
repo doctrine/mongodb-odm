@@ -77,7 +77,7 @@ class YamlDriver extends FileDriver
         }
         if (isset($element['indexes'])) {
             foreach($element['indexes'] as $index) {
-                $class->addIndex($index['keys'], isset($index['options']) ? $index['options'] : array());
+                $class->addIndex($index['keys'], isset($index['options']) ? $index['options'] : []);
             }
         }
         if (isset($element['inheritanceType'])) {
@@ -105,7 +105,7 @@ class YamlDriver extends FileDriver
             foreach ($element['fields'] as $fieldName => $mapping) {
                 if (is_string($mapping)) {
                     $type = $mapping;
-                    $mapping = array();
+                    $mapping = [];
                     $mapping['type'] = $type;
                 }
                 if ( ! isset($mapping['fieldName'])) {
@@ -178,7 +178,7 @@ class YamlDriver extends FileDriver
         }
 
         // Index this field if either "index", "unique", or "sparse" are set
-        $keys = array($name => 'asc');
+        $keys = [$name => 'asc'];
 
         /* The "order" option is only used in the index specification and should
          * not be passed along as an index option.
@@ -198,7 +198,7 @@ class YamlDriver extends FileDriver
          * sparse. Any boolean values for unique or sparse should be merged into
          * the options afterwards to ensure consistent parsing.
          */
-        $options = array();
+        $options = [];
         $unique = null;
         $sparse = null;
 
@@ -208,7 +208,7 @@ class YamlDriver extends FileDriver
 
         if (isset($mapping['unique'])) {
             if (is_array($mapping['unique'])) {
-                $options = $mapping['unique'] + array('unique' => true);
+                $options = $mapping['unique'] + ['unique' => true];
             } else {
                 $unique = (boolean) $mapping['unique'];
             }
@@ -216,7 +216,7 @@ class YamlDriver extends FileDriver
 
         if (isset($mapping['sparse'])) {
             if (is_array($mapping['sparse'])) {
-                $options = $mapping['sparse'] + array('sparse' => true);
+                $options = $mapping['sparse'] + ['sparse' => true];
             } else {
                 $sparse = (boolean) $mapping['sparse'];
             }
@@ -235,13 +235,13 @@ class YamlDriver extends FileDriver
 
     private function addMappingFromEmbed(ClassMetadataInfo $class, $fieldName, $embed, $type)
     {
-        $mapping = array(
+        $mapping = [
             'type'           => $type,
             'embedded'       => true,
             'targetDocument' => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
             'fieldName'      => $fieldName,
             'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
-        );
+        ];
         if (isset($embed['name'])) {
             $mapping['name'] = $embed['name'];
         }
@@ -259,7 +259,7 @@ class YamlDriver extends FileDriver
 
     private function addMappingFromReference(ClassMetadataInfo $class, $fieldName, $reference, $type)
     {
-        $mapping = array(
+        $mapping = [
             'cascade'          => isset($reference['cascade']) ? $reference['cascade'] : null,
             'orphanRemoval'    => isset($reference['orphanRemoval']) ? $reference['orphanRemoval'] : false,
             'type'             => $type,
@@ -273,7 +273,7 @@ class YamlDriver extends FileDriver
             'repositoryMethod' => isset($reference['repositoryMethod']) ? (string) $reference['repositoryMethod'] : null,
             'limit'            => isset($reference['limit']) ? (integer) $reference['limit'] : null,
             'skip'             => isset($reference['skip']) ? (integer) $reference['skip'] : null,
-        );
+        ];
         if (isset($reference['name'])) {
             $mapping['name'] = $reference['name'];
         }

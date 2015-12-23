@@ -37,5 +37,5 @@ interface HydratorInterface
      * @param array $hints Any hints to account for during reconstitution/lookup of the document.
      * @return array $values The array of hydrated values.
      */
-    function hydrate($document, $data, array $hints = array());
+    function hydrate($document, $data, array $hints = []);
 }

@@ -41,7 +41,7 @@ abstract class BsonFilter
      * Parameters for the filter.
      * @var array
      */
-    protected $parameters = array();
+    protected $parameters = [];
 
     /**
      * Constructs the BsonFilter object.

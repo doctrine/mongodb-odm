@@ -38,7 +38,7 @@ class PersistentCollection implements BaseCollection
      *
      * @var array
      */
-    private $snapshot = array();
+    private $snapshot = [];
 
     /**
      * Collection's owning entity
@@ -93,14 +93,14 @@ class PersistentCollection implements BaseCollection
      *
      * @var array
      */
-    private $mongoData = array();
+    private $mongoData = [];
 
     /**
      * Any hints to account for during reconstitution/lookup of the documents.
      *
      * @var array
      */
-    private $hints = array();
+    private $hints = [];
 
     /**
      * @var ClassMetadata
@@ -180,7 +180,7 @@ class PersistentCollection implements BaseCollection
             return;
         }
 
-        $newObjects = array();
+        $newObjects = [];
 
         if ($this->isDirty) {
             // Remember any NEW objects added through add()
@@ -193,7 +193,7 @@ class PersistentCollection implements BaseCollection
         $this->uow->loadCollection($this);
         $this->takeSnapshot();
 
-        $this->mongoData = array();
+        $this->mongoData = [];
 
         // Reattach any NEW objects added through add()
         if ($newObjects) {
@@ -295,7 +295,7 @@ class PersistentCollection implements BaseCollection
      */
     public function clearSnapshot()
     {
-        $this->snapshot = array();
+        $this->snapshot = [];
         $this->isDirty = $this->coll->count() ? true : false;
     }
 
@@ -655,7 +655,7 @@ class PersistentCollection implements BaseCollection
             }
         }
 
-        $this->mongoData = array();
+        $this->mongoData = [];
         $this->coll->clear();
 
         // Nothing to do for inverse-side collections
@@ -691,7 +691,7 @@ class PersistentCollection implements BaseCollection
      */
     public function __sleep()
     {
-        return array('coll', 'initialized');
+        return ['coll', 'initialized'];
     }
 
     /* ArrayAccess implementation */
@@ -782,7 +782,7 @@ class PersistentCollection implements BaseCollection
         $this->initialize();
 
         $this->owner = null;
-        $this->snapshot = array();
+        $this->snapshot = [];
 
         $this->changed();
     }

@@ -68,7 +68,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
      *
      * @var array
      */
-    private $primers = array();
+    private $primers = [];
 
     /**
      * Whether or not to require indexes.
@@ -82,7 +82,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
      *
      * @var array
      */
-    private $unitOfWorkHints = array();
+    private $unitOfWorkHints = [];
 
     /**
      * Constructor.
@@ -97,7 +97,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @param array $primers
      * @param null $requireIndexes
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], $hydrate = true, $refresh = false, array $primers = [], $requireIndexes = null)
     {
         $primers = array_filter($primers);
 
@@ -178,8 +178,8 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function getFieldsInQuery()
     {
-        $query = isset($this->query['query']) ? $this->query['query'] : array();
-        $sort = isset($this->query['sort']) ? $this->query['sort'] : array();
+        $query = isset($this->query['query']) ? $this->query['query'] : [];
+        $sort = isset($this->query['sort']) ? $this->query['sort'] : [];
 
         $extractor = new FieldExtractor($query, $sort);
         return $extractor->getFields();
@@ -208,7 +208,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function getUnindexedFields()
     {
-        $unindexedFields = array();
+        $unindexedFields = [];
         $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {
             if ( ! $this->collection->isFieldIndexed($field)) {
@@ -270,7 +270,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
                 foreach ($this->primers as $fieldName => $primer) {
                     $primer = is_callable($primer) ? $primer : null;
-                    $referencePrimer->primeReferences($this->class, array($results), $fieldName, $this->unitOfWorkHints, $primer);
+                    $referencePrimer->primeReferences($this->class, [$results], $fieldName, $this->unitOfWorkHints, $primer);
                 }
             }
         }

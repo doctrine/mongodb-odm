@@ -73,7 +73,7 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot['collection'])) {
             if (isset($xmlRoot['capped-collection'])) {
-                $config = array('name' => (string) $xmlRoot['collection']);
+                $config = ['name' => (string) $xmlRoot['collection']];
                 $config['capped'] = (bool) $xmlRoot['capped-collection'];
                 if (isset($xmlRoot['capped-collection-max'])) {
                     $config['max'] = (int) $xmlRoot['capped-collection-max'];
@@ -103,7 +103,7 @@ class XmlDriver extends FileDriver
             );
         }
         if (isset($xmlRoot->{'discriminator-map'})) {
-            $map = array();
+            $map = [];
             foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} AS $discrMapElement) {
                 $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
             }
@@ -125,17 +125,17 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
-                $mapping = array();
+                $mapping = [];
                 $attributes = $field->attributes();
                 foreach ($attributes as $key => $value) {
                     $mapping[$key] = (string) $value;
-                    $booleanAttributes = array('id', 'reference', 'embed', 'unique', 'sparse', 'file', 'distance');
+                    $booleanAttributes = ['id', 'reference', 'embed', 'unique', 'sparse', 'file', 'distance'];
                     if (in_array($key, $booleanAttributes)) {
                         $mapping[$key] = ('true' === $mapping[$key]);
                     }
                 }
                 if (isset($mapping['id']) && $mapping['id'] === true && isset($mapping['strategy'])) {
-                    $mapping['options'] = array();
+                    $mapping['options'] = [];
                     if (isset($field->{'id-generator-option'})) {
                         foreach ($field->{'id-generator-option'} as $generatorOptions) {
                             $attributesGenerator = iterator_to_array($generatorOptions->attributes());
@@ -210,8 +210,8 @@ class XmlDriver extends FileDriver
             return;
         }
 
-        $keys = array($name => isset($mapping['order']) ? $mapping['order'] : 'asc');
-        $options = array();
+        $keys = [$name => isset($mapping['order']) ? $mapping['order'] : 'asc'];
+        $options = [];
 
         if (isset($mapping['background'])) {
             $options['background'] = (boolean) $mapping['background'];
@@ -238,13 +238,13 @@ class XmlDriver extends FileDriver
     private function addEmbedMapping(ClassMetadataInfo $class, $embed, $type)
     {
         $attributes = $embed->attributes();
-        $mapping = array(
+        $mapping = [
             'type'           => $type,
             'embedded'       => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
             'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
-        );
+        ];
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
         }
@@ -277,7 +277,7 @@ class XmlDriver extends FileDriver
             $cascade = current($cascade) ?: next($cascade);
         }
         $attributes = $reference->attributes();
-        $mapping = array(
+        $mapping = [
             'cascade'          => $cascade,
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
             'type'             => $type,
@@ -291,7 +291,7 @@ class XmlDriver extends FileDriver
             'repositoryMethod' => isset($attributes['repository-method']) ? (string) $attributes['repository-method'] : null,
             'limit'            => isset($attributes['limit']) ? (integer) $attributes['limit'] : null,
             'skip'             => isset($attributes['skip']) ? (integer) $attributes['skip'] : null,
-        );
+        ];
 
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
@@ -334,13 +334,13 @@ class XmlDriver extends FileDriver
     {
         $attributes = $xmlIndex->attributes();
 
-        $keys = array();
+        $keys = [];
 
         foreach ($xmlIndex->{'key'} as $key) {
             $keys[(string) $key['name']] = isset($key['order']) ? (string) $key['order'] : 'asc';
         }
 
-        $options = array();
+        $options = [];
 
         if (isset($attributes['background'])) {
             $options['background'] = ('true' === (string) $attributes['background']);
@@ -383,10 +383,10 @@ class XmlDriver extends FileDriver
      */
     protected function loadMappingFile($file)
     {
-        $result = array();
+        $result = [];
         $xmlElement = simplexml_load_file($file);
 
-        foreach (array('document', 'embedded-document', 'mapped-superclass') as $type) {
+        foreach (['document', 'embedded-document', 'mapped-superclass'] as $type) {
             if (isset($xmlElement->$type)) {
                 foreach ($xmlElement->$type as $documentElement) {
                     $documentName = (string) $documentElement['name'];

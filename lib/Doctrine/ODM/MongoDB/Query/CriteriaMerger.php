@@ -36,7 +36,7 @@ class CriteriaMerger
      */
     public function merge(/* array($field => $value), ... */)
     {
-        $merged = array();
+        $merged = [];
 
         foreach (func_get_args() as $criteria) {
             if (empty($criteria)) {

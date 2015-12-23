@@ -29,7 +29,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class DropCommand extends AbstractCommand
 {
-    private $dropOrder = array(self::INDEX, self::COLLECTION, self::DB);
+    private $dropOrder = [self::INDEX, self::COLLECTION, self::DB];
 
     protected function configure()
     {
