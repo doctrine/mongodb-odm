@@ -19,36 +19,19 @@
 
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection as BaseCollection;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\PersistentCollection;
-
 /**
  * Default factory class for persistent collection classes.
  *
  * @since  1.1
  * @author Maciej Malarz <malarzm@gmail.com>
  */
-final class DefaultPersistentCollectionFactory implements PersistentCollectionFactory
+final class DefaultPersistentCollectionFactory extends AbstractPersistentCollectionFactory
 {
     /**
      * {@inheritdoc}
      */
-    public function create(DocumentManager $dm, array $mapping, BaseCollection $coll = null)
+    protected function createCollectionClass($collectionClass)
     {
-        if ($coll === null) {
-            $coll = ! empty($mapping['collectionClass'])
-                    ? new $mapping['collectionClass']
-                    : new ArrayCollection();
-        }
-        if (empty($mapping['collectionClass'])) {
-            return new PersistentCollection($coll, $dm, $dm->getUnitOfWork());
-        }
-
-        $generator = $dm->getConfiguration()->getPersistentCollectionGenerator();
-        $className = $generator->loadClass($mapping['collectionClass'], $dm->getConfiguration()->getAutoGeneratePersistentCollectionClasses());
-
-        return new $className($coll, $dm, $dm->getUnitOfWork());
+        return new $collectionClass;
     }
 }
