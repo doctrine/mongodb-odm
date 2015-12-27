@@ -3,8 +3,11 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 
 class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -12,7 +15,7 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $d = new DocumentWithCustomCollection();
         $cm = $this->dm->getClassMetadata(get_class($d));
-        $this->assertSame('Doctrine\\ODM\\MongoDB\\Tests\\Functional\\MyEmbedsCollection', $cm->fieldMappings['coll']['collectionClass']);
+        $this->assertSame(MyEmbedsCollection::class, $cm->fieldMappings['coll']['collectionClass']);
     }
 
     /**
@@ -31,6 +34,19 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         ));
     }
 
+    public function testGeneratedClassExtendsBaseCollection()
+    {
+        $coll = new MyEmbedsCollection();
+        $pcoll = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create(
+            $this->dm,
+            ['collectionClass' => MyEmbedsCollection::class],
+            $coll
+        );
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $pcoll);
+        $this->assertInstanceOf(MyEmbedsCollection::class, $pcoll);
+        $this->assertSame($coll, $pcoll->unwrap());
+    }
+
     public function testEmbedMany()
     {
         $d = new DocumentWithCustomCollection();
@@ -41,19 +57,19 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($d);
         $this->dm->flush();
 
-        $this->assertNotInstanceOf('Doctrine\\ODM\\MongoDB\\PersistentCollection', $d->coll);
-        $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\Tests\\Functional\\MyEmbedsCollection', $d->coll->unwrap());
-        $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\PersistentCollection', $d->boring);
+        $this->assertNotInstanceOf(PersistentCollection::class, $d->coll);
+        $this->assertInstanceOf(MyEmbedsCollection::class, $d->coll);
+        $this->assertInstanceOf(PersistentCollection::class, $d->boring);
 
         $this->dm->clear();
         $d = $this->dm->find(get_class($d), $d->id);
 
-        $this->assertNotInstanceOf('Doctrine\\ODM\\MongoDB\\PersistentCollection', $d->coll);
-        $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\Tests\\Functional\\MyEmbedsCollection', $d->coll->unwrap());
+        $this->assertNotInstanceOf(PersistentCollection::class, $d->coll);
+        $this->assertInstanceOf(MyEmbedsCollection::class, $d->coll);
         $this->assertCount(1, $d->coll->getEnabled());
         $this->assertCount(1, $d->coll->getByName('#1'));
         
-        $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\PersistentCollection', $d->boring);
+        $this->assertInstanceOf(PersistentCollection::class, $d->boring);
         $this->assertCount(2, $d->boring);
     }
 
@@ -72,10 +88,26 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $d2 = $this->dm->find(get_class($d2), $d2->id);
-        $this->assertNotInstanceOf('Doctrine\\ODM\\MongoDB\\PersistentCollection', $d2->refMany);
-        $this->assertInstanceOf('Doctrine\\ODM\\MongoDB\\Tests\\Functional\\MyDocumentsCollection', $d2->refMany->unwrap());
+        $this->assertNotInstanceOf(PersistentCollection::class, $d2->refMany);
+        $this->assertInstanceOf(MyDocumentsCollection::class, $d2->refMany);
         $this->assertCount(2, $d2->refMany);
         $this->assertCount(1, $d2->refMany->havingEmbeds());
+    }
+
+    public function testInverseSideOfReferenceMany()
+    {
+        $d = new DocumentWithCustomCollection();
+        $this->dm->persist($d);
+        $d2 = new DocumentWithCustomCollection();
+        $d2->refMany->add($d);
+        $this->dm->persist($d2);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $d2 = $this->dm->find(get_class($d2), $d2->id);
+        $this->assertNotInstanceOf(PersistentCollection::class, $d2->inverseRefMany);
+        $this->assertInstanceOf(MyDocumentsCollection::class, $d2->inverseRefMany);
     }
 }
 
@@ -105,16 +137,27 @@ class DocumentWithCustomCollection
     /**
      * @ODM\ReferenceMany(
      *   collectionClass="MyDocumentsCollection",
+     *   orphanRemoval=true,
      *   targetDocument="DocumentWithCustomCollection"
      * )
      */
     public $refMany;
+
+    /**
+     * @ODM\ReferenceMany(
+     *   collectionClass="MyDocumentsCollection",
+     *   mappedBy="refMany",
+     *   targetDocument="DocumentWithCustomCollection"
+     * )
+     */
+    public $inverseRefMany;
 
     public function __construct()
     {
         $this->boring = new ArrayCollection();
         $this->coll = new MyEmbedsCollection();
         $this->refMany = new MyDocumentsCollection();
+        $this->inverseRefMany = new MyDocumentsCollection();
     }
 }
 

@@ -568,9 +568,10 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getPersistentCollectionFactory()
     {
-        return isset($this->attributes['persistentCollectionFactory'])
-            ? $this->attributes['persistentCollectionFactory']
-            : new DefaultPersistentCollectionFactory();
+        if ( ! isset($this->attributes['persistentCollectionFactory'])) {
+            $this->attributes['persistentCollectionFactory'] = new DefaultPersistentCollectionFactory();
+        }
+        return $this->attributes['persistentCollectionFactory'];
     }
 
     /**
@@ -590,11 +591,12 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getPersistentCollectionGenerator()
     {
-        return isset($this->attributes['persistentCollectionGenerator'])
-            ? $this->attributes['persistentCollectionGenerator']
-            : new DefaultPersistentCollectionGenerator(
+        if ( ! isset($this->attributes['persistentCollectionGenerator'])) {
+            $this->attributes['persistentCollectionGenerator'] = new DefaultPersistentCollectionGenerator(
                 $this->attributes['persistentCollectionDir'],
                 $this->attributes['persistentCollectionNamespace']
             );
+        }
+        return $this->attributes['persistentCollectionGenerator'];
     }
 }
