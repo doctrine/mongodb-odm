@@ -70,6 +70,7 @@ Advanced Topics
 * **Collections**:
   :doc:`Capped Collections <reference/capped-collections>` |
   :doc:`Storage Strategies <reference/storage-strategies>`
+  :doc:`Custom Collections <reference/custom-collections>`
 
 * **Best Practices**:
   :doc:`Best Practices <reference/best-practices>`

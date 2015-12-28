@@ -441,6 +441,9 @@ Optional attributes:
     strategy - The strategy used to persist changes to the collection. Possible
     values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
     is the default. See :ref:`storage_strategies` for more information.
+-
+    collectionClass - A full class name that implements ``Collection`` interface
+    and is used to hold documents. Doctrine's ``ArrayCollection`` is used by default.
 
 .. code-block:: php
 
@@ -1219,6 +1222,9 @@ Optional attributes:
     strategy - The strategy used to persist changes to the collection. Possible
     values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
     is the default. See :ref:`storage_strategies` for more information.
+-
+    collectionClass - A full class name that implements ``Collection`` interface
+    and is used to hold documents. Doctrine's ``ArrayCollection`` is used by default
 
 .. code-block:: php
 

@@ -18,6 +18,12 @@ constructed internally during hydration. As a developer, you should develop with
 the ``Collection`` interface in mind so that your code can operate with any
 implementation.
 
+.. note::
+
+    New in 1.1: you are no longer limited to using ``ArrayCollection`` and can
+    freely use your own ``Collection`` implementation. For more details please
+    see :doc:`Custom Collections <custom-collections>` chapter.
+
 Why are these classes used over PHP arrays? Native arrays cannot be
 transparently extended in PHP, which is necessary for many advanced features
 provided by the ODM. Although PHP does provide various interfaces that allow
