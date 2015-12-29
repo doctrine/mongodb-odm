@@ -93,7 +93,7 @@ class PersistenceBuilder
                 $insertData[$mapping['name']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
 
             // @ReferenceOne
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                 $insertData[$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
 
             // @EmbedOne
@@ -207,7 +207,7 @@ class PersistenceBuilder
                 }
 
             // @ReferenceOne
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                 if (isset($new) || $mapping['nullable'] === true) {
                     $updateData['$set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 } else {
@@ -281,7 +281,7 @@ class PersistenceBuilder
                 }
 
             // @ReferenceOne
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
+            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                 if (isset($new) || $mapping['nullable'] === true) {
                     $updateData['$set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
                 }

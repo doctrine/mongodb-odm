@@ -871,7 +871,11 @@ class DocumentPersister
          */
         if ($this->class->hasDiscriminator() && ! isset($preparedQuery[$this->class->discriminatorField])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
-            $preparedQuery[$this->class->discriminatorField] = array('$in' => $discriminatorValues);
+            if ((count($discriminatorValues) === 1)) {
+                $preparedQuery[$this->class->discriminatorField] = $discriminatorValues[0];
+            } else {
+                $preparedQuery[$this->class->discriminatorField] = array('$in' => $discriminatorValues);
+            }
         }
 
         return $preparedQuery;
@@ -972,7 +976,9 @@ class DocumentPersister
             }
 
             // No further preparation unless we're dealing with a simple reference
-            if (empty($mapping['reference']) || empty($mapping['simple']) || empty((array) $value)) {
+            // We can't have expressions in empty() with PHP < 5.5, so store it in a variable
+            $arrayValue = (array) $value;
+            if (empty($mapping['reference']) || empty($mapping['simple']) || empty($arrayValue)) {
                 return array($fieldName, $value);
             }
 

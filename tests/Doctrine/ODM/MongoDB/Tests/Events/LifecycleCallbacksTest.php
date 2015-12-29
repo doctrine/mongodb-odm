@@ -221,6 +221,23 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFalse($user2->preUpdate);
         $this->assertFalse($user2->postUpdate);
     }
+
+    public function testEventsNotFiredForInverseSide()
+    {
+        $customer = new Customer();
+        $cart = new Cart();
+
+        $this->dm->persist($customer);
+        $this->dm->persist($cart);
+        $this->dm->flush();
+
+        $customer->cart = $cart;
+        $cart->customer = $customer;
+        $this->dm->flush();
+
+        $this->assertFalse($customer->postUpdate);
+        $this->assertTrue($cart->postUpdate);
+    }
 }
 
 /** @ODM\Document */
@@ -237,6 +254,30 @@ class User extends BaseDocument
     
     /** @ODM\ReferenceMany(targetDocument="User") */
     public $friends = array();
+}
+
+/** @ODM\Document */
+class Cart extends BaseDocument
+{
+    /** @ODM\Id */
+    public $id;
+
+    /**
+     * @ODM\ReferenceOne(targetDocument="Customer", inversedBy="cart")
+     */
+    public $customer;
+}
+
+/** @ODM\Document */
+class Customer extends BaseDocument
+{
+    /** @ODM\Id */
+    public $id;
+
+    /**
+     * @ODM\ReferenceOne(targetDocument="Cart", mappedBy="customer")
+     */
+    public $cart;
 }
 
 /** @ODM\EmbeddedDocument */
