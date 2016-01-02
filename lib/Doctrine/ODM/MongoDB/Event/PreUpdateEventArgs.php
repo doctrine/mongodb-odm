@@ -40,10 +40,10 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      * @param DocumentManager $dm
      * @param array           $changeSet
      */
-    public function __construct($document, DocumentManager $dm, array &$changeSet)
+    public function __construct($document, DocumentManager $dm, array $changeSet)
     {
         parent::__construct($document, $dm);
-        $this->documentChangeSet = &$changeSet;
+        $this->documentChangeSet = $changeSet;
     }
 
     /**
@@ -105,6 +105,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
         $this->assertValidField($field);
 
         $this->documentChangeSet[$field][1] = $value;
+        $this->getDocumentManager()->getUnitOfWork()->setDocumentChangeSet($this->getDocument(), $this->documentChangeSet);
     }
 
     /**

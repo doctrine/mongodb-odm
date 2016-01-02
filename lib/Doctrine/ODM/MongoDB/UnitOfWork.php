@@ -586,6 +586,18 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * INTERNAL:
+     * Sets the changeset for a document.
+     *
+     * @param object $document
+     * @param array $changeset
+     */
+    public function setDocumentChangeSet($document, $changeset)
+    {
+        $this->documentChangeSets[spl_object_hash($document)] = $changeset;
+    }
+
+    /**
      * Get a documents actual data, flattening all the objects to arrays.
      *
      * @param object $document
