@@ -373,22 +373,67 @@ class XmlDriver extends FileDriver
             }
         }
 
-        if (isset($xmlIndex->{'partialFilterExpression'})) {
-            foreach ($xmlIndex->{'partialFilterExpression'} as $partialFilterExpression) {
-                $operator = (string) $partialFilterExpression['comparison'] ?: 'eq';
-                $value = (string) $partialFilterExpression['value'];
-                if ($value === 'true') {
-                    $value = true;
-                } elseif ($value === 'false') {
-                    $value = false;
-                } elseif (is_numeric($value)) {
-                    $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
+        if (isset($xmlIndex->{'partial-filter-expression'})) {
+            $partialFilterExpressionMapping = $xmlIndex->{'partial-filter-expression'};
+
+            if (isset($partialFilterExpressionMapping->and)) {
+                foreach ($partialFilterExpressionMapping->and as $and) {
+                    if (! isset($and->field)) {
+                        continue;
+                    }
+
+                    $partialFilterExpression = $this->getPartialFilterExpression($and->field);
+                    if (! $partialFilterExpression) {
+                        continue;
+                    }
+
+                    $options['partialFilterExpression']['$and'][] = $partialFilterExpression;
                 }
-                $options['partialFilterExpression'][(string) $partialFilterExpression['field']] = array('$' . $operator => $value);
+            } elseif (isset($partialFilterExpressionMapping->field)) {
+                $partialFilterExpression = $this->getPartialFilterExpression($partialFilterExpressionMapping->field);
+
+                if ($partialFilterExpression) {
+                    $options['partialFilterExpression'] = $partialFilterExpression;
+                }
             }
         }
 
         $class->addIndex($keys, $options);
+    }
+
+    private function getPartialFilterExpression(\SimpleXMLElement $fields)
+    {
+        $partialFilterExpression = [];
+        foreach ($fields as $field) {
+            $operator = (string) $field['operator'] ?: null;
+
+            if (! isset($field['value'])) {
+                if (! isset($field->field)) {
+                    continue;
+                }
+
+                $nestedExpression = $this->getPartialFilterExpression($field->field);
+                if (! $nestedExpression) {
+                    continue;
+                }
+
+                $value = $nestedExpression;
+            } else {
+                $value = trim((string) $field['value']);
+            }
+
+            if ($value === 'true') {
+                $value = true;
+            } elseif ($value === 'false') {
+                $value = false;
+            } elseif (is_numeric($value)) {
+                $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
+            }
+
+            $partialFilterExpression[(string) $field['name']] = $operator ? ['$' . $operator => $value] : $value;
+        }
+
+        return $partialFilterExpression;
     }
 
     /**

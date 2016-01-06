@@ -30,8 +30,10 @@
             </index>
             <index>
                 <key name="lock" order="asc" />
-                <partialFilterExpression field="version" comparison="gt" value="1" />
-                <partialFilterExpression field="discr" value="default" />
+                <partial-filter-expression>
+                    <field name="version" value="1" operator="gt" />
+                    <field name="discr" operator="eq" value="default" />
+                </partial-filter-expression>
             </index>
         </indexes>
         <reference-one target-document="Address" field="address">
