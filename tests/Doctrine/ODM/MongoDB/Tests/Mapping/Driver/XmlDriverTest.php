@@ -5,9 +5,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-/**
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
- */
 class XmlDriverTest extends AbstractDriverTest
 {
     public function setUp()

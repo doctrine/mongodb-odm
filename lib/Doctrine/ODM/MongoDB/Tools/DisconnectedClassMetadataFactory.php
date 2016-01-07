@@ -29,10 +29,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
  * from the mapping information.
  *
  * @since   1.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class DisconnectedClassMetadataFactory extends ClassMetadataFactory
 {

@@ -31,7 +31,6 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
  * UnitOfWork to build queries using atomic operators like $set, $unset, etc.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class PersistenceBuilder
 {

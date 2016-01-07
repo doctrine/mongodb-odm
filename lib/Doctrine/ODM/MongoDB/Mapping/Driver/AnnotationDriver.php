@@ -34,8 +34,6 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class AnnotationDriver extends AbstractAnnotationDriver
 {

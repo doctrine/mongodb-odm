@@ -40,8 +40,6 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
  *     $dm = DocumentManager::create(new Connection(), $config);
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class Configuration extends \Doctrine\MongoDB\Configuration
 {

@@ -5,9 +5,6 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 
-/**
- * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
- */
 class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
 {
     public function testSlice()

@@ -33,7 +33,6 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  * and to hydrate the raw arrays of data to Doctrine document objects.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Query extends \Doctrine\MongoDB\Query\Query
 {

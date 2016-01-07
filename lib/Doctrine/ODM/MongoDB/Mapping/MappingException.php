@@ -25,7 +25,6 @@ use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException
  * Class for all exceptions related to the Doctrine MongoDB ODM
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class MappingException extends BaseMappingException
 {

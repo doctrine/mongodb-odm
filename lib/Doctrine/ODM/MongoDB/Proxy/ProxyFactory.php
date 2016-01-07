@@ -37,10 +37,6 @@ use ReflectionProperty;
  * This factory is used to create proxy objects for documents at runtime.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
- * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
- * @author      Marco Pivetta <ocramius@gmail.com>
  */
 class ProxyFactory extends AbstractProxyFactory
 {

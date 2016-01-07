@@ -37,9 +37,6 @@ use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
  * For compatibility, this class also extends Doctrine\MongoDB\Cursor.
  *
  * @since  1.0
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @author Roman Borschel <roman@code-factory.org>
- * @author Jeremy Mikola <jmikola@gmail.com>
  */
 class Cursor implements CursorInterface
 {

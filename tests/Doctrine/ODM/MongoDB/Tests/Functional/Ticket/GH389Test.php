@@ -4,9 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @author Pierre Durand <pierredurand@gmail.com>
- */
 class GH389Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testDiscriminatorEmptyEmbeddedDocument()

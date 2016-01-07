@@ -23,10 +23,6 @@ namespace Doctrine\ODM\MongoDB\Tools\Console;
  * Used by CLI Tools to restrict entity-based commands to given patterns.
  *
  * @since       1.0
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Jonathan Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class MetadataFilter extends \FilterIterator implements \Countable
 {

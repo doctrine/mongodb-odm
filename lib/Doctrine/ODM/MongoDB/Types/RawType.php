@@ -23,9 +23,6 @@ namespace Doctrine\ODM\MongoDB\Types;
  * Raw data type.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
- * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
 class RawType extends Type
 {

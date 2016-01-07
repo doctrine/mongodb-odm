@@ -24,7 +24,6 @@ namespace Doctrine\ODM\MongoDB\Utility;
  *
  * @since   1.0
  * @internal
- * @author  Maciej Malarz <malarzm@gmail.com>
  */
 class CollectionHelper
 {

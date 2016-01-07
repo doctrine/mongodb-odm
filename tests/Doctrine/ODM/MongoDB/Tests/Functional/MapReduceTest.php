@@ -10,9 +10,6 @@ use Documents\Ecommerce\Option;
 use Documents\User;
 use Documents\Event;
 
-/**
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
- */
 class MapReduceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function setUp()

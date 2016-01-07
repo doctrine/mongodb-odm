@@ -27,7 +27,6 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * Query expression builder for ODM.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Expr extends \Doctrine\MongoDB\Query\Expr
 {

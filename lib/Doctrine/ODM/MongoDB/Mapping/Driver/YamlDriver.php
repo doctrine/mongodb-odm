@@ -30,8 +30,6 @@ use Symfony\Component\Yaml\Yaml;
  * The YamlDriver reads the mapping metadata from yaml schema files.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class YamlDriver extends FileDriver
 {
