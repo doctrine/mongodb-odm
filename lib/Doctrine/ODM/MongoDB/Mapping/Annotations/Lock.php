@@ -21,7 +21,11 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
 
-/** @Annotation */
+/**
+ * Specifies a field to use for pessimistic locking
+ *
+ * @Annotation
+ */
 final class Lock extends Annotation
 {
 }

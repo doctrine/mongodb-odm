@@ -19,7 +19,12 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+/**
+ * Maps a field as GridFS file and instructs ODM to store the entire document in
+ * a GridFS collection.
+ *
+ * @Annotation
+ */
 final class File extends AbstractField
 {
     public $type = 'file';
