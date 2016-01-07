@@ -539,8 +539,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function invokeLifecycleCallbacks($event, $document, array $arguments = null)
     {
-        if (!$document instanceof $this->name) {
+        if ( ! $document instanceof $this->name) {
             throw new \InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
+        }
+
+        if (empty($this->lifecycleCallbacks[$event])) {
+            return;
         }
 
         foreach ($this->lifecycleCallbacks[$event] as $callback) {
@@ -1557,6 +1561,19 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
         return $this->fieldMappings[$fieldName];
+    }
+
+    /**
+     * Gets mappings of fields holding embedded document(s).
+     *
+     * @return array of field mappings
+     */
+    public function getEmbeddedFieldsMappings()
+    {
+        return array_filter(
+            $this->associationMappings,
+            function($assoc) { return ! empty($assoc['embedded']); }
+        );
     }
 
     /**
