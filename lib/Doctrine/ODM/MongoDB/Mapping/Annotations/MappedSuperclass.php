@@ -19,7 +19,12 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+/**
+ * Specifies a parent class that other documents may extend to inherit mapping
+ * information
+ *
+ * @Annotation
+ */
 final class MappedSuperclass extends AbstractDocument
 {
     /**
