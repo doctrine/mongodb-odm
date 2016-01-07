@@ -21,7 +21,11 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
-/** @Annotation */
+/**
+ * Specifies a one-to-many relationship to a different document
+ *
+ * @Annotation
+ */
 final class ReferenceMany extends AbstractField
 {
     public $type = 'many';

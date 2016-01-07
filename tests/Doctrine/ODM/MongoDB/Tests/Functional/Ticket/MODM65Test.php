@@ -53,12 +53,12 @@ class MODM65User
 class MODM65SocialNetworkUser
 {
 	/**
-	 * @ODM\String(name="fN")
+	 * @ODM\Field(name="fN", type="string")
 	 * @var string
 	 */
 	public $firstName;
 	/**
-	 * @ODM\String(name="lN")
+	 * @ODM\Field(name="lN", type="string")
 	 * @var string
 	 */
 	public $lastName;

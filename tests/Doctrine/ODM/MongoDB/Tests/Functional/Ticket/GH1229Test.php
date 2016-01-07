@@ -192,10 +192,10 @@ class GH1229Child
 {
     const CLASSNAME = __CLASS__;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\Int */
+    /** @ODM\Field(type="int") */
     public $order = 0;
 
     /**

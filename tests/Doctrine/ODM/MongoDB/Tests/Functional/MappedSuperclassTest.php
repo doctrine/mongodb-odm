@@ -38,10 +38,10 @@ class MappedSuperclassTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /** @ODM\MappedSuperclass */
 class MappedSuperclassBase
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $mapped1;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $mapped2;
 
     /**
@@ -88,7 +88,7 @@ class MappedSuperclassRelated1
     /** @ODM\Id(strategy="none") */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     public function setName($name)
@@ -118,7 +118,7 @@ class DocumentSubClass extends MappedSuperclassBase
     /** @ODM\Id(strategy="none") */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
     
     public function setName($name)

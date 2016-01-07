@@ -10,7 +10,7 @@ Sample Model: Product
 ---------------------
 
 Imagine you had a ``Product`` document and you want to search the products by keywords. You can
-setup a document like the following with a ``$keywords`` property that is mapped as a ``@Collection``:
+setup a document like the following with a ``$keywords`` property that is mapped as a collection:
 
 .. code-block:: php
 
@@ -24,10 +24,10 @@ setup a document like the following with a ``$keywords`` property that is mapped
         /** @Id */
         private $id;
 
-        /** @String */
+        /** @Field(type="string") */
         private $title;
 
-        /** @Collection @Index */
+        /** @Field(type="collection") @Index */
         private $keywords = array();
 
         // ...
@@ -120,10 +120,10 @@ You can setup a ``Keyword`` document like the following:
     /** @EmbeddedDocument */
     class Keyword
     {
-        /** @String @Index */
+        /** @Field(type="string") @Index */
         private $keyword;
 
-        /** @Int */
+        /** @Field(type="int") */
         private $weight;
 
         public function __construct($keyword, $weight)

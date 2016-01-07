@@ -38,7 +38,7 @@ class MODM45A
 /** @ODM\EmbeddedDocument */
 class MODM45B
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $val;
     function setVal($val) {$this->val = $val;}
     function getVal() {return $this->val;}

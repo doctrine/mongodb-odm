@@ -10,7 +10,7 @@ class PreUpdateTestSeller
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function getName()

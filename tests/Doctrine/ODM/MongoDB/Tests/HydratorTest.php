@@ -49,10 +49,10 @@ class HydrationClosureUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
     
-    /** @ODM\Date */
+    /** @ODM\Field(type="date") */
     public $birthdate;
 
     /** @ODM\ReferenceOne(targetDocument="HydrationClosureReferenceOne") */
@@ -74,7 +74,7 @@ class HydrationClosureReferenceOne
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }
 
@@ -84,20 +84,20 @@ class HydrationClosureReferenceMany
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }
 
 /** @ODM\EmbeddedDocument */
 class HydrationClosureEmbedMany
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }
 
 /** @ODM\EmbeddedDocument */
 class HydrationClosureEmbedOne
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }

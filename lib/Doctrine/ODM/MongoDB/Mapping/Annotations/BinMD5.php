@@ -19,7 +19,10 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+/**
+ * @Annotation
+ * @deprecated This class will be removed in ODM 2.0
+ */
 final class BinMD5 extends AbstractField
 {
     public $type = 'bin_md5';

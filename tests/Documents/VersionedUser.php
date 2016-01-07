@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class VersionedUser extends User
 {
-    /** @ODM\Int @ODM\Version */
+    /** @ODM\Field(type="int") @ODM\Version */
     protected $version;
 
     public function getVersion()

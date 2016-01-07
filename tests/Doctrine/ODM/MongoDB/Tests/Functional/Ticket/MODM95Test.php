@@ -80,7 +80,7 @@ class MODM95TestDocument
 /** @ODM\EmbeddedDocument */
 class MODM95TestEmbeddedDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name) {

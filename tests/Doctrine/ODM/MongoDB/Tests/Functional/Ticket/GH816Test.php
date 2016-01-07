@@ -37,6 +37,6 @@ class GH816Document
     /** @ODM\Id */
     public $_id;
     
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $title;
 }

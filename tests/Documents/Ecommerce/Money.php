@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class Money
 {
     /**
-     * @ODM\Float
+     * @ODM\Field(type="float")
      */
     protected $amount;
 

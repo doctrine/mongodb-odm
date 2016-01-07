@@ -44,7 +44,7 @@ class Product
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="Price") */
@@ -75,6 +75,6 @@ class SubProduct
 /** @ODM\EmbeddedDocument */
 class Price
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $price;
 }

@@ -47,9 +47,9 @@ class GH596Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\Boolean */
+    /** @ODM\Field(type="bool") */
     public $deleted = false;
 }

@@ -10,7 +10,7 @@ class ForumUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $username;
 
     /** @ODM\ReferenceOne(targetDocument="ForumAvatar", cascade={"persist"}) */

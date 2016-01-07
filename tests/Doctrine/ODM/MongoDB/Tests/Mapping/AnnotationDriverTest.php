@@ -167,23 +167,23 @@ class AnnotationDriverTestSuper
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $protected;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $private;
 }
 
 /** @ODM\Document */
 class AnnotationDriverTestParent extends AnnotationDriverTestSuper
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $foo;
 }
 
 /** @ODM\Document */
 class AnnotationDriverTestChild extends AnnotationDriverTestParent
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $bar;
 }

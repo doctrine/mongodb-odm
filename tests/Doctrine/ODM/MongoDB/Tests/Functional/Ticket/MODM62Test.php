@@ -28,7 +28,7 @@ class MODM62Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Collection */
+    /** @ODM\Field(type="collection") */
     public $b = array('ok');
 
     public function setB($b) {$this->b = $b;}

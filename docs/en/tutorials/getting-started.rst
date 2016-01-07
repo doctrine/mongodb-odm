@@ -76,10 +76,10 @@ You can provide your mapping information in Annotations, XML, or YAML:
             /** @ODM\Id */
             private $id;
 
-            /** @ODM\String */
+            /** @ODM\Field(type="string") */
             private $name;
 
-            /** @ODM\String */
+            /** @ODM\Field(type="string") */
             private $email;
 
             /** @ODM\ReferenceMany(targetDocument="BlogPost", cascade="all") */
@@ -94,13 +94,13 @@ You can provide your mapping information in Annotations, XML, or YAML:
             /** @ODM\Id */
             private $id;
 
-            /** @ODM\String */
+            /** @ODM\Field(type="string") */
             private $title;
 
-            /** @ODM\String */
+            /** @ODM\Field(type="string") */
             private $body;
 
-            /** @ODM\Date */
+            /** @ODM\Field(type="date") */
             private $createdAt;
 
             // ...

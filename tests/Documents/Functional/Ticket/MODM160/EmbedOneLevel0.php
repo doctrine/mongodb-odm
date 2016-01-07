@@ -11,7 +11,7 @@ class EmbedOneLevel0
 {
     /** @ODM\Id */
     public $id;
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
     /** @ODM\EmbedOne(targetDocument="EmbedOneLevel1") */
     public $level1;

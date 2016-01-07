@@ -57,7 +57,7 @@ class MODM91TestDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedOne(targetDocument="MODM91TestEmbeddedDocument") */
@@ -67,6 +67,6 @@ class MODM91TestDocument
 /** @ODM\EmbeddedDocument */
 class MODM91TestEmbeddedDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }

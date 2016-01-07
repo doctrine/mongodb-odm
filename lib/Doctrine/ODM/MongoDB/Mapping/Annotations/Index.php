@@ -19,7 +19,11 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+/**
+ * Defines an index on a field
+ *
+ * @Annotation
+ */
 final class Index extends AbstractIndex
 {
 }

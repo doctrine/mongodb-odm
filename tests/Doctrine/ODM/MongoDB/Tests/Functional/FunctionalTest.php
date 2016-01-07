@@ -889,7 +889,7 @@ class ParentAssociationTestA
 {
     /** @ODM\Id */
     public $id;
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
     /** @ODM\EmbedOne */
     public $child;
@@ -902,7 +902,7 @@ class ParentAssociationTestA
 /** @ODM\EmbeddedDocument */
 class ParentAssociationTestB
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
     /** @ODM\EmbedMany */
     public $children = array();
@@ -915,7 +915,7 @@ class ParentAssociationTestB
 /** @ODM\EmbeddedDocument */
 class ParentAssociationTestC
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
     public function __construct($name)
     {

@@ -415,10 +415,10 @@ abstract class AbstractVersionBase
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $title;
 
-    /** @ODM\Lock @ODM\Int */
+    /** @ODM\Lock @ODM\Field(type="int") */
     public $locked;
 
     /**
@@ -451,14 +451,14 @@ abstract class AbstractVersionBase
 /** @ODM\Document */
 class LockInt extends AbstractVersionBase
 {
-    /** @ODM\Version @ODM\Int */
+    /** @ODM\Version @ODM\Field(type="int") */
     public $version;
 }
 
 /** @ODM\Document */
 class LockTimestamp extends AbstractVersionBase
 {
-    /** @ODM\Version @ODM\Date */
+    /** @ODM\Version @ODM\Field(type="date") */
     public $version;
 }
 
@@ -468,7 +468,7 @@ class InvalidLockDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Lock @ODM\String */
+    /** @ODM\Lock @ODM\Field(type="string") */
     public $lock;
 }
 
@@ -478,6 +478,6 @@ class InvalidVersionDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Version @ODM\String */
+    /** @ODM\Version @ODM\Field(type="string") */
     public $version;
 }

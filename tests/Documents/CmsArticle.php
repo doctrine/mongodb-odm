@@ -17,11 +17,11 @@ class CmsArticle
      */
     public $id;
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     public $topic;
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     public $text;
     /**

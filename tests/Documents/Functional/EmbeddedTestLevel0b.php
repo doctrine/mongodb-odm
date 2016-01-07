@@ -9,7 +9,7 @@ class EmbeddedTestLevel0b
 {
     /** @ODM\Id */
     public $id;
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
     /** @ODM\EmbedOne(targetDocument="EmbeddedTestLevel1") */
     public $oneLevel1;

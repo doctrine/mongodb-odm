@@ -11,7 +11,7 @@ class BlogPost
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\ReferenceMany(targetDocument="Tag", inversedBy="blogPosts", cascade={"all"}) */

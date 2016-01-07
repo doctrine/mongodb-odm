@@ -17,10 +17,10 @@ class User extends BaseDocument
     /** @ODM\Field(type="string") */
     protected $username;
 
-    /** @ODM\Bin(type="bin_md5") */
+    /** @ODM\Field(type="bin_md5") */
     protected $password;
 
-    /** @ODM\Date */
+    /** @ODM\Field(type="date") */
     protected $createdAt;
 
     /** @ODM\EmbedOne(targetDocument="Address", nullable=true) */
@@ -53,13 +53,13 @@ class User extends BaseDocument
     /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
-    /** @ODM\Int */
+    /** @ODM\Field(type="int") */
     protected $hits = 0;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $nullTest;
 
-    /** @ODM\Increment */
+    /** @ODM\Field(type="increment") */
     protected $count = 0;
 
     /** @ODM\ReferenceMany(targetDocument="BlogPost", mappedBy="user", nullable=true) */
@@ -71,7 +71,7 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument="Documents\SimpleReferenceUser", mappedBy="users") */
     protected $simpleReferenceManyInverse;
 
-    /** @ODM\Collection */
+    /** @ODM\Field(type="collection") */
     private $logs = array();
 
     public function __construct()

@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument */
 class Address
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $street;
     
     public function getStreet()

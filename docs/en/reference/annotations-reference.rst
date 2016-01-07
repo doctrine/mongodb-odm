@@ -14,7 +14,7 @@ does not exist.
 
     <?php
 
-    /** @String @AlsoLoad("name") */
+    /** @Field(type="string") @AlsoLoad("name") */
     public $fullName;
 
 The ``$fullName`` property will be loaded from ``fullName`` if it exists, but
@@ -51,6 +51,11 @@ Alias of `@Field`_, with "type" attribute set to "bin". Converts value to
     /** @Bin */
     private $data;
 
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "bin".
+
 @BinCustom
 ----------
 
@@ -63,6 +68,11 @@ value to `MongoBinData`_ with ``MongoBinData::CUSTOM`` sub-type.
 
     /** @BinCustom */
     private $data;
+
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "bin\_custom".
 
 @BinFunc
 --------
@@ -77,6 +87,11 @@ Alias of `@Field`_, with "type" attribute set to "bin\_func". Converts value to
     /** @BinFunc */
     private $data;
 
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "bin\_func".
+
 @BinMD5
 -------
 
@@ -89,6 +104,11 @@ Alias of `@Field`_, with "type" attribute set to "bin\_md5". Converts value to
 
     /** @BinMD5 */
     private $password;
+
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "bin\_md5".
 
 @BinUUID
 --------
@@ -126,8 +146,13 @@ value to `MongoBinData`_ with ``MongoBinData::UUID_RFC4122`` sub-type.
     RFC 4122 UUIDs must be 16 bytes. The PHP driver will throw an exception if
     the binary data's size is invalid.
 
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "bin\_uuid\_rfc4122".
+
 @Bool
---------
+-----
 
 Alias of `@Field`_, with "type" attribute set to "bool". Internally it uses
 exactly same logic as `@Boolean`_ annotation and "boolean" type.
@@ -138,6 +163,13 @@ exactly same logic as `@Boolean`_ annotation and "boolean" type.
 
     /** @Bool */
     private $active;
+
+.. note::
+
+    This annotation is deprecated because it uses a keyword that was reserved in
+    PHP 7. It will be removed in ODM 2.0. Please use the `@Field`_ annotation
+    with type "bool".
+
 
 @Boolean
 --------
@@ -150,6 +182,11 @@ Alias of `@Field`_, with "type" attribute set to "boolean".
 
     /** @Boolean */
     private $active;
+
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "bool".
 
 @Collection
 -----------
@@ -164,6 +201,11 @@ retrieves the value as a numerically indexed array.
     /** @Collection */
     private $tags = array();
 
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "collection".
+
 @Date
 -----
 
@@ -177,6 +219,11 @@ in MongoDB. The property will be a DateTime when loaded from the database.
 
     /** @Date */
     private $createdAt;
+
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "date".
 
 @DefaultDiscriminatorValue
 --------------------------
@@ -286,10 +333,10 @@ calculated distance value.
     /** @EmbeddedDocument */
     class Coordinates
     {
-        /** @Float */
+        /** @Field(type="float") */
         public $latitude;
     
-        /** @Float */
+        /** @Field(type="float") */
         public $longitude;
     }
 
@@ -459,7 +506,7 @@ to be stored within an `@EmbedOne`_ or `@EmbedMany`_ relationship.
     /** @EmbeddedDocument */
     class Money
     {
-        /** @Float */
+        /** @Field(type="float") */
         private $amount;
     
         public function __construct($amount)
@@ -569,7 +616,7 @@ that created the file.
 
     <?php
 
-    /** @String */
+    /** @Field(type="string") */
     private $filename;
 
     /** @NotSaved(type="int") */
@@ -588,6 +635,13 @@ that created the file.
 ------
 
 Alias of `@Field`_, with "type" attribute set to "float".
+
+.. note::
+
+    This annotation is deprecated because it uses a keyword that was reserved in
+    PHP 7. It will be removed in ODM 2.0. Please use the `@Field`_ annotation
+    with type "float".
+
 
 .. _haslifecyclecallbacks:
 
@@ -616,6 +670,11 @@ annotation will cause Doctrine to ignore the callbacks.
 
 Alias of `@Field`_, with "type" attribute set to "hash". Stores and retrieves
 the value as an associative array.
+
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "hash".
 
 @Id
 ---
@@ -676,6 +735,11 @@ The query sent to Mongo would resemble the following:
 The field will be incremented by the difference between the new and old values.
 This is useful if many requests are attempting to update the field concurrently.
 
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "increment".
+
 @Index
 ------
 
@@ -723,7 +787,7 @@ If you are creating a single-field index, you can simply specify an `@Index`_ or
 
     <?php
 
-    /** @String @UniqueIndex */
+    /** @Field(type="string") @UniqueIndex */
     private $username;
 
 @Indexes
@@ -793,6 +857,12 @@ Alias of `@Field`_, with "type" attribute set to "int".
     /** @Int */
     private $columns;
 
+.. note::
+
+    This annotation is deprecated because it uses a keyword that was reserved in
+    PHP 7. It will be removed in ODM 2.0. Please use the `@Field`_ annotation
+    with type "int".
+
 @Integer
 --------
 
@@ -806,6 +876,11 @@ exactly same logic as `@Int`_ annotation and "int" type.
     /** @Integer */
     private $columns;
 
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "int".
+
 @Key
 ----
 
@@ -817,6 +892,11 @@ respectively.
 
     The BSON MaxKey and MinKey types are internally used by MongoDB for indexing
     and sharding. There is generally no reason to use these in an application.
+
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "key".
 
 @MappedSuperclass
 -----------------
@@ -1208,6 +1288,13 @@ Alias of `@Field`_, with "type" attribute set to "string".
     /** @String */
     private $username;
 
+.. note::
+
+    This annotation is deprecated because it uses a keyword that was reserved in
+    PHP 7. It will be removed in ODM 2.0. Please use the `@Field`_ annotation
+    with type "string".
+
+
 @Timestamp
 ----------
 
@@ -1218,7 +1305,12 @@ converted to `MongoTimestamp`_ for storage in MongoDB.
 
     The BSON timestamp type is an internal type used for MongoDB's replication
     and sharding. If you need to store dates in your application, you should use
-    the `@Date`_ annotation instead.
+    the "date" type instead.
+
+.. note::
+
+    This annotation is deprecated and will be removed in ODM 2.0. Please use the
+    `@Field`_ annotation with type "timestamp".
 
 @UniqueIndex
 ------------
@@ -1229,7 +1321,7 @@ Alias of `@Index`_, with the ``unique`` option set by default.
 
     <?php
 
-    /** @String @UniqueIndex */
+    /** @Field(type="string") @UniqueIndex */
     private $email;
 
 .. _annotations_reference_version:
@@ -1239,13 +1331,13 @@ Alias of `@Index`_, with the ``unique`` option set by default.
 
 The annotated instance variable will be used to store version information, which
 is used for pessimistic and optimistic locking. This is only compatible with
-`@Int`_ and `@Date`_ field types, and cannot be combined with `@Id`_.
+integer and date field types, and cannot be combined with `@Id`_.
 
 .. code-block:: php
 
     <?php
 
-    /** @Int @Version */
+    /** @Field(type="int") @Version */
     private $version;
 
 By default, Doctrine ODM processes updates :ref:`embed-many <embed_many>` and

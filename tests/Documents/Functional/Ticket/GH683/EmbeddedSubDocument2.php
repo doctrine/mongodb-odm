@@ -9,6 +9,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class EmbeddedSubDocument2 extends AbstractEmbedded
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }

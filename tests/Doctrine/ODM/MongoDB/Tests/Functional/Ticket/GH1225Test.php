@@ -57,7 +57,7 @@ class GH1225Document
  */
 class GH1225EmbeddedDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $value;
 
     public function __construct($value)

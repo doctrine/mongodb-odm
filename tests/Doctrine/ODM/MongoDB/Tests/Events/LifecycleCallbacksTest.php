@@ -290,13 +290,13 @@ class Profile extends BaseDocument
 /** @ODM\MappedSuperclass @ODM\HasLifecycleCallbacks */
 abstract class BaseDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\Date */
+    /** @ODM\Field(type="date") */
     public $createdAt;
 
-    /** @ODM\Date */
+    /** @ODM\Field(type="date") */
     public $updatedAt;
 
     public $prePersist = false;

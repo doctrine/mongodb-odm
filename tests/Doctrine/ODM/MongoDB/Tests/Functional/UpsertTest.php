@@ -57,6 +57,6 @@ class UpsertTestUserEmbedded
      */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $test;
 }

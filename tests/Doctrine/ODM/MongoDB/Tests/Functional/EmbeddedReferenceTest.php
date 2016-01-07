@@ -61,7 +61,7 @@ class Offer
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="Link") */
@@ -80,7 +80,7 @@ class Link
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $url;
 
     /** @ODM\ReferenceMany(targetDocument="ReferencedDocument") */
@@ -99,7 +99,7 @@ class ReferencedDocument
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)

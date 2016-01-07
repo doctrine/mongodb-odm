@@ -44,7 +44,7 @@ class MODM48A
 /** @ODM\EmbeddedDocument */
 class MODM48B
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $val;
 
     function setVal($val) {$this->val = $val;}

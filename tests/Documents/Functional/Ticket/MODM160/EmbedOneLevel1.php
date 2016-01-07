@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /** @ODM\EmbeddedDocument */
 class EmbedOneLevel1
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
     /** @ODM\EmbedOne(targetDocument="MODM160Level2") */
     public $level2;

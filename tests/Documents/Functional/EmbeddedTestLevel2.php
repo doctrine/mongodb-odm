@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument @ODM\HasLifecycleCallbacks */
 class EmbeddedTestLevel2
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public $preRemove = false;

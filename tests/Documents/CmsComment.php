@@ -29,7 +29,7 @@ class CmsComment
      */
     public $article;
 
-    /** @ODM\String(name="ip") */
+    /** @ODM\Field(name="ip", type="string") */
     public $authorIp;
 
     public function setArticle(CmsArticle $article) {

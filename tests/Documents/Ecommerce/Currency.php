@@ -20,12 +20,12 @@ class Currency
     protected $id;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $name;
 
     /**
-     * @ODM\Float
+     * @ODM\Field(type="float")
      */
     protected $multiplier;
 
