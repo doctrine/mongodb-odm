@@ -68,6 +68,17 @@ class MappingException extends BaseMappingException
     }
 
     /**
+     * @param $fieldName
+     * @param $className
+     * @param $className2
+     * @return MappingException
+     */
+    public static function referenceFieldConflict($fieldName, $className, $className2)
+    {
+        return new self("Reference mapping for field '$fieldName' in class '$className' conflicts with one mapped in class '$className2'.");
+    }
+
+    /**
      * @param string $document
      * @param string $fieldName
      * @return MappingException

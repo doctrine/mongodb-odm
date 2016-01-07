@@ -61,20 +61,25 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     public function references($document)
     {
         if ($this->currentField) {
+            $mapping = null;
             try {
                 $mapping = $this->class->getFieldMapping($this->currentField);
             } catch (MappingException $e) {
                 if (empty($this->class->discriminatorMap)) {
                     throw $e;
                 }
+                $foundIn = null;
                 foreach ($this->class->discriminatorMap as $child) {
                     $childClass = $this->dm->getClassMetadata($child);
                     if ($childClass->hasAssociation($this->currentField)) {
+                        if ($mapping !== null && $mapping !== $childClass->getFieldMapping($this->currentField)) {
+                            throw MappingException::referenceFieldConflict($this->currentField, $foundIn->name, $childClass->name);
+                        }
                         $mapping = $childClass->getFieldMapping($this->currentField);
-                        break;
+                        $foundIn = $childClass;
                     }
                 }
-                if ( ! isset($mapping) || $mapping === null) {
+                if ($mapping === null) {
                     throw MappingException::mappingNotFoundInClassNorDescendants($this->class->name, $this->currentField);
                 }
             }

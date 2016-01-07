@@ -47,6 +47,20 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('nope')->references($f)
             ->getQuery();
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Reference mapping for field 'conflict' in class 'Doctrine\ODM\MongoDB\Tests\Query\ChildA' conflicts with one mapped in class 'Doctrine\ODM\MongoDB\Tests\Query\ChildB'.
+     */
+    public function testReferencesThrowsSpecializedExceptionForConflictingMappings()
+    {
+        $f = new Feature('Smarter references');
+        $this->dm->persist($f);
+
+        $this->dm->createQueryBuilder(ParentClass::class)
+            ->field('conflict')->references($f)
+            ->getQuery();
+    }
 }
 
 /**
@@ -68,6 +82,9 @@ class ChildA extends ParentClass
 {
     /** @ODM\ReferenceOne(targetDocument="Documents\Feature") */
     public $featureFull;
+
+    /** @ODM\ReferenceOne(targetDocument="Documents\Feature") */
+    public $conflict;
 }
 
 /**
@@ -77,4 +94,7 @@ class ChildB extends ParentClass
 {
     /** @ODM\ReferenceOne(targetDocument="Documents\Feature", simple=true) */
     public $featureSimple;
+
+    /** @ODM\ReferenceOne(targetDocument="Documents\Feature", simple=true) */
+    public $conflict;
 }
