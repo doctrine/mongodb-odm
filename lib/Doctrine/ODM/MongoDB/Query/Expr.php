@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
  * Query expression builder for ODM.
@@ -60,7 +61,23 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     public function references($document)
     {
         if ($this->currentField) {
-            $mapping = $this->class->getFieldMapping($this->currentField);
+            try {
+                $mapping = $this->class->getFieldMapping($this->currentField);
+            } catch (MappingException $e) {
+                if (empty($this->class->discriminatorMap)) {
+                    throw $e;
+                }
+                foreach ($this->class->discriminatorMap as $child) {
+                    $childClass = $this->dm->getClassMetadata($child);
+                    if ($childClass->hasAssociation($this->currentField)) {
+                        $mapping = $childClass->getFieldMapping($this->currentField);
+                        break;
+                    }
+                }
+                if ( ! isset($mapping) || $mapping === null) {
+                    throw $e;
+                }
+            }
             $dbRef = $this->dm->createDBRef($document, $mapping);
 
             if (isset($mapping['simple']) && $mapping['simple']) {
