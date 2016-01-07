@@ -58,6 +58,27 @@ class MappingException extends BaseMappingException
     }
 
     /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function mappingNotFoundInClassNorDescendants($className, $fieldName)
+    {
+        return new self("No mapping found for field '$fieldName' in class '$className' nor its descendants.");
+    }
+
+    /**
+     * @param $fieldName
+     * @param $className
+     * @param $className2
+     * @return MappingException
+     */
+    public static function referenceFieldConflict($fieldName, $className, $className2)
+    {
+        return new self("Reference mapping for field '$fieldName' in class '$className' conflicts with one mapped in class '$className2'.");
+    }
+
+    /**
      * @param string $document
      * @param string $fieldName
      * @return MappingException
