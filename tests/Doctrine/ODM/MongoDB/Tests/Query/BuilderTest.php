@@ -33,6 +33,20 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals([ 'featureSimple' => new \MongoId($f->id) ], $q2['query']);
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage No mapping found for field 'nope' in class 'Doctrine\ODM\MongoDB\Tests\Query\ParentClass' nor its descendants.
+     */
+    public function testReferencesThrowsSpecializedExceptionForDiscriminatedDocuments()
+    {
+        $f = new Feature('Smarter references');
+        $this->dm->persist($f);
+
+        $this->dm->createQueryBuilder(ParentClass::class)
+            ->field('nope')->references($f)
+            ->getQuery();
+    }
 }
 
 /**

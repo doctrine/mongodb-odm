@@ -58,6 +58,16 @@ class MappingException extends BaseMappingException
     }
 
     /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function mappingNotFoundInClassNorDescendants($className, $fieldName)
+    {
+        return new self("No mapping found for field '$fieldName' in class '$className' nor its descendants.");
+    }
+
+    /**
      * @param string $document
      * @param string $fieldName
      * @return MappingException

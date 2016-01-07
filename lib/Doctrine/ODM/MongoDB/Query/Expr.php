@@ -75,7 +75,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                     }
                 }
                 if ( ! isset($mapping) || $mapping === null) {
-                    throw $e;
+                    throw MappingException::mappingNotFoundInClassNorDescendants($this->class->name, $this->currentField);
                 }
             }
             $dbRef = $this->dm->createDBRef($document, $mapping);
