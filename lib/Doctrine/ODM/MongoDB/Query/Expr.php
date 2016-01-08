@@ -44,11 +44,19 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
      */
     private $class;
 
+    /**
+     * @param DocumentManager $dm
+     */
     public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
     }
 
+    /**
+     * Sets ClassMetadata for document being queried.
+     *
+     * @param ClassMetadata $class
+     */
     public function setClassMetadata(ClassMetadata $class)
     {
         $this->class = $class;
@@ -56,6 +64,9 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
 
     /**
      * Checks that the value of the current field is a reference to the supplied document.
+     *
+     * @param object $document
+     * @return Expr
      */
     public function references($document)
     {
@@ -86,6 +97,9 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
 
     /**
      * Checks that the current field includes a reference to the supplied document.
+     *
+     * @param object $document
+     * @return Expr
      */
     public function includesReferenceTo($document)
     {
@@ -114,6 +128,11 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
         return $this;
     }
 
+    /**
+     * Gets prepared query part of expression.
+     *
+     * @return array
+     */
     public function getQuery()
     {
         return $this->dm->getUnitOfWork()
@@ -121,6 +140,11 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
             ->prepareQueryOrNewObj($this->query);
     }
 
+    /**
+     * Gets prepared newObj part of expression.
+     *
+     * @return array
+     */
     public function getNewObj()
     {
         return $this->dm->getUnitOfWork()
