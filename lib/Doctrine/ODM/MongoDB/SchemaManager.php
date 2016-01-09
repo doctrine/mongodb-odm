@@ -468,7 +468,7 @@ class SchemaManager
             return false;
         }
 
-        foreach (array('bits', 'max', 'min', 'partialFilterExpression') as $option) {
+        foreach (array('bits', 'max', 'min') as $option) {
             if (isset($mongoIndex[$option]) xor isset($documentIndexOptions[$option])) {
                 return false;
             }
@@ -478,6 +478,16 @@ class SchemaManager
 
                 return false;
             }
+        }
+
+        if (empty($mongoIndex['partialFilterExpression']) xor empty($documentIndexOptions['partialFilterExpression'])) {
+            return false;
+        }
+
+        if (isset($mongoIndex['partialFilterExpression']) && isset($documentIndexOptions['partialFilterExpression']) &&
+            $mongoIndex['partialFilterExpression'] !== $documentIndexOptions['partialFilterExpression']) {
+
+            return false;
         }
 
         return true;

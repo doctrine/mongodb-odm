@@ -292,6 +292,183 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $this->schemaManager->dropDatabases();
     }
 
+    /**
+     * @dataProvider dataIsMongoIndexEquivalentToDocumentIndex
+     */
+    public function testIsMongoIndexEquivalentToDocumentIndex($expected, $mongoIndex, $documentIndex)
+    {
+        $defaultMongoIndex = [
+            'key' => ['foo' => 1, 'bar' => -1]
+        ];
+        $defaultDocumentIndex = [
+            'keys' => ['foo' => 1, 'bar' => -1],
+            'options' => [],
+        ];
+
+        $mongoIndex += $defaultMongoIndex;
+        $documentIndex += $defaultDocumentIndex;
+
+        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
+    }
+
+    public function dataIsMongoIndexEquivalentToDocumentIndex()
+    {
+        return [
+            'keysSame' => [
+                'expected' => true,
+                'mongoIndex' => ['key' => ['foo' => 1]],
+                'documentIndex' => ['keys' => ['foo' => 1]],
+            ],
+            'keysDiffer' => [
+                'expected' => false,
+                'mongoIndex' => ['key' => ['foo' => 1]],
+                'documentIndex' => ['keys' => ['foo' => -1]],
+            ],
+            // Sparse option
+            'sparseOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['sparse' => true],
+                'documentIndex' => [],
+            ],
+            'sparseOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['sparse' => true]],
+            ],
+            'sparseInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['sparse' => true],
+                'documentIndex' => ['options' => ['sparse' => true]],
+            ],
+            // Unique option
+            'uniqueOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['unique' => true],
+                'documentIndex' => [],
+            ],
+            'uniqueOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['unique' => true]],
+            ],
+            'uniqueInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['unique' => true],
+                'documentIndex' => ['options' => ['unique' => true]],
+            ],
+            // DropDups option
+            'dropDupsWithoutUniqueInMongoIndex' => [
+                'expected' => true,
+                'mongoIndex' => ['dropDups' => true],
+                'documentIndex' => [],
+            ],
+            'dropDupsWithoutUniqueInDocumentIndex' => [
+                'expected' => true,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['dropDups' => true]],
+            ],
+            'dropDupsOnlyInMongoIndex' => [
+                'expected' => true,
+                'mongoIndex' => ['unique' => true, 'dropDups' => true],
+                'documentIndex' => ['options' => ['unique' => true]],
+            ],
+            'dropDupsOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['unique' => true],
+                'documentIndex' => ['options' => ['unique' => true, 'dropDups' => true]],
+            ],
+            // bits option
+            'bitsOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['bits' => 5],
+                'documentIndex' => [],
+            ],
+            'bitsOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['bits' => 5]],
+            ],
+            'bitsInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['bits' => 3],
+                'documentIndex' => ['options' => ['bits' => 5]],
+            ],
+            'bitsInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['bits' => 5],
+                'documentIndex' => ['options' => ['bits' => 5]],
+            ],
+            // max option
+            'maxOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['max' => 5],
+                'documentIndex' => [],
+            ],
+            'maxOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['max' => 5]],
+            ],
+            'maxInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['max' => 3],
+                'documentIndex' => ['options' => ['max' => 5]],
+            ],
+            'maxInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['max' => 5],
+                'documentIndex' => ['options' => ['max' => 5]],
+            ],
+            // min option
+            'minOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['min' => 5],
+                'documentIndex' => [],
+            ],
+            'minOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['min' => 5]],
+            ],
+            'minInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['min' => 3],
+                'documentIndex' => ['options' => ['min' => 5]],
+            ],
+            'minInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['min' => 5],
+                'documentIndex' => ['options' => ['min' => 5]],
+            ],
+            // partialFilterExpression
+            'partialFilterExpressionOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['partialFilterExpression' => ['foo' => 5]],
+                'documentIndex' => [],
+            ],
+            'partialFilterExpressionOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['partialFilterExpression' => ['foo' => 5]]],
+            ],
+            'partialFilterExpressionOnlyInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['partialFilterExpression' => ['foo' => 3]],
+                'documentIndex' => ['options' => ['partialFilterExpression' => ['foo' => 5]]],
+            ],
+            'partialFilterExpressionOnlyInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['partialFilterExpression' => ['foo' => 5]],
+                'documentIndex' => ['options' => ['partialFilterExpression' => ['foo' => 5]]],
+            ],
+            'partialFilterExpressionEmptyInOneIndexIsSame' => [
+                'expected' => true,
+                'mongoIndex' => ['partialFilterExpression' => []],
+                'documentIndex' => [],
+            ]
+        ];
+    }
+
     private function getMockCollection()
     {
         return $this->getMockBuilder('Doctrine\MongoDB\Collection')
