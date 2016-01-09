@@ -22,10 +22,9 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
- * MongoDB ODM PersistentCollection Exception
+ * MongoDB ODM PersistentCollection Exception.
  *
- * @since  1.1
- * @author Maciej Malarz <malarzm@gmail.com>
+ * @since 1.1
  */
 class PersistentCollectionException extends MongoDBException
 {

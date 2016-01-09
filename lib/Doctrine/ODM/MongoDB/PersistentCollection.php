@@ -28,7 +28,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
  *
- * @since       1.0
+ * @since 1.0
  */
 class PersistentCollection implements PersistentCollectionInterface
 {

@@ -24,6 +24,11 @@ use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 
+/**
+ * Abstract factory for creating persistent collection classes.
+ *
+ * @since 1.1
+ */
 abstract class AbstractPersistentCollectionFactory implements PersistentCollectionFactory
 {
     /**

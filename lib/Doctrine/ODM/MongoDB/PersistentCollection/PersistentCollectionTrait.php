@@ -29,8 +29,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
  *
- * @since  1.1
- * @author Maciej Malarz <malarzm@gmail.com>
+ * @since 1.1
  */
 trait PersistentCollectionTrait
 {

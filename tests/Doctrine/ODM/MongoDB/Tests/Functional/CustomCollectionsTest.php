@@ -166,10 +166,10 @@ class DocumentWithCustomCollection
  */
 class EmbeddedDocumentInCustomCollection
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\Bool */
+    /** @ODM\Field(type="bool") */
     public $enabled;
 
     public function __construct($name, $enabled)

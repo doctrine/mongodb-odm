@@ -21,6 +21,11 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\ODM\MongoDB\Configuration;
 
+/**
+ * Default generator for custom PersistentCollection classes.
+ *
+ * @since 1.1
+ */
 final class DefaultPersistentCollectionGenerator implements PersistentCollectionGenerator
 {
     /**

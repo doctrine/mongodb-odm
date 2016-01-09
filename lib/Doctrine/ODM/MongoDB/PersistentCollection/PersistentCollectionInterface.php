@@ -27,8 +27,8 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 /**
  * Interface for persistent collection classes.
  *
- * @since  1.1
- * @author Maciej Malarz <malarzm@gmail.com>
+ * @internal
+ * @since 1.1
  */
 interface PersistentCollectionInterface extends BaseCollection
 {

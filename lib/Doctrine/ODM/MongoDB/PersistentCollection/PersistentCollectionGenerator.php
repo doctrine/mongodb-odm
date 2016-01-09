@@ -19,6 +19,11 @@
 
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
+/**
+ * Interface for PersistentCollection classes generator.
+ *
+ * @since 1.1
+ */
 interface PersistentCollectionGenerator
 {
     /**

@@ -25,8 +25,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 /**
  * Interface for persistent collection classes factory.
  *
- * @since  1.1
- * @author Maciej Malarz <malarzm@gmail.com>
+ * @since 1.1
  */
 interface PersistentCollectionFactory
 {

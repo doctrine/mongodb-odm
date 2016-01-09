@@ -28,8 +28,7 @@ use Symfony\Component\Console;
 /**
  * Command to (re)generate the persistent collection classes used by doctrine.
  *
- * @since   1.1
- * @author  Maciej Malarz <malarzm@gmail.com>
+ * @since 1.1
  */
 class GeneratePersistentCollectionsCommand extends Console\Command\Command
 {

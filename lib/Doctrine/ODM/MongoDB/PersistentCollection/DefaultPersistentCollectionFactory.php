@@ -22,8 +22,7 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 /**
  * Default factory class for persistent collection classes.
  *
- * @since  1.1
- * @author Maciej Malarz <malarzm@gmail.com>
+ * @since 1.1
  */
 final class DefaultPersistentCollectionFactory extends AbstractPersistentCollectionFactory
 {
