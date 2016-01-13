@@ -100,6 +100,13 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\PartialIndexOnDocumentTest');
+        $indexes = $class->getIndexes();
+        $this->assertTrue(isset($indexes[0]['keys']['username']));
+        $this->assertEquals(1, $indexes[0]['keys']['username']);
+        $this->assertTrue(isset($indexes[0]['options']['partialFilterExpression']));
+        $this->assertSame(array('counter' => array('$gt' => 5)), $indexes[0]['options']['partialFilterExpression']);
+
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\UniqueSparseOnFieldTest');
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
@@ -201,6 +208,21 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->uniqueTest('MultipleFieldIndexes');
     }
+
+    public function testPartialIndexCreation()
+    {
+        if (version_compare($this->getServerVersion(), '3.2.0', '<')) {
+            $this->markTestSkipped('This test is not applicable to server versions < 3.2.0');
+        }
+
+        $className = __NAMESPACE__ . '\PartialIndexOnDocumentTest';
+        $this->dm->getSchemaManager()->ensureDocumentIndexes($className);
+
+        $indexes = $this->dm->getSchemaManager()->getDocumentIndexes($className);
+        $this->assertFalse(empty($indexes[0]['options']['partialFilterExpression']));
+        $this->assertSame(array('counter' => array('$gt' => 5)), $indexes[0]['options']['partialFilterExpression']);
+        $this->assertTrue($indexes[0]['options']['unique']);
+    }
 }
 
 /** @ODM\Document */
@@ -240,6 +262,22 @@ class IndexesOnDocumentTest
 
     /** @ODM\Field(type="string") */
     public $email;
+}
+
+/** @ODM\Document @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"},partialFilterExpression={"counter"={"$gt"=5}})) */
+class PartialIndexOnDocumentTest
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\String */
+    public $username;
+
+    /** @ODM\String */
+    public $email;
+
+    /** @ODM\Integer */
+    public $counter;
 }
 
 /** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}) */

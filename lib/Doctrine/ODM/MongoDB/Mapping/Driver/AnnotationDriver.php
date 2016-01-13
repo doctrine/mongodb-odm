@@ -235,6 +235,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $options[$name] = $index->$name;
             }
         }
+        if (! empty($index->partialFilterExpression)) {
+            $options['partialFilterExpression'] = $index->partialFilterExpression;
+        }
         $options = array_merge($options, $index->options);
         $class->addIndex($keys, $options);
     }

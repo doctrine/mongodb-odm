@@ -1,0 +1,30 @@
+TestDocuments\PartialFilterDocument:
+  db: documents
+  collection: partialFilterDocument
+  fields:
+    id:
+      fieldName: id
+      id: true
+  indexes:
+    index1:
+      keys:
+        fieldA: asc
+      options:
+        partialFilterExpression:
+          version: { $gt: 1 }
+          discr: { $eq: 'default' }
+    index2:
+      keys:
+        fieldB: asc
+      options:
+        partialFilterExpression:
+          $and:
+            - version: { $gt: 1 }
+            - discr: { $eq: 'default' }
+    index3:
+      keys:
+        fieldC: asc
+      options:
+        partialFilterExpression:
+          embedded:
+            foo: bar

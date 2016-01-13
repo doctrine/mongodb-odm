@@ -4,6 +4,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+require_once 'fixtures/InvalidPartialFilterDocument.php';
+require_once 'fixtures/PartialFilterDocument.php';
 require_once 'fixtures/User.php';
 require_once 'fixtures/EmbeddedDocument.php';
 
@@ -240,4 +242,40 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         ), $classMetadata->fieldMappings['name']);
     }
 
+    public function testPartialFilterExpressions()
+    {
+        $classMetadata = new ClassMetadata('TestDocuments\PartialFilterDocument');
+        $this->driver->loadMetadataForClass('TestDocuments\PartialFilterDocument', $classMetadata);
+
+        $this->assertEquals([
+            [
+                'keys' => ['fieldA' => 1],
+                'options' => [
+                    'partialFilterExpression' => [
+                        'version' => ['$gt' => 1],
+                        'discr' => ['$eq' => 'default'],
+                    ],
+                ],
+            ],
+            [
+                'keys' => ['fieldB' => 1],
+                'options' => [
+                    'partialFilterExpression' => [
+                        '$and' => [
+                            ['version' => ['$gt' => 1]],
+                            ['discr' => ['$eq' => 'default']],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'keys' => ['fieldC' => 1],
+                'options' => [
+                    'partialFilterExpression' => [
+                        'embedded' => ['foo' => 'bar'],
+                    ],
+                ],
+            ],
+        ], $classMetadata->getIndexes());
+    }
 }

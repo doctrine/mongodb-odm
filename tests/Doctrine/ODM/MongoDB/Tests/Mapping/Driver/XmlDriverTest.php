@@ -55,6 +55,27 @@ class XmlDriverTest extends AbstractDriverTest
         $this->assertSame(0, $profileMapping['limit']);
         $this->assertSame(2, $profileMapping['skip']);
     }
+
+    public function testInvalidPartialFilterExpressions()
+    {
+        $classMetadata = new ClassMetadata('TestDocuments\InvalidPartialFilterDocument');
+        $this->driver->loadMetadataForClass('TestDocuments\InvalidPartialFilterDocument', $classMetadata);
+
+        $this->assertEquals([
+            [
+                'keys' => ['fieldA' => 1],
+                'options' => [
+                    'partialFilterExpression' => [
+                        '$and' => [['discr' => ['$eq' => 'default']]],
+                    ],
+                ],
+            ],
+            [
+                'keys' => ['fieldB' => 1],
+                'options' => [],
+            ],
+        ], $classMetadata->getIndexes());
+    }
 }
 
 namespace TestDocuments;
