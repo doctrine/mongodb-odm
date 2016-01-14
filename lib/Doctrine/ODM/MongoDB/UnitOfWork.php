@@ -727,8 +727,13 @@ class UnitOfWork implements PropertyChangedListener
 
                 // skip if value has not changed
                 if ($orgValue === $actualValue) {
-                    // but consider dirty GridFSFile instances as changed
-                    if ( ! (isset($class->fieldMappings[$propName]['file']) && $actualValue->isDirty())) {
+                    if ($actualValue instanceof PersistentCollection) {
+                        if (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue)) {
+                            // consider dirty collections as changed as well
+                            continue;
+                        }
+                    } elseif ( ! (isset($class->fieldMappings[$propName]['file']) && $actualValue->isDirty())) {
+                        // but consider dirty GridFSFile instances as changed
                         continue;
                     }
                 }
@@ -778,7 +783,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ($actualValue && $actualValue->isDirty() && CollectionHelper::usesSet($class->fieldMappings[$propName]['strategy'])) {
                         continue;
                     }
-                    if ($orgValue instanceof PersistentCollection) {
+                    if ($orgValue !== $actualValue && $orgValue instanceof PersistentCollection) {
                         $this->scheduleCollectionDeletion($orgValue);
                     }
                     continue;
