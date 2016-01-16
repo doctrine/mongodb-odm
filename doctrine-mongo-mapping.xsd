@@ -128,7 +128,7 @@
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
-    <xs:attribute name="repositoryMethod" type="xs:NMTOKEN" />
+    <xs:attribute name="repository-method" type="xs:NMTOKEN" />
     <xs:attribute name="orphan-removal" type="xs:boolean" />
   </xs:complexType>
 
