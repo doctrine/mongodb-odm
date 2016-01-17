@@ -47,11 +47,10 @@ class Match extends BaseStage\Match
      */
     public function __construct(Builder $builder, DocumentManager $dm, ClassMetadata $class)
     {
-        parent::__construct($builder);
-
         $this->dm = $dm;
         $this->class = $class;
-        $this->expr = $this->expr();
+
+        parent::__construct($builder);
     }
 
     /**

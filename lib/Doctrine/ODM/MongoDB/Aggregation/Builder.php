@@ -95,7 +95,7 @@ class Builder extends BaseBuilder
      */
     public function match()
     {
-        return new Stage\Match($this, $this->dm, $this->class);
+        return $this->addStage(new Stage\Match($this, $this->dm, $this->class));
     }
 
     /**
