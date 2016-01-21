@@ -7,6 +7,9 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH1346Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    /**
+     * @group GH1346Test
+     */
     public function testPublicDistanceProperty()
     {
         $coordinates = new GH1346Coordinates();
@@ -30,7 +33,12 @@ class GH1346Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->persist($gH1346Document);
         $this->dm->flush();
+        $this->dm->clear();
 
+        $gH1346Document = $this->dm->getRepository(__NAMESPACE__ . '\GH1346Document')->find($gH1346Document->getId());
+        $refrenced2 = $this->dm->getRepository(__NAMESPACE__ . '\GH1346ReferencedDocument')->find($refrenced2->getId());
+
+        $gH1346Document->hasReference($refrenced2);
         $gH1346Document->addReference($refrenced2);
 
         $this->dm->persist($gH1346Document);
@@ -99,9 +107,8 @@ class GH1346Document
 
 
 /**
- * @ODM\Document(collection="city")
+ * @ODM\Document
  * @ODM\Index(keys={"coordinates"="2d"})
- * @ODM\InheritanceType("COLLECTION_PER_CLASS")
  */
 class GH1346ReferencedDocument
 {
@@ -109,7 +116,7 @@ class GH1346ReferencedDocument
     public $distance;
     /** @ODM\Id */
     protected $id;
-    /** @ODM\EmbedOne(targetDocument="Coordinates") */
+    /** @ODM\EmbedOne(targetDocument="GH1346Coordinates") */
     protected $coordinates;
 
     public function getCoordinates()
