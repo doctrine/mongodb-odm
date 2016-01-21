@@ -34,11 +34,7 @@ class GH1346Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals(2, $gH1346Document->getReferences()->count());
 
-        $this->dm->remove($gH1346Document);
-        $this->dm->remove($refrenced2);
-        $this->dm->remove($refrenced2);
         $this->dm->flush();
-        $this->dm->clear();
     }
 }
 
