@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
@@ -30,7 +31,8 @@ final class ReferenceMany extends AbstractField
 {
     public $type = 'many';
     public $reference = true;
-    public $simple = false;
+    public $simple = false; // @deprecated
+    public $storeAs = ClassMetadataInfo::REFERENCE_STORE_AS_FULL;
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
