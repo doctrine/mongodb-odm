@@ -97,6 +97,16 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     const MANY = 'many';
     const ONE = 'one';
 
+    /**#@+
+     * The types of storeAs references
+     *
+     * TODO move this to a different class?
+     */
+    const REFERENCE_STORE_AS_SIMPLE = 'simple';
+    const REFERENCE_STORE_AS_PARTIAL = 'partial';
+    const REFERENCE_STORE_AS_FULL = 'full';
+    /**#@-*/
+
     /* The inheritance mapping types */
     /**
      * NONE means the class does not participate in an inheritance hierarchy
