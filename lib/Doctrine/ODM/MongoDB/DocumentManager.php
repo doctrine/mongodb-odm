@@ -762,4 +762,96 @@ class DocumentManager implements ObjectManager
 
         return $this->filterCollection;
     }
+
+    /**
+     * Given a model, create a simple array representation of it's values.
+     *
+     * @param $model
+     * @return array
+     */
+    public function export($model)
+    {
+        // Create a container for the results.
+        $result = array();
+
+        $metadata = $this->getClassMetadata(get_class($model));
+
+        foreach ($metadata->fieldMappings as $mapping) {
+            $property = $metadata->getReflectionProperty($mapping['fieldName']);
+            $value = $this->extractFieldFromModel($model, $property);
+            $result[$property->name] = $value;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Determine if two Doctrine ODM models are the same by evaluating each of their ODM properties.
+     *
+     * @param $modelA
+     * @param $modelB
+     * @return boolean
+     */
+    public function deepCompare($modelA, $modelB)
+    {
+        $exportA = $this->export($modelA);
+        $exportB = $this->export($modelB);
+        $result = $exportA === $exportB;
+        return $result;
+    }
+
+    /**
+     * Return the value of the given property from the model.
+     *
+     * @param $model
+     * @param $reflectionProperty
+     * @return mixed
+     */
+    protected function extractFieldFromModel($model, $reflectionProperty)
+    {
+        $value = $reflectionProperty->getValue($model);
+
+        /**
+         * If this value is an embedded array collection, reduce each of the items to primitives.
+         */
+        if ($this->isDoctrineCollection($value)) {
+            $exportedEmbeddedCollection = array();
+            foreach ($value as $thisElement) {
+                if (is_object($thisElement)) {
+                    $exportedEmbeddedCollection[] = array(
+                        'payload' => $this->export($thisElement),
+                        '__class' => get_class($thisElement)
+                    );
+                } else {
+                    $exportedEmbeddedCollection[] = array('payload' => $thisElement);
+                }
+            }
+            $result = $exportedEmbeddedCollection;
+        } elseif ($value instanceof \DateTime) {
+            $result = $value->getTimestamp();
+        } elseif (is_object($value)) {
+            $result = $this->export($value);
+        } else {
+            // Capture the primitive value.
+            $result = $value;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Determine if a value is a Doctrine collection.
+     *
+     * @param $value
+     * @return bool
+     */
+    protected function isDoctrineCollection($value)
+    {
+        if (!is_object($value)) {
+            return false;
+        }
+        $reflectedClass = new \ReflectionClass($value);
+        $result = $reflectedClass->implementsInterface('Doctrine\Common\Collections\Collection');
+        return $result;
+    }
 }
