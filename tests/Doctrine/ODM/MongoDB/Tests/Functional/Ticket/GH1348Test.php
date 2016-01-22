@@ -1,11 +1,11 @@
 <?php
 
-namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GHXXXX;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1348;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\Common\Collections\ArrayCollection;
 
-class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1348Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testCanSnapshotSimpleModel()
     {
@@ -43,7 +43,7 @@ class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                         'numPages' => 88,
                         'pages' => array(),
                     ),
-                    '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GHXXXX\DrivingManual'
+                    '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1348\DrivingManual'
                 )
             )
         );
@@ -90,18 +90,18 @@ class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                                                 'id' => null,
                                                 'fileName' => 'goat.jpg',
                                             ),
-                                            '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GHXXXX\Picture'
+                                            '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1348\Picture'
                                         ),
                                         array(
                                             'payload' => array(
                                                 'id' => null,
                                                 'fileName' => 'horse.jpg',
                                             ),
-                                            '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GHXXXX\Picture'
+                                            '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1348\Picture'
                                         )
                                     )
                                 ),
-                                '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GHXXXX\Page'
+                                '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1348\Page'
                             ),
                             array(
                                 'payload' => array(
@@ -109,11 +109,11 @@ class GHXXXXTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                                     'pageNumber' => 2,
                                     'pictures' => array()
                                 ),
-                                '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GHXXXX\Page'
+                                '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1348\Page'
                             )
                         ),
                     ),
-                    '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GHXXXX\DrivingManual'
+                    '__class' => 'Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1348\DrivingManual'
                 )
             ),
             "id" => null
@@ -229,7 +229,7 @@ class Car
      */
     protected $color;
     /**
-     * @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GHXXXX\DrivingManual", strategy="set")
+     * @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1348\DrivingManual", strategy="set")
      */
     protected $glovebox;
 
@@ -298,7 +298,7 @@ class DrivingManual
     /** @ODM\Int */
     protected $numPages;
     /**
-     * @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GHXXXX\Page", strategy="set")
+     * @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1348\Page", strategy="set")
      */
     protected $pages;
 
@@ -389,7 +389,7 @@ class Page
     /** @ODM\Int */
     protected $pageNumber;
     /**
-     * @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GHXXXX\Picture", strategy="set")
+     * @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH1348\Picture", strategy="set")
      */
     protected $pictures;
 
