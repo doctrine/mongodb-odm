@@ -18,6 +18,7 @@
  */
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
+
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**
