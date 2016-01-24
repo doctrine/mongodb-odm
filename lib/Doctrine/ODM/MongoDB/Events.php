@@ -161,4 +161,12 @@ final class Events
      * @var string
      */
     const onClear = 'onClear';
+
+    /**
+     * The documentNotFound event occurs if a proxy object could not be found in
+     * the database.
+     *
+     * @var string
+     */
+    const documentNotFound = 'documentNotFound';
 }

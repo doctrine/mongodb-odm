@@ -30,7 +30,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy as BaseProxy;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
 use ReflectionProperty;
 
 /**
@@ -56,6 +56,11 @@ class ProxyFactory extends AbstractProxyFactory
     private $proxyNamespace;
 
     /**
+     * @var \Doctrine\Common\EventManager
+     */
+    private $lifecycleEventManager;
+
+    /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>DocumentManager</tt>.
      *
@@ -68,9 +73,10 @@ class ProxyFactory extends AbstractProxyFactory
     public function __construct(DocumentManager $documentManager, $proxyDir, $proxyNamespace, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
         $this->metadataFactory = $documentManager->getMetadataFactory();
-        $this->uow             = $documentManager->getUnitOfWork();
-        $this->proxyNamespace  = $proxyNamespace;
-        $proxyGenerator        = new ProxyGenerator($proxyDir, $proxyNamespace);
+        $this->uow = $documentManager->getUnitOfWork();
+        $this->proxyNamespace = $proxyNamespace;
+        $this->lifecycleEventManager = new LifecycleEventManager($documentManager, $this->uow, $documentManager->getEventManager());
+        $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNamespace);
 
         $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
 
@@ -121,10 +127,8 @@ class ProxyFactory extends AbstractProxyFactory
         DocumentPersister $documentPersister,
         ReflectionProperty $reflectionId
     ) {
-        $unitOfWork = $this->uow;
-
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            return function (BaseProxy $proxy) use ($documentPersister, $reflectionId, $unitOfWork) {
+            return function (BaseProxy $proxy) use ($documentPersister, $reflectionId) {
                 $proxy->__setInitializer(null);
                 $proxy->__setCloner(null);
 
@@ -146,16 +150,18 @@ class ProxyFactory extends AbstractProxyFactory
                 $id = $reflectionId->getValue($proxy);
 
                 if (null === $documentPersister->load(array('_id' => $id), $proxy)) {
-                    throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
+                    if ( ! $this->lifecycleEventManager->documentNotFound($proxy, $id)) {
+                        throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
+                    }
                 }
 
                 if ($proxy instanceof NotifyPropertyChanged) {
-                    $proxy->addPropertyChangedListener($unitOfWork);
+                    $proxy->addPropertyChangedListener($this->uow);
                 }
             };
         }
 
-        return function (BaseProxy $proxy) use ($documentPersister, $reflectionId, $unitOfWork) {
+        return function (BaseProxy $proxy) use ($documentPersister, $reflectionId) {
             $proxy->__setInitializer(null);
             $proxy->__setCloner(null);
 
@@ -176,11 +182,13 @@ class ProxyFactory extends AbstractProxyFactory
             $id = $reflectionId->getValue($proxy);
 
             if (null === $documentPersister->load(array('_id' => $id), $proxy)) {
-                throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
+                if ( ! $this->lifecycleEventManager->documentNotFound($proxy, $id)) {
+                    throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
+                }
             }
 
             if ($proxy instanceof NotifyPropertyChanged) {
-                $proxy->addPropertyChangedListener($unitOfWork);
+                $proxy->addPropertyChangedListener($this->uow);
             }
         };
     }
@@ -213,7 +221,9 @@ class ProxyFactory extends AbstractProxyFactory
             $original = $documentPersister->load(array('_id' => $id));
 
             if (null === $original) {
-                throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
+                if ( ! $this->lifecycleEventManager->documentNotFound($proxy, $id)) {
+                    throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
+                }
             }
 
             foreach ($classMetadata->getReflectionClass()->getProperties() as $reflectionProperty) {

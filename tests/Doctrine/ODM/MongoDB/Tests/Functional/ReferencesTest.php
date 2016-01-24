@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
+use Doctrine\ODM\MongoDB\Events;
 use Documents\Address;
 use Documents\Profile;
 use Documents\ProfileNotify;
@@ -428,6 +430,42 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $this->dm->find(get_class($test), $test->id);
         $test->referenceOne->__load();
     }
+
+    public function testDocumentNotFoundEvent()
+    {
+        $profile = new Profile();
+        $user = new User();
+        $user->setProfile($profile);
+
+        $this->dm->persist($profile);
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $collection = $this->dm->getDocumentCollection(get_class($user));
+
+        $invalidId = new \MongoId('abcdefabcdefabcdefabcdef');
+
+        $collection->update(
+            array('_id' => new \MongoId($user->getId())),
+            array('$set' => array(
+                'profile.$id' => $invalidId,
+            ))
+        );
+
+        $user = $this->dm->find(get_class($user), $user->getId());
+        $profile = $user->getProfile();
+
+        $closure = function (DocumentNotFoundEventArgs $eventArgs) use ($profile) {
+            $this->assertFalse($eventArgs->isExceptionDisabled());
+            $this->assertSame($profile, $eventArgs->getObject());
+            $eventArgs->disableException();
+        };
+
+        $this->dm->getEventManager()->addEventListener(Events::documentNotFound, new DocumentNotFoundListener($closure));
+
+        $profile->__load();
+    }
 }
 
 /** @ODM\Document */
@@ -463,4 +501,20 @@ class DocumentWithMongoBinDataId
 {
     /** @ODM\Id(strategy="none", options={"type"="bin"}) */
     public $id;
+}
+
+class DocumentNotFoundListener
+{
+    private $closure;
+
+    public function __construct(\Closure $closure)
+    {
+        $this->closure = $closure;
+    }
+
+    public function documentNotFound(DocumentNotFoundEventArgs $eventArgs)
+    {
+        $closure = $this->closure;
+        $closure($eventArgs);
+    }
 }

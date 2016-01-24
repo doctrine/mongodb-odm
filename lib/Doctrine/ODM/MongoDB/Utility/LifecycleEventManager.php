@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Utility;
 
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
@@ -58,6 +59,19 @@ class LifecycleEventManager
         $this->dm = $dm;
         $this->evm = $evm;
         $this->uow = $uow;
+    }
+
+    /**
+     * @param object $proxy
+     * @param mixed $id
+     * @return bool Returns whether the exceptionDisabled flag was set
+     */
+    public function documentNotFound($proxy, $id)
+    {
+        $eventArgs = new DocumentNotFoundEventArgs($proxy, $this->dm, $id);
+        $this->evm->dispatchEvent(Events::documentNotFound, $eventArgs);
+
+        return $eventArgs->isExceptionDisabled();
     }
 
     /**
