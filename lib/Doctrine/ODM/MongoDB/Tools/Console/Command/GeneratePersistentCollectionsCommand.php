@@ -88,6 +88,7 @@ EOT
         }
 
         if (count($metadatas)) {
+            $generated = [];
             $collectionGenerator = $dm->getConfiguration()->getPersistentCollectionGenerator();
             foreach ($metadatas as $metadata) {
                 $output->write(
@@ -95,9 +96,10 @@ EOT
                 );
                 foreach ($metadata->getAssociationNames() as $fieldName) {
                     $mapping = $metadata->getFieldMapping($fieldName);
-                    if (empty($mapping['collectionClass'])) {
+                    if (empty($mapping['collectionClass']) || isset($generated[$mapping['collectionClass']])) {
                         continue;
                     }
+                    $generated[$mapping['collectionClass']] = true;
                     $output->write(
                         sprintf('Generating class for "<info>%s</info>"', $mapping['collectionClass']) . PHP_EOL
                     );
