@@ -34,7 +34,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\Id */
         private $id;
     
-        /** @ODM\Field(type="increment") */
+        /** @ODM\Field(type="int", strategy="increment") */
         private $changes = 0;
     
         /** @ODM\Field(type="collection") */

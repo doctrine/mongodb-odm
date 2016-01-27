@@ -57,7 +57,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'unique' => true,
-            'sparse' => true
+            'sparse' => true,
+            'strategy' => 'set',
         ), $classMetadata->fieldMappings['username']);
         
         $this->assertEquals(array(
@@ -78,7 +79,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRemove' => false,
             'isInverseSide' => false,
             'isOwningSide' => true,
-            'nullable' => false
+            'nullable' => false,
+            'strategy' => 'set',
         ), $classMetadata->fieldMappings['createdAt']);
 
         $this->assertEquals(array(
@@ -93,6 +95,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
+            'strategy' => 'set',
         ), $classMetadata->fieldMappings['tags']);
 
         $this->assertEquals(array(
@@ -239,6 +242,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
+            'strategy' => 'set',
         ), $classMetadata->fieldMappings['name']);
     }
 
