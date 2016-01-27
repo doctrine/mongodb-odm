@@ -14,7 +14,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->hydrate('Documents\BlogTagAggregation')
             ->unwind('$tags')
             ->group()
-                ->field('_id')
+                ->field('id')
                 ->expression('$tags')
                 ->field('numPosts')
                 ->sum(1)
