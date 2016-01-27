@@ -19,7 +19,7 @@ class Address
     /** @ODM\Field(type="string") */
     private $zipcode;
 
-    /** @ODM\Field(type="increment") */
+    /** @ODM\Field(type="int", strategy="increment") */
     public $count = 0;
 
     /** @ODM\EmbedOne(targetDocument="Address") */

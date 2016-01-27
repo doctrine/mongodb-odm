@@ -59,8 +59,11 @@ class User extends BaseDocument
     /** @ODM\Field(type="string") */
     protected $nullTest;
 
-    /** @ODM\Field(type="increment") */
-    protected $count = 0;
+    /** @ODM\Field(type="int", strategy="increment") */
+    protected $count;
+
+    /** @ODM\Field(type="float", strategy="increment") */
+    protected $floatCount;
 
     /** @ODM\ReferenceMany(targetDocument="BlogPost", mappedBy="user", nullable=true) */
     protected $posts;
@@ -267,6 +270,16 @@ class User extends BaseDocument
         $this->count = $count;
     }
 
+    public function getFloatCount()
+    {
+        return $this->floatCount;
+    }
+
+    public function setFloatCount($floatCount)
+    {
+        $this->floatCount = $floatCount;
+    }
+
     public function getSimpleReferenceOneInverse()
     {
         return $this->simpleReferenceOneInverse;
@@ -282,7 +295,16 @@ class User extends BaseDocument
         if ($num === null) {
             $this->count++;
         } else {
-            $this->count = $this->count + $num;
+            $this->count += $num;
+        }
+    }
+
+    public function incrementFloatCount($num = null)
+    {
+        if ($num === null) {
+            $this->floatCount++;
+        } else {
+            $this->floatCount += $num;
         }
     }
 

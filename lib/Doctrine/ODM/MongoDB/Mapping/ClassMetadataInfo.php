@@ -142,6 +142,17 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     const CHANGETRACKING_NOTIFY = 3;
 
     /**
+     * SET means that fields will be written to the database using a $set operator
+     */
+    const STORAGE_STRATEGY_SET = 'set';
+
+    /**
+     * INCREMENT means that fields will be written to the database by calculating
+     * the difference and using the $inc operator
+     */
+    const STORAGE_STRATEGY_INCREMENT = 'increment';
+
+    /**
      * READ-ONLY: The name of the mongo database the document is mapped to.
      */
     public $db;
@@ -1119,6 +1130,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['type']) && $mapping['type'] === 'file') {
             $mapping['file'] = true;
         }
+        if (isset($mapping['type']) && $mapping['type'] === 'increment') {
+            $mapping['strategy'] = self::STORAGE_STRATEGY_INCREMENT;
+        }
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
             $mapping['name'] = 'file';
@@ -1145,7 +1159,25 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                     }
             }
             unset($this->generatorOptions['type']);
+        } elseif (!isset($mapping['embedded']) && !isset($mapping['reference']) && isset($mapping['type'])) {
+            switch ($mapping['type']) {
+                case 'int':
+                case 'float':
+                    $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
+                    break;
+                default:
+                    $allowedStrategies = [self::STORAGE_STRATEGY_SET];
+            }
+
+            if (isset($mapping['strategy'])) {
+                if (! in_array($mapping['strategy'], $allowedStrategies)) {
+                    throw MappingException::invalidStorageStrategy($this->name, $mapping['fieldName'], $mapping['type'], $mapping['strategy']);
+                }
+            } else {
+                $mapping['strategy'] = self::STORAGE_STRATEGY_SET;
+            }
         }
+
         if ( ! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
         }
