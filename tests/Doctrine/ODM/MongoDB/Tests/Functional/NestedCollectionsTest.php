@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Documents\Phonebook;
 use Documents\Phonenumber;
 
@@ -64,12 +65,12 @@ class NestedCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function provideStrategy()
     {
         return array(
-            array('atomicSet'),
-            array('atomicSetArray'),
-            array('set'),
-            array('setArray'),
-            array('pushAll'),
-            array('addToSet'),
+            array(ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET),
+            array(ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET_ARRAY),
+            array(ClassMetadataInfo::STORAGE_STRATEGY_SET),
+            array(ClassMetadataInfo::STORAGE_STRATEGY_SET_ARRAY),
+            array(ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL),
+            array(ClassMetadataInfo::STORAGE_STRATEGY_ADD_TO_SET),
         );
     }
 }

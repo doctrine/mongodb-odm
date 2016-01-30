@@ -104,7 +104,7 @@ class PersistenceBuilder
             // We're excluding collections using addToSet since there is a risk
             // of duplicated entries stored in the collection
             } elseif ($mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
-                    && $mapping['strategy'] !== 'addToSet' && ! $new->isEmpty()) {
+                    && $mapping['strategy'] !== ClassMetadataInfo::STORAGE_STRATEGY_ADD_TO_SET && ! $new->isEmpty()) {
                 $insertData[$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
             }
         }
