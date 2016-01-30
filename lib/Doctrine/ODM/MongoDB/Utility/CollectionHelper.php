@@ -18,6 +18,7 @@
  */
 
 namespace Doctrine\ODM\MongoDB\Utility;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**
  * Utility class used to unify checks on how collection strategies should behave.
@@ -27,7 +28,7 @@ namespace Doctrine\ODM\MongoDB\Utility;
  */
 class CollectionHelper
 {
-    const DEFAULT_STRATEGY = 'pushAll';
+    const DEFAULT_STRATEGY = ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL;
 
     /**
      * Returns whether update query must be included in query updating owning document.
@@ -37,7 +38,7 @@ class CollectionHelper
      */
     public static function isAtomic($strategy)
     {
-        return $strategy === 'atomicSet' || $strategy === 'atomicSetArray';
+        return $strategy === ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET || $strategy === ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET_ARRAY;
     }
 
     /**
@@ -48,7 +49,7 @@ class CollectionHelper
      */
     public static function isHash($strategy)
     {
-        return $strategy === 'set' || $strategy === 'atomicSet';
+        return $strategy === ClassMetadataInfo::STORAGE_STRATEGY_SET || $strategy === ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET;
     }
     
     /**
@@ -59,7 +60,7 @@ class CollectionHelper
      */
     public static function isList($strategy)
     {
-        return $strategy !== 'set' && $strategy !== 'atomicSet';
+        return $strategy !== ClassMetadataInfo::STORAGE_STRATEGY_SET && $strategy !== ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET;
     }
     
     /**
@@ -70,6 +71,14 @@ class CollectionHelper
      */
     public static function usesSet($strategy)
     {
-        return in_array($strategy, array('set', 'setArray', 'atomicSet', 'atomicSetArray'));
+        return in_array(
+            $strategy,
+            [
+                ClassMetadataInfo::STORAGE_STRATEGY_SET,
+                ClassMetadataInfo::STORAGE_STRATEGY_SET_ARRAY,
+                ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET,
+                ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET_ARRAY
+            ]
+        );
     }
 }

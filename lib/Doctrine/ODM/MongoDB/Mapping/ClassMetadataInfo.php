@@ -152,6 +152,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     const STORAGE_STRATEGY_INCREMENT = 'increment';
 
+    const STORAGE_STRATEGY_PUSH_ALL = 'pushAll';
+    const STORAGE_STRATEGY_ADD_TO_SET = 'addToSet';
+    const STORAGE_STRATEGY_ATOMIC_SET = 'atomicSet';
+    const STORAGE_STRATEGY_ATOMIC_SET_ARRAY = 'atomicSetArray';
+    const STORAGE_STRATEGY_SET_ARRAY = 'setArray';
+
     /**
      * READ-ONLY: The name of the mongo database the document is mapped to.
      */

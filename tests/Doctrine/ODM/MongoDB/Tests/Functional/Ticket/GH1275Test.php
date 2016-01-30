@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -132,12 +133,12 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public static function getCollectionStrategies()
     {
         return array(
-            'testResortWithStrategyAddToSet' => array('addToSet'),
-            'testResortWithStrategySet' => array('set'),
-            'testResortWithStrategySetArray' => array('setArray'),
-            'testResortWithStrategyPushAll' => array('pushAll'),
-            'testResortWithStrategyAtomicSet' => array('atomicSet'),
-            'testResortWithStrategyAtomicSetArray' => array('atomicSetArray'),
+            'testResortWithStrategyAddToSet' => array(ClassMetadataInfo::STORAGE_STRATEGY_ADD_TO_SET),
+            'testResortWithStrategySet' => array(ClassMetadataInfo::STORAGE_STRATEGY_SET),
+            'testResortWithStrategySetArray' => array(ClassMetadataInfo::STORAGE_STRATEGY_SET_ARRAY),
+            'testResortWithStrategyPushAll' => array(ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL),
+            'testResortWithStrategyAtomicSet' => array(ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET),
+            'testResortWithStrategyAtomicSetArray' => array(ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET_ARRAY),
         );
     }
 
