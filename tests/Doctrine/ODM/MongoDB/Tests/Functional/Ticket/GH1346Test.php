@@ -12,22 +12,21 @@ class GH1346Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPublicProperty()
     {
-
-        $refrenced1 = new GH1346ReferencedDocument();
-        $refrenced2 = new GH1346ReferencedDocument();
+        $referenced1 = new GH1346ReferencedDocument();
+        $referenced2 = new GH1346ReferencedDocument();
         $gH1346Document = new GH1346Document();
-        $gH1346Document->addReference($refrenced1);
+        $gH1346Document->addReference($referenced1);
 
-        $this->dm->persist($refrenced2);
-        $this->dm->persist($refrenced1);
+        $this->dm->persist($referenced2);
+        $this->dm->persist($referenced1);
         $this->dm->persist($gH1346Document);
         $this->dm->flush();
         $this->dm->clear();
 
         $gH1346Document = $this->dm->getRepository(__NAMESPACE__ . '\GH1346Document')->find($gH1346Document->getId());
-        $refrenced2 = $this->dm->getRepository(__NAMESPACE__ . '\GH1346ReferencedDocument')->find($refrenced2->getId());
+        $referenced2 = $this->dm->getRepository(__NAMESPACE__ . '\GH1346ReferencedDocument')->find($referenced2->getId());
 
-        $gH1346Document->addReference($refrenced2);
+        $gH1346Document->addReference($referenced2);
 
         $this->dm->persist($gH1346Document);
         $this->dm->flush();
@@ -76,7 +75,7 @@ class GH1346Document
  */
 class GH1346ReferencedDocument
 {
-    /** @ODM\String() */
+    /** @ODM\Field(type="string") */
     public $test;
 
     /** @ODM\Id */
