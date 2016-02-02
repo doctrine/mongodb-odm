@@ -1165,23 +1165,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                     }
             }
             unset($this->generatorOptions['type']);
-        } elseif (!isset($mapping['embedded']) && !isset($mapping['reference']) && isset($mapping['type'])) {
-            switch ($mapping['type']) {
-                case 'int':
-                case 'float':
-                    $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
-                    break;
-                default:
-                    $allowedStrategies = [self::STORAGE_STRATEGY_SET];
-            }
-
-            if (isset($mapping['strategy'])) {
-                if (! in_array($mapping['strategy'], $allowedStrategies)) {
-                    throw MappingException::invalidStorageStrategy($this->name, $mapping['fieldName'], $mapping['type'], $mapping['strategy']);
-                }
-            } else {
-                $mapping['strategy'] = self::STORAGE_STRATEGY_SET;
-            }
         }
 
         if ( ! isset($mapping['nullable'])) {
@@ -1251,10 +1234,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             }
         }
 
-        if (isset($mapping['reference']) && $mapping['type'] === 'many' && $mapping['isOwningSide']
-            && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
-            throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
-        }
+        $this->applyStorageStrategy($mapping);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
         if (isset($mapping['association'])) {
@@ -1262,6 +1242,55 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         }
 
         return $mapping;
+    }
+
+    /**
+     * Validates the storage strategy of a mapping for consistency
+     * @param array $mapping
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     */
+    private function applyStorageStrategy(array &$mapping)
+    {
+        if (! isset($mapping['type']) || isset($mapping['id'])) {
+            return;
+        }
+
+        switch (true) {
+            case $mapping['type'] == 'int':
+            case $mapping['type'] == 'float':
+                $defaultStrategy = self::STORAGE_STRATEGY_SET;
+                $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
+                break;
+
+            case $mapping['type'] == 'many':
+                $defaultStrategy = CollectionHelper::DEFAULT_STRATEGY;
+                $allowedStrategies = [
+                    self::STORAGE_STRATEGY_PUSH_ALL,
+                    self::STORAGE_STRATEGY_ADD_TO_SET,
+                    self::STORAGE_STRATEGY_SET,
+                    self::STORAGE_STRATEGY_SET_ARRAY,
+                    self::STORAGE_STRATEGY_ATOMIC_SET,
+                    self::STORAGE_STRATEGY_ATOMIC_SET_ARRAY,
+                ];
+                break;
+
+            default:
+                $defaultStrategy = self::STORAGE_STRATEGY_SET;
+                $allowedStrategies = [self::STORAGE_STRATEGY_SET];
+        }
+
+        if (! isset($mapping['strategy'])) {
+            $mapping['strategy'] = $defaultStrategy;
+        }
+
+        if (! in_array($mapping['strategy'], $allowedStrategies)) {
+            throw MappingException::invalidStorageStrategy($this->name, $mapping['fieldName'], $mapping['type'], $mapping['strategy']);
+        }
+
+        if (isset($mapping['reference']) && $mapping['type'] === 'many' && $mapping['isOwningSide']
+            && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
+            throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
+        }
     }
 
     /**

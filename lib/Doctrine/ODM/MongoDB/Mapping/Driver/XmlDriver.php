@@ -236,12 +236,13 @@ class XmlDriver extends FileDriver
     private function addEmbedMapping(ClassMetadataInfo $class, $embed, $type)
     {
         $attributes = $embed->attributes();
+        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'type'           => $type,
             'embedded'       => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
-            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
+            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
         );
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
@@ -275,6 +276,7 @@ class XmlDriver extends FileDriver
             $cascade = current($cascade) ?: next($cascade);
         }
         $attributes = $reference->attributes();
+        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'cascade'          => $cascade,
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
@@ -283,7 +285,7 @@ class XmlDriver extends FileDriver
             'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false,
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'             => (string) $attributes['field'],
-            'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
+            'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
             'inversedBy'       => isset($attributes['inversed-by']) ? (string) $attributes['inversed-by'] : null,
             'mappedBy'         => isset($attributes['mapped-by']) ? (string) $attributes['mapped-by'] : null,
             'repositoryMethod' => isset($attributes['repository-method']) ? (string) $attributes['repository-method'] : null,

@@ -1043,7 +1043,7 @@ class DocumentPersister
             return array($fieldName, $value);
         }
 
-        if (isset($mapping['strategy']) && CollectionHelper::isHash($mapping['strategy'])
+        if ($mapping['type'] == 'many' && CollectionHelper::isHash($mapping['strategy'])
                 && isset($e[2])) {
             $objectProperty = $e[2];
             $objectPropertyPrefix = $e[1] . '.';

@@ -114,7 +114,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['address']);
 
         $this->assertEquals(array(
@@ -152,7 +152,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
             'inversedBy' => null,
             'mappedBy' => null,
             'repositoryMethod' => null,
@@ -178,7 +178,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
             'inversedBy' => null,
             'mappedBy' => null,
             'repositoryMethod' => null,

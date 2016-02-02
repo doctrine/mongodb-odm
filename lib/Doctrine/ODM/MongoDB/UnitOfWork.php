@@ -2180,7 +2180,7 @@ class UnitOfWork implements PropertyChangedListener
                             $relatedDocument = clone $relatedDocument;
                             $relatedDocuments[$relatedKey] = $relatedDocument;
                         }
-                        $pathKey = ! isset($mapping['strategy']) || CollectionHelper::isList($mapping['strategy']) ? $count++ : $relatedKey;
+                        $pathKey = CollectionHelper::isList($mapping['strategy']) ? $count++ : $relatedKey;
                         $this->setParentAssociation($relatedDocument, $mapping, $document, $mapping['fieldName'] . '.' . $pathKey);
                     }
                     $this->doPersist($relatedDocument, $visited);
@@ -2537,7 +2537,7 @@ class UnitOfWork implements PropertyChangedListener
             while (null !== ($parentAssoc = $this->getParentAssociation($parent))) {
                 list($mapping, $parent, ) = $parentAssoc;
             }
-            if (isset($mapping['strategy']) && CollectionHelper::isAtomic($mapping['strategy'])) {
+            if (CollectionHelper::isAtomic($mapping['strategy'])) {
                 $class = $this->dm->getClassMetadata(get_class($document));
                 $atomicCollection = $class->getFieldValue($document, $mapping['fieldName']);
                 $this->scheduleCollectionUpdate($atomicCollection);
