@@ -48,7 +48,7 @@ First, setup some documents like the following:
 
         <indexes>
             <index>
-                <key name="coordinates" value="2d" />
+                <key name="coordinates" order="2d" />
             </index>
         </indexes>
 
