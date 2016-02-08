@@ -216,9 +216,9 @@ class DocumentRepository implements ObjectRepository, Selectable
 
         if ($this->class->hasField($fieldName)) {
             return $this->$method(array($fieldName => $arguments[0]));
-        } else {
-            throw MongoDBException::invalidFindByCall($this->documentName, $fieldName, $method . $by);
         }
+
+        throw MongoDBException::invalidFindByCall($this->documentName, $fieldName, $method . $by);
     }
 
     /**
