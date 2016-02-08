@@ -309,10 +309,10 @@ class UnitOfWork implements PropertyChangedListener
     public function getParentAssociation($document)
     {
         $oid = spl_object_hash($document);
-        if ( ! isset($this->parentAssociations[$oid])) {
-            return null;
-        }
-        return $this->parentAssociations[$oid];
+
+        return isset($this->parentAssociations[$oid])
+            ? $this->parentAssociations[$oid]
+            : null;
     }
 
     /**
@@ -577,10 +577,10 @@ class UnitOfWork implements PropertyChangedListener
     public function getDocumentChangeSet($document)
     {
         $oid = spl_object_hash($document);
-        if (isset($this->documentChangeSets[$oid])) {
-            return $this->documentChangeSets[$oid];
-        }
-        return array();
+
+        return isset($this->documentChangeSets[$oid])
+            ? $this->documentChangeSets[$oid]
+            : [];
     }
 
     /**
@@ -2717,10 +2717,10 @@ class UnitOfWork implements PropertyChangedListener
     public function getOriginalDocumentData($document)
     {
         $oid = spl_object_hash($document);
-        if (isset($this->originalDocumentData[$oid])) {
-            return $this->originalDocumentData[$oid];
-        }
-        return array();
+
+        return isset($this->originalDocumentData[$oid])
+            ? $this->originalDocumentData[$oid]
+            : [];
     }
 
     /**
@@ -2755,8 +2755,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getDocumentIdentifier($document)
     {
-        return isset($this->documentIdentifiers[spl_object_hash($document)]) ?
-            $this->documentIdentifiers[spl_object_hash($document)] : null;
+        $oid = spl_object_hash($document);
+        return isset($this->documentIdentifiers[$oid])
+            ? $this->documentIdentifiers[$oid]
+            : null;
     }
 
     /**
