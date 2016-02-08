@@ -36,18 +36,18 @@ class CriteriaMerger
      */
     public function merge(/* array($field => $value), ... */)
     {
-        $merged = array();
+        $criteria = array_filter(func_get_args());
 
-        foreach (func_get_args() as $criteria) {
-            if (empty($criteria)) {
-                continue;
+        if ($criteria) {
+            if (count($criteria) === 1) {
+                return $criteria[0];
             }
 
-            $merged['$and'][] = $criteria;
+            return [
+                '$and' => $criteria
+            ];
         }
 
-        return (isset($merged['$and']) && count($merged['$and']) === 1)
-            ? $merged['$and'][0]
-            : $merged;
+        return [];
     }
 }

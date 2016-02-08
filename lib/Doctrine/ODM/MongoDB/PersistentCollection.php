@@ -716,11 +716,9 @@ class PersistentCollection implements BaseCollection
      */
     public function offsetSet($offset, $value)
     {
-        if ( ! isset($offset)) {
-            return $this->add($value);
-        }
-
-        return $this->set($offset, $value);
+        return isset($offset)
+            ? $this->set($offset, $value)
+            : $this->add($value);
     }
 
     /**
