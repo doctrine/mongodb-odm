@@ -18,6 +18,13 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame(MyEmbedsCollection::class, $cm->fieldMappings['coll']['collectionClass']);
     }
 
+    public function testLeadingBackslashIsRemoved()
+    {
+        $d = new DocumentWithCustomCollection();
+        $cm = $this->dm->getClassMetadata(get_class($d));
+        $this->assertSame(MyDocumentsCollection::class, $cm->fieldMappings['inverseRefMany']['collectionClass']);
+    }
+
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
      * @expectedExceptionMessage stdClass used as custom collection class for stdClass::assoc has to implement Doctrine\Common\Collections\Collection interface.
@@ -145,7 +152,7 @@ class DocumentWithCustomCollection
 
     /**
      * @ODM\ReferenceMany(
-     *   collectionClass="MyDocumentsCollection",
+     *   collectionClass="\Doctrine\ODM\MongoDB\Tests\Functional\MyDocumentsCollection",
      *   mappedBy="refMany",
      *   targetDocument="DocumentWithCustomCollection"
      * )
