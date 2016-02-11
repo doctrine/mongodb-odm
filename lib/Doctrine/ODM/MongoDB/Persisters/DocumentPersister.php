@@ -795,11 +795,12 @@ class DocumentPersister
     {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
+        $repositoryMethod = $mapping['repositoryMethod'];
         $cursor = $this->dm->getRepository($mapping['targetDocument'])
-            ->$mapping['repositoryMethod']($collection->getOwner());
+            ->$repositoryMethod($collection->getOwner());
 
         if ( ! $cursor instanceof CursorInterface) {
-            throw new \BadMethodCallException("Expected repository method {$mapping['repositoryMethod']} to return a CursorInterface");
+            throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return a CursorInterface");
         }
 
         if (isset($mapping['sort'])) {
