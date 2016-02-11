@@ -270,13 +270,13 @@ class PartialIndexOnDocumentTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $email;
 
-    /** @ODM\Integer */
+    /** @ODM\Field(type="integer") */
     public $counter;
 }
 
