@@ -180,8 +180,8 @@ the embedded document. The field name can be customized with the
           tasks:
             discriminatorField: type
 
-You can also specify a discriminator map to avoid storing the fully qualified
-class name in each embedded document:
+You can also specify a discriminator map to avoid storing the |FQCN|
+in each embedded document:
 
 .. configuration-block::
 
@@ -278,3 +278,6 @@ Cascading Operations
 All operations on embedded documents are automatically cascaded.
 This is because embedded documents are part of their parent
 document and cannot exist without those by nature.
+
+.. |FQCN| raw:: html
+  <abbr title="Fully-Qualified Class Name">FQCN</abbr>

@@ -218,8 +218,8 @@ The name of the field within the DBRef object can be customized via the
           favorites:
             discriminatorField: type
 
-You can also specify a discriminator map to avoid storing the fully qualified
-class name in each `DBRef`_ object:
+You can also specify a discriminator map to avoid storing the |FQCN|
+in each `DBRef`_ object:
 
 .. configuration-block::
 
@@ -392,3 +392,5 @@ The valid values are:
 -  **persist** - cascade persist operation to referenced documents.
 
 .. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbref
+.. |FQCN| raw:: html
+  <abbr title="Fully-Qualified Class Name">FQCN</abbr>
