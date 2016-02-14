@@ -975,8 +975,7 @@ class DocumentPersister
                 return array($fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value));
             }
 
-            if (! empty($mapping['reference']) && $mapping['type'] === ClassMetadata::ONE
-                && is_object($value) && ! ($value instanceof \MongoId)) {
+            if (! empty($mapping['reference']) && is_object($value) && ! ($value instanceof \MongoId)) {
                 try {
                     return array($fieldName, $this->dm->createDBRef($value, $mapping));
                 } catch (MappingException $e) {
