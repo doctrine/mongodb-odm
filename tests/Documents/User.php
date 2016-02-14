@@ -53,6 +53,9 @@ class User extends BaseDocument
     /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
+    /** @ODM\ReferenceOne(targetDocument="Account", simple=true, cascade={"all"}) */
+    protected $accountSimple;
+
     /** @ODM\Field(type="int") */
     protected $hits = 0;
 
@@ -184,6 +187,17 @@ class User extends BaseDocument
     public function getAccount()
     {
         return $this->account;
+    }
+
+    public function setAccountSimple(Account $account)
+    {
+        $this->accountSimple = $account;
+        $this->accountSimple->setUser($this);
+    }
+
+    public function getAccountSimple()
+    {
+        return $this->accountSimple;
     }
 
     public function getPhonenumbers()
