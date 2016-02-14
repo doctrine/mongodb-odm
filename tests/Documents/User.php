@@ -41,6 +41,9 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
     protected $groups;
 
+    /** @ODM\ReferenceMany(targetDocument="Group", simple=true, cascade={"all"}) */
+    protected $groupsSimple;
+
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}, strategy="addToSet") */
     protected $uniqueGroups;
 
@@ -82,6 +85,7 @@ class User extends BaseDocument
         $this->phonebooks = new ArrayCollection();
         $this->phonenumbers = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->groupsSimple = new ArrayCollection();
         $this->sortedGroups = new ArrayCollection();
         $this->sortedGroupsAsc = new ArrayCollection();
         $this->posts = new ArrayCollection();
@@ -244,6 +248,11 @@ class User extends BaseDocument
             }
         }
         return false;
+    }
+
+    public function addGroupSimple(Group $group)
+    {
+        $this->groupsSimple[] = $group;
     }
 
     public function getUniqueGroups()

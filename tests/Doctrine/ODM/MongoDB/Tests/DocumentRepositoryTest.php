@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\LockMode;
 use Documents\Account;
 use Documents\Address;
 use Documents\Group;
+use Documents\Phonenumber;
 use Documents\User;
 
 class DocumentRepositoryTest extends BaseTest
@@ -61,5 +62,37 @@ class DocumentRepositoryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
         $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['address' => $address]));
+    }
+
+    public function testFindByRefManyFull()
+    {
+        $user = new User();
+        $group = new Group('group');
+        $user->addGroup($group);
+        $this->dm->persist($user);
+        $this->dm->persist($group);
+        $this->dm->flush();
+        $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['groups' => $group]));
+    }
+
+    public function testFindByRefManySimple()
+    {
+        $user = new User();
+        $group = new Group('group');
+        $user->addGroupSimple($group);
+        $this->dm->persist($user);
+        $this->dm->persist($group);
+        $this->dm->flush();
+        $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['groupsSimple' => $group]));
+    }
+
+    public function testFindByEmbedMany()
+    {
+        $user = new User();
+        $phonenumber = new Phonenumber('12345678');
+        $user->addPhonenumber($phonenumber);
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['phonenumbers' => $phonenumber]));
     }
 }
