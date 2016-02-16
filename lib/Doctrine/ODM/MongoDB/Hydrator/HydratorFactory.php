@@ -452,6 +452,15 @@ EOF
         $data = $this->getHydratorFor($metadata->name)->hydrate($document, $data, $hints);
         if ($document instanceof Proxy) {
             $document->__isInitialized__ = true;
+            $document->__setInitializer(null);
+            $document->__setCloner(null);
+            // lazy properties may be left uninitialized
+            $properties = $document->__getLazyProperties();
+            foreach ($properties as $propertyName => $property) {
+                if ( ! isset($document->$propertyName)) {
+                    $document->$propertyName = $properties[$propertyName];
+                }
+            }
         }
 
         // Invoke the postLoad lifecycle callbacks and listeners
