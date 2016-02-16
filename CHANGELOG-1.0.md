@@ -12,8 +12,20 @@ the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
-1.0.x-dev
----------
+1.0.5 (2016-02-16)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.0.5 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.5).
+
+* [#1266](https://github.com/doctrine/mongodb-odm/pull/1266) excludes changes to inverse side of relationship from change set.
+* [#1313](https://github.com/doctrine/mongodb-odm/pull/1313) fixes querying for empty collection of simple references.
+* [#1319](https://github.com/doctrine/mongodb-odm/pull/1319) fixes creation of discriminated documents during upserts.
+* [#1320](https://github.com/doctrine/mongodb-odm/pull/1320) lets `ReflectionException` bubble when mapping not existing field.
+* [#1328](https://github.com/doctrine/mongodb-odm/pull/1328) fixes compatibility with version 2.6 of `doctrine/common`.
+* [#1341](https://github.com/doctrine/mongodb-odm/pull/1341) fixes XSD entry for `repository-method`.
+* [#1355](https://github.com/doctrine/mongodb-odm/pull/1355) fixes initialization of mapped `public` properties when hydrating into `Proxy`.
+
 
 1.0.4 (2015-12-15)
 ------------------
