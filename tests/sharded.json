@@ -1,0 +1,42 @@
+{
+  "configsvrs": [
+    {
+      "dbpath": "$DBPATH/db27117",
+      "logpath": "$LOGPATH/configsvr27117.log",
+      "port": 27117
+    }
+  ],
+  "id": "shard_cluster_1",
+  "shards": [
+    {
+      "id": "sh01",
+      "shardParams": {
+        "procParams": {
+          "dbpath": "$DBPATH/db27217",
+          "logpath": "$LOGPATH/sh01.log",
+          "port": 27217
+        }
+      }
+    },
+    {
+      "id": "sh02",
+      "shardParams": {
+        "procParams": {
+          "dbpath": "$DBPATH/db27218",
+          "logpath": "$LOGPATH/sh02.log",
+          "port": 27218
+        }
+      }
+    }
+  ],
+  "routers": [
+    {
+      "logpath": "$LOGPATH/router27017.log",
+      "port": 27017
+    },
+    {
+      "logpath": "$LOGPATH/router27018.log",
+      "port": 27018
+    }
+  ]
+}
