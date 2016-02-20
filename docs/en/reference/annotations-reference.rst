@@ -419,7 +419,7 @@ Optional attributes:
 -
     strategy - The strategy used to persist changes to the collection. Possible
     values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
-    is the default. See :ref:`collection_strategies` for more information.
+    is the default. See :ref:`storage_strategies` for more information.
 
 .. code-block:: php
 
@@ -738,7 +738,8 @@ This is useful if many requests are attempting to update the field concurrently.
 .. note::
 
     This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "increment".
+    `@Field`_ annotation with type "int" or "float" and use the "increment"
+    strategy.
 
 @Index
 ------
@@ -1196,7 +1197,7 @@ Optional attributes:
 -
     strategy - The strategy used to persist changes to the collection. Possible
     values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
-    is the default. See :ref:`collection_strategies` for more information.
+    is the default. See :ref:`storage_strategies` for more information.
 
 .. code-block:: php
 

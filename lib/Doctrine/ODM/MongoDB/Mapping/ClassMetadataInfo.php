@@ -142,6 +142,23 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     const CHANGETRACKING_NOTIFY = 3;
 
     /**
+     * SET means that fields will be written to the database using a $set operator
+     */
+    const STORAGE_STRATEGY_SET = 'set';
+
+    /**
+     * INCREMENT means that fields will be written to the database by calculating
+     * the difference and using the $inc operator
+     */
+    const STORAGE_STRATEGY_INCREMENT = 'increment';
+
+    const STORAGE_STRATEGY_PUSH_ALL = 'pushAll';
+    const STORAGE_STRATEGY_ADD_TO_SET = 'addToSet';
+    const STORAGE_STRATEGY_ATOMIC_SET = 'atomicSet';
+    const STORAGE_STRATEGY_ATOMIC_SET_ARRAY = 'atomicSetArray';
+    const STORAGE_STRATEGY_SET_ARRAY = 'setArray';
+
+    /**
      * READ-ONLY: The name of the mongo database the document is mapped to.
      */
     public $db;
@@ -1119,6 +1136,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['type']) && $mapping['type'] === 'file') {
             $mapping['file'] = true;
         }
+        if (isset($mapping['type']) && $mapping['type'] === 'increment') {
+            $mapping['strategy'] = self::STORAGE_STRATEGY_INCREMENT;
+        }
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
             $mapping['name'] = 'file';
@@ -1146,6 +1166,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             }
             unset($this->generatorOptions['type']);
         }
+
         if ( ! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
         }
@@ -1213,10 +1234,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             }
         }
 
-        if (isset($mapping['reference']) && $mapping['type'] === 'many' && $mapping['isOwningSide']
-            && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
-            throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
-        }
+        $this->applyStorageStrategy($mapping);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
         if (isset($mapping['association'])) {
@@ -1224,6 +1242,55 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         }
 
         return $mapping;
+    }
+
+    /**
+     * Validates the storage strategy of a mapping for consistency
+     * @param array $mapping
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     */
+    private function applyStorageStrategy(array &$mapping)
+    {
+        if (! isset($mapping['type']) || isset($mapping['id'])) {
+            return;
+        }
+
+        switch (true) {
+            case $mapping['type'] == 'int':
+            case $mapping['type'] == 'float':
+                $defaultStrategy = self::STORAGE_STRATEGY_SET;
+                $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
+                break;
+
+            case $mapping['type'] == 'many':
+                $defaultStrategy = CollectionHelper::DEFAULT_STRATEGY;
+                $allowedStrategies = [
+                    self::STORAGE_STRATEGY_PUSH_ALL,
+                    self::STORAGE_STRATEGY_ADD_TO_SET,
+                    self::STORAGE_STRATEGY_SET,
+                    self::STORAGE_STRATEGY_SET_ARRAY,
+                    self::STORAGE_STRATEGY_ATOMIC_SET,
+                    self::STORAGE_STRATEGY_ATOMIC_SET_ARRAY,
+                ];
+                break;
+
+            default:
+                $defaultStrategy = self::STORAGE_STRATEGY_SET;
+                $allowedStrategies = [self::STORAGE_STRATEGY_SET];
+        }
+
+        if (! isset($mapping['strategy'])) {
+            $mapping['strategy'] = $defaultStrategy;
+        }
+
+        if (! in_array($mapping['strategy'], $allowedStrategies)) {
+            throw MappingException::invalidStorageStrategy($this->name, $mapping['fieldName'], $mapping['type'], $mapping['strategy']);
+        }
+
+        if (isset($mapping['reference']) && $mapping['type'] === 'many' && $mapping['isOwningSide']
+            && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
+            throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
+        }
     }
 
     /**

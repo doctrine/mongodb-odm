@@ -233,12 +233,13 @@ class YamlDriver extends FileDriver
 
     private function addMappingFromEmbed(ClassMetadataInfo $class, $fieldName, $embed, $type)
     {
+        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'type'           => $type,
             'embedded'       => true,
             'targetDocument' => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
             'fieldName'      => $fieldName,
-            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
+            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : $defaultStrategy,
         );
         if (isset($embed['name'])) {
             $mapping['name'] = $embed['name'];
@@ -257,6 +258,7 @@ class YamlDriver extends FileDriver
 
     private function addMappingFromReference(ClassMetadataInfo $class, $fieldName, $reference, $type)
     {
+        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'cascade'          => isset($reference['cascade']) ? $reference['cascade'] : null,
             'orphanRemoval'    => isset($reference['orphanRemoval']) ? $reference['orphanRemoval'] : false,
@@ -265,7 +267,7 @@ class YamlDriver extends FileDriver
             'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false,
             'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'fieldName'        => $fieldName,
-            'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : CollectionHelper::DEFAULT_STRATEGY,
+            'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : $defaultStrategy,
             'inversedBy'       => isset($reference['inversedBy']) ? (string) $reference['inversedBy'] : null,
             'mappedBy'         => isset($reference['mappedBy']) ? (string) $reference['mappedBy'] : null,
             'repositoryMethod' => isset($reference['repositoryMethod']) ? (string) $reference['repositoryMethod'] : null,

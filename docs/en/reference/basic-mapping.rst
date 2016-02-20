@@ -166,7 +166,6 @@ Here is a quick overview of the built-in mapping types:
 -  ``float``
 -  ``hash``
 -  ``id``
--  ``increment``
 -  ``int``
 -  ``key``
 -  ``object_id``
@@ -197,7 +196,6 @@ This list explains some of the less obvious mapping types:
 -  ``hash``: associative array to MongoDB object
 -  ``id``: string to MongoId by default, but other formats are possible
 -  ``timestamp``: string to MongoTimestamp
--  ``increment``: integer in both PHP and MongoDB
 -  ``raw``: any type
 
 .. note::

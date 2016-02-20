@@ -10,7 +10,7 @@ abstract class BaseEmployee
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\Field(type="increment") */
+    /** @ODM\Field(type="int", strategy="increment") */
     protected $changes = 0;
 
     /** @ODM\Field(type="collection") */

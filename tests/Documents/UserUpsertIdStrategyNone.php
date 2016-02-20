@@ -24,7 +24,7 @@ class UserUpsertIdStrategyNone
     /** @ODM\Field(type="int") */
     public $hits;
 
-    /** @ODM\Field(type="increment") */
+    /** @ODM\Field(type="int", strategy="increment") */
     public $count;
 
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */

@@ -20,6 +20,7 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -103,7 +104,7 @@ class PersistenceBuilder
             // We're excluding collections using addToSet since there is a risk
             // of duplicated entries stored in the collection
             } elseif ($mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
-                    && $mapping['strategy'] !== 'addToSet' && ! $new->isEmpty()) {
+                    && $mapping['strategy'] !== ClassMetadataInfo::STORAGE_STRATEGY_ADD_TO_SET && ! $new->isEmpty()) {
                 $insertData[$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
             }
         }
@@ -140,26 +141,20 @@ class PersistenceBuilder
 
             list($old, $new) = $change;
 
-            // @Inc
-            if ($mapping['type'] === 'increment') {
-                if ($new === null) {
-                    if ($mapping['nullable'] === true) {
-                        $updateData['$set'][$mapping['name']] = null;
-                    } else {
-                        $updateData['$unset'][$mapping['name']] = true;
-                    }
-                } elseif ($new >= $old) {
-                    $updateData['$inc'][$mapping['name']] = $new - $old;
-                } else {
-                    $updateData['$inc'][$mapping['name']] = ($old - $new) * -1;
-                }
-
-            // @Field, @String, @Date, etc.
-            } elseif ( ! isset($mapping['association'])) {
-                if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData['$set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
-                } else {
+            // Scalar fields
+            if ( ! isset($mapping['association'])) {
+                if ($new === null && $mapping['nullable'] !== true) {
                     $updateData['$unset'][$mapping['name']] = true;
+                } else {
+                    if ($new !== null && $mapping['strategy'] === ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT) {
+                        $operator = '$inc';
+                        $value = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
+                    } else {
+                        $operator = '$set';
+                        $value = $new === null ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                    }
+
+                    $updateData[$operator][$mapping['name']] = $value;
                 }
 
             // @EmbedOne
@@ -246,31 +241,28 @@ class PersistenceBuilder
 
             list($old, $new) = $change;
 
-            // @Inc
-            if ($mapping['type'] === 'increment') {
-                if ($new >= $old) {
-                    $updateData['$inc'][$mapping['name']] = $new - $old;
-                } else {
-                    $updateData['$inc'][$mapping['name']] = ($old - $new) * -1;
-                }
+            // Scalar fields
+            if ( ! isset($mapping['association'])) {
+                if ($new !== null || $mapping['nullable'] === true) {
+                    if ($new !== null && $mapping['strategy'] === ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT) {
+                        $operator = '$inc';
+                        $value = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
+                    } else {
+                        $operator = '$set';
+                        $value = $new === null ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                    }
 
-            // @Field, @String, @Date, etc.
-            } elseif ( ! isset($mapping['association'])) {
-                if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData['$set'][$mapping['name']] = (is_null($new) ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new));
+                    $updateData[$operator][$mapping['name']] = $value;
                 }
 
             // @EmbedOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
+                // If we don't have a new value then do nothing on upsert
                 // If we have a new embedded document then lets set the whole thing
                 if ($new && $this->uow->isScheduledForInsert($new)) {
                     $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
-
-                // If we don't have a new value then do nothing on upsert
-                } elseif ( ! $new) {
-
-                // Update existing embedded document
-                } else {
+                } elseif ($new) {
+                    // Update existing embedded document
                     $update = $this->prepareUpsertData($new);
                     foreach ($update as $cmd => $values) {
                         foreach ($values as $key => $value) {

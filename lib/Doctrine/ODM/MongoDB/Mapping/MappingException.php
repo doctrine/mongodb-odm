@@ -275,4 +275,16 @@ class MappingException extends BaseMappingException
     {
         return new self("ReferenceMany's sort can not be used with addToSet and pushAll strategies, $strategy used in $className::$fieldName");
     }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @param string $type
+     * @param string $strategy
+     * @return MappingException
+     */
+    public static function invalidStorageStrategy($className, $fieldName, $type, $strategy)
+    {
+        return new self("Invalid strategy $strategy used in $className::$fieldName with type $type");
+    }
 }

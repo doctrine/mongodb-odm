@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 require_once 'fixtures/InvalidPartialFilterDocument.php';
 require_once 'fixtures/PartialFilterDocument.php';
@@ -57,7 +58,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'unique' => true,
-            'sparse' => true
+            'sparse' => true,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['username']);
         
         $this->assertEquals(array(
@@ -78,7 +80,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isCascadeRemove' => false,
             'isInverseSide' => false,
             'isOwningSide' => true,
-            'nullable' => false
+            'nullable' => false,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['createdAt']);
 
         $this->assertEquals(array(
@@ -93,6 +96,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['tags']);
 
         $this->assertEquals(array(
@@ -110,7 +114,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => 'pushAll',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['address']);
 
         $this->assertEquals(array(
@@ -128,7 +132,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => 'pushAll',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
         ), $classMetadata->fieldMappings['phonenumbers']);
 
         $this->assertEquals(array(
@@ -148,7 +152,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => 'pushAll',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
             'inversedBy' => null,
             'mappedBy' => null,
             'repositoryMethod' => null,
@@ -174,7 +178,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => 'pushAll',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
             'inversedBy' => null,
             'mappedBy' => null,
             'repositoryMethod' => null,
@@ -200,7 +204,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => 'pushAll',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
             'inversedBy' => null,
             'mappedBy' => null,
             'repositoryMethod' => null,
@@ -239,6 +243,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['name']);
     }
 

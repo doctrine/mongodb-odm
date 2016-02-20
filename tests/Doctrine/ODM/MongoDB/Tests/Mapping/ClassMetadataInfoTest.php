@@ -248,7 +248,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fieldName' => 'many',
             'reference' => true,
             'type' => 'many',
-            'strategy' => 'atomicSet',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET,
         ));
     }
 
@@ -261,7 +261,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $config = array_merge($config, array(
             'fieldName' => 'many',
             'reference' => true,
-            'strategy' => 'atomicSet',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET,
         ));
 
         $cm = new ClassMetadataInfo('stdClass');
@@ -323,7 +323,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->mapField(array(
             'fieldName' => 'ref',
             'reference' => true,
-            'strategy' => 'pushAll',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
             'type' => 'many',
             'sort' => array('foo' => 1)
         ));
