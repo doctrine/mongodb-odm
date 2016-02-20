@@ -188,6 +188,27 @@ Alias of `@Field`_, with "type" attribute set to "boolean".
     This annotation is deprecated and will be removed in ODM 2.0. Please use the
     `@Field`_ annotation with type "bool".
 
+@ChangeTrackingPolicy
+---------------------
+
+This annotation is used to change the change tracking policy for a document:
+
+.. code-block:: php
+
+    <?php
+
+    /**
+     * @Document
+     * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+     */
+    class Person
+    {
+        // ...
+    }
+
+For a list of available policies, read the section on :ref:`change tracking policies <change_tracking_policies>`.
+
+
 @Collection
 -----------
 
