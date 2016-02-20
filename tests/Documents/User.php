@@ -41,6 +41,9 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
     protected $groups;
 
+    /** @ODM\ReferenceMany(targetDocument="Group", simple=true, cascade={"all"}) */
+    protected $groupsSimple;
+
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}, strategy="addToSet") */
     protected $uniqueGroups;
 
@@ -52,6 +55,9 @@ class User extends BaseDocument
 
     /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
+
+    /** @ODM\ReferenceOne(targetDocument="Account", simple=true, cascade={"all"}) */
+    protected $accountSimple;
 
     /** @ODM\Field(type="int") */
     protected $hits = 0;
@@ -82,6 +88,7 @@ class User extends BaseDocument
         $this->phonebooks = new ArrayCollection();
         $this->phonenumbers = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->groupsSimple = new ArrayCollection();
         $this->sortedGroups = new ArrayCollection();
         $this->sortedGroupsAsc = new ArrayCollection();
         $this->posts = new ArrayCollection();
@@ -189,6 +196,17 @@ class User extends BaseDocument
         return $this->account;
     }
 
+    public function setAccountSimple(Account $account)
+    {
+        $this->accountSimple = $account;
+        $this->accountSimple->setUser($this);
+    }
+
+    public function getAccountSimple()
+    {
+        return $this->accountSimple;
+    }
+
     public function getPhonenumbers()
     {
         return $this->phonenumbers;
@@ -233,6 +251,11 @@ class User extends BaseDocument
             }
         }
         return false;
+    }
+
+    public function addGroupSimple(Group $group)
+    {
+        $this->groupsSimple[] = $group;
     }
 
     public function getUniqueGroups()

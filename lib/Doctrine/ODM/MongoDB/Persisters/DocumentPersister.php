@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -972,6 +973,14 @@ class DocumentPersister
             if ( ! empty($mapping['embedded']) && is_object($value) &&
                 ! $this->dm->getMetadataFactory()->isTransient(get_class($value))) {
                 return array($fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value));
+            }
+
+            if (! empty($mapping['reference']) && is_object($value) && ! ($value instanceof \MongoId)) {
+                try {
+                    return array($fieldName, $this->dm->createDBRef($value, $mapping));
+                } catch (MappingException $e) {
+                    // do nothing in case passed object is not mapped document
+                }
             }
 
             // No further preparation unless we're dealing with a simple reference
