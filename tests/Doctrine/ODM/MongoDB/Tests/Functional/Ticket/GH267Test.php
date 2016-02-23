@@ -60,7 +60,7 @@ class User
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $name;
 
     /**

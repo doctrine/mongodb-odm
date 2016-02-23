@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @author Vadim Tyukov <brainreflex@gmail.com>
  * @since 6/26/12
  */
 class GH232Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -44,7 +43,7 @@ class Product
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="Price") */
@@ -75,6 +74,6 @@ class SubProduct
 /** @ODM\EmbeddedDocument */
 class Price
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $price;
 }

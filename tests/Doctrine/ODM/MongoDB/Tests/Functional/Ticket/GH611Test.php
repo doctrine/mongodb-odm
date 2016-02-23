@@ -128,10 +128,10 @@ class GH611Document
 /** @ODM\EmbeddedDocument */
 class GH611EmbeddedDocument
 {
-    /** @ODM\Integer */
+    /** @ODM\Field(type="int") */
     public $id;
 
-    /** @ODM\String(name="n") */
+    /** @ODM\Field(name="n", type="string") */
     public $name;
 
     public function __construct($id, $name)

@@ -25,7 +25,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * The HydratorInterface defines methods all hydrator need to implement
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 interface HydratorInterface
 {

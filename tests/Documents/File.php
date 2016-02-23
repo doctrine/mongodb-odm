@@ -11,13 +11,13 @@ class File
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     /** @ODM\File */
     private $file;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $filename;
 
     /** @ODM\NotSaved(type="int") */

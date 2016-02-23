@@ -27,7 +27,6 @@ use Symfony\Component\Console;
  * Command to query mongodb and inspect the outputted results from your document classes.
  *
  * @since   1.0
- * @author  Jonathan Wage <jonwage@gmail.com>
  */
 class QueryCommand extends Console\Command\Command
 {

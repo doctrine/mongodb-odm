@@ -13,12 +13,12 @@ class DoctrineGlobal_Article
     protected $id;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $headline;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $text;
 
@@ -44,13 +44,13 @@ class DoctrineGlobal_User
     private $id;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      * @var string
      */
     private $username;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      * @var string
      */
     private $email;

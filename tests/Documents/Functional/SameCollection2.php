@@ -15,12 +15,12 @@ class SameCollection2
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $ok;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $w00t;
 }

@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class CmsPhonenumber
 {
-    /** @ODM\Id(type="custom_id") */
+    /** @ODM\Id(strategy="NONE", type="custom_id") */
     public $phonenumber;
 
     /**

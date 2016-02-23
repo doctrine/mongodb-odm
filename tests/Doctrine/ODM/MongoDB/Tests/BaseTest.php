@@ -63,8 +63,19 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     protected function createTestDocumentManager()
     {
         $config = $this->getConfiguration();
-        $conn = new Connection(DOCTRINE_MONGODB_SERVER, array(), $config);
+        $conn = new Connection(
+            getenv("DOCTRINE_MONGODB_SERVER") ?: DOCTRINE_MONGODB_SERVER,
+            array(),
+            $config
+        );
 
         return DocumentManager::create($conn, $config);
+    }
+
+    protected function getServerVersion()
+    {
+        $result = $this->dm->getConnection()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(array('buildInfo' => 1));
+
+        return $result['version'];
     }
 }

@@ -23,7 +23,7 @@ property:
             /** @Id */
             public $id;
     
-            /** @String @Index */
+            /** @Field(type="string") @Index */
             public $username;
         }
 
@@ -72,6 +72,13 @@ You can customize the index with some additional options:
    **sparse** - Create a sparse index. If a unique index is being created
    the sparse option will allow duplicate null entries, but the field must be
    unique otherwise.
+-
+   **partialFilterExpression** - Create a partial index. Partial indexes only
+   index the documents in a collection that meet a specified filter expression.
+   By indexing a subset of the documents in a collection, partial indexes have
+   lower storage requirements and reduced performance costs for index creation
+   and maintenance. This feature was introduced with MongoDB 3.2 and is not
+   available on older versions.
 
 Unique Index
 ------------
@@ -90,7 +97,7 @@ Unique Index
             /** @Id */
             public $id;
     
-            /** @String @Index(unique=true, order="asc") */
+            /** @Field(type="string") @Index(unique=true, order="asc") */
             public $username;
         }
 
@@ -123,7 +130,7 @@ For your convenience you can quickly specify a unique index with
             /** @Id */
             public $id;
     
-            /** @String @UniqueIndex(order="asc") */
+            /** @Field(type="string") @UniqueIndex(order="asc") */
             public $username;
         }
 
@@ -158,10 +165,10 @@ you can specify them on the class doc block:
             /** @Id */
             public $id;
     
-            /** @Integer */
+            /** @Field(type="int") */
             public $accountId;
     
-            /** @String */
+            /** @Field(type="string") */
             public $username;
         }
 
@@ -217,10 +224,10 @@ annotation:
             /** @Id */
             public $id;
     
-            /** @Integer */
+            /** @Field(type="int") */
             public $accountId;
     
-            /** @String */
+            /** @Field(type="string") */
             public $username;
         }
 
@@ -272,7 +279,7 @@ documents.
     /** @EmbeddedDocument */
     class Comment
     {
-        /** @Date @Index */
+        /** @Field(type="date") @Index */
         private $date;
 
         // ...
@@ -317,7 +324,16 @@ database:
 Also, for your convenience you can create the indexes for your mapped documents from the
 :doc:`console <console-commands>`:
 
+..
+
     $ php mongodb.php mongodb:schema:create --index
+
+.. note::
+
+    If you are :ref:`mixing document types <embed_mixing_document_types>` for your
+    embedded documents, ODM will not be able to create indexes for their fields
+    unless you specify a discriminator map for the :ref:`embed-one <embed_one>`
+    or :ref:`embed-many <embed_many>` relationship.
 
 Geospatial Indexing
 -------------------
@@ -347,10 +363,10 @@ options structures manually:
         /** @EmbeddedDocument */
         class Coordinates
         {
-            /** @Float */
+            /** @Field(type="float") */
             public $latitude;
     
-            /** @Float */
+            /** @Field(type="float") */
             public $longitude;
         }
 
@@ -358,7 +374,7 @@ options structures manually:
 
         <indexes>
             <index>
-                <key name="coordinates" value="2d" />
+                <key name="coordinates" order="2d" />
             </index>
         </indexes>
 
@@ -390,7 +406,7 @@ make it to the database and cause performance problems.
             /** @Id */
             public $id;
     
-            /** @String @Index */
+            /** @Field(type="string") @Index */
             public $city;
         }
 

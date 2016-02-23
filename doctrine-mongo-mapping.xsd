@@ -64,7 +64,7 @@
     <xs:attribute name="id" type="xs:boolean" default="false" />
     <xs:attribute name="name" type="xs:NMTOKEN" />
     <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
-    <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
+    <xs:attribute name="strategy" type="xs:NMTOKEN" default="set" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
     <xs:attribute name="embed" type="xs:boolean" />
     <xs:attribute name="file" type="xs:boolean" />
@@ -128,7 +128,7 @@
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
-    <xs:attribute name="repositoryMethod" type="xs:NMTOKEN" />
+    <xs:attribute name="repository-method" type="xs:NMTOKEN" />
     <xs:attribute name="orphan-removal" type="xs:boolean" />
   </xs:complexType>
 
@@ -256,10 +256,45 @@
     <xs:attribute name="value" type="xs:NMTOKEN" use="required" />
   </xs:complexType>
 
+  <xs:simpleType name="partial-filter-expression-operator">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="eq"/>
+      <xs:enumeration value="exists"/>
+      <xs:enumeration value="gt"/>
+      <xs:enumeration value="gte"/>
+      <xs:enumeration value="lt"/>
+      <xs:enumeration value="lte"/>
+      <xs:enumeration value="type"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="partial-filter-expression-field">
+    <xs:sequence>
+      <xs:element name="field" type="odm:partial-filter-expression-field" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+    <xs:attribute name="operator" type="odm:partial-filter-expression-operator" use="optional" />
+    <xs:attribute name="value" type="xs:string" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="partial-filter-expression-and">
+    <xs:sequence>
+      <xs:element name="field" type="odm:partial-filter-expression-field" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="partial-filter-expression">
+    <xs:choice>
+      <xs:element name="and" type="odm:partial-filter-expression-and" minOccurs="1" maxOccurs="unbounded" />
+      <xs:element name="field" type="odm:partial-filter-expression-field" minOccurs="1" maxOccurs="unbounded" />
+    </xs:choice>
+  </xs:complexType>
+
   <xs:complexType name="index">
     <xs:sequence>
       <xs:element name="key" type="odm:index-key" minOccurs="1" maxOccurs="unbounded"/>
       <xs:element name="option" type="odm:index-option" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="partial-filter-expression" type="odm:partial-filter-expression" minOccurs="0" maxOccurs="1"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN"/>
     <xs:attribute name="drop-dups" type="xs:boolean"/>

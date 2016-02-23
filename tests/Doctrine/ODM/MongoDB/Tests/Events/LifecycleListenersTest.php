@@ -196,7 +196,7 @@ class TestDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="TestEmbeddedDocument") */
@@ -215,7 +215,7 @@ class TestDocument
 /** @ODM\EmbeddedDocument */
 class TestEmbeddedDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }
 
@@ -226,7 +226,7 @@ class TestProfile
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedOne(targetDocument="Image") */
@@ -238,7 +238,7 @@ class TestProfile
  */
 class Image
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="Thumbnail") */
@@ -255,7 +255,7 @@ class Image
  */
 class Thumbnail
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)

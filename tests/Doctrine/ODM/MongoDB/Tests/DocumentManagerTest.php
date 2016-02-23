@@ -3,11 +3,9 @@
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 
-/**
- * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
- */
 class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testCustomRepository()
@@ -185,6 +183,29 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->getDocumentCollection('c');
     }
 
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Cannot create a DBRef for class Documents\User without an identifier. Have you forgotten to persist/merge the document first?
+     */
+    public function testCannotCreateDbRefWithoutId()
+    {
+        $d = new \Documents\User();
+        $this->dm->createDBRef($d);
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Simple reference must not target document using Single Collection Inheritance, Documents\Tournament\Participant targeted.
+     */
+    public function testDisriminatedSimpleReferenceFails()
+    {
+        $d = new WrongSimpleRefDocument();
+        $r = new \Documents\Tournament\ParticipantSolo('Maciej');
+        $this->dm->persist($r);
+        $class = $this->dm->getClassMetadata(get_class($d));
+        $this->dm->createDBRef($r, $class->associationMappings['ref']);
+    }
+
     private function getMockClassMetadataFactory()
     {
         return $this->getMockBuilder('Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory')
@@ -198,4 +219,14 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->disableOriginalConstructor()
             ->getMock();
     }
+}
+
+/** @ODM\Document */
+class WrongSimpleRefDocument
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\ReferenceOne(targetDocument="Documents\Tournament\Participant", simple=true) */
+    public $ref;
 }

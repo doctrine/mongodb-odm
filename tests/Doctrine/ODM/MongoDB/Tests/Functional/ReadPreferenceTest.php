@@ -10,10 +10,6 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function setUp()
     {
-        if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
-            $this->markTestSkipped('This test is not applicable to driver versions < 1.3.0');
-        }
-
         parent::setUp();
 
         $user = new User();

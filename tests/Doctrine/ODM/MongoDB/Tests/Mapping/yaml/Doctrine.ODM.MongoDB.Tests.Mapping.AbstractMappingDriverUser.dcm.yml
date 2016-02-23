@@ -31,6 +31,8 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
       index:
         order: asc
         expireAfterSeconds: 3600
+    roles:
+      type: collection
   indexes:
     index1:
       keys:
@@ -44,6 +46,13 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
       options:
         unique: true
         dropDups: true
+    index3:
+      keys:
+        lock: asc
+      options:
+        partialFilterExpression:
+          version: { $gt: 1 }
+          discr: { $eq: 'default' }
   referenceOne:
     address:
       targetDocument: Address

@@ -9,8 +9,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * ResolveTargetDocumentListener
  *
  * Mechanism to overwrite document interfaces or classes specified as association targets.
- *
- * @author Nikolai Zujev <nikolai.zujev@gmail.com>
  */
 class ResolveTargetDocumentListener
 {

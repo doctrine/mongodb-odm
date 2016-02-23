@@ -1,29 +1,37 @@
-.. _collection_strategies:
+.. _storage_strategies:
 
-Collection Strategies
-=====================
+Storage Strategies
+==================
 
-Doctrine MongoDB ODM implements four different strategies for persisting changes
-to collections of embedded documents or references. These strategies apply to
-the following mapping types:
+Doctrine MongoDB ODM implements several different strategies for persisting changes
+to mapped fields. These strategies apply to the following mapping types:
 
+- :ref:`int`
+- :ref:`float`
 - :ref:`embed_many`
 - :ref:`reference_many`
 
-Internally, Doctrine tracks changes via the PersistentCollection class. The
+For collections, Doctrine tracks changes via the PersistentCollection class. The
 strategies described on this page are implemented by the CollectionPersister
-class.
+class. The ``increment`` strategy cannot be used for collections.
 
-``addToSet``
-------------
+increment
+---------
+
+The ``increment`` strategy does not apply to collections but can be used for
+``int`` and ``float`` fields. When using the ``increment`` strategy, the field
+value will be updated using the `$inc`_ operator.
+
+addToSet
+--------
 
 The ``addToSet`` strategy uses MongoDB's `$addToSet`_ operator to insert
 elements into the array. This strategy is useful for ensuring that duplicate
 values will not be inserted into the collection. Like the `pushAll`_ strategy,
 elements are inserted in a separate query after removing deleted elements.
 
-``set``
--------
+set
+---
 
 The ``set`` strategy uses MongoDB's `$set`_ operator to update the entire
 collection with a single update query.
@@ -37,23 +45,25 @@ collection with a single update query.
     `setArray`_ strategy if you want to ensure that the collection is always
     stored as a BSON array.
 
-``setArray``
-------------
+setArray
+--------
 
 The ``setArray`` strategy uses MongoDB's `$set`_ operator, just like the ``set``
 strategy, but will first numerically reindex the collection to ensure that it is
 stored as a BSON array.
 
-``pushAll``
------------
+pushAll
+-------
 
 The ``pushAll`` strategy uses MongoDB's `$pushAll`_ operator to insert
 elements into the array. MongoDB does not allow elements to be added and removed
 from an array in a single operation, so this strategy relies on multiple update
 queries to remove and insert elements (in that order).
 
-``atomicSet``
--------------
+.. _atomic_set:
+
+atomicSet
+---------
 
 The ``atomicSet`` strategy uses MongoDB's `$set`_ operator to update the entire
 collection with a single update query. Unlike with ``set`` strategy there will
@@ -66,8 +76,10 @@ strategy can be especially useful when dealing with high concurrency and
     The ``atomicSet`` and ``atomicSetArray`` strategies may only be used for 
     collections mapped directly in a top-level document.
 
-``atomicSetArray``
-------------------
+.. _atomic_set_array:
+
+atomicSetArray
+--------------
 
 The ``atomicSetArray`` strategy works exactly like ``atomicSet`` strategy,  but 
 will first numerically reindex the collection to ensure that it is stored as a 
@@ -79,6 +91,7 @@ BSON array.
     collections mapped directly in a top-level document.
 
 .. _`$addToSet`: http://docs.mongodb.org/manual/reference/operator/addToSet/
+.. _`$inc`: http://docs.mongodb.org/manual/reference/operator/inc/
 .. _`$pushAll`: http://docs.mongodb.org/manual/reference/operator/pushAll/
 .. _`$set`: http://docs.mongodb.org/manual/reference/operator/set/
 .. _`$unset`: http://docs.mongodb.org/manual/reference/operator/unset/

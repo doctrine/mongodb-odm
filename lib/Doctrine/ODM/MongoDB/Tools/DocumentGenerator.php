@@ -37,10 +37,6 @@ use Doctrine\ODM\MongoDB\Types\Type;
  *     $generator->generate($classes, '/path/to/generate/documents');
  *
  * @since   1.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class DocumentGenerator
 {
@@ -179,7 +175,7 @@ public function <methodName>()
         $dir = dirname($path);
 
         if ( ! is_dir($dir)) {
-            mkdir($dir, 0777, true);
+            mkdir($dir, 0775, true);
         }
 
         $this->isNew = ! file_exists($path) || (file_exists($path) && $this->regenerateDocumentIfExists);
@@ -203,6 +199,7 @@ public function <methodName>()
         } elseif ( ! $this->isNew && $this->updateDocumentIfExists) {
             file_put_contents($path, $this->generateUpdatedDocumentClass($metadata, $path));
         }
+        chmod($path, 0664);
     }
 
     /**
@@ -437,20 +434,21 @@ public function <methodName>()
 
     private function hasProperty($property, ClassMetadataInfo $metadata)
     {
-        if ($this->extendsClass()) {
+        if ($this->extendsClass() || class_exists($metadata->name)) {
             // don't generate property if its already on the base class.
-            $reflClass = new \ReflectionClass($this->getClassToExtend());
+            $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->name);
+
             if ($reflClass->hasProperty($property)) {
                 return true;
             }
         }
-        
+
         foreach ($this->getTraits($metadata) as $trait) {
             if ($trait->hasProperty($property)) {
                 return true;
             }
         }
-        
+
         return (
             isset($this->staticReflection[$metadata->name]) &&
             in_array($property, $this->staticReflection[$metadata->name]['properties'])
@@ -459,20 +457,21 @@ public function <methodName>()
 
     private function hasMethod($method, ClassMetadataInfo $metadata)
     {
-        if ($this->extendsClass()) {
+        if ($this->extendsClass() || class_exists($metadata->name)) {
             // don't generate method if its already on the base class.
-            $reflClass = new \ReflectionClass($this->getClassToExtend());
+            $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->name);
+
             if ($reflClass->hasMethod($method)) {
                 return true;
             }
         }
-        
+
         foreach ($this->getTraits($metadata) as $trait) {
             if ($trait->hasMethod($method)) {
                 return true;
             }
         }
-        
+
         return (
             isset($this->staticReflection[$metadata->name]) &&
             in_array($method, $this->staticReflection[$metadata->name]['methods'])
@@ -511,15 +510,15 @@ public function <methodName>()
     {
         return substr($metadata->name, 0, strrpos($metadata->name, '\\'));
     }
-    
+
     /**
      * @param ClassMetadataInfo $metadata
      *
      * @return array
      */
-    protected function getTraits(ClassMetadataInfo $metadata) 
+    protected function getTraits(ClassMetadataInfo $metadata)
     {
-        if (PHP_VERSION_ID >= 50400 && ($metadata->reflClass !== null || class_exists($metadata->name))) {
+        if ($metadata->reflClass !== null || class_exists($metadata->name)) {
             $reflClass = $metadata->reflClass === null ? new \ReflectionClass($metadata->name) : $metadata->reflClass;
             $traits = array();
             while ($reflClass !== false) {
@@ -531,7 +530,7 @@ public function <methodName>()
         return array();
     }
 
-    private function generateDocumentImports(ClassMetadataInfo $metadata)
+    private function generateDocumentImports()
     {
         if ($this->generateAnnotations) {
             return 'use Doctrine\\ODM\\MongoDB\\Mapping\\Annotations as ODM;';
@@ -697,7 +696,7 @@ public function <methodName>()
 
         return implode("\n\n", $methods);
     }
-    
+
     /**
      * @param array $fieldMapping
      *
@@ -830,7 +829,7 @@ public function <methodName>()
         return $this->prefixCodeWithSpaces($method);
     }
 
-    private function generateAssociationMappingPropertyDocBlock(array $fieldMapping, ClassMetadataInfo $metadata)
+    private function generateAssociationMappingPropertyDocBlock(array $fieldMapping)
     {
         $lines = array();
         $lines[] = $this->spaces . '/**';
@@ -998,13 +997,13 @@ public function <methodName>()
 
             case ClassMetadataInfo::GENERATOR_TYPE_UUID:
                 return 'UUID';
-                
+
             case ClassMetadataInfo::GENERATOR_TYPE_ALNUM:
                 return 'ALNUM';
 
             case ClassMetadataInfo::GENERATOR_TYPE_CUSTOM:
                 return 'CUSTOM';
-                
+
             case ClassMetadataInfo::GENERATOR_TYPE_NONE:
                 return 'NONE';
 

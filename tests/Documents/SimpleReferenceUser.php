@@ -19,7 +19,7 @@ class SimpleReferenceUser
     /** @ODM\ReferenceMany(targetDocument="Documents\User", simple=true) */
     public $users = array();
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function setUser($user)

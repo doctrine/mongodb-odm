@@ -25,30 +25,73 @@ use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException
  * Class for all exceptions related to the Doctrine MongoDB ODM
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class MappingException extends BaseMappingException
 {
+    /**
+     * @param string $name
+     * @return MappingException
+     */
     public static function typeExists($name)
     {
         return new self('Type ' . $name . ' already exists.');
     }
 
+    /**
+     * @param string $name
+     * @return MappingException
+     */
     public static function typeNotFound($name)
     {
         return new self('Type to be overwritten ' . $name . ' does not exist.');
     }
 
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
     public static function mappingNotFound($className, $fieldName)
     {
         return new self("No mapping found for field '$fieldName' in class '$className'.");
     }
 
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function mappingNotFoundInClassNorDescendants($className, $fieldName)
+    {
+        return new self("No mapping found for field '$fieldName' in class '$className' nor its descendants.");
+    }
+
+    /**
+     * @param $fieldName
+     * @param $className
+     * @param $className2
+     * @return MappingException
+     */
+    public static function referenceFieldConflict($fieldName, $className, $className2)
+    {
+        return new self("Reference mapping for field '$fieldName' in class '$className' conflicts with one mapped in class '$className2'.");
+    }
+
+    /**
+     * @param string $document
+     * @param string $fieldName
+     * @return MappingException
+     */
     public static function duplicateFieldMapping($document, $fieldName)
     {
         return new self('Property "' . $fieldName . '" in "' . $document . '" was already declared, but it must be declared only once');
     }
 
+    /**
+     * @param string $document
+     * @param string $fieldName
+     * @return MappingException
+     */
     public static function discriminatorFieldConflict($document, $fieldName)
     {
         return new self('Discriminator field "' . $fieldName . '" in "' . $document . '" conflicts with a mapped field\'s "name" attribute.');
@@ -60,7 +103,7 @@ class MappingException extends BaseMappingException
      *
      * @param string $className The class that could not be found
      * @param string $owningClass The class that declares the discriminator map.
-     * @return self
+     * @return MappingException
      */
     public static function invalidClassInDiscriminatorMap($className, $owningClass)
     {
@@ -75,18 +118,26 @@ class MappingException extends BaseMappingException
      *
      * @param string $value The discriminator value that could not be found
      * @param string $owningClass The class that declares the discriminator map
-     * @return self
+     * @return MappingException
      */
     public static function invalidDiscriminatorValue($value, $owningClass)
     {
         return new self("Discriminator value '$value' used in the declaration of class '$owningClass' does not exist.");
     }
 
+    /**
+     * @param string $className
+     * @return MappingException
+     */
     public static function missingFieldName($className)
     {
         return new self("The Document class '$className' field mapping misses the 'fieldName' attribute.");
     }
 
+    /**
+     * @param string $className
+     * @return MappingException
+     */
     public static function classIsNotAValidDocument($className)
     {
         return new self('Class ' . $className . ' is not a valid document or mapped super class.');
@@ -175,6 +226,15 @@ class MappingException extends BaseMappingException
     }
 
     /**
+     * @param string $targetDocument
+     * @return MappingException
+     */
+    public static function simpleReferenceMustNotTargetDiscriminatedDocument($targetDocument)
+    {
+        return new self("Simple reference must not target document using Single Collection Inheritance, $targetDocument targeted.");
+    }
+
+    /**
      * @param string $strategy
      * @param string $className
      * @param string $fieldName
@@ -193,5 +253,38 @@ class MappingException extends BaseMappingException
     public static function owningAndInverseReferencesRequireTargetDocument($className, $fieldName)
     {
         return new self("Target document must be specified for owning/inverse sides of reference: $className::$fieldName");
+    }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function mustNotChangeIdentifierFieldsType($className, $fieldName)
+    {
+        return new self("$className::$fieldName was declared an identifier and must stay this way.");
+    }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @param string $strategy
+     * @return MappingException
+     */
+    public static function referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($className, $fieldName, $strategy)
+    {
+        return new self("ReferenceMany's sort can not be used with addToSet and pushAll strategies, $strategy used in $className::$fieldName");
+    }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @param string $type
+     * @param string $strategy
+     * @return MappingException
+     */
+    public static function invalidStorageStrategy($className, $fieldName, $type, $strategy)
+    {
+        return new self("Invalid strategy $strategy used in $className::$fieldName with type $type");
     }
 }

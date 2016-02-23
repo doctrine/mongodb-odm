@@ -23,8 +23,7 @@ namespace Doctrine\ODM\MongoDB\Types;
  * The Increment type.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @deprecated This type will be removed in ODM 2.0. Please use int or float instead
  */
 class IncrementType extends Type
 {

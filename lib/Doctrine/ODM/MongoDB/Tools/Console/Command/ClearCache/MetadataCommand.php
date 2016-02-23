@@ -28,11 +28,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @since   1.0
  * @version $Revision$
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
- * @author  Henrik Westphal <henrik.westphal@gmail.com>
  */
 class MetadataCommand extends Command
 {

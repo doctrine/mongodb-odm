@@ -35,7 +35,7 @@ class MODM52Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
  */
 class MODM52Container
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $value;
 
     /** @ODM\EmbedMany(targetDocument="MODM52Embedded", strategy="set") */

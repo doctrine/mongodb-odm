@@ -38,7 +38,7 @@ class Directory
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $test = 'test';
 
     /** @ODM\ReferenceMany(targetDocument="File") */

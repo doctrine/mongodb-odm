@@ -24,7 +24,7 @@ class MODM47A
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $b = 'tmp';
 
     /** @ODM\AlsoLoad("c") */

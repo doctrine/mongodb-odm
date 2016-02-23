@@ -254,16 +254,10 @@ class SchemaManager
                 $options = $index['options'];
 
                 if ( ! isset($options['safe']) && ! isset($options['w'])) {
-                    if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
-                        $options['safe'] = true;
-                    } else {
-                        $options['w'] = 1;
-                    }
+                    $options['w'] = 1;
                 }
 
-                if (isset($options['safe']) && ! isset($options['w']) &&
-                    version_compare(phpversion('mongo'), '1.3.0', '>=')) {
-
+                if (isset($options['safe']) && ! isset($options['w'])) {
                     $options['w'] = is_bool($options['safe']) ? (integer) $options['safe'] : $options['safe'];
                     unset($options['safe']);
                 }
@@ -445,6 +439,7 @@ class SchemaManager
      *   (c) Mongo index is unique without dropDups and mapped index is unique
      *       with dropDups
      *   (d) Geospatial options differ (bits, max, min)
+     *   (e) The partialFilterExpression differs
      *
      * Regarding (c), the inverse case is not a reason to delete and
      * recreate the index, since dropDups only affects creation of
@@ -483,6 +478,16 @@ class SchemaManager
 
                 return false;
             }
+        }
+
+        if (empty($mongoIndex['partialFilterExpression']) xor empty($documentIndexOptions['partialFilterExpression'])) {
+            return false;
+        }
+
+        if (isset($mongoIndex['partialFilterExpression']) && isset($documentIndexOptions['partialFilterExpression']) &&
+            $mongoIndex['partialFilterExpression'] !== $documentIndexOptions['partialFilterExpression']) {
+
+            return false;
         }
 
         return true;

@@ -11,7 +11,7 @@ class BlogPost
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\ReferenceMany(targetDocument="Tag", inversedBy="blogPosts", cascade={"all"}) */
@@ -37,6 +37,12 @@ class BlogPost
 
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyComments") */
     public $repoComments;
+
+    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", strategy="set", repositoryMethod="findManyComments") */
+    public $repoCommentsSet;
+
+    /** @ODM\ReferenceMany(targetDocument="Comment", repositoryMethod="findManyComments") */
+    public $repoCommentsWithoutMappedBy;
 
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyCommentsEager") */
     public $repoCommentsEager;

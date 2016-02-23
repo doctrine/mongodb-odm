@@ -21,6 +21,8 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Yaml;
 
@@ -28,8 +30,6 @@ use Symfony\Component\Yaml\Yaml;
  * The YamlDriver reads the mapping metadata from yaml schema files.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class YamlDriver extends FileDriver
 {
@@ -79,7 +79,7 @@ class YamlDriver extends FileDriver
             }
         }
         if (isset($element['inheritanceType'])) {
-            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
+            $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
         }
         if (isset($element['discriminatorField'])) {
             $class->setDiscriminatorField($this->parseDiscriminatorField($element['discriminatorField']));
@@ -91,8 +91,7 @@ class YamlDriver extends FileDriver
             $class->setDefaultDiscriminatorValue($element['defaultDiscriminatorValue']);
         }
         if (isset($element['changeTrackingPolicy'])) {
-            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_'
-                    . strtoupper($element['changeTrackingPolicy'])));
+            $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_' . strtoupper($element['changeTrackingPolicy'])));
         }
         if (isset($element['requireIndexes'])) {
             $class->setRequireIndexes($element['requireIndexes']);
@@ -109,10 +108,6 @@ class YamlDriver extends FileDriver
                 }
                 if ( ! isset($mapping['fieldName'])) {
                     $mapping['fieldName'] = $fieldName;
-                }
-                if (isset($mapping['type']) && $mapping['type'] === 'collection') {
-                    // Note: this strategy is not actually used
-                    $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
                 }
                 if (isset($mapping['type']) && ! empty($mapping['embedded'])) {
                     $this->addMappingFromEmbed($class, $fieldName, $mapping, $mapping['type']);
@@ -238,12 +233,13 @@ class YamlDriver extends FileDriver
 
     private function addMappingFromEmbed(ClassMetadataInfo $class, $fieldName, $embed, $type)
     {
+        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'type'           => $type,
             'embedded'       => true,
             'targetDocument' => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
             'fieldName'      => $fieldName,
-            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : 'pushAll',
+            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : $defaultStrategy,
         );
         if (isset($embed['name'])) {
             $mapping['name'] = $embed['name'];
@@ -262,6 +258,7 @@ class YamlDriver extends FileDriver
 
     private function addMappingFromReference(ClassMetadataInfo $class, $fieldName, $reference, $type)
     {
+        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'cascade'          => isset($reference['cascade']) ? $reference['cascade'] : null,
             'orphanRemoval'    => isset($reference['orphanRemoval']) ? $reference['orphanRemoval'] : false,
@@ -270,7 +267,7 @@ class YamlDriver extends FileDriver
             'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false,
             'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'fieldName'        => $fieldName,
-            'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : 'pushAll',
+            'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : $defaultStrategy,
             'inversedBy'       => isset($reference['inversedBy']) ? (string) $reference['inversedBy'] : null,
             'mappedBy'         => isset($reference['mappedBy']) ? (string) $reference['mappedBy'] : null,
             'repositoryMethod' => isset($reference['repositoryMethod']) ? (string) $reference['repositoryMethod'] : null,

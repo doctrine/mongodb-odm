@@ -248,7 +248,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fieldName' => 'many',
             'reference' => true,
             'type' => 'many',
-            'strategy' => 'atomicSet',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET,
         ));
     }
 
@@ -261,7 +261,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $config = array_merge($config, array(
             'fieldName' => 'many',
             'reference' => true,
-            'strategy' => 'atomicSet',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET,
         ));
 
         $cm = new ClassMetadataInfo('stdClass');
@@ -297,6 +297,36 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         );
 
         $this->assertEquals($expected, $cm->associationMappings);
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage stdClass::id was declared an identifier and must stay this way.
+     */
+    public function testIdFieldsTypeMustNotBeOverridden()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->setIdentifier('id');
+        $cm->mapField(array(
+            'fieldName' => 'id',
+            'type' => 'string'
+        ));
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage ReferenceMany's sort can not be used with addToSet and pushAll strategies, pushAll used in stdClass::ref
+     */
+    public function testReferenceManySortMustNotBeUsedWithNonSetCollectionStrategy()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->mapField(array(
+            'fieldName' => 'ref',
+            'reference' => true,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'type' => 'many',
+            'sort' => array('foo' => 1)
+        ));
     }
 }
 

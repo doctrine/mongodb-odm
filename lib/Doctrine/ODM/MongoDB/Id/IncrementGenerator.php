@@ -34,7 +34,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * document.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class IncrementGenerator extends AbstractIdGenerator
 {

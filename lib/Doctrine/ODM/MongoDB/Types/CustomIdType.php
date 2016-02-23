@@ -23,9 +23,6 @@ namespace Doctrine\ODM\MongoDB\Types;
  * The Id type.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
- * @author      Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
 class CustomIdType extends Type
 {

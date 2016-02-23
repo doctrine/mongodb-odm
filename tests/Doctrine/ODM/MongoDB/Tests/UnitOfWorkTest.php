@@ -240,6 +240,33 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($updates[0] === $item);
     }
 
+    public function testDoubleCommitWithChangeTrackingNotify()
+    {
+        $pb = $this->getMockPersistenceBuilder();
+
+        $class = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\NotifyChangedDocument');
+        $persister = $this->getMockDocumentPersister($pb, $class);
+        $this->uow->setDocumentPersister($class->name, $persister);
+
+        $entity = new NotifyChangedDocument();
+        $entity->setId(2);
+        $this->uow->persist($entity);
+
+        $this->uow->commit($entity);
+
+        // Use a custom error handler that will fail the test if the next commit() call raises a notice error
+        set_error_handler(function() {
+            restore_error_handler();
+
+            $this->fail('Expected not to get a notice error after committing an entity multiple times using the NOTIFY change tracking policy.');
+        }, E_NOTICE);
+
+        $this->uow->commit($entity);
+
+        // Restore previous error handler if no errors have been raised
+        restore_error_handler();
+    }
+
     public function testGetDocumentStateWithAssignedIdentity()
     {
         $pb = $this->getMockPersistenceBuilder();
@@ -586,6 +613,31 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Documents\User', $this->uow->getClassNameForAssociation($mapping, null));
     }
 
+    public function testRecomputeChangesetForUninitializedProxyDoesNotCreateChangeset()
+    {
+        $user = new \Documents\ForumUser();
+        $user->username = '12345';
+        $user->setAvatar(new \Documents\ForumAvatar());
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $id = $user->getId();
+        $this->dm->clear();
+
+        $user = $this->dm->find('\Documents\ForumUser', $id);
+        $this->assertInstanceOf('\Documents\ForumUser', $user);
+
+        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user->getAvatar());
+
+        $classMetadata = $this->dm->getClassMetadata('Documents\ForumAvatar');
+
+        $this->uow->recomputeSingleDocumentChangeSet($classMetadata, $user->getAvatar());
+
+        $this->assertEquals(array(), $this->uow->getDocumentChangeSet($user->getAvatar()));
+    }
+
+
     protected function getDocumentManager()
     {
         return new \Stubs\DocumentManager();
@@ -661,7 +713,10 @@ class ParentAssociationTest
     }
 }
 
-/** @ODM\Document */
+/**
+ * @ODM\Document
+ * @ODM\ChangeTrackingPolicy("NOTIFY")
+ */
 class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
 {
     private $_listeners = array();
@@ -669,7 +724,7 @@ class NotifyChangedDocument implements \Doctrine\Common\NotifyPropertyChanged
     /** @ODM\Id(type="int_id", strategy="none") */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $data;
 
     /** @ODM\ReferenceMany(targetDocument="NotifyChangedRelatedItem") */
@@ -767,7 +822,7 @@ class ArrayTest
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\Hash */
+    /** @ODM\Field(type="hash") */
     public $data;
 
     public function __construct($data)

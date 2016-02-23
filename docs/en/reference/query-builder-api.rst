@@ -182,6 +182,40 @@ method:
 
 The above would give you an ``ArrayCollection`` of all the distinct user ages!
 
+.. note::
+
+    MongoDB's `distinct command <http://docs.mongodb.org/manual/reference/command/distinct/>`_
+    does not support sorting, so you cannot combine ``distinct()`` with
+    ``sort()``. If you would like to sort the results of a distinct query, you
+    will need to do so in PHP after executing the query.
+
+Refreshing Documents
+~~~~~~~~~~~~~~~~~~~~
+
+When a query (e.g. geoNear, find) returns one or more hydrated documents whose
+identifiers are already in the identity map, ODM returns the managed document
+instances for those results. In this case, a managed document's data may differ
+from whatever was just returned by the database query.
+
+The query builder's ``refresh()`` method may be used to instruct ODM to override
+the managed document with data from the query result. This is comparable to
+calling ``DocumentManager::refresh()`` for a managed document. The document's
+changeset will be reset in the process.
+
+.. code-block:: php
+
+    <?php
+
+    $user = $dm->createQueryBuilder('User')
+        ->field('username')->equals('jwage')
+        ->refresh()
+        ->getQuery()
+        ->getSingleResult();
+
+    // Jon's user will have the latest data, even if it was already managed
+
+Refreshing is not applicable if hydration is disabled.
+
 Disabling Hydration
 ~~~~~~~~~~~~~~~~~~~
 
@@ -504,6 +538,69 @@ account.
     // Suppose $account has already been fetched from the database
     $qb = $dm->createQueryBuilder('User')
         ->field('accounts')->includesReferenceTo($account);
+
+Text Search
+~~~~~~~~~~~
+
+You can use the
+`$text operator <https://docs.mongodb.org/manual/reference/operator/query/text/>`_
+to run a text search against a field with a text index. To do so, create a
+document with a text index:
+
+.. code-block:: php
+
+        <?php
+
+        /**
+         * @Document
+         * @Index(keys={"description"="text"})
+         */
+        class Document
+        {
+            /** @Id */
+            public $id;
+
+            /** @Field(type="string") */
+            public $description;
+
+            /** @Field(type="float") @NotSaved */
+            public $score;
+        }
+
+You can then run queries using the text operator:
+
+.. code-block:: php
+
+    <?php
+
+    // Run a text search against the index
+    $qb = $dm->createQueryBuilder('Document')
+        ->text('words you are looking for');
+
+To fetch the calculated score for the text search, use the ``selectMeta()``
+method:
+
+.. code-block:: php
+
+    <?php
+
+    // Run a text search against the index
+    $qb = $dm->createQueryBuilder('Document')
+        ->selectMeta('score', 'textScore')
+        ->text('words you are looking for');
+
+You can also change the language used for stemming using the ``language()``
+method:
+
+.. code-block:: php
+
+    <?php
+
+    // Run a text search against the index
+    $qb = $dm->createQueryBuilder('Document')
+        ->language('it')
+        ->text('parole che stai cercando');
+
 
 Update Queries
 ~~~~~~~~~~~~~~

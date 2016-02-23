@@ -6,9 +6,6 @@ use Documents\Account;
 use Documents\CustomUser;
 use Documents\User;
 
-/**
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
- */
 class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testSetId()

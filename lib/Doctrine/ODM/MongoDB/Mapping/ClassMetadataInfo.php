@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
@@ -40,8 +42,6 @@ use InvalidArgumentException;
  *    the serialized representation).
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMetadata
 {
@@ -140,6 +140,23 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * the <tt>NotifyPropertyChanged</tt> interface.
      */
     const CHANGETRACKING_NOTIFY = 3;
+
+    /**
+     * SET means that fields will be written to the database using a $set operator
+     */
+    const STORAGE_STRATEGY_SET = 'set';
+
+    /**
+     * INCREMENT means that fields will be written to the database by calculating
+     * the difference and using the $inc operator
+     */
+    const STORAGE_STRATEGY_INCREMENT = 'increment';
+
+    const STORAGE_STRATEGY_PUSH_ALL = 'pushAll';
+    const STORAGE_STRATEGY_ADD_TO_SET = 'addToSet';
+    const STORAGE_STRATEGY_ATOMIC_SET = 'atomicSet';
+    const STORAGE_STRATEGY_ATOMIC_SET_ARRAY = 'atomicSetArray';
+    const STORAGE_STRATEGY_SET_ARRAY = 'setArray';
 
     /**
      * READ-ONLY: The name of the mongo database the document is mapped to.
@@ -537,8 +554,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function invokeLifecycleCallbacks($event, $document, array $arguments = null)
     {
-        if (!$document instanceof $this->name) {
+        if ( ! $document instanceof $this->name) {
             throw new \InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
+        }
+
+        if (empty($this->lifecycleCallbacks[$event])) {
+            return;
         }
 
         foreach ($this->lifecycleCallbacks[$event] as $callback) {
@@ -1069,6 +1090,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ( ! isset($mapping['name'])) {
             $mapping['name'] = $mapping['fieldName'];
         }
+        if ($this->identifier === $mapping['name'] && empty($mapping['id'])) {
+            throw MappingException::mustNotChangeIdentifierFieldsType($this->name, $mapping['name']);
+        }
         if (isset($this->fieldMappings[$mapping['fieldName']])) {
             //throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
@@ -1112,6 +1136,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['type']) && $mapping['type'] === 'file') {
             $mapping['file'] = true;
         }
+        if (isset($mapping['type']) && $mapping['type'] === 'increment') {
+            $mapping['strategy'] = self::STORAGE_STRATEGY_INCREMENT;
+        }
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
             $mapping['name'] = 'file';
@@ -1121,27 +1148,25 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         }
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $mapping['name'] = '_id';
-            $mapping['type'] = isset($mapping['type']) ? $mapping['type'] : 'id';
             $this->identifier = $mapping['fieldName'];
             if (isset($mapping['strategy'])) {
-                $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : array();
-
-                $generatorType = constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
-                if ($generatorType !== self::GENERATOR_TYPE_AUTO) {
-                    if (isset($this->generatorOptions['type'])) {
-                        $mapping['type'] = $this->generatorOptions['type'];
-                    } elseif ($generatorType === ClassMetadata::GENERATOR_TYPE_INCREMENT) {
-                        $mapping['type'] = 'int_id';
-                    } else {
-                        $mapping['type'] = 'custom_id';
-                    }
-
-                    unset($this->generatorOptions['type']);
-                }
-
-                $this->generatorType = $generatorType;
+                $this->generatorType = constant(ClassMetadata::class . '::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
             }
+            $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : array();
+            switch ($this->generatorType) {
+                case self::GENERATOR_TYPE_AUTO:
+                    $mapping['type'] = 'id';
+                    break;
+                default:
+                    if ( ! empty($this->generatorOptions['type'])) {
+                        $mapping['type'] = $this->generatorOptions['type'];
+                    } elseif (empty($mapping['type'])) {
+                        $mapping['type'] = $this->generatorType === self::GENERATOR_TYPE_INCREMENT ? 'int_id' : 'custom_id';
+                    }
+            }
+            unset($this->generatorOptions['type']);
         }
+
         if ( ! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
         }
@@ -1155,8 +1180,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::owningAndInverseReferencesRequireTargetDocument($this->name, $mapping['fieldName']);
         }
         
-        if ($this->isEmbeddedDocument && isset($mapping['strategy']) &&
-                ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')) {
+        if ($this->isEmbeddedDocument && $mapping['type'] === 'many' && CollectionHelper::isAtomic($mapping['strategy'])) {
             throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
         }
 
@@ -1201,10 +1225,16 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 $mapping['isInverseSide'] = true;
                 $mapping['isOwningSide'] = false;
             }
+            if (isset($mapping['repositoryMethod'])) {
+                $mapping['isInverseSide'] = true;
+                $mapping['isOwningSide'] = false;
+            }
             if (!isset($mapping['orphanRemoval'])) {
                 $mapping['orphanRemoval'] = false;
             }
         }
+
+        $this->applyStorageStrategy($mapping);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
         if (isset($mapping['association'])) {
@@ -1212,6 +1242,55 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         }
 
         return $mapping;
+    }
+
+    /**
+     * Validates the storage strategy of a mapping for consistency
+     * @param array $mapping
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     */
+    private function applyStorageStrategy(array &$mapping)
+    {
+        if (! isset($mapping['type']) || isset($mapping['id'])) {
+            return;
+        }
+
+        switch (true) {
+            case $mapping['type'] == 'int':
+            case $mapping['type'] == 'float':
+                $defaultStrategy = self::STORAGE_STRATEGY_SET;
+                $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
+                break;
+
+            case $mapping['type'] == 'many':
+                $defaultStrategy = CollectionHelper::DEFAULT_STRATEGY;
+                $allowedStrategies = [
+                    self::STORAGE_STRATEGY_PUSH_ALL,
+                    self::STORAGE_STRATEGY_ADD_TO_SET,
+                    self::STORAGE_STRATEGY_SET,
+                    self::STORAGE_STRATEGY_SET_ARRAY,
+                    self::STORAGE_STRATEGY_ATOMIC_SET,
+                    self::STORAGE_STRATEGY_ATOMIC_SET_ARRAY,
+                ];
+                break;
+
+            default:
+                $defaultStrategy = self::STORAGE_STRATEGY_SET;
+                $allowedStrategies = [self::STORAGE_STRATEGY_SET];
+        }
+
+        if (! isset($mapping['strategy'])) {
+            $mapping['strategy'] = $defaultStrategy;
+        }
+
+        if (! in_array($mapping['strategy'], $allowedStrategies)) {
+            throw MappingException::invalidStorageStrategy($this->name, $mapping['fieldName'], $mapping['type'], $mapping['strategy']);
+        }
+
+        if (isset($mapping['reference']) && $mapping['type'] === 'many' && $mapping['isOwningSide']
+            && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
+            throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
+        }
     }
 
     /**
@@ -1245,10 +1324,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function mapManyEmbedded(array $mapping)
     {
-        if ($this->isEmbeddedDocument && isset($mapping['strategy']) &&
-                ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')) {
-            throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
-        }
         $mapping['embedded'] = true;
         $mapping['type'] = 'many';
         $this->mapField($mapping);
@@ -1273,10 +1348,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function mapManyReference(array $mapping)
     {
-        if ($this->isEmbeddedDocument && isset($mapping['strategy']) &&
-                ($mapping['strategy'] === 'atomicSet' || $mapping['strategy'] === 'atomicSetArray')) {
-            throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
-        }
         $mapping['reference'] = true;
         $mapping['type'] = 'many';
         $this->mapField($mapping);
@@ -1555,6 +1626,19 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
         return $this->fieldMappings[$fieldName];
+    }
+
+    /**
+     * Gets mappings of fields holding embedded document(s).
+     *
+     * @return array of field mappings
+     */
+    public function getEmbeddedFieldsMappings()
+    {
+        return array_filter(
+            $this->associationMappings,
+            function($assoc) { return ! empty($assoc['embedded']); }
+        );
     }
 
     /**

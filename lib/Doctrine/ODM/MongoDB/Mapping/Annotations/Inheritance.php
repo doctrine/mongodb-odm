@@ -21,7 +21,11 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
 
-/** @Annotation */
+/**
+ * Specifies inheritance mapping for a document
+ *
+ * @Annotation
+ */
 final class Inheritance extends Annotation
 {
     public $type = 'NONE';

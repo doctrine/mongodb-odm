@@ -268,13 +268,13 @@ class GH453Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Hash */
+    /** @ODM\Field(type="hash") */
     public $hash;
 
-    /** @ODM\Collection(strategy="pushAll")) */
+    /** @ODM\Field(type="collection") */
     public $colPush;
 
-    /** @ODM\Collection(strategy="set") */
+    /** @ODM\Field(type="collection") */
     public $colSet;
 
     /** @ODM\EmbedMany(strategy="pushAll")) */

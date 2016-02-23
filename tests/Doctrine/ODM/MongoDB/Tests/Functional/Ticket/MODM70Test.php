@@ -38,13 +38,13 @@ class Avatar
 	protected $id;
 
 	/**
-	 * @ODM\String(name="na")
+	 * @ODM\Field(name="na", type="string")
 	 * @var string
 	 */
 	protected $name;
 
 	/**
-	 * @ODM\Int(name="sex")
+	 * @ODM\Field(name="sex", type="int")
 	 * @var int
 	 */
 	protected $sex;
@@ -120,7 +120,7 @@ class Avatar
 class AvatarPart
 {
 	/**
-	 * @ODM\String(name="col")
+	 * @ODM\Field(name="col", type="string")
 	 * @var string
 	 */
 	protected $color;

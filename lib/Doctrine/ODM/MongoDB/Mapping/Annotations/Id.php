@@ -19,10 +19,14 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+/**
+ * Special field mapping to map document identifiers
+ *
+ * @Annotation
+ */
 final class Id extends AbstractField
 {
     public $id = true;
-    public $type = 'id';
+    public $type;
     public $strategy = 'auto';
 }

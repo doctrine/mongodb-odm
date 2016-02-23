@@ -3,7 +3,6 @@
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -18,10 +17,10 @@ class User extends BaseDocument
     /** @ODM\Field(type="string") */
     protected $username;
 
-    /** @ODM\Bin(type="bin_md5") */
+    /** @ODM\Field(type="bin_md5") */
     protected $password;
 
-    /** @ODM\Date */
+    /** @ODM\Field(type="date") */
     protected $createdAt;
 
     /** @ODM\EmbedOne(targetDocument="Address", nullable=true) */
@@ -30,32 +29,47 @@ class User extends BaseDocument
     /** @ODM\ReferenceOne(targetDocument="Profile", cascade={"all"}) */
     protected $profile;
 
+    /** @ODM\ReferenceOne(targetDocument="ProfileNotify", cascade={"all"}) */
+    protected $profileNotify;
+
     /** @ODM\EmbedMany(targetDocument="Phonenumber") */
     protected $phonenumbers;
+
+    /** @ODM\EmbedMany(targetDocument="Phonebook") */
+    protected $phonebooks;
 
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
     protected $groups;
 
+    /** @ODM\ReferenceMany(targetDocument="Group", simple=true, cascade={"all"}) */
+    protected $groupsSimple;
+
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}, strategy="addToSet") */
     protected $uniqueGroups;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="asc"}) */
+    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="asc"}, strategy="setArray") */
     protected $sortedAscGroups;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="desc"}) */
+    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="desc"}, strategy="setArray") */
     protected $sortedDescGroups;
 
     /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
-    /** @ODM\Int */
+    /** @ODM\ReferenceOne(targetDocument="Account", simple=true, cascade={"all"}) */
+    protected $accountSimple;
+
+    /** @ODM\Field(type="int") */
     protected $hits = 0;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $nullTest;
 
-    /** @ODM\Increment */
-    protected $count = 0;
+    /** @ODM\Field(type="int", strategy="increment") */
+    protected $count;
+
+    /** @ODM\Field(type="float", strategy="increment") */
+    protected $floatCount;
 
     /** @ODM\ReferenceMany(targetDocument="BlogPost", mappedBy="user", nullable=true) */
     protected $posts;
@@ -66,13 +80,15 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument="Documents\SimpleReferenceUser", mappedBy="users") */
     protected $simpleReferenceManyInverse;
 
-    /** @ODM\Collection */
+    /** @ODM\Field(type="collection") */
     private $logs = array();
 
     public function __construct()
     {
+        $this->phonebooks = new ArrayCollection();
         $this->phonenumbers = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->groupsSimple = new ArrayCollection();
         $this->sortedGroups = new ArrayCollection();
         $this->sortedGroupsAsc = new ArrayCollection();
         $this->posts = new ArrayCollection();
@@ -159,6 +175,16 @@ class User extends BaseDocument
         return $this->profile;
     }
 
+    public function setProfileNotify(ProfileNotify $profile)
+    {
+        $this->profileNotify = $profile;
+    }
+
+    public function getProfileNotify()
+    {
+        return $this->profileNotify;
+    }
+
     public function setAccount(Account $account)
     {
         $this->account = $account;
@@ -168,6 +194,17 @@ class User extends BaseDocument
     public function getAccount()
     {
         return $this->account;
+    }
+
+    public function setAccountSimple(Account $account)
+    {
+        $this->accountSimple = $account;
+        $this->accountSimple->setUser($this);
+    }
+
+    public function getAccountSimple()
+    {
+        return $this->accountSimple;
     }
 
     public function getPhonenumbers()
@@ -216,6 +253,11 @@ class User extends BaseDocument
         return false;
     }
 
+    public function addGroupSimple(Group $group)
+    {
+        $this->groupsSimple[] = $group;
+    }
+
     public function getUniqueGroups()
     {
         return $this->uniqueGroups;
@@ -251,6 +293,16 @@ class User extends BaseDocument
         $this->count = $count;
     }
 
+    public function getFloatCount()
+    {
+        return $this->floatCount;
+    }
+
+    public function setFloatCount($floatCount)
+    {
+        $this->floatCount = $floatCount;
+    }
+
     public function getSimpleReferenceOneInverse()
     {
         return $this->simpleReferenceOneInverse;
@@ -266,7 +318,16 @@ class User extends BaseDocument
         if ($num === null) {
             $this->count++;
         } else {
-            $this->count = $this->count + $num;
+            $this->count += $num;
+        }
+    }
+
+    public function incrementFloatCount($num = null)
+    {
+        if ($num === null) {
+            $this->floatCount++;
+        } else {
+            $this->floatCount += $num;
         }
     }
 
@@ -299,5 +360,20 @@ class User extends BaseDocument
     public function setPhonenumbers($phonenumbers)
     {
         $this->phonenumbers = $phonenumbers;
+    }
+
+    public function addPhonebook(Phonebook $phonebook)
+    {
+        $this->phonebooks->add($phonebook);
+    }
+
+    public function getPhonebooks()
+    {
+        return $this->phonebooks;
+    }
+
+    public function removePhonebook(Phonebook $phonebook)
+    {
+        $this->phonebooks->removeElement($phonebook);
     }
 }

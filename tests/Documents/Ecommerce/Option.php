@@ -13,7 +13,7 @@ class Option
     protected $id;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      * @var string
      */
     protected $name;

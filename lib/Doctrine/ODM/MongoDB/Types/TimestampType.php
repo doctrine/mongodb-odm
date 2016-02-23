@@ -23,8 +23,6 @@ namespace Doctrine\ODM\MongoDB\Types;
  * The Timestamp type.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class TimestampType extends Type
 {

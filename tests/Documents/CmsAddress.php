@@ -18,17 +18,17 @@ class CmsAddress
     public $id;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     public $country;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     public $zip;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     public $city;
 

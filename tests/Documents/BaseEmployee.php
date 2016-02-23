@@ -10,22 +10,22 @@ abstract class BaseEmployee
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\Increment */
+    /** @ODM\Field(type="int", strategy="increment") */
     protected $changes = 0;
 
-    /** @ODM\Collection */
+    /** @ODM\Field(type="collection") */
     protected $notes = array();
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $name;
 
-    /** @ODM\Float */
+    /** @ODM\Field(type="float") */
     protected $salary;
 
-    /** @ODM\Date */
+    /** @ODM\Field(type="date") */
     protected $started;
 
-    /** @ODM\Date */
+    /** @ODM\Field(type="date") */
     protected $left;
 
     /** @ODM\EmbedOne(targetDocument="Address") */

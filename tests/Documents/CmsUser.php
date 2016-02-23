@@ -16,17 +16,17 @@ class CmsUser
     public $id;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     public $status;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     public $username;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     public $name;
 

@@ -19,7 +19,11 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+/**
+ * Embeds a single document
+ *
+ * @Annotation
+ */
 final class EmbedOne extends AbstractField
 {
     public $type = 'one';

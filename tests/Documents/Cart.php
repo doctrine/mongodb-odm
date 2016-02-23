@@ -10,7 +10,7 @@ class Cart
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Int */
+    /** @ODM\Field(type="int") */
     public $numItems = 0;
 
     /**

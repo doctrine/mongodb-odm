@@ -65,7 +65,7 @@ class GH665Document
 /** @ODM\EmbeddedDocument */
 class GH665Embedded
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)

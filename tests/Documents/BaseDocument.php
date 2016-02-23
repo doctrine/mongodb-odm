@@ -9,7 +9,7 @@ abstract class BaseDocument
 {
     public $persisted = false;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $inheritedProperty;
 
     public function setInheritedProperty($value)

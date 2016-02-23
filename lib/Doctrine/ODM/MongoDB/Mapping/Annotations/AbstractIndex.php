@@ -33,4 +33,5 @@ abstract class AbstractIndex extends Annotation
     public $unique = false;
     public $sparse = false;
     public $options = array();
+    public $partialFilterExpression = array();
 }

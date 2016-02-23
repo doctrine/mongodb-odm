@@ -21,8 +21,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Cursor as BaseCursor;
-use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
-use Doctrine\MongoDB\Iterator;
+use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\EagerCursor;
@@ -34,7 +33,6 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  * and to hydrate the raw arrays of data to Doctrine document objects.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Query extends \Doctrine\MongoDB\Query\Query
 {
@@ -100,11 +98,21 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
     {
+        $primers = array_filter($primers);
+
+        if ( ! empty($primers)) {
+            $query['eagerCursor'] = true;
+        }
+
+        if ( ! empty($query['eagerCursor'])) {
+            $query['useIdentifierKeys'] = false;
+        }
+
         parent::__construct($collection, $query, $options);
         $this->dm = $dm;
         $this->class = $class;
         $this->hydrate = $hydrate;
-        $this->primers = array_filter($primers);
+        $this->primers = $primers;
         $this->requireIndexes = $requireIndexes;
 
         $this->setRefresh($refresh);
@@ -278,24 +286,15 @@ class Query extends \Doctrine\MongoDB\Query\Query
      *
      * @see \Doctrine\MongoDB\Cursor::prepareCursor()
      * @param BaseCursor $cursor
-     * @return Cursor|EagerCursor
+     * @return CursorInterface
      */
     protected function prepareCursor(BaseCursor $cursor)
     {
         $cursor = parent::prepareCursor($cursor);
 
-        // Unwrap a base EagerCursor
-        if ($cursor instanceof BaseEagerCursor) {
-            $cursor = $cursor->getCursor();
-        }
-
         // Convert the base Cursor into an ODM Cursor
-        $cursor = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
-
-        // Wrap ODM Cursor with EagerCursor
-        if ( ! empty($this->query['eagerCursor'])) {
-            $cursor = new EagerCursor($cursor, $this->dm->getUnitOfWork(), $this->class);
-        }
+        $cursorClass = ( ! empty($this->query['eagerCursor'])) ? EagerCursor::class : Cursor::class;
+        $cursor = new $cursorClass($cursor, $this->dm->getUnitOfWork(), $this->class);
 
         $cursor->hydrate($this->hydrate);
         $cursor->setHints($this->unitOfWorkHints);

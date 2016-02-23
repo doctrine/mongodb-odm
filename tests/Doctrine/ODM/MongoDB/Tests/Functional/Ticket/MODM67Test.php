@@ -110,18 +110,18 @@ class MODM67DerivedClass
  */
 class MODM67EmbeddedObject
 {
-    /** @ODM\Int */
+    /** @ODM\Field(type="int") */
     public $numAccesses = 0;
 
-    /** @ODM\Bool */
+    /** @ODM\Field(type="bool") */
     public $prePersist = false;
 
-    /** @ODM\Bool */
+    /** @ODM\Field(type="bool") */
     public $postPersist = false;
 
-    /** @ODM\Bool */
+    /** @ODM\Field(type="bool") */
     public $preUpdate = false;
 
-    /** @ODM\Bool */
+    /** @ODM\Field(type="bool") */
     public $postUpdate = false;
 }

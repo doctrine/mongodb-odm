@@ -153,7 +153,11 @@ the life-time of their registered documents.
 - 
    postUpdate - The postUpdate event occurs after the database update
    operations to document data.
-- 
+-
+   preLoad - The preLoad event occurs for a document before the
+   document has been loaded into the current DocumentManager from the
+   database or after the refresh operation has been applied to it.
+-
    postLoad - The postLoad event occurs for a document after the
    document has been loaded into the current DocumentManager from the
    database or after the refresh operation has been applied to it.
@@ -175,6 +179,9 @@ the life-time of their registered documents.
 -
    onClear - The onClear event occurs after the UnitOfWork has had
    its state cleared.
+-
+   documentNotFound - The documentNotFound event occurs when a proxy object
+   could not be initialized. This event is not a lifecycle callback.
 
 You can access the Event constants from the ``Events`` class in the
 ODM package.
@@ -235,37 +242,44 @@ event occurs.
         private $createdAt;
     
         /** @PrePersist */
-        public function doStuffOnPrePersist()
+        public function doStuffOnPrePersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
         {
             $this->createdAt = date('Y-m-d H:i:s');
         }
     
         /** @PrePersist */
-        public function doOtherStuffOnPrePersist()
+        public function doOtherStuffOnPrePersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
         {
             $this->value = 'changed from prePersist callback!';
         }
     
         /** @PostPersist */
-        public function doStuffOnPostPersist()
+        public function doStuffOnPostPersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
         {
             $this->value = 'changed from postPersist callback!';
         }
+
+        /** @PreLoad */
+        public function doStuffOnPreLoad(\Doctrine\ODM\MongoDB\Event\PreLoadEventArgs $eventArgs)
+        {
+            $data =& $eventArgs->getData();
+            $data['value'] = 'changed from preLoad callback';
+        }
     
         /** @PostLoad */
-        public function doStuffOnPostLoad()
+        public function doStuffOnPostLoad(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
         {
             $this->value = 'changed from postLoad callback!';
         }
     
         /** @PreUpdate */
-        public function doStuffOnPreUpdate()
+        public function doStuffOnPreUpdate(\Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs $eventArgs)
         {
             $this->value = 'changed from preUpdate callback!';
         }
 
         /** @PreFlush */
-        public function preFlush()
+        public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs)
         {
             $this->value = 'changed from preFlush callback!';
         }
@@ -343,6 +357,32 @@ Define the ``EventTest`` class:
         {
             $document = $eventArgs->getDocument();
             $document->setSomething();
+        }
+    }
+
+preLoad
+~~~~~~~
+
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::preLoad, $test);
+
+Define the ``EventTest`` class with a ``preLoad()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function preLoad(\Doctrine\ODM\MongoDB\Event\PreLoadEventArgs $eventArgs)
+        {
+            $data =& $eventArgs->getData();
+            // do something
         }
     }
 
@@ -519,6 +559,36 @@ Define the ``EventTest`` class with a ``onClear()`` method:
             // do something
         }
     }
+
+documentNotFound
+~~~~~~~~~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::documentNotFound, $test);
+
+Define the ``EventTest`` class with a ``documentNotFound()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function documentNotFound(\Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs $eventArgs)
+        {
+            $proxy = $eventArgs->getObject();
+            $identifier = $eventArgs->getIdentifier();
+            // do something
+            // To prevent the documentNotFound exception from being thrown, call the disableException() method:
+            $eventArgs->disableException();
+        }
+    }
+
 
 postUpdate, postRemove, postPersist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

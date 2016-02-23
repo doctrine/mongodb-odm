@@ -21,14 +21,14 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class XmlDriver extends FileDriver
 {
@@ -86,10 +86,10 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
-            $class->setInheritanceType(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
+            $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_' . $inheritanceType));
         }
         if (isset($xmlRoot['change-tracking-policy'])) {
-            $class->setChangeTrackingPolicy(constant('Doctrine\ODM\MongoDB\Mapping\ClassMetadata::CHANGETRACKING_' . strtoupper((string) $xmlRoot['change-tracking-policy'])));
+            $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_' . strtoupper((string) $xmlRoot['change-tracking-policy'])));
         }
         if (isset($xmlRoot->{'discriminator-field'})) {
             $discrField = $xmlRoot->{'discriminator-field'};
@@ -201,11 +201,6 @@ class XmlDriver extends FileDriver
             throw new \InvalidArgumentException('Cannot infer a MongoDB name from the mapping');
         }
 
-        if (isset($mapping['type']) && $mapping['type'] === 'collection') {
-            // Note: this strategy is not actually used
-            $mapping['strategy'] = isset($mapping['strategy']) ? $mapping['strategy'] : 'pushAll';
-        }
-
         $class->mapField($mapping);
 
         // Index this field if either "index", "unique", or "sparse" are set
@@ -240,17 +235,14 @@ class XmlDriver extends FileDriver
 
     private function addEmbedMapping(ClassMetadataInfo $class, $embed, $type)
     {
-        $cascade = array_keys((array) $embed->cascade);
-        if (1 === count($cascade)) {
-            $cascade = current($cascade) ?: next($cascade);
-        }
         $attributes = $embed->attributes();
+        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'type'           => $type,
             'embedded'       => true,
             'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'           => (string) $attributes['field'],
-            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
+            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
         );
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
@@ -284,6 +276,7 @@ class XmlDriver extends FileDriver
             $cascade = current($cascade) ?: next($cascade);
         }
         $attributes = $reference->attributes();
+        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'cascade'          => $cascade,
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
@@ -292,7 +285,7 @@ class XmlDriver extends FileDriver
             'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false,
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'             => (string) $attributes['field'],
-            'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : 'pushAll',
+            'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
             'inversedBy'       => isset($attributes['inversed-by']) ? (string) $attributes['inversed-by'] : null,
             'mappedBy'         => isset($attributes['mapped-by']) ? (string) $attributes['mapped-by'] : null,
             'repositoryMethod' => isset($attributes['repository-method']) ? (string) $attributes['repository-method'] : null,
@@ -382,7 +375,67 @@ class XmlDriver extends FileDriver
             }
         }
 
+        if (isset($xmlIndex->{'partial-filter-expression'})) {
+            $partialFilterExpressionMapping = $xmlIndex->{'partial-filter-expression'};
+
+            if (isset($partialFilterExpressionMapping->and)) {
+                foreach ($partialFilterExpressionMapping->and as $and) {
+                    if (! isset($and->field)) {
+                        continue;
+                    }
+
+                    $partialFilterExpression = $this->getPartialFilterExpression($and->field);
+                    if (! $partialFilterExpression) {
+                        continue;
+                    }
+
+                    $options['partialFilterExpression']['$and'][] = $partialFilterExpression;
+                }
+            } elseif (isset($partialFilterExpressionMapping->field)) {
+                $partialFilterExpression = $this->getPartialFilterExpression($partialFilterExpressionMapping->field);
+
+                if ($partialFilterExpression) {
+                    $options['partialFilterExpression'] = $partialFilterExpression;
+                }
+            }
+        }
+
         $class->addIndex($keys, $options);
+    }
+
+    private function getPartialFilterExpression(\SimpleXMLElement $fields)
+    {
+        $partialFilterExpression = [];
+        foreach ($fields as $field) {
+            $operator = (string) $field['operator'] ?: null;
+
+            if (! isset($field['value'])) {
+                if (! isset($field->field)) {
+                    continue;
+                }
+
+                $nestedExpression = $this->getPartialFilterExpression($field->field);
+                if (! $nestedExpression) {
+                    continue;
+                }
+
+                $value = $nestedExpression;
+            } else {
+                $value = trim((string) $field['value']);
+            }
+
+            if ($value === 'true') {
+                $value = true;
+            } elseif ($value === 'false') {
+                $value = false;
+            } elseif (is_numeric($value)) {
+                $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
+            }
+
+            $partialFilterExpression[(string) $field['name']] = $operator ? ['$' . $operator => $value] : $value;
+        }
+
+        return $partialFilterExpression;
     }
 
     /**

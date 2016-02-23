@@ -7,25 +7,25 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument */
 class Address
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $address;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $city;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $state;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $zipcode;
 
-    /** @ODM\Increment */
+    /** @ODM\Field(type="int", strategy="increment") */
     public $count = 0;
 
     /** @ODM\EmbedOne(targetDocument="Address") */
     private $subAddress;
 
-    /** @ODM\String(name="testFieldName") */
+    /** @ODM\Field(name="testFieldName", type="string") */
     private $test;
 
     public function setSubAddress(Address $subAddress)

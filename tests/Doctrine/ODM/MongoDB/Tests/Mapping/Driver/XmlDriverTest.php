@@ -5,9 +5,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-/**
- * @author Bulat Shakirzyanov <bulat@theopenskyproject.com>
- */
 class XmlDriverTest extends AbstractDriverTest
 {
     public function setUp()
@@ -57,6 +54,27 @@ class XmlDriverTest extends AbstractDriverTest
         $this->assertSame(false, $profileMapping['orphanRemoval']);
         $this->assertSame(0, $profileMapping['limit']);
         $this->assertSame(2, $profileMapping['skip']);
+    }
+
+    public function testInvalidPartialFilterExpressions()
+    {
+        $classMetadata = new ClassMetadata('TestDocuments\InvalidPartialFilterDocument');
+        $this->driver->loadMetadataForClass('TestDocuments\InvalidPartialFilterDocument', $classMetadata);
+
+        $this->assertEquals([
+            [
+                'keys' => ['fieldA' => 1],
+                'options' => [
+                    'partialFilterExpression' => [
+                        '$and' => [['discr' => ['$eq' => 'default']]],
+                    ],
+                ],
+            ],
+            [
+                'keys' => ['fieldB' => 1],
+                'options' => [],
+            ],
+        ], $classMetadata->getIndexes());
     }
 }
 

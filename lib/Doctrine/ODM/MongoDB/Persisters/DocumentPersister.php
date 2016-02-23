@@ -20,10 +20,11 @@
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\Common\EventManager;
-use Doctrine\MongoDB\Cursor as BaseCursor;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\EagerCursor;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
@@ -39,8 +40,6 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
  * The DocumentPersister is responsible for persisting documents.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Bulat Shakirzyanov <bulat@theopenskyproject.com>
  */
 class DocumentPersister
 {
@@ -108,6 +107,13 @@ class DocumentPersister
     private $cm;
 
     /**
+     * The CollectionPersister instance.
+     *
+     * @var CollectionPersister
+     */
+    private $cp;
+
+    /**
      * Initializes a new DocumentPersister instance.
      *
      * @param PersistenceBuilder $pb
@@ -127,6 +133,7 @@ class DocumentPersister
         $this->hydratorFactory = $hydratorFactory;
         $this->class = $class;
         $this->collection = $dm->getDocumentCollection($class->name);
+        $this->cp = $this->uow->getCollectionPersister();
     }
 
     /**
@@ -228,11 +235,6 @@ class DocumentPersister
                 }
                 $data[$versionMapping['name']] = $nextVersion;
             }
-            
-            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
-            if (!empty($atomicCollectionQuery['$set'])) {
-                $data = array_merge($data, $atomicCollectionQuery['$set']);
-            }
 
             $inserts[$oid] = $data;
         }
@@ -244,6 +246,14 @@ class DocumentPersister
                 $this->queuedInserts = array();
                 throw $e;
             }
+        }
+
+        /* All collections except for ones using addToSet have already been
+         * saved. We have left these to be handled separately to avoid checking
+         * collection for uniqueness on PHP side.
+         */
+        foreach ($this->queuedInserts as $document) {
+            $this->handleCollections($document, $options);
         }
 
         $this->queuedInserts = array();
@@ -281,13 +291,9 @@ class DocumentPersister
                 $data['$set'][$versionMapping['name']] = $nextVersion;
             }
             
-            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
-            if ( ! empty($atomicCollectionQuery)) {
-                $data = array_merge_recursive($data, $atomicCollectionQuery);
-            }
-
             try {
                 $this->executeUpsert($data, $options);
+                $this->handleCollections($document, $options);
                 unset($this->queuedUpserts[$oid]);
             } catch (\MongoException $e) {
                 unset($this->queuedUpserts[$oid]);
@@ -355,42 +361,29 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $update = $this->pb->prepareUpdateData($document);
 
-        if ( ! empty($update) || $this->uow->hasScheduledCollections($document)) {
+        $id = $this->class->getDatabaseIdentifierValue($id);
+        $query = array('_id' => $id);
 
-            $id = $this->class->getDatabaseIdentifierValue($id);
-            $query = array('_id' => $id);
+        // Include versioning logic to set the new version value in the database
+        // and to ensure the version has not changed since this document object instance
+        // was fetched from the database
+        if ($this->class->isVersioned) {
+            $versionMapping = $this->class->fieldMappings[$this->class->versionField];
+            $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
+            if ($versionMapping['type'] === 'int') {
+                $nextVersion = $currentVersion + 1;
+                $update['$inc'][$versionMapping['name']] = 1;
+                $query[$versionMapping['name']] = $currentVersion;
+                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+            } elseif ($versionMapping['type'] === 'date') {
+                $nextVersion = new \DateTime();
+                $update['$set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
+                $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
+                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+            }
+        }
 
-            // Include versioning logic to set the new version value in the database
-            // and to ensure the version has not changed since this document object instance
-            // was fetched from the database
-            if ($this->class->isVersioned) {
-                $versionMapping = $this->class->fieldMappings[$this->class->versionField];
-                $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
-                if ($versionMapping['type'] === 'int') {
-                    $nextVersion = $currentVersion + 1;
-                    $update['$inc'][$versionMapping['name']] = 1;
-                    $query[$versionMapping['name']] = $currentVersion;
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
-                } elseif ($versionMapping['type'] === 'date') {
-                    $nextVersion = new \DateTime();
-                    $update['$set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
-                    $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
-                }
-            }
-            
-            $atomicCollectionQuery = $this->getAtomicCollectionUpdateQuery($document);
-            if ( ! empty($atomicCollectionQuery)) {
-                $update = array_merge_recursive($update, $atomicCollectionQuery);
-            }
-            /* We got here because the document has one or more related
-             * PersistentCollections to be committed later; however, if the
-             * document is not versioned then there is nothing left to do.
-             */
-            if (empty($update)) {
-                return;
-            }
-
+        if ( ! empty($update)) {
             // Include locking logic so that if the document object in memory is currently
             // locked then it will remove it, otherwise it ensures the document is not locked.
             if ($this->class->isLockable) {
@@ -403,13 +396,14 @@ class DocumentPersister
                 }
             }
 
-            unset($update['$set']['_id']);
             $result = $this->collection->update($query, $update, $options);
 
             if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
                 throw LockException::lockFailed($document);
             }
         }
+
+        $this->handleCollections($document, $options);
     }
 
     /**
@@ -443,7 +437,6 @@ class DocumentPersister
      */
     public function refresh($id, $document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
         $data = $this->collection->findOne(array('_id' => $id));
         $data = $this->hydratorFactory->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
@@ -511,22 +504,15 @@ class DocumentPersister
         $baseCursor = $this->collection->find($criteria);
         $cursor = $this->wrapCursor($baseCursor);
 
-        /* The wrapped cursor may be used if the ODM cursor becomes wrapped with
-         * an EagerCursor, so we should apply the same sort, limit, and skip
-         * options to both cursors.
-         */
         if (null !== $sort) {
-            $baseCursor->sort($this->prepareSortOrProjection($sort));
             $cursor->sort($sort);
         }
 
         if (null !== $limit) {
-            $baseCursor->limit($limit);
             $cursor->limit($limit);
         }
 
         if (null !== $skip) {
-            $baseCursor->skip($skip);
             $cursor->skip($skip);
         }
 
@@ -536,10 +522,10 @@ class DocumentPersister
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
      *
-     * @param BaseCursor $cursor
+     * @param CursorInterface $baseCursor
      * @return Cursor
      */
-    private function wrapCursor(BaseCursor $baseCursor)
+    private function wrapCursor(CursorInterface $baseCursor)
     {
         return new Cursor($baseCursor, $this->dm->getUnitOfWork(), $this->class);
     }
@@ -654,7 +640,7 @@ class DocumentPersister
                     : null;
 
                 $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
-                if ($mapping['strategy'] === 'set' || $mapping['strategy'] === 'atomicSet') {
+                if (CollectionHelper::isHash($mapping['strategy'])) {
                     $collection->set($key, $embeddedDocumentObject);
                 } else {
                     $collection->add($embeddedDocumentObject);
@@ -686,7 +672,7 @@ class DocumentPersister
 
             // no custom sort so add the references right now in the order they are embedded
             if ( ! $sorted) {
-                if ($mapping['strategy'] === 'set' || $mapping['strategy'] === 'atomicSet') {
+                if (CollectionHelper::isHash($mapping['strategy'])) {
                     $collection->set($key, $reference);
                 } else {
                     $collection->add($reference);
@@ -790,43 +776,48 @@ class DocumentPersister
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
     {
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
+        $mapping = $collection->getMapping();        
         $documents = $cursor->toArray(false);
-        foreach ($documents as $document) {
-            $collection->add($document);
+        foreach ($documents as $key => $obj) {
+            if (CollectionHelper::isHash($mapping['strategy'])) {
+                $collection->set($key, $obj);
+            } else {
+                $collection->add($obj);
+            }
         }
     }
 
     /**
      * @param PersistentCollection $collection
      *
-     * @return Cursor|EagerCursor
+     * @return CursorInterface
      */
     public function createReferenceManyWithRepositoryMethodCursor(PersistentCollection $collection)
     {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
+        $repositoryMethod = $mapping['repositoryMethod'];
         $cursor = $this->dm->getRepository($mapping['targetDocument'])
-            ->$mapping['repositoryMethod']($collection->getOwner());
+            ->$repositoryMethod($collection->getOwner());
 
-        $wrappedCursor = $cursor;
-        if ($cursor instanceof EagerCursor) {
-            $wrappedCursor = $cursor->getCursor();
+        if ( ! $cursor instanceof CursorInterface) {
+            throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return a CursorInterface");
         }
 
         if (isset($mapping['sort'])) {
-            $wrappedCursor->sort($mapping['sort']);
+            $cursor->sort($mapping['sort']);
         }
         if (isset($mapping['limit'])) {
-            $wrappedCursor->limit($mapping['limit']);
+            $cursor->limit($mapping['limit']);
         }
         if (isset($mapping['skip'])) {
-            $wrappedCursor->skip($mapping['skip']);
+            $cursor->skip($mapping['skip']);
         }
         if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-            $wrappedCursor->slaveOkay(true);
+            $cursor->slaveOkay(true);
         }
         if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-            $wrappedCursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+            $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
         }
 
         return $cursor;
@@ -880,7 +871,11 @@ class DocumentPersister
          */
         if ($this->class->hasDiscriminator() && ! isset($preparedQuery[$this->class->discriminatorField])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
-            $preparedQuery[$this->class->discriminatorField] = array('$in' => $discriminatorValues);
+            if ((count($discriminatorValues) === 1)) {
+                $preparedQuery[$this->class->discriminatorField] = $discriminatorValues[0];
+            } else {
+                $preparedQuery[$this->class->discriminatorField] = array('$in' => $discriminatorValues);
+            }
         }
 
         return $preparedQuery;
@@ -940,7 +935,7 @@ class DocumentPersister
             list($key, $value) = $this->prepareQueryElement($key, $value, null, true);
 
             $preparedQuery[$key] = is_array($value)
-                ? array_map('Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $value)
+                ? array_map('\Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $value)
                 : Type::convertPHPToDatabaseValue($value);
         }
 
@@ -980,8 +975,18 @@ class DocumentPersister
                 return array($fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value));
             }
 
+            if (! empty($mapping['reference']) && is_object($value) && ! ($value instanceof \MongoId)) {
+                try {
+                    return array($fieldName, $this->dm->createDBRef($value, $mapping));
+                } catch (MappingException $e) {
+                    // do nothing in case passed object is not mapped document
+                }
+            }
+
             // No further preparation unless we're dealing with a simple reference
-            if (empty($mapping['reference']) || empty($mapping['simple'])) {
+            // We can't have expressions in empty() with PHP < 5.5, so store it in a variable
+            $arrayValue = (array) $value;
+            if (empty($mapping['reference']) || empty($mapping['simple']) || empty($arrayValue)) {
                 return array($fieldName, $value);
             }
 
@@ -1048,7 +1053,8 @@ class DocumentPersister
             return array($fieldName, $value);
         }
 
-        if ($mapping['strategy'] === 'set' && isset($e[2])) {
+        if ($mapping['type'] == 'many' && CollectionHelper::isHash($mapping['strategy'])
+                && isset($e[2])) {
             $objectProperty = $e[2];
             $objectPropertyPrefix = $e[1] . '.';
             $nextObjectProperty = implode('.', array_slice($e, 3));
@@ -1244,81 +1250,24 @@ class DocumentPersister
 
         return $discriminatorValues;
     }
-    
-    private function getAtomicCollectionUpdateQuery($document)
+
+    private function handleCollections($document, $options)
     {
-        $update = array();
-        $atomicCollUpdates = array();
-        $atomicCollDeletes = array();
-        $collPersister = $this->uow->getCollectionPersister();
-
-        /* Collect all atomic collections (top-level and nested) to be included
-         * in the update.
-         */
+        // Collection deletions (deletions of complete collections)
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
-            /* If this is a top-level, atomic collection, its scheduled update
-             * or deletion must be included in the document's update query.
-             */
-            if ($coll->getOwner() === $document) {
-                $mapping = $coll->getMapping();
-
-                if ($mapping['strategy'] !== "atomicSet" && $mapping['strategy'] !== "atomicSetArray") {
-                    continue;
-                }
-
-                if ($this->uow->isCollectionScheduledForUpdate($coll)) {
-                    $atomicCollUpdates[spl_object_hash($coll)] = $coll;
-                } elseif ($this->uow->isCollectionScheduledForDeletion($coll)) {
-                    $atomicCollDeletes[spl_object_hash($coll)] = $coll;
-                }
-
-                continue;
-            }
-
-            /* Otherwise, the collection is nested. Check if its top-most parent
-             * is an atomic collection and include it for updating if so. This
-             * is necessary because the atomic parent may not have directly
-             * changed.
-             */
-            $parent = $coll->getOwner();
-            while (null !== ($parentAssoc = $this->uow->getParentAssociation($parent))) {
-                list($mapping, $parent, ) = $parentAssoc;
-            }
-
-            if ( ! isset($mapping['association']) ||
-                $mapping['association'] !== ClassMetadata::EMBED_MANY ||
-                ($mapping['strategy'] !== 'atomicSet' && $mapping['strategy'] !== 'atomicSetArray')) {
-                continue;
-            }
-
-            $classMetadata = $this->dm->getClassMetadata(get_class($document));
-            $parentColl = $classMetadata->getFieldValue($document, $mapping['fieldName']);
-
-            /* It's possible that the atomic parent was independently scheduled
-             * for deletion. In that case, updating nested data is unnecessary.
-             */
-            if ( ! $this->uow->isCollectionScheduledForDeletion($parentColl)) {
-                $atomicCollUpdates[spl_object_hash($parentColl)] = $parentColl;
+            if ($this->uow->isCollectionScheduledForDeletion($coll)) {
+                $this->cp->delete($coll, $options);
             }
         }
-
-        foreach ($atomicCollUpdates as $coll) {
-            $update = array_merge_recursive($update, $collPersister->prepareSetQuery($coll));
-            /* Note: If the collection is only be handled because it's an atomic
-             * parent of a scheduled child, the following calls are NOPs.
-             */
-            $this->uow->unscheduleCollectionUpdate($coll);
+        // Collection updates (deleteRows, updateRows, insertRows)
+        foreach ($this->uow->getScheduledCollections($document) as $coll) {
+            if ($this->uow->isCollectionScheduledForUpdate($coll)) {
+                $this->cp->update($coll, $options);
+            }
         }
-
-        foreach ($atomicCollDeletes as $coll) {
-            $update = array_merge_recursive($update, $collPersister->prepareDeleteQuery($coll));
-            /* Note: We don't need to call unscheduleCollectionUpdate(), because
-             * the collection should never have been added to $atomicCollDeletes
-             * if it was independently scheduled for update.
-             */
-            $this->uow->unscheduleCollectionDeletion($coll);
+        // Take new snapshots from visited collections
+        foreach ($this->uow->getVisitedCollections($document) as $coll) {
+            $coll->takeSnapshot();
         }
-
-        return $update;
     }
 }

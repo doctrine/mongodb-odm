@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class CmsProduct extends CmsContent
 {
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     public $name;
 }

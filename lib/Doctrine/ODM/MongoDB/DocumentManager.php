@@ -22,6 +22,8 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\MongoDB\Connection;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
@@ -37,8 +39,6 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
  *     $dm = DocumentManager::create(new Connection(), $config);
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class DocumentManager implements ObjectManager
 {
@@ -673,13 +673,16 @@ class DocumentManager implements ObjectManager
         $class = $this->getClassMetadata(get_class($document));
         $id = $this->unitOfWork->getDocumentIdentifier($document);
 
-        if (!$id) {
+        if ( ! $id) {
             throw new \RuntimeException(
-                sprintf('Cannot create a DBRef without an identifier. UnitOfWork::getDocumentIdentifier() did not return an identifier for class %s', $class->name)
+                sprintf('Cannot create a DBRef for class %s without an identifier. Have you forgotten to persist/merge the document first?', $class->name)
             );
         }
 
         if ( ! empty($referenceMapping['simple'])) {
+            if ($class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+                throw MappingException::simpleReferenceMustNotTargetDiscriminatedDocument($referenceMapping['targetDocument']);
+            }
             return $class->getDatabaseIdentifierValue($id);
         }
 

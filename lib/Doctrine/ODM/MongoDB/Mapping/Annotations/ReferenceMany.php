@@ -19,7 +19,13 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+
+/**
+ * Specifies a one-to-many relationship to a different document
+ *
+ * @Annotation
+ */
 final class ReferenceMany extends AbstractField
 {
     public $type = 'many';
@@ -38,5 +44,5 @@ final class ReferenceMany extends AbstractField
     public $criteria = array();
     public $limit;
     public $skip;
-    public $strategy = 'pushAll'; // pushAll, set
+    public $strategy = CollectionHelper::DEFAULT_STRATEGY;
 }

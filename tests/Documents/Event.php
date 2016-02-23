@@ -13,10 +13,10 @@ class Event
     /** @ODM\ReferenceOne(targetDocument="Documents\User") */
     private $user;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $title;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $type;
 
     public function getId()

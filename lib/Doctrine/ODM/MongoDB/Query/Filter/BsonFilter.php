@@ -20,19 +20,17 @@
 namespace Doctrine\ODM\MongoDB\Query\Filter;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetaData;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * The base class that user defined filters should extend.
  *
  * Handles the setting and escaping of parameters.
- *
- * @author Tim Roediger <superdweebie@gmail.com>
  */
 abstract class BsonFilter
 {
     /**
-     * The entity manager.
+     * The document manager.
      * @var DocumentManager
      */
     protected $dm;
@@ -80,7 +78,7 @@ abstract class BsonFilter
      */
     final public function getParameter($name)
     {
-        if ( ! isset($this->parameters[$name])) {
+        if ( ! array_key_exists($name, $this->parameters)) {
             throw new \InvalidArgumentException("Filter parameter '" . $name . "' is not set.");
         }
         return $this->parameters[$name];

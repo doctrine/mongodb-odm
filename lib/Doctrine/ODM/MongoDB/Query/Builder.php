@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
@@ -28,7 +29,6 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
  * Query builder for ODM.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class Builder extends \Doctrine\MongoDB\Query\Builder
 {
@@ -147,11 +147,16 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             throw new \InvalidArgumentException('$primer is not a boolean or callable');
         }
 
+        if ($primer === false) {
+            unset($this->primers[$this->currentField]);
+
+            return $this;
+        }
+
         if (array_key_exists('eagerCursor', $this->query) && !$this->query['eagerCursor']) {
             throw new \BadMethodCallException("Can't call prime() when setting eagerCursor to false");
         }
 
-        $this->eagerCursor(true);
         $this->primers[$this->currentField] = $primer;
         return $this;
     }
@@ -317,8 +322,25 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         $query['newObj'] = $this->expr->getNewObj();
 
-        if (isset($query['select'])) {
+        if (isset($query['distinct'])) {
+            $query['distinct'] = $documentPersister->prepareFieldName($query['distinct']);
+        }
+
+        if ($this->class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION && ! empty($query['upsert']) &&
+            (empty($query['query'][$this->class->discriminatorField]) || is_array($query['query'][$this->class->discriminatorField]))) {
+            throw new \InvalidArgumentException('Upsert query that is to be performed on discriminated document does not have single ' .
+                'discriminator. Either not use base class or set \'' . $this->class->discriminatorField . '\' field manually.');
+        }
+
+        if ( ! empty($query['select'])) {
             $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
+            if ($this->hydrate && $this->class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION
+                && ! isset($query['select'][$this->class->discriminatorField])) {
+                $includeMode = 0 < count(array_filter($query['select'], function($mode) { return $mode == 1; }));
+                if ($includeMode && ! isset($query['select'][$this->class->discriminatorField])) {
+                    $query['select'][$this->class->discriminatorField] = 1;
+                }
+            }
         }
 
         if (isset($query['sort'])) {

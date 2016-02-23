@@ -61,7 +61,7 @@ class GH942Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }
 
@@ -78,7 +78,7 @@ class GH942DocumentParent
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 }
 

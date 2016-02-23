@@ -10,7 +10,7 @@ class Album
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     /** @ODM\EmbedMany(targetDocument="Song") */

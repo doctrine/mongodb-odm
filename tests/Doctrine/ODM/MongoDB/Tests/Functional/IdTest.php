@@ -295,21 +295,35 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function getTestBinIdsData()
     {
-        /* In driver versions before 1.2.11, the custom binary data type is
-         * incorrectly returned as -128.
-         *
-         * See: https://jira.mongodb.org/browse/PHP-408
-         */
-        $expectedBinCustom = version_compare(phpversion('mongo'), '1.2.11', '<') ? -128 : \MongoBinData::CUSTOM;
-
         return array(
             array('bin', 0),
             array('bin_func', \MongoBinData::FUNC),
             array('bin_bytearray', \MongoBinData::BYTE_ARRAY),
             array('bin_uuid', \MongoBinData::UUID),
             array('bin_md5', \MongoBinData::MD5),
-            array('bin_custom', $expectedBinCustom),
+            array('bin_custom', \MongoBinData::CUSTOM),
         );
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\CustomIdUser uses NONE identifier generation strategy but no identifier was provided when persisting.
+     */
+    public function testStrategyNoneAndNoIdThrowsException()
+    {
+        $this->dm->persist(new CustomIdUser('Maciej'));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\TestIdTypesIdAutoUser uses AUTO identifier generation strategy but provided identifier is not valid MongoId.
+     */
+    public function testStrategyAutoWithNotValidIdThrowsException()
+    {
+        $this->createIdTestClass('id', 'auto');
+        $user = new TestIdTypesIdAutoUser();
+        $user->id = 1;
+        $this->dm->persist($user);
     }
 
     private function createIdTestClass($type, $strategy)
@@ -329,7 +343,7 @@ class %s
     /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(strategy="%s", options={"type"="%s"}) **/
     public $id;
 
-    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\String **/
+    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Field("type=string") **/
     public $test = "test";
 }', $shortClassName, $strategy, $type);
 
@@ -346,7 +360,7 @@ class UuidUser
     /** @ODM\Id(strategy="uuid", options={"salt"="test"}) */
     public $id;
 
-    /** @ODM\String(name="t") */
+    /** @ODM\Field(name="t", type="string") */
     public $name;
 
     public function __construct($name)
@@ -361,7 +375,7 @@ class CollectionIdUser
     /** @ODM\Id(strategy="increment") */
     public $id;
 
-    /** @ODM\String(name="t") */
+    /** @ODM\Field(name="t", type="string") */
     public $name;
 
     /** @ODM\ReferenceOne(targetDocument="ReferencedCollectionId", cascade={"persist"}) */
@@ -382,7 +396,7 @@ class ReferencedCollectionId
     /** @ODM\Id(strategy="increment") */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)
@@ -402,7 +416,7 @@ class EmbeddedCollectionId
     /** @ODM\Id(strategy="increment") */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)
@@ -422,7 +436,7 @@ class AlnumCharsUser
     /** @ODM\Id(strategy="alnum", options={"chars"="zyxwvutsrqponmlkjihgfedcba"}) */
     public $id;
 
-    /** @ODM\String(name="t") */
+    /** @ODM\Field(name="t", type="string") */
     public $name;
 
     public function __construct($name)
@@ -437,7 +451,7 @@ class CustomIdUser
     /** @ODM\Id(strategy="none",nullable=true) */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name)

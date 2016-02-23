@@ -10,12 +10,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class Issue
 {
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     private $name;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     private $description;
 

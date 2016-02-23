@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument */
 class Phonebook
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $title;
 
     /** @ODM\EmbedMany(targetDocument="Phonenumber") */

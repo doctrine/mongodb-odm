@@ -18,7 +18,7 @@ abstract class CmsPage
     public $id;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     public $slug;
 }

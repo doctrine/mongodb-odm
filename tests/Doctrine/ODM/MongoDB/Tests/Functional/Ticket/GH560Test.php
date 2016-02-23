@@ -113,7 +113,7 @@ class GH560Document
     /** @ODM\Id(strategy="NONE") */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($id, $name)

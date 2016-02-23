@@ -27,31 +27,28 @@ class EmbeddedIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($id, $test->id);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\DefaultIdStrategyNoneEmbeddedDocument uses NONE identifier generation strategy but no identifier was provided when persisting.
+     */
     public function testEmbedOneDocumentWithMissingIdentifier()
     {
         $user = new EmbeddedStrategyNoneIdTestUser();
         $user->embedOne = new DefaultIdStrategyNoneEmbeddedDocument();
 
         $this->dm->persist($user);
-        $this->dm->flush();
-        $this->dm->clear();
-
-        $user = $this->dm->find(get_class($user), $user->id);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\DefaultIdStrategyNoneEmbeddedDocument uses NONE identifier generation strategy but no identifier was provided when persisting.
+     */
     public function testEmbedManyDocumentWithMissingIdentifier()
     {
         $user = new EmbeddedStrategyNoneIdTestUser();
         $user->embedMany[] = new DefaultIdStrategyNoneEmbeddedDocument();
 
         $this->dm->persist($user);
-        $this->dm->flush();
-        $this->dm->clear();
-
-        $user = $this->dm->find(get_class($user), $user->id);
-        foreach ($user->embedMany as $embed) {
-            $this->assertNull($embed->id);
-        }
     }
 }
 

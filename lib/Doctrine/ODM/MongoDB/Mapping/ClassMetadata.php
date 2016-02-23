@@ -37,8 +37,6 @@ use Doctrine\ODM\MongoDB\LockException;
  *    the serialized representation).
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class ClassMetadata extends ClassMetadataInfo
 {
@@ -79,11 +77,9 @@ class ClassMetadata extends ClassMetadataInfo
     {
         $mapping = parent::mapField($mapping);
 
-        if ($this->reflClass->hasProperty($mapping['fieldName'])) {
-            $reflProp = $this->reflClass->getProperty($mapping['fieldName']);
-            $reflProp->setAccessible(true);
-            $this->reflFields[$mapping['fieldName']] = $reflProp;
-        }
+        $reflProp = $this->reflClass->getProperty($mapping['fieldName']);
+        $reflProp->setAccessible(true);
+        $this->reflFields[$mapping['fieldName']] = $reflProp;
     }
 
     /**

@@ -4,6 +4,8 @@ Embedded Mapping
 This chapter explains how embedded documents are mapped in
 Doctrine.
 
+.. _embed_one:
+
 Embed One
 ---------
 
@@ -108,6 +110,8 @@ Embed many documents:
         Phonenumber:
           type: embeddedDocument
           
+.. _embed_mixing_document_types:
+
 Mixing Document Types
 ---------------------
 
@@ -166,7 +170,7 @@ the embedded document. The field name can be customized with the
 
     .. code-block:: xml
 
-        <embed-many fieldName="tasks">
+        <embed-many field="tasks">
             <discriminator-field name="type" />
         </embed-many>
 
@@ -205,7 +209,7 @@ class name in each embedded document:
 
     .. code-block:: xml
 
-        <embed-many fieldName="tasks">
+        <embed-many field="tasks">
             <discriminator-map>
                 <discriminator-mapping value="download" class="DownloadTask" />
                 <discriminator-mapping value="build" class="BuildTask" />
@@ -251,7 +255,7 @@ discriminator:
 
     .. code-block:: xml
 
-        <embed-many fieldName="tasks">
+        <embed-many field="tasks">
             <discriminator-map>
                 <discriminator-mapping value="download" class="DownloadTask" />
                 <discriminator-mapping value="build" class="BuildTask" />

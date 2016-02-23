@@ -49,7 +49,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             'Doctrine\Common\Persistence\Mapping\MappingException',
-            "No mapping file found named '".$this->dir."/Foo".$this->getFileExtension()."' for class 'MyNamespace\MySubnamespace\Document\Foo'."
+            "No mapping file found named"
         );
 
         $driver = $this->getDriver(array(
@@ -76,7 +76,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->dir = sys_get_temp_dir().'/abstract_driver_test';
-        @mkdir($this->dir, 0777, true);
+        @mkdir($this->dir, 0775, true);
     }
 
     protected function tearDown()

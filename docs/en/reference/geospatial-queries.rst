@@ -24,7 +24,7 @@ First, setup some documents like the following:
             /** @Id */
             public $id;
 
-            /** @String */
+            /** @Field(type="string") */
             public $name;
 
             /** @EmbedOne(targetDocument="Coordinates") */
@@ -37,10 +37,10 @@ First, setup some documents like the following:
         /** @EmbeddedDocument */
         class Coordinates
         {
-            /** @Float */
+            /** @Field(type="float") */
             public $x;
     
-            /** @Float */
+            /** @Field(type="float") */
             public $y;
         }
 
@@ -48,7 +48,7 @@ First, setup some documents like the following:
 
         <indexes>
             <index>
-                <key name="coordinates" value="2d" />
+                <key name="coordinates" order="2d" />
             </index>
         </indexes>
 

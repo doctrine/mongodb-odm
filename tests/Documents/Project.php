@@ -17,7 +17,7 @@ class Project
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 
     /** @ODM\EmbedOne(targetDocument="Address") */

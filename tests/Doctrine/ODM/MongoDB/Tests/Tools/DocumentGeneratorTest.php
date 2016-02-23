@@ -192,12 +192,9 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($cm->idGenerator, $metadata->idGenerator);
         $this->assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
     }
-    
+
     public function testTraitPropertiesAndMethodsAreNotDuplicated()
     {
-        if (PHP_VERSION_ID < 50400) {
-            $this->markTestSkipped('Traits are not available before php 5.4.');
-        }
         $cmf = $this->dm->getMetadataFactory();
         $user = new \Doctrine\ODM\MongoDB\Tests\Tools\GH297\User();
         $metadata = $cmf->getMetadataFor(get_class($user));
@@ -212,11 +209,8 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame($reflClass->hasMethod('getAddress'), false);
     }
 
-    public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses() 
+    public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses()
     {
-        if (PHP_VERSION_ID < 50400) {
-            $this->markTestSkipped('Traits are not available before php 5.4.');
-        }
         $cmf = $this->dm->getMetadataFactory();
         $user = new \Doctrine\ODM\MongoDB\Tests\Tools\GH297\Admin();
         $metadata = $cmf->getMetadataFor(get_class($user));
@@ -231,6 +225,74 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame($reflClass->hasMethod('getAddress'), false);
     }
 
+    /**
+     * Tests that properties, getters and setters are not duplicated on children classes
+     *
+     * @see https://github.com/doctrine/mongodb-odm/issues/1299
+     */
+    public function testMethodsAndPropertiesAreNotDuplicatedInChildClasses()
+    {
+        $cmf = $this->dm->getMetadataFactory();
+        $nsDir = $this->tmpDir.'/'.$this->namespace;
+
+        // Copy GH1299User class to temp dir
+        $content = str_replace(
+            'namespace Doctrine\ODM\MongoDB\Tests\Tools\GH1299',
+            'namespace '.$this->namespace,
+            file_get_contents(__DIR__.'/GH1299/GH1299User.php')
+        );
+        $fname = $nsDir.'/GH1299User.php';
+        file_put_contents($fname, $content);
+        require $fname;
+
+        // Generate document class
+        $metadata = $cmf->getMetadataFor($this->namespace.'\GH1299User');
+        $this->generator->writeDocumentClass($metadata, $this->tmpDir);
+
+        // Make a copy of the generated class that does not extend the BaseUser class
+        $source = file_get_contents($fname);
+
+        // class _DDC1590User extends DDC1590Entity { ... }
+        $source2 = str_replace('class GH1299User', 'class _GH1299User', $source);
+        $fname2  = $nsDir.'/_DDC1590User.php';
+        file_put_contents($fname2, $source2);
+        require $fname2;
+
+        $source3 = str_replace('class GH1299User extends BaseUser', 'class __GH1299User', $source);
+        $fname3  = $nsDir.'/_GH1299User.php';
+        file_put_contents($fname3, $source3);
+        require $fname3;
+
+        // The GH1299User class that extends BaseUser should have all properties, getters and setters
+        // (some of them are inherited from BaseUser)
+        $reflClass2 = new \ReflectionClass($this->namespace.'\_GH1299User');
+
+        $this->assertTrue($reflClass2->hasProperty('id'));
+        $this->assertTrue($reflClass2->hasProperty('name'));
+        $this->assertTrue($reflClass2->hasProperty('lastname'));
+
+        $this->assertTrue($reflClass2->hasMethod('getId'));
+        $this->assertFalse($reflClass2->hasMethod('setId'));
+        $this->assertTrue($reflClass2->hasMethod('getName'));
+        $this->assertTrue($reflClass2->hasMethod('setName'));
+        $this->assertTrue($reflClass2->hasMethod('getLastname'));
+        $this->assertTrue($reflClass2->hasMethod('setLastname'));
+
+        // The class that does not extend BaseUser should not have the properties and methods / setters
+        // from the BaseUser class, but only its own specific ones
+        $reflClass3 = new \ReflectionClass($this->namespace.'\__GH1299User');
+
+        $this->assertFalse($reflClass3->hasProperty('id'));
+        $this->assertFalse($reflClass3->hasProperty('name'));
+        $this->assertTrue($reflClass3->hasProperty('lastname'));
+
+        $this->assertFalse($reflClass3->hasMethod('getId'));
+        $this->assertFalse($reflClass3->hasMethod('setId'));
+        $this->assertFalse($reflClass3->hasMethod('getName'));
+        $this->assertFalse($reflClass3->hasMethod('setName'));
+        $this->assertTrue($reflClass3->hasMethod('getLastname'));
+        $this->assertTrue($reflClass3->hasMethod('setLastname'));
+    }
 }
 
 class DocumentGeneratorAuthor {}

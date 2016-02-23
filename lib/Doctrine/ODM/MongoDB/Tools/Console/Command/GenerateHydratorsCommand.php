@@ -28,10 +28,6 @@ use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
  * Command to (re)generate the hydrator classes used by doctrine.
  *
  * @since   1.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class GenerateHydratorsCommand extends Console\Command\Command
 {
@@ -75,7 +71,7 @@ EOT
         }
 
         if ( ! is_dir($destPath)) {
-            mkdir($destPath, 0777, true);
+            mkdir($destPath, 0775, true);
         }
 
         $destPath = realpath($destPath);

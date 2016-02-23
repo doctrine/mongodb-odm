@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\ODM\MongoDB\Tests\Mapping\Types;
+namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -24,6 +24,21 @@ class DateTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue('' . $timestamp), 'String dates are converted to MongoDate objects');
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are converted to MongoDate objects');
         $this->assertEquals(null, $type->convertToDatabaseValue(null), 'null are converted to null');
+    }
+
+    public function testConvertDateTimeImmutable()
+    {
+        if (! class_exists('DateTimeImmutable')) {
+            $this->markTestSkipped('DateTimeImmutable class does not exist in your PHP version');
+        }
+
+        $type = Type::getType(Type::DATE);
+
+        $timestamp = 100000000.123;
+        $mongoDate = new \MongoDate(100000000, 123000);
+
+        $dateTimeImmutable = \DateTimeImmutable::createFromFormat('U.u', $timestamp);
+        $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTimeImmutable), 'DateTimeImmutable objects are converted to MongoDate objects');
     }
 
     public function testConvertOldDate()

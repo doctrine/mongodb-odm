@@ -105,7 +105,7 @@ class PersistenceBuilderTest extends BaseTest
         $debug = $query->debug('query');
         $results = $query->execute();
 
-        $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $results);
+        $this->assertInstanceOf('Doctrine\MongoDB\CursorInterface', $results);
 
         $targetClass = $this->dm->getClassMetadata('Documents\Functional\SameCollection2');
         $mongoId1 = $targetClass->getDatabaseIdentifierValue($ids[1]);
@@ -284,7 +284,7 @@ class PersistenceBuilderTest extends BaseTest
         $query = $qb->getQuery();
         $results = $query->execute();
 
-        $this->assertInstanceOf('Doctrine\MongoDB\Cursor', $results);
+        $this->assertInstanceOf('Doctrine\MongoDB\CursorInterface', $results);
 
         $singleResult = $results->getSingleResult();
         $this->assertInstanceOf('Documents\CmsComment', $singleResult);

@@ -24,7 +24,6 @@ namespace Doctrine\ODM\MongoDB;
  * an identifier that does not exist in the database.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class DocumentNotFoundException extends MongoDBException
 {

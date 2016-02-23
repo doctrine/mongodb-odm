@@ -25,21 +25,14 @@ class BinDataTest extends BaseTest
 
     public function provideData()
     {
-        /* In driver versions before 1.2.11, the custom binary data type is
-         * incorrectly returned as -128.
-         *
-         * See: https://jira.mongodb.org/browse/PHP-408
-         */
-        $expectedBinCustom = version_compare(phpversion('mongo'), '1.2.11', '<') ? -128 : \MongoBinData::CUSTOM;
-
         return array(
-            array('bin', 'test', 0), // MongoBinData::GENERIC is only defined in driver 1.5+
+            array('bin', 'test', \MongoBinData::GENERIC),
             array('binFunc', 'test', \MongoBinData::FUNC),
             array('binByteArray', 'test', \MongoBinData::BYTE_ARRAY),
             array('binUUID', 'test', \MongoBinData::UUID),
-            array('binUUIDRFC4122', '1234567890ABCDEF', 4), // MongoBinData::UUID_RFC4122 is only defined in driver 1.5+
+            array('binUUIDRFC4122', '1234567890ABCDEF', \MongoBinData::UUID_RFC4122),
             array('binMD5', 'test', \MongoBinData::MD5),
-            array('binCustom', 'test', $expectedBinCustom),
+            array('binCustom', 'test', \MongoBinData::CUSTOM),
         );
     }
 }
@@ -50,24 +43,24 @@ class BinDataTestUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Bin */
+    /** @ODM\Field(type="bin") */
     public $bin;
 
-    /** @ODM\Bin(type="bin_func") */
+    /** @ODM\Field(type="bin_func") */
     public $binFunc;
 
-    /** @ODM\Bin(type="bin_bytearray") */
+    /** @ODM\Field(type="bin_bytearray") */
     public $binByteArray;
 
-    /** @ODM\Bin(type="bin_uuid") */
+    /** @ODM\Field(type="bin_uuid") */
     public $binUUID;
 
-    /** @ODM\Bin(type="bin_uuid_rfc4122") */
+    /** @ODM\Field(type="bin_uuid_rfc4122") */
     public $binUUIDRFC4122;
 
-    /** @ODM\Bin(type="bin_md5") */
+    /** @ODM\Field(type="bin_md5") */
     public $binMD5;
 
-    /** @ODM\Bin(type="bin_custom") */
+    /** @ODM\Field(type="bin_custom") */
     public $binCustom;
 }

@@ -5,6 +5,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\QueryLogger;
+use Documents\Book;
+use Documents\Chapter;
+use Documents\IdentifiedChapter;
+use Documents\Page;
 use Documents\Phonebook;
 use Documents\Phonenumber;
 
@@ -351,6 +355,187 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $user->inception[0]->many[1]->many);
         $this->assertEquals($user->inception[0]->many[1]->many[0]->value, 'start.many.1.many.0-new');
     }
+
+    public function testAtomicRefMany()
+    {
+        $malarzm = new AtomicSetUser('Maciej');
+        $jmikola = new AtomicSetUser('Jeremy');
+        $jonwage = new AtomicSetUser('Jon');
+
+        $this->dm->persist($malarzm);
+        $this->dm->persist($jmikola);
+        $this->dm->persist($jonwage);
+        $this->dm->flush();
+        $this->ql->clear();
+
+        $malarzm->friends[] = $jmikola;
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Updating empty atomic reference many requires one query');
+        $this->dm->clear();
+
+        $malarzm = $this->dm->find(get_class($malarzm), $malarzm->id);
+        $this->assertCount(1, $malarzm->friends);
+        $this->assertEquals('Jeremy', $malarzm->friends[0]->name);
+
+        $jonwage = $this->dm->find(get_class($jonwage), $jonwage->id);
+        $malarzm->friends[] = $jonwage;
+        $this->ql->clear();
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Updating existing atomic reference many requires one query');
+        $this->dm->clear();
+
+        $malarzm = $this->dm->find(get_class($malarzm), $malarzm->id);
+        $this->assertCount(2, $malarzm->friends);
+        $this->assertEquals('Jeremy', $malarzm->friends[0]->name);
+        $this->assertEquals('Jon', $malarzm->friends[1]->name);
+
+        $malarzm->friends->clear();
+        $this->ql->clear();
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Clearing atomic reference many requires one query');
+        $this->dm->clear();
+    }
+
+    public function testAtomicSetUpdatesAllNestedCollectionsInOneQuery()
+    {
+        // Create a book which has one chapter with one page.
+        $chapter1 = new Chapter();
+        $chapter1->pages->add(new Page(1));
+        $book = new Book('title');
+        $book->chapters->add($chapter1);
+
+        $this->dm->persist($book);
+
+        // Saving this book should result in 1 query since we use strategy="atomicSet"
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Inserting a book with one chapter and page requires one query');
+
+        // Simulate another PHP request which loads this record and tries to add an embedded document two levels deep...
+        $this->dm->clear();
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+
+        // Now we add a new "page" to the only chapter in this book.
+        $firstChapter = $book->chapters->first();
+        $firstChapter->pages->add(new Page(2));
+
+        // Updating this book should result in 1 query since we use strategy="atomicSet"
+        $this->ql->clear();
+        $this->dm->flush();
+        $this->assertCount(1, $this->ql, 'Adding a page to the first chapter of the book requires one query');
+
+        // this is failing if lifecycle callback postUpdate is recomputing change set
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $this->assertEquals(2, $book->chapters->first()->pages->count(), "Two page objects are expected in the first chapter of the book.");
+    }
+
+    public function testReplacementOfEmbedManyElements()
+    {
+        // Create a book with a single chapter.
+        $book = new Book();
+        $book->chapters->add(new Chapter('A'));
+
+        // Save it.
+        $this->dm->persist($book);
+        $this->dm->flush();
+
+        // Simulate another PHP request which loads this record.
+        $this->dm->clear();
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+
+        $firstChapter = $book->chapters->first();
+        $firstChapter->name = "First chapter A";
+
+        // Developers commonly attempt to replace the contents of an EmbedMany with a new ArrayCollection like this:
+        $replacementChapters = new ArrayCollection();
+        $replacementChapters->add($firstChapter);
+        $replacementChapters->add(new Chapter('Second chapter B'));
+        $book->chapters = $replacementChapters;
+
+        $this->dm->flush(); // <- Currently getting "Cannot update 'chapters' and 'chapters' at the same time" failures.
+
+        // Simulate another PHP request.
+        $this->dm->clear();
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+
+        // Verify we see chapters A and B.
+        $this->assertEquals('First chapter A', $book->chapters[0]->name);
+        $this->assertEquals('Second chapter B', $book->chapters[1]->name);
+    }
+
+    public function testReplacementOfIdentifiedEmbedManyElements()
+    {
+        $book = new Book();
+        $book->identifiedChapters->add(new IdentifiedChapter('A'));
+
+        $this->dm->persist($book);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $firstChapter = $book->identifiedChapters->first();
+        $firstChapter->name = "First chapter A";
+        $replacementChapters = new ArrayCollection();
+        $replacementChapters->add($firstChapter);
+        $replacementChapters->add(new IdentifiedChapter('Second chapter B'));
+        $book->identifiedChapters = $replacementChapters;
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $this->assertEquals('First chapter A', $book->identifiedChapters[0]->name);
+        $this->assertEquals('Second chapter B', $book->identifiedChapters[1]->name);
+    }
+
+    public function testOnlyEmbeddedDocumentUpdated()
+    {
+        // Create a book with a single chapter.
+        $book = new Book();
+        $book->chapters->add(new Chapter('A'));
+
+        // Save it.
+        $this->dm->persist($book);
+        $this->dm->flush();
+
+        // Simulate another PHP request which loads this record.
+        $this->dm->clear();
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+
+        // Modify the chapter's name.
+        $book->chapters->first()->name = "First chapter A";
+
+        $this->dm->flush();
+
+        // Simulate another PHP request & verify the change was saved.
+        $this->dm->clear();
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+
+        $this->assertEquals('First chapter A', $book->chapters[0]->name, "The chapter title failed to update.");
+    }
+
+    public function testUpdatedEmbeddedDocumentAndDirtyCollectionInside()
+    {
+        $book = new Book();
+        $book->chapters->add(new Chapter('A'));
+
+        $this->dm->persist($book);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $firstChapter = $book->chapters->first();
+        $firstChapter->name = "Apple";
+
+        // Add some pages.
+        $firstChapter->pages->add(new Page(1));
+        $firstChapter->pages->add(new Page(2));
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $this->assertEquals(2, $book->chapters->first()->pages->count());
+    }
 }
 
 /**
@@ -361,13 +546,13 @@ class AtomicSetUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\Int @ODM\Version */
+    /** @ODM\Field(type="int") @ODM\Version */
     public $version = 1;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $surname;
 
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="Documents\Phonenumber") */
@@ -382,12 +567,16 @@ class AtomicSetUser
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="AtomicSetInception") */
     public $inception;
 
+    /** @ODM\ReferenceMany(strategy="atomicSetArray", targetDocument="AtomicSetUser") */
+    public $friends;
+
     public function __construct($name)
     {
         $this->name = $name;
         $this->phonenumbers = new ArrayCollection();
         $this->phonenumbersArray = new ArrayCollection();
         $this->phonebooks = new ArrayCollection();
+        $this->friends = new ArrayCollection();
     }
 }
 
@@ -396,7 +585,7 @@ class AtomicSetUser
  */
 class AtomicSetInception
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $value;
 
     /** @ODM\EmbedOne(targetDocument="AtomicSetInception") */

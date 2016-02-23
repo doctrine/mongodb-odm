@@ -19,7 +19,11 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+/**
+ * Use this field to store distance information for geoNear queries
+ *
+ * @Annotation
+ */
 final class Distance extends AbstractField
 {
     public $distance = true;

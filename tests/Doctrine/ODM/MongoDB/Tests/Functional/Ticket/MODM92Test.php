@@ -74,7 +74,7 @@ class MODM92TestDocument
 /** @ODM\EmbeddedDocument */
 class MODM92TestEmbeddedDocument
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     public function __construct($name) {

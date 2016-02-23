@@ -22,6 +22,9 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
@@ -37,8 +40,6 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
  *     $dm = DocumentManager::create(new Connection(), $config);
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class Configuration extends \Doctrine\MongoDB\Configuration
 {
@@ -356,7 +357,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getClassMetadataFactoryName()
     {
         if ( ! isset($this->attributes['classMetadataFactoryName'])) {
-            $this->attributes['classMetadataFactoryName'] = 'Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory';
+            $this->attributes['classMetadataFactoryName'] = ClassMetadataFactory::class;
         }
         return $this->attributes['classMetadataFactoryName'];
     }
@@ -364,16 +365,12 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Gets array of default commit options.
      *
-     * @return boolean
+     * @return array
      */
     public function getDefaultCommitOptions()
     {
         if (isset($this->attributes['defaultCommitOptions'])) {
             return $this->attributes['defaultCommitOptions'];
-        }
-
-        if (version_compare(phpversion('mongo'), '1.3.0', '<')) {
-            return array('safe' => true);
         }
 
         return array('w' => 1);
@@ -445,7 +442,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         $reflectionClass = new \ReflectionClass($className);
 
-        if ( ! $reflectionClass->implementsInterface('Doctrine\Common\Persistence\ObjectRepository')) {
+        if ( ! $reflectionClass->implementsInterface(ObjectRepository::class)) {
             throw MongoDBException::invalidDocumentRepository($className);
         }
 
@@ -461,7 +458,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         return isset($this->attributes['defaultRepositoryClassName'])
             ? $this->attributes['defaultRepositoryClassName']
-            : 'Doctrine\ODM\MongoDB\DocumentRepository';
+            : DocumentRepository::class;
     }
 
     /**

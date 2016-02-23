@@ -103,6 +103,6 @@ class CustomFieldName
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String(name="login") */
+    /** @ODM\Field(name="login", type="string") */
     public $username;
 }

@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\MappedSuperclass(repositoryClass="Documents\BaseCategoryRepository") */
 abstract class BaseCategory
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
      protected $name;
 
      /** @ODM\EmbedMany(targetDocument="SubCategory") */

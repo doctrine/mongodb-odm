@@ -26,8 +26,6 @@ namespace Doctrine\ODM\MongoDB\Types;
  * generic sub-type (BinDataType class).
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class BinDataByteArrayType extends BinDataType
 {

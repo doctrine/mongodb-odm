@@ -17,10 +17,10 @@ Full Tree in Single Document
         /** @Id */
         private $id;
     
-        /** @String */
+        /** @Field(type="string") */
         private $title;
     
-        /** @String */
+        /** @Field(type="string") */
         private $body;
     
         /** @EmbedMany(targetDocument="Comment") */
@@ -32,10 +32,10 @@ Full Tree in Single Document
     /** @EmbeddedDocument */
     class Comment
     {
-        /** @String */
+        /** @Field(type="string") */
         private $by;
     
-        /** @String */
+        /** @Field(type="string") */
         private $text;
     
         /** @EmbedMany(targetDocument="Comment") */
@@ -73,7 +73,7 @@ Parent Reference
         /** @Id */
         private $id;
     
-        /** @String */
+        /** @Field(type="string") */
         private $name;
     
         /**
@@ -112,7 +112,7 @@ Child Reference
         /** @Id */
         private $id;
     
-        /** @String */
+        /** @Field(type="string") */
         private $name;
     
         /**
@@ -161,7 +161,7 @@ Array of Ancestors
     /** @MappedSuperclass */
     class BaseCategory
     {
-        /** @String */
+        /** @Field(type="string") */
         private $name;
     
         // ...
@@ -233,10 +233,10 @@ Materialized Paths
         /** @Id */
         private $id;
     
-        /** @String */
+        /** @Field(type="string") */
         private $name;
     
-        /** @String */
+        /** @Field(type="string") */
         private $path;
     
         // ...

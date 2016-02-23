@@ -35,7 +35,6 @@ use Doctrine\ODM\MongoDB\Configuration;
  * type based on document's ClassMetadata
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
  */
 class HydratorFactory
 {
@@ -357,7 +356,6 @@ EOF
             }
         }
 
-        $className = $class->name;
         $namespace = $this->hydratorNamespace;
         $code = sprintf(<<<EOF
 <?php
@@ -414,6 +412,7 @@ EOF
             $tmpFileName = $fileName . '.' . uniqid('', true);
             file_put_contents($tmpFileName, $code);
             rename($tmpFileName, $fileName);
+            chmod($fileName, 0664);
         }
     }
 
@@ -430,7 +429,7 @@ EOF
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners
         if ( ! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
-            $args = array(&$data);
+            $args = array(new PreLoadEventArgs($document, $this->dm, $data));
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
         if ($this->evm->hasListeners(Events::preLoad)) {
@@ -453,11 +452,20 @@ EOF
         $data = $this->getHydratorFor($metadata->name)->hydrate($document, $data, $hints);
         if ($document instanceof Proxy) {
             $document->__isInitialized__ = true;
+            $document->__setInitializer(null);
+            $document->__setCloner(null);
+            // lazy properties may be left uninitialized
+            $properties = $document->__getLazyProperties();
+            foreach ($properties as $propertyName => $property) {
+                if ( ! isset($document->$propertyName)) {
+                    $document->$propertyName = $properties[$propertyName];
+                }
+            }
         }
 
         // Invoke the postLoad lifecycle callbacks and listeners
         if ( ! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
-            $metadata->invokeLifecycleCallbacks(Events::postLoad, $document);
+            $metadata->invokeLifecycleCallbacks(Events::postLoad, $document, array(new LifecycleEventArgs($document, $this->dm)));
         }
         if ($this->evm->hasListeners(Events::postLoad)) {
             $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));

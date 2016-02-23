@@ -30,10 +30,6 @@ use Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory;
  * Command to generate document classes and method stubs from your mapping information.
  *
  * @since   1.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class GenerateDocumentsCommand extends Console\Command\Command
 {
@@ -76,6 +72,10 @@ class GenerateDocumentsCommand extends Console\Command\Command
             new InputOption(
                 'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces.', 4
+            ),
+            new InputOption(
+                'no-backup', null, InputOption::VALUE_NONE,
+                'Flag to define if the generator should provide a backup file of exisiting code.'
             )
         ))
         ->setHelp(<<<EOT
@@ -135,6 +135,7 @@ EOT
             $documentGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
             $documentGenerator->setRegenerateDocumentIfExists($input->getOption('regenerate-documents'));
             $documentGenerator->setUpdateDocumentIfExists($input->getOption('update-documents'));
+            $documentGenerator->setBackupExisting(!$input->getOption('no-backup'));
             $documentGenerator->setNumSpaces($input->getOption('num-spaces'));
 
             if (($extend = $input->getOption('extend')) !== null) {

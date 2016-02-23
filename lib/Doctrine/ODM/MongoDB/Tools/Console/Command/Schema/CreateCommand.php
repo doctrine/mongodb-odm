@@ -24,9 +24,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
- */
 class CreateCommand extends AbstractCommand
 {
     private $createOrder = array(self::DB, self::COLLECTION, self::INDEX);

@@ -11,10 +11,10 @@ class User
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     protected $password;
 
     /** @ODM\EmbedOne(targetDocument="Address") */

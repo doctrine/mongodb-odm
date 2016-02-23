@@ -26,6 +26,7 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
@@ -33,15 +34,13 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class AnnotationDriver extends AbstractAnnotationDriver
 {
     protected $entityAnnotationClasses = array(
-        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\Document' => 1,
-        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\MappedSuperclass' => 2,
-        'Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\EmbeddedDocument' => 3,
+        ODM\Document::class         => 1,
+        ODM\MappedSuperclass::class => 2,
+        ODM\EmbeddedDocument::class => 3,
     );
 
     /**
@@ -84,7 +83,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $this->addIndex($class, $index);
                 }
             } elseif ($annot instanceof ODM\InheritanceType) {
-                $class->setInheritanceType(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::INHERITANCE_TYPE_'.$annot->value));
+                $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_'.$annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
                 // $fieldName property is deprecated, but fall back for BC
                 if (isset($annot->value)) {
@@ -99,7 +98,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
                 $class->setDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {
-                $class->setChangeTrackingPolicy(constant('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata::CHANGETRACKING_'.$annot->value));
+                $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_'.$annot->value));
             } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
                 $class->setDefaultDiscriminatorValue($annot->value);
             }
@@ -199,7 +198,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $class->registerAlsoLoadMethod($method->getName(), $annot->value);
                 }
 
-                if ( ! isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks'])) {
+                if ( ! isset($classAnnotations[ODM\HasLifecycleCallbacks::class])) {
                     continue;
                 }
 
@@ -235,6 +234,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if (isset($index->$name)) {
                 $options[$name] = $index->$name;
             }
+        }
+        if (! empty($index->partialFilterExpression)) {
+            $options['partialFilterExpression'] = $index->partialFilterExpression;
         }
         $options = array_merge($options, $index->options);
         $class->addIndex($keys, $options);

@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument @ODM\HasLifecycleCallbacks */
 class EmbeddedTestLevel1
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
     /** @ODM\EmbedMany(targetDocument="EmbeddedTestLevel2") */
     public $level2 = array();

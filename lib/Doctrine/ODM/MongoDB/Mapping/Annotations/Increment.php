@@ -19,8 +19,13 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+/**
+ * @Annotation
+ * @deprecated This class will be removed in ODM 2.0. Use regular field mapping
+ * with the increment strategy instead
+ */
 final class Increment extends AbstractField
 {
     public $type = 'increment';
+    public $strategy = 'increment';
 }

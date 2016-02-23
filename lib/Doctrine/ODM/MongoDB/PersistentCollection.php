@@ -21,13 +21,12 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
  *
  * @since       1.0
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class PersistentCollection implements BaseCollection
 {
@@ -186,14 +185,18 @@ class PersistentCollection implements BaseCollection
             $newObjects = $this->coll->toArray();
         }
 
+        $this->initialized = true;
+
         $this->coll->clear();
         $this->uow->loadCollection($this);
         $this->takeSnapshot();
 
+        $this->mongoData = array();
+
         // Reattach any NEW objects added through add()
         if ($newObjects) {
             foreach ($newObjects as $key => $obj) {
-                if ($this->mapping['strategy'] === 'set' || $this->mapping['strategy'] === 'atomicSet') {
+                if (CollectionHelper::isHash($this->mapping['strategy'])) {
                     $this->coll->set($key, $obj);
                 } else {
                     $this->coll->add($obj);
@@ -202,9 +205,6 @@ class PersistentCollection implements BaseCollection
 
             $this->isDirty = true;
         }
-
-        $this->mongoData = array();
-        $this->initialized = true;
     }
 
     /**
@@ -268,10 +268,20 @@ class PersistentCollection implements BaseCollection
 
     /**
      * INTERNAL:
-     * Tells this collection to take a snapshot of its current state.
+     * Tells this collection to take a snapshot of its current state reindexing
+     * itself numerically if using save strategy that is enforcing BSON array.
+     * Reindexing is safe as snapshot is taken only after synchronizing collection
+     * with database or clearing it.
      */
     public function takeSnapshot()
     {
+        if (CollectionHelper::isList($this->mapping['strategy'])) {
+            $array = $this->coll->toArray();
+            $this->coll->clear();
+            foreach ($array as $document) {
+                $this->coll->add($document);
+            }
+        }
         $this->snapshot = $this->coll->toArray();
         $this->isDirty = false;
     }
@@ -284,7 +294,7 @@ class PersistentCollection implements BaseCollection
     public function clearSnapshot()
     {
         $this->snapshot = array();
-        $this->isDirty = $this->count() ? true : false;
+        $this->isDirty = $this->coll->count() ? true : false;
     }
 
     /**
@@ -310,6 +320,26 @@ class PersistentCollection implements BaseCollection
             $this->snapshot,
             $this->coll->toArray(),
             function ($a, $b) { return $a === $b ? 0 : 1; }
+        );
+    }
+
+    /**
+     * INTERNAL: get objects that were removed, unlike getDeleteDiff this doesn't care about indices.
+     *
+     * @return array
+     */
+    public function getDeletedDocuments()
+    {
+        $compare = function ($a, $b) {
+            $compareA = is_object($a) ? spl_object_hash($a) : $a;
+            $compareb = is_object($b) ? spl_object_hash($b) : $b;
+            return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
+        };
+
+        return array_udiff(
+            $this->snapshot,
+            $this->coll->toArray(),
+            $compare
         );
     }
 
@@ -408,10 +438,6 @@ class PersistentCollection implements BaseCollection
 
         $this->changed();
 
-        if ($this->isOrphanRemovalEnabled()) {
-            $this->uow->scheduleOrphanRemoval($removed);
-        }
-
         return $removed;
     }
 
@@ -428,10 +454,6 @@ class PersistentCollection implements BaseCollection
         }
 
         $this->changed();
-
-        if ($this->isOrphanRemovalEnabled()) {
-            $this->uow->scheduleOrphanRemoval($element);
-        }
 
         return $removed;
     }
@@ -504,10 +526,17 @@ class PersistentCollection implements BaseCollection
      */
     public function count()
     {
-        if ($this->mapping['isInverseSide']) {
-            $this->initialize();
+        $count = $this->coll->count();
+
+        // If this collection is inversed and not initialized, add the count returned from the database
+        if ($this->mapping['isInverseSide'] && ! $this->initialized) {
+            $documentPersister = $this->uow->getDocumentPersister(get_class($this->owner));
+            $count += empty($this->mapping['repositoryMethod'])
+                ? $documentPersister->createReferenceManyInverseSideQuery($this)->count()
+                : $documentPersister->createReferenceManyWithRepositoryMethodCursor($this)->count();
         }
-        return count($this->mongoData) + $this->coll->count();
+
+        return count($this->mongoData) + $count;
     }
 
     /**
@@ -516,6 +545,12 @@ class PersistentCollection implements BaseCollection
     public function set($key, $value)
     {
         $this->coll->set($key, $value);
+
+        // Handle orphanRemoval
+        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $value !== null) {
+            $this->uow->unscheduleOrphanRemoval($value);
+        }
+
         $this->changed();
     }
 
@@ -528,11 +563,16 @@ class PersistentCollection implements BaseCollection
          * uses the appropriate key. Otherwise, we risk overwriting original data
          * when $newObjects are re-added in a later call to initialize().
          */
-        if (isset($this->mapping['strategy']) && ($this->mapping['strategy'] === 'set' || $this->mapping['strategy'] === 'atomicSet')) {
+        if (isset($this->mapping['strategy']) && CollectionHelper::isHash($this->mapping['strategy'])) {
             $this->initialize();
         }
         $this->coll->add($value);
         $this->changed();
+
+        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $value !== null) {
+            $this->uow->unscheduleOrphanRemoval($value);
+        }
+
         return true;
     }
 

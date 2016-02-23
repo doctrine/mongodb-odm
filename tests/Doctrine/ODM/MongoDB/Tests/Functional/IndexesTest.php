@@ -100,6 +100,13 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\PartialIndexOnDocumentTest');
+        $indexes = $class->getIndexes();
+        $this->assertTrue(isset($indexes[0]['keys']['username']));
+        $this->assertEquals(1, $indexes[0]['keys']['username']);
+        $this->assertTrue(isset($indexes[0]['options']['partialFilterExpression']));
+        $this->assertSame(array('counter' => array('$gt' => 5)), $indexes[0]['options']['partialFilterExpression']);
+
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\UniqueSparseOnFieldTest');
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
@@ -201,6 +208,21 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->uniqueTest('MultipleFieldIndexes');
     }
+
+    public function testPartialIndexCreation()
+    {
+        if (version_compare($this->getServerVersion(), '3.2.0', '<')) {
+            $this->markTestSkipped('This test is not applicable to server versions < 3.2.0');
+        }
+
+        $className = __NAMESPACE__ . '\PartialIndexOnDocumentTest';
+        $this->dm->getSchemaManager()->ensureDocumentIndexes($className);
+
+        $indexes = $this->dm->getSchemaManager()->getDocumentIndexes($className);
+        $this->assertFalse(empty($indexes[0]['options']['partialFilterExpression']));
+        $this->assertSame(array('counter' => array('$gt' => 5)), $indexes[0]['options']['partialFilterExpression']);
+        $this->assertTrue($indexes[0]['options']['unique']);
+    }
 }
 
 /** @ODM\Document */
@@ -209,10 +231,10 @@ class UniqueOnFieldTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String @ODM\UniqueIndex(safe=true) */
+    /** @ODM\Field(type="string") @ODM\UniqueIndex(safe=true) */
     public $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $email;
 }
 
@@ -222,10 +244,10 @@ class UniqueOnDocumentTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $email;
 }
 
@@ -235,11 +257,27 @@ class IndexesOnDocumentTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $email;
+}
+
+/** @ODM\Document @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"},partialFilterExpression={"counter"={"$gt"=5}})) */
+class PartialIndexOnDocumentTest
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\Field(type="string") */
+    public $username;
+
+    /** @ODM\Field(type="string") */
+    public $email;
+
+    /** @ODM\Field(type="integer") */
+    public $counter;
 }
 
 /** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}) */
@@ -248,10 +286,10 @@ class MultipleFieldsUniqueIndexTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $email;
 }
 
@@ -261,10 +299,10 @@ class UniqueSparseOnFieldTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String @ODM\UniqueIndex(safe=true, sparse=true) */
+    /** @ODM\Field(type="string") @ODM\UniqueIndex(safe=true, sparse=true) */
     public $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $email;
 }
 
@@ -274,10 +312,10 @@ class UniqueSparseOnDocumentTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $email;
 }
 
@@ -287,10 +325,10 @@ class SparseIndexesOnDocumentTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $email;
 }
 
@@ -300,10 +338,10 @@ class MultipleFieldsUniqueSparseIndexTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $username;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $email;
 }
 
@@ -313,10 +351,10 @@ class MultipleFieldIndexes
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String @ODM\UniqueIndex(name="test") */
+    /** @ODM\Field(type="string") @ODM\UniqueIndex(name="test") */
     public $username;
 
-    /** @ODM\String @ODM\Index(unique=true) */
+    /** @ODM\Field(type="string") @ODM\Index(unique=true) */
     public $email;
 }
 
@@ -326,7 +364,7 @@ class DocumentWithEmbeddedIndexes
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $name;
 
     /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
@@ -350,7 +388,7 @@ class DocumentWithDiscriminatorIndex
 /** @ODM\EmbeddedDocument */
 class EmbeddedDocumentWithIndexes
 {
-    /** @ODM\String @ODM\Index */
+    /** @ODM\Field(type="string") @ODM\Index */
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="EmbeddedManyDocumentWithIndexes") */
@@ -360,14 +398,14 @@ class EmbeddedDocumentWithIndexes
 /** @ODM\EmbeddedDocument */
 class EmbeddedManyDocumentWithIndexes
 {
-    /** @ODM\String @ODM\Index */
+    /** @ODM\Field(type="string") @ODM\Index */
     public $name;
 }
 
 /** @ODM\EmbeddedDocument */
 class YetAnotherEmbeddedDocumentWithIndex
 {
-    /** @ODM\String @ODM\Index */
+    /** @ODM\Field(type="string") @ODM\Index */
     public $value;
 }
 

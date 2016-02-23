@@ -19,7 +19,11 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-/** @Annotation */
+/**
+ * Specifies a one-to-one relationship to a different document
+ *
+ * @Annotation
+ */
 final class ReferenceOne extends AbstractField
 {
     public $type = 'one';
