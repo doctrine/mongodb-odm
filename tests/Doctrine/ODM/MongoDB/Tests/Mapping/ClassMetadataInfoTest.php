@@ -328,6 +328,18 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'sort' => array('foo' => 1)
         ));
     }
+
+    public function testIncrementTypeAutomaticallyAssumesIncrementStrategy()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->mapField([
+            'fieldName' => 'incrementField',
+            'type' => 'increment',
+        ]);
+
+        $mapping = $cm->fieldMappings['incrementField'];
+        $this->assertSame(ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT, $mapping['strategy']);
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository
