@@ -6,7 +6,7 @@ php:
 
 env:
   global:
-    - DOCTRINE_MONGODB_SERVER=mongodb://localhost:27217
+    - DOCTRINE_MONGODB_SERVER=mongodb://localhost:27017
   matrix:
     - MONGO_VERSION=1.5.8
     - MONGO_VERSION=stable
@@ -21,6 +21,7 @@ services: mongodb
 
 before_script:
   - if [ "x${MONGO_VERSION}" != "x" ]; then yes '' | pecl -q install -f mongo-${MONGO_VERSION} && echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`; fi
+  - sudo service mongodb stop
   - sudo pip install mongo-orchestration
   - sudo mongo-orchestration start
   - curl -XPUT http://localhost:8889/v1/sharded_clusters/myCluster --data @tests/sharded.json | python -m json.tool
