@@ -113,7 +113,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Set the current field to operate on.
      *
      * @param string $field
-     * @return self
+     * @return $this
      */
     public function field($field)
     {
@@ -222,7 +222,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param bool $bool
-     * @return self
+     * @return $this
      */
     public function returnNew($bool = true)
     {
