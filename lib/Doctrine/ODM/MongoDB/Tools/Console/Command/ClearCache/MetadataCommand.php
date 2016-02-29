@@ -59,7 +59,7 @@ EOT
         }
 
         if ($cacheDriver instanceof \Doctrine\Common\Cache\ApcCache) {
-            throw new \LogicException("Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
+            throw new \LogicException('Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
         }
 
         $output->write('Clearing ALL Metadata cache entries' . PHP_EOL);

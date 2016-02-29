@@ -109,7 +109,7 @@ class MappingException extends BaseMappingException
     {
         return new self(
             "Document class '$className' used in the discriminator map of class '$owningClass' " .
-            "does not exist."
+            'does not exist.'
         );
     }
 
@@ -164,7 +164,7 @@ class MappingException extends BaseMappingException
     public static function identifierRequired($documentName)
     {
         return new self("No identifier/primary key specified for Document '$documentName'."
-            . " Every Document must have an identifier/primary key.");
+            . ' Every Document must have an identifier/primary key.');
     }
 
     /**

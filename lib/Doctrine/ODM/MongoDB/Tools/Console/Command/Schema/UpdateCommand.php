@@ -66,7 +66,7 @@ class UpdateCommand extends AbstractCommand
             $isErrored = true;
         }
 
-        return ($isErrored) ? 255 : 0;
+        return $isErrored ? 255 : 0;
     }
 
     /**

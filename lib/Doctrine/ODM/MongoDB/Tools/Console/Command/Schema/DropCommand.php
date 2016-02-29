@@ -74,7 +74,7 @@ class DropCommand extends AbstractCommand
             }
         }
 
-        return ($isErrored) ? 255 : 0;
+        return $isErrored ? 255 : 0;
     }
 
     protected function processDocumentCollection(SchemaManager $sm, $document)

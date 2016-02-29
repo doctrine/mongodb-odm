@@ -129,7 +129,7 @@ class MongoDBException extends \Exception
     public static function invalidValueForType($type, $expected, $got)
     {
         if (is_array($expected)) {
-            $expected = sprintf("%s or %s",
+            $expected = sprintf('%s or %s',
                 join(', ', array_slice($expected, 0, -1)),
                 end($expected)
             );
