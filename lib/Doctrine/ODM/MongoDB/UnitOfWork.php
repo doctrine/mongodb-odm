@@ -25,10 +25,8 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\MongoDB\GridFSFile;
-use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\Query;
@@ -174,10 +172,10 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $collectionUpdates = array();
-    
+
     /**
      * A list of documents related to collections scheduled for update or deletion
-     * 
+     *
      * @var array
      */
     private $hasScheduledCollections = array();
@@ -451,7 +449,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions =
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
-        $this->orphanRemovals = 
+        $this->orphanRemovals =
         $this->hasScheduledCollections = array();
     }
 
@@ -2298,7 +2296,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->collectionUpdates =
             $this->collectionDeletions =
             $this->parentAssociations =
-            $this->orphanRemovals = 
+            $this->orphanRemovals =
             $this->hasScheduledCollections = array();
         } else {
             $visited = array();
@@ -2405,11 +2403,11 @@ class UnitOfWork implements PropertyChangedListener
     {
         return isset($this->collectionDeletions[spl_object_hash($coll)]);
     }
-    
+
     /**
      * INTERNAL:
      * Unschedules a collection from being deleted when this UnitOfWork commits.
-     * 
+     *
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
     public function unscheduleCollectionDeletion(PersistentCollection $coll)
@@ -2443,11 +2441,11 @@ class UnitOfWork implements PropertyChangedListener
             $this->scheduleCollectionOwner($coll);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Unschedules a collection from being updated when this UnitOfWork commits.
-     * 
+     *
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
     public function unscheduleCollectionUpdate(PersistentCollection $coll)
@@ -2459,7 +2457,7 @@ class UnitOfWork implements PropertyChangedListener
             unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
         }
     }
-    
+
     /**
      * Checks whether a PersistentCollection is scheduled for update.
      *
@@ -2486,22 +2484,22 @@ class UnitOfWork implements PropertyChangedListener
                 ? $this->visitedCollections[$oid]
                 : array();
     }
-    
+
     /**
      * INTERNAL:
      * Gets PersistentCollections that are scheduled to update and related to $document
-     * 
+     *
      * @param object $document
      * @return array
      */
     public function getScheduledCollections($document)
     {
         $oid = spl_object_hash($document);
-        return isset($this->hasScheduledCollections[$oid]) 
+        return isset($this->hasScheduledCollections[$oid])
                 ? $this->hasScheduledCollections[$oid]
                 : array();
     }
-    
+
     /**
      * Checks whether the document is related to a PersistentCollection
      * scheduled for update or deletion.
@@ -2513,7 +2511,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         return isset($this->hasScheduledCollections[spl_object_hash($document)]);
     }
-    
+
     /**
      * Marks the PersistentCollection's top-level owner as having a relation to
      * a collection scheduled for update or deletion.
@@ -2524,7 +2522,7 @@ class UnitOfWork implements PropertyChangedListener
      * If the collection is nested within atomic collection, it is immediately
      * unscheduled and atomic one is scheduled for update instead. This makes
      * calculating update data way easier.
-     * 
+     *
      * @param PersistentCollection $coll
      */
     private function scheduleCollectionOwner(PersistentCollection $coll)

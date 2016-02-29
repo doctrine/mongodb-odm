@@ -23,7 +23,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\PersistentCollection;
-use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
@@ -108,7 +107,7 @@ class CollectionPersister
             case ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET:
             case ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET_ARRAY:
                 throw new \UnexpectedValueException($mapping['strategy'] . ' update collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
-            
+
             case ClassMetadataInfo::STORAGE_STRATEGY_SET:
             case ClassMetadataInfo::STORAGE_STRATEGY_SET_ARRAY:
                 $this->setCollection($coll, $options);

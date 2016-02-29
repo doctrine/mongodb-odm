@@ -19,8 +19,6 @@
 
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-
 /**
  * The HydratorInterface defines methods all hydrator need to implement
  *
@@ -36,5 +34,5 @@ interface HydratorInterface
      * @param array $hints Any hints to account for during reconstitution/lookup of the document.
      * @return array $values The array of hydrated values.
      */
-    function hydrate($document, $data, array $hints = array());
+    public function hydrate($document, $data, array $hints = array());
 }

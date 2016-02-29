@@ -2,8 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use DateTime,
-    Doctrine\ODM\MongoDB\PersistentCollection;
+use DateTime;
 
 class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

@@ -20,17 +20,16 @@
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * IncrementGenerator is responsible for generating auto increment identifiers. It uses
  * a collection and generates the next id by using $inc on a field named "current_id".
  *
- * The 'collection' property determines which collection name is used to store the 
+ * The 'collection' property determines which collection name is used to store the
  * id values. If not specified it defaults to 'doctrine_increment_ids'.
- * 
+ *
  * The 'key' property determines the document ID used to store the id values in the
- * collection. If not specified it defaults to the name of the collection for the 
+ * collection. If not specified it defaults to the name of the collection for the
  * document.
  *
  * @since       1.0
@@ -39,26 +38,26 @@ class IncrementGenerator extends AbstractIdGenerator
 {
     protected $collection = null;
     protected $key = null;
-    
-    public function setCollection($collection) 
-    { 
+
+    public function setCollection($collection)
+    {
         $this->collection = $collection;
     }
 
-    public function setKey($key) 
-    { 
+    public function setKey($key)
+    {
         $this->key = $key;
     }
-    
+
     /** @inheritDoc */
     public function generate(DocumentManager $dm, $document)
     {
         $className = get_class($document);
         $db = $dm->getDocumentDatabase($className);
-        
+
         $coll = $this->collection ?: 'doctrine_increment_ids';
         $key = $this->key ?: $dm->getDocumentCollection($className)->getName();
-        
+
         $query = array('_id' => $key);
         $newObj = array('$inc' => array('current_id' => 1));
 
