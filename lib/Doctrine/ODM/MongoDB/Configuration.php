@@ -80,7 +80,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * @var integer
      */
     const AUTOGENERATE_EVAL = 3;
-    
+
     /**
      * Adds a namespace under a certain alias.
      *
@@ -147,7 +147,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * @param array $paths
      * @return Mapping\Driver\AnnotationDriver
      */
-    public function newDefaultAnnotationDriver($paths = array())
+    public function newDefaultAnnotationDriver(array $paths = array())
     {
         $reader = new AnnotationReader();
 
