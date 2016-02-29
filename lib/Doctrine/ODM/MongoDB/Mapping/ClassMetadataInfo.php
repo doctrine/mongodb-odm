@@ -534,7 +534,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ($this->isEmbeddedDocument) {
             return;
         }
-        
+
         if ($repositoryClassName && strpos($repositoryClassName, '\\') === false && strlen($this->namespace)) {
             $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
         }
@@ -1132,7 +1132,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
         $mapping['isCascadeMerge'] = in_array('merge', $cascades);
         $mapping['isCascadeDetach'] = in_array('detach', $cascades);
-        
+
         if (isset($mapping['type']) && $mapping['type'] === 'file') {
             $mapping['file'] = true;
         }
@@ -1179,7 +1179,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 (isset($mapping['mappedBy']) || isset($mapping['inversedBy']))) {
             throw MappingException::owningAndInverseReferencesRequireTargetDocument($this->name, $mapping['fieldName']);
         }
-        
+
         if ($this->isEmbeddedDocument && $mapping['type'] === 'many' && CollectionHelper::isAtomic($mapping['strategy'])) {
             throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
         }
@@ -1589,7 +1589,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             //so the proxy needs to be loaded first.
             $document->__load();
         }
-        
+
         $this->reflFields[$field]->setValue($document, $value);
     }
 
@@ -1606,7 +1606,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ($document instanceof Proxy && $field !== $this->identifier && ! $document->__isInitialized()) {
             $document->__load();
         }
-        
+
         return $this->reflFields[$field]->getValue($document);
     }
 
@@ -1670,6 +1670,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
     /**
      * Sets the type of Id generator to use for the mapped class.
+     *
+     * @param string $generatorType Generator type.
      */
     public function setIdGeneratorType($generatorType)
     {
@@ -1678,8 +1680,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
     /**
      * Sets the Id generator options.
+     *
+     * @param array $generatorOptions Generator options.
      */
-    public function setIdGeneratorOptions($generatorOptions)
+    public function setIdGeneratorOptions(array $generatorOptions)
     {
         $this->generatorOptions = $generatorOptions;
     }
@@ -1789,7 +1793,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * value to use depending on the column type.
      *
      * @param array $mapping   The version field mapping array
-     * 
+     *
      * @throws LockException
      */
     public function setVersionMapping(array &$mapping)

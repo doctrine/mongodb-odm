@@ -445,8 +445,12 @@ class SchemaManager
      * recreate the index, since dropDups only affects creation of
      * the unique index. Additionally, the background option is only
      * relevant to index creation and is not considered.
+     *
+     * @param array $mongoIndex Mongo index data.
+     * @param array $documentIndex Document index data.
+     * @return bool True if the indexes are equivalent, otherwise false.
      */
-    public function isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)
+    public function isMongoIndexEquivalentToDocumentIndex(array $mongoIndex, array $documentIndex)
     {
         $documentIndexOptions = $documentIndex['options'];
 

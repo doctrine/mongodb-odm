@@ -115,7 +115,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      * Converts a composite expression into the target query language output.
      *
      * @see ExpressionVisitor::walkCompositeExpression()
-     * @param CompositeExpression $expr
+     * @param CompositeExpression $compositeExpr
      * @return \Doctrine\ODM\MongoDB\Query\Expr
      */
     public function walkCompositeExpression(CompositeExpression $compositeExpr)

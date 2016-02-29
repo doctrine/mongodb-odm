@@ -114,7 +114,7 @@ class DocumentPersister
     private $cp;
 
     /**
-     * Initializes a new DocumentPersister instance.
+     * Initializes this instance.
      *
      * @param PersistenceBuilder $pb
      * @param DocumentManager $dm
@@ -122,9 +122,17 @@ class DocumentPersister
      * @param UnitOfWork $uow
      * @param HydratorFactory $hydratorFactory
      * @param ClassMetadata $class
+     * @param CriteriaMerger $cm
      */
-    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, HydratorFactory $hydratorFactory, ClassMetadata $class, CriteriaMerger $cm = null)
-    {
+    public function __construct(
+        PersistenceBuilder $pb,
+        DocumentManager $dm,
+        EventManager $evm,
+        UnitOfWork $uow,
+        HydratorFactory $hydratorFactory,
+        ClassMetadata $class,
+        CriteriaMerger $cm = null
+    ) {
         $this->pb = $pb;
         $this->dm = $dm;
         $this->evm = $evm;
@@ -290,7 +298,7 @@ class DocumentPersister
                 }
                 $data['$set'][$versionMapping['name']] = $nextVersion;
             }
-            
+
             try {
                 $this->executeUpsert($data, $options);
                 $this->handleCollections($document, $options);
@@ -319,7 +327,7 @@ class DocumentPersister
             unset($data['$set']);
         }
 
-        /* If there are no modifiers remaining, we're upserting a document with 
+        /* If there are no modifiers remaining, we're upserting a document with
          * an identifier as its only field. Since a document with the identifier
          * may already exist, the desired behavior is "insert if not exists" and
          * NOOP otherwise. MongoDB 2.6+ does not allow empty modifiers, so $set
@@ -776,7 +784,7 @@ class DocumentPersister
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
     {
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
-        $mapping = $collection->getMapping();        
+        $mapping = $collection->getMapping();
         $documents = $cursor->toArray(false);
         foreach ($documents as $key => $obj) {
             if (CollectionHelper::isHash($mapping['strategy'])) {

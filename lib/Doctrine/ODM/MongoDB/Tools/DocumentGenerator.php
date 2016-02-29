@@ -274,6 +274,7 @@ public function <methodName>()
     /**
      * Set the name of the class the generated classes should extend from
      *
+     * @param string $classToExtend Class name.
      * @return void
      */
     public function setClassToExtend($classToExtend)
@@ -326,7 +327,9 @@ public function <methodName>()
     }
 
     /**
-     * Should an existing document be backed up if it already exists?
+     * Sets a value indicating whether existing documents will be backed up.
+     *
+     * @param bool $bool True to backup existing document, false to overwrite.
      */
     public function setBackupExisting($bool)
     {
