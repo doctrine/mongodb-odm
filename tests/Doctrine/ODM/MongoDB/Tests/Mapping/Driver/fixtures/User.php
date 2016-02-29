@@ -2,8 +2,6 @@
 
 namespace TestDocuments;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-
 class User
 {
     protected $id;

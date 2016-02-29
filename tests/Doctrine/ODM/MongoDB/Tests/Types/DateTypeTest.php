@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
-use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 class DateTypeTest extends \PHPUnit_Framework_TestCase

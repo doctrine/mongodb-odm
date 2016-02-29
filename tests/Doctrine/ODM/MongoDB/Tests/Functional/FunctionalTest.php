@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Documents\Bars\Bar;
 use Documents\Bars\Location;
@@ -14,9 +13,6 @@ use Documents\Manager;
 use Documents\Address;
 use Documents\Group;
 use Documents\Project;
-use Documents\Agent;
-use Documents\Server;
-use Documents\GuestServer;
 use Documents\Functional\EmbeddedTestLevel0;
 use Documents\Functional\EmbeddedTestLevel0b;
 use Documents\Functional\EmbeddedTestLevel1;
@@ -31,7 +27,6 @@ use Documents\Functional\PreUpdateTestSeller;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
 use Documents\Functional\SameCollection3;
-use Documents\Functional\SimpleEmbedAndReference;
 use Documents\Album;
 use Documents\Song;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;

@@ -6,7 +6,6 @@ use Documents\SubProject;
 use Documents\Project;
 use Documents\Issue;
 use Doctrine\Common\Collections\ArrayCollection;
-use Documents\Developer;
 
 class ReferenceEmbeddedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

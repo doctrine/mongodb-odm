@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Documents\CmsAddress;
-use Documents\CmsArticle;
 use Documents\CmsUser;
 use Documents\FriendUser;
 

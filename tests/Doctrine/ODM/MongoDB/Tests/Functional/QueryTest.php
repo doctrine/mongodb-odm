@@ -6,10 +6,7 @@ use Documents\Article;
 use Documents\Account;
 use Documents\Address;
 use Documents\CmsComment;
-use Documents\Group;
 use Documents\Phonenumber;
-use Documents\Profile;
-use Documents\File;
 use Documents\User;
 
 class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest

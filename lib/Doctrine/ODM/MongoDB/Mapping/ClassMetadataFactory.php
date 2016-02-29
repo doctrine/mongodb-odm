@@ -25,8 +25,6 @@ use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
