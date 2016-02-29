@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
+use Doctrine\Common\Util\Debug;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console;
@@ -103,7 +104,7 @@ EOT
         }
 
         foreach ($qb->getQuery() as $result) {
-            \Doctrine\Common\Util\Debug::dump($result, $depth);
+            Debug::dump($result, $depth);
         }
     }
 }
