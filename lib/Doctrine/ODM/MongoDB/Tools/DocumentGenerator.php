@@ -103,7 +103,7 @@ public function <methodName>()
  * <description>
  *
  * @param <variableType>$<variableName>
- * @return self
+ * @return $this
  */
 public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
 {
