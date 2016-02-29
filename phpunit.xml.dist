@@ -25,7 +25,6 @@
     <groups>
         <exclude>
             <group>performance</group>
-            <group>sharding</group>
         </exclude>
     </groups>
 

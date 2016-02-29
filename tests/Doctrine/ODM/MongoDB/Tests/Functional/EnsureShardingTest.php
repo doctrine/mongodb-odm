@@ -7,12 +7,11 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class EnsureShardingTest extends BaseTest
 {
-    /**
-     * @group sharding
-     */
+
     public function testEnsureShardingForNewCollection()
     {
         $class = 'Documents\Sharded\ShardedOne';
+        $this->skipTestIfNotSharded($class);
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $collection = $this->dm->getDocumentCollection($class);
@@ -24,12 +23,10 @@ class EnsureShardingTest extends BaseTest
         $this->assertTrue($stats['sharded']);
     }
 
-    /**
-     * @group sharding
-     */
     public function testEnsureShardingForCollectionWithDocuments()
     {
         $class = 'Documents\Sharded\ShardedOne';
+        $this->skipTestIfNotSharded($class);
         $collection = $this->dm->getDocumentCollection($class);
         $doc = array('title' => 'hey', 'k' => 'hi');
         $collection->insert($doc);

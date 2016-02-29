@@ -76,4 +76,16 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
         return $result['version'];
     }
+
+    protected function skipTestIfNotSharded($className)
+    {
+        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true]);
+        if (!$result['ok']) {
+            $this->markTestSkipped('Could not check whether server supports sharding');
+        }
+
+        if (!array_key_exists('shardCollection', $result['commands'])) {
+            $this->markTestSkipped('Test skipped because server does not support sharding');
+        }
+    }
 }

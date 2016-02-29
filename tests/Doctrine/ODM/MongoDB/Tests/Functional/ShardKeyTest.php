@@ -12,13 +12,12 @@ class ShardKeyTest extends BaseTest
     {
         parent::setUp();
 
+        $class = 'Documents\Sharded\ShardedOne';
+        $this->skipTestIfNotSharded($class);
         $schemaManager = $this->dm->getSchemaManager();
-        $schemaManager->ensureDocumentSharding('Documents\Sharded\ShardedOne');
+        $schemaManager->ensureDocumentSharding($class);
     }
 
-    /**
-     * @group sharding
-     */
     public function testUpdateAfterSave()
     {
         $queries = array();
@@ -39,9 +38,6 @@ class ShardKeyTest extends BaseTest
         $this->assertEquals($o->key, $lastQuery['query']['k']);
     }
 
-    /**
-     * @group sharding
-     */
     public function testUpsert()
     {
         $queries = array();
@@ -58,9 +54,6 @@ class ShardKeyTest extends BaseTest
         $this->assertEquals($o->key, $lastQuery['query']['k']);
     }
 
-    /**
-     * @group sharding
-     */
     public function testRemove()
     {
         $queries = array();
@@ -78,9 +71,6 @@ class ShardKeyTest extends BaseTest
         $this->assertEquals($o->key, $lastQuery['query']['k']);
     }
 
-    /**
-     * @group sharding
-     */
     public function testRefresh()
     {
         $queries = array();
@@ -98,7 +88,6 @@ class ShardKeyTest extends BaseTest
     }
 
     /**
-     * @group sharding
      * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function testUpdateWithShardKeyChangeException()
@@ -112,7 +101,6 @@ class ShardKeyTest extends BaseTest
     }
 
     /**
-     * @group sharding
      * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function testUpdateWithUpsertTrue()
