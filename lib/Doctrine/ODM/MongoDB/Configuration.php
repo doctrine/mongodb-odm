@@ -593,8 +593,8 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         if ( ! isset($this->attributes['persistentCollectionGenerator'])) {
             $this->attributes['persistentCollectionGenerator'] = new DefaultPersistentCollectionGenerator(
-                $this->attributes['persistentCollectionDir'],
-                $this->attributes['persistentCollectionNamespace']
+                $this->getPersistentCollectionDir(),
+                $this->getPersistentCollectionNamespace()
             );
         }
         return $this->attributes['persistentCollectionGenerator'];
