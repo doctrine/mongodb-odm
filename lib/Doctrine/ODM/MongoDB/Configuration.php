@@ -23,7 +23,6 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
@@ -80,7 +79,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * @var integer
      */
     const AUTOGENERATE_EVAL = 3;
-    
+
     /**
      * Adds a namespace under a certain alias.
      *

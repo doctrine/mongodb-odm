@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\PersistentCollection;
-
 use Documents\BlogPost;
 use Documents\User;
 

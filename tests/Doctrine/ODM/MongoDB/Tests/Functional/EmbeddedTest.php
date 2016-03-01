@@ -4,10 +4,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Documents\Address;
-use Documents\Profile;
 use Documents\Phonenumber;
 use Documents\Account;
-use Documents\Group;
 use Documents\User;
 use Documents\Functional\EmbeddedTestLevel0;
 use Documents\Functional\EmbeddedTestLevel0b;
@@ -18,7 +16,6 @@ use Documents\Functional\NotSavedEmbedded;
 use Documents\Functional\VirtualHost;
 use Documents\Functional\VirtualHostDirective;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\PersistentCollection;
 
 class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

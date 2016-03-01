@@ -4,10 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Documents\Account;
 use Documents\Address;
-use Documents\Group;
 use Documents\Phonenumber;
-use Documents\Profile;
-use Documents\File;
 use Documents\User;
 
 class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest

@@ -20,7 +20,6 @@
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * AlnumGenerator is responsible for generating cased alpha-numeric unique identifiers.
