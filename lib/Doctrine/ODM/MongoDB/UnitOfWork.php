@@ -174,10 +174,10 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $collectionUpdates = array();
-    
+
     /**
      * A list of documents related to collections scheduled for update or deletion
-     * 
+     *
      * @var array
      */
     private $hasScheduledCollections = array();
@@ -451,7 +451,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions =
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
-        $this->orphanRemovals = 
+        $this->orphanRemovals =
         $this->hasScheduledCollections = array();
     }
 
@@ -538,7 +538,7 @@ class UnitOfWork implements PropertyChangedListener
         $state = $this->getDocumentState($document);
 
         if ($state !== self::STATE_MANAGED && $state !== self::STATE_REMOVED) {
-            throw new \InvalidArgumentException("Document has to be managed or scheduled for removal for single computation " . $this->objToStr($document));
+            throw new \InvalidArgumentException('Document has to be managed or scheduled for removal for single computation ' . $this->objToStr($document));
         }
 
         $class = $this->dm->getClassMetadata(get_class($document));
@@ -804,7 +804,7 @@ class UnitOfWork implements PropertyChangedListener
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
             if ($changeSet) {
-                $this->documentChangeSets[$oid] = (isset($this->documentChangeSets[$oid]))
+                $this->documentChangeSets[$oid] = isset($this->documentChangeSets[$oid])
                     ? $changeSet + $this->documentChangeSets[$oid]
                     : $changeSet;
 
@@ -964,10 +964,10 @@ class UnitOfWork implements PropertyChangedListener
             switch ($state) {
                 case self::STATE_NEW:
                     if ( ! $assoc['isCascadePersist']) {
-                        throw new \InvalidArgumentException("A new document was found through a relationship that was not"
-                            . " configured to cascade persist operations: " . $this->objToStr($entry) . "."
-                            . " Explicitly persist the new document or configure cascading persist operations"
-                            . " on the relationship.");
+                        throw new \InvalidArgumentException('A new document was found through a relationship that was not'
+                            . ' configured to cascade persist operations: ' . $this->objToStr($entry) . '.'
+                            . ' Explicitly persist the new document or configure cascading persist operations'
+                            . ' on the relationship.');
                     }
 
                     $this->persistNew($targetClass, $entry);
@@ -1005,8 +1005,8 @@ class UnitOfWork implements PropertyChangedListener
                 case self::STATE_DETACHED:
                     // Can actually not happen right now as we assume STATE_NEW,
                     // so the exception will be raised from the DBAL layer (constraint violation).
-                    throw new \InvalidArgumentException("A detached document was found through a "
-                        . "relationship during cascading a persist operation.");
+                    throw new \InvalidArgumentException('A detached document was found through a '
+                        . 'relationship during cascading a persist operation.');
 
                 default:
                     // MANAGED associated documents are already taken into account
@@ -1066,14 +1066,14 @@ class UnitOfWork implements PropertyChangedListener
 
             if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null) {
                 throw new \InvalidArgumentException(sprintf(
-                    "%s uses NONE identifier generation strategy but no identifier was provided when persisting.",
+                    '%s uses NONE identifier generation strategy but no identifier was provided when persisting.',
                     get_class($document)
                 ));
             }
 
             if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! \MongoId::isValid($idValue)) {
                 throw new \InvalidArgumentException(sprintf(
-                    "%s uses AUTO identifier generation strategy but provided identifier is not valid MongoId.",
+                    '%s uses AUTO identifier generation strategy but provided identifier is not valid MongoId.',
                     get_class($document)
                 ));
             }
@@ -1225,13 +1225,13 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($document);
 
         if (isset($this->documentUpdates[$oid])) {
-            throw new \InvalidArgumentException("Dirty document can not be scheduled for insertion.");
+            throw new \InvalidArgumentException('Dirty document can not be scheduled for insertion.');
         }
         if (isset($this->documentDeletions[$oid])) {
-            throw new \InvalidArgumentException("Removed document can not be scheduled for insertion.");
+            throw new \InvalidArgumentException('Removed document can not be scheduled for insertion.');
         }
         if (isset($this->documentInsertions[$oid])) {
-            throw new \InvalidArgumentException("Document can not be scheduled for insertion twice.");
+            throw new \InvalidArgumentException('Document can not be scheduled for insertion twice.');
         }
 
         $this->documentInsertions[$oid] = $document;
@@ -1254,16 +1254,16 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($document);
 
         if ($class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException("Embedded document can not be scheduled for upsert.");
+            throw new \InvalidArgumentException('Embedded document can not be scheduled for upsert.');
         }
         if (isset($this->documentUpdates[$oid])) {
-            throw new \InvalidArgumentException("Dirty document can not be scheduled for upsert.");
+            throw new \InvalidArgumentException('Dirty document can not be scheduled for upsert.');
         }
         if (isset($this->documentDeletions[$oid])) {
-            throw new \InvalidArgumentException("Removed document can not be scheduled for upsert.");
+            throw new \InvalidArgumentException('Removed document can not be scheduled for upsert.');
         }
         if (isset($this->documentUpserts[$oid])) {
-            throw new \InvalidArgumentException("Document can not be scheduled for upsert twice.");
+            throw new \InvalidArgumentException('Document can not be scheduled for upsert twice.');
         }
 
         $this->documentUpserts[$oid] = $document;
@@ -1303,11 +1303,11 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
         if ( ! isset($this->documentIdentifiers[$oid])) {
-            throw new \InvalidArgumentException("Document has no identity.");
+            throw new \InvalidArgumentException('Document has no identity.');
         }
 
         if (isset($this->documentDeletions[$oid])) {
-            throw new \InvalidArgumentException("Document is removed.");
+            throw new \InvalidArgumentException('Document is removed.');
         }
 
         if ( ! isset($this->documentUpdates[$oid])
@@ -1471,7 +1471,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Check for a version field, if available, to avoid a DB lookup.
         if ($class->isVersioned) {
-            return ($class->getFieldValue($document, $class->versionField))
+            return $class->getFieldValue($document, $class->versionField)
                 ? self::STATE_DETACHED
                 : self::STATE_NEW;
         }
@@ -1690,7 +1690,7 @@ class UnitOfWork implements PropertyChangedListener
 
             case self::STATE_DETACHED:
                 throw new \InvalidArgumentException(
-                    "Behavior of persist() for a detached document is not yet defined.");
+                    'Behavior of persist() for a detached document is not yet defined.');
 
             default:
                 throw MongoDBException::invalidDocumentState($documentState);
@@ -2041,7 +2041,7 @@ class UnitOfWork implements PropertyChangedListener
                 $id = $class->getDatabaseIdentifierValue($this->documentIdentifiers[$oid]);
                 $this->getDocumentPersister($class->name)->refresh($id, $document);
             } else {
-                throw new \InvalidArgumentException("Document is not MANAGED.");
+                throw new \InvalidArgumentException('Document is not MANAGED.');
             }
         }
 
@@ -2093,7 +2093,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-            if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+            if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 if ($relatedDocuments instanceof PersistentCollection) {
                     // Unwrap so that foreach() does not initialize
                     $relatedDocuments = $relatedDocuments->unwrap();
@@ -2217,7 +2217,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-            if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+            if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 // If its a PersistentCollection initialization is intended! No unwrap!
                 foreach ($relatedDocuments as $relatedDocument) {
                     $this->doRemove($relatedDocument, $visited);
@@ -2240,7 +2240,7 @@ class UnitOfWork implements PropertyChangedListener
     public function lock($document, $lockMode, $lockVersion = null)
     {
         if ($this->getDocumentState($document) != self::STATE_MANAGED) {
-            throw new \InvalidArgumentException("Document is not MANAGED.");
+            throw new \InvalidArgumentException('Document is not MANAGED.');
         }
 
         $documentName = get_class($document);
@@ -2298,7 +2298,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->collectionUpdates =
             $this->collectionDeletions =
             $this->parentAssociations =
-            $this->orphanRemovals = 
+            $this->orphanRemovals =
             $this->hasScheduledCollections = array();
         } else {
             $visited = array();
@@ -2405,11 +2405,11 @@ class UnitOfWork implements PropertyChangedListener
     {
         return isset($this->collectionDeletions[spl_object_hash($coll)]);
     }
-    
+
     /**
      * INTERNAL:
      * Unschedules a collection from being deleted when this UnitOfWork commits.
-     * 
+     *
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
     public function unscheduleCollectionDeletion(PersistentCollection $coll)
@@ -2443,11 +2443,11 @@ class UnitOfWork implements PropertyChangedListener
             $this->scheduleCollectionOwner($coll);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Unschedules a collection from being updated when this UnitOfWork commits.
-     * 
+     *
      * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
      */
     public function unscheduleCollectionUpdate(PersistentCollection $coll)
@@ -2459,7 +2459,7 @@ class UnitOfWork implements PropertyChangedListener
             unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
         }
     }
-    
+
     /**
      * Checks whether a PersistentCollection is scheduled for update.
      *
@@ -2486,22 +2486,22 @@ class UnitOfWork implements PropertyChangedListener
                 ? $this->visitedCollections[$oid]
                 : array();
     }
-    
+
     /**
      * INTERNAL:
      * Gets PersistentCollections that are scheduled to update and related to $document
-     * 
+     *
      * @param object $document
      * @return array
      */
     public function getScheduledCollections($document)
     {
         $oid = spl_object_hash($document);
-        return isset($this->hasScheduledCollections[$oid]) 
+        return isset($this->hasScheduledCollections[$oid])
                 ? $this->hasScheduledCollections[$oid]
                 : array();
     }
-    
+
     /**
      * Checks whether the document is related to a PersistentCollection
      * scheduled for update or deletion.
@@ -2513,7 +2513,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         return isset($this->hasScheduledCollections[spl_object_hash($document)]);
     }
-    
+
     /**
      * Marks the PersistentCollection's top-level owner as having a relation to
      * a collection scheduled for update or deletion.
@@ -2524,7 +2524,7 @@ class UnitOfWork implements PropertyChangedListener
      * If the collection is nested within atomic collection, it is immediately
      * unscheduled and atomic one is scheduled for update instead. This makes
      * calculating update data way easier.
-     * 
+     *
      * @param PersistentCollection $coll
      */
     private function scheduleCollectionOwner(PersistentCollection $coll)
@@ -2569,7 +2569,7 @@ class UnitOfWork implements PropertyChangedListener
             $parentAssociation = $this->getParentAssociation($document);
 
             if ( ! $parentAssociation) {
-                throw new \UnexpectedValueException("Could not determine parent association for " . get_class($document));
+                throw new \UnexpectedValueException('Could not determine parent association for ' . get_class($document));
             }
 
             list(, $document, ) = $parentAssociation;

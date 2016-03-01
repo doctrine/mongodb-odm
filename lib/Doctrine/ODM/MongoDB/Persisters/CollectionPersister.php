@@ -108,7 +108,7 @@ class CollectionPersister
             case ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET:
             case ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET_ARRAY:
                 throw new \UnexpectedValueException($mapping['strategy'] . ' update collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
-            
+
             case ClassMetadataInfo::STORAGE_STRATEGY_SET:
             case ClassMetadataInfo::STORAGE_STRATEGY_SET_ARRAY:
                 $this->setCollection($coll, $options);
@@ -273,7 +273,7 @@ class CollectionPersister
         }
         $collection = $this->dm->getDocumentCollection($className);
         $result = $collection->update($query, $newObj, $options);
-        if (($class->isVersioned) && ! $result['n']) {
+        if ($class->isVersioned && ! $result['n']) {
             throw LockException::lockFailed($document);
         }
     }

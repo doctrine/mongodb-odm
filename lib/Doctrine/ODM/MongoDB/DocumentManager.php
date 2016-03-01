@@ -302,8 +302,8 @@ class DocumentManager implements ObjectManager
 
         $metadata = $this->metadataFactory->getMetadataFor($className);
         $db = $metadata->getDatabase();
-        $db = $db ? $db : $this->config->getDefaultDB();
-        $db = $db ? $db : 'doctrine';
+        $db = $db ?: $this->config->getDefaultDB();
+        $db = $db ?: 'doctrine';
         $this->documentDatabases[$className] = $this->connection->selectDatabase($db);
 
         return $this->documentDatabases[$className];

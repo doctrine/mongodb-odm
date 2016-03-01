@@ -84,14 +84,14 @@ class AlnumGenerator extends IncrementGenerator
         $index = $this->awkwardSafeMode ? $this->awkwardSafeChars : $this->chars;
         $base  = strlen($index);
 
-        $out = "";
+        $out = '';
         do {
             $out = $index[bcmod($id, $base)] . $out;
             $id = bcdiv($id, $base);
         } while (bccomp($id, 0) == 1);
 
         if (is_numeric($this->pad)) {
-            $out = str_pad($out, $this->pad, "0", STR_PAD_LEFT);
+            $out = str_pad($out, $this->pad, '0', STR_PAD_LEFT);
         }
 
         return $out;

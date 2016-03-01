@@ -290,7 +290,7 @@ class DocumentPersister
                 }
                 $data['$set'][$versionMapping['name']] = $nextVersion;
             }
-            
+
             try {
                 $this->executeUpsert($data, $options);
                 $this->handleCollections($document, $options);
@@ -319,7 +319,7 @@ class DocumentPersister
             unset($data['$set']);
         }
 
-        /* If there are no modifiers remaining, we're upserting a document with 
+        /* If there are no modifiers remaining, we're upserting a document with
          * an identifier as its only field. Since a document with the identifier
          * may already exist, the desired behavior is "insert if not exists" and
          * NOOP otherwise. MongoDB 2.6+ does not allow empty modifiers, so $set
@@ -776,7 +776,7 @@ class DocumentPersister
     private function loadReferenceManyWithRepositoryMethod(PersistentCollection $collection)
     {
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
-        $mapping = $collection->getMapping();        
+        $mapping = $collection->getMapping();
         $documents = $cursor->toArray(false);
         foreach ($documents as $key => $obj) {
             if (CollectionHelper::isHash($mapping['strategy'])) {
@@ -871,7 +871,7 @@ class DocumentPersister
          */
         if ($this->class->hasDiscriminator() && ! isset($preparedQuery[$this->class->discriminatorField])) {
             $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
-            if ((count($discriminatorValues) === 1)) {
+            if (count($discriminatorValues) === 1) {
                 $preparedQuery[$this->class->discriminatorField] = $discriminatorValues[0];
             } else {
                 $preparedQuery[$this->class->discriminatorField] = array('$in' => $discriminatorValues);
@@ -1244,7 +1244,7 @@ class DocumentPersister
         }
 
         // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list
-        if ($metadata->defaultDiscriminatorValue && (array_search($metadata->defaultDiscriminatorValue, $discriminatorValues)) !== false) {
+        if ($metadata->defaultDiscriminatorValue && array_search($metadata->defaultDiscriminatorValue, $discriminatorValues) !== false) {
             $discriminatorValues[] = null;
         }
 

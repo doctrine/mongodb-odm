@@ -41,7 +41,7 @@ class DisconnectedClassMetadataFactory extends ClassMetadataFactory
         if (strpos($className, "\\") !== false) {
             $metadata->namespace = strrev(substr( strrev($className), strpos(strrev($className), "\\")+1 ));
         } else {
-            $metadata->namespace = "";
+            $metadata->namespace = '';
         }
         return $metadata;
     }

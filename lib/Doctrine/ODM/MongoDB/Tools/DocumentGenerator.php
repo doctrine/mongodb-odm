@@ -187,7 +187,7 @@ public function <methodName>()
         if ($this->backupExisting && file_exists($path)) {
             $backupPath = dirname($path) . DIRECTORY_SEPARATOR . basename($path) . '~';
             if ( ! copy($path, $backupPath)) {
-                throw new \RuntimeException("Attempt to backup overwritten document file but copy operation failed.");
+                throw new \RuntimeException('Attempt to backup overwritten document file but copy operation failed.');
             }
         }
 
@@ -220,7 +220,7 @@ public function <methodName>()
 
         $replacements = array(
             $this->generateDocumentNamespace($metadata),
-            $this->generateDocumentImports($metadata),
+            $this->generateDocumentImports(),
             $this->generateDocumentDocBlock($metadata),
             $this->generateDocumentClassName($metadata),
             $this->generateDocumentBody($metadata)
@@ -389,7 +389,7 @@ public function <methodName>()
             }
         }
         if ($collections) {
-            return $this->prefixCodeWithSpaces(str_replace("<collections>", $this->spaces . implode("\n" . $this->spaces, $collections), self::$constructorMethodTemplate));
+            return $this->prefixCodeWithSpaces(str_replace('<collections>', $this->spaces . implode("\n" . $this->spaces, $collections), self::$constructorMethodTemplate));
         }
         return '';
     }
@@ -566,7 +566,7 @@ public function <methodName>()
             if ($metadata->indexes) {
                 $indexes = array();
                 $indexLines = array();
-                $indexLines[] = " *     indexes={";
+                $indexLines[] = ' *     indexes={';
                 foreach ($metadata->indexes as $index) {
                     $keys = array();
                     foreach ($index['keys'] as $key => $value) {
@@ -739,7 +739,7 @@ public function <methodName>()
                 continue;
             }
 
-            $lines[] = $this->generateAssociationMappingPropertyDocBlock($fieldMapping, $metadata);
+            $lines[] = $this->generateAssociationMappingPropertyDocBlock($fieldMapping);
             $lines[] = $this->spaces . 'protected $' . $fieldMapping['fieldName']
                 . ($fieldMapping['type'] === ClassMetadataInfo::MANY ? ' = array()' : null) . ";\n";
         }
@@ -926,7 +926,7 @@ public function <methodName>()
                     foreach ($fieldMapping['options'] as $key => $value) {
                         $options[] = '"' . $key . '" = "' . $value . '"';
                     }
-                    $field[] = "options={" . implode(', ', $options) . "}";
+                    $field[] = 'options={' . implode(', ', $options) . '}';
                 }
                 $lines[] = $this->spaces . ' * @ODM\\Field(' . implode(', ', $field) . ')';
             }
