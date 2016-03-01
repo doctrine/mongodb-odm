@@ -192,7 +192,7 @@ class Cursor implements CursorInterface
      * @see http://php.net/manual/en/mongocursor.addoption.php
      * @param string $key
      * @param mixed $value
-     * @return self
+     * @return $this
      */
     public function addOption($key, $value)
     {
@@ -206,7 +206,7 @@ class Cursor implements CursorInterface
      * @see CursorInterface::batchSize()
      * @see http://php.net/manual/en/mongocursor.batchsize.php
      * @param integer $num
-     * @return self
+     * @return $this
      */
     public function batchSize($num)
     {
@@ -276,7 +276,7 @@ class Cursor implements CursorInterface
      *
      * @see CursorInterface::fields()
      * @see http://php.net/manual/en/mongocursor.fields.php
-     * @return self
+     * @return $this
      */
     public function fields(array $f)
     {
@@ -319,7 +319,7 @@ class Cursor implements CursorInterface
      * @see http://php.net/manual/en/mongocursor.setreadpreference.php
      * @param string $readPreference
      * @param array  $tags
-     * @return self
+     * @return $this
      */
     public function setReadPreference($readPreference, array $tags = null)
     {
@@ -381,7 +381,7 @@ class Cursor implements CursorInterface
      * @see CursorInterface::hint()
      * @see http://php.net/manual/en/mongocursor.hint.php
      * @param array|string $keyPattern
-     * @return self
+     * @return $this
      */
     public function hint($keyPattern)
     {
@@ -393,7 +393,7 @@ class Cursor implements CursorInterface
      * Set whether to hydrate results as document class instances.
      *
      * @param boolean $hydrate
-     * @return self
+     * @return $this
      */
     public function hydrate($hydrate = true)
     {
@@ -420,7 +420,7 @@ class Cursor implements CursorInterface
      * @see CursorInterface::immortal()
      * @see http://php.net/manual/en/mongocursor.immortal.php
      * @param boolean $liveForever
-     * @return self
+     * @return $this
      */
     public function immortal($liveForever = true)
     {
@@ -459,7 +459,7 @@ class Cursor implements CursorInterface
      * @see CursorInterface::limit()
      * @see http://php.net/manual/en/mongocursor.limit.php
      * @param integer $num
-     * @return self
+     * @return $this
      */
     public function limit($num)
     {
@@ -496,7 +496,7 @@ class Cursor implements CursorInterface
      * This option has no effect if hydration is disabled.
      *
      * @param boolean $refresh
-     * @return self
+     * @return $this
      */
     public function refresh($refresh = true)
     {
@@ -534,7 +534,7 @@ class Cursor implements CursorInterface
      * @see CursorInterface::skip()
      * @see http://php.net/manual/en/mongocursor.skip.php
      * @param integer $num
-     * @return self
+     * @return $this
      */
     public function skip($num)
     {
@@ -548,7 +548,7 @@ class Cursor implements CursorInterface
      * @see CursorInterface::slaveOkay()
      * @see http://php.net/manual/en/mongocursor.slaveokay.php
      * @param boolean $ok
-     * @return self
+     * @return $this
      */
     public function slaveOkay($ok = true)
     {
@@ -563,7 +563,7 @@ class Cursor implements CursorInterface
      *
      * @see CursorInterface::snapshot()
      * @see http://php.net/manual/en/mongocursor.snapshot.php
-     * @return self
+     * @return $this
      */
     public function snapshot()
     {
@@ -579,7 +579,7 @@ class Cursor implements CursorInterface
      * @see CursorInterface::sort()
      * @see http://php.net/manual/en/mongocursor.sort.php
      * @param array $fields
-     * @return self
+     * @return $this
      */
     public function sort($fields)
     {
@@ -597,7 +597,7 @@ class Cursor implements CursorInterface
      * @see CursorInterface::tailable()
      * @see http://php.net/manual/en/mongocursor.tailable.php
      * @param boolean $tail
-     * @return self
+     * @return $this
      */
     public function tailable($tail = true)
     {
@@ -611,7 +611,7 @@ class Cursor implements CursorInterface
      * @see CursorInterface::timeout()
      * @see http://php.net/manual/en/mongocursor.timeout.php
      * @param integer $ms
-     * @return self
+     * @return $this
      */
     public function timeout($ms)
     {
@@ -664,7 +664,7 @@ class Cursor implements CursorInterface
     /**
      * @param array $primers
      * @param ReferencePrimer $referencePrimer
-     * @return self
+     * @return $this
      */
     public function enableReferencePriming(array $primers, ReferencePrimer $referencePrimer)
     {

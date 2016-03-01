@@ -101,7 +101,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Set whether or not to require indexes.
      *
      * @param bool $requireIndexes
-     * @return Builder
+     * @return $this
      */
     public function requireIndexes($requireIndexes = true)
     {
@@ -113,7 +113,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Set the current field to operate on.
      *
      * @param string $field
-     * @return self
+     * @return $this
      */
     public function field($field)
     {
@@ -138,7 +138,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Closure defined in {@link ReferencePrimer::__construct()}.
      *
      * @param boolean|callable $primer
-     * @return Builder
+     * @return $this
      * @throws \InvalidArgumentException If $primer is not boolean or callable
      */
     public function prime($primer = true)
@@ -176,7 +176,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param bool $bool
-     * @return Builder
+     * @return $this
      */
     public function hydrate($bool = true)
     {
@@ -186,7 +186,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param bool $bool
-     * @return Builder
+     * @return $this
      */
     public function refresh($bool = true)
     {
@@ -198,7 +198,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      * Change the query type to find and optionally set and change the class being queried.
      *
      * @param string $documentName
-     * @return Builder
+     * @return $this
      */
     public function find($documentName = null)
     {
@@ -210,7 +210,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param string $documentName
-     * @return Builder
+     * @return $this
      */
     public function findAndUpdate($documentName = null)
     {
@@ -222,7 +222,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param bool $bool
-     * @return self
+     * @return $this
      */
     public function returnNew($bool = true)
     {
@@ -234,7 +234,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param string $documentName
-     * @return Builder
+     * @return $this
      */
     public function findAndRemove($documentName = null)
     {
@@ -246,7 +246,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param string $documentName
-     * @return Builder
+     * @return $this
      */
     public function update($documentName = null)
     {
@@ -258,7 +258,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param string $documentName
-     * @return Builder
+     * @return $this
      */
     public function insert($documentName = null)
     {
@@ -270,7 +270,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param string $documentName
-     * @return Builder
+     * @return $this
      */
     public function remove($documentName = null)
     {
@@ -282,7 +282,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param object $document
-     * @return Builder
+     * @return $this
      */
     public function references($document)
     {
@@ -292,7 +292,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
     /**
      * @param object $document
-     * @return Builder
+     * @return $this
      */
     public function includesReferenceTo($document)
     {
