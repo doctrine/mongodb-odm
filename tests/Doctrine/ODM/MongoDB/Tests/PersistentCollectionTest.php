@@ -58,14 +58,19 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
                 function ($collection) use ($two) { $collection->add($two); }
             ),
             'removed' => array(
-                array(0 => $one),
+                array($one),
                 array($one, $two),
                 function ($collection) use ($one) { $collection->removeElement($one); }
             ),
             'replaced' => array(
-                array(0 => $one),
+                array($one),
                 array($one),
                 function ($collection) use ($one, $two) { $collection->removeElement($one); $collection->add($two); }
+            ),
+            'removed2' => array(
+                array($two),
+                array($one, $two),
+                function ($collection) use ($two) { $collection->removeElement($two); }
             ),
             'orderChanged' => array(
                 array(),
@@ -92,7 +97,7 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
         $collection->takeSnapshot();
         $callback($collection);
 
-        $this->assertSame($expected, array_values($collection->getInsertedDocuments()));
+        $this->assertSame($expected, $collection->getInsertedDocuments());
     }
 
     public static function dataGetInsertedDocuments()
