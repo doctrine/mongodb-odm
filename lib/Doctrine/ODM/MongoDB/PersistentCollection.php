@@ -223,7 +223,7 @@ class PersistentCollection implements BaseCollection
             $this->mapping['isOwningSide'] &&
             $this->owner &&
             $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
-            $this->uow->scheduleForDirtyCheck($this->owner);
+            $this->uow->scheduleForSynchronization($this->owner);
         }
     }
 
