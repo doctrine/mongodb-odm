@@ -450,7 +450,7 @@ class SchemaManager
      * @param array $documentIndex Document index data.
      * @return bool True if the indexes are equivalent, otherwise false.
      */
-    public function isMongoIndexEquivalentToDocumentIndex(array $mongoIndex, array $documentIndex)
+    public function isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)
     {
         $documentIndexOptions = $documentIndex['options'];
 

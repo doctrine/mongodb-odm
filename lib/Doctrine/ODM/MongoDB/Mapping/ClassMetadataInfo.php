@@ -1683,7 +1683,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param array $generatorOptions Generator options.
      */
-    public function setIdGeneratorOptions(array $generatorOptions)
+    public function setIdGeneratorOptions($generatorOptions)
     {
         $this->generatorOptions = $generatorOptions;
     }
