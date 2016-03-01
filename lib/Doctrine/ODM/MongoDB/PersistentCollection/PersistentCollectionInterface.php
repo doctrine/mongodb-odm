@@ -146,6 +146,13 @@ interface PersistentCollectionInterface extends BaseCollection
     public function getInsertDiff();
 
     /**
+     * INTERNAL: get objects that were added, unlike getInsertDiff this doesn't care about indices.
+     *
+     * @return array
+     */
+    public function getInsertedDocuments();
+
+    /**
      * INTERNAL:
      * Gets the collection owner.
      *

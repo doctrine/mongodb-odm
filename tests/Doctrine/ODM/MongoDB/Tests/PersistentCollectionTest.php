@@ -76,6 +76,55 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param array $expected
+     * @param array $snapshot
+     * @param \Closure $callback
+     *
+     * @dataProvider dataGetInsertedDocuments
+     */
+    public function testGetInsertedDocuments($expected, $snapshot, \Closure $callback)
+    {
+        $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+
+        foreach ($snapshot as $item) {
+            $collection->add($item);
+        }
+        $collection->takeSnapshot();
+        $callback($collection);
+
+        $this->assertSame($expected, array_values($collection->getInsertedDocuments()));
+    }
+
+    public static function dataGetInsertedDocuments()
+    {
+        $one = new \stdClass();
+        $two = new \stdClass();
+
+        return array(
+            'sameItems' => array(
+                array(),
+                array($one),
+                function ($collection) {}
+            ),
+            'added' => array(
+                array($two),
+                array($one),
+                function ($collection) use ($two) { $collection->add($two); }
+            ),
+            'replaced' => array(
+                array($two),
+                array($one),
+                function ($collection) use ($one, $two) { $collection->removeElement($one); $collection->add($two); }
+            ),
+            'orderChanged' => array(
+                array(),
+                array($one, $two),
+                function ($collection) use ($one, $two) { $collection->removeElement($one); $collection->removeElement($two); $collection->add($two); $collection->add($one); }
+            ),
+        );
+    }
+
+    /**
      * @return \Doctrine\ODM\MongoDB\DocumentManager
      */
     private function getMockDocumentManager()

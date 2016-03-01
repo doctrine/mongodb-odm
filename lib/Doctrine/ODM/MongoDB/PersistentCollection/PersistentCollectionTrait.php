@@ -281,6 +281,21 @@ trait PersistentCollectionTrait
     }
 
     /** {@inheritdoc} */
+    public function getInsertedDocuments()
+    {
+        $compare = function ($a, $b) {
+            $compareA = is_object($a) ? spl_object_hash($a) : $a;
+            $compareb = is_object($b) ? spl_object_hash($b) : $b;
+            return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
+        };
+        return array_udiff(
+            $this->coll->toArray(),
+            $this->snapshot,
+            $compare
+        );
+    }
+
+    /** {@inheritdoc} */
     public function getOwner()
     {
         return $this->owner;
