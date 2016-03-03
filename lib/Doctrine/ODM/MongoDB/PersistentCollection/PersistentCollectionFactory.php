@@ -17,32 +17,25 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB;
+namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\Common\Collections\Collection as BaseCollection;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionTrait;
-use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
- * A PersistentCollection represents a collection of elements that have persistent state.
+ * Interface for persistent collection classes factory.
  *
- * @since 1.0
+ * @since 1.1
  */
-class PersistentCollection implements PersistentCollectionInterface
+interface PersistentCollectionFactory
 {
-    use PersistentCollectionTrait;
-
     /**
-     * @param BaseCollection $coll
-     * @param DocumentManager $dm
-     * @param UnitOfWork $uow
+     * Creates specified persistent collection to work with given collection class.
+     *
+     * @param DocumentManager $dm DocumentManager with which collection is associated
+     * @param array $mapping Mapping of field holding collection
+     * @param BaseCollection $coll Collection to be decorated
+     * @return PersistentCollectionInterface
      */
-    public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow)
-    {
-        $this->coll = $coll;
-        $this->dm = $dm;
-        $this->uow = $uow;
-    }
+    public function create(DocumentManager $dm, array $mapping, BaseCollection $coll = null);
 }

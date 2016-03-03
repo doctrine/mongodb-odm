@@ -46,6 +46,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $config->setProxyNamespace('Proxies');
         $config->setHydratorDir(__DIR__ . '/../../../../Hydrators');
         $config->setHydratorNamespace('Hydrators');
+        $config->setPersistentCollectionDir(__DIR__ . '/../../../../PersistentCollections');
+        $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl($this->createMetadataDriverImpl());
 

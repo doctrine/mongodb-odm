@@ -543,8 +543,8 @@ Here is an example:
 
 As can be seen above, when registering the custom types in the
 configuration you specify a unique name for the mapping type and
-map that to the corresponding fully qualified class name. Now you
-can use your new type in your mapping like this:
+map that to the corresponding |FQCN|. Now you can use your new
+type in your mapping like this:
 
 .. configuration-block::
 
@@ -616,3 +616,6 @@ may pass an array of document class names when creating a query builder:
 
 The above will return a cursor that will allow you to iterate over all
 ``Article`` and ``Album`` documents in the collections.
+
+.. |FQCN| raw:: html
+  <abbr title="Fully-Qualified Class Name">FQCN</abbr>

@@ -305,7 +305,7 @@ This annotation is required for the top-most class in a
 It takes an array as its only argument, which maps keys to class names. The
 class names may be fully qualified or relative to the current namespace. When
 a document is persisted to the database, its class name key will be stored in
-the discriminator field instead of the fully qualified class name.
+the discriminator field instead of the |FQCN|.
 
 .. code-block:: php
 
@@ -428,7 +428,7 @@ document, it embeds a collection of documents.
 Optional attributes:
 
 -
-    targetDocument - A full class name of the target document.
+    targetDocument - A |FQCN| of the target document.
 -
     discriminatorField - The database field name to store the discriminator
     value within the embedded document.
@@ -441,6 +441,9 @@ Optional attributes:
     strategy - The strategy used to persist changes to the collection. Possible
     values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
     is the default. See :ref:`storage_strategies` for more information.
+-
+    collectionClass - A |FQCN| of class that implements ``Collection`` interface
+    and is used to hold documents. Doctrine's ``ArrayCollection`` is used by default.
 
 .. code-block:: php
 
@@ -483,7 +486,7 @@ following excerpt from the MongoDB documentation:
 Optional attributes:
 
 -
-    targetDocument - A full class name of the target document.
+    targetDocument - A |FQCN| of the target document.
 -
     discriminatorField - The database field name to store the discriminator
     value within the embedded document.
@@ -1186,7 +1189,7 @@ documents.
 Optional attributes:
 
 -
-    targetDocument - A full class name of the target document.
+    targetDocument - A |FQCN| of the target document.
 -
     simple - Create simple references and only store the referenced document's
     identifier (e.g. ``MongoId``) instead of a `DBRef`_. Note that simple
@@ -1219,6 +1222,9 @@ Optional attributes:
     strategy - The strategy used to persist changes to the collection. Possible
     values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
     is the default. See :ref:`storage_strategies` for more information.
+-
+    collectionClass - A |FQCN| of class that implements ``Collection`` interface
+    and is used to hold documents. Doctrine's ``ArrayCollection`` is used by default
 
 .. code-block:: php
 
@@ -1250,7 +1256,7 @@ Defines an instance variable holds a related document instance.
 Optional attributes:
 
 -
-    targetDocument - A full class name of the target document.
+    targetDocument - A |FQCN| of the target document.
 -
     simple - Create simple references and only store the referenced document's
     identifier (e.g. ``MongoId``) instead of a `DBRef`_. Note that simple
@@ -1381,3 +1387,5 @@ versioned document.
 .. _MongoMaxKey: http://php.net/manual/en/class.mongomaxkey.php
 .. _MongoMinKey: http://php.net/manual/en/class.mongominkey.php
 .. _MongoTimestamp: http://php.net/manual/en/class.mongotimestamp.php
+.. |FQCN| raw:: html
+  <abbr title="Fully-Qualified Class Name">FQCN</abbr>

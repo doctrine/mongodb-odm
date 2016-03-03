@@ -18,6 +18,12 @@ constructed internally during hydration. As a developer, you should develop with
 the ``Collection`` interface in mind so that your code can operate with any
 implementation.
 
+.. note::
+
+    New in 1.1: you are no longer limited to using ``ArrayCollection`` and can
+    freely use your own ``Collection`` implementation. For more details please
+    see :doc:`Custom Collections <custom-collections>` chapter.
+
 Why are these classes used over PHP arrays? Native arrays cannot be
 transparently extended in PHP, which is necessary for many advanced features
 provided by the ODM. Although PHP does provide various interfaces that allow
@@ -212,8 +218,8 @@ The name of the field within the DBRef object can be customized via the
           favorites:
             discriminatorField: type
 
-You can also specify a discriminator map to avoid storing the fully qualified
-class name in each `DBRef`_ object:
+You can also specify a discriminator map to avoid storing the |FQCN|
+in each `DBRef`_ object:
 
 .. configuration-block::
 
@@ -386,3 +392,5 @@ The valid values are:
 -  **persist** - cascade persist operation to referenced documents.
 
 .. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbref
+.. |FQCN| raw:: html
+  <abbr title="Fully-Qualified Class Name">FQCN</abbr>

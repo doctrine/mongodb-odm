@@ -17,32 +17,29 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB;
+namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
-use Doctrine\Common\Collections\Collection as BaseCollection;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionTrait;
-use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use Doctrine\ODM\MongoDB\MongoDBException;
 
 /**
- * A PersistentCollection represents a collection of elements that have persistent state.
+ * MongoDB ODM PersistentCollection Exception.
  *
- * @since 1.0
+ * @since 1.1
  */
-class PersistentCollection implements PersistentCollectionInterface
+class PersistentCollectionException extends MongoDBException
 {
-    use PersistentCollectionTrait;
-
-    /**
-     * @param BaseCollection $coll
-     * @param DocumentManager $dm
-     * @param UnitOfWork $uow
-     */
-    public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow)
+    public static function directoryNotWritable()
     {
-        $this->coll = $coll;
-        $this->dm = $dm;
-        $this->uow = $uow;
+        return new self('Your PersistentCollection directory must be writable.');
+    }
+
+    public static function directoryRequired()
+    {
+        return new self('You must configure a PersistentCollection directory. See docs for details.');
+    }
+
+    public static function namespaceRequired()
+    {
+        return new self('You must configure a PersistentCollection namespace. See docs for details');
     }
 }

@@ -17,32 +17,30 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB;
-
-use Doctrine\Common\Collections\Collection as BaseCollection;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionTrait;
-use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 /**
- * A PersistentCollection represents a collection of elements that have persistent state.
+ * Interface for PersistentCollection classes generator.
  *
- * @since 1.0
+ * @since 1.1
  */
-class PersistentCollection implements PersistentCollectionInterface
+interface PersistentCollectionGenerator
 {
-    use PersistentCollectionTrait;
+    /**
+     * Loads persistent collection class.
+     *
+     * @param string $collectionClass FQCN of base collection class
+     * @param int $autoGenerate
+     * @return string FQCN of generated class
+     */
+    public function loadClass($collectionClass, $autoGenerate);
 
     /**
-     * @param BaseCollection $coll
-     * @param DocumentManager $dm
-     * @param UnitOfWork $uow
+     * Generates persistent collection class.
+     *
+     * @param string $class
+     * @param string $dir
+     * @return void
      */
-    public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow)
-    {
-        $this->coll = $coll;
-        $this->dm = $dm;
-        $this->uow = $uow;
-    }
+    public function generateClass($class, $dir);
 }

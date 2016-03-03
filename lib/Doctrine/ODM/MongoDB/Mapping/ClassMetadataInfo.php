@@ -1100,6 +1100,18 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
         }
+        if (isset($mapping['collectionClass'])) {
+            if (strpos($mapping['collectionClass'], '\\') === false && strlen($this->namespace)) {
+                $mapping['collectionClass'] = $this->namespace . '\\' . $mapping['collectionClass'];
+            }
+            $mapping['collectionClass'] = ltrim($mapping['collectionClass'], '\\');
+        }
+        if ( ! empty($mapping['collectionClass'])) {
+            $rColl = new \ReflectionClass($mapping['collectionClass']);
+            if ( ! $rColl->implementsInterface('Doctrine\\Common\\Collections\\Collection')) {
+                throw MappingException::collectionClassDoesNotImplementCommonInterface($this->name, $mapping['fieldName'], $mapping['collectionClass']);
+            }
+        }
 
         if (isset($mapping['discriminatorMap'])) {
             foreach ($mapping['discriminatorMap'] as $key => $class) {

@@ -110,6 +110,7 @@
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
+    <xs:attribute name="collectionClass" type="xs:string" />
   </xs:complexType>
 
   <xs:complexType name="reference-one">
@@ -152,6 +153,7 @@
     <xs:attribute name="limit" type="xs:integer" />
     <xs:attribute name="skip" type="xs:integer" />
     <xs:attribute name="orphan-removal" type="xs:boolean" />
+    <xs:attribute name="collectionClass" type="xs:string" />
   </xs:complexType>
 
   <xs:complexType name="sort-type">

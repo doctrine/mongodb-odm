@@ -163,5 +163,4 @@ of several common elements:
             dropDups: true
             safe: true
 
-Be aware that class-names specified in the YAML files should be
-fully qualified.
+Be aware that class-names specified in the YAML files should be fully qualified.

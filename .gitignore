@@ -1,7 +1,9 @@
 tools/sandbox/Proxies/*
 tools/sandbox/Hydrators/*
+tools/sandbox/PersistentCollections/*
 tests/Proxies/*
 tests/Hydrators/*
+tests/PersistentCollections/*
 phpunit.xml
 composer.lock
 vendor/

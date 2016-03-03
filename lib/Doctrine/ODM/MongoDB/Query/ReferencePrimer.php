@@ -20,7 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -135,7 +135,7 @@ class ReferencePrimer
         $primer = $primer ?: $this->defaultPrimer;
         $groupedIds = array();
 
-        /* @var $document PersistentCollection */
+        /* @var $document PersistentCollectionInterface */
         foreach ($documents as $document) {
             $fieldValue = $class->getFieldValue($document, $fieldName);
 
@@ -150,7 +150,7 @@ class ReferencePrimer
                 $refClass = $this->dm->getClassMetadata(get_class($fieldValue));
                 $id = $this->uow->getDocumentIdentifier($fieldValue);
                 $groupedIds[$refClass->name][serialize($id)] = $id;
-            } elseif ($mapping['type'] == 'many' && $fieldValue instanceof PersistentCollection) {
+            } elseif ($mapping['type'] == 'many' && $fieldValue instanceof PersistentCollectionInterface) {
                 $this->addManyReferences($fieldValue, $groupedIds);
             }
         }
@@ -207,7 +207,7 @@ class ReferencePrimer
             foreach ($documents as $document) {
                 $fieldValue = $class->getFieldValue($document, $e[0]);
 
-                if ($fieldValue instanceof PersistentCollection) {
+                if ($fieldValue instanceof PersistentCollectionInterface) {
                     foreach ($fieldValue as $elemDocument) {
                         array_push($childDocuments, $elemDocument);
                     }
@@ -246,10 +246,10 @@ class ReferencePrimer
      * have a target document class defined. Without that, there is no way to
      * infer the class of the referenced documents.
      *
-     * @param PersistentCollection $persistentCollection
+     * @param PersistentCollectionInterface $persistentCollection
      * @param array                $groupedIds
      */
-    private function addManyReferences(PersistentCollection $persistentCollection, array &$groupedIds)
+    private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds)
     {
         $mapping = $persistentCollection->getMapping();
 
