@@ -61,9 +61,10 @@ class ReferencePrimer
     private $uow;
 
     /**
-     * Constructor.
+     * Initializes this instance with the specified document manager and unit of work.
      *
-     * @param DocumentManager $dm
+     * @param DocumentManager $dm Document manager.
+     * @param UnitOfWork $uow Unit of work.
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {

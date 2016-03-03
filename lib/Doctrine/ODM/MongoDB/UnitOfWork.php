@@ -2583,6 +2583,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param array      $mapping Field mapping for the association
      * @param array|null $data    Data for the embedded document or reference
+     * @return string Class name.
      */
     public function getClassNameForAssociation(array $mapping, $data)
     {
@@ -2626,7 +2627,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param string $className The name of the document class.
      * @param array $data The data for the document.
      * @param array $hints Any hints to account for during reconstitution/lookup of the document.
-     * @param object The document to be hydrated into in case of creation
+     * @param object $document The document to be hydrated into in case of creation
      * @return object The document instance.
      * @internal Highly performance-sensitive method.
      */

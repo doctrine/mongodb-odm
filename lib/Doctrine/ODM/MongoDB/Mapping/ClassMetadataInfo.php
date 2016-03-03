@@ -1668,6 +1668,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
     /**
      * Sets the type of Id generator to use for the mapped class.
+     *
+     * @param string $generatorType Generator type.
      */
     public function setIdGeneratorType($generatorType)
     {
@@ -1676,6 +1678,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
     /**
      * Sets the Id generator options.
+     *
+     * @param array $generatorOptions Generator options.
      */
     public function setIdGeneratorOptions($generatorOptions)
     {

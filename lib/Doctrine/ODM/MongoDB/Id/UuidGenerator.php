@@ -22,14 +22,14 @@ namespace Doctrine\ODM\MongoDB\Id;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
- * UuidGenerator generates a uuid for the id.
+ * Generates UUIDs.
  *
  * @since       1.0
  */
 class UuidGenerator extends AbstractIdGenerator
 {
     /**
-     * A unique environment value to salt each GUID with.
+     * A unique environment value to salt each UUID with.
      *
      * @var string
      */
@@ -61,24 +61,27 @@ class UuidGenerator extends AbstractIdGenerator
      * @param string $uuid The string to check.
      * @return boolean
      */
-    public function isValid($guid)
+    public function isValid($uuid)
     {
-        return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $guid) === 1;
+        return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $uuid)
+            === 1;
     }
 
     /**
-     * Generates a new GUID
+     * Generates a new UUID
      *
-     * @return string
+     * @param DocumentManager $dm Not used.
+     * @param object $document Not used.
+     * @return string UUID
      */
     public function generate(DocumentManager $dm, $document)
     {
-        $guid = $this->generateV4();
-        return $this->generateV5($guid, $this->salt ?: php_uname('n'));
+        $uuid = $this->generateV4();
+        return $this->generateV5($uuid, $this->salt ?: php_uname('n'));
     }
 
     /**
-     * Generates a v4 GUID
+     * Generates a v4 UUID
      *
      * @return string
      */
@@ -106,9 +109,9 @@ class UuidGenerator extends AbstractIdGenerator
     }
 
     /**
-     * Generates a v5 GUID
+     * Generates a v5 UUID
      *
-     * @param string $namespace The GUID to seed with
+     * @param string $namespace The UUID to seed with
      * @param string $salt The string to salt this new UUID with
      * @throws \Exception when the provided namespace is invalid
      * @return string
@@ -133,7 +136,7 @@ class UuidGenerator extends AbstractIdGenerator
         // Calculate hash value
         $hash = sha1($nstr . $salt);
 
-        $guid = sprintf(
+        return sprintf(
             '%08s%04s%04x%04x%12s',
             // 32 bits for "time_low"
             substr($hash, 0, 8),
@@ -149,7 +152,5 @@ class UuidGenerator extends AbstractIdGenerator
             // 48 bits for "node"
             substr($hash, 20, 12)
         );
-
-        return $guid;
     }
 }

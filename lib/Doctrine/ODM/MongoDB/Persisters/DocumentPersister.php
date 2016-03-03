@@ -114,7 +114,7 @@ class DocumentPersister
     private $cp;
 
     /**
-     * Initializes a new DocumentPersister instance.
+     * Initializes this instance.
      *
      * @param PersistenceBuilder $pb
      * @param DocumentManager $dm
@@ -122,9 +122,17 @@ class DocumentPersister
      * @param UnitOfWork $uow
      * @param HydratorFactory $hydratorFactory
      * @param ClassMetadata $class
+     * @param CriteriaMerger $cm
      */
-    public function __construct(PersistenceBuilder $pb, DocumentManager $dm, EventManager $evm, UnitOfWork $uow, HydratorFactory $hydratorFactory, ClassMetadata $class, CriteriaMerger $cm = null)
-    {
+    public function __construct(
+        PersistenceBuilder $pb,
+        DocumentManager $dm,
+        EventManager $evm,
+        UnitOfWork $uow,
+        HydratorFactory $hydratorFactory,
+        ClassMetadata $class,
+        CriteriaMerger $cm = null
+    ) {
         $this->pb = $pb;
         $this->dm = $dm;
         $this->evm = $evm;
