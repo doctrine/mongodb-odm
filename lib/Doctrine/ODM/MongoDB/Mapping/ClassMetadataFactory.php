@@ -24,7 +24,13 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Id\AbstractIdGenerator;
+use Doctrine\ODM\MongoDB\Id\AlnumGenerator;
+use Doctrine\ODM\MongoDB\Id\AutoGenerator;
+use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
+use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -177,7 +183,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $class->setParentClasses($nonSuperclassParents);
 
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
-            $eventArgs = new \Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs($class, $this->dm);
+            $eventArgs = new LoadClassMetadataEventArgs($class, $this->dm);
             $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
         }
     }
@@ -211,10 +217,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $idGenOptions = $class->generatorOptions;
         switch ($class->generatorType) {
             case ClassMetadata::GENERATOR_TYPE_AUTO:
-                $class->setIdGenerator(new \Doctrine\ODM\MongoDB\Id\AutoGenerator());
+                $class->setIdGenerator(new AutoGenerator());
                 break;
             case ClassMetadata::GENERATOR_TYPE_INCREMENT:
-                $incrementGenerator = new \Doctrine\ODM\MongoDB\Id\IncrementGenerator();
+                $incrementGenerator = new IncrementGenerator();
                 if (isset($idGenOptions['key'])) {
                     $incrementGenerator->setKey($idGenOptions['key']);
                 }
@@ -224,12 +230,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setIdGenerator($incrementGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:
-                $uuidGenerator = new \Doctrine\ODM\MongoDB\Id\UuidGenerator();
+                $uuidGenerator = new UuidGenerator();
                 isset($idGenOptions['salt']) && $uuidGenerator->setSalt($idGenOptions['salt']);
                 $class->setIdGenerator($uuidGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_ALNUM:
-                $alnumGenerator = new \Doctrine\ODM\MongoDB\Id\AlnumGenerator();
+                $alnumGenerator = new AlnumGenerator();
                 if (isset($idGenOptions['pad'])) {
                     $alnumGenerator->setPad($idGenOptions['pad']);
                 }
@@ -248,7 +254,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 $customGenerator = new $idGenOptions['class'];
                 unset($idGenOptions['class']);
-                if ( ! $customGenerator instanceof \Doctrine\ODM\MongoDB\Id\AbstractIdGenerator) {
+                if ( ! $customGenerator instanceof AbstractIdGenerator) {
                     throw MappingException::classIsNotAValidGenerator(get_class($customGenerator));
                 }
 
