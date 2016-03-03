@@ -43,6 +43,11 @@ owning document's class.
 Custom Collection Classes
 -------------------------
 
+.. note::
+    You may want to check `malarzm/collections <https://github.com/malarzm/collections>`_
+    which provides alternative implementations of Doctrine's ``Collection`` interface and
+    aims to kickstart development of your own collections.
+
 Using your own ``Collection`` implementation is as simple as specifying the
 ``collectionClass`` parameter in the ``@EmbedMany`` or ``@ReferenceMany`` mapping
 and ensuring that your custom class is initialized in the owning class' constructor:
