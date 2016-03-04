@@ -23,9 +23,11 @@ use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
@@ -72,6 +74,12 @@ class LifecycleEventManager
         $this->evm->dispatchEvent(Events::documentNotFound, $eventArgs);
 
         return $eventArgs->isExceptionDisabled();
+    }
+
+    public function postCollectionLoad(PersistentCollectionInterface $coll)
+    {
+        $eventArgs = new PostCollectionLoadEventArgs($coll, $this->dm);
+        $this->evm->dispatchEvent(Events::postCollectionLoad, $eventArgs);
     }
 
     /**

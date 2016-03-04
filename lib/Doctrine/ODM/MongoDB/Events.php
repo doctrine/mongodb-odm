@@ -169,4 +169,11 @@ final class Events
      * @var string
      */
     const documentNotFound = 'documentNotFound';
+
+    /**
+     * The postCollectionLoad event occurs after collection is initialized (loaded).
+     *
+     * @var string
+     */
+    const postCollectionLoad = 'postCollectionLoad';
 }

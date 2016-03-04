@@ -455,7 +455,7 @@ trait PersistentCollectionTrait
                 : $documentPersister->createReferenceManyWithRepositoryMethodCursor($this)->count();
         }
 
-        return count($this->mongoData) + $count;
+        return $count + ($this->initialized ? 0 : count($this->mongoData));
     }
 
     /**

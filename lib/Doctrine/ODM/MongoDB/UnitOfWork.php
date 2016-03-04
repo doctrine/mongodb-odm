@@ -2710,6 +2710,7 @@ class UnitOfWork implements PropertyChangedListener
     public function loadCollection(PersistentCollectionInterface $collection)
     {
         $this->getDocumentPersister(get_class($collection->getOwner()))->loadCollection($collection);
+        $this->lifecycleEventManager->postCollectionLoad($collection);
     }
 
     /**
