@@ -40,4 +40,17 @@ class EnsureShardingTest extends BaseTest
         $this->assertSame(array('k' => 1), $indexes[1]['key']);
         $this->assertTrue($stats['sharded']);
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
+     * @expectedExceptionMessage Failed to ensure sharding for document "Documents\Sharded\ShardedOneWithDifferentKey".
+     */
+    public function testEnsureShardingForCollectionWithShardingEnabled()
+    {
+        $class = 'Documents\Sharded\ShardedOneWithDifferentKey';
+        $this->skipTestIfNotSharded($class);
+        $this->dm->getSchemaManager()->ensureDocumentSharding($class);
+
+        $this->dm->getSchemaManager()->ensureDocumentSharding('Documents\Sharded\ShardedOne');
+    }
 }
