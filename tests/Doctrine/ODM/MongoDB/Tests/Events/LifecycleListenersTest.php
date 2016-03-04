@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
+use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -19,7 +20,7 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             Events::preLoad,
             Events::postLoad,
             Events::preRemove,
-            Events::postRemove
+            Events::postRemove,
         );
         $evm->addEventListener($events, $this->listener);
         return $this->dm;
@@ -176,6 +177,30 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($called, $this->listener->called, 'Changing ReferenceMany field did not dispatched proper events.');
         $this->listener->called = array();
     }
+
+    public function testPostCollectionLoad()
+    {
+        $evm = $this->dm->getEventManager();
+        $evm->addEventListener([Events::postCollectionLoad], new PostCollectionLoadEventListener($this));
+
+        $document = new TestDocument();
+        $document->name = 'Maciej';
+        $this->dm->persist($document);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->getRepository(get_class($document))->find($document->id);
+        $document->embedded->add(new TestEmbeddedDocument('For mock at 1'));
+        // mock at 0, despite adding postCollectionLoad will have empty collection
+        $document->embedded->initialize();
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->getRepository(get_class($document))->find($document->id);
+        $document->embedded->add(new TestEmbeddedDocument('Will not be seen'));
+        // mock at 1, collection should have 1 element after
+        $document->embedded->initialize();
+    }
 }
 
 class MyEventListener
@@ -187,6 +212,36 @@ class MyEventListener
         $document = $args[0]->getDocument();
         $className = get_class($document);
         $this->called[$method][] = $className;
+    }
+}
+
+/**
+ * I have no idea why mock with ->withConsecutive didn't work but it was called 1 additional time for whatever reason
+ * it may had, exactly same test code with this class instead just works.
+ */
+class PostCollectionLoadEventListener
+{
+    private $at = 0;
+    private $phpunit;
+
+    public function __construct($phpunit)
+    {
+        $this->phpunit = $phpunit;
+    }
+
+    public function postCollectionLoad(PostCollectionLoadEventArgs $e)
+    {
+        switch ($this->at++) {
+            case 0:
+                $this->phpunit->assertCount(0, $e->getCollection());
+                break;
+            case 1:
+                $this->phpunit->assertCount(1, $e->getCollection());
+                $this->phpunit->assertEquals(new TestEmbeddedDocument('For mock at 1'), $e->getCollection()[0]);
+                break;
+            default:
+                throw new \BadMethodCallException('This was not expected');
+        }
     }
 }
 
@@ -217,6 +272,11 @@ class TestEmbeddedDocument
 {
     /** @ODM\Field(type="string") */
     public $name;
+
+    public function __construct($name = '')
+    {
+        $this->name = $name;
+    }
 }
 
 
