@@ -263,11 +263,11 @@ trait PersistentCollectionTrait
             $compareb = is_object($b) ? spl_object_hash($b) : $b;
             return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
         };
-        return array_udiff(
+        return array_values(array_udiff(
             $this->snapshot,
             $this->coll->toArray(),
             $compare
-        );
+        ));
     }
 
     /** {@inheritdoc} */
@@ -278,6 +278,21 @@ trait PersistentCollectionTrait
             $this->snapshot,
             function ($a, $b) { return $a === $b ? 0 : 1; }
         );
+    }
+
+    /** {@inheritdoc} */
+    public function getInsertedDocuments()
+    {
+        $compare = function ($a, $b) {
+            $compareA = is_object($a) ? spl_object_hash($a) : $a;
+            $compareb = is_object($b) ? spl_object_hash($b) : $b;
+            return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
+        };
+        return array_values(array_udiff(
+            $this->coll->toArray(),
+            $this->snapshot,
+            $compare
+        ));
     }
 
     /** {@inheritdoc} */
