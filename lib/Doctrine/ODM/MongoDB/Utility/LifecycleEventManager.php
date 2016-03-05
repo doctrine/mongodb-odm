@@ -76,6 +76,11 @@ class LifecycleEventManager
         return $eventArgs->isExceptionDisabled();
     }
 
+    /**
+     * Dispatches postCollectionLoad event.
+     *
+     * @param PersistentCollectionInterface $coll
+     */
     public function postCollectionLoad(PersistentCollectionInterface $coll)
     {
         $eventArgs = new PostCollectionLoadEventArgs($coll, $this->dm);
