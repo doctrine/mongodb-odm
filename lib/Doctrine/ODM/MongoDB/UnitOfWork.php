@@ -2408,13 +2408,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Unschedules a collection from being deleted when this UnitOfWork commits.
-<<<<<<< HEAD
      *
-     * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
-=======
-     * 
-     * @param \Doctrine\ODM\MongoDB\PersistentCollectionInterface $coll
->>>>>>> Start using PersistentCollectionInterface
+     * @param PersistentCollectionInterface $coll
      */
     public function unscheduleCollectionDeletion(PersistentCollectionInterface $coll)
     {
@@ -2451,13 +2446,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Unschedules a collection from being updated when this UnitOfWork commits.
-<<<<<<< HEAD
      *
-     * @param \Doctrine\ODM\MongoDB\PersistentCollection $coll
-=======
-     * 
-     * @param \Doctrine\ODM\MongoDB\PersistentCollectionInterface $coll
->>>>>>> Start using PersistentCollectionInterface
+     * @param PersistentCollectionInterface $coll
      */
     public function unscheduleCollectionUpdate(PersistentCollectionInterface $coll)
     {
@@ -2533,13 +2523,8 @@ class UnitOfWork implements PropertyChangedListener
      * If the collection is nested within atomic collection, it is immediately
      * unscheduled and atomic one is scheduled for update instead. This makes
      * calculating update data way easier.
-<<<<<<< HEAD
      *
-     * @param PersistentCollection $coll
-=======
-     * 
      * @param PersistentCollectionInterface $coll
->>>>>>> Start using PersistentCollectionInterface
      */
     private function scheduleCollectionOwner(PersistentCollectionInterface $coll)
     {
