@@ -6,6 +6,19 @@ use Doctrine\ODM\MongoDB\Types\Type;
 
 class DateTypeTest extends \PHPUnit_Framework_TestCase
 {
+    public function testGetDateTime()
+    {
+        $type = Type::getType(Type::DATE);
+
+        $timestamp = 100000000.001;
+        $dateTime = $type->getDateTime($timestamp);
+        $this->assertEquals($timestamp, $dateTime->format('U.u'));
+
+        $mongoDate = new \MongoDate(100000000, 1000);
+        $dateTime = $type->getDateTime($mongoDate);
+        $this->assertEquals($timestamp, $dateTime->format('U.u'));
+    }
+
     public function testConvertToDatabaseValue()
     {
         $type = Type::getType(Type::DATE);
