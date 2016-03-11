@@ -192,6 +192,9 @@ CODE;
     public function {$method->name}($parametersString)
     {
         \$this->initialize();
+        if (\$this->needsSchedulingForDirtyCheck()) {
+            \$this->changed();
+        }
         return \$this->coll->{$method->name}($callParamsString);
     }
 
