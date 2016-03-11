@@ -76,6 +76,7 @@ class UpdateCommand extends AbstractCommand
     protected function processDocumentIndex(SchemaManager $sm, $document)
     {
         $sm->updateDocumentIndexes($document, $this->timeout);
+        $sm->ensureDocumentSharding($document);
     }
 
     /**
@@ -84,6 +85,7 @@ class UpdateCommand extends AbstractCommand
     protected function processIndex(SchemaManager $sm)
     {
         $sm->updateIndexes($this->timeout);
+        $sm->ensureSharding();
     }
 
     /**
