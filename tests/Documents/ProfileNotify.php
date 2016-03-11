@@ -2,6 +2,7 @@
 
 namespace Documents;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -21,8 +22,16 @@ class ProfileNotify implements NotifyPropertyChanged
     /** @ODM\ReferenceOne(targetDocument="File", cascade={"all"}) */
     private $image;
 
+    /** @ODM\ReferenceMany(targetDocument="File", cascade={"all"}, collectionClass="ProfileNotifyImagesCollection") */
+    private $images;
+
     /** @var PropertyChangedListener[] */
     private $listeners = array();
+
+    public function __construct()
+    {
+        $this->images = new ProfileNotifyImagesCollection();
+    }
 
     public function addPropertyChangedListener(PropertyChangedListener $listener)
     {
@@ -72,5 +81,20 @@ class ProfileNotify implements NotifyPropertyChanged
     public function getImage()
     {
         return $this->image;
+    }
+
+    public function getImages()
+    {
+        return $this->images;
+    }
+}
+
+class ProfileNotifyImagesCollection extends ArrayCollection
+{
+    public function move($i, $j)
+    {
+        $tmp = $this->get($i);
+        $this->set($i, $this->get($j));
+        $this->set($j, $tmp);
     }
 }

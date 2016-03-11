@@ -8,6 +8,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
+use Documents\File;
+use Documents\ProfileNotify;
 
 class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -116,6 +118,48 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNotInstanceOf(PersistentCollection::class, $d2->inverseRefMany);
         $this->assertInstanceOf(MyDocumentsCollection::class, $d2->inverseRefMany);
     }
+
+    public function testModifyingCollectionByCustomMethod()
+    {
+        $d = new DocumentWithCustomCollection();
+        $d->coll->add($e1 = new EmbeddedDocumentInCustomCollection('#1', true));
+        $d->coll->add($e2 = new EmbeddedDocumentInCustomCollection('#2', false));
+        $this->dm->persist($d);
+        $this->dm->flush();
+
+        $d = $this->dm->find(get_class($d), $d->id);
+        $d->coll->move(0, 1);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $d = $this->dm->find(get_class($d), $d->id);
+        $this->assertCount(2, $d->coll);
+        $this->assertEquals($e2, $d->coll[0]);
+        $this->assertEquals($e1, $d->coll[1]);
+    }
+
+    public function testModifyingCollectionInChangeTrackingNotifyDocument()
+    {
+        $profile = new ProfileNotify();
+        $f1 = new File();
+        $f1->setName('av.jpeg');
+        $profile->getImages()->add($f1);
+        $f2 = new File();
+        $f2->setName('ghost.gif');
+        $profile->getImages()->add($f2);
+        $this->dm->persist($profile);
+        $this->dm->flush();
+
+        $profile = $this->dm->find(get_class($profile), $profile->getProfileId());
+        $profile->getImages()->move(0, 1);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $profile = $this->dm->find(get_class($profile), $profile->getProfileId());
+        $this->assertCount(2, $profile->getImages());
+        $this->assertEquals($f2->getName(), $profile->getImages()[0]->getName());
+        $this->assertEquals($f1->getName(), $profile->getImages()[1]->getName());
+    }
 }
 
 /**
@@ -200,6 +244,13 @@ class MyEmbedsCollection extends ArrayCollection
         return $this->filter(function($item) {
             return $item->enabled;
         });
+    }
+
+    public function move($i, $j)
+    {
+        $tmp = $this->get($i);
+        $this->set($i, $this->get($j));
+        $this->set($j, $tmp);
     }
 }
 
