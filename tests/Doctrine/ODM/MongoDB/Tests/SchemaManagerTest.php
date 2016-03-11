@@ -522,7 +522,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->at(1))
             ->method('command')
             ->with(array('shardCollection' => $dbName . '.' . $collectionName, 'key' => array('_id' => 'hashed')))
-            ->willReturn(array('ok' => 0, 'errmsg' => 'scary error'));
+            ->willReturn(array('ok' => 0, 'code' => 666, 'errmsg' => 'Scary error'));
 
         $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
     }
@@ -549,7 +549,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->at(1))
             ->method('command')
             ->with(array('shardCollection' => $dbName . '.' . $collectionName, 'key' => array('_id' => 'hashed')))
-            ->willReturn(array('ok' => 0, 'errmsg' => 'already sharded'));
+            ->willReturn(array('ok' => 0, 'code' => 20, 'errmsg' => 'already sharded'));
 
         $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
     }
@@ -583,7 +583,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('command')
             ->with(array('enableSharding' => 'db'))
-            ->willReturn(array('ok' => 0, 'errmsg' => 'scary error'));
+            ->willReturn(array('ok' => 0, 'code' => 666, 'errmsg' => 'Scary error'));
         $connMock = $this->getMockConnection();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
@@ -601,7 +601,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('command')
             ->with(array('enableSharding' => 'db'))
-            ->willReturn(array('ok' => 0, 'errmsg' => 'already enabled'));
+            ->willReturn(array('ok' => 0, 'code' => 23, 'errmsg' => 'already enabled'));
         $connMock = $this->getMockConnection();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;

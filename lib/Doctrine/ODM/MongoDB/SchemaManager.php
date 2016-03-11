@@ -548,7 +548,9 @@ class SchemaManager
             }
         } while (!$done && $try < 2);
 
-        if ($result['ok'] != 1 && $result['errmsg'] !== 'already sharded') {
+        // Different MongoDB versions return different result sets.
+        // Thus, check code if it exists and fall back on error message
+        if ($result['ok'] != 1 && ((isset($result['code']) && $result['code'] !== 20) && $result['errmsg'] !== 'already sharded')) {
             throw MongoDBException::failedToEnsureDocumentSharding($documentName, $result['errmsg']);
         }
     }
@@ -566,7 +568,9 @@ class SchemaManager
         $adminDb = $this->dm->getConnection()->selectDatabase('admin');
         $result = $adminDb->command(array('enableSharding' => $dbName));
 
-        if ($result['ok'] != 1 && $result['errmsg'] !== 'already enabled') {
+        // Different MongoDB versions return different result sets.
+        // Thus, check code if it exists and fall back on error message
+        if ($result['ok'] != 1 && ((isset($result['code']) && $result['code'] !== 23) && $result['errmsg'] !== 'already enabled')) {
             throw MongoDBException::failedToEnableSharding($dbName, $result['errmsg']);
         }
     }
