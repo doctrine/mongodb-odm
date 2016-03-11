@@ -1310,6 +1310,26 @@ Optional attributes:
      */
     private $cart;
 
+@ShardKey
+---------
+
+This annotation may be used at the class level to specify a shard key to be used
+for sharding the document collection.
+
+.. code-block:: php
+
+    <?php
+
+    /**
+     * @Document
+     * @ShardKey(keys={"username"="asc"})
+     */
+    class User
+    {
+        //...
+    }
+
+
 @String
 -------
 
