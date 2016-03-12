@@ -182,6 +182,10 @@ the life-time of their registered documents.
 -
    documentNotFound - The documentNotFound event occurs when a proxy object
    could not be initialized. This event is not a lifecycle callback.
+-
+   postCollectionLoad - The postCollectionLoad event occurs just after
+   collection has been initialized (loaded) and before new elements
+   are re-added to it.
 
 You can access the Event constants from the ``Events`` class in the
 ODM package.
@@ -623,6 +627,38 @@ Define the ``EventTest`` class with a ``postUpdate()``, ``postRemove()`` and ``p
         {
         }
     }
+
+postCollectionLoad
+~~~~~~~~~~~~~~~~~~
+
+.. note::
+    This event was introduced in version 1.1
+
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::postCollectionLoad, $test);
+
+Define the ``EventTest`` class with a ``postCollectionLoad()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function postCollectionLoad(\Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs $eventArgs)
+        {
+            $collection = $eventArgs->getCollection();
+            if ($collection instanceof \Malarzm\Collections\DiffableCollection) {
+                $collection->snapshot();
+            }
+        }
+    }
+
 
 Load ClassMetadata Event
 ------------------------
