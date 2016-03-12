@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
-use Doctrine\Common\Collections\Collection as BaseCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -30,7 +30,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  * @internal
  * @since 1.1
  */
-interface PersistentCollectionInterface extends BaseCollection
+interface PersistentCollectionInterface extends Collection
 {
     /**
      * Sets the document manager and unit of work (used during merge operations).
@@ -184,4 +184,11 @@ interface PersistentCollectionInterface extends BaseCollection
      * @return boolean
      */
     public function isInitialized();
+
+    /**
+     * Returns the wrapped Collection instance.
+     *
+     * @return Collection
+     */
+    public function unwrap();
 }

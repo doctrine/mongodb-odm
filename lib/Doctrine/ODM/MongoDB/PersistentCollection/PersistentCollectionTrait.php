@@ -672,7 +672,7 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * Retrieves the wrapped Collection instance.
+     * {@inheritdoc}
      */
     public function unwrap()
     {
