@@ -186,11 +186,7 @@ trait PersistentCollectionTrait
 
         $this->isDirty = true;
 
-        if ($this->dm &&
-            $this->mapping !== null &&
-            $this->mapping['isOwningSide'] &&
-            $this->owner &&
-            $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
+        if ($this->needsSchedulingForDirtyCheck()) {
             $this->uow->scheduleForDirtyCheck($this->owner);
         }
     }
@@ -198,7 +194,18 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function isDirty()
     {
-        return $this->isDirty;
+        if ($this->isDirty) {
+            return true;
+        }
+        if (! $this->initialized && count($this->coll)) {
+            // not initialized collection with added elements
+            return true;
+        }
+        if ($this->initialized) {
+            // if initialized let's check with last known snapshot
+            return $this->coll->toArray() !== $this->snapshot;
+        }
+        return false;
     }
 
     /** {@inheritdoc} */
@@ -727,5 +734,16 @@ trait PersistentCollectionTrait
         }
 
         return false;
+    }
+
+    /**
+     * Checks whether collection owner needs to be scheduled for dirty change in case the collection is modified.
+     *
+     * @return bool
+     */
+    private function needsSchedulingForDirtyCheck()
+    {
+        return $this->owner && $this->dm && ! empty($this->mapping['isOwningSide'])
+            && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify();
     }
 }
