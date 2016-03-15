@@ -346,8 +346,8 @@ class PersistenceBuilder
         $class = $this->dm->getClassMetadata(get_class($embeddedDocument));
 
         foreach ($class->fieldMappings as $mapping) {
-            // Skip notSaved fields
-            if ( ! empty($mapping['notSaved'])) {
+            // Skip notSaved fields or inversed collections
+            if (! empty($mapping['notSaved']) || ! empty($mapping['isInverseSide'])) {
                 continue;
             }
 
