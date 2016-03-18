@@ -99,12 +99,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
     /**#@+
      * The types of storeAs references
-     *
-     * TODO move this to a different class?
      */
-    const REFERENCE_STORE_AS_SIMPLE = 'simple';
-    const REFERENCE_STORE_AS_PARTIAL = 'partial';
-    const REFERENCE_STORE_AS_FULL = 'full';
+    const REFERENCE_STORE_AS_ID = 'id';
+    const REFERENCE_STORE_AS_DB_REF = 'dbRef';
+    const REFERENCE_STORE_AS_DB_REF_WITH_DB = 'dbRefWithDb';
     /**#@-*/
 
     /* The inheritance mapping types */
