@@ -125,7 +125,8 @@
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
-    <xs:attribute name="simple" type="xs:boolean" />
+    <xs:attribute name="simple" type="xs:boolean" /><!-- deprecated -->
+    <xs:attribute name="storeAs" type="xs:NMTOKEN" default="dbRefWithDb" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
@@ -145,7 +146,8 @@
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
-    <xs:attribute name="simple" type="xs:boolean" />
+    <xs:attribute name="simple" type="xs:boolean" /><!-- deprecated -->
+    <xs:attribute name="storeAs" type="xs:NMTOKEN" default="dbRefWithDb" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />

@@ -264,7 +264,8 @@ class YamlDriver extends FileDriver
             'orphanRemoval'    => isset($reference['orphanRemoval']) ? $reference['orphanRemoval'] : false,
             'type'             => $type,
             'reference'        => true,
-            'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false,
+            'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false, // deprecated
+            'storeAs'          => isset($attributes['storeAs']) ? (string) $attributes['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'fieldName'        => $fieldName,
             'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : $defaultStrategy,
@@ -292,6 +293,7 @@ class YamlDriver extends FileDriver
         if (isset($reference['criteria'])) {
             $mapping['criteria'] = $reference['criteria'];
         }
+        // TODO: Ignore the simple processing above and "redirect" the option to the "storeAs" mapping
         $this->addFieldMapping($class, $mapping);
     }
 

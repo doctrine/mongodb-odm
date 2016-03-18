@@ -314,6 +314,8 @@ a certain class, you can optionally specify a default discriminator value:
 Simple References
 -----------------
 
+TODO: Rewrite this to reflect the new ``storeAs`` approach.
+
 By default all references are stored as a `DBRef`_ object with the traditional
 ``$ref``, ``$id``, and ``$db`` fields (in that order). For references to
 documents of a single collection, storing the collection and database names for
