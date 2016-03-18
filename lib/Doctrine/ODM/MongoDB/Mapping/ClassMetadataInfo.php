@@ -1189,6 +1189,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             $mapping['nullable'] = false;
         }
 
+        // TODO: Ignore the simple processing below and "redirect" the option to the "storeAs" mapping
+
         if (isset($mapping['reference']) && ! empty($mapping['simple']) && ! isset($mapping['targetDocument'])) {
             throw MappingException::simpleReferenceRequiresTargetDocument($this->name, $mapping['fieldName']);
         }

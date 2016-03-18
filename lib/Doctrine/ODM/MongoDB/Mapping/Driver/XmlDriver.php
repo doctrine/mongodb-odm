@@ -282,7 +282,8 @@ class XmlDriver extends FileDriver
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
             'type'             => $type,
             'reference'        => true,
-            'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false,
+            'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false, // deprecated
+            'storeAs'          => isset($attributes['storeAs']) ? (string) $attributes['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'             => (string) $attributes['field'],
             'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
@@ -327,6 +328,7 @@ class XmlDriver extends FileDriver
         if (isset($attributes['also-load'])) {
             $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
         }
+        // TODO: Ignore the simple processing above and "redirect" the option to the "storeAs" mapping
         $this->addFieldMapping($class, $mapping);
     }
 
