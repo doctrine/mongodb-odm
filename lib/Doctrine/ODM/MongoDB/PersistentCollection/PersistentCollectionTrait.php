@@ -220,7 +220,7 @@ trait PersistentCollectionTrait
         $this->owner = $document;
         $this->mapping = $mapping;
 
-        if ( ! empty($this->mapping['targetDocument'])) {
+        if ( ! empty($this->mapping['targetDocument']) && $this->dm) {
             $this->typeClass = $this->dm->getClassMetadata($this->mapping['targetDocument']);
         }
     }
