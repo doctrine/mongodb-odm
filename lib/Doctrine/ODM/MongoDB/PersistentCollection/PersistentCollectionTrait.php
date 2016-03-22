@@ -220,7 +220,7 @@ trait PersistentCollectionTrait
         $this->owner = $document;
         $this->mapping = $mapping;
 
-        if ( ! empty($this->mapping['targetDocument'])) {
+        if ( ! empty($this->mapping['targetDocument']) && $this->dm) {
             $this->typeClass = $this->dm->getClassMetadata($this->mapping['targetDocument']);
         }
     }
@@ -318,6 +318,9 @@ trait PersistentCollectionTrait
     public function getTypeClass()
     {
         if (empty($this->typeClass)) {
+            if (!$this->dm) {
+                throw new MongoDBException('No DocumentManager is associated with this PersistentCollection, please set one using setDocumentManager');
+            }
             throw new MongoDBException('Specifying targetDocument is required for the ClassMetadata to be obtained.');
         }
 
