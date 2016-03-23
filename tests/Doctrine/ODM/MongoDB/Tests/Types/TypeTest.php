@@ -73,4 +73,11 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array(Type::getType(Type::OBJECTID), new \MongoId()),
         );
     }
+
+    public function testConvertImmutableDate()
+    {
+        $date = new \DateTimeImmutable('now');
+
+        $this->assertInstanceOf('\MongoDate', Type::convertPHPToDatabaseValue($date));
+    }
 }
