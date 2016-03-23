@@ -10,15 +10,15 @@ class SimpleEmbedAndReference
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument="Reference") */
+    /** @ODM\EmbedMany(targetDocument="Embedded") */
     public $embedMany = array();
 
-    /** @ODM\ReferenceMany(targetDocument="Embedded") */
+    /** @ODM\ReferenceMany(targetDocument="Reference") */
     public $referenceMany = array();
 
-    /** @ODM\EmbedOne(targetDocument="Reference") */
+    /** @ODM\EmbedOne(targetDocument="Embedded") */
     public $embedOne;
 
-    /** @ODM\ReferenceOne(targetDocument="Embedded") */
+    /** @ODM\ReferenceOne(targetDocument="Reference") */
     public $referenceOne;
 }
