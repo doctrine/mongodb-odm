@@ -164,7 +164,7 @@ abstract class Type
     public static function getTypeFromPHPVariable($variable)
     {
         if (is_object($variable)) {
-            if ($variable instanceof \DateTime) {
+            if ($variable instanceof \DateTimeInterface) {
                 return self::getType('date');
             } elseif ($variable instanceof \MongoId) {
                 return self::getType('id');

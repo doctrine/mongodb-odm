@@ -31,7 +31,7 @@ class DateType extends Type
      * Supports microseconds
      *
      * @throws InvalidArgumentException if $value is invalid
-     * @param  mixed $value \DateTime|\MongoDate|int|float
+     * @param  mixed $value \DateTimeInterface|\MongoDate|int|float
      * @return \DateTime
      */
     public static function getDateTime($value)
@@ -39,7 +39,7 @@ class DateType extends Type
         $datetime = false;
         $exception = null;
 
-        if ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
+        if ($value instanceof \DateTimeInterface) {
             return $value;
         } elseif ($value instanceof \MongoDate) {
             $datetime = static::craftDateTime($value->sec, $value->usec);
