@@ -318,6 +318,9 @@ trait PersistentCollectionTrait
     public function getTypeClass()
     {
         if (empty($this->typeClass)) {
+            if (!$this->dm) {
+                throw new MongoDBException('No DocumentManager is associated with this PersistentCollection, please set one using setDocumentManager');
+            }
             throw new MongoDBException('Specifying targetDocument is required for the ClassMetadata to be obtained.');
         }
 
