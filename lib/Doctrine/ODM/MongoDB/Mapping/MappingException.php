@@ -329,10 +329,21 @@ class MappingException extends BaseMappingException
 
     /**
      * @param string $className
+     * @param string $fieldName
      * @return MappingException
      */
-    public static function noIncrementFieldsAllowedInShardKey($className)
+    public static function onlySetStrategyAllowedInShardKey($className, $fieldName)
     {
-        return new self("No increment fields allowed in the shard key: $className");
+        return new self("Only fields using the SET strategy can be used in the shard key: $className::$fieldName");
+    }
+
+    /**
+     * @param $className
+     * @param $fieldName
+     * @return MappingException
+     */
+    public static function noMultiKeyShardKeys($className, $fieldName)
+    {
+        return new self("No multikey indexes are allowed in the shard key: $className::$fieldName");
     }
 }

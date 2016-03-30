@@ -446,16 +446,53 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage No increment fields allowed in the shard key
+     * @expectedExceptionMessage Only fields using the SET strategy can be used in the shard key
      */
     public function testNoIncrementFieldsAllowedInShardKey()
     {
         $cm = new ClassMetadataInfo('stdClass');
-        $cm->mapField(array(
+        $cm->mapField([
             'fieldName' => 'inc',
-            'type' => 'increment'
-        ));
-        $cm->setShardKey(array('inc'));
+            'type' => 'int',
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT,
+        ]);
+        $cm->setShardKey(array('inc' => 1));
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage No multikey indexes are allowed in the shard key
+     */
+    public function testNoCollectionsInShardKey()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->mapField([
+            'fieldName' => 'collection',
+            'type' => 'collection'
+        ]);
+        $cm->setShardKey(array('collection' => 1));
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage No multikey indexes are allowed in the shard key
+     */
+    public function testNoEmbedManyInShardKey()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->mapManyEmbedded(['fieldName' => 'embedMany']);
+        $cm->setShardKey(array('embedMany' => 1));
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage No multikey indexes are allowed in the shard key
+     */
+    public function testNoReferenceManyInShardKey()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->mapManyEmbedded(['fieldName' => 'referenceMany']);
+        $cm->setShardKey(array('referenceMany' => 1));
     }
 }
 
