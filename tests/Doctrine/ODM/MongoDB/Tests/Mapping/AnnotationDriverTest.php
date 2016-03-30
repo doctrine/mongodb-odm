@@ -202,6 +202,6 @@ class AnnotationDriverTestChild extends AnnotationDriverTestParent
  */
 class AnnotationDriverEmbeddedWithShardKey
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $foo;
 }

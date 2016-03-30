@@ -15,12 +15,12 @@ class ShardedOneWithDifferentKey
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $title = 'test';
 
-    /** @ODM\String(name="k") */
+    /** @ODM\Field(name="k", type="string") */
     public $key = 'testing';
 
-    /** @ODM\String(name="v") */
+    /** @ODM\Field(name="v", type="string") */
     public $value = 'testing';
 }

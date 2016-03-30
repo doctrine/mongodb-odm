@@ -70,16 +70,16 @@ class ShardedByScalars
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Int */
+    /** @ODM\Field(type="int") */
     public $int;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $string;
 
-    /** @ODM\Boolean */
+    /** @ODM\Field(type="boolean") */
     public $bool;
 
-    /** @ODM\Float */
+    /** @ODM\Field(type="float") */
     public $float;
 }
 

@@ -67,7 +67,7 @@ class ShardKeyInheritanceMappingTest extends BaseTest
  */
 class ShardedSuperclass
 {
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     private $name;
 }
 

@@ -13,9 +13,9 @@ class ShardedOne
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /** @ODM\Field(type="string") */
     public $title = 'test';
 
-    /** @ODM\String(name="k") */
+    /** @ODM\Field(name="k", type="string") */
     public $key = 'testing';
 }
