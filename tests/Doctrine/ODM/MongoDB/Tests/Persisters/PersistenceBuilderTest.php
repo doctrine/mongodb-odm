@@ -10,6 +10,7 @@ use Documents\CmsArticle;
 use Documents\CmsComment;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class PersistenceBuilderTest extends BaseTest
 {
@@ -296,4 +297,38 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertEquals($articleId, $singleResult->article->id);
         $this->assertEquals(1, $results->count(true));
     }
+
+    public function testReferencePartial()
+    {
+        $article = new CmsArticle();
+        $article->id = new \MongoId();
+
+        $this->dm->persist($article);
+        $this->dm->flush();
+
+        $test = new DocumentWithPartialReference();
+        $test->article = $article;
+        $this->dm->persist($test);
+
+        $this->uow->computeChangeSets();
+
+        $expectedData = array(
+            'article' => array(
+                '$id' => $test->article->id,
+                '$ref' => 'CmsArticle'
+            )
+        );
+
+        $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($test));
+    }
+}
+
+/** @ODM\Document */
+class DocumentWithPartialReference
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\ReferenceOne(targetDocument="Documents\CmsComment", partial="true") */
+    public $article;
 }

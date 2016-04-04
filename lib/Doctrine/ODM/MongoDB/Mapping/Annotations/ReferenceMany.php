@@ -31,6 +31,7 @@ final class ReferenceMany extends AbstractField
     public $type = 'many';
     public $reference = true;
     public $simple = false;
+    public $partial = false;
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;

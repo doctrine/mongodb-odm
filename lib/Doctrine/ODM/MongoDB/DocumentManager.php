@@ -689,8 +689,10 @@ class DocumentManager implements ObjectManager
         $dbRef = array(
             '$ref' => $class->getCollection(),
             '$id'  => $class->getDatabaseIdentifierValue($id),
-            '$db'  => $this->getDocumentDatabase($class->name)->getName(),
         );
+        if ( empty($referenceMapping['partial'])) {
+            $dbRef['$db'] = $this->getDocumentDatabase($class->name)->getName();
+        }
 
         /* If the class has a discriminator (field and value), use it. A child
          * class that is not defined in the discriminator map may only have a
