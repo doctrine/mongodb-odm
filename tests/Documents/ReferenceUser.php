@@ -18,7 +18,6 @@ class ReferenceUser
 
     /**
      * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="id")
-     * @ODM\Index
      *
      * @var User
      */
@@ -33,7 +32,6 @@ class ReferenceUser
 
     /**
      * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRef")
-     * @ODM\Index
      *
      * @var User
      */
@@ -48,7 +46,6 @@ class ReferenceUser
 
     /**
      * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRefWithDb")
-     * @ODM\Index
      *
      * @var User
      */
