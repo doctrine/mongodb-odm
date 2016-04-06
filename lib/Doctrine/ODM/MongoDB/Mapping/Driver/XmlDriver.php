@@ -328,7 +328,6 @@ class XmlDriver extends FileDriver
         if (isset($attributes['also-load'])) {
             $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
         }
-        // TODO: Ignore the simple processing above and "redirect" the option to the "storeAs" mapping
         $this->addFieldMapping($class, $mapping);
     }
 

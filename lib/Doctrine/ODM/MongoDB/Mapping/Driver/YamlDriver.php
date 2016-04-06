@@ -293,7 +293,6 @@ class YamlDriver extends FileDriver
         if (isset($reference['criteria'])) {
             $mapping['criteria'] = $reference['criteria'];
         }
-        // TODO: Ignore the simple processing above and "redirect" the option to the "storeAs" mapping
         $this->addFieldMapping($class, $mapping);
     }
 
