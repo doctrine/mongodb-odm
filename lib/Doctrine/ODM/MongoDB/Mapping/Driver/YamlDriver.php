@@ -265,7 +265,7 @@ class YamlDriver extends FileDriver
             'type'             => $type,
             'reference'        => true,
             'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false, // deprecated
-            'storeAs'          => isset($attributes['storeAs']) ? (string) $attributes['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs'          => isset($reference['storeAs']) ? (string) $reference['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'fieldName'        => $fieldName,
             'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : $defaultStrategy,
