@@ -206,6 +206,28 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->createDBRef($r, $class->associationMappings['ref']);
     }
 
+    public function testDifferentStoreAsDbReferences()
+    {
+        $r = new \Documents\User();
+        $this->dm->persist($r);
+        $d = new ReferenceStoreAsDocument();
+        $class = $this->dm->getClassMetadata(get_class($d));
+
+        $dbRef = $this->dm->createDBRef($r, $class->associationMappings['ref1']);
+        $this->assertInstanceOf('MongoId', $dbRef);
+
+        $dbRef = $this->dm->createDBRef($r, $class->associationMappings['ref2']);
+        $this->assertCount(2, $dbRef);
+        $this->assertArrayHasKey('$ref', $dbRef);
+        $this->assertArrayHasKey('$id', $dbRef);
+
+        $dbRef = $this->dm->createDBRef($r, $class->associationMappings['ref3']);
+        $this->assertCount(3, $dbRef);
+        $this->assertArrayHasKey('$ref', $dbRef);
+        $this->assertArrayHasKey('$id', $dbRef);
+        $this->assertArrayHasKey('$db', $dbRef);
+    }
+
     private function getMockClassMetadataFactory()
     {
         return $this->getMockBuilder('Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory')
@@ -229,4 +251,20 @@ class WrongSimpleRefDocument
 
     /** @ODM\ReferenceOne(targetDocument="Documents\Tournament\Participant", simple=true) */
     public $ref;
+}
+
+/** @ODM\Document */
+class ReferenceStoreAsDocument
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="id") */
+    public $ref1;
+
+    /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRef") */
+    public $ref2;
+
+    /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRefWithDb") */
+    public $ref3;
 }

@@ -679,7 +679,7 @@ class DocumentManager implements ObjectManager
             );
         }
 
-        if ( ! empty($referenceMapping['simple'])) {
+        if ($referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
             if ($class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
                 throw MappingException::simpleReferenceMustNotTargetDiscriminatedDocument($referenceMapping['targetDocument']);
             }
@@ -689,8 +689,11 @@ class DocumentManager implements ObjectManager
         $dbRef = array(
             '$ref' => $class->getCollection(),
             '$id'  => $class->getDatabaseIdentifierValue($id),
-            '$db'  => $this->getDocumentDatabase($class->name)->getName(),
         );
+
+        if ($referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
+            $dbRef['$db'] = $this->getDocumentDatabase($class->name)->getName();
+        }
 
         /* If the class has a discriminator (field and value), use it. A child
          * class that is not defined in the discriminator map may only have a
