@@ -234,6 +234,38 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'simple' => true,
         ));
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Target document must be specified for simple reference: stdClass::assoc
+     */
+    public function testSimpleAsStringReferenceRequiresTargetDocument()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+
+        $cm->mapField(array(
+            'fieldName' => 'assoc',
+            'reference' => true,
+            'type' => 'one',
+            'simple' => 'true',
+        ));
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Target document must be specified for simple reference: stdClass::assoc
+     */
+    public function testStoreAsIdReferenceRequiresTargetDocument()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+
+        $cm->mapField(array(
+            'fieldName' => 'assoc',
+            'reference' => true,
+            'type' => 'one',
+            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
+        ));
+    }
     
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException

@@ -1190,14 +1190,18 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         }
 
         // Synchronize the "simple" and "storeAs" mapping information for backwards compatibility
-        if (isset($mapping['simple']) && $mapping['simple'] === true) {
+        if (isset($mapping['simple']) && ($mapping['simple'] === true || $mapping['simple'] === 'true')) {
             $mapping['storeAs'] = ClassMetadataInfo::REFERENCE_STORE_AS_ID;
         }
         if (isset($mapping['storeAs']) && $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
             $mapping['simple'] = true;
         }
 
-        if (isset($mapping['reference']) && ! empty($mapping['simple']) && ! isset($mapping['targetDocument'])) {
+        if (isset($mapping['reference'])
+            && isset($mapping['storeAs'])
+            && $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID
+            && ! isset($mapping['targetDocument'])
+        ) {
             throw MappingException::simpleReferenceRequiresTargetDocument($this->name, $mapping['fieldName']);
         }
 
