@@ -541,8 +541,17 @@ class SchemaManager
             $done = true;
             $try = 0;
 
-            if ($result['ok'] != 1 && isset($result['proposedKey'])) {
-                $this->dm->getDocumentCollection($documentName)->ensureIndex($result['proposedKey'], $indexOptions);
+            if ($result['ok'] != 1 && ((isset($result['code']) && $result['code'] == 59) || isset($result['proposedKey']))) {
+                // Code 59: need to create an index for shard key. See if we've got a proposed key
+                // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
+                // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
+                if (isset($result['proposedKey'])) {
+                    $key = $result['proposedKey'];
+                } else {
+                    $key = $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
+                }
+
+                $this->dm->getDocumentCollection($documentName)->ensureIndex($key, $indexOptions);
                 $done = false;
                 $try++;
             }
