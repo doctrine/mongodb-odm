@@ -19,9 +19,12 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
 
+        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method->setAccessible(true);
+
         $this->assertSame(
             array('int' => $o->int, 'string' => $o->string, 'bool' => $o->bool, 'float' => $o->float),
-            $persister->getShardKeyQuery($o)
+            $method->invoke($persister, $o)
         );
     }
 
@@ -35,7 +38,9 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
 
-        $shardKeyQuery = $persister->getShardKeyQuery($o);
+        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method->setAccessible(true);
+        $shardKeyQuery = $method->invoke($persister, $o);
 
         $this->assertInstanceOf('MongoId', $shardKeyQuery['oid']);
         $this->assertSame($o->oid, $shardKeyQuery['oid']->{'$id'});
@@ -55,7 +60,10 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
-        $shardKeyQuery = $persister->getShardKeyQuery($o);
+
+        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method->setAccessible(true);
+        $shardKeyQuery = $method->invoke($persister, $o);
 
         $this->assertSame(array('_id' => $o->identifier), $shardKeyQuery);
     }

@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class ShardKeyInheritanceMappingTest extends BaseTest
 {
+    /** @var ClassMetadataFactory */
     private $factory;
 
     public function setUp()
@@ -21,7 +22,7 @@ class ShardKeyInheritanceMappingTest extends BaseTest
 
     public function testShardKeyFromMappedSuperclass()
     {
-        $class = $this->factory->getMetadataFor(__NAMESPACE__ . '\\ShardedSubclass');
+        $class = $this->factory->getMetadataFor(ShardedSubclass::class);
 
         $this->assertTrue($class->isSharded());
         $this->assertEquals(array('keys' => array('_id' => 1), 'options' => array()), $class->getShardKey());
@@ -29,23 +30,23 @@ class ShardKeyInheritanceMappingTest extends BaseTest
 
     public function testShardKeySingleCollectionInheritance()
     {
-        $class = $this->factory->getMetadataFor(__NAMESPACE__ . '\\ShardedSingleCollInheritance2');
+        $class = $this->factory->getMetadataFor(ShardedSingleCollInheritance2::class);
 
         $this->assertTrue($class->isSharded());
         $this->assertEquals(array('keys' => array('_id' => 1), 'options' => array()), $class->getShardKey());
     }
 
     /**
-     * @expectedException Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function testShardKeySingleCollectionInheritanceOverriding()
     {
-        $this->factory->getMetadataFor(__NAMESPACE__ . '\\ShardedSingleCollInheritance3');
+        $this->factory->getMetadataFor(ShardedSingleCollInheritance3::class);
     }
 
     public function testShardKeyCollectionPerClassInheritance()
     {
-        $class = $this->factory->getMetadataFor(__NAMESPACE__ . '\\ShardedCollectionPerClass2');
+        $class = $this->factory->getMetadataFor(ShardedCollectionPerClass2::class);
 
         $this->assertTrue($class->isSharded());
         $this->assertEquals(array('keys' => array('_id' => 1), 'options' => array()), $class->getShardKey());
@@ -53,7 +54,7 @@ class ShardKeyInheritanceMappingTest extends BaseTest
 
     public function testShardKeyCollectionPerClassInheritanceOverriding()
     {
-        $class = $this->factory->getMetadataFor(__NAMESPACE__ . '\\ShardedCollectionPerClass3');
+        $class = $this->factory->getMetadataFor(ShardedCollectionPerClass3::class);
 
         $this->assertTrue($class->isSharded());
         $this->assertEquals(array('keys' => array('_id' => 'hashed'), 'options' => array()), $class->getShardKey());

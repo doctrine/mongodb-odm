@@ -7,11 +7,16 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class EnsureShardingTest extends BaseTest
 {
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->skipTestIfNotSharded(\Documents\Sharded\ShardedOne::class);
+    }
 
     public function testEnsureShardingForNewCollection()
     {
-        $class = 'Documents\Sharded\ShardedOne';
-        $this->skipTestIfNotSharded($class);
+        $class = \Documents\Sharded\ShardedOne::class;
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $collection = $this->dm->getDocumentCollection($class);
@@ -25,8 +30,7 @@ class EnsureShardingTest extends BaseTest
 
     public function testEnsureShardingForCollectionWithDocuments()
     {
-        $class = 'Documents\Sharded\ShardedOne';
-        $this->skipTestIfNotSharded($class);
+        $class = \Documents\Sharded\ShardedOne::class;
         $collection = $this->dm->getDocumentCollection($class);
         $doc = array('title' => 'hey', 'k' => 'hi');
         $collection->insert($doc);
@@ -43,11 +47,10 @@ class EnsureShardingTest extends BaseTest
 
     public function testEnsureShardingForCollectionWithShardingEnabled()
     {
-        $class = 'Documents\Sharded\ShardedOneWithDifferentKey';
-        $this->skipTestIfNotSharded($class);
+        $class = \Documents\Sharded\ShardedOneWithDifferentKey::class;
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
-        $this->dm->getSchemaManager()->ensureDocumentSharding('Documents\Sharded\ShardedOne');
+        $this->dm->getSchemaManager()->ensureDocumentSharding(\Documents\Sharded\ShardedOne::class);
 
         $collection = $this->dm->getDocumentCollection($class);
         $indexes = $collection->getIndexInfo();

@@ -20,7 +20,7 @@ use Documents\Phonenumber;
 class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**
-     * @var Doctrine\ODM\MongoDB\Tests\QueryLogger
+     * @var QueryLogger
      */
     private $ql;
 

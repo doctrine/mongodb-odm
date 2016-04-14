@@ -536,10 +536,10 @@ class SchemaManager
 
         $this->enableShardingForDbByDocumentName($documentName);
 
+        $try = 0;
         do {
             $result = $this->runShardCollectionCommand($documentName);
             $done = true;
-            $try = 0;
 
             if ($result['ok'] != 1 && ((isset($result['code']) && $result['code'] == 59) || isset($result['proposedKey']))) {
                 // Code 59: need to create an index for shard key. See if we've got a proposed key
@@ -555,7 +555,7 @@ class SchemaManager
                 $done = false;
                 $try++;
             }
-        } while (!$done && $try < 2);
+        } while (! $done && $try < 2);
 
         // Different MongoDB versions return different result sets.
         // Thus, check code if it exists and fall back on error message

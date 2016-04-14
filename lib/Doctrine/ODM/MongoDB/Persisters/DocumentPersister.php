@@ -547,7 +547,7 @@ class DocumentPersister
      * @return array
      * @throws MongoDBException
      */
-    public function getShardKeyQuery($document)
+    private function getShardKeyQuery($document)
     {
         if ( ! $this->class->isSharded()) {
             return array();
@@ -1324,7 +1324,7 @@ class DocumentPersister
 
     /**
      * If the document is new, ignore shard key field value, otherwise throw an exception.
-     * Also, shard key field should be presented in actual document data.
+     * Also, shard key field should be present in actual document data.
      *
      * @param object $document
      * @param string $shardKeyField

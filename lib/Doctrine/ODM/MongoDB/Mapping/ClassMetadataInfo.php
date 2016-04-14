@@ -838,7 +838,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setShardKey(array $keys, array $options = array())
     {
-        if ($this->inheritanceType == self::INHERITANCE_TYPE_SINGLE_COLLECTION && !is_null($this->shardKey)) {
+        if ($this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION && !is_null($this->shardKey)) {
             throw MappingException::shardKeyInSingleCollInheritanceSubclass($this->getName());
         }
 
