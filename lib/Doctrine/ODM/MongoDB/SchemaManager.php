@@ -577,7 +577,7 @@ class SchemaManager
         $adminDb = $this->dm->getConnection()->selectDatabase('admin');
         $result = $adminDb->command(array('enableSharding' => $dbName));
 
-        // Different MongoDB versions return different result sets.
+        // Error code is only available with MongoDB 3.2. MongoDB 3.0 only returns a message
         // Thus, check code if it exists and fall back on error message
         if ($result['ok'] != 1 && ((isset($result['code']) && $result['code'] !== 23) && $result['errmsg'] !== 'already enabled')) {
             throw MongoDBException::failedToEnableSharding($dbName, $result['errmsg']);
