@@ -541,8 +541,8 @@ class SchemaManager
             $result = $this->runShardCollectionCommand($documentName);
             $done = true;
 
-            if ($result['ok'] != 1 && ((isset($result['code']) && $result['code'] == 59) || isset($result['proposedKey']))) {
-                // Code 59: need to create an index for shard key. See if we've got a proposed key
+            // Need to check error message because MongoDB 3.0 does not return a code for this error
+            if ($result['ok'] != 1 && strpos($result['errmsg'], 'please create an index that starts') !== false) {
                 // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
                 // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
                 if (isset($result['proposedKey'])) {
@@ -557,8 +557,8 @@ class SchemaManager
             }
         } while (! $done && $try < 2);
 
-        // Different MongoDB versions return different result sets.
-        // Thus, check code if it exists and fall back on error message
+        // Starting with MongoDB 3.2, this command returns code 20 when a collection is already sharded.
+        // For older MongoDB versions, check the error message
         if ($result['ok'] != 1 && ((isset($result['code']) && $result['code'] !== 20) && $result['errmsg'] !== 'already sharded')) {
             throw MongoDBException::failedToEnsureDocumentSharding($documentName, $result['errmsg']);
         }
