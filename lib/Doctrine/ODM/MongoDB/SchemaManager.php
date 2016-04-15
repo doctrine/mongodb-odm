@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 class SchemaManager
 {
@@ -192,7 +193,9 @@ class SchemaManager
                     $newKeys = array();
                     foreach ($index['keys'] as $key => $v) {
                         if ($key == $fieldMapping['name']) {
-                            $key = $fieldMapping['simple'] ? $key : $key . '.$id';
+                            $key = $fieldMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID
+                                ? $key
+                                : $key . '.$id';
                         }
                         $newKeys[$key] = $v;
                     }

@@ -24,6 +24,7 @@ use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
@@ -666,7 +667,7 @@ class DocumentPersister
         $sorted = isset($mapping['sort']) && $mapping['sort'];
 
         foreach ($collection->getMongoData() as $key => $reference) {
-            if (isset($mapping['simple']) && $mapping['simple']) {
+            if (isset($mapping['storeAs']) && $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 $className = $mapping['targetDocument'];
                 $mongoId = $reference;
             } else {
@@ -752,7 +753,7 @@ class DocumentPersister
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping = isset($targetClass->fieldMappings[$mapping['mappedBy']]) ? $targetClass->fieldMappings[$mapping['mappedBy']] : array();
-        $mappedByFieldName = isset($mappedByMapping['simple']) && $mappedByMapping['simple'] ? $mapping['mappedBy'] : $mapping['mappedBy'] . '.$id';
+        $mappedByFieldName = isset($mappedByMapping['storeAs']) && $mappedByMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID ? $mapping['mappedBy'] : $mapping['mappedBy'] . '.$id';
         $criteria = $this->cm->merge(
             array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
@@ -994,7 +995,7 @@ class DocumentPersister
             // No further preparation unless we're dealing with a simple reference
             // We can't have expressions in empty() with PHP < 5.5, so store it in a variable
             $arrayValue = (array) $value;
-            if (empty($mapping['reference']) || empty($mapping['simple']) || empty($arrayValue)) {
+            if (empty($mapping['reference']) || $mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID || empty($arrayValue)) {
                 return array($fieldName, $value);
             }
 
@@ -1106,7 +1107,7 @@ class DocumentPersister
         $objectPropertyIsId = $targetClass->isIdentifier($objectProperty);
 
         // Prepare DBRef identifiers or the mapped field's property path
-        $fieldName = ($objectPropertyIsId && ! empty($mapping['reference']) && empty($mapping['simple']))
+        $fieldName = ($objectPropertyIsId && ! empty($mapping['reference']) && $mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID)
             ? $e[0] . '.$id'
             : $e[0] . '.' . $objectPropertyPrefix . $targetMapping['name'];
 
