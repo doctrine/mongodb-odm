@@ -368,10 +368,13 @@ class DocumentPersisterTestDocument
      */
     public $association;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", simple=true) */
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", storeAs="id") */
     public $simpleRef;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument") */
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", storeAs="dbRef") */
+    public $semiComplexRef;
+
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", storeAs="dbRefWithDb") */
     public $complexRef;
 }
 
@@ -433,9 +436,12 @@ class DocumentPersisterTestHashIdDocument
     /** @ODM\Id(strategy="none", options={"type"="hash"}) */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", simple=true) */
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", storeAs="id") */
     public $simpleRef;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument") */
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", storeAs="dbRef") */
+    public $semiComplexRef;
+
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", storeAs="dbRefWithDb") */
     public $complexRef;
 }
