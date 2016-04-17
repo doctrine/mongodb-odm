@@ -283,7 +283,7 @@ class XmlDriver extends FileDriver
             'type'             => $type,
             'reference'        => true,
             'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false, // deprecated
-            'storeAs'          => isset($attributes['storeAs']) ? (string) $attributes['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs'          => isset($attributes['store-as']) ? (string) $attributes['store-as'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'name'             => (string) $attributes['field'],
             'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,

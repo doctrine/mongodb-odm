@@ -113,6 +113,14 @@
     <xs:attribute name="collectionClass" type="xs:string" />
   </xs:complexType>
 
+  <xs:simpleType name="reference-store-as">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="id"/>
+      <xs:enumeration value="dbRef"/>
+      <xs:enumeration value="dbRefWithDb"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="reference-one">
     <xs:sequence>
       <xs:element name="cascade" type="odm:cascade-type" minOccurs="0" />
@@ -126,7 +134,7 @@
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
     <xs:attribute name="simple" type="xs:boolean" /><!-- deprecated -->
-    <xs:attribute name="storeAs" type="xs:NMTOKEN" default="dbRefWithDb" />
+    <xs:attribute name="store-as" type="odm:reference-store-as" default="dbRefWithDb" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
@@ -147,7 +155,7 @@
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
     <xs:attribute name="simple" type="xs:boolean" /><!-- deprecated -->
-    <xs:attribute name="storeAs" type="xs:NMTOKEN" default="dbRefWithDb" />
+    <xs:attribute name="store-as" type="odm:reference-store-as" default="dbRefWithDb" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
