@@ -74,17 +74,14 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
         if ($this->currentField) {
             $mapping = $this->getReferenceMapping();
             $dbRef = $this->dm->createDBRef($document, $mapping);
+            $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
-            if (array_key_exists('storeAs', $mapping)
-                && $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID
-            ) {
+            if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 $this->query[$mapping['name']] = $dbRef;
             } else {
                 $keys = array('ref' => true, 'id' => true, 'db' => true);
 
-                if (array_key_exists('storeAs', $mapping)
-                    && $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF
-                ) {
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
                     unset($keys['db']);
                 }
 
@@ -115,17 +112,14 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
         if ($this->currentField) {
             $mapping = $this->getReferenceMapping();
             $dbRef = $this->dm->createDBRef($document, $mapping);
+            $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
-            if (array_key_exists('storeAs', $mapping)
-                && $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID
-            ) {
+            if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 $this->query[$mapping['name']] = $dbRef;
             } else {
                 $keys = array('ref' => true, 'id' => true, 'db' => true);
 
-                if (array_key_exists('storeAs', $mapping)
-                    && $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF
-                ) {
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
                     unset($keys['db']);
                 }
 
