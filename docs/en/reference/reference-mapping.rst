@@ -407,6 +407,6 @@ The valid values are:
 -  **remove** - cascade remove operation to referenced documents.
 -  **persist** - cascade persist operation to referenced documents.
 
-.. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbref
+.. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbrefs
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>
