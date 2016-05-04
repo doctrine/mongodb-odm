@@ -97,13 +97,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     const MANY = 'many';
     const ONE = 'one';
 
-    /**#@+
+    /**
      * The types of storeAs references
      */
     const REFERENCE_STORE_AS_ID = 'id';
     const REFERENCE_STORE_AS_DB_REF = 'dbRef';
     const REFERENCE_STORE_AS_DB_REF_WITH_DB = 'dbRefWithDb';
-    /**#@-*/
 
     /* The inheritance mapping types */
     /**
