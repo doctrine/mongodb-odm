@@ -7,7 +7,7 @@ the inverse side of a relationship.
 You can create an `immutable`_ reference to one or many documents and specify
 how that reference is to be loaded. The reference is immutable in that it is
 defined only in the mapping, unlike a typical reference where a `MongoDBRef`_ or
-identifier (for :ref:`simple_references`) is stored on the document itself.
+identifier (see :ref:`storing_references`) is stored on the document itself.
 
 The following options may be used for :ref:`one <reference_one>` and
 :ref:`many <reference_many>` reference mappings:
