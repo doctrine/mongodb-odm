@@ -367,6 +367,12 @@ The ``storeAs`` option has three possible values:
     The ``storeAs=id`` option used to call a "simple reference". The old syntax is
     still recognized (so using ``simple=true`` will imply ``storeAs=id``).
 
+.. note::
+
+    For backwards compatibility ``storeAs=dbRefWithDb`` is the default, but
+    ``storeAs=dbRef`` is the recommended setting.
+
+
 Cascading Operations
 --------------------
 
