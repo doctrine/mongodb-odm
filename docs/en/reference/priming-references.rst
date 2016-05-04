@@ -83,7 +83,7 @@ queries (one per discriminated class name).
 
 .. note::
 
-    Priming is also compatible with :ref:`simple references <simple_references>`
+    Priming is also compatible with :ref:`simple references <storing_references>`
     and discriminated references. When priming discriminated references, ODM
     will issue one query per distinct class among the referenced document(s).
 
