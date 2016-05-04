@@ -32,6 +32,18 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()->debug();
 
         $this->assertEquals([ 'featureSimple' => new \MongoId($f->id) ], $q2['query']);
+
+        $q3 = $this->dm->createQueryBuilder(ParentClass::class)
+            ->field('featurePartial')->references($f)
+            ->getQuery()->debug();
+
+        $this->assertEquals(
+            [
+                'featurePartial.$id' => new \MongoId($f->id),
+                'featurePartial.$ref' => 'Feature',
+            ],
+            $q3['query']
+        );
     }
 
     /**
@@ -77,7 +89,23 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('featureSimpleMany')->includesReferenceTo($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureSimpleMany' => [ '$elemMatch' => new \MongoId($f->id) ] ], $q2['query']);
+        $this->assertEquals([ 'featureSimpleMany' => new \MongoId($f->id) ], $q2['query']);
+
+        $q3 = $this->dm->createQueryBuilder(ParentClass::class)
+            ->field('featurePartialMany')->includesReferenceTo($f)
+            ->getQuery()->debug();
+
+        $this->assertEquals(
+            [
+                'featurePartialMany' => [
+                    '$elemMatch' => [
+                        '$id' => new \MongoId($f->id),
+                        '$ref' => 'Feature',
+                    ]
+                ]
+            ],
+            $q3['query']
+        );
     }
 
     /**
@@ -113,7 +141,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField(fieldName="type")
- * @ODM\DiscriminatorMap({"ca"="ChildA", "cb"="ChildB"})
+ * @ODM\DiscriminatorMap({"ca"="ChildA", "cb"="ChildB", "cc"="ChildC"})
  */
 class ParentClass
 {
@@ -155,4 +183,16 @@ class ChildB extends ParentClass
 
     /** @ODM\ReferenceMany(targetDocument="Documents\Feature", simple=true) */
     public $conflictMany;
+}
+
+/**
+ * @ODM\Document
+ */
+class ChildC extends ParentClass
+{
+    /** @ODM\ReferenceOne(storeAs="dbRef") */
+    public $featurePartial;
+
+    /** @ODM\ReferenceMany(storeAs="dbRef") */
+    public $featurePartialMany;
 }
