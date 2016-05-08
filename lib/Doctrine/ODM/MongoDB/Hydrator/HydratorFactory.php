@@ -342,7 +342,9 @@ EOF
             \$embeddedData = \$this->dm->getHydratorFactory()->hydrate(\$return, \$embeddedDocument, \$hints);
             \$embeddedId = \$embeddedMetadata->identifier && isset(\$embeddedData[\$embeddedMetadata->identifier]) ? \$embeddedData[\$embeddedMetadata->identifier] : null;
 
-            \$this->unitOfWork->registerManaged(\$return, \$embeddedId, \$embeddedData);
+            if (empty(\$hints[Query::HINT_READ_ONLY])) {
+                \$this->unitOfWork->registerManaged(\$return, \$embeddedId, \$embeddedData);
+            }
 
             \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
             \$hydratedData['%2\$s'] = \$return;
@@ -365,6 +367,7 @@ namespace $namespace;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorInterface;
+use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 

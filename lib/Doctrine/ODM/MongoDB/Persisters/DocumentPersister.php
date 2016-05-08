@@ -643,12 +643,14 @@ class DocumentPersister
 
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
 
-                $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument);
+                $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument, $collection->getHints());
                 $id = $embeddedMetadata->identifier && isset($data[$embeddedMetadata->identifier])
                     ? $data[$embeddedMetadata->identifier]
                     : null;
-
-                $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
+                
+                if (empty($collection->getHints()[Query::HINT_READ_ONLY])) {
+                    $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
+                }
                 if (CollectionHelper::isHash($mapping['strategy'])) {
                     $collection->set($key, $embeddedDocumentObject);
                 } else {

@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Query\Query;
 
 class HydratorTest extends BaseTest
 {
@@ -40,6 +41,26 @@ class HydratorTest extends BaseTest
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->embedMany);
         $this->assertEquals('jon', $user->embedOne->name);
         $this->assertEquals('jon', $user->embedMany[0]->name);
+    }
+    
+    public function testReadOnly()
+    {
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\HydrationClosureUser');
+
+        $user = new HydrationClosureUser();
+        $this->dm->getHydratorFactory()->hydrate($user, [
+            '_id' => 1,
+            'name' => 'maciej',
+            'birthdate' => new \DateTime('1961-01-01'),
+            'embedOne' => ['name' => 'maciej'],
+            'embedMany' => [
+                ['name' => 'maciej']
+            ],
+        ], [ Query::HINT_READ_ONLY => true ]);
+        
+        $this->assertFalse($this->uow->isInIdentityMap($user));
+        $this->assertFalse($this->uow->isInIdentityMap($user->embedOne));
+        $this->assertFalse($this->uow->isInIdentityMap($user->embedMany[0]));
     }
 }
 
