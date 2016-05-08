@@ -81,6 +81,13 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     private $requireIndexes;
 
     /**
+     * Whether or not to register documents in UnitOfWork.
+     *
+     * @var bool
+     */
+    private $readOnly;
+
+    /**
      * Construct a Builder
      *
      * @param DocumentManager $dm
@@ -179,6 +186,16 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function hydrate($bool = true)
     {
         $this->hydrate = $bool;
+        return $this;
+    }
+
+    /**
+     * @param bool $bool
+     * @return $this
+     */
+    public function readOnly($bool = true)
+    {
+        $this->readOnly = $bool;
         return $this;
     }
 
@@ -358,7 +375,8 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->hydrate,
             $this->refresh,
             $this->primers,
-            $this->requireIndexes
+            $this->requireIndexes,
+            $this->readOnly
         );
     }
 

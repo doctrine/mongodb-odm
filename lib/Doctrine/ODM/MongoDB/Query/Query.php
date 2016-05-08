@@ -96,8 +96,9 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @param boolean $refresh
      * @param array $primers
      * @param null $requireIndexes
+     * @param boolean $readOnly
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null, $readOnly = false)
     {
         $primers = array_filter($primers);
 
@@ -116,6 +117,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $this->primers = $primers;
         $this->requireIndexes = $requireIndexes;
 
+        $this->setReadOnly($readOnly);
         $this->setRefresh($refresh);
 
         if (isset($query['slaveOkay'])) {
@@ -156,6 +158,19 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function setHydrate($hydrate)
     {
         $this->hydrate = (boolean) $hydrate;
+    }
+
+    /**
+     * Set whether documents should be registered in UnitOfWork. If document would
+     * already be managed it will be left intact and new instance returned.
+     * 
+     * This option has no effect if hydration is disabled.
+     * 
+     * @param boolean $readOnly
+     */
+    public function setReadOnly($readOnly)
+    {
+        $this->unitOfWorkHints[Query::HINT_READ_ONLY] = (boolean) $readOnly;
     }
 
     /**

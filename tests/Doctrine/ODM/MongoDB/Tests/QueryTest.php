@@ -350,6 +350,25 @@ class QueryTest extends BaseTest
         $this->assertInstanceOf('Documents\SubProject', $test);
         $this->assertNull($test->getName());
     }
+
+    public function testReadOnly()
+    {
+        $p = new Person('Maciej');
+        $p->pet = new Pet('Blackie', $p);
+        $this->dm->persist($p);
+        $this->dm->flush();
+        
+        $readOnly = $this->dm->createQueryBuilder()
+            ->find(Person::class)
+            ->field('id')->equals($p->id)
+            ->readOnly()
+            ->getQuery()->getSingleResult();
+        
+        $this->assertTrue($p !== $readOnly);
+        $this->assertTrue($this->uow->isInIdentityMap($p));
+        $this->assertFalse($this->uow->isInIdentityMap($readOnly));
+        $this->assertFalse($this->uow->isInIdentityMap($readOnly->pet));
+    }
 }
 
 /** @ODM\Document(collection="people") */
@@ -379,6 +398,9 @@ class Person
     /** @ODM\ReferenceMany(storeAs="dbRef") */
     public $friendsPartial = array();
 
+    /** @ODM\EmbedOne(targetDocument="Pet") */
+    public $pet;
+
     public function __construct($firstName)
     {
         $this->firstName = $firstName;
@@ -390,6 +412,15 @@ class Pet
 {
     /** @ODM\ReferenceOne(name="pO", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
     public $owner;
+
+    /** @ODM\Field(type="string") */
+    public $name;
+
+    public function __construct($name, Person $owner)
+    {
+        $this->name = $name;
+        $this->owner = $owner;
+    }
 }
 
 /** @ODM\EmbeddedDocument */
