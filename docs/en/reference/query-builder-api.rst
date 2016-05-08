@@ -216,6 +216,32 @@ changeset will be reset in the process.
 
 Refreshing is not applicable if hydration is disabled.
 
+Fetching Documents as Read-Only
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Similar to ``refresh()``, ``readOnly()`` instructs ODM to not only hydrate the
+latest data but also to create new document's instance (i.e. if found document
+would be already managed by Doctrine, new instance will be returned) and not
+register it in ``UnitOfWork``.
+
+This technique can prove especially useful when using ``select()`` with no intent
+to update fetched documents.
+
+.. code-block:: php
+
+    <?php
+
+    $user = $dm->createQueryBuilder('User')
+        ->field('username')->equals('malarzm')
+        ->readOnly()
+        ->getQuery()
+        ->getSingleResult();
+
+    // Maciej's user will have the latest data, and will not be the same object
+    // as the one that was already managed (if it was)
+
+Read-Only is not applicable if hydration is disabled.
+
 Disabling Hydration
 ~~~~~~~~~~~~~~~~~~~
 
