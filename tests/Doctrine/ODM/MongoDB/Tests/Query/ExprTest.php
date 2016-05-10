@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Query\Expr;
 
 class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -261,5 +262,46 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $expr->field('foo')->references(new \stdClass());
 
         $this->assertEquals($expected, $expr->getQuery(), '->references() uses all keys if no targetDocument is set');
+    }
+
+    public function testReferencesUsesSomeKeys()
+    {
+        $dm = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\DocumentManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $uw = $this->getMockBuilder('Doctrine\ODM\MongoDB\UnitOfWork')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $documentPersister = $this->getMockBuilder('Doctrine\ODM\MongoDB\Persisters\DocumentPersister')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $class = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $expected = array('foo.$ref' => 'coll', 'foo.$id' => '1234');
+
+        $dm->expects($this->once())
+            ->method('createDBRef')
+            ->will($this->returnValue(array('$ref' => 'coll', '$id' => '1234')));
+        $dm->expects($this->once())
+            ->method('getUnitOfWork')
+            ->will($this->returnValue($uw));
+        $uw->expects($this->once())
+            ->method('getDocumentPersister')
+            ->will($this->returnValue($documentPersister));
+        $documentPersister->expects($this->once())
+            ->method('prepareQueryOrNewObj')
+            ->with($expected)
+            ->will($this->returnValue($expected));
+        $class->expects($this->once())
+            ->method('getFieldMapping')
+            ->will($this->returnValue(array('storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF)));
+
+        $expr = new Expr($dm);
+        $expr->setClassMetadata($class);
+        $expr->field('foo')->references(new \stdClass());
+
+        $this->assertEquals($expected, $expr->getQuery(), '->references() uses some keys if storeAs=dbRef is set');
     }
 }
