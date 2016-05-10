@@ -116,7 +116,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
 
             if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 // TODO: This creates an invalid query ($elemMatch needs an Object)
-                $this->query[$mapping['name']]['$elemMatch'] = $dbRef;
+                $this->query[$mapping['name']] = $dbRef;
             } else {
                 $keys = array('ref' => true, 'id' => true, 'db' => true);
 

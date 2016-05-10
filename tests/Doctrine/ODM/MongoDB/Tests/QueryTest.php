@@ -175,18 +175,13 @@ class QueryTest extends BaseTest
 
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
-            'friendsSimple' => array(
-                '$elemMatch' => new \MongoId($kris->id)
-            ),
+            'friendsSimple' => new \MongoId($kris->id),
         ), $queryArray);
 
-        //$query = $qb->getQuery();
+        $query = $qb->getQuery();
 
-        // TODO: Looks like this is not valid:
-        // MongoException: Cannot run command count(): $elemMatch needs an Object
-        //$this->assertEquals(1, $query->count());
-        // MongoCursorException: localhost:27017: Can't canonicalize query: BadValue: $elemMatch needs an Object
-        //$this->assertSame($jon, $query->getSingleResult());
+        $this->assertEquals(1, $query->count());
+        $this->assertSame($jon, $query->getSingleResult());
     }
 
     public function testIncludesReferenceToWithStoreAsDbRef()
