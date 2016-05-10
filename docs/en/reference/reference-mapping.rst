@@ -329,7 +329,7 @@ Example:
         <?php
 
         /**
-         * @ReferenceOne(targetDocument="Profile", storeAs=id)
+         * @ReferenceOne(targetDocument="Profile", storeAs="id")
          */
         private $profile;
 
