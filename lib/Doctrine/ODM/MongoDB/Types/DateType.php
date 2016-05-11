@@ -42,14 +42,15 @@ class DateType extends Type
         if ($value instanceof \DateTimeInterface) {
             return $value;
         } elseif ($value instanceof \MongoDate) {
-            $datetime = static::craftDateTime($value->sec, $value->usec);
+            $microseconds = str_pad($value->usec, 6, '0', STR_PAD_LEFT); // ensure microseconds
+            $datetime = static::craftDateTime($value->sec, $microseconds);
         } elseif (is_numeric($value)) {
             $seconds = $value;
             $microseconds = 0;
 
             if (false !== strpos($value, '.')) {
                 list($seconds, $microseconds) = explode('.', $value);
-                $microseconds = (int) str_pad((int) $microseconds, 6, '0'); // ensure microseconds
+                $microseconds = str_pad($microseconds, 6, '0'); // ensure microseconds
             }
 
             $datetime = static::craftDateTime($seconds, $microseconds);
