@@ -73,6 +73,32 @@ class QueryTest extends BaseTest
         $this->assertSame($kris, $query->getSingleResult());
     }
 
+    public function testReferencesSimple()
+    {
+        $kris = new Person('Kris');
+        $jon = new Person('Jon');
+
+        $this->dm->persist($kris);
+        $this->dm->persist($jon);
+        $this->dm->flush();
+
+        $kris->bestFriendSimple = $jon;
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb->field('bestFriendSimple')->references($jon);
+
+        $queryArray = $qb->getQueryArray();
+        $this->assertEquals(array(
+            'bestFriendSimple' => new \MongoId($jon->id),
+        ), $queryArray);
+
+        $query = $qb->getQuery();
+
+        $this->assertEquals(1, $query->count());
+        $this->assertSame($kris, $query->getSingleResult());
+    }
+
     public function testIncludesReferenceTo()
     {
         $kris = new Person('Kris');
@@ -97,6 +123,35 @@ class QueryTest extends BaseTest
                     '$db' => DOCTRINE_MONGODB_DATABASE,
                 ),
             ),
+        ), $queryArray);
+
+        $query = $qb->getQuery();
+
+        $this->assertEquals(1, $query->count());
+        $this->assertSame($jon, $query->getSingleResult());
+    }
+
+    public function testIncludesReferenceToSimple()
+    {
+        $kris = new Person('Kris');
+        $jon = new Person('Jon');
+        $jachim = new Person('Jachim');
+
+        $this->dm->persist($kris);
+        $this->dm->persist($jon);
+        $this->dm->persist($jachim);
+        $this->dm->flush();
+
+        $jon->friendsSimple[] = $kris;
+        $jon->friendsSimple[] = $jachim;
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb->field('friendsSimple')->includesReferenceTo($kris);
+
+        $queryArray = $qb->getQueryArray();
+        $this->assertEquals(array(
+            'friendsSimple' =>  new \MongoId($kris->id)
         ), $queryArray);
 
         $query = $qb->getQuery();
@@ -251,8 +306,14 @@ class Person
     /** @ODM\ReferenceOne */
     public $bestFriend;
 
+    /** @ODM\ReferenceOne(simple=true, targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
+    public $bestFriendSimple;
+
     /** @ODM\ReferenceMany */
     public $friends = array();
+
+    /** @ODM\ReferenceMany(simple=true, targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
+    public $friendsSimple = array();
 
     public function __construct($firstName)
     {
