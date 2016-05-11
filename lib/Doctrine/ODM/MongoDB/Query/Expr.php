@@ -94,7 +94,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
             $dbRef = $this->dm->createDBRef($document, $mapping);
 
             if (isset($mapping['simple']) && $mapping['simple']) {
-                $this->query[$mapping['name']]['$elemMatch'] = $dbRef;
+                $this->query[$mapping['name']] = $dbRef;
             } else {
                 $keys = array('ref' => true, 'id' => true, 'db' => true);
 
