@@ -364,7 +364,7 @@ The ``storeAs`` option has three possible values:
 
 .. note::
 
-    The ``storeAs=id`` option used to call a "simple reference". The old syntax is
+    The ``storeAs=id`` option used to be called a "simple reference". The old syntax is
     still recognized (so using ``simple=true`` will imply ``storeAs=id``).
 
 .. note::
