@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
@@ -73,11 +74,16 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
         if ($this->currentField) {
             $mapping = $this->getReferenceMapping();
             $dbRef = $this->dm->createDBRef($document, $mapping);
+            $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
-            if (isset($mapping['simple']) && $mapping['simple']) {
+            if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 $this->query[$mapping['name']] = $dbRef;
             } else {
                 $keys = array('ref' => true, 'id' => true, 'db' => true);
+
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                    unset($keys['db']);
+                }
 
                 if (isset($mapping['targetDocument'])) {
                     unset($keys['ref'], $keys['db']);
@@ -106,11 +112,16 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
         if ($this->currentField) {
             $mapping = $this->getReferenceMapping();
             $dbRef = $this->dm->createDBRef($document, $mapping);
+            $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
-            if (isset($mapping['simple']) && $mapping['simple']) {
+            if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 $this->query[$mapping['name']] = $dbRef;
             } else {
                 $keys = array('ref' => true, 'id' => true, 'db' => true);
+
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                    unset($keys['db']);
+                }
 
                 if (isset($mapping['targetDocument'])) {
                     unset($keys['ref'], $keys['db']);

@@ -73,7 +73,7 @@ class QueryTest extends BaseTest
         $this->assertSame($kris, $query->getSingleResult());
     }
 
-    public function testReferencesSimple()
+    public function testReferencesStoreAsId()
     {
         $kris = new Person('Kris');
         $jon = new Person('Jon');
@@ -91,6 +91,33 @@ class QueryTest extends BaseTest
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
             'bestFriendSimple' => new \MongoId($jon->id),
+        ), $queryArray);
+
+        $query = $qb->getQuery();
+
+        $this->assertEquals(1, $query->count());
+        $this->assertSame($kris, $query->getSingleResult());
+    }
+
+    public function testReferencesStoreAsDbRef()
+    {
+        $kris = new Person('Kris');
+        $jon = new Person('Jon');
+
+        $this->dm->persist($kris);
+        $this->dm->persist($jon);
+        $this->dm->flush();
+
+        $kris->bestFriendPartial = $jon;
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb->field('bestFriendPartial')->references($jon);
+
+        $queryArray = $qb->getQueryArray();
+        $this->assertEquals(array(
+            'bestFriendPartial.$ref' => 'people',
+            'bestFriendPartial.$id' => new \MongoId($jon->id),
         ), $queryArray);
 
         $query = $qb->getQuery();
@@ -131,7 +158,7 @@ class QueryTest extends BaseTest
         $this->assertSame($jon, $query->getSingleResult());
     }
 
-    public function testIncludesReferenceToSimple()
+    public function testIncludesReferenceToWithStoreAsId()
     {
         $kris = new Person('Kris');
         $jon = new Person('Jon');
@@ -152,6 +179,37 @@ class QueryTest extends BaseTest
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
             'friendsSimple' =>  new \MongoId($kris->id)
+        ), $queryArray);
+
+        $query = $qb->getQuery();
+
+        $this->assertEquals(1, $query->count());
+        $this->assertSame($jon, $query->getSingleResult());
+    }
+
+    public function testIncludesReferenceToWithStoreAsDbRef()
+    {
+        $kris = new Person('Kris');
+        $jon = new Person('Jon');
+
+        $this->dm->persist($kris);
+        $this->dm->persist($jon);
+        $this->dm->flush();
+
+        $jon->friendsPartial[] = $kris;
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb->field('friendsPartial')->includesReferenceTo($kris);
+
+        $queryArray = $qb->getQueryArray();
+        $this->assertEquals(array(
+            'friendsPartial' => array(
+                '$elemMatch' => array(
+                    '$ref' => 'people',
+                    '$id' => new \MongoId($kris->id)
+                ),
+            ),
         ), $queryArray);
 
         $query = $qb->getQuery();
@@ -306,14 +364,20 @@ class Person
     /** @ODM\ReferenceOne */
     public $bestFriend;
 
-    /** @ODM\ReferenceOne(simple=true, targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
+    /** @ODM\ReferenceOne(storeAs="id", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
     public $bestFriendSimple;
+
+    /** @ODM\ReferenceOne(storeAs="dbRef") */
+    public $bestFriendPartial;
 
     /** @ODM\ReferenceMany */
     public $friends = array();
 
-    /** @ODM\ReferenceMany(simple=true, targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
+    /** @ODM\ReferenceMany(storeAs="id", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
     public $friendsSimple = array();
+
+    /** @ODM\ReferenceMany(storeAs="dbRef") */
+    public $friendsPartial = array();
 
     public function __construct($firstName)
     {

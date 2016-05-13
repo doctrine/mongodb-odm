@@ -309,14 +309,14 @@ a certain class, you can optionally specify a default discriminator value:
               song: Documents\Song
             defaultDiscriminatorValue: album
 
-.. _simple_references:
+.. _storing_references:
 
-Simple References
------------------
+Storing References
+------------------
 
 By default all references are stored as a `DBRef`_ object with the traditional
-``$ref``, ``$id``, and ``$db`` fields (in that order). For references to
-documents of a single collection, storing the collection and database names for
+``$ref``, ``$id``, and (optionally) ``$db`` fields (in that order). For references to
+documents of a single collection, storing the collection (and database) names for
 each reference may be redundant. You can use simple references to store the
 referenced document's identifier (e.g. ``MongoId``) instead of a `DBRef`_.
 
@@ -329,19 +329,19 @@ Example:
         <?php
 
         /**
-         * @ReferenceOne(targetDocument="Profile", simple=true)
+         * @ReferenceOne(targetDocument="Profile", storeAs="id")
          */
         private $profile;
 
     .. code-block:: xml
 
-        <reference-one target-document="Documents\Profile", simple="true" />
+        <reference-one target-document="Documents\Profile", store-as="id" />
 
     .. code-block:: yaml
 
         referenceOne:
           profile:
-            simple: true
+            storeAs: id
 
 Now, the ``profile`` field will only store the ``MongoId`` of the referenced
 Profile document.
@@ -350,6 +350,28 @@ Simple references reduce the amount of storage used, both for the document
 itself and any indexes on the reference field; however, simple references cannot
 be used with discriminators, since there is no `DBRef`_ object in which to store
 a discriminator value.
+
+In addition to saving references as `DBRef`_ with ``$ref``, ``$id``, and ``$db``
+fields and as ``MongoId``, it is possible to save references as `DBRef`_ without
+the ``$db`` field. This solves problems when the database name changes (and also
+reduces the amount of storage used).
+
+The ``storeAs`` option has three possible values:
+
+- **dbRefWithDb**: Uses a `DBRef`_ with ``$ref``, ``$id``, and ``$db`` fields (this is the default)
+- **dbRef**: Uses a `DBRef`_ with ``$ref`` and ``$id``
+- **id**: Uses a ``MongoId``
+
+.. note::
+
+    The ``storeAs=id`` option used to be called a "simple reference". The old syntax is
+    still recognized (so using ``simple=true`` will imply ``storeAs=id``).
+
+.. note::
+
+    For backwards compatibility ``storeAs=dbRefWithDb`` is the default, but
+    ``storeAs=dbRef`` is the recommended setting.
+
 
 Cascading Operations
 --------------------
@@ -391,6 +413,6 @@ The valid values are:
 -  **remove** - cascade remove operation to referenced documents.
 -  **persist** - cascade persist operation to referenced documents.
 
-.. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbref
+.. _`DBRef`: http://docs.mongodb.org/manual/reference/database-references/#dbrefs
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>

@@ -12,6 +12,7 @@ use Documents\Group;
 use Documents\GuestServer;
 use Documents\Phonenumber;
 use Documents\Project;
+use Documents\ReferenceUser;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 use Documents\Ecommerce\ConfigurableProduct;
@@ -159,6 +160,83 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->assertCount(2, $simpleUser->getUsers());
 
             foreach ($simpleUser->getUsers() as $user) {
+                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user);
+                $this->assertInstanceOf('Documents\User', $user);
+            }
+        }
+    }
+
+    public function testPrimeReferencesWithDifferentStoreAsReferences()
+    {
+        $referenceUser = new ReferenceUser();
+        $this->dm->persist($referenceUser);
+
+        $user1 = new User();
+        $this->dm->persist($user1);
+        $referenceUser->setUser($user1);
+
+        $user2 = new User();
+        $this->dm->persist($user2);
+        $referenceUser->addUser($user2);
+
+        $parentUser1 = new User();
+        $this->dm->persist($parentUser1);
+        $referenceUser->setParentUser($parentUser1);
+
+        $parentUser2 = new User();
+        $this->dm->persist($parentUser2);
+        $referenceUser->addParentUser($parentUser2);
+
+        $otherUser1 = new User();
+        $this->dm->persist($otherUser1);
+        $referenceUser->setOtherUser($otherUser1);
+
+        $otherUser2 = new User();
+        $this->dm->persist($otherUser2);
+        $referenceUser->addOtherUser($otherUser2);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $qb = $this->dm->createQueryBuilder('Documents\ReferenceUser')
+            ->field('user')->prime(true)
+            ->field('users')->prime(true)
+            ->field('parentUser')->prime(true)
+            ->field('parentUsers')->prime(true)
+            ->field('otherUser')->prime(true)
+            ->field('otherUsers')->prime(true);
+
+        /** @var ReferenceUser $referenceUser */
+        foreach ($qb->getQuery() as $referenceUser) {
+            // storeAs=id reference
+            $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $referenceUser->getUser());
+            $this->assertTrue($referenceUser->getUser()->__isInitialized());
+
+            $this->assertCount(1, $referenceUser->getUsers());
+
+            foreach ($referenceUser->getUsers() as $user) {
+                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user);
+                $this->assertInstanceOf('Documents\User', $user);
+            }
+
+            // storeAs=dbRef reference
+            $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $referenceUser->getParentUser());
+            $this->assertTrue($referenceUser->getParentUser()->__isInitialized());
+
+            $this->assertCount(1, $referenceUser->getParentUsers());
+
+            foreach ($referenceUser->getParentUsers() as $user) {
+                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user);
+                $this->assertInstanceOf('Documents\User', $user);
+            }
+
+            // storeAs=dbRefWithDb reference
+            $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $referenceUser->getOtherUser());
+            $this->assertTrue($referenceUser->getOtherUser()->__isInitialized());
+
+            $this->assertCount(1, $referenceUser->getOtherUsers());
+
+            foreach ($referenceUser->getOtherUsers() as $user) {
                 $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user);
                 $this->assertInstanceOf('Documents\User', $user);
             }
