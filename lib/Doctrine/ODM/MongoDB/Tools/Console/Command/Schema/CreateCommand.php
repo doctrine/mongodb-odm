@@ -107,13 +107,11 @@ class CreateCommand extends AbstractCommand
     protected function processDocumentIndex(SchemaManager $sm, $document)
     {
         $sm->ensureDocumentIndexes($document, $this->timeout);
-        $sm->ensureDocumentSharding($document);
     }
 
     protected function processIndex(SchemaManager $sm)
     {
         $sm->ensureIndexes($this->timeout);
-        $sm->ensureSharding();
     }
 
     protected function processDocumentProxy(SchemaManager $sm, $document)

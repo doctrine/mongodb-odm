@@ -24,17 +24,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdateCommand extends AbstractCommand
+class ShardCommand extends AbstractCommand
 {
-    private $timeout;
-
     protected function configure()
     {
         $this
-            ->setName('odm:schema:update')
+            ->setName('odm:schema:shard')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
-            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
-            ->setDescription('Update indexes for your documents')
+            ->setDescription('Enable sharding for selected documents')
         ;
     }
 
@@ -47,19 +44,16 @@ class UpdateCommand extends AbstractCommand
     {
         $class = $input->getOption('class');
 
-        $timeout = $input->getOption('timeout');
-        $this->timeout = isset($timeout) ? (int) $timeout : null;
-
         $sm = $this->getSchemaManager();
         $isErrored = false;
 
         try {
             if (isset($class)) {
                 $this->processDocumentIndex($sm, $class);
-                $output->writeln(sprintf('Updated <comment>index(es)</comment> for <info>%s</info>', $class));
+                $output->writeln(sprintf('Enabled sharding for <info>%s</info>', $class));
             } else {
                 $this->processIndex($sm);
-                $output->writeln('Updated <comment>indexes</comment> for <info>all classes</info>');
+                $output->writeln('Enabled sharding for <info>all classes</info>');
             }
         } catch (\Exception $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
@@ -75,7 +69,7 @@ class UpdateCommand extends AbstractCommand
      */
     protected function processDocumentIndex(SchemaManager $sm, $document)
     {
-        $sm->updateDocumentIndexes($document, $this->timeout);
+        $sm->ensureDocumentSharding($document);
     }
 
     /**
@@ -83,7 +77,7 @@ class UpdateCommand extends AbstractCommand
      */
     protected function processIndex(SchemaManager $sm)
     {
-        $sm->updateIndexes($this->timeout);
+        $sm->ensureSharding();
     }
 
     /**
