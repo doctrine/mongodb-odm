@@ -69,8 +69,9 @@ Advanced Topics
 
 * **Collections**:
   :doc:`Capped Collections <reference/capped-collections>` |
-  :doc:`Storage Strategies <reference/storage-strategies>`
-  :doc:`Custom Collections <reference/custom-collections>`
+  :doc:`Storage Strategies <reference/storage-strategies>` |
+  :doc:`Custom Collections <reference/custom-collections>` |
+  :doc:`Sharded setups <reference/sharding>`
 
 * **Best Practices**:
   :doc:`Best Practices <reference/best-practices>`
