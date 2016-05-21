@@ -22,6 +22,22 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function testSetOwnerWithSerializedCollection()
+    {
+        $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $owner = new \stdClass();
+
+        $serialized = serialize($collection);
+        /** @var PersistentCollection $unserialized */
+        $unserialized = unserialize($serialized);
+
+        $unserialized->setOwner($owner, array('targetDocument' => '\stdClass'));
+        $unserialized->getTypeClass();
+    }
+
+    /**
      * @param array $expected
      * @param array $snapshot
      * @param \Closure $callback
