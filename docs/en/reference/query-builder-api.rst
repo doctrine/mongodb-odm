@@ -242,6 +242,13 @@ to update fetched documents.
 
 Read-Only is not applicable if hydration is disabled.
 
+.. note::
+
+    Read-only mode is not deep, i.e. any references (be it owning or inverse) of
+    fetched WILL be managed by Doctrine. This is a shortcoming of current
+    implementation, may change in future and will not be considered a BC break
+    (will be treated as a feature instead).
+
 Disabling Hydration
 ~~~~~~~~~~~~~~~~~~~
 
