@@ -215,4 +215,4 @@ Self-Referencing Many to Many
         }
     }
 
-.. _DBRef: http://docs.mongodb.org/manual/reference/database-references/#dbrefs
+.. _DBRef: https://docs.mongodb.com/manual/reference/database-references/#dbrefs

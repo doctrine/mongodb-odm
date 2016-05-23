@@ -457,6 +457,6 @@ The final ``bootstrap.php`` file should look like this:
 
 That is it! Your ``DocumentManager`` instance is ready to be used!
 
-.. _MongoDB: http://mongodb.org
+.. _MongoDB: https://www.mongodb.com/
 .. _10gen: http://www.10gen.com
 .. _Composer: http://getcomposer.org/

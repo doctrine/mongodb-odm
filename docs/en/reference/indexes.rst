@@ -63,7 +63,7 @@ You can customize the index with some additional options:
    **expireAfterSeconds** - If you specify this option then the associated 
    document will be automatically removed when the provided time (in seconds) 
    has passed. This option is bound to a number of limitations, which 
-   are documented at http://docs.mongodb.org/manual/tutorial/expire-data/.
+   are documented at https://docs.mongodb.com/manual/tutorial/expire-data/.
 -
    **order** - The order of the index (asc or desc).
 -

@@ -90,8 +90,8 @@ BSON array.
     The ``atomicSet`` and ``atomicSetArray`` strategies may only be used for 
     collections mapped directly in a top-level document.
 
-.. _`$addToSet`: http://docs.mongodb.org/manual/reference/operator/addToSet/
-.. _`$inc`: http://docs.mongodb.org/manual/reference/operator/inc/
-.. _`$pushAll`: http://docs.mongodb.org/manual/reference/operator/pushAll/
-.. _`$set`: http://docs.mongodb.org/manual/reference/operator/set/
-.. _`$unset`: http://docs.mongodb.org/manual/reference/operator/unset/
+.. _`$addToSet`: https://docs.mongodb.com/manual/reference/operator/update/addToSet/
+.. _`$inc`: https://docs.mongodb.com/manual/reference/operator/update/inc/
+.. _`$pushAll`: https://docs.mongodb.com/manual/reference/operator/update/pushAll/
+.. _`$set`: https://docs.mongodb.com/manual/reference/operator/update/set/
+.. _`$unset`: https://docs.mongodb.com/manual/reference/operator/update/unset/
