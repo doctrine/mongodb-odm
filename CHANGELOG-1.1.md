@@ -54,7 +54,8 @@ Upgrade Path
 
 #### PHP requirement changed
 
-PHP 5.3 and 5.4 support has been dropped due to their [end of life](http://php.net/eol.php).
+PHP 5.3, 5.4 and 5.5 support has been dropped due to their [end of life](http://php.net/eol.php)
+(or getting close to it in case of 5.5).
 
 #### preLoad lifecycle callback signature change
 
@@ -72,3 +73,10 @@ Deprecations
 #### `@Increment` superseded by storage strategies
 
 @todo
+
+1.0.x End-of-Life
+-----------------
+
+ODM 1.1 drops older PHP versions which may be problematic for some users. Although we strongly
+recommend running latest PHP we understand this may not be easy change therefore we will still
+support ODM 1.0.x and release bugfix versions for **6 months** from now on.
