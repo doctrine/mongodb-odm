@@ -47,7 +47,12 @@ https://github.com/doctrine/mongodb-odm/pull/1339
 PHP 7 compatibility
 -------------------
 
-@todo
+While ODM still relies on legacy MongoDB driver (i.e. [ext-mongo](https://pecl.php.net/package/mongo))
+it is possible to run ODM using PHP 7 and HHVM thanks to
+[alcaeus/mongo-php-adapter](https://github.com/alcaeus/mongo-php-adapter) which provides old API
+atop new [ext-mongodb](http://php.net/manual/en/mongodb.installation.php) driver and
+[mongodb/mongo-php-library](https://github.com/mongodb/mongo-php-library) library. Until ODM 2.0 is
+released this is officially supported way and is included in our test suite.
 
 Upgrade Path
 ------------
