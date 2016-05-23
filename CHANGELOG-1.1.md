@@ -68,11 +68,17 @@ Deprecations
 
 #### `@Field` preferred way of mapping field
 
-@todo
+Due to PHP 7 reserving keywords such as `int`, `string`, `bool` and `float` their respective
+field annotations are no longer valid. To avoid having large inconsistencies
+[#1318](https://github.com/doctrine/mongodb-odm/pull/1318) deprecates all annotations which
+only purpose was setting mapped field's type. Deprecated classes will be removed in version 2.0.
 
 #### `@Increment` superseded by storage strategies
 
-@todo
+[#1352](https://github.com/doctrine/mongodb-odm/pull/1352) deprecates `@Increment` field type
+in favour of more robust `strategy` field option. To learn more about storage strategies
+please see relevant chapter in [documentation](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/storage-strategies.html).
+`increment` field type will be removed in version 2.0.
 
 1.0.x End-of-Life
 -----------------
