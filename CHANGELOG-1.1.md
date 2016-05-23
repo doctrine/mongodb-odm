@@ -13,36 +13,78 @@ All issues and pull requests in this release may be found under the
 
 #### Sharding support
 
-https://github.com/doctrine/mongodb-odm/pull/1385
+[#1385](https://github.com/doctrine/mongodb-odm/pull/1385) -
+Introduces full [sharding](https://docs.mongodb.com/manual/sharding/) support for ODM.
+For usage instructions please refer to
+[Sharding chapter](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/sharding.html)
+in the documentation.
 
 #### Custom Collections
 
-https://github.com/doctrine/mongodb-odm/pull/1219
+[#1219](https://github.com/doctrine/mongodb-odm/pull/1219) -
+Allows developer to use their own collection classes instead of `ArrayCollection` for
+`@EmbedMany` and `@ReferenceMany` fields and gives full control on how the collections
+are instantiated. For full usage reference please check out
+[Custom Collections chapter](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/custom-collections.html)
+in the documentation.
 
 #### Event is dispatched for missing referenced documents
 
-https://github.com/doctrine/mongodb-odm/pull/1336
+[#1336](https://github.com/doctrine/mongodb-odm/pull/1336) -
+When referenced document is accessed but not found in database ODM throws
+`DocumentNotFoundException` exception. As of now user can hook into the process
+and populate incomplete object on his/her own or take any other suitable action.
+For example usage please refer to
+[documentNotFound event documentation](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html#documentnotfound).
 
 #### Partial indexes
 
-https://github.com/doctrine/mongodb-odm/pull/1303
+[#1303](https://github.com/doctrine/mongodb-odm/pull/1303)
+Partial indexes [introduced in MongoDB 3.2](https://docs.mongodb.com/manual/core/index-partial/)
+are also supported as ODM's `@Index` option.
+
+@todo docs are barely mentioning partialFilterExpression, should we add examples?
 
 #### More powerful lifecycle callbacks
 
-https://github.com/doctrine/mongodb-odm/pull/1222
+[#1222](https://github.com/doctrine/mongodb-odm/pull/1222) -
+Document's lifecycle callbacks are now receiving an event argument which allows user
+to access `DocumentManager` should (s)he need it. For full method signatures please see
+[Event chapter](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/events.html#lifecycle-callbacks)
+of documentation.
 
 #### Ease using objects as search criterion
 
-https://github.com/doctrine/mongodb-odm/pull/1363
-https://github.com/doctrine/mongodb-odm/pull/1333
+[#1363](https://github.com/doctrine/mongodb-odm/pull/1363) -
+querying for references is now less tedious, now you can use
+
+```
+$dm->getRepository(User::class)->findOneBy(['account' => $account]);
+$dm->getRepository(User::class)->findBy(['groups' => $group]);
+```
+
+[#1333](https://github.com/doctrine/mongodb-odm/pull/1333) -
+ODM will go through known class' descendants when query builder's `references` or
+`includesReferenceTo` are used with non-existing field (i.e. discriminated abstract
+class being queried for references defined in child classes).
 
 #### Read-Only mode for fetching documents
 
-https://github.com/doctrine/mongodb-odm/pull/1403
+[#1403](https://github.com/doctrine/mongodb-odm/pull/1403) -
+Read-Only mode instructs ODM to not only hydrate the latest data but also to
+create new document's instance (i.e. if found document would be already managed
+by Doctrine, new instance will be returned) and not register it in UnitOfWork`.
+This technique can prove especially useful when using `select()` while building
+query with no intent to update fetched documents. To read more about read-only mode
+you can check [documentation](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#fetching-documents-as-read-only).
 
 #### EmbedMany and ReferenceMany fields included in the change set
 
-https://github.com/doctrine/mongodb-odm/pull/1339
+[#1339](https://github.com/doctrine/mongodb-odm/pull/1339) -
+Previously hard to spot changes in collections are now easier to detect thanks to
+including them in the owning document's change set. While collections' instances
+are usually the same you can check both new and removed documents with `getInsertedDocuments`
+and `getDeletedDocuments` methods respectively.
 
 PHP 7 compatibility
 -------------------
