@@ -2,8 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
-use Doctrine\ODM\MongoDB\Aggregation\Stage\Match;
-
 class MatchTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTypeConversion()

@@ -91,14 +91,6 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * @return Stage\Match
-     */
-    public function match()
-    {
-        return $this->addStage(new Stage\Match($this, $this->dm, $this->class));
-    }
-
-    /**
      * @return QueryExpr
      */
     public function matchExpr()
@@ -107,6 +99,14 @@ class Builder extends BaseBuilder
         $expr->setClassMetadata($this->class);
 
         return $expr;
+    }
+
+    /**
+     * @return Expr
+     */
+    public function expr()
+    {
+        return new Expr($this->dm, $this->class);
     }
 
     /**

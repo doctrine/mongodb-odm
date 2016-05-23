@@ -33,34 +33,24 @@ use Doctrine\ODM\MongoDB\Query\Expr;
 class Match extends BaseStage\Match
 {
     /**
-     * @var DocumentManager
+     * @param object $document
+     * @return $this
      */
-    private $dm;
-
-    /**
-     * @var ClassMetadata
-     */
-    private $class;
-
-    /**
-     * @inheritDoc
-     */
-    public function __construct(Builder $builder, DocumentManager $dm, ClassMetadata $class)
+    public function references($document)
     {
-        $this->dm = $dm;
-        $this->class = $class;
+        $this->query->references($document);
 
-        parent::__construct($builder);
+        return $this;
     }
 
     /**
-     * @inheritDoc
+     * @param object $document
+     * @return $this
      */
-    public function expr()
+    public function includesReferenceTo($document)
     {
-        $expr = new Expr($this->dm);
-        $expr->setClassMetadata($this->class);
+        $this->query->includesReferenceTo($document);
 
-        return $expr;
+        return $this;
     }
 }
