@@ -36,6 +36,10 @@ https://github.com/doctrine/mongodb-odm/pull/1222
 https://github.com/doctrine/mongodb-odm/pull/1363
 https://github.com/doctrine/mongodb-odm/pull/1333
 
+#### Read-Only mode for fetching documents
+
+https://github.com/doctrine/mongodb-odm/pull/1403
+
 #### EmbedMany and ReferenceMany fields included in the change set
 
 https://github.com/doctrine/mongodb-odm/pull/1339
