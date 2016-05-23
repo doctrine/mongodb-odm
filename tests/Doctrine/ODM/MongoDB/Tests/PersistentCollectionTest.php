@@ -3,9 +3,10 @@
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 
-class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
+class PersistentCollectionTest extends BaseTest
 {
     public function testSlice()
     {
@@ -23,8 +24,9 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
+     * @expectedExceptionMessage No DocumentManager is associated with this PersistentCollection, please set one using setDocumentManager method.
      */
-    public function testSetOwnerWithSerializedCollection()
+    public function testExceptionForGetTypeClassWithoutDocumentManager()
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
         $owner = new \stdClass();
@@ -35,6 +37,35 @@ class PersistentCollectionTest extends \PHPUnit_Framework_TestCase
 
         $unserialized->setOwner($owner, array('targetDocument' => '\stdClass'));
         $unserialized->getTypeClass();
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
+     * @expectedExceptionMessage No mapping is associated with this PersistentCollection, please set one using setOwner method.
+     */
+    public function testExceptionForGetTypeClassWithoutMapping()
+    {
+        $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+
+        $serialized = serialize($collection);
+        /** @var PersistentCollection $unserialized */
+        $unserialized = unserialize($serialized);
+
+        $unserialized->setDocumentManager($this->dm);
+        $unserialized->getTypeClass();
+    }
+    
+    public function testGetTypeClassWorksAfterUnserialization()
+    {
+        $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
+
+        $serialized = serialize($collection);
+        /** @var PersistentCollection $unserialized */
+        $unserialized = unserialize($serialized);
+
+        $unserialized->setOwner(new \Documents\User(), $this->dm->getClassMetadata('Documents\\User')->getFieldMapping('phonebooks'));
+        $unserialized->setDocumentManager($this->dm);
+        $this->assertInstanceOf(ClassMetadata::class, $unserialized->getTypeClass());
     }
 
     /**
