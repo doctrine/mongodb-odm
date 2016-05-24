@@ -600,8 +600,7 @@ class SchemaManager
             array(
                 'shardCollection' => $dbName . '.' . $class->getCollection(),
                 'key'             => $shardKey['keys']
-            ),
-            $shardKey['options']
+            )
         );
 
         return $result;
