@@ -2653,6 +2653,12 @@ class UnitOfWork implements PropertyChangedListener
 
             unset($data[$class->discriminatorField]);
         }
+        
+        if (! empty($hints[Query::HINT_READ_ONLY])) {
+            $document = $class->newInstance();
+            $this->hydratorFactory->hydrate($document, $data, $hints);
+            return $document;
+        }
 
         $id = $class->getDatabaseIdentifierValue($data['_id']);
         $serializedId = serialize($id);
