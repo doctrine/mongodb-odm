@@ -30,6 +30,7 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
@@ -284,24 +285,8 @@ class DocumentPersister
         }
 
         foreach ($this->queuedUpserts as $oid => $document) {
-            $data = $this->pb->prepareUpsertData($document);
-
-            // Set the initial version for each upsert
-            if ($this->class->isVersioned) {
-                $versionMapping = $this->class->fieldMappings[$this->class->versionField];
-                if ($versionMapping['type'] === 'int') {
-                    $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
-                } elseif ($versionMapping['type'] === 'date') {
-                    $nextVersionDateTime = new \DateTime();
-                    $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
-                }
-                $data['$set'][$versionMapping['name']] = $nextVersion;
-            }
-
             try {
-                $this->executeUpsert($data, $options);
+                $this->executeUpsert($document, $options);
                 $this->handleCollections($document, $options);
                 unset($this->queuedUpserts[$oid]);
             } catch (\MongoException $e) {
@@ -312,16 +297,35 @@ class DocumentPersister
     }
 
     /**
-     * Executes a single upsert in {@link executeInserts}
+     * Executes a single upsert in {@link executeUpserts}
      *
-     * @param array $data
-     * @param array $options
+     * @param object $document
+     * @param array  $options
      */
-    private function executeUpsert(array $data, array $options)
+    private function executeUpsert($document, array $options)
     {
         $options['upsert'] = true;
-        $criteria = array('_id' => $data['$set']['_id']);
-        unset($data['$set']['_id']);
+        $criteria = $this->getQueryForDocument($document);
+
+        $data = $this->pb->prepareUpsertData($document);
+
+        // Set the initial version for each upsert
+        if ($this->class->isVersioned) {
+            $versionMapping = $this->class->fieldMappings[$this->class->versionField];
+            if ($versionMapping['type'] === 'int') {
+                $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
+                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+            } elseif ($versionMapping['type'] === 'date') {
+                $nextVersionDateTime = new \DateTime();
+                $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
+                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
+            }
+            $data['$set'][$versionMapping['name']] = $nextVersion;
+        }
+
+        foreach (array_keys($criteria) as $field) {
+            unset($data['$set'][$field]);
+        }
 
         // Do not send an empty $set modifier
         if (empty($data['$set'])) {
@@ -367,11 +371,18 @@ class DocumentPersister
      */
     public function update($document, array $options = array())
     {
-        $id = $this->uow->getDocumentIdentifier($document);
         $update = $this->pb->prepareUpdateData($document);
 
-        $id = $this->class->getDatabaseIdentifierValue($id);
-        $query = array('_id' => $id);
+        $query = $this->getQueryForDocument($document);
+
+        foreach (array_keys($query) as $field) {
+            unset($update['$set'][$field]);
+        }
+
+        if (empty($update['$set'])) {
+            unset($update['$set']);
+        }
+
 
         // Include versioning logic to set the new version value in the database
         // and to ensure the version has not changed since this document object instance
@@ -424,8 +435,7 @@ class DocumentPersister
      */
     public function delete($document, array $options = array())
     {
-        $id = $this->uow->getDocumentIdentifier($document);
-        $query = array('_id' => $this->class->getDatabaseIdentifierValue($id));
+        $query = $this->getQueryForDocument($document);
 
         if ($this->class->isLockable) {
             $query[$this->class->lockField] = array('$exists' => false);
@@ -441,12 +451,15 @@ class DocumentPersister
     /**
      * Refreshes a managed document.
      *
-     * @param array $id The identifier of the document.
+     * @param string $id
      * @param object $document The document to refresh.
+     *
+     * @deprecated The first argument is deprecated.
      */
     public function refresh($id, $document)
     {
-        $data = $this->collection->findOne(array('_id' => $id));
+        $query = $this->getQueryForDocument($document);
+        $data = $this->collection->findOne($query);
         $data = $this->hydratorFactory->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
@@ -526,6 +539,33 @@ class DocumentPersister
         }
 
         return $cursor;
+    }
+
+    /**
+     * @param object $document
+     *
+     * @return array
+     * @throws MongoDBException
+     */
+    private function getShardKeyQuery($document)
+    {
+        if ( ! $this->class->isSharded()) {
+            return array();
+        }
+
+        $shardKey = $this->class->getShardKey();
+        $keys = array_keys($shardKey['keys']);
+        $data = $this->uow->getDocumentActualData($document);
+
+        $shardKeyQueryPart = array();
+        foreach ($keys as $key) {
+            $mapping = $this->class->getFieldMappingByDbFieldName($key);
+            $this->guardMissingShardKey($document, $key, $data);
+            $value = Type::getType($mapping['type'])->convertToDatabaseValue($data[$mapping['fieldName']]);
+            $shardKeyQueryPart[$key] = $value;
+        }
+
+        return $shardKeyQueryPart;
     }
 
     /**
@@ -1280,5 +1320,50 @@ class DocumentPersister
         foreach ($this->uow->getVisitedCollections($document) as $coll) {
             $coll->takeSnapshot();
         }
+    }
+
+    /**
+     * If the document is new, ignore shard key field value, otherwise throw an exception.
+     * Also, shard key field should be present in actual document data.
+     *
+     * @param object $document
+     * @param string $shardKeyField
+     * @param array  $actualDocumentData
+     *
+     * @throws MongoDBException
+     */
+    private function guardMissingShardKey($document, $shardKeyField, $actualDocumentData)
+    {
+        $dcs = $this->uow->getDocumentChangeSet($document);
+        $isUpdate = $this->uow->isScheduledForUpdate($document);
+
+        $fieldMapping = $this->class->getFieldMappingByDbFieldName($shardKeyField);
+        $fieldName = $fieldMapping['fieldName'];
+
+        if ($isUpdate && isset($dcs[$fieldName]) && $dcs[$fieldName][0] != $dcs[$fieldName][1]) {
+            throw MongoDBException::shardKeyFieldCannotBeChanged($shardKeyField, $this->class->getName());
+        }
+
+        if (!isset($actualDocumentData[$fieldName])) {
+            throw MongoDBException::shardKeyFieldMissing($shardKeyField, $this->class->getName());
+        }
+    }
+
+    /**
+     * Get shard key aware query for single document.
+     *
+     * @param object $document
+     *
+     * @return array
+     */
+    private function getQueryForDocument($document)
+    {
+        $id = $this->uow->getDocumentIdentifier($document);
+        $id = $this->class->getDatabaseIdentifierValue($id);
+
+        $shardKeyQueryPart = $this->getShardKeyQuery($document);
+        $query = array_merge(array('_id' => $id), $shardKeyQueryPart);
+
+        return $query;
     }
 }

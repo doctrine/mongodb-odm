@@ -78,6 +78,16 @@ class MappingException extends BaseMappingException
     }
 
     /**
+     * @param string $className
+     * @param string $dbFieldName
+     * @return MappingException
+     */
+    public static function mappingNotFoundByDbName($className, $dbFieldName)
+    {
+        return new self("No mapping found for field by DB name '$dbFieldName' in class '$className'.");
+    }
+
+    /**
      * @param string $document
      * @param string $fieldName
      * @return MappingException
@@ -297,5 +307,43 @@ class MappingException extends BaseMappingException
     public static function collectionClassDoesNotImplementCommonInterface($className, $fieldName, $collectionClass)
     {
         return new self("$collectionClass used as custom collection class for $className::$fieldName has to implement Doctrine\\Common\\Collections\\Collection interface.");
+    }
+
+    /**
+     * @param $subclassName
+     * @return MappingException
+     */
+    public static function shardKeyInSingleCollInheritanceSubclass($subclassName)
+    {
+        return new self("Shard key overriding in subclass is forbidden for single collection inheritance: $subclassName");
+    }
+
+    /**
+     * @param $className
+     * @return MappingException
+     */
+    public static function embeddedDocumentCantHaveShardKey($className)
+    {
+        return new self("Embedded document can't have shard key: $className");
+    }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function onlySetStrategyAllowedInShardKey($className, $fieldName)
+    {
+        return new self("Only fields using the SET strategy can be used in the shard key: $className::$fieldName");
+    }
+
+    /**
+     * @param $className
+     * @param $fieldName
+     * @return MappingException
+     */
+    public static function noMultiKeyShardKeys($className, $fieldName)
+    {
+        return new self("No multikey indexes are allowed in the shard key: $className::$fieldName");
     }
 }

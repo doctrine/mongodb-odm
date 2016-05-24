@@ -80,3 +80,4 @@ require_once __DIR__ . '/PreLoad.php';
 require_once __DIR__ . '/PostLoad.php';
 require_once __DIR__ . '/PreFlush.php';
 require_once __DIR__ . '/HasLifecycleCallbacks.php';
+require_once __DIR__ . '/ShardKey.php';

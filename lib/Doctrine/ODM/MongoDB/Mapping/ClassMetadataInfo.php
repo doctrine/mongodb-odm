@@ -216,6 +216,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $indexes = array();
 
     /**
+     * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
+     */
+    public $shardKey;
+
+    /**
      * READ-ONLY: Whether or not queries on this document should require indexes.
      */
     public $requireIndexes = false;
@@ -821,6 +826,75 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function hasIndexes()
     {
         return $this->indexes ? true : false;
+    }
+
+    /**
+     * Set shard key for this Document.
+     *
+     * @param array $keys Array of document keys.
+     * @param array $options Array of sharding options.
+     *
+     * @throws MappingException
+     */
+    public function setShardKey(array $keys, array $options = array())
+    {
+        if ($this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION && !is_null($this->shardKey)) {
+            throw MappingException::shardKeyInSingleCollInheritanceSubclass($this->getName());
+        }
+
+        if ($this->isEmbeddedDocument) {
+            throw MappingException::embeddedDocumentCantHaveShardKey($this->getName());
+        }
+
+        foreach (array_keys($keys) as $field) {
+            if (! isset($this->fieldMappings[$field])) {
+                continue;
+            }
+
+            if (in_array($this->fieldMappings[$field]['type'], ['many', 'collection'])) {
+                throw MappingException::noMultiKeyShardKeys($this->getName(), $field);
+            }
+
+            if ($this->fieldMappings[$field]['strategy'] !== static::STORAGE_STRATEGY_SET) {
+                throw MappingException::onlySetStrategyAllowedInShardKey($this->getName(), $field);
+            }
+        }
+
+        $this->shardKey = array(
+            'keys' => array_map(function($value) {
+                if ($value == 1 || $value == -1) {
+                    return (int) $value;
+                }
+                if (is_string($value)) {
+                    $lower = strtolower($value);
+                    if ($lower === 'asc') {
+                        return 1;
+                    } elseif ($lower === 'desc') {
+                        return -1;
+                    }
+                }
+                return $value;
+            }, $keys),
+            'options' => $options
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getShardKey()
+    {
+        return $this->shardKey;
+    }
+
+    /**
+     * Checks whether this document has shard key or not.
+     *
+     * @return bool
+     */
+    public function isSharded()
+    {
+        return $this->shardKey ? true : false;
     }
 
     /**
@@ -1648,8 +1722,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * @return array  The field mapping.
      *
      * @throws MappingException if the $fieldName is not found in the fieldMappings array
-     *
-     * @throws MappingException
      */
     public function getFieldMapping($fieldName)
     {
@@ -1670,6 +1742,26 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             $this->associationMappings,
             function($assoc) { return ! empty($assoc['embedded']); }
         );
+    }
+
+    /**
+     * Gets the field mapping by its DB name.
+     * E.g. it returns identifier's mapping when called with _id.
+     *
+     * @param string $dbFieldName
+     *
+     * @return array
+     * @throws MappingException
+     */
+    public function getFieldMappingByDbFieldName($dbFieldName)
+    {
+        foreach ($this->fieldMappings as $mapping) {
+            if ($mapping['name'] == $dbFieldName) {
+                return $mapping;
+            }
+        }
+
+        throw MappingException::mappingNotFoundByDbName($this->name, $dbFieldName);
     }
 
     /**

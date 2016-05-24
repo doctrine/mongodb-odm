@@ -499,4 +499,114 @@ class SchemaManager
 
         return true;
     }
+
+    /**
+     * Ensure collections are sharded for all documents that can be loaded with the
+     * metadata factory.
+     *
+     * @param array $indexOptions Options for `ensureIndex` command. It's performed on an existing collections
+     *
+     * @throws MongoDBException
+     */
+    public function ensureSharding(array $indexOptions = array())
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || !$class->isSharded()) {
+                continue;
+            }
+
+            $this->ensureDocumentSharding($class->name, $indexOptions);
+        }
+    }
+
+    /**
+     * Ensure sharding for collection by document name.
+     *
+     * @param string $documentName
+     * @param array  $indexOptions Options for `ensureIndex` command. It's performed on an existing collections.
+     *
+     * @throws MongoDBException
+     */
+    public function ensureDocumentSharding($documentName, array $indexOptions = array())
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+        if ( ! $class->isSharded()) {
+            return;
+        }
+
+        $this->enableShardingForDbByDocumentName($documentName);
+
+        $try = 0;
+        do {
+            $result = $this->runShardCollectionCommand($documentName);
+            $done = true;
+
+            // Need to check error message because MongoDB 3.0 does not return a code for this error
+            if ($result['ok'] != 1 && strpos($result['errmsg'], 'please create an index that starts') !== false) {
+                // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
+                // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
+                if (isset($result['proposedKey'])) {
+                    $key = $result['proposedKey'];
+                } else {
+                    $key = $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
+                }
+
+                $this->dm->getDocumentCollection($documentName)->ensureIndex($key, $indexOptions);
+                $done = false;
+                $try++;
+            }
+        } while (! $done && $try < 2);
+
+        // Starting with MongoDB 3.2, this command returns code 20 when a collection is already sharded.
+        // For older MongoDB versions, check the error message
+        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == 20) || $result['errmsg'] == 'already sharded') {
+            return;
+        }
+
+        throw MongoDBException::failedToEnsureDocumentSharding($documentName, $result['errmsg']);
+    }
+
+    /**
+     * Enable sharding for database which contains documents with given name.
+     *
+     * @param string $documentName
+     *
+     * @throws MongoDBException
+     */
+    public function enableShardingForDbByDocumentName($documentName)
+    {
+        $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
+        $adminDb = $this->dm->getConnection()->selectDatabase('admin');
+        $result = $adminDb->command(array('enableSharding' => $dbName));
+
+        // Error code is only available with MongoDB 3.2. MongoDB 3.0 only returns a message
+        // Thus, check code if it exists and fall back on error message
+        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == 23) || $result['errmsg'] == 'already enabled') {
+            return;
+        }
+
+        throw MongoDBException::failedToEnableSharding($dbName, $result['errmsg']);
+    }
+
+    /**
+     * @param $documentName
+     *
+     * @return array
+     */
+    private function runShardCollectionCommand($documentName)
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+        $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
+        $shardKey = $class->getShardKey();
+        $adminDb = $this->dm->getConnection()->selectDatabase('admin');
+
+        $result = $adminDb->command(
+            array(
+                'shardCollection' => $dbName . '.' . $class->getCollection(),
+                'key'             => $shardKey['keys']
+            )
+        );
+
+        return $result;
+    }
 }

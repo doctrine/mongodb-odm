@@ -6,17 +6,13 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\MongoDB\Connection;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 
 abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var \Doctrine\ODM\MongoDB\DocumentManager
-     */
+    /** @var DocumentManager */
     protected $dm;
-    
-    /**
-     * @var \Doctrine\ODM\MongoDB\UnitOfWork
-     */
+    /** @var UnitOfWork */
     protected $uow;
 
     public function setUp()
@@ -79,5 +75,17 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $result = $this->dm->getConnection()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(array('buildInfo' => 1));
 
         return $result['version'];
+    }
+
+    protected function skipTestIfNotSharded($className)
+    {
+        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true]);
+        if (!$result['ok']) {
+            $this->markTestSkipped('Could not check whether server supports sharding');
+        }
+
+        if (!array_key_exists('shardCollection', $result['commands'])) {
+            $this->markTestSkipped('Test skipped because server does not support sharding');
+        }
     }
 }

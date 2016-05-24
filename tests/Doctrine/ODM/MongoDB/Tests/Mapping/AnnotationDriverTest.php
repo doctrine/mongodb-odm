@@ -139,6 +139,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertNotContains($extraneousClassName, $classes);
     }
 
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Embedded document can't have shard key
+     */
+    public function testEmbeddedClassCantHaveShardKey()
+    {
+        $this->dm->getClassMetadata(__NAMESPACE__ . '\AnnotationDriverEmbeddedWithShardKey');
+    }
+
     protected function _loadDriverForCMSDocuments()
     {
         $annotationDriver = $this->_loadDriver();
@@ -185,4 +194,14 @@ class AnnotationDriverTestChild extends AnnotationDriverTestParent
 {
     /** @ODM\Field(type="string") */
     public $bar;
+}
+
+/**
+ * @ODM\EmbeddedDocument
+ * @ODM\ShardKey(keys={"foo"="asc"})
+ */
+class AnnotationDriverEmbeddedWithShardKey
+{
+    /** @ODM\Field(type="string") */
+    public $foo;
 }

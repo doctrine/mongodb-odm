@@ -78,6 +78,9 @@ class YamlDriver extends FileDriver
                 $class->addIndex($index['keys'], isset($index['options']) ? $index['options'] : array());
             }
         }
+        if (isset($element['shardKey'])) {
+            $this->setShardKey($class, $element['shardKey']);
+        }
         if (isset($element['inheritanceType'])) {
             $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
         }
@@ -335,5 +338,23 @@ class YamlDriver extends FileDriver
     protected function loadMappingFile($file)
     {
         return Yaml::parse(file_get_contents($file));
+    }
+
+    private function setShardKey(ClassMetadataInfo $class, array $shardKey)
+    {
+        $keys = $shardKey['keys'];
+        $options = array();
+
+        if (isset($shardKey['options'])) {
+            $allowed = array('unique', 'numInitialChunks');
+            foreach ($shardKey['options'] as $name => $value) {
+                if ( ! in_array($name, $allowed, true)) {
+                    continue;
+                }
+                $options[$name] = $value;
+            }
+        }
+
+        $class->setShardKey($keys, $options);
     }
 }

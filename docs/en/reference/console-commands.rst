@@ -13,6 +13,7 @@ Console component, to ease your development process:
 - ``odm:schema:create`` - Allows you to create databases, collections and indexes for your documents
 - ``odm:schema:drop`` - Allows you to drop databases, collections and indexes for your documents
 - ``odm:schema:update`` - Allows you to update indexes for your documents
+- ``odm:schema:shard`` - Allows you to enable sharding for your documents
 
 Provided you have an existing ``DocumentManager`` instance, you can setup a
 console command easily with the following code:
@@ -41,6 +42,7 @@ console command easily with the following code:
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\CreateCommand(),
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\DropCommand(),
         new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\UpdateCommand(),
+        new \Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\ShardCommand(),
     ));
 
     $app->run();

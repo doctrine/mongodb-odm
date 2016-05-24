@@ -323,6 +323,23 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
         return $class;
     }
+
+    /**
+     * @depends testIndexes
+     * @param ClassMetadata $class
+     */
+    public function testShardKey($class)
+    {
+        $shardKey = $class->getShardKey();
+
+        $this->assertTrue(isset($shardKey['keys']['name']), 'Shard key is not mapped');
+        $this->assertEquals(1, $shardKey['keys']['name'], 'Wrong value for shard key');
+
+        $this->assertTrue(isset($shardKey['options']['unique']), 'Shard key option is not mapped');
+        $this->assertTrue($shardKey['options']['unique'], 'Shard key option has wrong value');
+        $this->assertTrue(isset($shardKey['options']['numInitialChunks']), 'Shard key option is not mapped');
+        $this->assertEquals(4096, $shardKey['options']['numInitialChunks'], 'Shard key option has wrong value');
+    }
 }
 
 /**
@@ -332,6 +349,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
  * @ODM\DefaultDiscriminatorValue("default")
  * @ODM\HasLifecycleCallbacks
  * @ODM\Indexes(@ODM\Index(keys={"createdAt"="asc"},expireAfterSeconds=3600),@ODM\Index(keys={"lock"="asc"},partialFilterExpression={"version"={"$gt"=1},"discr"={"$eq"="default"}}))
+ * @ODM\ShardKey(keys={"name"="asc"},unique=true,numInitialChunks=4096)
  */
 class AbstractMappingDriverUser
 {
@@ -522,5 +540,6 @@ class AbstractMappingDriverUser
         $metadata->addIndex(array('email' => 'desc'), array('unique' => true, 'dropDups' => true));
         $metadata->addIndex(array('mysqlProfileId' => 'desc'), array('unique' => true, 'dropDups' => true));
         $metadata->addIndex(array('createdAt' => 'asc'), array('expireAfterSeconds' => 3600));
+        $metadata->setShardKey(array('name' => 'asc'), array('unique' => true, 'numInitialChunks' => 4096));
     }
 }

@@ -115,6 +115,9 @@ class XmlDriver extends FileDriver
                 $this->addIndex($class, $index);
             }
         }
+        if (isset($xmlRoot->{'shard-key'})) {
+            $this->setShardKey($class, $xmlRoot->{'shard-key'}[0]);
+        }
         if (isset($xmlRoot['require-indexes'])) {
             $class->setRequireIndexes('true' === (string) $xmlRoot['require-indexes']);
         }
@@ -437,6 +440,41 @@ class XmlDriver extends FileDriver
         }
 
         return $partialFilterExpression;
+    }
+
+    private function setShardKey(ClassMetadataInfo $class, \SimpleXmlElement $xmlShardkey)
+    {
+        $attributes = $xmlShardkey->attributes();
+
+        $keys = array();
+        $options = array();
+        foreach ($xmlShardkey->{'key'} as $key) {
+            $keys[(string) $key['name']] = isset($key['order']) ? (string)$key['order'] : 'asc';
+        }
+
+        if (isset($attributes['unique'])) {
+            $options['unique'] = ('true' === (string) $attributes['unique']);
+        }
+
+        if (isset($attributes['numInitialChunks'])) {
+            $options['numInitialChunks'] = (int) $attributes['numInitialChunks'];
+        }
+
+        if (isset($xmlShardkey->{'option'})) {
+            foreach ($xmlShardkey->{'option'} as $option) {
+                $value = (string) $option['value'];
+                if ($value === 'true') {
+                    $value = true;
+                } elseif ($value === 'false') {
+                    $value = false;
+                } elseif (is_numeric($value)) {
+                    $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
+                }
+                $options[(string) $option['name']] = $value;
+            }
+        }
+
+        $class->setShardKey($keys, $options);
     }
 
     /**

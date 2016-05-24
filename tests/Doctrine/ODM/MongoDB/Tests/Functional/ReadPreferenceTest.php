@@ -37,6 +37,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
+     * @group replication_lag
      * @dataProvider provideReadPreferenceHints
      */
     public function testHintIsSetOnQuery($readPreference, array $tags = null)
@@ -58,6 +59,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
+     * @group replication_lag
      * @dataProvider provideReadPreferenceHints
      */
     public function testHintIsSetOnCursor($readPreference, array $tags = null)
@@ -83,6 +85,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
+     * @group replication_lag
      * @dataProvider provideReadPreferenceHints
      */
     public function testHintIsSetOnPersistentCollection($readPreference, array $tags = null)
