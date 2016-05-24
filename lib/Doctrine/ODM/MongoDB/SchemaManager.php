@@ -559,9 +559,11 @@ class SchemaManager
 
         // Starting with MongoDB 3.2, this command returns code 20 when a collection is already sharded.
         // For older MongoDB versions, check the error message
-        if ($result['ok'] != 1 && ((isset($result['code']) && $result['code'] !== 20) && $result['errmsg'] !== 'already sharded')) {
-            throw MongoDBException::failedToEnsureDocumentSharding($documentName, $result['errmsg']);
+        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == 20) || $result['errmsg'] == 'already sharded') {
+            return;
         }
+
+        throw MongoDBException::failedToEnsureDocumentSharding($documentName, $result['errmsg']);
     }
 
     /**
@@ -579,9 +581,11 @@ class SchemaManager
 
         // Error code is only available with MongoDB 3.2. MongoDB 3.0 only returns a message
         // Thus, check code if it exists and fall back on error message
-        if ($result['ok'] != 1 && ((isset($result['code']) && $result['code'] !== 23) && $result['errmsg'] !== 'already enabled')) {
-            throw MongoDBException::failedToEnableSharding($dbName, $result['errmsg']);
+        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == 23) || $result['errmsg'] == 'already enabled') {
+            return;
         }
+
+        throw MongoDBException::failedToEnableSharding($dbName, $result['errmsg']);
     }
 
     /**
