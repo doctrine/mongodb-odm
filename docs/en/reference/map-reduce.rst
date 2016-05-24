@@ -113,5 +113,5 @@ PHP driver directly:
         printf("User %s had %d sale(s).\n", $user['_id'], $user['value']);
     }
 
-.. _`map reduce`: http://docs.mongodb.org/manual/core/map-reduce/
-.. _`finalize function`: http://docs.mongodb.org/master/reference/command/mapReduce/#mapreduce-finalize-cmd
+.. _`map reduce`: https://docs.mongodb.com/manual/core/map-reduce/
+.. _`finalize function`: https://docs.mongodb.com/master/reference/command/mapReduce/#mapreduce-finalize-cmd

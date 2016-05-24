@@ -1383,9 +1383,9 @@ will ensure that collections are updated in the same write operation as the
 versioned document.
 
 .. _BSON specification: http://bsonspec.org/spec.html
-.. _DBRef: http://docs.mongodb.org/manual/reference/database-references/#dbrefs
-.. _geoNear command: http://docs.mongodb.org/manual/reference/command/geoNear/
-.. _GridFS: http://docs.mongodb.org/manual/core/gridfs/
+.. _DBRef: https://docs.mongodb.com/manual/reference/database-references/#dbrefs
+.. _geoNear command: https://docs.mongodb.com/manual/reference/command/geoNear/
+.. _GridFS: https://docs.mongodb.com/manual/core/gridfs/
 .. _MongoBinData: http://php.net/manual/en/class.mongobindata.php
 .. _MongoDate: http://php.net/manual/en/class.mongodate.php
 .. _MongoGridFSFile: http://php.net/manual/en/class.mongogridfsfile.php

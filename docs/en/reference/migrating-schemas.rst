@@ -213,7 +213,7 @@ Alternatively, you could defer this migration until the Person is saved:
 The :ref:`haslifecyclecallbacks` annotation must be present on the class in
 which the method is declared for the lifecycle callback to be registered.
 
-.. _`$rename`: http://docs.mongodb.org/manual/reference/operator/update/rename/
+.. _`$rename`: https://docs.mongodb.com/manual/reference/operator/update/rename/
 .. _`Objectify`: http://code.google.com/p/objectify-appengine/
 .. _`Objectify schema migration`: http://code.google.com/p/objectify-appengine/wiki/SchemaMigration
-.. _`$or`: http://docs.mongodb.org/manual/reference/operator/query/or/
+.. _`$or`: https://docs.mongodb.com/manual/reference/operator/query/or/

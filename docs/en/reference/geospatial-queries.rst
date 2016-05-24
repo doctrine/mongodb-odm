@@ -110,7 +110,7 @@ query coordinates.
         printf("%s is %f kilometers away.\n", $city->name, $city->distance);
     }
 
-.. _`geoNear command`: http://docs.mongodb.org/manual/reference/command/geoNear/
+.. _`geoNear command`: https://docs.mongodb.com/manual/reference/command/geoNear/
 
 Within Box
 ----------

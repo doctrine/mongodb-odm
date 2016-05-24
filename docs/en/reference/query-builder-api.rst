@@ -184,7 +184,7 @@ The above would give you an ``ArrayCollection`` of all the distinct user ages!
 
 .. note::
 
-    MongoDB's `distinct command <http://docs.mongodb.org/manual/reference/command/distinct/>`_
+    MongoDB's `distinct command <https://docs.mongodb.com/manual/reference/command/distinct/>`_
     does not support sorting, so you cannot combine ``distinct()`` with
     ``sort()``. If you would like to sort the results of a distinct query, you
     will need to do so in PHP after executing the query.
@@ -348,7 +348,7 @@ you can just call the ``where()`` method:
     $qb = $dm->createQueryBuilder('User')
         ->where("function() { return this.type == 'admin'; }");
 
-You can read more about the `$where operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-JavascriptExpressionsand%7B%7B%24where%7D%7D>`_ in the Mongo docs.
+You can read more about the `$where operator <https://docs.mongodb.com/manual/reference/operator/query/where/>`_ in the Mongo docs.
 
 Conditional Operators
 ~~~~~~~~~~~~~~~~~~~~~
@@ -394,7 +394,7 @@ Query for articles that have some tags:
         ->field('tags.name')->in(array('tag1', 'tag2'));
 
 Read more about the
-`$in operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24in>`_
+`$in operator <https://docs.mongodb.com/manual/reference/operator/query/in/>`_
 in the Mongo docs
 
 Query for articles that do not have some tags:
@@ -407,7 +407,7 @@ Query for articles that do not have some tags:
         ->field('tags.name')->notIn(array('tag3'));
 
 Read more about the
-`$nin operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24nin>`_
+`$nin operator <https://docs.mongodb.com/manual/reference/operator/query/nin/>`_
 in the Mongo docs.
 
 .. code-block:: php
@@ -418,7 +418,7 @@ in the Mongo docs.
         ->field('type')->notEqual('admin');
 
 Read more about the
-`$ne operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24ne>`_
+`$ne operator <https://docs.mongodb.com/manual/reference/operator/query/ne/>`_
 in the Mongo docs.
 
 Query for accounts with an amount due greater than 30:
@@ -480,7 +480,7 @@ Query for articles with no comments:
         ->field('comments')->size(0);
 
 Read more about the
-`$size operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24size>`_
+`$size operator <https://docs.mongodb.com/manual/reference/operator/query/size/>`_
 in the Mongo docs.
 
 Query for users that have a login field before it was renamed to
@@ -494,7 +494,7 @@ username:
         ->field('login')->exists(true);
 
 Read more about the
-`$exists operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24exists>`_
+`$exists operator <https://docs.mongodb.com/manual/reference/operator/query/exists/>`_
 in the Mongo docs.
 
 Query for users that have a type field that is of integer bson
@@ -508,7 +508,7 @@ type:
         ->field('type')->type('integer');
 
 Read more about the
-`$type operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24type>`_
+`$type operator <https://docs.mongodb.com/manual/reference/operator/query/type/>`_
 in the Mongo docs.
 
 Query for users that are in all the specified Groups:
@@ -521,7 +521,7 @@ Query for users that are in all the specified Groups:
         ->field('groups')->all(array('Group 1', 'Group 2'));
 
 Read more about the
-`$all operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24all>`_
+`$all operator <https://docs.mongodb.com/manual/reference/operator/query/all/>`_
 in the Mongo docs.
 
 .. code-block:: php
@@ -532,7 +532,7 @@ in the Mongo docs.
         ->field('field')->mod('field', array(10, 1));
 
 Read more about the
-`$mod operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperator%3A%24mod>`_ in the Mongo docs.
+`$mod operator <https://docs.mongodb.com/manual/reference/operator/query/mod/>`_ in the Mongo docs.
 
 Query for users who have subscribed or are in a trial.
 
@@ -545,7 +545,7 @@ Query for users who have subscribed or are in a trial.
     $qb->addOr($qb->expr()->field('inTrial')->equals(true));
     
 Read more about the 
-`$or operator <http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-%24or>`_ in the Mongo docs.
+`$or operator <https://docs.mongodb.com/manual/reference/operator/query/or/>`_ in the Mongo docs.
 
 The ``references()`` method may be used to query the owning side of a
 :ref:`@ReferenceOne <annotations_reference_reference_one>` relationship. In the
@@ -576,7 +576,7 @@ Text Search
 ~~~~~~~~~~~
 
 You can use the
-`$text operator <https://docs.mongodb.org/manual/reference/operator/query/text/>`_
+`$text operator <https://docs.mongodb.com/manual/reference/operator/query/text/>`_
 to run a text search against a field with a text index. To do so, create a
 document with a text index:
 
@@ -704,7 +704,7 @@ tell it the update is not an atomic one:
         ->execute();
 
 Read more about the
-`$set modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24set>`_
+`$set modifier <https://docs.mongodb.com/manual/reference/operator/update/set/>`_
 in the Mongo docs.
 
 You can set an entirely new object to update as well:
@@ -736,7 +736,7 @@ Increment the value of a document:
         ->execute();
 
 Read more about the
-`$inc modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24inc>`_
+`$inc modifier <https://docs.mongodb.com/manual/reference/operator/update/inc/>`_
 in the Mongo docs.
 
 Unset the login field from users where the login field still
@@ -753,7 +753,7 @@ exists:
         ->execute();
 
 Read more about the
-`$unset modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24unset>`_
+`$unset modifier <https://docs.mongodb.com/manual/reference/operator/update/unset/>`_
 in the Mongo docs.
 
 Append new tag to the tags array:
@@ -770,7 +770,7 @@ Append new tag to the tags array:
         ->execute();
 
 Read more about the
-`$push modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24push>`_
+`$push modifier <https://docs.mongodb.com/manual/reference/operator/update/push/>`_
 in the Mongo docs.
 
 Append new tags to the tags array:
@@ -787,7 +787,7 @@ Append new tags to the tags array:
         ->execute();
 
 Read more about the
-`$pushAll modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24pushAll>`_
+`$pushAll modifier <https://docs.mongodb.com/manual/reference/operator/update/pushAll/>`_
 in the Mongo docs.
 
 Add value to array only if its not in the array already:
@@ -804,7 +804,7 @@ Add value to array only if its not in the array already:
         ->execute();
 
 Read more about the
-`$addToSet modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24addToSet>`_
+`$addToSet modifier <https://docs.mongodb.com/manual/reference/operator/update/addToSet/>`_
 in the Mongo docs.
 
 Add many values to the array only if they do not exist in the array
@@ -852,7 +852,7 @@ Remove last element in an array:
         ->execute();
 
 Read more about the
-`$pop modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24pop>`_
+`$pop modifier <https://docs.mongodb.com/manual/reference/operator/update/pop/>`_
 in the Mongo docs.
 
 Remove all occurrences of value from array:
@@ -868,7 +868,7 @@ Remove all occurrences of value from array:
         ->execute();
 
 Read more about the
-`$pull modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24pull>`_
+`$pull modifier <https://docs.mongodb.com/manual/reference/operator/update/pull/>`_
 in the Mongo docs.
 
 .. code-block:: php
@@ -882,7 +882,7 @@ in the Mongo docs.
         ->execute();
 
 Read more about the
-`$pullAll modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24pullAll>`_
+`$pullAll modifier <https://docs.mongodb.com/manual/reference/operator/update/pullAll/>`_
 in the Mongo docs.
 
 Remove Queries

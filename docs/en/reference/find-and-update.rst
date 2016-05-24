@@ -74,7 +74,7 @@ You can also remove a document and return it:
         ->execute();
 
 You can read more about the find and modify functionality on the
-`MongoDB website <http://www.mongodb.org/display/DOCS/findandmodify+Command>`_.
+`MongoDB website <https://docs.mongodb.com/manual/reference/method/db.collection.findAndModify/>`_.
 
 .. note::
 
