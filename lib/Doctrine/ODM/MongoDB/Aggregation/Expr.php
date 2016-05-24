@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\MongoDB\Aggregation\Expr as BaseExpr;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -71,7 +72,8 @@ class Expr extends BaseExpr
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
         }
 
-        return parent::ensureArray($expression);
+        // Convert PHP types to MongoDB types for everything else
+        return Type::convertPHPToDatabaseValue(parent::ensureArray($expression));
     }
 
     /**
