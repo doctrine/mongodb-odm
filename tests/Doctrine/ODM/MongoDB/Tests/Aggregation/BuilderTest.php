@@ -8,10 +8,10 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->insertTestData();
 
-        $builder = $this->dm->createAggregationBuilder('Documents\BlogPost');
+        $builder = $this->dm->createAggregationBuilder(\Documents\BlogPost::class);
 
         $aggregationResult = $builder
-            ->hydrate('Documents\BlogTagAggregation')
+            ->hydrate(\Documents\BlogTagAggregation::class)
             ->unwind('$tags')
             ->group()
                 ->field('id')
@@ -29,6 +29,42 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertSame('baseball', $results[0]->tag->name);
         $this->assertSame(3, $results[0]->numPosts);
+    }
+
+    public function testPipelineConvertsTypes()
+    {
+        $builder = $this->dm->createAggregationBuilder(\Documents\Article::class);
+        $dateTime = new \DateTimeImmutable('2000-01-01T00:00Z');
+        $builder
+            ->group()
+                ->field('id')
+                ->expression(
+                    $builder->expr()
+                        ->cond(
+                            $builder->expr()->lt('$createdAt', $dateTime),
+                            true,
+                            false
+                        )
+                )
+                ->field('numPosts')
+                ->sum(1);
+
+        $expectedPipeline = [
+            [
+                '$group' => [
+                    '_id' => [
+                        '$cond' => [
+                            'if' => ['$lt' => ['$createdAt', new \MongoDate($dateTime->format('U'), $dateTime->format('u'))]],
+                            'then' => true,
+                            'else' => false,
+                        ]
+                    ],
+                    'numPosts' => ['$sum' => 1],
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     private function insertTestData()
