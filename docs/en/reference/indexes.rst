@@ -385,6 +385,61 @@ options structures manually:
             keys:
               coordinates: 2d
 
+Partial indexes
+---------------
+
+You can create a partial index by adding a ``partialFilterExpression`` to any
+index.
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        /**
+         * @Document
+         * @Index(keys={"city"="asc"}, partialFilterExpression={"version"={"$gt"=1}})
+         */
+        class Place
+        {
+            /** @Id */
+            public $id;
+
+            /** @Field(type="string") */
+            public $city;
+
+            /** @Field(type="int") */
+            public $version;
+        }
+
+    .. code-block:: xml
+
+        <indexes>
+            <index>
+                <key name="city" order="asc" />
+                <partial-filter-expression>
+                    <field name="version" value="1" operator="gt" />
+                </partial-filter-expression>
+            </index>
+        </indexes>
+
+    .. code-block:: yaml
+
+        indexes:
+          partialIndexExample:
+            keys:
+              coordinates: asc
+            options:
+              partialFilterExpression:
+                version: { $gt: 1 }
+
+.. note::
+
+    Partial indexes are only available with MongoDB 3.2 or newer. For more
+    information on partial filter expressions, read the
+    `official MongoDB documentation <https://docs.mongodb.com/manual/core/index-partial/>`_.
+
 Requiring Indexes
 -----------------
 
