@@ -110,6 +110,32 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * @return Stage\Match
+     */
+    public function match()
+    {
+        return $this->addStage(new Stage\Match($this));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function sort($fieldName, $order = null)
+    {
+        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
+        return parent::sort($this->getDocumentPersister()->prepareSortOrProjection($fields));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unwind($fieldName)
+    {
+        $fieldName = $this->getDocumentPersister()->prepareFieldName($fieldName);
+        return parent::unwind($fieldName);
+    }
+
+    /**
      * @param BaseCommandCursor $cursor
      *
      * @return CommandCursor
@@ -122,5 +148,13 @@ class Builder extends BaseBuilder
         }
 
         return new CommandCursor($cursor, $this->dm->getUnitOfWork(), $class);
+    }
+
+    /**
+     * @return \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
+     */
+    private function getDocumentPersister()
+    {
+        return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
     }
 }
