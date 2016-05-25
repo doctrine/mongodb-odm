@@ -67,6 +67,36 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
+    public function testFieldNameConversion()
+    {
+        $builder = $this->dm->createAggregationBuilder(\Documents\CmsComment::class);
+        $builder
+            ->match()
+                ->field('authorIp')
+                ->notEqual('127.0.0.1')
+            ->project()
+                ->includeFields(['authorIp'])
+            ->unwind('authorIp')
+            ->sort('authorIp', 'asc');
+
+        $expectedPipeline = [
+            [
+                '$match' => ['ip' => ['$ne' => '127.0.0.1']],
+            ],
+            [
+                '$project' => ['ip' => true],
+            ],
+            [
+                '$unwind' => 'ip',
+            ],
+            [
+                '$sort' => ['ip' => 1],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
     private function insertTestData()
     {
         $baseballTag = new \Documents\Tag('baseball');
