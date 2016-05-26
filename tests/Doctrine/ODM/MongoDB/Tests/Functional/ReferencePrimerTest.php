@@ -7,7 +7,10 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Documents\Account;
 use Documents\Agent;
+use Documents\Functional\EmbeddedWhichReferences;
+use Documents\Functional\EmbedNamed;
 use Documents\Functional\FavoritesUser;
+use Documents\Functional\Reference;
 use Documents\Group;
 use Documents\GuestServer;
 use Documents\Phonenumber;
@@ -162,6 +165,73 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             foreach ($simpleUser->getUsers() as $user) {
                 $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user);
                 $this->assertInstanceOf('Documents\User', $user);
+            }
+        }
+    }
+
+    /**
+     * @group current
+     */
+    public function testPrimeReferencesNestedInNamedEmbeddedReference()
+    {
+        $root = new EmbedNamed();
+
+        $root->embeddedDoc    = ($embedded1 = new EmbeddedWhichReferences());
+        $root->embeddedDocs[] = ($embedded2 = new EmbeddedWhichReferences());
+        $root->embeddedDocs[] = ($embedded3 = new EmbeddedWhichReferences());
+
+        $embedded1->referencedDoc    = ($referenced11 = new Reference());
+        $embedded1->referencedDocs[] = ($referenced12 = new Reference());
+        $embedded1->referencedDocs[] = ($referenced13 = new Reference());
+
+        $embedded2->referencedDoc    = ($referenced21 = new Reference());
+        $embedded2->referencedDocs[] = ($referenced22 = new Reference());
+        $embedded2->referencedDocs[] = ($referenced23 = new Reference());
+
+        $embedded3->referencedDoc    = ($referenced31 = new Reference());
+        $embedded3->referencedDocs[] = ($referenced32 = new Reference());
+        $embedded3->referencedDocs[] = ($referenced33 = new Reference());
+
+        $this->dm->persist($referenced33);
+        $this->dm->persist($referenced32);
+        $this->dm->persist($referenced31);
+        $this->dm->persist($referenced23);
+        $this->dm->persist($referenced22);
+        $this->dm->persist($referenced21);
+        $this->dm->persist($referenced13);
+        $this->dm->persist($referenced12);
+        $this->dm->persist($referenced11);
+        $this->dm->persist($embedded3);
+        $this->dm->persist($embedded2);
+        $this->dm->persist($embedded1);
+        $this->dm->persist($root);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $qb = $this->dm->createQueryBuilder('Documents\Functional\EmbedNamed')
+            ->field('embeddedDoc.referencedDoc')->prime(true)
+            ->field('embeddedDoc.referencedDocs')->prime(true)
+            ->field('embeddedDocs.referencedDoc')->prime(true)
+            ->field('embeddedDocs.referencedDocs')->prime(true)
+        ;
+
+        foreach ($qb->getQuery() as $root) {
+            $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $root->embeddedDoc);
+            $this->assertInstanceOf('Documents\Functional\EmbeddedWhichReferences', $root->embeddedDoc);
+
+            $this->assertCount(2, $root->embeddedDocs);
+            foreach ($root->embeddedDocs as $embeddedDoc) {
+                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $embeddedDoc);
+                $this->assertInstanceOf('Documents\Functional\EmbeddedWhichReferences', $embeddedDoc);
+
+                $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $embeddedDoc->referencedDoc);
+                $this->assertTrue($embeddedDoc->referencedDoc->__isInitialized());
+
+                $this->assertCount(2, $embeddedDoc->referencedDocs);
+                foreach ($embeddedDoc->referencedDocs as $referencedDoc) {
+                    $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $referencedDoc);
+                    $this->assertInstanceOf('Documents\Functional\Reference', $referencedDoc);
+                }
             }
         }
     }
