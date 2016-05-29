@@ -190,7 +190,7 @@ class ReferencePrimer
         }
 
         $mapping = $class->fieldMappings[$e[0]];
-        $e[0] = $mapping['name'];
+        $e[0] = $mapping['fieldName'];
 
         // Case of embedded document(s) to recurse through:
         if ( ! isset($mapping['reference'])) {
