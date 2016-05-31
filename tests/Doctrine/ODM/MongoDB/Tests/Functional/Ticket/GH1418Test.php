@@ -60,10 +60,10 @@ class GH1418Document
     /** @ODM\Id(strategy="none") */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="GH1418Embedded", strategy="set") */
+    /** @ODM\EmbedOne(targetDocument="GH1418Embedded") */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument="GH1418Embedded", strategy="set") */
+    /** @ODM\EmbedMany(targetDocument="GH1418Embedded") */
     public $embedMany;
 }
 
