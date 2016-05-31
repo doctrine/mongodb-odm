@@ -24,7 +24,7 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->getRepository(__NAMESPACE__.'\GH1418Document')->findOneById(1);
+        $document = $this->dm->getRepository(__NAMESPACE__.'\GH1418Document')->find(1);
         $this->assertEquals(1, $document->id);
         $this->assertEquals('maciej', $document->embedOne->name);
         $this->assertEquals(1, $document->embedMany->count());
@@ -47,7 +47,7 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->getRepository(__NAMESPACE__.'\GH1418Document')->findOneById(1);
+        $document = $this->dm->getRepository(__NAMESPACE__.'\GH1418Document')->find(1);
         $this->assertEquals(1, $document->id);
         $this->assertEquals('maciej', $document->embedOne->name);
         $this->assertEquals(1, $document->embedMany->count());
