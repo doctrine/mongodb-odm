@@ -9,8 +9,8 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testManualHydrateAndPersist()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\GH1418Document');
-        $document = $class->newInstance();
+        $document = new GH1418Document;
+        $class = $this->dm->getClassMetadata(get_class($document));
         $this->dm->getHydratorFactory()->hydrate($document, array(
           '_id' => 1,
           'name' => 'maciej',
@@ -32,8 +32,8 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testManualHydrateAndMerge()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\GH1418Document');
-        $document = $class->newInstance();
+        $document = new GH1418Document;
+        $class = $this->dm->getClassMetadata(get_class($document));
         $this->dm->getHydratorFactory()->hydrate($document, array(
           '_id' => 1,
           'name' => 'maciej',
