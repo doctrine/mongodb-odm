@@ -118,6 +118,15 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * @param string $from
+     * @return Stage\Lookup
+     */
+    public function lookup($from)
+    {
+        return $this->addStage(new Stage\Lookup($this, $from, $this->dm, $this->class));
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function sort($fieldName, $order = null)
