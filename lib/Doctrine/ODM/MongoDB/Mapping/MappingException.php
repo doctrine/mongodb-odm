@@ -61,6 +61,16 @@ class MappingException extends BaseMappingException
      * @param string $fieldName
      * @return MappingException
      */
+    public static function referenceMappingNotFound($className, $fieldName)
+    {
+        return new self("No reference mapping found for field '$fieldName' in class '$className'.");
+    }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
     public static function mappingNotFoundInClassNorDescendants($className, $fieldName)
     {
         return new self("No mapping found for field '$fieldName' in class '$className' nor its descendants.");
@@ -345,5 +355,25 @@ class MappingException extends BaseMappingException
     public static function noMultiKeyShardKeys($className, $fieldName)
     {
         return new self("No multikey indexes are allowed in the shard key: $className::$fieldName");
+    }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function cannotLookupNonIdReference($className, $fieldName)
+    {
+        return new self("Cannot use reference '$fieldName' in class '$className' for lookup. Only ID references are allowed in \$lookup stages.");
+    }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function repositoryMethodLookupNotAllowed($className, $fieldName)
+    {
+        return new self("Cannot use reference '$fieldName' in class '$className' for lookup. repositoryMethod is not supported in \$lookup stages.");
     }
 }

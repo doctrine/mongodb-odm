@@ -20,10 +20,6 @@
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\MongoDB\Aggregation\Stage as BaseStage;
-use Doctrine\ODM\MongoDB\Aggregation\Builder;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Query\Expr;
 
 /**
  * Fluent interface for building aggregation pipelines.
