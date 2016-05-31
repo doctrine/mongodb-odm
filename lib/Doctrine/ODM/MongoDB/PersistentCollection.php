@@ -103,11 +103,6 @@ class PersistentCollection implements BaseCollection
     private $hints = array();
 
     /**
-     * @var ClassMetadata
-     */
-    private $typeClass;
-
-    /**
      * @param BaseCollection $coll
      * @param DocumentManager $dm
      * @param UnitOfWork $uow
@@ -262,10 +257,6 @@ class PersistentCollection implements BaseCollection
     {
         $this->owner = $document;
         $this->mapping = $mapping;
-
-        if ( ! empty($this->mapping['targetDocument'])) {
-            $this->typeClass = $this->dm->getClassMetadata($this->mapping['targetDocument']);
-        }
     }
 
     /**
@@ -385,11 +376,16 @@ class PersistentCollection implements BaseCollection
      */
     public function getTypeClass()
     {
-        if (empty($this->typeClass)) {
-            throw new MongoDBException('Specifying targetDocument is required for the ClassMetadata to be obtained.');
+        switch (true) {
+            case ($this->dm === null):
+                throw new MongoDBException('No DocumentManager is associated with this PersistentCollection, please set one using setDocumentManager method.');
+            case (empty($this->mapping)):
+                throw new MongoDBException('No mapping is associated with this PersistentCollection, please set one using setOwner method.');
+            case (empty($this->mapping['targetDocument'])):
+                throw new MongoDBException('Specifying targetDocument is required for the ClassMetadata to be obtained.');
+            default:
+                return $this->dm->getClassMetadata($this->mapping['targetDocument']);
         }
-
-        return $this->typeClass;
     }
 
     /**
