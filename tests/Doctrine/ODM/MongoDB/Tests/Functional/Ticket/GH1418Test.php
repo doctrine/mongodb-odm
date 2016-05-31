@@ -28,6 +28,7 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, $document->id);
         $this->assertEquals('maciej', $document->embedOne->name);
         $this->assertEquals(1, $document->embedMany->count());
+        $this->assertEquals('maciej', $document->embedMany->first()->name);
     }
 
     public function testManualHydrateAndMerge()
@@ -51,6 +52,7 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, $document->id);
         $this->assertEquals('maciej', $document->embedOne->name);
         $this->assertEquals(1, $document->embedMany->count());
+        $this->assertEquals('maciej', $document->embedMany->first()->name);
     }
 }
 
