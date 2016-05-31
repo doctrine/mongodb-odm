@@ -2,15 +2,14 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Query;
 
-class GH1350Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testManualHydrateAndMerge()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\GH1350Document');
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\GH1418Document');
         $document = $class->newInstance();
         $this->dm->getHydratorFactory()->hydrate($document, array(
           '_id' => 1,
@@ -24,7 +23,7 @@ class GH1350Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->getRepository(__NAMESPACE__.'\GH1350Document')->findOneById(1);
+        $document = $this->dm->getRepository(__NAMESPACE__.'\GH1418Document')->findOneById(1);
         $this->assertEquals(1, $document->id);
         $this->assertEquals('maciej', $document->embedOne->name);
         $this->assertEquals(1, $document->embedMany->count());
@@ -32,25 +31,21 @@ class GH1350Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /** @ODM\Document */
-class GH1350Document
+class GH1418Document
 {
     /** @ODM\Id(strategy="none") */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="GH1350Embedded", strategy="set") */
+    /** @ODM\EmbedOne(targetDocument="GH1418Embedded", strategy="set") */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument="GH1350Embedded", strategy="set") */
+    /** @ODM\EmbedMany(targetDocument="GH1418Embedded", strategy="set") */
     public $embedMany;
 }
 
 /** @ODM\EmbeddedDocument */
-class GH1350Embedded
+class GH1418Embedded
 {
     /** @ODM\Field(type="string") */
     public $name;
-
-    public function __construct($name) {
-      $this->name = $name;
-    }
 }
