@@ -41,9 +41,8 @@ For example usage please refer to
 
 [#1303](https://github.com/doctrine/mongodb-odm/pull/1303)
 Partial indexes [introduced in MongoDB 3.2](https://docs.mongodb.com/manual/core/index-partial/)
-are also supported as ODM's `@Index` option.
-
-@todo docs are barely mentioning partialFilterExpression, should we add examples?
+are also supported as ODM's `@Index` option. For example usage please refer to
+[index documentation](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/indexes.html#partial-indexes)
 
 #### More powerful lifecycle callbacks
 
@@ -86,6 +85,12 @@ including them in the owning document's change set. While collections' instances
 are usually the same you can check both new and removed documents with `getInsertedDocuments`
 and `getDeletedDocuments` methods respectively.
 
+#### Support for immutable DateTime objects
+
+[#1391](https://github.com/doctrine/mongodb-odm/pull/1391) -
+The `Date` type now supports converting `DateTimeImmutable` objects to `MongoDate`. Previously, only
+`DateTime` was converted, causing errors when using immutable date objects.
+
 PHP 7 compatibility
 -------------------
 
@@ -94,7 +99,9 @@ it is possible to run ODM using PHP 7 and HHVM thanks to
 [alcaeus/mongo-php-adapter](https://github.com/alcaeus/mongo-php-adapter) which provides old API
 atop new [ext-mongodb](http://php.net/manual/en/mongodb.installation.php) driver and
 [mongodb/mongo-php-library](https://github.com/mongodb/mongo-php-library) library. Until ODM 2.0 is
-released this is officially supported way and is included in our test suite.
+released this is officially supported way and is included in our test suite. If you are using
+annotations to map documents, do not use the deprecated annotations mentioned below as they do not
+work in PHP 7.
 
 Upgrade Path
 ------------
@@ -126,6 +133,15 @@ only purpose was setting mapped field's type. Deprecated classes will be removed
 in favour of more robust `strategy` field option. To learn more about storage strategies
 please see relevant chapter in [documentation](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/storage-strategies.html).
 `increment` field type will be removed in version 2.0.
+
+#### `Simple` references superseded by `storeAs`
+
+[#1349](https://github.com/doctrine/mongodb-odm/pull/1349) deprecates the `simple` option used
+in references and replaces it with the new `storeAs` option. This allows for an additional reference
+mode called `dbRef` which doesn't store a `$db` field in the `DBRef` object. For compatibility with
+existing references, the default mode is `dbRefWithDb` but will be replaced with `dbRef` in version
+2.0. For more information, see the
+[reference mapping documentation](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/reference-mapping.html#storing-references).
 
 1.0.x End-of-Life
 -----------------
