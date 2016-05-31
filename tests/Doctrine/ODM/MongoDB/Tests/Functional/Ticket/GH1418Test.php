@@ -7,6 +7,29 @@ use Doctrine\ODM\MongoDB\Query\Query;
 
 class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    public function testManualHydrateAndPersist()
+    {
+        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\GH1418Document');
+        $document = $class->newInstance();
+        $this->dm->getHydratorFactory()->hydrate($document, array(
+          '_id' => 1,
+          'name' => 'maciej',
+          'embedOne' => ['name' => 'maciej'],
+          'embedMany' => [
+              ['name' => 'maciej']
+          ],
+        ), [ Query::HINT_READ_ONLY => true ]);
+
+        $this->dm->persist($document);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->getRepository(__NAMESPACE__.'\GH1418Document')->findOneById(1);
+        $this->assertEquals(1, $document->id);
+        $this->assertEquals('maciej', $document->embedOne->name);
+        $this->assertEquals(1, $document->embedMany->count());
+    }
+
     public function testManualHydrateAndMerge()
     {
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\GH1418Document');
@@ -19,6 +42,7 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
               ['name' => 'maciej']
           ],
         ), [ Query::HINT_READ_ONLY => true ]);
+
         $this->dm->merge($document);
         $this->dm->flush();
         $this->dm->clear();
