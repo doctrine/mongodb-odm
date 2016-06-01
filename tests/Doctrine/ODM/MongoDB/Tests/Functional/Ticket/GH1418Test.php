@@ -54,63 +54,6 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, $document->embedMany->count());
         $this->assertEquals('maciej', $document->embedMany->first()->name);
     }
-
-    public function testManualHydrateAndMergeWorkaround()
-    {
-        $document = new GH1418Document;
-        $class = $this->dm->getClassMetadata(get_class($document));
-        $this->dm->getHydratorFactory()->hydrate($document, array(
-          '_id' => 1,
-          'name' => 'maciej',
-          'embedOne' => ['name' => 'maciej'],
-          'embedMany' => [
-              ['name' => 'maciej']
-          ],
-        ), [ Query::HINT_READ_ONLY => true ]);
-
-        foreach ($document->embedMany AS $val) {
-          $this->dm->getUnitOfWork()->getDocumentState($val);
-        }
-
-        $this->dm->merge($document);
-        $this->dm->flush();
-        $this->dm->clear();
-
-        $document = $this->dm->getRepository(__NAMESPACE__.'\GH1418Document')->find(1);
-        $this->assertEquals(1, $document->id);
-        $this->assertEquals('maciej', $document->embedOne->name);
-        $this->assertEquals(1, $document->embedMany->count());
-        $this->assertEquals('maciej', $document->embedMany->first()->name);
-    }
-
-    public function testManualHydrateAndPersistWorkaround()
-    {
-        $document = new GH1418Document;
-        $class = $this->dm->getClassMetadata(get_class($document));
-        $this->dm->getHydratorFactory()->hydrate($document, array(
-          '_id' => 1,
-          'name' => 'maciej',
-          'embedOne' => ['name' => 'maciej'],
-          'embedMany' => [
-              ['name' => 'maciej']
-          ],
-        ), [ Query::HINT_READ_ONLY => true ]);
-
-        foreach ($document->embedMany AS $val) {
-          $this->dm->getUnitOfWork()->getDocumentState($val);
-        }
-
-        $this->dm->persist($document);
-        $this->dm->flush();
-        $this->dm->clear();
-
-        $document = $this->dm->getRepository(__NAMESPACE__.'\GH1418Document')->find(1);
-        $this->assertEquals(1, $document->id);
-        $this->assertEquals('maciej', $document->embedOne->name);
-        $this->assertEquals(1, $document->embedMany->count());
-        $this->assertEquals('maciej', $document->embedMany->first()->name);
-    }
-
 }
 
 /** @ODM\Document */
