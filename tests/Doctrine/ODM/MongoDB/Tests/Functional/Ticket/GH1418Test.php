@@ -54,6 +54,25 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, $document->embedMany->count());
         $this->assertEquals('maciej', $document->embedMany->first()->name);
     }
+
+    public function testManualHydrateAndPersistEmbedEmpty()
+    {
+        $document = new GH1418Document;
+        $class = $this->dm->getClassMetadata(get_class($document));
+        $this->dm->getHydratorFactory()->hydrate($document, array(
+          '_id' => 1,
+          'name' => 'maciej',
+        ), [ Query::HINT_READ_ONLY => true ]);
+        // This is a work around to trigger persisting the embedded documents
+        // until a solution is implemented
+        $this->dm->getUnitOfWork()->getDocumentState($document->embedOne);
+        $this->dm->getUnitOfWork()->getDocumentState($document->embedMany);
+
+        $this->dm->persist($document);
+        $this->dm->flush();
+        $this->dm->clear();
+        // If no error is thrown, the test has passed
+    }
 }
 
 /** @ODM\Document */
