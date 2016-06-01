@@ -180,10 +180,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setDatabase($parent->getDatabase());
             $class->setCollection($parent->getCollection());
 
-            if (! $class->writeConcern) {
+            if ($class->writeConcern === null) {
                 $class->setWriteConcern($parent->writeConcern);
             }
-
         }
 
         $class->setParentClasses($nonSuperclassParents);
