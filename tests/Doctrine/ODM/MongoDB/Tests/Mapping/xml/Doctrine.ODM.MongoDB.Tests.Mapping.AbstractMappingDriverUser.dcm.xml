@@ -5,7 +5,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <document name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" collection="cms_users" writeConcern="0">
+    <document name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" collection="cms_users" writeConcern="1">
         <discriminator-field name="discr" />
         <discriminator-map>
             <discriminator-mapping value="default" class="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" />

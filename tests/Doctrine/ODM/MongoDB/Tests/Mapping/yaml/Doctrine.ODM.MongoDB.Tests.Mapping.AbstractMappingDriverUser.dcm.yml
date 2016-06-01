@@ -1,7 +1,7 @@
 Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
   type: document
   collection: cms_users
-  writeConcern: 0
+  writeConcern: 1
   discriminatorField:
     fieldName: discr
   discriminatorMap:

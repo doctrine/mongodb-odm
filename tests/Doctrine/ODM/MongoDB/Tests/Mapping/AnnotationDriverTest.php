@@ -150,8 +150,11 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     public function testDocumentAnnotationCanSpecifyWriteConcern()
     {
-        $cm = $this->dm->getClassMetadata(__NAMESPACE__ . '\AnnotationDriverTestWriteConcern');
+        $cm = $this->dm->getClassMetadata(__NAMESPACE__ . '\AnnotationDriverTestWriteConcernMajority');
         $this->assertEquals('majority', $cm->writeConcern);
+
+        $cm = $this->dm->getClassMetadata(__NAMESPACE__ . '\AnnotationDriverTestWriteConcernUnacknowledged');
+        $this->assertSame(0, $cm->writeConcern);
 
         $cm = $this->dm->getClassMetadata(__NAMESPACE__ . '\ColumnWithoutType');
         $this->assertNull($cm->writeConcern);
@@ -218,7 +221,16 @@ class AnnotationDriverEmbeddedWithShardKey
 /**
  * @ODM\Document(writeConcern="majority")
  */
-class AnnotationDriverTestWriteConcern
+class AnnotationDriverTestWriteConcernMajority
+{
+    /** @ODM\Id */
+    public $id;
+}
+
+/**
+ * @ODM\Document(writeConcern=0)
+ */
+class AnnotationDriverTestWriteConcernUnacknowledged
 {
     /** @ODM\Id */
     public $id;
