@@ -344,6 +344,128 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
+
+    /**
+     * @return array
+     */
+    public static function dataProviderTestWriteConcern()
+    {
+        return array(
+            'default' => array(
+                'className' => __NAMESPACE__ . '\DocumentPersisterTestDocument',
+                'writeConcern' => 1,
+            ),
+            'acknowledged' => array(
+                'className' => __NAMESPACE__ . '\DocumentPersisterWriteConcernAcknowledged',
+                'writeConcern' => 1,
+            ),
+            'unacknowledged' => array(
+                'className' => __NAMESPACE__ . '\DocumentPersisterWriteConcernUnacknowledged',
+                'writeConcern' => 0,
+            ),
+            'majority' => array(
+                'className' => __NAMESPACE__ . '\DocumentPersisterWriteConcernMajority',
+                'writeConcern' => 'majority',
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider dataProviderTestWriteConcern
+     *
+     * @param string $class
+     * @param string $writeConcern
+     */
+    public function testExecuteInsertsRespectsWriteConcern($class, $writeConcern)
+    {
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->getMock('\MongoCollection', ['batchInsert'], [], '', false);
+        $collection->expects($this->any())
+            ->method('batchInsert')
+            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
+
+        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $testDocument = new $class();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+    }
+
+    /**
+     * @dataProvider dataProviderTestWriteConcern
+     *
+     * @param string $class
+     * @param string $writeConcern
+     */
+    public function testExecuteUpsertsRespectsWriteConcern($class, $writeConcern)
+    {
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->getMock('\MongoCollection', ['update'], [], '', false);
+        $collection->expects($this->any())
+            ->method('update')
+            ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
+
+        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $testDocument = new $class();
+        $testDocument->id = new \MongoId();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+    }
+
+    /**
+     * @dataProvider dataProviderTestWriteConcern
+     *
+     * @param string $class
+     * @param string $writeConcern
+     */
+    public function testRemoveRespectsWriteConcern($class, $writeConcern)
+    {
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->getMock('\MongoCollection', ['remove', 'batchInsert'], [], '', false);
+        $collection->expects($this->once())
+            ->method('remove')
+            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
+
+        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $testDocument = new $class();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+
+        $this->dm->remove($testDocument);
+        $this->dm->flush();
+    }
+
+    public function testDefaultWriteConcernIsRespected()
+    {
+        $class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->getMock('\MongoCollection', ['batchInsert'], [], '', false);
+        $collection->expects($this->any())
+            ->method('batchInsert')
+            ->with($this->isType('array'), $this->equalTo(array('w' => 0)));
+
+        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $this->dm->getConfiguration()->setDefaultCommitOptions(array('w' => 0));
+
+        $testDocument = new $class();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+    }
 }
 
 /** @ODM\Document */
@@ -429,7 +551,6 @@ class DocumentPersisterTestDocumentEmbed extends AbstractDocumentPersisterTestDo
     public $nested;
 }
 
-
 /** @ODM\Document */
 class DocumentPersisterTestHashIdDocument
 {
@@ -444,4 +565,25 @@ class DocumentPersisterTestHashIdDocument
 
     /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", storeAs="dbRefWithDb") */
     public $complexRef;
+}
+
+/** @ODM\Document(writeConcern="majority") */
+class DocumentPersisterWriteConcernMajority
+{
+    /** @ODM\Id */
+    public $id;
+}
+
+/** @ODM\Document(writeConcern=0) */
+class DocumentPersisterWriteConcernUnacknowledged
+{
+    /** @ODM\Id */
+    public $id;
+}
+
+/** @ODM\Document(writeConcern=1) */
+class DocumentPersisterWriteConcernAcknowledged
+{
+    /** @ODM\Id */
+    public $id;
 }

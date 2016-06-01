@@ -229,6 +229,7 @@ class DocumentPersister
         }
 
         $inserts = array();
+        $options = $this->getWriteOptions($options);
         foreach ($this->queuedInserts as $oid => $document) {
             $data = $this->pb->prepareInsertData($document);
 
@@ -284,6 +285,7 @@ class DocumentPersister
             return;
         }
 
+        $options = $this->getWriteOptions($options);
         foreach ($this->queuedUpserts as $oid => $document) {
             try {
                 $this->executeUpsert($document, $options);
@@ -416,6 +418,8 @@ class DocumentPersister
                 }
             }
 
+            $options = $this->getWriteOptions($options);
+
             $result = $this->collection->update($query, $update, $options);
 
             if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
@@ -440,6 +444,8 @@ class DocumentPersister
         if ($this->class->isLockable) {
             $query[$this->class->lockField] = array('$exists' => false);
         }
+
+        $options = $this->getWriteOptions($options);
 
         $result = $this->collection->remove($query, $options);
 
@@ -1365,5 +1371,21 @@ class DocumentPersister
         $query = array_merge(array('_id' => $id), $shardKeyQueryPart);
 
         return $query;
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return array
+     */
+    private function getWriteOptions(array $options = array())
+    {
+        $defaultOptions = $this->dm->getConfiguration()->getDefaultCommitOptions();
+        $documentOptions = [];
+        if ($this->class->hasWriteConcern()) {
+            $documentOptions['w'] = $this->class->getWriteConcern();
+        }
+
+        return array_merge($defaultOptions, $documentOptions, $options);
     }
 }

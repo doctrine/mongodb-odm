@@ -376,12 +376,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->dm));
         }
 
-        $defaultOptions = $this->dm->getConfiguration()->getDefaultCommitOptions();
-        if ($options) {
-            $options = array_merge($defaultOptions, $options);
-        } else {
-            $options = $defaultOptions;
-        }
         // Compute changes done since last commit.
         if ($document === null) {
             $this->computeChangeSets();
