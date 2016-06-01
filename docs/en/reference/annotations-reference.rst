@@ -398,6 +398,9 @@ Optional attributes:
 -
    requireIndexes - Specifies whether or not queries for this document should
    require indexes by default. This may also be specified per query.
+-
+   writeConcern - Specifies the write concern for this document that overwrites
+   the default write concern specified in the configuration.
 
 .. code-block:: php
 
