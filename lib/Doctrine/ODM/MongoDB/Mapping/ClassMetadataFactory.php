@@ -147,6 +147,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $class->setAlsoLoadMethods($parent->alsoLoadMethods);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
+            $class->setWriteConcern($parent->writeConcern);
             $class->setFile($parent->getFile());
             if ($parent->isMappedSuperclass) {
                 $class->setCustomRepositoryClass($parent->customRepositoryClassName);
@@ -179,10 +180,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($parent && $parent->isInheritanceTypeSingleCollection()) {
             $class->setDatabase($parent->getDatabase());
             $class->setCollection($parent->getCollection());
-        }
-
-        if ($parent && $class->writeConcern === null) {
-            $class->setWriteConcern($parent->writeConcern);
         }
 
         $class->setParentClasses($nonSuperclassParents);
