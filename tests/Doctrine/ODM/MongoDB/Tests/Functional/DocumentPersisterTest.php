@@ -13,7 +13,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         parent::setUp();
 
-        $this->class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
+        $this->class = DocumentPersisterTestDocument::class;
 
         $collection = $this->dm->getDocumentCollection($this->class);
         $collection->drop();
@@ -139,7 +139,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrepareQueryOrNewObjWithHashId($hashId)
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $class = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $value = array('_id' => $hashId);
@@ -153,7 +153,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrepareQueryOrNewObjWithHashIdAndInOperators($hashId)
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $class = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $value = array('_id' => array('$exists' => true));
@@ -193,7 +193,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithNormalIdType()
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $class = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $id = new \MongoId();
@@ -234,7 +234,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithHashIdType($hashId)
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
+        $class = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $value = array('simpleRef' => $hashId);
@@ -270,7 +270,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithNormalIdType()
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestHashIdDocument';
+        $class = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $id = new \MongoId();
@@ -311,7 +311,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithHashIdType($hashId)
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
+        $class = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $value = array('complexRef.id' => $hashId);
@@ -352,19 +352,19 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         return array(
             'default' => array(
-                'className' => __NAMESPACE__ . '\DocumentPersisterTestDocument',
+                'className' => DocumentPersisterTestDocument::class,
                 'writeConcern' => 1,
             ),
             'acknowledged' => array(
-                'className' => __NAMESPACE__ . '\DocumentPersisterWriteConcernAcknowledged',
+                'className' => DocumentPersisterWriteConcernAcknowledged::class,
                 'writeConcern' => 1,
             ),
             'unacknowledged' => array(
-                'className' => __NAMESPACE__ . '\DocumentPersisterWriteConcernUnacknowledged',
+                'className' => DocumentPersisterWriteConcernUnacknowledged::class,
                 'writeConcern' => 0,
             ),
             'majority' => array(
-                'className' => __NAMESPACE__ . '\DocumentPersisterWriteConcernMajority',
+                'className' => DocumentPersisterWriteConcernMajority::class,
                 'writeConcern' => 'majority',
             ),
         );
@@ -448,7 +448,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testDefaultWriteConcernIsRespected()
     {
-        $class = __NAMESPACE__ . '\DocumentPersisterTestDocument';
+        $class = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $collection = $this->getMock('\MongoCollection', ['batchInsert'], [], '', false);
