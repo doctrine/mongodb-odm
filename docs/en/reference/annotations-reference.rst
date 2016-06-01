@@ -400,7 +400,9 @@ Optional attributes:
    require indexes by default. This may also be specified per query.
 -
    writeConcern - Specifies the write concern for this document that overwrites
-   the default write concern specified in the configuration.
+   the default write concern specified in the configuration. It does not overwrite
+   a write concern given as option to the ``flush`` method when committing your
+   documents.
 
 .. code-block:: php
 
