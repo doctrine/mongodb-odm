@@ -84,6 +84,9 @@ class XmlDriver extends FileDriver
                 $class->setCollection((string) $xmlRoot['collection']);
             }
         }
+        if (isset($xmlRoot['writeConcern'])) {
+            $class->setWriteConcern((string) $xmlRoot['writeConcern']);
+        }
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
             $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_' . $inheritanceType));

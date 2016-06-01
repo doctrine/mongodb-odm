@@ -179,6 +179,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($parent && $parent->isInheritanceTypeSingleCollection()) {
             $class->setDatabase($parent->getDatabase());
             $class->setCollection($parent->getCollection());
+
+            if (! $class->writeConcern) {
+                $class->setWriteConcern($parent->writeConcern);
+            }
+
         }
 
         $class->setParentClasses($nonSuperclassParents);

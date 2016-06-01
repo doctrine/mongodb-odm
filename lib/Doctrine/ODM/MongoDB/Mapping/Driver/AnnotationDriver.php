@@ -127,6 +127,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($documentAnnot->repositoryClass) && !$class->isEmbeddedDocument) {
             $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
         }
+        if (isset($documentAnnot->writeConcern)) {
+            $class->setWriteConcern($documentAnnot->writeConcern);
+        }
         if (isset($documentAnnot->indexes)) {
             foreach ($documentAnnot->indexes as $index) {
                 $this->addIndex($class, $index);

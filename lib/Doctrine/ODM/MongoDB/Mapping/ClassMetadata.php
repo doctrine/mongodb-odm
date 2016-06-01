@@ -105,6 +105,7 @@ class ClassMetadata extends ClassMetadataInfo
             'namespace', // TODO: REMOVE
             'db',
             'collection',
+            'writeConcern',
             'rootDocumentName',
             'generatorType',
             'generatorOptions',

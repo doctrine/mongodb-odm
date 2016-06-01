@@ -61,6 +61,9 @@ class YamlDriver extends FileDriver
         if (isset($element['collection'])) {
             $class->setCollection($element['collection']);
         }
+        if (isset($element['writeConcern'])) {
+            $class->setWriteConcern($element['writeConcern']);
+        }
         if ($element['type'] == 'document') {
             if (isset($element['repositoryClass'])) {
                 $class->setCustomRepositoryClass($element['repositoryClass']);

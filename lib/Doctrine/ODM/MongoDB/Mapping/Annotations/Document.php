@@ -33,4 +33,5 @@ final class Document extends AbstractDocument
     public $requireIndexes = false;
     public $shardKey;
     public $slaveOkay;
+    public $writeConcern;
 }

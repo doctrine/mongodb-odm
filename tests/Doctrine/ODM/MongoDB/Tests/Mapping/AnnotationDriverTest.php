@@ -148,6 +148,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->dm->getClassMetadata(__NAMESPACE__ . '\AnnotationDriverEmbeddedWithShardKey');
     }
 
+    public function testDocumentAnnotationCanSpecifyWriteConcern()
+    {
+        $cm = $this->dm->getClassMetadata(__NAMESPACE__ . '\AnnotationDriverTestWriteConcern');
+        $this->assertEquals('majority', $cm->writeConcern);
+
+        $cm = $this->dm->getClassMetadata(__NAMESPACE__ . '\ColumnWithoutType');
+        $this->assertNull($cm->writeConcern);
+    }
+
     protected function _loadDriverForCMSDocuments()
     {
         $annotationDriver = $this->_loadDriver();
@@ -204,4 +213,13 @@ class AnnotationDriverEmbeddedWithShardKey
 {
     /** @ODM\Field(type="string") */
     public $foo;
+}
+
+/**
+ * @ODM\Document(writeConcern="majority")
+ */
+class AnnotationDriverTestWriteConcern
+{
+    /** @ODM\Id */
+    public $id;
 }

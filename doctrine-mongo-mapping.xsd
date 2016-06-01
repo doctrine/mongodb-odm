@@ -47,6 +47,7 @@
     </xs:sequence>
     <xs:attribute name="db" type="xs:NMTOKEN" />
     <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="writeConcern" type="xs:string" />
     <xs:attribute name="collection" type="xs:NMTOKEN" />
     <xs:attribute name="capped-collection" type="xs:boolean" />
     <xs:attribute name="capped-collection-size" type="xs:integer" />
