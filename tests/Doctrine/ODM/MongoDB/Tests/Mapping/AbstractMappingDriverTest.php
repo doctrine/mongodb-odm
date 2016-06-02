@@ -36,6 +36,17 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      * @depends testDocumentCollectionNameAndInheritance
      * @param ClassMetadata $class
      */
+    public function testDocumentLevelWriteConcern($class)
+    {
+        $this->assertEquals(1, $class->getWriteConcern());
+
+        return $class;
+    }
+
+    /**
+     * @depends testDocumentLevelWriteConcern
+     * @param ClassMetadata $class
+     */
     public function testFieldMappings($class)
     {
         $this->assertEquals(14, count($class->fieldMappings));
@@ -343,7 +354,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 }
 
 /**
- * @ODM\Document(collection="cms_users")
+ * @ODM\Document(collection="cms_users", writeConcern=1)
  * @ODM\DiscriminatorField(fieldName="discr")
  * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser"})
  * @ODM\DefaultDiscriminatorValue("default")

@@ -447,7 +447,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     /**
      * Sets array of default commit options.
      *
-     * @param boolean $defaultCommitOptions
+     * @param array $defaultCommitOptions
      */
     public function setDefaultCommitOptions($defaultCommitOptions)
     {

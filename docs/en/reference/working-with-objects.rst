@@ -145,6 +145,7 @@ Example:
     $user->setPassword('changeme');
     $dm->flush($user);
 
+.. _flush_options:
 
 Flush Options
 -------------

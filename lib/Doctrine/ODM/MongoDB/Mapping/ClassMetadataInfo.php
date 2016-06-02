@@ -189,6 +189,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $collectionMax;
 
     /**
+     * READ-ONLY: Describes the level of acknowledgement requested from MongoDB for write operations.
+     */
+    public $writeConcern;
+
+    /**
      * READ-ONLY: The field name of the document identifier.
      */
     public $identifier;
@@ -895,6 +900,34 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isSharded()
     {
         return $this->shardKey ? true : false;
+    }
+
+    /**
+     * Sets the write concern used by this class.
+     *
+     * @param string $writeConcern
+     */
+    public function setWriteConcern($writeConcern)
+    {
+        $this->writeConcern = $writeConcern;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWriteConcern()
+    {
+        return $this->writeConcern;
+    }
+
+    /**
+     * Whether there is a write concern configured for this class.
+     *
+     * @return bool
+     */
+    public function hasWriteConcern()
+    {
+        return $this->writeConcern !== null;
     }
 
     /**
