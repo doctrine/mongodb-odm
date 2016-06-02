@@ -7,29 +7,6 @@ use Doctrine\ODM\MongoDB\Query\Query;
 
 class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testManualHydrateAndPersist()
-    {
-        $document = new GH1418Document;
-        $this->dm->getHydratorFactory()->hydrate($document, array(
-          '_id' => 1,
-          'name' => 'maciej',
-          'embedOne' => ['name' => 'maciej'],
-          'embedMany' => [
-              ['name' => 'maciej']
-          ],
-        ), [ Query::HINT_READ_ONLY => true ]);
-
-        $this->dm->persist($document);
-        $this->dm->flush();
-        $this->dm->clear();
-
-        $document = $this->dm->getRepository(GH1418Document::class)->find(1);
-        $this->assertEquals(1, $document->id);
-        $this->assertEquals('maciej', $document->embedOne->name);
-        $this->assertEquals(1, $document->embedMany->count());
-        $this->assertEquals('maciej', $document->embedMany->first()->name);
-    }
-
     public function testManualHydrateAndMerge()
     {
         $document = new GH1418Document;
@@ -51,6 +28,60 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('maciej', $document->embedOne->name);
         $this->assertEquals(1, $document->embedMany->count());
         $this->assertEquals('maciej', $document->embedMany->first()->name);
+    }
+
+    public function testReadDocumentAndManage()
+    {
+        $document = new GH1418Document;
+        $document->id = 1;
+
+        $embedded = new GH1418Embedded();
+        $embedded->name = 'maciej';
+
+        $document->embedOne = clone $embedded;
+        $document->embedMany[] = clone $embedded;
+
+        $this->dm->persist($document);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->createQueryBuilder(GH1418Document::class)
+            ->readOnly(true)
+            ->field('id')
+            ->equals(1)
+            ->getQuery()
+            ->getSingleResult();
+
+        $this->assertEquals(1, $document->id);
+        $this->assertEquals('maciej', $document->embedOne->name);
+        $this->assertEquals(1, $document->embedMany->count());
+        $this->assertEquals('maciej', $document->embedMany->first()->name);
+
+        $document = $this->dm->merge($document);
+
+        $document->embedOne->name = 'alcaeus';
+        $document->embedMany[0]->name = 'alcaeus';
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->getRepository(GH1418Document::class)->find(1);
+        $this->assertEquals(1, $document->id);
+        $this->assertEquals('alcaeus', $document->embedOne->name);
+        $this->assertEquals(1, $document->embedMany->count());
+        $this->assertEquals('alcaeus', $document->embedMany->first()->name);
+
+        $document->embedMany[] = clone $embedded;
+
+        $document = $this->dm->merge($document);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document = $this->dm->getRepository(GH1418Document::class)->find(1);
+        $this->assertEquals(1, $document->id);
+        $this->assertEquals('alcaeus', $document->embedOne->name);
+        $this->assertEquals(2, $document->embedMany->count());
+        $this->assertEquals('maciej', $document->embedMany->last()->name);
     }
 }
 
