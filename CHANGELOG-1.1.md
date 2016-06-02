@@ -91,6 +91,13 @@ and `getDeletedDocuments` methods respectively.
 The `Date` type now supports converting `DateTimeImmutable` objects to `MongoDate`. Previously, only
 `DateTime` was converted, causing errors when using immutable date objects.
 
+#### Support for writeConcern per document
+
+[#1419](https://github.com/doctrine/mongodb-odm/pull/1419) -
+The new `writeConcern` property in the document mapping allows users to overwrite the default write
+concern specified in the configuration. With this, it's possible to allow unacknowledged writes for
+certain documents or require writes to more than one node for others.
+
 PHP 7 compatibility
 -------------------
 
