@@ -1882,7 +1882,7 @@ class UnitOfWork implements PropertyChangedListener
                     } else {
                         $mergeCol = $prop->getValue($document);
 
-                        if ($mergeCol instanceof PersistentCollectionInterface && ! $mergeCol->isInitialized()) {
+                        if ($mergeCol instanceof PersistentCollectionInterface && ! $mergeCol->isInitialized() && ! $assoc2['isCascadeMerge']) {
                             /* Do not merge fields marked lazy that have not
                              * been fetched. Keep the lazy persistent collection
                              * of the managed copy.
@@ -2122,11 +2122,6 @@ class UnitOfWork implements PropertyChangedListener
                 if ($relatedDocuments === $class->reflFields[$assoc['fieldName']]->getValue($managedCopy)) {
                     // Collections are the same, so there is nothing to do
                     continue;
-                }
-
-                if ($relatedDocuments instanceof PersistentCollectionInterface) {
-                    // Unwrap so that foreach() does not initialize
-                    $relatedDocuments = $relatedDocuments->unwrap();
                 }
 
                 foreach ($relatedDocuments as $relatedDocument) {
