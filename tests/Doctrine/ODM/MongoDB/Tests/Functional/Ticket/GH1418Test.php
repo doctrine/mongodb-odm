@@ -13,11 +13,14 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getHydratorFactory()->hydrate($document, array(
           '_id' => 1,
           'name' => 'maciej',
-          'embedOne' => ['name' => 'maciej'],
+          'embedOne' => ['name' => 'maciej', 'sourceId' => 1],
           'embedMany' => [
-              ['name' => 'maciej']
+              ['name' => 'maciej', 'sourceId' => 2]
           ],
         ), [ Query::HINT_READ_ONLY => true ]);
+
+        $this->assertEquals(1, $document->embedOne->id);
+        $this->assertEquals(2, $document->embedMany->first()->id);
 
         $this->dm->merge($document);
         $this->dm->flush();
@@ -26,8 +29,10 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = $this->dm->getRepository(GH1418Document::class)->find(1);
         $this->assertEquals(1, $document->id);
         $this->assertEquals('maciej', $document->embedOne->name);
+        $this->assertEquals(1, $document->embedOne->id);
         $this->assertEquals(1, $document->embedMany->count());
         $this->assertEquals('maciej', $document->embedMany->first()->name);
+        $this->assertEquals(2, $document->embedMany->first()->id);
     }
 
     public function testReadDocumentAndManage()
@@ -36,6 +41,7 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document->id = 1;
 
         $embedded = new GH1418Embedded();
+        $embedded->id = 1;
         $embedded->name = 'maciej';
 
         $document->embedOne = clone $embedded;
@@ -54,8 +60,10 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals(1, $document->id);
         $this->assertEquals('maciej', $document->embedOne->name);
+        $this->assertEquals(1, $document->embedOne->id);
         $this->assertEquals(1, $document->embedMany->count());
         $this->assertEquals('maciej', $document->embedMany->first()->name);
+        $this->assertEquals(1, $document->embedMany->first()->id);
 
         $document = $this->dm->merge($document);
 
@@ -68,8 +76,10 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = $this->dm->getRepository(GH1418Document::class)->find(1);
         $this->assertEquals(1, $document->id);
         $this->assertEquals('alcaeus', $document->embedOne->name);
+        $this->assertEquals(1, $document->embedOne->id);
         $this->assertEquals(1, $document->embedMany->count());
         $this->assertEquals('alcaeus', $document->embedMany->first()->name);
+        $this->assertEquals(1, $document->embedMany->first()->id);
 
         $document->embedMany[] = clone $embedded;
 
@@ -101,6 +111,12 @@ class GH1418Document
 /** @ODM\EmbeddedDocument */
 class GH1418Embedded
 {
+    /**
+     * @ODM\Id(strategy="none", type="int")
+     * @ODM\AlsoLoad("sourceId")
+     */
+    public $id;
+
     /** @ODM\Field(type="string") */
     public $name;
 }
