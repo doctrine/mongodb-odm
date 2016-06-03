@@ -1798,36 +1798,32 @@ class UnitOfWork implements PropertyChangedListener
                 $document->__load();
             }
 
-            // Try to look the document up in the identity map.
-            $id = $class->isEmbeddedDocument ? null : $class->getIdentifierObject($document);
+            $identifier = $class->getIdentifier();
+            // We always have one element in the identifier array but it might be null
+            $id = $identifier[0] !== null ? $class->getIdentifierObject($document) : null;
+            $managedCopy = null;
 
-            if ($id === null) {
-                // If there is no identifier, it is actually NEW.
+            // Try to fetch document from the database
+            if (! $class->isEmbeddedDocument && $id !== null) {
+                $managedCopy = $this->dm->find($class->name, $id);
+
+                // Managed copy may be removed in which case we can't merge
+                if ($managedCopy && $this->getDocumentState($managedCopy) === self::STATE_REMOVED) {
+                    throw new \InvalidArgumentException('Removed entity detected during merge. Cannot merge with a removed entity.');
+                }
+
+                if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized__) {
+                    $managedCopy->__load();
+                }
+            }
+
+            if ($managedCopy === null) {
+                // Create a new managed instance
                 $managedCopy = $class->newInstance();
-                $this->persistNew($class, $managedCopy);
-            } else {
-                $managedCopy = $this->tryGetById($id, $class);
-
-                if ($managedCopy) {
-                    // We have the document in memory already, just make sure it is not removed.
-                    if ($this->getDocumentState($managedCopy) === self::STATE_REMOVED) {
-                        throw new \InvalidArgumentException('Removed entity detected during merge. Cannot merge with a removed entity.');
-                    }
-                } else {
-                    // We need to fetch the managed copy in order to merge.
-                    $managedCopy = $this->dm->find($class->name, $id);
-                }
-
-                if ($managedCopy === null) {
-                    // If the identifier is ASSIGNED, it is NEW
-                    $managedCopy = $class->newInstance();
+                if ($id !== null) {
                     $class->setIdentifierValue($managedCopy, $id);
-                    $this->persistNew($class, $managedCopy);
-                } else {
-                    if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized__) {
-                        $managedCopy->__load();
-                    }
                 }
+                $this->persistNew($class, $managedCopy);
             }
 
             if ($class->isVersioned) {
@@ -1882,7 +1878,7 @@ class UnitOfWork implements PropertyChangedListener
                     } else {
                         $mergeCol = $prop->getValue($document);
 
-                        if ($mergeCol instanceof PersistentCollectionInterface && ! $mergeCol->isInitialized()) {
+                        if ($mergeCol instanceof PersistentCollectionInterface && ! $mergeCol->isInitialized() && ! $assoc2['isCascadeMerge']) {
                             /* Do not merge fields marked lazy that have not
                              * been fetched. Keep the lazy persistent collection
                              * of the managed copy.
@@ -2122,11 +2118,6 @@ class UnitOfWork implements PropertyChangedListener
                 if ($relatedDocuments === $class->reflFields[$assoc['fieldName']]->getValue($managedCopy)) {
                     // Collections are the same, so there is nothing to do
                     continue;
-                }
-
-                if ($relatedDocuments instanceof PersistentCollectionInterface) {
-                    // Unwrap so that foreach() does not initialize
-                    $relatedDocuments = $relatedDocuments->unwrap();
                 }
 
                 foreach ($relatedDocuments as $relatedDocument) {

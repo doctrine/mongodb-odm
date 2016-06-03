@@ -249,6 +249,12 @@ Read-Only is not applicable if hydration is disabled.
     implementation, may change in future and will not be considered a BC break
     (will be treated as a feature instead).
 
+.. note::
+
+    To manage a document previously fetched in read-only mode, always use the
+    `merge` method of the DocumentManager. Using `persist` in these cases can
+    have unwanted side effects.
+
 Disabling Hydration
 ~~~~~~~~~~~~~~~~~~~
 
