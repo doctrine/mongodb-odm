@@ -1299,9 +1299,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['simple']) && ($mapping['simple'] === true || $mapping['simple'] === 'true')) {
             $mapping['storeAs'] = ClassMetadataInfo::REFERENCE_STORE_AS_ID;
         }
-        // Remove the "simple" mapping and use "storeAs" in all further logic
-        if (isset($mapping['simple'])) {
-            unset($mapping['simple']);
+        // Provide the correct value for the "simple" field for backwards compatibility
+        if (isset($mapping['storeAs'])) {
+            $mapping['simple'] = $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID;
         }
 
         if (isset($mapping['reference'])
