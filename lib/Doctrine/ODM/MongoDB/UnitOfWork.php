@@ -242,12 +242,20 @@ class UnitOfWork implements PropertyChangedListener
     private $persistenceBuilder;
 
     /**
-     * Array of parent associations between embedded documents
+     * Array of parent associations between embedded documents.
      *
-     * @todo We might need to clean up this array in clear(), doDetach(), etc.
      * @var array
      */
     private $parentAssociations = array();
+
+    /**
+     * Array of embedded documents known to UnitOfWork. We need to hold them to prevent spl_object_hash
+     * collisions in case already managed object is lost due to GC (so now it won't). Embedded documents
+     * found during doDetach are removed from the registry, to empty it altogether clear() can be utilized.
+     *
+     * @var array
+     */
+    private $embeddedDocumentsRegistry = array();
 
     /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
@@ -288,6 +296,7 @@ class UnitOfWork implements PropertyChangedListener
     public function setParentAssociation($document, $mapping, $parent, $propertyPath)
     {
         $oid = spl_object_hash($document);
+        $this->embeddedDocumentsRegistry[$oid] = $document;
         $this->parentAssociations[$oid] = array($mapping, $parent, $propertyPath);
     }
 
@@ -2185,7 +2194,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->documentDeletions[$oid], $this->documentIdentifiers[$oid],
                     $this->documentStates[$oid], $this->originalDocumentData[$oid],
                     $this->parentAssociations[$oid], $this->documentUpserts[$oid],
-                    $this->hasScheduledCollections[$oid]);
+                    $this->hasScheduledCollections[$oid], $this->embeddedDocumentsRegistry[$oid]);
                 break;
             case self::STATE_NEW:
             case self::STATE_DETACHED:
@@ -2488,7 +2497,8 @@ class UnitOfWork implements PropertyChangedListener
             $this->collectionUpdates =
             $this->collectionDeletions =
             $this->parentAssociations =
-            $this->orphanRemovals = 
+            $this->embeddedDocumentsRegistry =
+            $this->orphanRemovals =
             $this->hasScheduledCollections = array();
         } else {
             $visited = array();
