@@ -968,8 +968,8 @@ class UnitOfWork implements PropertyChangedListener
                         if ($knownParent && $knownParent !== $parentDocument) {
                             $entry = clone $entry;
                             if ($assoc['type'] === ClassMetadata::ONE) {
-                                $class->setFieldValue($parentDocument, $assoc['name'], $entry);
-                                $this->setOriginalDocumentProperty(spl_object_hash($parentDocument), $assoc['name'], $entry);
+                                $class->setFieldValue($parentDocument, $assoc['fieldName'], $entry);
+                                $this->setOriginalDocumentProperty(spl_object_hash($parentDocument), $assoc['fieldName'], $entry);
                             } else {
                                 // must use unwrapped value to not trigger orphan removal
                                 $unwrappedValue[$key] = $entry;

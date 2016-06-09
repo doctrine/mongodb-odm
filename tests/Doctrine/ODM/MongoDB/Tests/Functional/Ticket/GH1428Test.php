@@ -25,10 +25,8 @@ class GH1428Test extends BaseTest
         try {
             $this->dm->flush();
             $this->assertTrue(true);
-
         } catch (PHPUnit_Framework_Error_Notice $ex) {
             $this->fail($ex);
-
         }
     }
 }
