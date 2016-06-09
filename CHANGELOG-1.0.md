@@ -23,6 +23,7 @@ All issues and pull requests in this release may be found under the
 * [#1416](https://github.com/doctrine/mongodb-odm/pull/1416) fixes name resolution when priming references contained in embedded documents.
 * [#1417](https://github.com/doctrine/mongodb-odm/pull/1417) fixes unserializing PersistentCollection objects contained in documents.
 * [#1431](https://github.com/doctrine/mongodb-odm/pull/1431) fixes potential object hash collisions with embedded documents by keeping a copy of the document in UnitOfWork.
+* [#1432](https://github.com/doctrine/mongodb-odm/pull/1432) fixes the usage of embedded document field names when fixing document ownership.
 
 1.0.5 (2016-02-16)
 ------------------
