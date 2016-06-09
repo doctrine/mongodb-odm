@@ -54,7 +54,7 @@ class PersistentCollectionTest extends BaseTest
         $unserialized->setDocumentManager($this->dm);
         $unserialized->getTypeClass();
     }
-    
+
     public function testGetTypeClassWorksAfterUnserialization()
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);

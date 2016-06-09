@@ -12,6 +12,19 @@ the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
+1.0.6 (2016-06-09)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.0.6 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.6).
+
+* [#1382](https://github.com/doctrine/mongodb-odm/pull/1382) fixes the conversion `MongoDate` objects to `DateTime`.
+* [#1406](https://github.com/doctrine/mongodb-odm/pull/1406) fixes queries to simple references.
+* [#1416](https://github.com/doctrine/mongodb-odm/pull/1416) fixes name resolution when priming references contained in embedded documents.
+* [#1417](https://github.com/doctrine/mongodb-odm/pull/1417) fixes unserializing PersistentCollection objects contained in documents.
+* [#1431](https://github.com/doctrine/mongodb-odm/pull/1431) fixes potential object hash collisions with embedded documents by keeping a copy of the document in UnitOfWork.
+* [#1432](https://github.com/doctrine/mongodb-odm/pull/1432) fixes the usage of embedded document field names when fixing document ownership.
+
 1.0.5 (2016-02-16)
 ------------------
 
