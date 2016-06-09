@@ -72,7 +72,7 @@ class being queried for references defined in child classes).
 [#1403](https://github.com/doctrine/mongodb-odm/pull/1403) -
 Read-Only mode instructs ODM to not only hydrate the latest data but also to
 create new document's instance (i.e. if found document would be already managed
-by Doctrine, new instance will be returned) and not register it in UnitOfWork`.
+by Doctrine, new instance will be returned) and not register it in `UnitOfWork`.
 This technique can prove especially useful when using `select()` while building
 query with no intent to update fetched documents. To read more about read-only mode
 you can check [documentation](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/query-builder-api.html#fetching-documents-as-read-only).
