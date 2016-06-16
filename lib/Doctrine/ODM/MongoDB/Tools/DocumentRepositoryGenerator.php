@@ -41,7 +41,8 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
  */
 class <className> extends DocumentRepository
 {
-}';
+}
+';
 
     public function generateDocumentRepositoryClass($fullClassName)
     {

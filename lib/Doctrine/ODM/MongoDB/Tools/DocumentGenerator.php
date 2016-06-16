@@ -85,7 +85,8 @@ class DocumentGenerator
 <documentClassName>
 {
 <documentBody>
-}';
+}
+';
 
     private static $getMethodTemplate =
 '/**
