@@ -25,6 +25,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
@@ -340,7 +341,13 @@ class YamlDriver extends FileDriver
      */
     protected function loadMappingFile($file)
     {
-        return Yaml::parse(file_get_contents($file));
+        try {
+            return Yaml::parse(file_get_contents($file));
+        }
+        catch (ParseException $e) {
+            $e->setParsedFile($file);
+            throw $e;
+        }
     }
 
     private function setShardKey(ClassMetadataInfo $class, array $shardKey)
