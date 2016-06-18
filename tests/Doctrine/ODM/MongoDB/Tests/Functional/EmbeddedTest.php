@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\ChangeSet\FieldChange;
 use Documents\Address;
 use Documents\Phonenumber;
 use Documents\Account;
@@ -115,9 +116,9 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->setAddress($address);
         $this->uow->computeChangeSets();
         $changeSet = $this->uow->getDocumentChangeSet($user);
-        $this->assertNotEmpty($changeSet['address']);
-        $this->assertSame($oldAddress, $changeSet['address'][0]);
-        $this->assertSame($user->getAddress(), $changeSet['address'][1]);
+        $this->assertInstanceOf(FieldChange::class, $changeSet['address']);
+        $this->assertSame($oldAddress, $changeSet['address']->getOldValue());
+        $this->assertSame($user->getAddress(), $changeSet['address']->getNewValue());
     }
 
     public function testRemoveOneEmbedded()

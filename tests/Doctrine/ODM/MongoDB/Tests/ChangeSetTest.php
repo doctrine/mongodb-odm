@@ -35,8 +35,8 @@ class ChangeSetTest extends BaseTest
             $this->uow->getDocumentChangeSet($album)['songs'],
             'Exchanged collection instance should be denoted by FieldChange'
         );
-        $this->assertSame($originalSongs, $this->uow->getDocumentChangeSet($album)['songs'][0]);
-        $this->assertSame($album->getSongs(), $this->uow->getDocumentChangeSet($album)['songs'][1]);
+        $this->assertSame($originalSongs, $this->uow->getDocumentChangeSet($album)['songs']->getOldValue());
+        $this->assertSame($album->getSongs(), $this->uow->getDocumentChangeSet($album)['songs']->getNewValue());
         $this->dm->flush();
 
         $oldSong = $album->getSongs()[0];
@@ -72,8 +72,8 @@ class ChangeSetTest extends BaseTest
         ];
         foreach ($songsChange->getChangedObjects() as $i => $changedObject) {
             $this->assertCount(1, $changedObject);
-            $this->assertSame($expected[$i][0], $changedObject['name'][0]);
-            $this->assertSame($expected[$i][1], $changedObject['name'][1]);
+            $this->assertSame($expected[$i][0], $changedObject['name']->getOldValue());
+            $this->assertSame($expected[$i][1], $changedObject['name']->getNewValue());
         }
     }
     
@@ -98,8 +98,8 @@ class ChangeSetTest extends BaseTest
             $this->uow->getDocumentChangeSet($item)['cost'],
             'Exchanged embed one instance should be denoted by FieldChange'
         );
-        $this->assertSame($originalCost, $this->uow->getDocumentChangeSet($item)['cost'][0]);
-        $this->assertSame($item->getCostInstance(), $this->uow->getDocumentChangeSet($item)['cost'][1]);
+        $this->assertSame($originalCost, $this->uow->getDocumentChangeSet($item)['cost']->getOldValue());
+        $this->assertSame($item->getCostInstance(), $this->uow->getDocumentChangeSet($item)['cost']->getNewValue());
         $this->dm->flush();
         
         $usd = new Currency('USD');
@@ -113,7 +113,7 @@ class ChangeSetTest extends BaseTest
         );
         $this->assertCount(1, $costChange);
         $this->assertInstanceOf(FieldChange::class, $costChange['currency']);
-        $this->assertSame($euro, $costChange['currency'][0]);
-        $this->assertSame($usd, $costChange['currency'][1]);
+        $this->assertSame($euro, $costChange['currency']->getOldValue());
+        $this->assertSame($usd, $costChange['currency']->getNewValue());
     }
 }

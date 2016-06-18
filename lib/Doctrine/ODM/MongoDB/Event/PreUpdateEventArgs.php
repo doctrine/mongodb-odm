@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Event;
 
+use Doctrine\ODM\MongoDB\ChangeSet\FieldChange;
 use Doctrine\ODM\MongoDB\ChangeSet\ObjectChangeSet;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
@@ -79,7 +80,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     {
         $this->assertValidField($field);
 
-        return $this->documentChangeSet[$field][0];
+        return $this->documentChangeSet[$field]->getOldValue();
     }
 
     /**
@@ -92,7 +93,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     {
         $this->assertValidField($field);
 
-        return $this->documentChangeSet[$field][1];
+        return $this->documentChangeSet[$field]->getNewValue();
     }
 
     /**
@@ -105,7 +106,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     {
         $this->assertValidField($field);
 
-        $this->documentChangeSet[$field][1] = $value;
+        $this->documentChangeSet[$field] = new FieldChange($this->documentChangeSet[$field]->getOldValue(), $value);
         $this->getDocumentManager()->getUnitOfWork()->setDocumentChangeSet($this->getDocument(), $this->documentChangeSet);
     }
 

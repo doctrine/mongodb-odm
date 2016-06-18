@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\ChangeSet;
 
-final class FieldChange implements \ArrayAccess
+final class FieldChange implements \ArrayAccess, ChangedValue
 {
     private $oldValue;
     private $newValue;

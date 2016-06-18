@@ -726,7 +726,8 @@ class UnitOfWork implements PropertyChangedListener
                             : new CollectionChangeSet($value, []);
                     }
                     $cs = $this->documentChangeSets[$oid][$mapping['fieldName']];
-                    if ($mapping['type'] === ClassMetadata::ONE && $cs instanceof FieldChange && $cs[0] === $cs[1]) {
+                    if ($mapping['type'] === ClassMetadata::ONE && $cs instanceof FieldChange
+                        && $cs->getOldValue() === $cs->getNewValue()) {
                         // the instance of embed one has not changed, we can use ObjectChangeSet for more data
                         $this->documentChangeSets[$oid][$mapping['fieldName']] = $this->documentChangeSets[$oid2];
                     }
@@ -877,7 +878,10 @@ class UnitOfWork implements PropertyChangedListener
                                 $this->setOriginalDocumentProperty(spl_object_hash($parentDocument), $assoc['fieldName'], $entry);
                                 $poid = spl_object_hash($parentDocument);
                                 if (isset($this->documentChangeSets[$poid][$assoc['fieldName']])) {
-                                    $this->documentChangeSets[$poid][$assoc['fieldName']][1] = $entry;
+                                    $this->documentChangeSets[$poid][$assoc['fieldName']] = new FieldChange(
+                                        $this->documentChangeSets[$poid][$assoc['fieldName']]->getOldValue(),
+                                        $entry
+                                    );
                                 }
                             } else {
                                 // must use unwrapped value to not trigger orphan removal

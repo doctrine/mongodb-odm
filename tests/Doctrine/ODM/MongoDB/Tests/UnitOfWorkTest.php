@@ -211,8 +211,8 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($this->uow->isScheduledForDirtyCheck($entity));
         $changeSet = $this->uow->getDocumentChangeSet($entity);
         $this->assertInstanceOf(ObjectChangeSet::class, $changeSet);
-        $this->assertEquals('thedata', $changeSet['data'][0]);
-        $this->assertEquals('newdata', $changeSet['data'][1]);
+        $this->assertEquals('thedata', $changeSet['data']->getOldValue());
+        $this->assertEquals('newdata', $changeSet['data']->getNewValue());
 
         $item = new NotifyChangedRelatedItem();
         $item->setId(1);
@@ -562,7 +562,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $changeSet = $this->uow->getDocumentChangeSet($address);
 
         $this->assertTrue(isset($changeSet['city']));
-        $this->assertEquals('Nashville', $changeSet['city'][1]);
+        $this->assertEquals('Nashville', $changeSet['city']->getNewValue());
     }
 
     public function testGetClassNameForAssociation()

@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\ChangeSet\FieldChange;
 use Documents\Bars\Bar;
 use Documents\Bars\Location;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -71,9 +72,9 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $bar->setLocations(new ArrayCollection([ new Location('Cracow') ]));
         $this->uow->computeChangeSets();
         $changeSet = $this->uow->getDocumentChangeSet($bar);
-        $this->assertNotEmpty($changeSet['locations']);
-        $this->assertSame($locations, $changeSet['locations'][0]);
-        $this->assertSame($bar->getLocations(), $changeSet['locations'][1]);
+        $this->assertInstanceOf(FieldChange::class, $changeSet['locations']);
+        $this->assertSame($locations, $changeSet['locations']->getOldValue());
+        $this->assertSame($bar->getLocations(), $changeSet['locations']->getNewValue());
     }
 
     public function testCreateCollections()

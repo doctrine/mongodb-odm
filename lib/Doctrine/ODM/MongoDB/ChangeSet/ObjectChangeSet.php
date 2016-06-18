@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\ChangeSet;
 
-final class ObjectChangeSet implements \IteratorAggregate, \ArrayAccess, \Countable
+final class ObjectChangeSet implements \IteratorAggregate, \ArrayAccess, \Countable, ChangedValue
 {
     private $changes = [];
 
@@ -37,6 +37,16 @@ final class ObjectChangeSet implements \IteratorAggregate, \ArrayAccess, \Counta
     }
 
     public function getObject()
+    {
+        return $this->object;
+    }
+
+    public function getNewValue()
+    {
+        return $this->object;
+    }
+
+    public function getOldValue()
     {
         return $this->object;
     }

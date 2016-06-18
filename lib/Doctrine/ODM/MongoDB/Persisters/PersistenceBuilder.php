@@ -76,7 +76,7 @@ class PersistenceBuilder
         $insertData = array();
         foreach ($class->fieldMappings as $mapping) {
 
-            $new = isset($changeset[$mapping['fieldName']]) ? $changeset[$mapping['fieldName']][1] : null;
+            $new = isset($changeset[$mapping['fieldName']]) ? $changeset[$mapping['fieldName']]->getNewValue() : null;
 
             if ($new === null && $mapping['nullable']) {
                 $insertData[$mapping['name']] = null;
@@ -140,11 +140,8 @@ class PersistenceBuilder
                 continue;
             }
 
-            if ($change instanceof ObjectChangeSet) {
-                $old = $new = $change->getObject();
-            } else {
-                list($old, $new) = $change;
-            }
+            $old = $change->getOldValue();
+            $new = $change->getNewValue();
 
             // Scalar fields
             if ( ! isset($mapping['association'])) {
@@ -244,7 +241,8 @@ class PersistenceBuilder
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
-            list($old, $new) = $change;
+            $old = $change->getOldValue();
+            $new = $change->getNewValue();
 
             // Scalar fields
             if ( ! isset($mapping['association'])) {

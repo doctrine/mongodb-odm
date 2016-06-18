@@ -21,7 +21,7 @@ namespace Doctrine\ODM\MongoDB\ChangeSet;
 
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 
-final class CollectionChangeSet implements \ArrayAccess
+final class CollectionChangeSet implements \ArrayAccess, ChangedValue
 {
     /**
      * @var PersistentCollectionInterface
@@ -65,6 +65,16 @@ final class CollectionChangeSet implements \ArrayAccess
     public function registerChange(ObjectChangeSet $changeSet)
     {
         $this->changes[spl_object_hash($changeSet->getObject())] = $changeSet;
+    }
+
+    public function getNewValue()
+    {
+        return $this->collection;
+    }
+
+    public function getOldValue()
+    {
+        return $this->collection;
     }
 
     public function offsetExists($offset)
