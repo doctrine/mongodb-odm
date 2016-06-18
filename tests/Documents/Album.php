@@ -45,4 +45,9 @@ class Album
     {
         return $this->songs;
     }
+
+    public function setSongs($songs)
+    {
+        $this->songs = $songs;
+    }
 }

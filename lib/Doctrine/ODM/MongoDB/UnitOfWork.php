@@ -717,7 +717,7 @@ class UnitOfWork implements PropertyChangedListener
                     if (! isset($this->documentChangeSets[$oid])) {
                         $this->documentChangeSets[$oid] = new ObjectChangeSet($document, []);
                     }
-                    if (empty($this->documentChangeSets[$oid][$mapping['fieldName']])) {
+                    if (! isset($this->documentChangeSets[$oid][$mapping['fieldName']])) {
                         // instance of $value is the same as it was previously otherwise there would be
                         // change set already in place
                         $this->documentChangeSets[$oid][$mapping['fieldName']] = new FieldChange($value, $value);

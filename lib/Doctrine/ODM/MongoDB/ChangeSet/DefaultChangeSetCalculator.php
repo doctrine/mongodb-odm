@@ -142,8 +142,10 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
                 }
 
                 // if embed-many or reference-many relationship
-                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
-                    $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
+                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::MANY) {
+                    $changeSet[$propName] = $orgValue === $actualValue
+                        ? new CollectionChangeSet($actualValue, [])
+                        : new FieldChange($orgValue, $actualValue);
                     /* If original collection was exchanged with a non-empty value
                      * and $set will be issued, there is no need to $unset it first
                      */

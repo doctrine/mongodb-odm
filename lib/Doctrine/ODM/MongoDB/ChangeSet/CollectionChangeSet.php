@@ -21,7 +21,7 @@ namespace Doctrine\ODM\MongoDB\ChangeSet;
 
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 
-final class CollectionChangeSet
+final class CollectionChangeSet implements \ArrayAccess
 {
     /**
      * @var PersistentCollectionInterface
@@ -45,6 +45,7 @@ final class CollectionChangeSet
     
     public function getChangedObjects()
     {
+        throw new \BadMethodCallException('Not implemented yet.');
         // 1. if object at index 1 was replaced then it'll be here as well as in getInsertedObjects
         // 2. if change set represents references then this returns empty array
         return $this->changes;
@@ -58,5 +59,28 @@ final class CollectionChangeSet
     public function getInsertedObjects()
     {
         return $this->collection->getInsertedDocuments();
+    }
+
+    public function offsetExists($offset)
+    {
+        return in_array($offset, [0, 1]);
+    }
+
+    public function offsetGet($offset)
+    {
+        if (! $this->offsetExists($offset)) {
+            throw new \OutOfBoundsException();
+        }
+        return $this->collection;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        throw new \BadMethodCallException('Not allowed.');
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new \BadMethodCallException('Not allowed.');
     }
 }
