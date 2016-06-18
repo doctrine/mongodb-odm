@@ -438,7 +438,7 @@ public function <methodName>()
 
     private function hasProperty($property, ClassMetadataInfo $metadata)
     {
-        if ($this->extendsClass() || class_exists($metadata->name)) {
+        if ($this->extendsClass() || class_exists($metadata->name) || trait_exists($metadata->name)) {
             // don't generate property if its already on the base class.
             $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->name);
 
@@ -461,7 +461,7 @@ public function <methodName>()
 
     private function hasMethod($method, ClassMetadataInfo $metadata)
     {
-        if ($this->extendsClass() || class_exists($metadata->name)) {
+        if ($this->extendsClass() || class_exists($metadata->name) || trait_exists($metadata->name)) {
             // don't generate method if its already on the base class.
             $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->name);
 
