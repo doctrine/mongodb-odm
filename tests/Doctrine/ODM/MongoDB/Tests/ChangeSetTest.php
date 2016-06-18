@@ -23,7 +23,7 @@ class ChangeSetTest extends BaseTest
         $this->assertInstanceOf(
             FieldChange::class,
             $this->uow->getDocumentChangeSet($album)['songs'],
-            'When document is new collection should be in FieldChange'
+            'When document is new, collection should be in FieldChange'
         );
         $this->dm->flush();
 
@@ -40,9 +40,11 @@ class ChangeSetTest extends BaseTest
         $this->dm->flush();
 
         $oldSong = $album->getSongs()[0];
-        $newSong = new Song('Hidden Track');
+        $newSong = new Song('Track #1');
+        $hiddenSong = new Song('Hidden Track');
         $album->getSongs()->removeElement($oldSong);
         $album->addSong($newSong);
+        $album->addSong($hiddenSong);
         $this->uow->computeChangeSets();
         /** @var CollectionChangeSet $songsChange */
         $songsChange = $this->uow->getDocumentChangeSet($album)['songs'];
@@ -53,8 +55,26 @@ class ChangeSetTest extends BaseTest
         );
         $this->assertCount(1, $songsChange->getDeletedObjects());
         $this->assertSame($oldSong, $songsChange->getDeletedObjects()[0]);
-        $this->assertCount(1, $songsChange->getInsertedObjects());
+        $this->assertCount(2, $songsChange->getInsertedObjects());
         $this->assertSame($newSong, $songsChange->getInsertedObjects()[0]);
+        $this->assertSame($hiddenSong, $songsChange->getInsertedObjects()[1]);
+        $this->dm->flush();
+        
+        $newSong->setName('Really long track');
+        $hiddenSong->setName('Surprise!');
+        $this->uow->computeChangeSets();
+        /** @var CollectionChangeSet $songsChange */
+        $songsChange = $this->uow->getDocumentChangeSet($album)['songs'];
+        $this->assertCount(2, $songsChange->getChangedObjects());
+        $expected = [
+            [ 'Track #1', 'Really long track' ],
+            [ 'Hidden Track', 'Surprise!' ],
+        ];
+        foreach ($songsChange->getChangedObjects() as $i => $changedObject) {
+            $this->assertCount(1, $changedObject);
+            $this->assertSame($expected[$i][0], $changedObject['name'][0]);
+            $this->assertSame($expected[$i][1], $changedObject['name'][1]);
+        }
     }
     
     public function testEmbedOne()

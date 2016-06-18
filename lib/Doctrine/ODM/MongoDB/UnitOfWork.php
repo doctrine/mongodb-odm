@@ -24,6 +24,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ODM\MongoDB\ChangeSet\ChangeSetCalculator;
+use Doctrine\ODM\MongoDB\ChangeSet\CollectionChangeSet;
 use Doctrine\ODM\MongoDB\ChangeSet\DefaultChangeSetCalculator;
 use Doctrine\ODM\MongoDB\ChangeSet\FieldChange;
 use Doctrine\ODM\MongoDB\ChangeSet\ObjectChangeSet;
@@ -720,19 +721,22 @@ class UnitOfWork implements PropertyChangedListener
                     if (! isset($this->documentChangeSets[$oid][$mapping['fieldName']])) {
                         // instance of $value is the same as it was previously otherwise there would be
                         // change set already in place
-                        $this->documentChangeSets[$oid][$mapping['fieldName']] = new FieldChange($value, $value);
+                        $this->documentChangeSets[$oid][$mapping['fieldName']] = $mapping['type'] === ClassMetadata::ONE
+                            ? new FieldChange($value, $value)
+                            : new CollectionChangeSet($value, []);
                     }
                     $cs = $this->documentChangeSets[$oid][$mapping['fieldName']];
                     if ($mapping['type'] === ClassMetadata::ONE && $cs instanceof FieldChange && $cs[0] === $cs[1]) {
                         // the instance of embed one has not changed, we can use ObjectChangeSet for more data
                         $this->documentChangeSets[$oid][$mapping['fieldName']] = $this->documentChangeSets[$oid2];
                     }
+                    if ($cs instanceof CollectionChangeSet && $this->documentChangeSets[$oid2] instanceof ObjectChangeSet) {
+                        $cs->registerChange($this->documentChangeSets[$oid2]);
+                    }
 
                     if ( ! $isNewDocument) {
                         $this->scheduleForUpdate($document);
                     }
-
-                    break;
                 }
             }
         }

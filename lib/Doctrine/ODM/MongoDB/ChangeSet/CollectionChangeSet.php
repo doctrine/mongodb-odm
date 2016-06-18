@@ -40,15 +40,16 @@ final class CollectionChangeSet implements \ArrayAccess
     public function __construct(PersistentCollectionInterface $collection, array $changes)
     {
         $this->collection = $collection;
-        $this->changes = $changes;
+        foreach ($changes as $change) {
+            $this->registerChange($change);
+        }
     }
-    
+
     public function getChangedObjects()
     {
-        throw new \BadMethodCallException('Not implemented yet.');
-        // 1. if object at index 1 was replaced then it'll be here as well as in getInsertedObjects
+        // 1. if object at index 1 was replaced then it'll be here as well as in getInsertedObjects (but not yet)
         // 2. if change set represents references then this returns empty array
-        return $this->changes;
+        return array_values($this->changes);
     }
 
     public function getDeletedObjects()
@@ -59,6 +60,11 @@ final class CollectionChangeSet implements \ArrayAccess
     public function getInsertedObjects()
     {
         return $this->collection->getInsertedDocuments();
+    }
+
+    public function registerChange(ObjectChangeSet $changeSet)
+    {
+        $this->changes[spl_object_hash($changeSet->getObject())] = $changeSet;
     }
 
     public function offsetExists($offset)
