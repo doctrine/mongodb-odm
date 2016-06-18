@@ -25,9 +25,9 @@ interface ChangeSetCalculator
 {
     /**
      * @param object $document
-     * @param ClassMetadata $classMetadata
+     * @param ClassMetadata $class
      * @param array $originalData
      * @return ObjectChangeSet
      */
-    public function calculate($document, ClassMetadata $classMetadata, $originalData = []);
+    public function calculate($document, ClassMetadata $class, $originalData = []);
 }
