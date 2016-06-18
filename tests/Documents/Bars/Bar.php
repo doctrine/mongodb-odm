@@ -45,4 +45,9 @@ class Bar
     {
         return $this->locations;
     }
+    
+    public function setLocations($locations)
+    {
+        $this->locations = $locations;
+    }
 }

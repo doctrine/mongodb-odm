@@ -840,7 +840,11 @@ class UnitOfWork implements PropertyChangedListener
                 $oid2 = spl_object_hash($obj);
 
                 if (isset($this->documentChangeSets[$oid2])) {
-                    $this->documentChangeSets[$oid][$mapping['fieldName']] = array($value, $value);
+                    if (empty($this->documentChangeSets[$oid][$mapping['fieldName']])) {
+                        // instance of $value is the same as it was previously otherwise there would be
+                        // change set already in place
+                        $this->documentChangeSets[$oid][$mapping['fieldName']] = array($value, $value);
+                    }
 
                     if ( ! $isNewDocument) {
                         $this->scheduleForUpdate($document);
