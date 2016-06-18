@@ -722,6 +722,11 @@ class UnitOfWork implements PropertyChangedListener
                         // change set already in place
                         $this->documentChangeSets[$oid][$mapping['fieldName']] = new FieldChange($value, $value);
                     }
+                    $cs = $this->documentChangeSets[$oid][$mapping['fieldName']];
+                    if ($mapping['type'] === ClassMetadata::ONE && $cs instanceof FieldChange && $cs[0] === $cs[1]) {
+                        // the instance of embed one has not changed, we can use ObjectChangeSet for more data
+                        $this->documentChangeSets[$oid][$mapping['fieldName']] = $this->documentChangeSets[$oid2];
+                    }
 
                     if ( ! $isNewDocument) {
                         $this->scheduleForUpdate($document);

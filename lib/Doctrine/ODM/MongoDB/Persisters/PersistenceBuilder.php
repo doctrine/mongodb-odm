@@ -18,6 +18,7 @@
  */
 namespace Doctrine\ODM\MongoDB\Persisters;
 
+use Doctrine\ODM\MongoDB\ChangeSet\ObjectChangeSet;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
@@ -139,7 +140,11 @@ class PersistenceBuilder
                 continue;
             }
 
-            list($old, $new) = $change;
+            if ($change instanceof ObjectChangeSet) {
+                $old = $new = $change->getObject();
+            } else {
+                list($old, $new) = $change;
+            }
 
             // Scalar fields
             if ( ! isset($mapping['association'])) {

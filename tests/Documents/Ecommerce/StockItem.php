@@ -67,6 +67,11 @@ class StockItem
     {
         return $this->cost->getAmount();
     }
+    
+    public function getCostInstance()
+    {
+        return $this->cost;
+    }
 
     public function setInventory($inventory)
     {

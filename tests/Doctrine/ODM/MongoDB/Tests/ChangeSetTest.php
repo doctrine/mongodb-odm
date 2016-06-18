@@ -5,7 +5,11 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\ChangeSet\CollectionChangeSet;
 use Doctrine\ODM\MongoDB\ChangeSet\FieldChange;
+use Doctrine\ODM\MongoDB\ChangeSet\ObjectChangeSet;
 use Documents\Album;
+use Documents\Ecommerce\Currency;
+use Documents\Ecommerce\Money;
+use Documents\Ecommerce\StockItem;
 use Documents\Song;
 
 class ChangeSetTest extends BaseTest
@@ -51,5 +55,45 @@ class ChangeSetTest extends BaseTest
         $this->assertSame($oldSong, $songsChange->getDeletedObjects()[0]);
         $this->assertCount(1, $songsChange->getInsertedObjects());
         $this->assertSame($newSong, $songsChange->getInsertedObjects()[0]);
+    }
+    
+    public function testEmbedOne()
+    {
+        $euro = new Currency('EURO');
+        $item = new StockItem('Google', new Money(100, $euro));
+        $this->dm->persist($item);
+        $this->uow->computeChangeSets();
+        $this->assertInstanceOf(
+            FieldChange::class,
+            $this->uow->getDocumentChangeSet($item)['cost'],
+            'When document is new embed one should be in FieldChange'
+        );
+        $this->dm->flush();
+
+        $originalCost = $item->getCostInstance();
+        $item->setCost(new Money(200, $euro));
+        $this->uow->computeChangeSets();
+        $this->assertInstanceOf(
+            FieldChange::class,
+            $this->uow->getDocumentChangeSet($item)['cost'],
+            'Exchanged embed one instance should be denoted by FieldChange'
+        );
+        $this->assertSame($originalCost, $this->uow->getDocumentChangeSet($item)['cost'][0]);
+        $this->assertSame($item->getCostInstance(), $this->uow->getDocumentChangeSet($item)['cost'][1]);
+        $this->dm->flush();
+        
+        $usd = new Currency('USD');
+        $item->getCostInstance()->setCurrency($usd);
+        $this->uow->computeChangeSets();
+        $costChange = $this->uow->getDocumentChangeSet($item)['cost'];
+        $this->assertInstanceOf(
+            ObjectChangeSet::class,
+            $costChange,
+            'Mutating embed one instance should be denoted by ObjectChangeSet'
+        );
+        $this->assertCount(1, $costChange);
+        $this->assertInstanceOf(FieldChange::class, $costChange['currency']);
+        $this->assertSame($euro, $costChange['currency'][0]);
+        $this->assertSame($usd, $costChange['currency'][1]);
     }
 }
