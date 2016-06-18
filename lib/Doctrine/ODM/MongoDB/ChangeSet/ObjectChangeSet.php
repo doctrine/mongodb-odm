@@ -31,6 +31,15 @@ final class ObjectChangeSet implements \IteratorAggregate, \ArrayAccess, \Counta
         $this->changes = $changes;
     }
 
+    public function getChange($field)
+    {
+        if (empty($this->changes[$field])) {
+            throw new \InvalidArgumentException(sprintf('Field "%s" has not been changed.', $field));
+        }
+
+        return $this->changes[$field];
+    }
+
     public function getChanges()
     {
         return $this->changes;
@@ -51,24 +60,34 @@ final class ObjectChangeSet implements \IteratorAggregate, \ArrayAccess, \Counta
         return $this->object;
     }
 
+    public function hasChanged($field)
+    {
+        return isset($this->changes[$field]);
+    }
+
     public function getIterator()
     {
         return new \ArrayIterator($this->changes);
     }
 
+    public function registerChange($field, ChangedValue $change)
+    {
+        $this->changes[$field] = $change;
+    }
+
     public function offsetExists($offset)
     {
-        return isset($this->changes[$offset]);
+        return $this->hasChanged($offset);
     }
 
     public function offsetGet($offset)
     {
-        return $this->changes[$offset];
+        return $this->getChange($offset);
     }
 
     public function offsetSet($offset, $value)
     {
-        $this->changes[$offset] = $value;
+        $this->registerChange($offset, $value);
     }
 
     public function offsetUnset($offset)
