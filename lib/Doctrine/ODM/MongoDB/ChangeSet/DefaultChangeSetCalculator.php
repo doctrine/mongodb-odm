@@ -50,11 +50,14 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
     /**
      * @param object $document
      * @param ClassMetadata $class
-     * @param array $originalData
+     * @param ObjectChangeSet $originalData
      * @return ObjectChangeSet
      */
-    public function calculate($document, ClassMetadata $class, $originalData = null, $changeSet = [])
+    public function calculate($document, ClassMetadata $class, $originalData = null, ObjectChangeSet $changeSet = null)
     {
+        if ($changeSet === null) {
+            $changeSet = new ObjectChangeSet($document, []);
+        }
         $actualData = $this->getDocumentActualData($document, $class);
         $isNewDocument = $originalData === null;
         if ($isNewDocument) {
@@ -73,7 +76,7 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
                 if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']) {
                     continue;
                 }
-                $changeSet[$propName] = array(null, $actualValue);
+                $changeSet[$propName] = new FieldChange(null, $actualValue);
             }
             return $changeSet;
         } else {
@@ -108,7 +111,7 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
                         $this->uow->scheduleOrphanRemoval($orgValue);
                     }
 
-                    $changeSet[$propName] = array($orgValue, $actualValue);
+                    $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
                     continue;
                 }
 
@@ -118,7 +121,7 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
                         $this->uow->scheduleOrphanRemoval($orgValue);
                     }
 
-                    $changeSet[$propName] = array($orgValue, $actualValue);
+                    $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
                     continue;
                 }
 
@@ -140,7 +143,7 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
 
                 // if embed-many or reference-many relationship
                 if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
-                    $changeSet[$propName] = array($orgValue, $actualValue);
+                    $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
                     /* If original collection was exchanged with a non-empty value
                      * and $set will be issued, there is no need to $unset it first
                      */
@@ -165,7 +168,7 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
                 }
 
                 // regular field
-                $changeSet[$propName] = array($orgValue, $actualValue);
+                $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
             }
             return $changeSet;
         }

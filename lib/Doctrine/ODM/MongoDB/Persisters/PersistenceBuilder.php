@@ -75,7 +75,7 @@ class PersistenceBuilder
         $insertData = array();
         foreach ($class->fieldMappings as $mapping) {
 
-            $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
+            $new = isset($changeset[$mapping['fieldName']]) ? $changeset[$mapping['fieldName']][1] : null;
 
             if ($new === null && $mapping['nullable']) {
                 $insertData[$mapping['name']] = null;
@@ -131,7 +131,7 @@ class PersistenceBuilder
         $changeset = $this->uow->getDocumentChangeSet($document);
 
         $updateData = array();
-        foreach ($changeset as $fieldName => $change) {
+        foreach ($changeset ?: [] as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
             // skip non embedded document identifiers

@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Utility;
 
 use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\ChangeSet\ObjectChangeSet;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
@@ -160,11 +161,15 @@ class LifecycleEventManager
     {
         if ( ! empty($class->lifecycleCallbacks[Events::preUpdate])) {
             $class->invokeLifecycleCallbacks(Events::preUpdate, $document, array(
-                new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document))
+                new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document) ?: new ObjectChangeSet($document, []))
             ));
             $this->uow->recomputeSingleDocumentChangeSet($class, $document);
         }
-        $this->evm->dispatchEvent(Events::preUpdate, new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document)));
+        // @todo there seems to be a bug in old change set calculation, cleared collections are not in change set
+        $this->evm->dispatchEvent(
+            Events::preUpdate,
+            new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document) ?: new ObjectChangeSet($document, []))
+        );
         $this->cascadePreUpdate($class, $document);
     }
 

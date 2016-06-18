@@ -19,21 +19,20 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
-use Doctrine\MongoDB\GridFSFile;
 use Doctrine\ODM\MongoDB\ChangeSet\ChangeSetCalculator;
 use Doctrine\ODM\MongoDB\ChangeSet\DefaultChangeSetCalculator;
+use Doctrine\ODM\MongoDB\ChangeSet\FieldChange;
+use Doctrine\ODM\MongoDB\ChangeSet\ObjectChangeSet;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
 
@@ -582,7 +581,7 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the changeset for a document.
      *
      * @param object $document
-     * @return array array('property' => array(0 => mixed|null, 1 => mixed|null))
+     * @return ObjectChangeSet|null
      */
     public function getDocumentChangeSet($document)
     {
@@ -590,7 +589,7 @@ class UnitOfWork implements PropertyChangedListener
         if (isset($this->documentChangeSets[$oid])) {
             return $this->documentChangeSets[$oid];
         }
-        return array();
+        return null;
     }
 
     /**
@@ -598,9 +597,9 @@ class UnitOfWork implements PropertyChangedListener
      * Sets the changeset for a document.
      *
      * @param object $document
-     * @param array $changeset
+     * @param ObjectChangeSet $changeset
      */
-    public function setDocumentChangeSet($document, $changeset)
+    public function setDocumentChangeSet($document, ObjectChangeSet $changeset)
     {
         $this->documentChangeSets[spl_object_hash($document)] = $changeset;
     }
@@ -670,15 +669,19 @@ class UnitOfWork implements PropertyChangedListener
         if ($isChangeTrackingNotify && ! $recompute && isset($this->documentChangeSets[$oid])) {
             $changeSet = $this->documentChangeSets[$oid];
         } else {
-            $changeSet = array();
+            $changeSet = new ObjectChangeSet($document, []);
         }
 
         $changeSet = $this->changeSetCalculator->calculate($document, $class, $isNewDocument ? null : $this->originalDocumentData[$oid], $changeSet);
 
-        if ($changeSet) {
-            $this->documentChangeSets[$oid] = isset($this->documentChangeSets[$oid])
-                ? $changeSet + $this->documentChangeSets[$oid]
-                : $changeSet;
+        if (count($changeSet)) {
+            if (isset($this->documentChangeSets[$oid])) {
+                foreach ($changeSet as $field => $change) {
+                    $this->documentChangeSets[$oid][$field] = $change;
+                }
+            } else {
+                $this->documentChangeSets[$oid] = $changeSet;
+            }
 
             $this->originalDocumentData[$oid] = $this->changeSetCalculator->getDocumentActualData($document, $class);
             if (! $isNewDocument) {
@@ -711,10 +714,13 @@ class UnitOfWork implements PropertyChangedListener
                 $oid2 = spl_object_hash($obj);
 
                 if (isset($this->documentChangeSets[$oid2])) {
+                    if (! isset($this->documentChangeSets[$oid])) {
+                        $this->documentChangeSets[$oid] = new ObjectChangeSet($document, []);
+                    }
                     if (empty($this->documentChangeSets[$oid][$mapping['fieldName']])) {
                         // instance of $value is the same as it was previously otherwise there would be
                         // change set already in place
-                        $this->documentChangeSets[$oid][$mapping['fieldName']] = array($value, $value);
+                        $this->documentChangeSets[$oid][$mapping['fieldName']] = new FieldChange($value, $value);
                     }
 
                     if ( ! $isNewDocument) {
@@ -1042,7 +1048,7 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($documents as $oid => $document) {
             $this->lifecycleEventManager->preUpdate($class, $document);
 
-            if ( ! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document)) {
+            if (! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document)) {
                 $persister->update($document, $options);
             }
 
@@ -2717,7 +2723,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clearDocumentChangeSet($oid)
     {
-        $this->documentChangeSets[$oid] = array();
+        unset($this->documentChangeSets[$oid]);
     }
 
     /* PropertyChangedListener implementation */
@@ -2740,7 +2746,10 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Update changeset and mark document for synchronization
-        $this->documentChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
+        if (! isset($this->documentChangeSets[$oid])) {
+            $this->documentChangeSets[$oid] = new ObjectChangeSet($document, []);
+        }
+        $this->documentChangeSets[$oid][$propertyName] = new FieldChange($oldValue, $newValue);
         if ( ! isset($this->scheduledForDirtyCheck[$class->name][$oid])) {
             $this->scheduleForDirtyCheck($document);
         }

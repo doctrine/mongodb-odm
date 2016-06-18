@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\ChangeSet;
 
-final class FieldChange
+final class FieldChange implements \ArrayAccess
 {
     private $oldValue;
     private $newValue;
@@ -44,5 +44,39 @@ final class FieldChange
     public function getOldValue()
     {
         return $this->oldValue;
+    }
+
+    public function offsetExists($offset)
+    {
+        return in_array($offset, [0, 1], true);
+    }
+
+    public function offsetGet($offset)
+    {
+        switch ($offset) {
+            case 0:
+                return $this->oldValue;
+            case 1:
+                return $this->newValue;
+            default:
+                throw new \OutOfBoundsException();
+        }
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        switch ($offset) {
+            case 0:
+                return $this->oldValue = $value;
+            case 1:
+                return $this->newValue = $value;
+            default:
+                throw new \OutOfBoundsException();
+        }
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new \BadMethodCallException('Not allowed.');
     }
 }

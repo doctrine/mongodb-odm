@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\ChangeSet\ObjectChangeSet;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -208,7 +209,10 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $entity->setTransient('newtransientvalue');
 
         $this->assertTrue($this->uow->isScheduledForDirtyCheck($entity));
-        $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->uow->getDocumentChangeSet($entity));
+        $changeSet = $this->uow->getDocumentChangeSet($entity);
+        $this->assertInstanceOf(ObjectChangeSet::class, $changeSet);
+        $this->assertEquals('thedata', $changeSet['data'][0]);
+        $this->assertEquals('newdata', $changeSet['data'][1]);
 
         $item = new NotifyChangedRelatedItem();
         $item->setId(1);
@@ -632,7 +636,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->uow->recomputeSingleDocumentChangeSet($classMetadata, $user->getAvatar());
 
-        $this->assertEquals(array(), $this->uow->getDocumentChangeSet($user->getAvatar()));
+        $this->assertEquals(null, $this->uow->getDocumentChangeSet($user->getAvatar()));
     }
 
 

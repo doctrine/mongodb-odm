@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\ChangeSet;
 
-final class ObjectChangeSet implements \IteratorAggregate
+final class ObjectChangeSet implements \IteratorAggregate, \ArrayAccess, \Countable
 {
     private $changes = [];
 
@@ -35,14 +35,39 @@ final class ObjectChangeSet implements \IteratorAggregate
     {
         return $this->changes;
     }
-    
+
     public function getObject()
     {
         return $this->object;
     }
-    
+
     public function getIterator()
     {
         return new \ArrayIterator($this->changes);
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->changes[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->changes[$offset];
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->changes[$offset] = $value;
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new \BadMethodCallException('Not allowed.');
+    }
+
+    public function count()
+    {
+        return count($this->changes);
     }
 }

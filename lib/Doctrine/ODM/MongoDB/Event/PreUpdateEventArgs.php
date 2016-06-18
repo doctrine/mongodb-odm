@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Event;
 
+use Doctrine\ODM\MongoDB\ChangeSet\ObjectChangeSet;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
@@ -29,7 +30,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 class PreUpdateEventArgs extends LifecycleEventArgs
 {
     /**
-     * @var array
+     * @var ObjectChangeSet
      */
     private $documentChangeSet;
 
@@ -38,9 +39,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      *
      * @param object          $document
      * @param DocumentManager $dm
-     * @param array           $changeSet
+     * @param ObjectChangeSet $changeSet
      */
-    public function __construct($document, DocumentManager $dm, array $changeSet)
+    public function __construct($document, DocumentManager $dm, ObjectChangeSet $changeSet)
     {
         parent::__construct($document, $dm);
         $this->documentChangeSet = $changeSet;
@@ -49,7 +50,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /**
      * Retrieves the document changeset.
      *
-     * @return array
+     * @return ObjectChangeSet
      */
     public function getDocumentChangeSet()
     {
