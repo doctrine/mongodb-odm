@@ -19,18 +19,39 @@
 
 namespace Doctrine\ODM\MongoDB\ChangeSet;
 
+/**
+ * Class aggregates all changes in an object.
+ */
 final class ObjectChangeSet implements \IteratorAggregate, \ArrayAccess, \Countable, ChangedValue
 {
+    /**
+     * @var ChangedValue[]
+     */
     private $changes = [];
 
+    /**
+     * @var object
+     */
     private $object;
 
+    /**
+     * @param object $object
+     * @param ChangedValue[] $changes
+     */
     public function __construct($object, array $changes)
     {
         $this->object = $object;
         $this->changes = $changes;
     }
 
+    /**
+     * Gets change set for specific field.
+     * 
+     * @param string $field
+     * @return ChangedValue
+     * 
+     * @throws \InvalidArgumentException when field has not been changed
+     */
     public function getChange($field)
     {
         if (empty($this->changes[$field])) {
@@ -40,63 +61,100 @@ final class ObjectChangeSet implements \IteratorAggregate, \ArrayAccess, \Counta
         return $this->changes[$field];
     }
 
+    /**
+     * Gets all changes.
+     * 
+     * @return ChangedValue[]
+     */
     public function getChanges()
     {
         return $this->changes;
     }
 
+    /**
+     * Gets object for which changes are held.
+     * 
+     * @return object
+     */
     public function getObject()
     {
         return $this->object;
     }
 
+    /**
+     * Checks if field's value has been changed.
+     * 
+     * @param string $field
+     * @return bool
+     */
+    public function hasChanged($field)
+    {
+        return isset($this->changes[$field]);
+    }
+
+    /**
+     * Registers change for specific field.
+     * 
+     * @param string $field
+     * @param ChangedValue $change
+     */
+    public function registerChange($field, ChangedValue $change)
+    {
+        $this->changes[$field] = $change;
+    }
+    
+    /** ChangedValue implementation */
+
+    /** {@inheritdoc} */
     public function getNewValue()
     {
         return $this->object;
     }
 
+    /** {@inheritdoc} */
     public function getOldValue()
     {
         return $this->object;
     }
 
-    public function hasChanged($field)
-    {
-        return isset($this->changes[$field]);
-    }
+    /** IteratorAggregate implementation */
 
     public function getIterator()
     {
         return new \ArrayIterator($this->changes);
     }
 
-    public function registerChange($field, ChangedValue $change)
+    /** Countable implementation */
+
+    /** {@inheritdoc} */
+    public function count()
     {
-        $this->changes[$field] = $change;
+        return count($this->changes);
     }
 
+    /** ArrayAccess Implementation */
+
+    /** {@inheritdoc} */
     public function offsetExists($offset)
     {
         return $this->hasChanged($offset);
     }
 
+    /** {@inheritdoc} */
     public function offsetGet($offset)
     {
         return $this->getChange($offset);
     }
 
+    /** {@inheritdoc} */
     public function offsetSet($offset, $value)
     {
         $this->registerChange($offset, $value);
     }
 
+    /** {@inheritdoc} */
     public function offsetUnset($offset)
     {
         throw new \BadMethodCallException('Not allowed.');
-    }
-
-    public function count()
-    {
-        return count($this->changes);
     }
 }

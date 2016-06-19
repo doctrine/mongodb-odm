@@ -29,6 +29,9 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
+/**
+ * ChangeSet calculator extracted from UnitOfWork.
+ */
 class DefaultChangeSetCalculator implements ChangeSetCalculator
 {
     /**
@@ -41,6 +44,10 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
      */
     private $uow;
 
+    /**
+     * @param DocumentManager $documentManager
+     * @param UnitOfWork $unitOfWork
+     */
     public function __construct(DocumentManager $documentManager, UnitOfWork $unitOfWork)
     {
         $this->dm = $documentManager;
@@ -50,7 +57,8 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
     /**
      * @param object $document
      * @param ClassMetadata $class
-     * @param ObjectChangeSet $originalData
+     * @param array|null $originalData
+     * @param ObjectChangeSet $changeSet previously calculated change set
      * @return ObjectChangeSet
      */
     public function calculate($document, ClassMetadata $class, $originalData = null, ObjectChangeSet $changeSet = null)
@@ -166,6 +174,7 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
      * Get a documents actual data, flattening all the objects to arrays.
      *
      * @param object $document
+     * @param ClassMetadata $class
      * @return array
      */
     public function getDocumentActualData($document, ClassMetadata $class)

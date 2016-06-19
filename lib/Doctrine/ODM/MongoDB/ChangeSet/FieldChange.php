@@ -19,38 +19,52 @@
 
 namespace Doctrine\ODM\MongoDB\ChangeSet;
 
+/**
+ * Class represents a general change in a field's value.
+ */
 final class FieldChange implements \ArrayAccess, ChangedValue
 {
+    /**
+     * @var mixed
+     */
     private $oldValue;
+
+    /**
+     * @var mixed
+     */
     private $newValue;
 
+    /**
+     * @param mixed $oldValue
+     * @param mixed $newValue
+     */
     public function __construct($oldValue, $newValue)
     {
         $this->oldValue = $oldValue;
         $this->newValue = $newValue;
     }
 
-    /**
-     * @return mixed
-     */
+    /** {@inheritdoc} */
     public function getNewValue()
     {
         return $this->newValue;
     }
 
-    /**
-     * @return mixed
-     */
+    /** {@inheritdoc} */
     public function getOldValue()
     {
         return $this->oldValue;
     }
 
+    /** ArrayAccess implementation for backward compatibility */
+
+    /** {@inheritdoc} */
     public function offsetExists($offset)
     {
         return in_array($offset, [0, 1], true);
     }
 
+    /** {@inheritdoc} */
     public function offsetGet($offset)
     {
         switch ($offset) {
@@ -63,6 +77,7 @@ final class FieldChange implements \ArrayAccess, ChangedValue
         }
     }
 
+    /** {@inheritdoc} */
     public function offsetSet($offset, $value)
     {
         switch ($offset) {
@@ -75,6 +90,7 @@ final class FieldChange implements \ArrayAccess, ChangedValue
         }
     }
 
+    /** {@inheritdoc} */
     public function offsetUnset($offset)
     {
         throw new \BadMethodCallException('Not allowed.');

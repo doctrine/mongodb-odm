@@ -19,9 +19,22 @@
 
 namespace Doctrine\ODM\MongoDB\ChangeSet;
 
+/**
+ * Classes implementing this interface are representing change in the object.
+ */
 interface ChangedValue
 {
+    /**
+     * Gets new (current) value.
+     *
+     * @return mixed
+     */
     public function getNewValue();
 
+    /**
+     * Gets original value.
+     *
+     * @return mixed
+     */
     public function getOldValue();
 }

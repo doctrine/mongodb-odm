@@ -21,9 +21,14 @@ namespace Doctrine\ODM\MongoDB\ChangeSet;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+/**
+ * Detects changes that were made to a certain object by comparing its current state with known original one.
+ */
 interface ChangeSetCalculator
 {
     /**
+     * Calculates change set for passed document basing on passed original data.
+     * 
      * @param object $document
      * @param ClassMetadata $class
      * @param array $originalData

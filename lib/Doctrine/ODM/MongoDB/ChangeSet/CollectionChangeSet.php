@@ -21,6 +21,12 @@ namespace Doctrine\ODM\MongoDB\ChangeSet;
 
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 
+/**
+ * Class represents changes in a collection (i.e. EmbedMany or ReferenceMany).
+ *
+ * CollectionChangeSet::getOldValue and CollectionChangeSet::getNewValue will return same instance of collection
+ * since only its value was changed.
+ */
 final class CollectionChangeSet implements \ArrayAccess, ChangedValue
 {
     /**
@@ -45,6 +51,14 @@ final class CollectionChangeSet implements \ArrayAccess, ChangedValue
         }
     }
 
+    /**
+     * Gets change sets for updated objects in the collection. This does not include deleted objects but in certain
+     * cases may include inserted ones.
+     *
+     * Returns empty array if collection is holding references (i.e. is used to hold ReferenceMany field's data).
+     *
+     * @return ObjectChangeSet[]
+     */
     public function getChangedObjects()
     {
         // 1. if object at index 1 was replaced then it'll be here as well as in getInsertedObjects (but not yet)
@@ -52,36 +66,57 @@ final class CollectionChangeSet implements \ArrayAccess, ChangedValue
         return array_values($this->changes);
     }
 
+    /**
+     * Gets list of objects removed from collection.
+     *
+     * @return object[]
+     */
     public function getDeletedObjects()
     {
         return $this->collection->getDeletedDocuments();
     }
 
+    /**
+     * Gets list of objects added to collection.
+     *
+     * @return object[]
+     */
     public function getInsertedObjects()
     {
         return $this->collection->getInsertedDocuments();
     }
 
+    /**
+     * Registers change of one of collection's elements.
+     *
+     * @param ObjectChangeSet $changeSet
+     */
     public function registerChange(ObjectChangeSet $changeSet)
     {
         $this->changes[spl_object_hash($changeSet->getObject())] = $changeSet;
     }
 
+    /** {@inheritdoc} */
     public function getNewValue()
     {
         return $this->collection;
     }
 
+    /** {@inheritdoc} */
     public function getOldValue()
     {
         return $this->collection;
     }
 
+    /** ArrayAccess implementation for backward compatibility */
+
+    /** {@inheritdoc} */
     public function offsetExists($offset)
     {
         return in_array($offset, [0, 1]);
     }
 
+    /** {@inheritdoc} */
     public function offsetGet($offset)
     {
         if (! $this->offsetExists($offset)) {
@@ -90,11 +125,13 @@ final class CollectionChangeSet implements \ArrayAccess, ChangedValue
         return $this->collection;
     }
 
+    /** {@inheritdoc} */
     public function offsetSet($offset, $value)
     {
         throw new \BadMethodCallException('Not allowed.');
     }
 
+    /** {@inheritdoc} */
     public function offsetUnset($offset)
     {
         throw new \BadMethodCallException('Not allowed.');
