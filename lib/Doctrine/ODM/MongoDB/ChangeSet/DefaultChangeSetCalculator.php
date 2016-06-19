@@ -59,121 +59,107 @@ class DefaultChangeSetCalculator implements ChangeSetCalculator
             $changeSet = new ObjectChangeSet($document, []);
         }
         $actualData = $this->getDocumentActualData($document, $class);
-        $isNewDocument = $originalData === null;
-        if ($isNewDocument) {
-            // Document is either NEW or MANAGED but not yet fully persisted (only has an id).
-            // These result in an INSERT.
-            $this->uow->setOriginalDocumentData($document, $actualData);
+        if ($originalData === null) {
+            // Document is either NEW or MANAGED but not yet fully persisted (only has an id). These result in an INSERT.
             foreach ($actualData as $propName => $actualValue) {
-                /* At this PersistentCollection shouldn't be here, probably it
-                 * was cloned and its ownership must be fixed
-                 */
+                // PersistentCollection shouldn't be here, probably it was cloned and its ownership must be fixed
                 if ($actualValue instanceof PersistentCollectionInterface && $actualValue->getOwner() !== $document) {
                     $actualData[$propName] = $this->uow->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
                     $actualValue = $actualData[$propName];
                 }
                 // ignore inverse side of reference relationship
-                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']) {
+                if (! empty($class->fieldMappings[$propName]['isInverseSide'])) {
                     continue;
                 }
                 $changeSet[$propName] = new FieldChange(null, $actualValue);
             }
             return $changeSet;
-        } else {
-            // Document is "fully" MANAGED: it was already fully persisted before
-            // and we have a copy of the original data
-            $isChangeTrackingNotify = $class->isChangeTrackingNotify();
-            
-            foreach ($actualData as $propName => $actualValue) {
-                // skip not saved fields
-                if (isset($class->fieldMappings[$propName]['notSaved']) && $class->fieldMappings[$propName]['notSaved'] === true) {
-                    continue;
-                }
-
-                $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
-
-                // skip if value has not changed
-                if ($orgValue === $actualValue) {
-                    if ($actualValue instanceof PersistentCollectionInterface) {
-                        if (! $actualValue->isDirty() && ! $this->uow->isCollectionScheduledForDeletion($actualValue)) {
-                            // consider dirty collections as changed as well
-                            continue;
-                        }
-                    } elseif ( ! (isset($class->fieldMappings[$propName]['file']) && $actualValue->isDirty())) {
-                        // but consider dirty GridFSFile instances as changed
-                        continue;
-                    }
-                }
-
-                // if relationship is a embed-one, schedule orphan removal to trigger cascade remove operations
-                if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one') {
-                    if ($orgValue !== null) {
-                        $this->uow->scheduleOrphanRemoval($orgValue);
-                    }
-
-                    $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
-                    continue;
-                }
-
-                // if owning side of reference-one relationship
-                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $class->fieldMappings[$propName]['isOwningSide']) {
-                    if ($orgValue !== null && $class->fieldMappings[$propName]['orphanRemoval']) {
-                        $this->uow->scheduleOrphanRemoval($orgValue);
-                    }
-
-                    $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
-                    continue;
-                }
-
-                if ($isChangeTrackingNotify) {
-                    continue;
-                }
-
-                // ignore inverse side of reference relationship
-                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']) {
-                    continue;
-                }
-
-                // Persistent collection was exchanged with the "originally"
-                // created one. This can only mean it was cloned and replaced
-                // on another document.
-                if ($actualValue instanceof PersistentCollectionInterface && $actualValue->getOwner() !== $document) {
-                    $actualValue = $this->uow->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
-                }
-
-                // if embed-many or reference-many relationship
-                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::MANY) {
-                    $changeSet[$propName] = $orgValue === $actualValue
-                        ? new CollectionChangeSet($actualValue, [])
-                        : new FieldChange($orgValue, $actualValue);
-                    /* If original collection was exchanged with a non-empty value
-                     * and $set will be issued, there is no need to $unset it first
-                     */
-                    if ($actualValue && $actualValue->isDirty() && CollectionHelper::usesSet($class->fieldMappings[$propName]['strategy'])) {
-                        continue;
-                    }
-                    if ($orgValue !== $actualValue && $orgValue instanceof PersistentCollectionInterface) {
-                        $this->uow->scheduleCollectionDeletion($orgValue);
-                    }
-                    continue;
-                }
-
-                // skip equivalent date values
-                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'date') {
-                    $dateType = Type::getType('date');
-                    $dbOrgValue = $dateType->convertToDatabaseValue($orgValue);
-                    $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
-
-                    if ($dbOrgValue instanceof \MongoDate && $dbActualValue instanceof \MongoDate && $dbOrgValue == $dbActualValue) {
-                        continue;
-                    }
-                }
-
-                // regular field
-                $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
-            }
-            return $changeSet;
         }
+        // Document is "fully" MANAGED: it was already fully persisted before and we have a copy of the original data
+        foreach ($actualData as $propName => $actualValue) {
+            // skip not saved fields
+            if (! empty($class->fieldMappings[$propName]['notSaved'])) {
+                continue;
+            }
+
+            $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
+
+            // skip if value has not changed
+            if ($orgValue === $actualValue) {
+                if ($actualValue instanceof PersistentCollectionInterface) {
+                    if (! $actualValue->isDirty() && ! $this->uow->isCollectionScheduledForDeletion($actualValue)) {
+                        // consider dirty collections as changed as well
+                        continue;
+                    }
+                } elseif ( ! (isset($class->fieldMappings[$propName]['file']) && $actualValue->isDirty())) {
+                    // but consider dirty GridFSFile instances as changed
+                    continue;
+                }
+            }
+
+            // if relationship is a embed-one, schedule orphan removal to trigger cascade remove operations
+            if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one') {
+                if ($orgValue !== null) {
+                    $this->uow->scheduleOrphanRemoval($orgValue);
+                }
+
+                $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
+                continue;
+            }
+
+            // if owning side of reference-one relationship
+            if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $class->fieldMappings[$propName]['isOwningSide']) {
+                if ($orgValue !== null && $class->fieldMappings[$propName]['orphanRemoval']) {
+                    $this->uow->scheduleOrphanRemoval($orgValue);
+                }
+
+                $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
+                continue;
+            }
+
+            // ignore the rest for change notifying documents and inverse side of reference relationship
+            if ($class->isChangeTrackingNotify() || ! empty($class->fieldMappings[$propName]['isInverseSide'])) {
+                continue;
+            }
+
+            // Persistent collection was exchanged with the "originally" created one. This can only mean it was cloned
+            // and replaced on another document.
+            if ($actualValue instanceof PersistentCollectionInterface && $actualValue->getOwner() !== $document) {
+                $actualValue = $this->uow->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
+            }
+
+            // if embed-many or reference-many relationship
+            if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::MANY) {
+                $changeSet[$propName] = $orgValue === $actualValue
+                    ? new CollectionChangeSet($actualValue, [])
+                    : new FieldChange($orgValue, $actualValue);
+                /* If original collection was exchanged with a non-empty value
+                 * and $set will be issued, there is no need to $unset it first
+                 */
+                if ($actualValue && $actualValue->isDirty() && CollectionHelper::usesSet($class->fieldMappings[$propName]['strategy'])) {
+                    continue;
+                }
+                if ($orgValue !== $actualValue && $orgValue instanceof PersistentCollectionInterface) {
+                    $this->uow->scheduleCollectionDeletion($orgValue);
+                }
+                continue;
+            }
+
+            // skip equivalent date values
+            if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'date') {
+                $dateType = Type::getType('date');
+                $dbOrgValue = $dateType->convertToDatabaseValue($orgValue);
+                $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
+
+                if ($dbOrgValue instanceof \MongoDate && $dbActualValue instanceof \MongoDate && $dbOrgValue == $dbActualValue) {
+                    continue;
+                }
+            }
+
+            // regular field
+            $changeSet[$propName] = new FieldChange($orgValue, $actualValue);
+        }
+        return $changeSet;
     }
 
     /**

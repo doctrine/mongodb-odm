@@ -666,14 +666,10 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
         $isNewDocument = ! isset($this->originalDocumentData[$oid]);
-        $isChangeTrackingNotify = $class->isChangeTrackingNotify();
-        if ($isChangeTrackingNotify && ! $recompute && isset($this->documentChangeSets[$oid])) {
-            $changeSet = $this->documentChangeSets[$oid];
-        } else {
-            $changeSet = new ObjectChangeSet($document, []);
-        }
+        $originalChangeSet = $class->isChangeTrackingNotify() && ! $recompute && isset($this->documentChangeSets[$oid])
+            ? $this->documentChangeSets[$oid] : null;
 
-        $changeSet = $this->changeSetCalculator->calculate($document, $class, $isNewDocument ? null : $this->originalDocumentData[$oid], $changeSet);
+        $changeSet = $this->changeSetCalculator->calculate($document, $class, $isNewDocument ? null : $this->originalDocumentData[$oid], $originalChangeSet);
 
         if (count($changeSet)) {
             if (isset($this->documentChangeSets[$oid])) {
@@ -709,35 +705,35 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            $values = $mapping['type'] === ClassMetadata::ONE ? array($value) : $value->unwrap();
+            $values = array_filter(
+                $mapping['type'] === ClassMetadata::ONE ? array($value) : $value->unwrap()->toArray(),
+                [$this, 'getDocumentChangeSet']
+            );
+            if (empty($values)) {
+                continue;
+            }
 
+            if (! isset($this->documentChangeSets[$oid])) {
+                $this->documentChangeSets[$oid] = new ObjectChangeSet($document, []);
+            }
+            if (! $isNewDocument) {
+                $this->scheduleForUpdate($document);
+            }
             foreach ($values as $obj) {
                 $oid2 = spl_object_hash($obj);
-
-                if (isset($this->documentChangeSets[$oid2])) {
-                    if (! isset($this->documentChangeSets[$oid])) {
-                        $this->documentChangeSets[$oid] = new ObjectChangeSet($document, []);
-                    }
-                    if (! isset($this->documentChangeSets[$oid][$mapping['fieldName']])) {
-                        // instance of $value is the same as it was previously otherwise there would be
-                        // change set already in place
-                        $this->documentChangeSets[$oid][$mapping['fieldName']] = $mapping['type'] === ClassMetadata::ONE
-                            ? new FieldChange($value, $value)
-                            : new CollectionChangeSet($value, []);
-                    }
-                    $cs = $this->documentChangeSets[$oid][$mapping['fieldName']];
-                    if ($mapping['type'] === ClassMetadata::ONE && $cs instanceof FieldChange
-                        && $cs->getOldValue() === $cs->getNewValue()) {
-                        // the instance of embed one has not changed, we can use ObjectChangeSet for more data
-                        $this->documentChangeSets[$oid][$mapping['fieldName']] = $this->documentChangeSets[$oid2];
-                    }
-                    if ($cs instanceof CollectionChangeSet && $this->documentChangeSets[$oid2] instanceof ObjectChangeSet) {
-                        $cs->registerChange($this->documentChangeSets[$oid2]);
-                    }
-
-                    if ( ! $isNewDocument) {
-                        $this->scheduleForUpdate($document);
-                    }
+                if (! isset($this->documentChangeSets[$oid][$mapping['fieldName']])) {
+                    // instance of $value is the same as it was previously otherwise there would be
+                    // change set already in place
+                    $this->documentChangeSets[$oid][$mapping['fieldName']] = $mapping['type'] === ClassMetadata::ONE
+                        ? new FieldChange($value, $value)
+                        : new CollectionChangeSet($value, []);
+                }
+                $cs = $this->documentChangeSets[$oid][$mapping['fieldName']];
+                if ($cs instanceof CollectionChangeSet && $this->documentChangeSets[$oid2] instanceof ObjectChangeSet) {
+                    $cs->registerChange($this->documentChangeSets[$oid2]);
+                } elseif ($mapping['type'] === ClassMetadata::ONE && $cs->getOldValue() === $cs->getNewValue()) {
+                    // the instance of embed one has not changed, we can use ObjectChangeSet for more data
+                    $this->documentChangeSets[$oid][$mapping['fieldName']] = $this->documentChangeSets[$oid2];
                 }
             }
         }
