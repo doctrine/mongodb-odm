@@ -1,0 +1,8 @@
+Doctrine\ODM\MongoDB\Tests\GH1435Document:
+    collection: documents
+    fields:
+        id:
+            id: true
+        name:
+            type: string
+            nullable: true
