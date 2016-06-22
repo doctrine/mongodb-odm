@@ -146,7 +146,7 @@ class PersistenceBuilder
                 if ($new === null && $mapping['nullable'] !== true) {
                     $updateData['$unset'][$mapping['name']] = true;
                 } else {
-                    if ($new !== null && $mapping['strategy'] === ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT) {
+                    if ($new !== null && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT) {
                         $operator = '$inc';
                         $value = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
                     } else {
@@ -244,7 +244,7 @@ class PersistenceBuilder
             // Scalar fields
             if ( ! isset($mapping['association'])) {
                 if ($new !== null || $mapping['nullable'] === true) {
-                    if ($new !== null && $mapping['strategy'] === ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT) {
+                    if ($new !== null && empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT) {
                         $operator = '$inc';
                         $value = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
                     } else {

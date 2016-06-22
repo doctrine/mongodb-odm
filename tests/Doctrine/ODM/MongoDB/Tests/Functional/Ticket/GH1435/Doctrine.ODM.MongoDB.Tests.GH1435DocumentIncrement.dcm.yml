@@ -1,0 +1,9 @@
+Doctrine\ODM\MongoDB\Tests\GH1435DocumentIncrement:
+    collection: documents
+    fields:
+        id:
+            id: true
+            strategy: increment
+        name:
+            type: string
+            nullable: true
