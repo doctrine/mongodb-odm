@@ -107,6 +107,26 @@ Now you can ``execute()`` that query and it will return a cursor for you to iter
 
     $users = $query->execute();
 
+Debugging Queries
+~~~~~~~~~~~~~~~~~
+
+While building not complicated queries is really simple sometimes it might be hard to wrap your head
+around more sophisticated queries that involves building separate expressions to work properly. If
+you are not sure if your the query constructed with Builder is in fact correct you may want to ``debug()`` it
+
+.. code-block:: php
+
+    <?php
+
+    $qb = $dm->createQueryBuilder('User');
+    $query = $qb->getQuery();
+    $debug = $query->debug();
+
+At this point your query is *prepared* - that means ODM done all its job in renaming fields to match their
+database name, added discriminator fields, applied filters, created correct references and all other things
+you employ ODM to. The array returned by ``->debug()`` is what is passed to the underlying driver for the
+query to be performed.
+
 Eager Cursors
 ~~~~~~~~~~~~~
 
