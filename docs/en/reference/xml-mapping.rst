@@ -141,3 +141,9 @@ of several common elements:
     </doctrine-mongo-mapping>
 
 Be aware that class-names specified in the XML files should be fully qualified.
+
+.. note::
+
+    ``field-name`` is the name of **property in your object** while ``name`` specifies
+    name of the field **in the database**. Specifying latter is optional and defaults to
+    ``field-name`` if not set explicitly.
