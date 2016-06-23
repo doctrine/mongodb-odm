@@ -390,6 +390,32 @@ Define the ``EventTest`` class with a ``preLoad()`` method:
         }
     }
 
+postLoad
+~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+
+    $test = new EventTest();
+    $evm = $dm->getEventManager();
+    $evm->addEventListener(Events::postLoad, $test);
+
+Define the ``EventTest`` class with a ``postLoad()`` method:
+
+.. code-block:: php
+
+    <?php
+
+    class EventTest
+    {
+        public function postLoad(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
+        {
+            $document = $eventArgs->getDocument();
+            // do something
+        }
+    }
+
 preRemove
 ~~~~~~~~~
 
