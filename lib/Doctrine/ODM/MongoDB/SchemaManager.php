@@ -55,7 +55,7 @@ class SchemaManager
     public function ensureIndexes($timeout = null)
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
                 continue;
             }
             $this->ensureDocumentIndexes($class->name, $timeout);
@@ -73,7 +73,7 @@ class SchemaManager
     public function updateIndexes($timeout = null)
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
                 continue;
             }
             $this->updateDocumentIndexes($class->name, $timeout);
@@ -94,8 +94,8 @@ class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot update document indexes for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
+            throw new \InvalidArgumentException('Cannot update document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
 
         $documentIndexes = $this->getDocumentIndexes($documentName);
@@ -247,8 +247,8 @@ class SchemaManager
     public function ensureDocumentIndexes($documentName, $timeout = null)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot create document indexes for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
+            throw new \InvalidArgumentException('Cannot create document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
         if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
@@ -281,7 +281,7 @@ class SchemaManager
     public function deleteIndexes()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
                 continue;
             }
             $this->deleteDocumentIndexes($class->name);
@@ -297,8 +297,8 @@ class SchemaManager
     public function deleteDocumentIndexes($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
+            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
         $this->dm->getDocumentCollection($documentName)->deleteIndexes();
     }
@@ -309,7 +309,7 @@ class SchemaManager
     public function createCollections()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
                 continue;
             }
             $this->createDocumentCollection($class->name);
@@ -326,8 +326,8 @@ class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot create document collection for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
+            throw new \InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or aggregation result documents.');
         }
 
         if ($class->isFile()) {
@@ -351,7 +351,7 @@ class SchemaManager
     public function dropCollections()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
                 continue;
             }
             $this->dropDocumentCollection($class->name);
@@ -367,8 +367,8 @@ class SchemaManager
     public function dropDocumentCollection($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
+            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
         $this->dm->getDocumentDatabase($documentName)->dropCollection(
             $class->getCollection()
@@ -381,7 +381,7 @@ class SchemaManager
     public function dropDatabases()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
                 continue;
             }
             $this->dropDocumentDatabase($class->name);
@@ -397,8 +397,8 @@ class SchemaManager
     public function dropDocumentDatabase($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot drop document database for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
+            throw new \InvalidArgumentException('Cannot drop document database for mapped super classes, embedded documents or aggregation result documents.');
         }
         $this->dm->getDocumentDatabase($documentName)->drop();
     }
@@ -409,7 +409,7 @@ class SchemaManager
     public function createDatabases()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
                 continue;
             }
             $this->createDocumentDatabase($class->name);
@@ -425,8 +425,8 @@ class SchemaManager
     public function createDocumentDatabase($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isAggregationResultDocument) {
+            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
         $this->dm->getDocumentDatabase($documentName)->execute('function() { return true; }');
     }

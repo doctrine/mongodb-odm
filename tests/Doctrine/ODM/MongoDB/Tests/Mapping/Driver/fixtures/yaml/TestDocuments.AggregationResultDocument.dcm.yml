@@ -1,0 +1,5 @@
+TestDocuments\AggregationResultDocument:
+  type: aggregationResultDocument
+  fields:
+    name: string
+    count: integer

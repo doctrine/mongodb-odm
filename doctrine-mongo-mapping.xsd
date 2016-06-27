@@ -18,6 +18,7 @@
         <xs:element name="document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="embedded-document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="mapped-superclass" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="aggregation-result-document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -27,6 +28,10 @@
   </xs:complexType>
 
   <xs:complexType name="mapped-superclass">
+    <xs:attribute name="name" type="xs:NMTOKEN" />
+  </xs:complexType>
+
+  <xs:complexType name="aggregation-result-document">
     <xs:attribute name="name" type="xs:NMTOKEN" />
   </xs:complexType>
 

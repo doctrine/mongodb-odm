@@ -63,6 +63,11 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Query\Builder', $this->dm->createQueryBuilder());
     }
 
+    public function testCreateAggregationBuilder()
+    {
+        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Aggregation\Builder', $this->dm->createAggregationBuilder('Documents\BlogPost'));
+    }
+
     public function testGetFilterCollection()
     {
         $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Query\FilterCollection', $this->dm->getFilterCollection());

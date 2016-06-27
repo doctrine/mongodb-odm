@@ -38,9 +38,10 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 class AnnotationDriver extends AbstractAnnotationDriver
 {
     protected $entityAnnotationClasses = array(
-        ODM\Document::class         => 1,
-        ODM\MappedSuperclass::class => 2,
-        ODM\EmbeddedDocument::class => 3,
+        ODM\Document::class                  => 1,
+        ODM\MappedSuperclass::class          => 2,
+        ODM\EmbeddedDocument::class          => 3,
+        ODM\AggregationResultDocument::class => 4,
     );
 
     /**
@@ -117,6 +118,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $class->isMappedSuperclass = true;
         } elseif ($documentAnnot instanceof ODM\EmbeddedDocument) {
             $class->isEmbeddedDocument = true;
+        } elseif ($documentAnnot instanceof ODM\AggregationResultDocument) {
+            $class->isAggregationResultDocument = true;
         }
         if (isset($documentAnnot->db)) {
             $class->setDatabase($documentAnnot->db);
@@ -124,7 +127,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($documentAnnot->collection)) {
             $class->setCollection($documentAnnot->collection);
         }
-        if (isset($documentAnnot->repositoryClass) && !$class->isEmbeddedDocument) {
+        if (isset($documentAnnot->repositoryClass) && !$class->isEmbeddedDocument && !$class->isAggregationResultDocument) {
             $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
         }
         if (isset($documentAnnot->writeConcern)) {

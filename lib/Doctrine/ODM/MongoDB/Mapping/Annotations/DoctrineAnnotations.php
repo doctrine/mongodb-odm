@@ -21,6 +21,7 @@ require_once __DIR__ . '/AbstractDocument.php';
 require_once __DIR__ . '/Document.php';
 require_once __DIR__ . '/EmbeddedDocument.php';
 require_once __DIR__ . '/MappedSuperclass.php';
+require_once __DIR__ . '/AggregationResultDocument.php';
 require_once __DIR__ . '/Inheritance.php';
 require_once __DIR__ . '/InheritanceType.php';
 require_once __DIR__ . '/DiscriminatorField.php';

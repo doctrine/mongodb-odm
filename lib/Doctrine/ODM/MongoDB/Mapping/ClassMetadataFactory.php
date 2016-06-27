@@ -121,7 +121,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function isEntity(ClassMetadataInterface $class)
     {
-        return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument;
+        return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isAggregationResultDocument;
     }
 
     /**
@@ -198,7 +198,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function validateIdentifier($class)
     {
-        if ( ! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument) {
+        if ( ! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isAggregationResultDocument) {
             throw MappingException::identifierRequired($class->name);
         }
     }

@@ -26,6 +26,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
     );
 
     private $someMappedSuperclassAndEmbeddedClasses = array(
+        'Documents/BlogTagAggregation',
         'Documents/CmsContent',
         'Documents/CmsPage',
         'Documents/Issue',
