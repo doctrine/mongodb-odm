@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Documents\Bars\Bar;
 use Documents\Bars\Location;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -65,6 +66,14 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
         $locations = $bar->getLocations();
         $this->assertEquals(0, count($locations));
+        $this->dm->flush();
+        
+        $bar->setLocations(new ArrayCollection([ new Location('Cracow') ]));
+        $this->uow->computeChangeSets();
+        $changeSet = $this->uow->getDocumentChangeSet($bar);
+        $this->assertNotEmpty($changeSet['locations']);
+        $this->assertSame($locations, $changeSet['locations'][0]);
+        $this->assertSame($bar->getLocations(), $changeSet['locations'][1]);
     }
 
     public function testCreateCollections()

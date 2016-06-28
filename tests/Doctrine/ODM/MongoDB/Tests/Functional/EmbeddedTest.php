@@ -108,6 +108,16 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getSingleResult();
         $this->assertNotNull($user);
         $this->assertEquals($addressClone, $user->getAddress());
+
+        $oldAddress = $user->getAddress();
+        $address = new Address();
+        $address->setAddress('Someplace else');
+        $user->setAddress($address);
+        $this->uow->computeChangeSets();
+        $changeSet = $this->uow->getDocumentChangeSet($user);
+        $this->assertNotEmpty($changeSet['address']);
+        $this->assertSame($oldAddress, $changeSet['address'][0]);
+        $this->assertSame($user->getAddress(), $changeSet['address'][1]);
     }
 
     public function testRemoveOneEmbedded()
