@@ -13,9 +13,27 @@ use Documents\Group;
 use Documents\User;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 
 class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    
+    /**
+	 * @var QueryLogger
+	 */
+	private $ql;
+
+	protected function getConfiguration() {
+		if (!isset($this->ql)) {
+			$this->ql = new QueryLogger();
+		}
+
+		$config = parent::getConfiguration();
+		$config->setLoggerCallable($this->ql);
+
+		return $config;
+	}
+    
     public function testManyDeleteReference()
     {
         $user = new \Documents\User();
@@ -195,6 +213,12 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $groups->isEmpty();
         $this->assertFalse($groups->isInitialized());
+
+        $this->ql->clear();
+		foreach ($user2->getGroups() as $group) {
+			$id = $group->getId();
+		}
+		$this->assertCount(0, $this->ql, 'Looping a collection & getting doc Ids should not trigger any queries');
 
         $groups = $user2->getGroups();
 
