@@ -713,9 +713,11 @@ class DocumentPersister
             $documents = $cursor->toArray(false);
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById($documentData['_id'], $class);
-                $data = $this->hydratorFactory->hydrate($document, $documentData);
-                $this->uow->setOriginalDocumentData($document, $data);
-                $document->__isInitialized__ = true;
+                if ($document instanceof Proxy && ! $document->__isInitialized()) {
+                    $data = $this->hydratorFactory->hydrate($document, $documentData);
+                    $this->uow->setOriginalDocumentData($document, $data);
+                    $document->__isInitialized__ = true;
+                }
                 if ($sorted) {
                     $collection->add($document);
                 }
