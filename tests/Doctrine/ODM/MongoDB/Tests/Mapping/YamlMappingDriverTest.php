@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
 
@@ -31,7 +32,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         }
 
         foreach (array('embeddedPhonenumber', 'otherPhonenumbers') as $embeddedField) {
-            foreach (array('strategy', 'targetDocument') as $key) {
+            foreach (array('strategy', 'targetDocument', 'collectionClass') as $key) {
                 $this->assertArrayHasKey($key, $class->fieldMappings[$embeddedField]);
             }
         }
@@ -69,4 +70,9 @@ class AbstractMappingDriverAlternateUser
     public $phonenumbers;
     public $embeddedPhonenumber;
     public $otherPhonenumbers;
+}
+
+class PhoneNumberCollection extends ArrayCollection
+{
+
 }
