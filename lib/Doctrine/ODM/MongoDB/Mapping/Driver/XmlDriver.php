@@ -244,11 +244,12 @@ class XmlDriver extends FileDriver
         $attributes = $embed->attributes();
         $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
-            'type'           => $type,
-            'embedded'       => true,
-            'targetDocument' => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
-            'name'           => (string) $attributes['field'],
-            'strategy'       => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
+            'type'            => $type,
+            'embedded'        => true,
+            'targetDocument'  => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
+            'collectionClass' => isset($attributes['collectionClass']) ? (string) $attributes['collectionClass'] : null,
+            'name'            => (string) $attributes['field'],
+            'strategy'        => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
         );
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
@@ -291,6 +292,7 @@ class XmlDriver extends FileDriver
             'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false, // deprecated
             'storeAs'          => isset($attributes['store-as']) ? (string) $attributes['store-as'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
+            'collectionClass'  => isset($attributes['collectionClass']) ? (string) $attributes['collectionClass'] : null,
             'name'             => (string) $attributes['field'],
             'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
             'inversedBy'       => isset($attributes['inversed-by']) ? (string) $attributes['inversed-by'] : null,
