@@ -31,10 +31,21 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         }
 
         foreach (array('embeddedPhonenumber', 'otherPhonenumbers') as $embeddedField) {
-            foreach (array('strategy', 'targetDocument') as $key) {
+            foreach (array('strategy', 'targetDocument', 'collectionClass') as $key) {
                 $this->assertArrayHasKey($key, $class->fieldMappings[$embeddedField]);
             }
         }
+    }
+
+    public function testGetAssociationCollectionClass()
+    {
+        $className = __NAMESPACE__.'\AbstractMappingDriverUser';
+        $mappingDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
+
+        $class = new ClassMetadata($className);
+        $mappingDriver->loadMetadataForClass($className, $class);
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection', $class->getAssociationCollectionClass('phonenumbers'));
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection', $class->getAssociationCollectionClass('otherPhonenumbers'));
     }
 
     public function testFieldLevelIndexSyntaxWithBooleanValues()
@@ -69,4 +80,9 @@ class AbstractMappingDriverAlternateUser
     public $phonenumbers;
     public $embeddedPhonenumber;
     public $otherPhonenumbers;
+}
+
+class PhonenumberCollection extends \Doctrine\Common\Collections\ArrayCollection
+{
+
 }

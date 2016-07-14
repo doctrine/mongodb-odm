@@ -242,11 +242,12 @@ class YamlDriver extends FileDriver
     {
         $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
-            'type'           => $type,
-            'embedded'       => true,
-            'targetDocument' => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
-            'fieldName'      => $fieldName,
-            'strategy'       => isset($embed['strategy']) ? (string) $embed['strategy'] : $defaultStrategy,
+            'type'            => $type,
+            'embedded'        => true,
+            'targetDocument'  => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
+            'collectionClass' => isset($embed['collectionClass']) ? $embed['collectionClass'] : null,
+            'fieldName'       => $fieldName,
+            'strategy'        => isset($embed['strategy']) ? (string) $embed['strategy'] : $defaultStrategy,
         );
         if (isset($embed['name'])) {
             $mapping['name'] = $embed['name'];
@@ -274,6 +275,7 @@ class YamlDriver extends FileDriver
             'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false, // deprecated
             'storeAs'          => isset($reference['storeAs']) ? (string) $reference['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
+            'collectionClass'  => isset($reference['collectionClass']) ? $reference['collectionClass'] : null,
             'fieldName'        => $fieldName,
             'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : $defaultStrategy,
             'inversedBy'       => isset($reference['inversedBy']) ? (string) $reference['inversedBy'] : null,

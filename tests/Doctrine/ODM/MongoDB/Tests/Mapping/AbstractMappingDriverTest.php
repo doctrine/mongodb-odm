@@ -405,7 +405,7 @@ class AbstractMappingDriverUser
     public $address;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Phonenumber", cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"}, defaultDiscriminatorValue="home")
+     * @ODM\ReferenceMany(targetDocument="Phonenumber", collectionClass="PhonenumberCollection", cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"}, defaultDiscriminatorValue="home")
      */
     public $phonenumbers;
 
@@ -415,7 +415,7 @@ class AbstractMappingDriverUser
     public $groups;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Phonenumber", name="more_phone_numbers")
+     * @ODM\ReferenceMany(targetDocument="Phonenumber", collectionClass="PhonenumberCollection", name="more_phone_numbers")
      */
     public $morePhoneNumbers;
 
@@ -509,6 +509,7 @@ class AbstractMappingDriverUser
         $metadata->mapManyReference(array(
             'fieldName' => 'phonenumbers',
             'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
+            'collectionClass' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\PhonenumberCollection',
             'cascade' => array(1 => 'persist'),
             'discriminatorField' => 'discr',
             'discriminatorMap' => array(
@@ -521,6 +522,7 @@ class AbstractMappingDriverUser
             'fieldName' => 'morePhoneNumbers',
             'name' => 'more_phone_numbers',
             'targetDocument' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\Phonenumber',
+            'collectionClass' => 'Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\PhonenumberCollection',
         ));
         $metadata->mapManyReference(array(
             'fieldName' => 'groups',
