@@ -2059,6 +2059,24 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
+     * Retrieve the collectionClass associated with an association
+     *
+     * @param string $assocName
+     */
+    public function getAssociationCollectionClass($assocName)
+    {
+        if ( ! isset($this->associationMappings[$assocName])) {
+            throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
+        }
+
+        if ( ! array_key_exists('collectionClass', $this->associationMappings[$assocName])) {
+            throw new InvalidArgumentException("collectionClass can only be applied to 'embedMany' and 'referenceMany' associations.");
+        }
+
+        return $this->associationMappings[$assocName]['collectionClass'];
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function isAssociationInverseSide($fieldName)

@@ -28,4 +28,18 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertSame(array('unique' => true, 'numInitialChunks' => 4096), $shardKey['options']);
         $this->assertSame(array('_id' => 1), $shardKey['keys']);
     }
+
+    public function testGetAssociationCollectionClass()
+    {
+        $class = new ClassMetadataInfo('doc');
+        $driver = $this->_loadDriver();
+        $element = new \SimpleXmlElement('<reference-many target-document="Phonenumber" collection-class="Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\PhonenumberCollection" field="phonenumbers"></reference-many>');
+
+        /** @uses XmlDriver::setShardKey */
+        $m = new \ReflectionMethod(get_class($driver), 'addReferenceMapping');
+        $m->setAccessible(true);
+        $m->invoke($driver, $class, $element, 'many');
+
+        $this->assertEquals('Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\PhonenumberCollection', $class->getAssociationCollectionClass('phonenumbers'));
+    }
 }

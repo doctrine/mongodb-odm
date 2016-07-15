@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
 
@@ -36,6 +35,17 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
                 $this->assertArrayHasKey($key, $class->fieldMappings[$embeddedField]);
             }
         }
+    }
+
+    public function testGetAssociationCollectionClass()
+    {
+        $className = __NAMESPACE__.'\AbstractMappingDriverAlternateUser';
+        $mappingDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
+
+        $class = new ClassMetadata($className);
+        $mappingDriver->loadMetadataForClass($className, $class);
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection', $class->getAssociationCollectionClass('embeddedPhonenumber'));
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection', $class->getAssociationCollectionClass('otherPhoneNumbers'));
     }
 
     public function testFieldLevelIndexSyntaxWithBooleanValues()
@@ -72,7 +82,7 @@ class AbstractMappingDriverAlternateUser
     public $otherPhonenumbers;
 }
 
-class PhoneNumberCollection extends ArrayCollection
+class PhonenumberCollection extends \Doctrine\Common\Collections\ArrayCollection
 {
 
 }
