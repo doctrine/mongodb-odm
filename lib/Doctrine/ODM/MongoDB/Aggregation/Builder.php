@@ -20,7 +20,9 @@
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use Doctrine\MongoDB\Aggregation\Builder as BaseBuilder;
+use Doctrine\MongoDB\Aggregation\Stage\GeoNear;
 use Doctrine\MongoDB\CommandCursor as BaseCommandCursor;
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Match;
 use Doctrine\ODM\MongoDB\CommandCursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
@@ -142,6 +144,48 @@ class Builder extends BaseBuilder
     {
         $fieldName = $this->getDocumentPersister()->prepareFieldName($fieldName);
         return parent::unwind($fieldName);
+    }
+
+    /**
+     * Returns the assembled aggregation pipeline
+     *
+     * For pipelines where the first stage is a $geoNear stage, it will apply
+     * the document filters and discriminator queries to the query portion of
+     * the geoNear operation. For all other pipelines, it prepends a $match stage
+     * containing the required query.
+     *
+     * @return array
+     */
+    public function getPipeline()
+    {
+        $pipeline = parent::getPipeline();
+
+        if ($this->getStage(0) instanceof GeoNear) {
+            $pipeline[0]['$geoNear']['query'] = $this->applyFilters($pipeline[0]['$geoNear']['query']);
+        } else {
+            $matchStage = $this->applyFilters([]);
+            if ($matchStage !== []) {
+                array_unshift($pipeline, ['$match' => $matchStage]);
+            }
+        }
+
+        return $pipeline;
+    }
+
+    /**
+     * Applies filters and discriminator queries to the pipeline
+     *
+     * @param array $query
+     * @return array
+     */
+    private function applyFilters(array $query)
+    {
+        $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
+
+        $query = $documentPersister->addDiscriminatorToPreparedQuery($query);
+        $query = $documentPersister->addFilterToPreparedQuery($query);
+
+        return $query;
     }
 
     /**
