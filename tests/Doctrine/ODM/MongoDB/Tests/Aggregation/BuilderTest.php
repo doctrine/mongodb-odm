@@ -97,6 +97,68 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
+    public function testBuilderAppliesFilterAndDiscriminatorWithMatchStage()
+    {
+        $this->dm->getFilterCollection()->enable('testFilter');
+        $filter = $this->dm->getFilterCollection()->getFilter('testFilter');
+        $filter->setParameter('class', \Documents\GuestServer::class);
+        $filter->setParameter('field', 'filtered');
+        $filter->setParameter('value', true);
+
+        $builder = $this->dm->createAggregationBuilder(\Documents\GuestServer::class);
+        $builder
+            ->project()
+            ->excludeIdField();
+
+        $expectedPipeline = [
+            [
+                '$match' => [
+                    '$and' => [
+                        ['stype' => 'server_guest'],
+                        ['filtered' => true],
+                    ],
+                ],
+
+            ],
+            [
+                '$project' => ['_id' => false],
+            ]
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
+    public function testBuilderAppliesFilterAndDiscriminatorWithGeoNearStage()
+    {
+        $this->dm->getFilterCollection()->enable('testFilter');
+        $filter = $this->dm->getFilterCollection()->getFilter('testFilter');
+        $filter->setParameter('class', \Documents\GuestServer::class);
+        $filter->setParameter('field', 'filtered');
+        $filter->setParameter('value', true);
+
+        $builder = $this->dm->createAggregationBuilder(\Documents\GuestServer::class);
+        $builder
+            ->geoNear(0, 0);
+
+        $expectedPipeline = [
+            [
+                '$geoNear' => [
+                    'near' => [0, 0],
+                    'spherical' => false,
+                    'distanceField' => null,
+                    'query' => [
+                        '$and' => [
+                            ['stype' => 'server_guest'],
+                            ['filtered' => true],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
     private function insertTestData()
     {
         $baseballTag = new \Documents\Tag('baseball');
