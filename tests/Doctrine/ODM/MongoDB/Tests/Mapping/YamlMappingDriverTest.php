@@ -39,13 +39,13 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testGetAssociationCollectionClass()
     {
-        $className = __NAMESPACE__.'\AbstractMappingDriverAlternateUser';
+        $className = __NAMESPACE__.'\AbstractMappingDriverUser';
         $mappingDriver = new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
 
         $class = new ClassMetadata($className);
         $mappingDriver->loadMetadataForClass($className, $class);
-        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection', $class->getAssociationCollectionClass('embeddedPhonenumber'));
-        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection', $class->getAssociationCollectionClass('otherPhoneNumbers'));
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection', $class->getAssociationCollectionClass('phonenumbers'));
+        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection', $class->getAssociationCollectionClass('otherPhonenumbers'));
     }
 
     public function testFieldLevelIndexSyntaxWithBooleanValues()
