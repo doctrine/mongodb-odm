@@ -309,14 +309,6 @@ Example:
     // $document now refers to the fully managed copy returned by the merge operation.
     // The DocumentManager $dm now manages the persistence of $document as usual.
 
-.. caution::
-
-    When you want to serialize/unserialize documents you
-    have to make all document properties protected, never private. The
-    reason for this is, if you serialize a class that was a proxy
-    instance before, the private variables won't be serialized and a
-    PHP Notice is thrown.
-
     The semantics of the merge operation, applied to a document X, are
     as follows:
 
