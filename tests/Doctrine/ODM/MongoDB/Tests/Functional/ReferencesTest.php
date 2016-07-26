@@ -334,9 +334,11 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Group 1', $groups[0]->getName());
         $this->assertEquals('Group 2', $groups[1]->getName());
 
+        $groups[1]->setName('Group 2a');
+
         $groups = $user->getSortedDescGroups();
         $this->assertEquals(2, $groups->count());
-        $this->assertEquals('Group 2', $groups[0]->getName());
+        $this->assertEquals('Group 2a', $groups[0]->getName());
         $this->assertEquals('Group 1', $groups[1]->getName());
     }
 
