@@ -67,6 +67,7 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
   referenceMany:
     phonenumbers:
       targetDocument: Phonenumber
+      collectionClass: PhonenumberCollection
       cascade: [ persist ]
       discriminatorField: discr
       discriminatorMap:
@@ -86,6 +87,7 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
   embedMany:
     otherPhonenumbers:
       targetDocument: Phonenumber
+      collectionClass: PhonenumberCollection
       discriminatorField: discr
       discriminatorMap:
         home: HomePhonenumber

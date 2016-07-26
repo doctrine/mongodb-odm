@@ -41,7 +41,7 @@
                 <remove />
             </cascade>
         </reference-one>
-        <reference-many target-document="Phonenumber" field="phonenumbers">
+        <reference-many target-document="Phonenumber" collection-class="PhonenumberCollection" field="phonenumbers">
             <cascade>
                 <persist />
             </cascade>
@@ -61,7 +61,7 @@
         </reference-many>
         <embed-one target-document="Phonenumber" fieldName="embeddedPhonenumber" field="embedded_phone_number">
         </embed-one>
-        <embed-many target-document="Phonenumber" field="otherPhonenumbers">
+        <embed-many target-document="Phonenumber" collection-class="PhonenumberCollection" field="otherPhonenumbers">
             <discriminator-field name="discr" />
             <discriminator-map>
                 <discriminator-mapping value="home" class="HomePhonenumber" />
