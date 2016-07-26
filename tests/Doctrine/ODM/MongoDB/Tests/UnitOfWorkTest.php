@@ -649,43 +649,31 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     /**
      * Gets mock HydratorFactory instance
      *
-     * @return Doctrine\ODM\MongoDB\Hydrator\HydratorFactory
+     * @return \Doctrine\ODM\MongoDB\Hydrator\HydratorFactory
      */
     private function getMockHydratorFactory()
     {
-        return $this->getMockBuilder('Doctrine\ODM\MongoDB\Hydrator\HydratorFactory')
-            ->disableOriginalClone()
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock('Doctrine\ODM\MongoDB\Hydrator\HydratorFactory');
     }
 
     /**
      * Gets mock EventManager instance
      *
-     * @return Doctrine\Common\EventManager
+     * @return \Doctrine\Common\EventManager
      */
     private function getMockEventManager()
     {
-        return $this->getMockBuilder('Doctrine\Common\EventManager')
-            ->disableOriginalClone()
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock('Doctrine\Common\EventManager');
     }
 
     private function getMockPersistenceBuilder()
     {
-        return $this->getMockBuilder('Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder')
-            ->disableOriginalClone()
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock('Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder');
     }
 
     private function getMockDocumentManager()
     {
-        return $this->getMockBuilder('Doctrine\ODM\MongoDB\DocumentManager')
-            ->disableOriginalClone()
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock('Doctrine\ODM\MongoDB\DocumentManager');
     }
 
     private function getMockDocumentPersister(PersistenceBuilder $pb, ClassMetadata $class)
