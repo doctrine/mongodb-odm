@@ -297,16 +297,12 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
 
     private function getMockCollection()
     {
-        return $this->getMockBuilder('Doctrine\MongoDB\Collection')
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock('Doctrine\MongoDB\Collection');
     }
 
     private function getMockDatabase()
     {
-        return $this->getMockBuilder('Doctrine\MongoDB\Database')
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock('Doctrine\MongoDB\Database');
     }
 
     private function getMockDocumentManager()
@@ -314,9 +310,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $config = new Configuration();
         $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/../../../../Documents'));
 
-        $em = $this->getMockBuilder('Doctrine\Common\EventManager')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $em = $this->createMock('Doctrine\Common\EventManager');
 
         $dm = new DocumentManagerMock();
         $dm->eventManager = $em;
@@ -327,17 +321,13 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
 
     private function getMockUnitOfWork()
     {
-        $documentPersister = $this->getMockBuilder('Doctrine\ODM\MongoDB\Persisters\DocumentPersister')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $documentPersister = $this->createMock('Doctrine\ODM\MongoDB\Persisters\DocumentPersister');
 
         $documentPersister->expects($this->any())
             ->method('prepareFieldName')
             ->will($this->returnArgument(0));
 
-        $uow = $this->getMockBuilder('Doctrine\ODM\MongoDB\UnitOfWork')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $uow = $this->createMock('Doctrine\ODM\MongoDB\UnitOfWork');
 
         $uow->expects($this->any())
             ->method('getDocumentPersister')
