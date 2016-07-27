@@ -14,6 +14,7 @@ class HydratorTest extends BaseTest
         $user = new HydrationClosureUser();
         $this->dm->getHydratorFactory()->hydrate($user, array(
             '_id' => 1,
+            'title' => null,
             'name' => 'jon',
             'birthdate' => new \DateTime('1961-01-01'),
             'referenceOne' => array('$id' => '1'),
@@ -32,6 +33,7 @@ class HydratorTest extends BaseTest
         ));
 
         $this->assertEquals(1, $user->id);
+        $this->assertSame(null, $user->title);
         $this->assertEquals('jon', $user->name);
         $this->assertInstanceOf('DateTime', $user->birthdate);
         $this->assertInstanceOf(__NAMESPACE__.'\HydrationClosureReferenceOne', $user->referenceOne);
@@ -69,6 +71,9 @@ class HydrationClosureUser
 {
     /** @ODM\Id */
     public $id;
+
+    /** @ODM\Field(type="string", nullable=true) */
+    public $title = 'Mr.';
 
     /** @ODM\Field(type="string") */
     public $name;
