@@ -5,6 +5,20 @@ This changelog references the relevant changes done in 1.1 minor versions. If up
 1.0.x branch, please review
 [Upgrade Path](https://github.com/doctrine/mongodb-odm/blob/master/CHANGELOG-1.1.md#upgrade-path).
 
+1.1.1 (2016-07-27)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.1.1 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.1.1).
+
+* [#1436](https://github.com/doctrine/mongodb-odm/pull/1436) ensures generated Documents/Repositories follow PSR-2 coding standard
+* [#1437](https://github.com/doctrine/mongodb-odm/pull/1437) fixes change set of exchanged collection to include old one
+* [#1440](https://github.com/doctrine/mongodb-odm/pull/1440) fixes upserting documents mapped with YAML file
+* [#1458](https://github.com/doctrine/mongodb-odm/pull/1458) adds support for `customCollection` to XML/YAML drivers
+* [#1461](https://github.com/doctrine/mongodb-odm/pull/1461) fixes overwriting data of documents contained in sorted collection
+* [#1462](https://github.com/doctrine/mongodb-odm/pull/1462) makes PersistentCollection call decorated `ArrayAccess` related methods
+* [#1466](https://github.com/doctrine/mongodb-odm/pull/1466) fixes hydrating `null` value when field is nullable
+
 1.1.0
 -----
 
