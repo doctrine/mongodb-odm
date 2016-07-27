@@ -12,6 +12,15 @@ the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
+1.0.7 (2016-07-27)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.0.0 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.7).
+
+* [#1461](https://github.com/doctrine/mongodb-odm/pull/1461) fixes overwriting data of documents contained in sorted collection
+* [#1466](https://github.com/doctrine/mongodb-odm/pull/1466) fixes hydrating `null` value when field is nullable
+
 1.0.6 (2016-06-09)
 ------------------
 
