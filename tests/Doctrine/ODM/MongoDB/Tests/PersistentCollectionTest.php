@@ -247,9 +247,7 @@ class PersistentCollectionTest extends BaseTest
      */
     private function getMockDocumentManager()
     {
-        return $this->getMockBuilder('Doctrine\ODM\MongoDB\DocumentManager')
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock('Doctrine\ODM\MongoDB\DocumentManager');
     }
 
     /**
@@ -257,9 +255,7 @@ class PersistentCollectionTest extends BaseTest
      */
     private function getMockUnitOfWork()
     {
-        return $this->getMockBuilder('Doctrine\ODM\MongoDB\UnitOfWork')
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock('Doctrine\ODM\MongoDB\UnitOfWork');
     }
 
     /**
@@ -267,6 +263,6 @@ class PersistentCollectionTest extends BaseTest
      */
     private function getMockCollection()
     {
-        return $this->getMock('Doctrine\Common\Collections\Collection');
+        return $this->createMock('Doctrine\Common\Collections\Collection');
     }
 }

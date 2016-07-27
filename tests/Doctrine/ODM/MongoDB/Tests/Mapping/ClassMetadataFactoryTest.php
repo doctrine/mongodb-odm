@@ -68,9 +68,7 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $config = new Configuration();
         $config->setMetadataDriverImpl($driver);
 
-        $em = $this->getMockBuilder('Doctrine\Common\EventManager')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $em = $this->createMock('Doctrine\Common\EventManager');
 
         $dm = new DocumentManagerMock();
         $dm->config = $config;

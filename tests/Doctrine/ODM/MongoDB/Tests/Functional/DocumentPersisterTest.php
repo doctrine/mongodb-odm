@@ -380,7 +380,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->getMock('\MongoCollection', ['batchInsert'], [], '', false);
+        $collection = $this->createMock('\MongoCollection');
         $collection->expects($this->any())
             ->method('batchInsert')
             ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
@@ -404,7 +404,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->getMock('\MongoCollection', ['update'], [], '', false);
+        $collection = $this->createMock('\MongoCollection');
         $collection->expects($this->any())
             ->method('update')
             ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
@@ -429,7 +429,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->getMock('\MongoCollection', ['remove', 'batchInsert'], [], '', false);
+        $collection = $this->createMock('\MongoCollection');
         $collection->expects($this->once())
             ->method('remove')
             ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
@@ -451,7 +451,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->getMock('\MongoCollection', ['batchInsert'], [], '', false);
+        $collection = $this->createMock('\MongoCollection');
         $collection->expects($this->any())
             ->method('batchInsert')
             ->with($this->isType('array'), $this->equalTo(array('w' => 0)));

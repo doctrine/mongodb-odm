@@ -184,18 +184,10 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testReferencesUsesMinimalKeys()
     {
-        $dm = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\DocumentManager')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $uw = $this->getMockBuilder('Doctrine\ODM\MongoDB\UnitOfWork')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $documentPersister = $this->getMockBuilder('Doctrine\ODM\MongoDB\Persisters\DocumentPersister')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $class = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $dm = $this->createMock('Doctrine\\ODM\\MongoDB\\DocumentManager');
+        $uw = $this->createMock('Doctrine\ODM\MongoDB\UnitOfWork');
+        $documentPersister = $this->createMock('Doctrine\ODM\MongoDB\Persisters\DocumentPersister');
+        $class = $this->createMock('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata');
 
         $expected = array('foo.$id' => '1234');
 
@@ -225,18 +217,10 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testReferencesUsesAllKeys()
     {
-        $dm = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\DocumentManager')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $uw = $this->getMockBuilder('Doctrine\ODM\MongoDB\UnitOfWork')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $documentPersister = $this->getMockBuilder('Doctrine\ODM\MongoDB\Persisters\DocumentPersister')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $class = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $dm = $this->createMock('Doctrine\\ODM\\MongoDB\\DocumentManager');
+        $uw = $this->createMock('Doctrine\ODM\MongoDB\UnitOfWork');
+        $documentPersister = $this->createMock('Doctrine\ODM\MongoDB\Persisters\DocumentPersister');
+        $class = $this->createMock('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata');
 
         $expected = array('foo.$ref' => 'coll', 'foo.$id' => '1234', 'foo.$db' => 'db');
 
@@ -266,18 +250,10 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testReferencesUsesSomeKeys()
     {
-        $dm = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\DocumentManager')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $uw = $this->getMockBuilder('Doctrine\ODM\MongoDB\UnitOfWork')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $documentPersister = $this->getMockBuilder('Doctrine\ODM\MongoDB\Persisters\DocumentPersister')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $class = $this->getMockBuilder('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $dm = $this->createMock('Doctrine\\ODM\\MongoDB\\DocumentManager');
+        $uw = $this->createMock('Doctrine\ODM\MongoDB\UnitOfWork');
+        $documentPersister = $this->createMock('Doctrine\ODM\MongoDB\Persisters\DocumentPersister');
+        $class = $this->createMock('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata');
 
         $expected = array('foo.$ref' => 'coll', 'foo.$id' => '1234');
 
