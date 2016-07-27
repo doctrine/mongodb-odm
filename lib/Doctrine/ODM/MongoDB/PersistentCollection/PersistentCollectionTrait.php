@@ -351,16 +351,7 @@ trait PersistentCollectionTrait
      */
     public function remove($key)
     {
-        $this->initialize();
-        $removed = $this->coll->remove($key);
-
-        if ( ! $removed) {
-            return $removed;
-        }
-
-        $this->changed();
-
-        return $removed;
+        return $this->doRemove($key, false);
     }
 
     /**
@@ -466,14 +457,7 @@ trait PersistentCollectionTrait
      */
     public function set($key, $value)
     {
-        $this->coll->set($key, $value);
-
-        // Handle orphanRemoval
-        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $value !== null) {
-            $this->uow->unscheduleOrphanRemoval($value);
-        }
-
-        $this->changed();
+        return $this->doSet($key, $value, false);
     }
 
     /**
@@ -481,21 +465,7 @@ trait PersistentCollectionTrait
      */
     public function add($value)
     {
-        /* Initialize the collection before calling add() so this append operation
-         * uses the appropriate key. Otherwise, we risk overwriting original data
-         * when $newObjects are re-added in a later call to initialize().
-         */
-        if (isset($this->mapping['strategy']) && CollectionHelper::isHash($this->mapping['strategy'])) {
-            $this->initialize();
-        }
-        $this->coll->add($value);
-        $this->changed();
-
-        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $value !== null) {
-            $this->uow->unscheduleOrphanRemoval($value);
-        }
-
-        return true;
+        return $this->doAdd($value, false);
     }
 
     /**
@@ -503,7 +473,7 @@ trait PersistentCollectionTrait
      */
     public function isEmpty()
     {
-        return $this->count() === 0;
+        return $this->initialized ? $this->coll->isEmpty() : $this->count() === 0;
     }
 
     /**
@@ -621,7 +591,8 @@ trait PersistentCollectionTrait
      */
     public function offsetExists($offset)
     {
-        return $this->containsKey($offset);
+        $this->initialize();
+        return $this->coll->offsetExists($offset);
     }
 
     /**
@@ -629,7 +600,8 @@ trait PersistentCollectionTrait
      */
     public function offsetGet($offset)
     {
-        return $this->get($offset);
+        $this->initialize();
+        return $this->coll->offsetGet($offset);
     }
 
     /**
@@ -639,10 +611,10 @@ trait PersistentCollectionTrait
     public function offsetSet($offset, $value)
     {
         if ( ! isset($offset)) {
-            return $this->add($value);
+            return $this->doAdd($value, true);
         }
 
-        return $this->set($offset, $value);
+        return $this->doSet($offset, $value, true);
     }
 
     /**
@@ -650,7 +622,7 @@ trait PersistentCollectionTrait
      */
     public function offsetUnset($offset)
     {
-        return $this->remove($offset);
+        return $this->doRemove($offset, true);
     }
 
     public function key()
@@ -703,6 +675,73 @@ trait PersistentCollectionTrait
 
         $this->owner = null;
         $this->snapshot = array();
+
+        $this->changed();
+    }
+
+    /**
+     * Actual logic for adding an element to the collection.
+     *
+     * @param mixed $value
+     * @param bool $arrayAccess
+     * @return bool
+     */
+    private function doAdd($value, $arrayAccess)
+    {
+        /* Initialize the collection before calling add() so this append operation
+         * uses the appropriate key. Otherwise, we risk overwriting original data
+         * when $newObjects are re-added in a later call to initialize().
+         */
+        if (isset($this->mapping['strategy']) && CollectionHelper::isHash($this->mapping['strategy'])) {
+            $this->initialize();
+        }
+        $arrayAccess ? $this->coll->offsetSet(null, $value) : $this->coll->add($value);
+        $this->changed();
+
+        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $value !== null) {
+            $this->uow->unscheduleOrphanRemoval($value);
+        }
+
+        return true;
+    }
+
+    /**
+     * Actual logic for removing element by its key.
+     *
+     * @param mixed $offset
+     * @param bool $arrayAccess
+     * @return mixed|void
+     */
+    private function doRemove($offset, $arrayAccess)
+    {
+        $this->initialize();
+        $removed = $arrayAccess ? $this->coll->offsetUnset($offset) : $this->coll->remove($offset);
+
+        if ( ! $removed && ! $arrayAccess) {
+            return $removed;
+        }
+
+        $this->changed();
+
+        return $removed;
+    }
+
+    /**
+     * Actual logic for setting an element in the collection.
+     *
+     * @param mixed $offset
+     * @param mixed $value
+     * @param bool $arrayAccess
+     * @return bool
+     */
+    private function doSet($offset, $value, $arrayAccess)
+    {
+        $arrayAccess ? $this->coll->offsetSet($offset, $value) : $this->coll->set($offset, $value);
+
+        // Handle orphanRemoval
+        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $value !== null) {
+            $this->uow->unscheduleOrphanRemoval($value);
+        }
 
         $this->changed();
     }

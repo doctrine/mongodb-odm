@@ -176,6 +176,72 @@ class PersistentCollectionTest extends BaseTest
         );
     }
 
+    public function testOffsetExistsIsForwarded()
+    {
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())->method('offsetExists')->willReturn(false);
+        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $this->assertFalse(isset($pcoll[0]));
+    }
+
+    public function testOffsetGetIsForwarded()
+    {
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())->method('offsetGet')->willReturn(2);
+        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $this->assertSame(2, $pcoll[0]);
+    }
+
+    public function testOffsetUnsetIsForwarded()
+    {
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())->method('offsetUnset');
+        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        unset($pcoll[0]);
+        $this->assertTrue($pcoll->isDirty());
+    }
+
+    public function testRemoveIsForwarded()
+    {
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())->method('remove')->willReturn(2);
+        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll->remove(0);
+        $this->assertTrue($pcoll->isDirty());
+    }
+
+    public function testOffsetSetIsForwarded()
+    {
+        $collection = $this->getMockCollection();
+        $collection->expects($this->exactly(2))->method('offsetSet');
+        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll[] = 1;
+        $pcoll[1] = 2;
+        $collection->expects($this->once())->method('add');
+        $pcoll->add(3);
+        $collection->expects($this->once())->method('set');
+        $pcoll->set(3, 4);
+    }
+
+    public function testIsEmptyIsForwardedWhenCollectionIsInitialized()
+    {
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())->method('isEmpty')->willReturn(true);
+        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll->setInitialized(true);
+        $this->assertTrue($pcoll->isEmpty());
+    }
+
+    public function testIsEmptyUsesCountWhenCollectionIsNotInitialized()
+    {
+        $collection = $this->getMockCollection();
+        $collection->expects($this->never())->method('isEmpty');
+        $collection->expects($this->once())->method('count')->willReturn(0);
+        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll->setInitialized(false);
+        $this->assertTrue($pcoll->isEmpty());
+    }
+
     /**
      * @return \Doctrine\ODM\MongoDB\DocumentManager
      */
