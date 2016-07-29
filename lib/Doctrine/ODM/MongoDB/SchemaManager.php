@@ -373,9 +373,7 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
             throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
         }
-        $this->dm->getDocumentDatabase($documentName)->dropCollection(
-            $class->getCollection()
-        );
+        $this->dm->getDocumentCollection($documentName)->drop();
     }
 
     /**
