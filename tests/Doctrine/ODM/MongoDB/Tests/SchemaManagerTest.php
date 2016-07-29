@@ -225,13 +225,13 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testDropCollections()
     {
-        foreach ($this->documentDatabases as $class => $database) {
+        foreach ($this->documentCollections as $class => $collection) {
             if (in_array($class, $this->indexedClasses + $this->someNonIndexedClasses)) {
-                $database->expects($this->once())
-                    ->method('dropCollection')
-                    ->with($this->classMetadatas[$class]->collection);
+                $collection->expects($this->once())
+                    ->method('drop')
+                    ->with();
             } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses)) {
-                $database->expects($this->never())->method('dropCollection');
+                $collection->expects($this->never())->method('drop');
             }
         }
 
@@ -240,13 +240,13 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testDropDocumentCollection()
     {
-        foreach ($this->documentDatabases as $class => $database) {
+        foreach ($this->documentCollections as $class => $collection) {
             if ($class === \Documents\CmsArticle::class) {
-                $database->expects($this->once())
-                    ->method('dropCollection')
-                    ->with($this->classMetadatas[$class]->collection);
+                $collection->expects($this->once())
+                    ->method('drop')
+                    ->with();
             } else {
-                $database->expects($this->never())->method('dropCollection');
+                $collection->expects($this->never())->method('drop');
             }
         }
 
