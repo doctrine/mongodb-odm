@@ -100,13 +100,13 @@ class ShardedByObjects
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ObjectId */
+    /** @ODM\Field(type="object_id") */
     public $oid;
 
-    /** @ODM\Bin */
+    /** @ODM\Field(type="bin") */
     public $bin;
 
-    /** @ODM\Date */
+    /** @ODM\Field(type="date") */
     public $date;
 }
 
