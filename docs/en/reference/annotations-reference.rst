@@ -726,53 +726,6 @@ via the :ref:`strategy <basic_mapping_identifiers>` attribute.
         protected $id;
     }
 
-@Increment
-----------
-
-The increment type is just like an integer field, except that it will be updated
-using the ``$inc`` operator instead of ``$set``:
-
-.. code-block:: php
-
-    <?php
-
-    class Package
-    {
-        /** @Increment */
-        private $downloads = 0;
-
-        public function incrementDownloads()
-        {
-            $this->downloads++;
-        }
-
-        // ...
-    }
-
-Now, update a Package instance like so:
-
-.. code-block:: php
-
-    <?php
-
-    $package->incrementDownloads();
-    $dm->flush();
-
-The query sent to Mongo would resemble the following:
-
-.. code-block:: json
-
-    { "$inc": { "downloads": 1 } }
-
-The field will be incremented by the difference between the new and old values.
-This is useful if many requests are attempting to update the field concurrently.
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "int" or "float" and use the "increment"
-    strategy.
-
 @Index
 ------
 
