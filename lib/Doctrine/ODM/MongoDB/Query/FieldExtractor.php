@@ -24,6 +24,8 @@ namespace Doctrine\ODM\MongoDB\Query;
  * a given mongodb query. Used for checking if query is indexed.
  *
  * @see Doctrine\ODM\MongoDB\Query::isIndexed()
+ *
+ * @deprecated class was deprecated in 1.2 and will be removed in 2.0
  */
 class FieldExtractor
 {
