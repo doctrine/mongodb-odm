@@ -90,7 +90,7 @@ class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /**
 * @ODM\Document(collection="rdt_action")
 * @ODM\InheritanceType("SINGLE_COLLECTION")
-* @ODM\DiscriminatorField(fieldName="discriminator")
+* @ODM\DiscriminatorField("discriminator")
 * @ODM\DiscriminatorMap({"action"="Action", "commentable_action"="CommentableAction"})
 */
 class Action

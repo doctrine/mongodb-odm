@@ -19,7 +19,7 @@ class MODM50Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /**
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorField("type")
  * @ODM\DiscriminatorMap({
  *      "file"="MODM50File",
  *      "image"="MODM50Image"

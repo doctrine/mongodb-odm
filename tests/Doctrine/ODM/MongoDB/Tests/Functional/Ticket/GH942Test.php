@@ -52,7 +52,7 @@ class GH942Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /**
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorField("type")
  */
 class GH942Document
 {
@@ -68,7 +68,7 @@ class GH942Document
 /**
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorField("type")
  * @ODM\DiscriminatorMap({"p"="GH942DocumentParent"})
  */
 class GH942DocumentParent

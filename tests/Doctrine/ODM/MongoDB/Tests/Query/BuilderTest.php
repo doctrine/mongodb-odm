@@ -140,7 +140,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /**
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorField("type")
  * @ODM\DiscriminatorMap({"ca"="ChildA", "cb"="ChildB", "cc"="ChildC"})
  */
 class ParentClass
