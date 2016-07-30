@@ -226,13 +226,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $shardKey;
 
     /**
-     * READ-ONLY: Whether or not queries on this document should require indexes.
-     *
-     * @deprecated property was deprecated in 1.2 and will be removed in 2.0
-     */
-    public $requireIndexes = false;
-
-    /**
      * READ-ONLY: The name of the document class.
      */
     public $name;
@@ -803,18 +796,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             }, $keys),
             'options' => $options
         );
-    }
-
-    /**
-     * Set whether or not queries on this document should require indexes.
-     *
-     * @param bool $requireIndexes
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public function setRequireIndexes($requireIndexes)
-    {
-        $this->requireIndexes = $requireIndexes;
     }
 
     /**
