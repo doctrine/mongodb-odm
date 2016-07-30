@@ -74,13 +74,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     private $primers = array();
 
     /**
-     * Whether or not to require indexes.
-     *
-     * @var bool
-     */
-    private $requireIndexes;
-
-    /**
      * Whether or not to register documents in UnitOfWork.
      *
      * @var bool
@@ -100,20 +93,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         if ($documentName !== null) {
             $this->setDocumentName($documentName);
         }
-    }
-
-    /**
-     * Set whether or not to require indexes.
-     *
-     * @param bool $requireIndexes
-     * @return $this
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public function requireIndexes($requireIndexes = true)
-    {
-        $this->requireIndexes = $requireIndexes;
-        return $this;
     }
 
     /**
@@ -403,7 +382,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->hydrate,
             $this->refresh,
             $this->primers,
-            $this->requireIndexes,
             $this->readOnly
         );
     }
