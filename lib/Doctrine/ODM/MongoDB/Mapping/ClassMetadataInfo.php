@@ -1264,9 +1264,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['type']) && $mapping['type'] === 'file') {
             $mapping['file'] = true;
         }
-        if (isset($mapping['type']) && $mapping['type'] === 'increment') {
-            $mapping['strategy'] = self::STORAGE_STRATEGY_INCREMENT;
-        }
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
             $mapping['name'] = 'file';
@@ -1399,7 +1396,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         switch (true) {
             case $mapping['type'] == 'int':
             case $mapping['type'] == 'float':
-            case $mapping['type'] == 'increment':
                 $defaultStrategy = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
                 break;
