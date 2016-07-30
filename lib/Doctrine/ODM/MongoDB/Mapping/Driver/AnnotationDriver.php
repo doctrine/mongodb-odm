@@ -92,22 +92,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\InheritanceType) {
                 $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_'.$annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
-                // $fieldName property is deprecated, but fall back for BC
-                if (isset($annot->value)) {
-                    $class->setDiscriminatorField($annot->value);
-                } elseif (isset($annot->name)) {
-                    @trigger_error(
-                        sprintf('Specifying discriminator\'s name through "name" is deprecated - use @DiscriminatorField("%s") instead', $annot->name),
-                        E_USER_DEPRECATED
-                    );
-                    $class->setDiscriminatorField($annot->name);
-                } elseif (isset($annot->fieldName)) {
-                    @trigger_error(
-                        sprintf('Specifying discriminator\'s name through "name" is deprecated - use @DiscriminatorField("%s") instead', $annot->fieldName),
-                        E_USER_DEPRECATED
-                    );
-                    $class->setDiscriminatorField($annot->fieldName);
-                }
+                $class->setDiscriminatorField($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorMap) {
                 $class->setDiscriminatorMap($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
