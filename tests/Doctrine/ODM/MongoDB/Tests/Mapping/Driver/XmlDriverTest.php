@@ -43,7 +43,6 @@ class XmlDriverTest extends AbstractDriverTest
         $classMetadata = new ClassMetadata('TestDocuments\UserNonStringOptions');
         $this->driver->loadMetadataForClass('TestDocuments\UserNonStringOptions', $classMetadata);
 
-        $this->assertTrue($classMetadata->requireIndexes);
         $this->assertFalse($classMetadata->slaveOkay);
 
         $profileMapping = $classMetadata->fieldMappings['profile'];

@@ -399,9 +399,6 @@ Optional attributes:
    readOnly - Prevents document from being updated: it can only be inserted,
    upserted or removed.
 -
-   requireIndexes - Specifies whether or not queries for this document should
-   require indexes by default. This may also be specified per query.
--
    writeConcern - Specifies the write concern for this document that overwrites
    the default write concern specified in the configuration. It does not overwrite
    a write concern given as :ref:`option <flush_options>` to the ``flush``
@@ -420,16 +417,12 @@ Optional attributes:
      *         @Index(keys={"username"="desc"}, options={"unique"=true})
      *     },
      *     readOnly=true,
-     *     requireIndexes=true
      * )
      */
     class User
     {
         //...
     }
-
-.. note::
-    Requiring Indexes was deprecated in 1.2 and will be removed in 2.0.
 
 @EmbedMany
 ----------

@@ -111,9 +111,6 @@ class YamlDriver extends FileDriver
         if (isset($element['changeTrackingPolicy'])) {
             $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_' . strtoupper($element['changeTrackingPolicy'])));
         }
-        if (isset($element['requireIndexes'])) {
-            $class->setRequireIndexes($element['requireIndexes']);
-        }
         if (isset($element['slaveOkay'])) {
             $class->setSlaveOkay($element['slaveOkay']);
         }
