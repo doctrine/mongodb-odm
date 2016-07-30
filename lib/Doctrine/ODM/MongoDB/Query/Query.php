@@ -72,13 +72,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
     private $primers = array();
 
     /**
-     * Whether or not to require indexes.
-     *
-     * @var boolean
-     */
-    private $requireIndexes;
-
-    /**
      * Hints for UnitOfWork behavior.
      *
      * @var array
@@ -98,10 +91,9 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @param boolean $hydrate
      * @param boolean $refresh
      * @param array $primers
-     * @param null $requireIndexes deprecated
      * @param boolean $readOnly
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null, $readOnly = false)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $readOnly = false)
     {
         $primers = array_filter($primers);
 
@@ -118,7 +110,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
         $this->class = $class;
         $this->hydrate = $hydrate;
         $this->primers = $primers;
-        $this->requireIndexes = $requireIndexes;
 
         $this->setReadOnly($readOnly);
         $this->setRefresh($refresh);
@@ -190,71 +181,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
     }
 
     /**
-     * Gets the fields involved in this query.
-     *
-     * @return array $fields An array of fields names used in this query.
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public function getFieldsInQuery()
-    {
-        @trigger_error(
-            sprintf('%s was deprecated in version 1.2 and will be removed altogether in 2.0.', __METHOD__),
-            E_USER_DEPRECATED
-        );
-        $query = isset($this->query['query']) ? $this->query['query'] : array();
-        $sort = isset($this->query['sort']) ? $this->query['sort'] : array();
-
-        $extractor = new FieldExtractor($query, $sort);
-        return $extractor->getFields();
-    }
-
-    /**
-     * Check if this query is indexed.
-     *
-     * @return bool
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public function isIndexed()
-    {
-        @trigger_error(
-            sprintf('%s was deprecated in version 1.2 and will be removed altogether in 2.0.', __METHOD__),
-            E_USER_DEPRECATED
-        );
-        $fields = $this->getFieldsInQuery();
-        foreach ($fields as $field) {
-            if ( ! $this->collection->isFieldIndexed($field)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Gets an array of the unindexed fields in this query.
-     *
-     * @return array
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public function getUnindexedFields()
-    {
-        @trigger_error(
-            sprintf('%s was deprecated in version 1.2 and will be removed altogether in 2.0.', __METHOD__),
-            E_USER_DEPRECATED
-        );
-        $unindexedFields = array();
-        $fields = $this->getFieldsInQuery();
-        foreach ($fields as $field) {
-            if ( ! $this->collection->isFieldIndexed($field)) {
-                $unindexedFields[] = $field;
-            }
-        }
-        return $unindexedFields;
-    }
-
-    /**
      * Execute the query and returns the results.
      *
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
@@ -262,10 +188,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function execute()
     {
-        if ($this->isIndexRequired() && ! $this->isIndexed()) {
-            throw MongoDBException::queryNotIndexed($this->class->name, $this->getUnindexedFields());
-        }
-
         $results = parent::execute();
 
         if ( ! $this->hydrate) {
@@ -342,15 +264,5 @@ class Query extends \Doctrine\MongoDB\Query\Query
         }
 
         return $cursor;
-    }
-
-    /**
-     * Return whether queries on this document should require indexes.
-     *
-     * @return boolean
-     */
-    private function isIndexRequired()
-    {
-        return $this->requireIndexes !== null ? $this->requireIndexes : $this->class->requireIndexes;
     }
 }

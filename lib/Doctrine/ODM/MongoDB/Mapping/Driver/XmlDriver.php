@@ -123,9 +123,6 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'shard-key'})) {
             $this->setShardKey($class, $xmlRoot->{'shard-key'}[0]);
         }
-        if (isset($xmlRoot['require-indexes'])) {
-            $class->setRequireIndexes('true' === (string) $xmlRoot['require-indexes']);
-        }
         if (isset($xmlRoot['slave-okay'])) {
             $class->setSlaveOkay('true' === (string) $xmlRoot['slave-okay']);
         }
