@@ -397,7 +397,7 @@ class GH788Document
 /**
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorField("type")
  * @ODM\DiscriminatorMap({"a"="GH788DocumentListed"})
  */
 class GH788DocumentListed extends GH788Document
@@ -443,7 +443,7 @@ class GH788InlineRefUnlisted extends GH788InlineRefListed
 
 /**
  * @ODM\EmbeddedDocument
- * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorField("type")
  * @ODM\DiscriminatorMap({"d"="GH788ExternEmbedListed"})
  */
 class GH788ExternEmbedListed
@@ -463,7 +463,7 @@ class GH788ExternEmbedUnlisted extends GH788ExternEmbedListed
 /**
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorField("type")
  * @ODM\DiscriminatorMap({"e"="GH788ExternRefListed"})
  */
 class GH788ExternRefListed

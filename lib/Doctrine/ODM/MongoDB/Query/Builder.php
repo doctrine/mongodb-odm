@@ -107,6 +107,8 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      *
      * @param bool $requireIndexes
      * @return $this
+     *
+     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
      */
     public function requireIndexes($requireIndexes = true)
     {

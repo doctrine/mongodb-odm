@@ -102,6 +102,8 @@ class MongoDBException extends \Exception
      * @param string $className
      * @param string $unindexedFields
      * @return MongoDBException
+     *
+     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
      */
     public static function queryNotIndexed($className, $unindexedFields)
     {

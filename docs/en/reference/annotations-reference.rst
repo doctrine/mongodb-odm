@@ -424,6 +424,9 @@ Optional attributes:
         //...
     }
 
+.. note::
+    Requiring Indexes was deprecated in 1.2 and will be removed in 2.0.
+
 @EmbedMany
 ----------
 
