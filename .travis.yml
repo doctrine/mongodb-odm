@@ -1,32 +1,24 @@
 language: php
 
 php:
-  - 5.6
+  - 7.0
 
 env:
   global:
     - DOCTRINE_MONGODB_SERVER=mongodb://localhost:27017
-  matrix:
-    - MONGO_VERSION=1.5.8
-    - MONGO_VERSION=stable
-
-matrix:
-  include:
-    - php: 7.0
-      env: ADAPTER_VERSION="^1.0.0" MONGODB_VERSION=stable
-
+    - ADAPTER_VERSION="^1.0.0"
+    - MONGODB_VERSION=stable
 
 services: mongodb
 
 before_script:
-  - if [ "x${MONGO_VERSION}" != "x" ]; then yes '' | pecl -q install -f mongo-${MONGO_VERSION} && echo "extension=mongo.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`; fi
   - sudo service mongodb stop
   - sudo pip install mongo-orchestration
   - sudo mongo-orchestration start
   - curl -XPUT http://localhost:8889/v1/sharded_clusters/myCluster --data @tests/sharded.json | python -m json.tool
   - composer self-update
-  - if [ "x${MONGODB_VERSION}" != "x" ]; then pecl install -f mongodb-${MONGODB_VERSION}; fi
-  - if [ "x${ADAPTER_VERSION}" != "x" ]; then composer require "alcaeus/mongo-php-adapter=${ADAPTER_VERSION}" --ignore-platform-reqs; fi
+  - pecl install -f mongodb-${MONGODB_VERSION}
+  - composer require "alcaeus/mongo-php-adapter=${ADAPTER_VERSION}" --ignore-platform-reqs
   - composer install --dev
 
 script:
