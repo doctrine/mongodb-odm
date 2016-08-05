@@ -87,6 +87,8 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /**
      * Constructor.
      *
+     * Please note that $requireIndexes was deprecated in 1.2 and will be removed in 2.0
+     *
      * @param DocumentManager $dm
      * @param ClassMetadata $class
      * @param Collection $collection
@@ -95,7 +97,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @param boolean $hydrate
      * @param boolean $refresh
      * @param array $primers
-     * @param null $requireIndexes
+     * @param null $requireIndexes deprecated
      * @param boolean $readOnly
      */
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null, $readOnly = false)
@@ -190,6 +192,8 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * Gets the fields involved in this query.
      *
      * @return array $fields An array of fields names used in this query.
+     *
+     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
      */
     public function getFieldsInQuery()
     {
@@ -204,6 +208,8 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * Check if this query is indexed.
      *
      * @return bool
+     *
+     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
      */
     public function isIndexed()
     {
@@ -220,6 +226,8 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * Gets an array of the unindexed fields in this query.
      *
      * @return array
+     *
+     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
      */
     public function getUnindexedFields()
     {

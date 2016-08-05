@@ -443,6 +443,9 @@ index.
 Requiring Indexes
 -----------------
 
+.. note::
+    Requiring Indexes was deprecated in 1.2 and will be removed in 2.0.
+
 Sometimes you may want to require indexes for all your queries to ensure you don't let stray unindexed queries
 make it to the database and cause performance problems.
 
