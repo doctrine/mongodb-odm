@@ -197,7 +197,7 @@ class ParentDocumentWithDiscriminator extends ParentDocument
 /**
  * @ODM\Document(collection="discriminator_child")
  * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField(fieldName="discriminator")
+ * @ODM\DiscriminatorField("discriminator")
  * @ODM\DiscriminatorMap({"simple"="ChildDocumentWithDiscriminatorSimple", "complex"="ChildDocumentWithDiscriminatorComplex"})
  * @ODM\DefaultDiscriminatorValue("simple")
  */

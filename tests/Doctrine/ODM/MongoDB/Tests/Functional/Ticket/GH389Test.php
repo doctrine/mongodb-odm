@@ -55,7 +55,7 @@ class RootDocument
 
 /**
  * @ODM\MappedSuperClass
- * @ODM\DiscriminatorField(fieldName="foobar")
+ * @ODM\DiscriminatorField("foobar")
  * @ODM\DiscriminatorMap({
  *     "empty"="EmptyEmbeddedDocument"
  * })

@@ -69,7 +69,7 @@ class GH971Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /**
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField(fieldName="type")
+ * @ODM\DiscriminatorField("type")
  * @ODM\DiscriminatorMap({"car"="Car", "bicycle"="Bicycle", "tandem"="Tandem"})
  */
 class Vehicle

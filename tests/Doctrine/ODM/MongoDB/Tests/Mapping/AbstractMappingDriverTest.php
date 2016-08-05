@@ -355,7 +355,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
 /**
  * @ODM\Document(collection="cms_users", writeConcern=1)
- * @ODM\DiscriminatorField(fieldName="discr")
+ * @ODM\DiscriminatorField("discr")
  * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser"})
  * @ODM\DefaultDiscriminatorValue("default")
  * @ODM\HasLifecycleCallbacks
