@@ -25,12 +25,12 @@ For example you can update a job and return it:
     $job = $dm->createQueryBuilder('Job')
         // Find the job
         ->findAndUpdate()
-        ->field('in_progress')->set(true)
         ->field('in_progress')->equals(false)
         ->sort('priority', 'desc')
     
         // Update found job
         ->field('started')->set(new \MongoDate())
+        ->field('in_progress')->set(true)
         ->getQuery()
         ->execute();
 
