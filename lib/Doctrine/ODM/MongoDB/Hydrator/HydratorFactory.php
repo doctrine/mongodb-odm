@@ -419,7 +419,8 @@ EOF
 
             $tmpFileName = $fileName . '.' . uniqid('', true);
             file_put_contents($tmpFileName, $code);
-            rename($tmpFileName, $fileName);
+            copy($tmpFileName, $fileName);
+            unlink($tmpFileName);
             chmod($fileName, 0664);
         }
     }
