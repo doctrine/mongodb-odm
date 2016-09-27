@@ -119,6 +119,31 @@ class OrphanRemovalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
     }
 
+    public function testOrphanRemovalOnReferenceManyUsingClearUninitialized()
+    {
+        $profile1 = new OrphanRemovalProfile();
+        $profile2 = new OrphanRemovalProfile();
+
+        $user = new OrphanRemovalUser();
+        $user->profileMany[] = $profile1;
+        $user->profileMany[] = $profile2;
+        $this->dm->persist($user);
+        $this->dm->persist($profile1);
+        $this->dm->persist($profile2);
+        $this->dm->flush();
+
+        // Ensure profileMany is uninitialized
+        $this->dm->detach($user);
+        $user = $this->getUserRepository()->find($user->id);
+
+        $user->profileMany->clear();
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
+        $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
+    }
+
     public function testOrphanRemovalOnReferenceManyUsingClearAndAddingNewElements()
     {
         $profile1 = new OrphanRemovalProfile();
