@@ -540,6 +540,7 @@ trait PersistentCollectionTrait
         }
 
         if ($this->isOrphanRemovalEnabled()) {
+            $this->initialize();
             foreach ($this->coll as $element) {
                 $this->uow->scheduleOrphanRemoval($element);
             }
