@@ -30,7 +30,7 @@ final class ReferenceOne extends AbstractField
 {
     public $type = 'one';
     public $reference = true;
-    public $storeAs = ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB;
+    public $storeAs = ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF;
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;
