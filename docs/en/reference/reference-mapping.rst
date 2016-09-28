@@ -358,16 +358,17 @@ reduces the amount of storage used).
 
 The ``storeAs`` option has the following possible values:
 
-- **dbRefWithDb**: Uses a `DBRef`_ with ``$ref``, ``$id``, and ``$db`` fields (this is the default)
-- **dbRef**: Uses a `DBRef`_ with ``$ref`` and ``$id``
+- **dbRefWithDb**: Uses a `DBRef`_ with ``$ref``, ``$id``, and ``$db`` fields
+- **dbRef**: Uses a `DBRef`_ with ``$ref`` and ``$id`` (this is the default)
 - **ref**: Uses a custom embedded object with an ``id`` field
 - **id**: Uses the identifier of the referenced object
 
 .. note::
 
-    For backwards compatibility ``storeAs=dbRefWithDb`` is the default, but
-    ``storeAs=ref`` is the recommended setting.
-
+    Up until 2.0 ``storeAs=dbRefWithDb`` was the default setting. If you have data in
+    the old format, you should add ``storeAs=dbRefWithDb`` to all your references, or
+    update the database references (deleting the ``$db`` field) as ``storeAs=dbRef``
+    is the new default setting.
 
 Cascading Operations
 --------------------

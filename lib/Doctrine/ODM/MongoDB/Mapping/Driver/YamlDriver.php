@@ -283,7 +283,7 @@ class YamlDriver extends FileDriver
             'orphanRemoval'    => isset($reference['orphanRemoval']) ? $reference['orphanRemoval'] : false,
             'type'             => $type,
             'reference'        => true,
-            'storeAs'          => isset($reference['storeAs']) ? (string) $reference['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs'          => isset($reference['storeAs']) ? (string) $reference['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF,
             'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'collectionClass'  => isset($reference['collectionClass']) ? $reference['collectionClass'] : null,
             'fieldName'        => $fieldName,

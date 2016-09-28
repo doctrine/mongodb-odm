@@ -126,7 +126,7 @@ class QueryTest extends BaseTest
         $this->assertSame($kris, $query->getSingleResult());
     }
 
-    public function testIncludesReferenceTo()
+    public function testIncludesReferenceToWithStoreAsDbRefWithDb()
     {
         $kris = new Person('Kris');
         $jon = new Person('Jon');
@@ -380,22 +380,22 @@ class Person
     /** @ODM\Field(type="string") */
     public $firstName;
 
-    /** @ODM\ReferenceOne */
+    /** @ODM\ReferenceOne(storeAs="dbRefWithDb") */
     public $bestFriend;
 
     /** @ODM\ReferenceOne(storeAs="id", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
     public $bestFriendSimple;
 
-    /** @ODM\ReferenceOne(storeAs="dbRef") */
+    /** @ODM\ReferenceOne */
     public $bestFriendPartial;
 
-    /** @ODM\ReferenceMany */
+    /** @ODM\ReferenceMany(storeAs="dbRefWithDb") */
     public $friends = array();
 
     /** @ODM\ReferenceMany(storeAs="id", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
     public $friendsSimple = array();
 
-    /** @ODM\ReferenceMany(storeAs="dbRef") */
+    /** @ODM\ReferenceMany */
     public $friendsPartial = array();
 
     /** @ODM\EmbedOne(targetDocument="Pet") */
