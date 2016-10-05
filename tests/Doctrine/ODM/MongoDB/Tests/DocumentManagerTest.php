@@ -196,6 +196,17 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->createDBRef($d);
     }
 
+    public function testCreateDbRefWithNonNullEmptyId()
+    {
+        $phonenumber = new \Documents\CmsPhonenumber();
+        $phonenumber->phonenumber = 0;
+        $this->dm->persist($phonenumber);
+
+        $dbRef = $this->dm->createDBRef($phonenumber);
+
+        $this->assertSame(array('$ref' => 'CmsPhonenumber', '$id' => 0, '$db' => DOCTRINE_MONGODB_DATABASE), $dbRef);
+    }
+
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
      * @expectedExceptionMessage Simple reference must not target document using Single Collection Inheritance, Documents\Tournament\Participant targeted.
