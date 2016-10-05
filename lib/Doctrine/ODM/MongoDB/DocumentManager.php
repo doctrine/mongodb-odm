@@ -673,7 +673,7 @@ class DocumentManager implements ObjectManager
         $class = $this->getClassMetadata(get_class($document));
         $id = $this->unitOfWork->getDocumentIdentifier($document);
 
-        if ( ! $id) {
+        if ($id === null) {
             throw new \RuntimeException(
                 sprintf('Cannot create a DBRef for class %s without an identifier. Have you forgotten to persist/merge the document first?', $class->name)
             );
