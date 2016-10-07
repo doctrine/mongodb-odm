@@ -13,6 +13,7 @@ To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
 1.0.8 (2016-10-07)
+------------------
 
 All issues and pull requests in this release may be found under the
 [1.0.8 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.8).
