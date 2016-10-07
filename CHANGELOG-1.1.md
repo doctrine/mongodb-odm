@@ -5,6 +5,17 @@ This changelog references the relevant changes done in 1.1 minor versions. If up
 1.0.x branch, please review
 [Upgrade Path](https://github.com/doctrine/mongodb-odm/blob/master/CHANGELOG-1.1.md#upgrade-path).
 
+1.1.2 (2016-10-07)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.1.2 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.1.2).
+
+* [#1468](https://github.com/doctrine/mongodb-odm/pull/1468) fixes dropping of GridFS collections when calling `dropCollections()` on the SchemaManager
+* [#1481](https://github.com/doctrine/mongodb-odm/pull/1481) fixes preparation of referenced objects when using `findBy()` or `findOneBy()`
+* [#1498](https://github.com/doctrine/mongodb-odm/pull/1498) fixes orphanRemoval when clearing an uninitialized collection
+* [#1503](https://github.com/doctrine/mongodb-odm/pull/1503) fixes an error with `createDbRef` not working for objects with an ID that evaluated to false (e.g. empty string, 0)
+
 1.1.1 (2016-07-27)
 ------------------
 
