@@ -56,6 +56,7 @@ Working with Objects
 
 * **Query Reference**:
   :doc:`Query Builder API <reference/query-builder-api>` |
+  :doc:`Aggregation Pipeline queries <reference/aggregation-builder>` |
   :doc:`Geo Spatial Queries <reference/geospatial-queries>` |
   :doc:`Slave Okay Queries <reference/slave-okay-queries>` |
   :doc:`Find and Update <reference/find-and-update>` |
