@@ -99,7 +99,7 @@ You can execute a query by getting a ``Query`` through the ``getQuery()`` method
     $qb = $dm->createQueryBuilder('User');
     $query = $qb->getQuery();
 
-Now you can ``execute()`` that query and it will return a cursor for you to iterator over the results:
+Now you can ``execute()`` that query and it will return a cursor for you to iterate over the results:
 
 .. code-block:: php
 
