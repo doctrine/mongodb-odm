@@ -27,6 +27,15 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
+        // Check if the database exists. Calling listCollections on a non-existing
+        // database in a sharded setup will cause an invalid command cursor to be
+        // returned
+        $databases = $this->dm->getConnection()->listDatabases();
+        $databaseNames = array_map(function ($database) { return $database['name']; }, $databases['databases']);
+        if (! in_array(DOCTRINE_MONGODB_DATABASE, $databaseNames)) {
+            return;
+        }
+
         $collections = $this->dm->getConnection()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
 
         foreach ($collections as $collection) {
