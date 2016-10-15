@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -40,8 +41,10 @@ class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-class DateCollectionType extends Type
+class DateCollectionType
 {
+    use ClosureToPHP;
+
     // Note: this method is called by PersistenceBuilder
     public function convertToDatabaseValue($value)
     {
@@ -62,7 +65,6 @@ class DateCollectionType extends Type
         return $value;
     }
 
-    // Note: this method is never called for non-identifier fields
     public function convertToPHPValue($value)
     {
         if ($value === null) {
@@ -86,12 +88,6 @@ class DateCollectionType extends Type
     public function closureToMongo()
     {
         return '$return = array_map(function($v) { if ($v instanceof \DateTime) { $v = $v->getTimestamp(); } else if (is_string($v)) { $v = strtotime($v); } return new \MongoDate($v); }, $value);';
-    }
-
-    // Note: this code ends up in the generated hydrator class (via HydratorFactory)
-    public function closureToPHP()
-    {
-        return '$return = array_map(function($v) { if ($v instanceof \MongoDate) { $date = new \DateTime(); $date->setTimestamp($v->sec); return $date; } else { return new \DateTime($v); } }, $value);';
     }
 }
 
