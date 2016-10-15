@@ -234,6 +234,7 @@ EOF
         if (isset(\$data['%1\$s']) || (! empty(\$this->class->fieldMappings['%2\$s']['nullable']) && array_key_exists('%1\$s', \$data))) {
             \$value = \$data['%1\$s'];
             if (\$value !== null) {
+                \$typeIdentifier = \$this->class->fieldMappings['%2\$s']['type'];
                 %3\$s
             } else {
                 \$return = null;
