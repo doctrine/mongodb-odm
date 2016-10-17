@@ -376,4 +376,13 @@ class MappingException extends BaseMappingException
     {
         return new self("Cannot use reference '$fieldName' in class '$className' for lookup. repositoryMethod is not supported in \$lookup stages.");
     }
+
+    /**
+     * @param string $className
+     * @return MappingException
+     */
+    public static function cannotUseShardedCollectionInOutStage($className)
+    {
+        return new self("Cannot use class '$className' as collection for out stage. Sharded collections are not allowed.");
+    }
 }

@@ -129,6 +129,15 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * @param string $from
+     * @return Stage\Out
+     */
+    public function out($from)
+    {
+        return $this->addStage(new Stage\Out($this, $from, $this->dm));
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function sort($fieldName, $order = null)
