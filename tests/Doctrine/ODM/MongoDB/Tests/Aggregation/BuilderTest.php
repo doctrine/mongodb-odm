@@ -159,6 +159,18 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
+    public function testBuilderWithOutStageReturnsNoData()
+    {
+        $this->insertTestData();
+
+        $builder = $this->dm->createAggregationBuilder(\Documents\BlogPost::class);
+        $builder
+            ->out('sampleCollection');
+
+        $result = $builder->execute();
+        $this->assertCount(0, $result);
+    }
+
     private function insertTestData()
     {
         $baseballTag = new \Documents\Tag('baseball');
