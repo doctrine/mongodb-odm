@@ -459,7 +459,7 @@ as follows:
 
         <field fieldName="name" name="db_name" />
 
-    -- code-block:: yaml
+    .. code-block:: yaml
 
         name:
           name: db_name
