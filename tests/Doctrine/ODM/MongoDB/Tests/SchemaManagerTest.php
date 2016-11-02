@@ -253,19 +253,6 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         $this->schemaManager->dropDocumentCollection(\Documents\CmsArticle::class);
     }
 
-    public function testCreateDocumentDatabase()
-    {
-        foreach ($this->documentDatabases as $class => $database) {
-            if ($class === \Documents\CmsArticle::class) {
-                $database->expects($this->once())->method('execute');
-            } else {
-                $database->expects($this->never())->method('execute');
-            }
-        }
-
-        $this->schemaManager->createDocumentDatabase(\Documents\CmsArticle::class);
-    }
-
     public function testDropDocumentDatabase()
     {
         foreach ($this->documentDatabases as $class => $database) {
