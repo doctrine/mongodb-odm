@@ -403,6 +403,8 @@ class SchemaManager
 
     /**
      * Create all the mapped document databases in the metadata factory.
+     *
+     * @deprecated Databases are created automatically by MongoDB (>= 3.0). Deprecated since ODM 1.2, to be removed in ODM 2.0.
      */
     public function createDatabases()
     {
@@ -419,6 +421,8 @@ class SchemaManager
      *
      * @param string $documentName
      * @throws \InvalidArgumentException
+     *
+     * @deprecated A database is created automatically by MongoDB (>= 3.0). Deprecated since ODM 1.2, to be removed in ODM 2.0.
      */
     public function createDocumentDatabase($documentName)
     {
@@ -426,6 +430,14 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
             throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
         }
+
+        $serverStatus = $this->dm->getDocumentDatabase($documentName)->command(['serverStatus' => true]);
+        $version = $serverStatus['version'];
+
+        if (version_compare($version, '3.0.0') >= 0) {
+            return;
+        }
+
         $this->dm->getDocumentDatabase($documentName)->execute('function() { return true; }');
     }
 
