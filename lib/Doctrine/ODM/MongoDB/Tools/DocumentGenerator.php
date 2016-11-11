@@ -661,20 +661,22 @@ public function <methodName>()
         $methods = array();
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
+            $typeHint = isset($fieldMapping['fieldTypeName']) ? $fieldMapping['fieldTypeName'] : $fieldMapping['type'];
+            
             if (isset($fieldMapping['id'])) {
                 if ($metadata->generatorType == ClassMetadataInfo::GENERATOR_TYPE_NONE) {
-                    if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
+                    if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $typeHint)) {
                         $methods[] = $code;
                     }
                 }
-                if ($code = $code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type'])) {
+                if ($code = $code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], $typeHint)) {
                     $methods[] = $code;
                 }
             } elseif ( ! isset($fieldMapping['association'])) {
-                if ($code = $code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
+                if ($code = $code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $typeHint)) {
                     $methods[] = $code;
                 }
-                if ($code = $code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type'])) {
+                if ($code = $code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], $typeHint)) {
                     $methods[] = $code;
                 }
             } elseif ($fieldMapping['type'] === ClassMetadataInfo::ONE) {
@@ -789,7 +791,7 @@ public function <methodName>()
         $description = ucfirst($type) . ' ' . $variableName;
 
         $types = Type::getTypesMap();
-        $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
+        $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? (mb_substr($typeHint, 0, 1) != '\\' ? '\\' : '') . $typeHint . ' ' : null;
         $variableType = $typeHint ? $typeHint . ' ' : null;
 
         $replacements = array(
@@ -901,7 +903,11 @@ public function <methodName>()
                 $lines[] = $this->spaces . ' * @var $' . $fieldMapping['fieldName'];
             }
         } else {
-            $lines[] = $this->spaces . ' * @var ' . $fieldMapping['type'] . ' $' . $fieldMapping['fieldName'];
+            if (isset($fieldMapping['fieldTypeName'])){
+                $lines[] = $this->spaces . ' * @var ' . $fieldMapping['fieldTypeName'] . ' $' . $fieldMapping['fieldName'];
+            } else {
+                $lines[] = $this->spaces . ' * @var ' . $fieldMapping['type'] . ' $' . $fieldMapping['fieldName'];
+            }
         }
 
         if ($this->generateAnnotations) {
