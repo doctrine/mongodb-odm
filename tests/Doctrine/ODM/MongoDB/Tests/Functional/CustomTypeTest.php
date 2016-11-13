@@ -67,19 +67,21 @@ class DateCollectionType
 
     public function convertToPHPValue($value)
     {
-        return array_map(
-            function ($v) {
-                if ($v instanceof \MongoDate) {
-                    $date = new \DateTime();
-                    $date->setTimestamp($v->sec);
+        if ($value === null) {
+            return null;
+        }
 
-                    return $date;
-                } else {
-                    return new \DateTime($v);
-                }
-            },
-            $value
-        );
+        if (!is_array($value)) {
+            throw new CustomTypeException('Array expected.');
+        }
+
+        $converter = Type::getType('date');
+
+        $value = array_map(function($date) use ($converter) {
+            return $converter->convertToPHPValue($date);
+        }, array_values($value));
+
+        return $value;
     }
 
     // Note: this method is never called
