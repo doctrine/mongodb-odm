@@ -661,6 +661,7 @@ public function <methodName>()
         $methods = array();
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
+            // fieldTypeName is optional in the yml-configuration, otherwise the non-optional type is used as field type name
             $typeHint = isset($fieldMapping['fieldTypeName']) ? $fieldMapping['fieldTypeName'] : $fieldMapping['type'];
             
             if (isset($fieldMapping['id'])) {
@@ -673,10 +674,10 @@ public function <methodName>()
                     $methods[] = $code;
                 }
             } elseif ( ! isset($fieldMapping['association'])) {
-                if ($code = $code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $typeHint)) {
+                if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $typeHint)) {
                     $methods[] = $code;
                 }
-                if ($code = $code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], $typeHint)) {
+                if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], $typeHint)) {
                     $methods[] = $code;
                 }
             } elseif ($fieldMapping['type'] === ClassMetadataInfo::ONE) {
@@ -791,7 +792,7 @@ public function <methodName>()
         $description = ucfirst($type) . ' ' . $variableName;
 
         $types = Type::getTypesMap();
-        $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? (mb_substr($typeHint, 0, 1) != '\\' ? '\\' : '') . $typeHint . ' ' : null;
+        $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? (substr($typeHint, 0, 1) !== '\\' ? '\\' : '') . $typeHint . ' ' : null;
         $variableType = $typeHint ? $typeHint . ' ' : null;
 
         $replacements = array(
@@ -903,6 +904,8 @@ public function <methodName>()
                 $lines[] = $this->spaces . ' * @var $' . $fieldMapping['fieldName'];
             }
         } else {
+            // fieldTypeName is optional in the yml-configuration, otherwise the non-optional type is used as field type name
+            
             if (isset($fieldMapping['fieldTypeName'])){
                 $lines[] = $this->spaces . ' * @var ' . $fieldMapping['fieldTypeName'] . ' $' . $fieldMapping['fieldName'];
             } else {
