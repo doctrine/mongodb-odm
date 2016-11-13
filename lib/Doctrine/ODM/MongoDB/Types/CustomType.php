@@ -2,14 +2,14 @@
 
 namespace Doctrine\ODM\MongoDB\Types;
 
-class CustomType extends Type
+trait CustomType
 {
     /**
      * @return string Redirects to the method convertToPHPValue from child class
      */
     final public function closureToPHP()
     {
-        $fqcn = self::class;
+        $fqcn = Type::class;
 
         return sprintf('
             $type = \%s::getType($typeIdentifier);

@@ -41,8 +41,10 @@ class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 }
 
-class DateCollectionType extends CustomType
+class DateCollectionType
 {
+    use CustomType;
+
     // Note: this method is called by PersistenceBuilder
     public function convertToDatabaseValue($value)
     {
