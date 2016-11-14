@@ -339,50 +339,48 @@ You can define your own ID generator by extending the
 ``Doctrine\ODM\MongoDB\Id\AbstractIdGenerator`` class and specifying the class
 as an option for the ``CUSTOM`` strategy:
 
-.. configuration-block::
+.. code-block:: php
 
-    .. code-block:: php
+	<?php
 
-        <?php
+	/** Document */
+	class MyPersistentClass
+	{
+		/** @Id(strategy="CUSTOM", type="string", options={"class"="Vendor\Specific\Generator"}) */
+		private $id;
 
-        /** Document */
-        class MyPersistentClass
-        {
-            /** @Id(strategy="CUSTOM", type="string", options={"class"="Vendor\Specific\Generator"}) */
-            private $id;
+		public function setId($id)
+		{
+			$this->id = $id;
+		}
 
-            public function setId($id)
-            {
-                $this->id = $id;
-            }
+		//...
+	}
 
-            //...
-        }
+.. code-block:: xml
 
-    .. code-block:: xml
+	<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+							xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+							xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+												http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                                                    http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+		<document name="MyPersistentClass">
+			<field name="id" id="true" strategy="CUSTOM" type="string">
+				<id-generator-option name="class" value="Vendor\Specific\Generator" />
+			</field>
+		</document>
+	</doctrine-mongo-mapping>
 
-            <document name="MyPersistentClass">
-                <field name="id" id="true" strategy="CUSTOM" type="string">
-                    <id-generator-option name="class" value="Vendor\Specific\Generator" />
-                </field>
-            </document>
-        </doctrine-mongo-mapping>
+.. code-block:: yaml
 
-    .. code-block:: yaml
-
-        MyPersistentClass:
-          fields:
-            id:
-              id: true
-              strategy: CUSTOM
-              type: string
-              options:
-                class: Vendor\Specific\Generator
+	MyPersistentClass:
+	  fields:
+		id:
+		  id: true
+		  strategy: CUSTOM
+		  type: string
+		  options:
+			class: Vendor\Specific\Generator
 
 
 
@@ -398,45 +396,43 @@ the most flexible.
 
 Example:
 
-.. configuration-block::
+.. code-block:: php
 
-    .. code-block:: php
+	<?php
 
-        <?php
+	namespace Documents;
 
-        namespace Documents;
+	/** @Document */
+	class User
+	{
+		// ...
 
-        /** @Document */
-        class User
-        {
-            // ...
+		/** @Field(type="string") */
+		private $username;
+	}
 
-            /** @Field(type="string") */
-            private $username;
-        }
+.. code-block:: xml
 
-    .. code-block:: xml
+	<?xml version="1.0" encoding="UTF-8"?>
+	<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+					http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+	  <document name="Documents\User">
+			<field fieldName="id" id="true" />
+			<field fieldName="username" type="string" />
+	  </document>
+	</doctrine-mongo-mapping>
 
-        <?xml version="1.0" encoding="UTF-8"?>
-        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-          <document name="Documents\User">
-                <field fieldName="id" id="true" />
-                <field fieldName="username" type="string" />
-          </document>
-        </doctrine-mongo-mapping>
+.. code-block:: yaml
 
-    .. code-block:: yaml
-
-        Documents\User:
-          fields:
-            id:
-              type: id
-              id: true
-            username:
-              type: string
+	Documents\User:
+	  fields:
+		id:
+		  type: id
+		  id: true
+		username:
+		  type: string
 
 In that example we mapped the property ``id`` to the field ``id``
 using the mapping type ``id`` and the property ``name`` is mapped
@@ -446,24 +442,67 @@ same as the property names. To specify a different name for the
 field, you can use the ``name`` attribute of the Field annotation
 as follows:
 
-.. configuration-block::
+.. code-block:: php
 
-    .. code-block:: php
+	<?php
 
-        <?php
+	/** @Field(name="db_name") */
+	private $name;
 
-        /** @Field(name="db_name") */
-        private $name;
+.. code-block:: xml
 
-    .. code-block:: xml
+	<field fieldName="name" name="db_name" />
 
-        <field fieldName="name" name="db_name" />
+.. code-block:: yaml
 
-    .. code-block:: yaml
+	name:
+	  name: db_name
 
-        name:
-          name: db_name
+The default field type generated in comments is taken from "type".
+To define a different or custom field type name (type in the 
+comments  of the field and get/set-Methods) you can use
+"fieldTypeName" as follows:
 
+.. code-block:: xml
+
+	<field fieldName="created_at" fieldTypeName="\DateTime" />
+
+.. code-block:: yaml
+
+	name:
+	  fieldTypeName: \DateTime
+
+This will give us the following code:
+
+.. code-block:: php
+	  
+	/**
+     * @var \DateTime $created_at
+     */
+    protected $created_at;
+
+	/**
+     * Get createdAt
+     *
+     * @return \DateTime $createdAt
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
+	/**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return self
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->created_at = $createdAt;
+        return $this;
+    }
+		  
 Custom Mapping Types
 --------------------
 
