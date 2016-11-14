@@ -339,48 +339,50 @@ You can define your own ID generator by extending the
 ``Doctrine\ODM\MongoDB\Id\AbstractIdGenerator`` class and specifying the class
 as an option for the ``CUSTOM`` strategy:
 
-.. code-block:: php
+.. configuration-block::
 
-	<?php
+    .. code-block:: php
 
-	/** Document */
-	class MyPersistentClass
-	{
-		/** @Id(strategy="CUSTOM", type="string", options={"class"="Vendor\Specific\Generator"}) */
-		private $id;
+        <?php
 
-		public function setId($id)
-		{
-			$this->id = $id;
-		}
+        /** Document */
+        class MyPersistentClass
+        {
+            /** @Id(strategy="CUSTOM", type="string", options={"class"="Vendor\Specific\Generator"}) */
+            private $id;
 
-		//...
-	}
+            public function setId($id)
+            {
+                $this->id = $id;
+            }
 
-.. code-block:: xml
+            //...
+        }
 
-	<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-							xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-							xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-												http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+    .. code-block:: xml
 
-		<document name="MyPersistentClass">
-			<field name="id" id="true" strategy="CUSTOM" type="string">
-				<id-generator-option name="class" value="Vendor\Specific\Generator" />
-			</field>
-		</document>
-	</doctrine-mongo-mapping>
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                                                    http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-.. code-block:: yaml
+            <document name="MyPersistentClass">
+                <field name="id" id="true" strategy="CUSTOM" type="string">
+                    <id-generator-option name="class" value="Vendor\Specific\Generator" />
+                </field>
+            </document>
+        </doctrine-mongo-mapping>
 
-	MyPersistentClass:
-	  fields:
-		id:
-		  id: true
-		  strategy: CUSTOM
-		  type: string
-		  options:
-			class: Vendor\Specific\Generator
+    .. code-block:: yaml
+
+        MyPersistentClass:
+          fields:
+            id:
+              id: true
+              strategy: CUSTOM
+              type: string
+              options:
+                class: Vendor\Specific\Generator
 
 
 
@@ -396,43 +398,45 @@ the most flexible.
 
 Example:
 
-.. code-block:: php
+.. configuration-block::
 
-	<?php
+    .. code-block:: php
 
-	namespace Documents;
+        <?php
 
-	/** @Document */
-	class User
-	{
-		// ...
+        namespace Documents;
 
-		/** @Field(type="string") */
-		private $username;
-	}
+        /** @Document */
+        class User
+        {
+            // ...
 
-.. code-block:: xml
+            /** @Field(type="string") */
+            private $username;
+        }
 
-	<?xml version="1.0" encoding="UTF-8"?>
-	<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-					xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-					http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-	  <document name="Documents\User">
-			<field fieldName="id" id="true" />
-			<field fieldName="username" type="string" />
-	  </document>
-	</doctrine-mongo-mapping>
+    .. code-block:: xml
 
-.. code-block:: yaml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+          <document name="Documents\User">
+                <field fieldName="id" id="true" />
+                <field fieldName="username" type="string" />
+          </document>
+        </doctrine-mongo-mapping>
 
-	Documents\User:
-	  fields:
-		id:
-		  type: id
-		  id: true
-		username:
-		  type: string
+    .. code-block:: yaml
+
+        Documents\User:
+          fields:
+            id:
+              type: id
+              id: true
+            username:
+              type: string
 
 In that example we mapped the property ``id`` to the field ``id``
 using the mapping type ``id`` and the property ``name`` is mapped
@@ -442,21 +446,23 @@ same as the property names. To specify a different name for the
 field, you can use the ``name`` attribute of the Field annotation
 as follows:
 
-.. code-block:: php
+.. configuration-block::
 
-	<?php
+    .. code-block:: php
 
-	/** @Field(name="db_name") */
-	private $name;
+        <?php
 
-.. code-block:: xml
+        /** @Field(name="db_name") */
+        private $name;
 
-	<field fieldName="name" name="db_name" />
+    .. code-block:: xml
 
-.. code-block:: yaml
+        <field fieldName="name" name="db_name" />
 
-	name:
-	  name: db_name
+    .. code-block:: yaml
+
+        name:
+          name: db_name
 
 The default field type generated in comments is taken from "type".
 To define a different or custom field type name (type in the 
@@ -502,7 +508,7 @@ This will give us the following code:
         $this->created_at = $createdAt;
         return $this;
     }
-		  
+
 Custom Mapping Types
 --------------------
 
