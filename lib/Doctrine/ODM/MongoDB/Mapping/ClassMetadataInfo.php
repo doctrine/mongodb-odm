@@ -2053,15 +2053,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * {@inheritDoc}
      */
-    public function getTypeNameOfField($fieldName)
-    {
-        return (isset($this->fieldMappings[$fieldName]) && isset($this->fieldMappings[$fieldName]['fieldTypeName'])) ?
-            $this->fieldMappings[$fieldName]['fieldTypeName'] : null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getAssociationTargetClass($assocName)
     {
         if ( ! isset($this->associationMappings[$assocName])) {
