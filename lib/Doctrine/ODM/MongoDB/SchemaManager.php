@@ -428,14 +428,7 @@ class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
-        }
-
-        $serverStatus = $this->dm->getDocumentDatabase($documentName)->command(['serverStatus' => true]);
-        $version = $serverStatus['version'];
-
-        if (version_compare($version, '3.0.0') >= 0) {
-            return;
+            throw new \InvalidArgumentException('Cannot create databases for mapped super classes or embedded documents.');
         }
 
         $this->dm->getDocumentDatabase($documentName)->execute('function() { return true; }');

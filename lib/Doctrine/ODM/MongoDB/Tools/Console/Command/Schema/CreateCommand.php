@@ -45,6 +45,10 @@ class CreateCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if ($input->getOption(self::DB)) {
+            @trigger_error('The ' . self::DB . ' option is deprecated and will be removed in ODM 2.0', E_USER_DEPRECATED);
+        }
+
         foreach ($this->createOrder as $option) {
             if ($input->getOption($option)) {
                 $create[] = $option;
