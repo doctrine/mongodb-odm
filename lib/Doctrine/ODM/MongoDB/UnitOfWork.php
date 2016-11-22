@@ -1644,7 +1644,7 @@ class UnitOfWork implements PropertyChangedListener
     public function persist($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-        if ($class->isMappedSuperclass) {
+        if ($class->isMappedSuperclass || $class->isQueryResultDocument) {
             throw MongoDBException::cannotPersistMappedSuperclass($class->name);
         }
         $visited = array();
@@ -2659,10 +2659,14 @@ class UnitOfWork implements PropertyChangedListener
             return $document;
         }
 
-        $id = $class->getDatabaseIdentifierValue($data['_id']);
-        $serializedId = serialize($id);
+        $isManagedObject = false;
+        if (! $class->isQueryResultDocument) {
+            $id = $class->getDatabaseIdentifierValue($data['_id']);
+            $serializedId = serialize($id);
+            $isManagedObject = isset($this->identityMap[$class->name][$serializedId]);
+        }
 
-        if (isset($this->identityMap[$class->name][$serializedId])) {
+        if ($isManagedObject) {
             $document = $this->identityMap[$class->name][$serializedId];
             $oid = spl_object_hash($document);
             if ($document instanceof Proxy && ! $document->__isInitialized__) {
@@ -2682,13 +2686,21 @@ class UnitOfWork implements PropertyChangedListener
             if ($document === null) {
                 $document = $class->newInstance();
             }
-            $this->registerManaged($document, $id, $data);
-            $oid = spl_object_hash($document);
-            $this->documentStates[$oid] = self::STATE_MANAGED;
-            $this->identityMap[$class->name][$serializedId] = $document;
+
+            if (! $class->isQueryResultDocument) {
+                $this->registerManaged($document, $id, $data);
+                $oid = spl_object_hash($document);
+                $this->documentStates[$oid] = self::STATE_MANAGED;
+                $this->identityMap[$class->name][$serializedId] = $document;
+            }
+
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
-            $this->originalDocumentData[$oid] = $data;
+
+            if (! $class->isQueryResultDocument) {
+                $this->originalDocumentData[$oid] = $data;
+            }
         }
+
         return $document;
     }
 

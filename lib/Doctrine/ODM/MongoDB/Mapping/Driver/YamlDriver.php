@@ -76,6 +76,8 @@ class YamlDriver extends FileDriver
             $class->isMappedSuperclass = true;
         } elseif ($element['type'] === 'embeddedDocument') {
             $class->isEmbeddedDocument = true;
+        } elseif ($element['type'] === 'queryResultDocument') {
+            $class->isQueryResultDocument = true;
         }
         if (isset($element['indexes'])) {
             foreach($element['indexes'] as $index) {

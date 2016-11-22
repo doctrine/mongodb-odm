@@ -95,7 +95,7 @@ class MongoDBException extends \Exception
      */
     public static function cannotPersistMappedSuperclass($className)
     {
-        return new self('Cannot persist an embedded document or mapped superclass ' . $className);
+        return new self('Cannot persist an embedded document, aggregation result document or mapped superclass ' . $className);
     }
 
     /**
