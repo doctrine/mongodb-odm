@@ -255,6 +255,16 @@ class MappingException extends BaseMappingException
     }
 
     /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function simpleReferenceCannotHaveRedundantFields($className, $fieldName)
+    {
+        return new self("Simple reference $className::$fieldName may not store redundant fields");
+    }
+
+    /**
      * @param string $strategy
      * @param string $className
      * @param string $fieldName

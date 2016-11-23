@@ -23,11 +23,17 @@
             <cascade>
                 <all />
             </cascade>
+            <redundant-fields>
+                <field name="name"/>
+            </redundant-fields>
         </reference-many>
         <reference-one target-document="Documents\Account" field="account">
             <cascade>
                 <all />
             </cascade>
+            <redundant-fields>
+                <field name="name"/>
+            </redundant-fields>
         </reference-one>
         <lifecycle-callbacks>
           <lifecycle-callback method="doStuffOnPrePersist" type="prePersist" />

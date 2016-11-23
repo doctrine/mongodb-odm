@@ -41,8 +41,9 @@ final class ReferenceOne extends AbstractField
     public $inversedBy;
     public $mappedBy;
     public $repositoryMethod;
-    public $sort = array();
-    public $criteria = array();
+    public $sort = [];
+    public $criteria = [];
     public $limit;
     public $skip;
+    public $redundantFields = [];
 }

@@ -494,6 +494,21 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->mapManyEmbedded(['fieldName' => 'referenceMany']);
         $cm->setShardKey(array('referenceMany' => 1));
     }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Simple reference stdClass::referenceOne may not store redundant fields
+     */
+    public function testSimpleReferenceWithRedundantFieldsThrowsError()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->mapOneReference([
+            'fieldName' => 'referenceOne',
+            'targetDocument' => 'stdClass',
+            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
+            'redundantFields' => ['foo', 'bar'],
+        ]);
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository

@@ -1323,6 +1323,14 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::simpleReferenceRequiresTargetDocument($this->name, $mapping['fieldName']);
         }
 
+        if (isset($mapping['reference'])
+            && isset($mapping['storeAs'])
+            && $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID
+            && ! empty($mapping['redundantFields'])
+        ) {
+            throw MappingException::simpleReferenceCannotHaveRedundantFields($this->name, $mapping['fieldName']);
+        }
+
         if (isset($mapping['reference']) && empty($mapping['targetDocument']) && empty($mapping['discriminatorMap']) &&
                 (isset($mapping['mappedBy']) || isset($mapping['inversedBy']))) {
             throw MappingException::owningAndInverseReferencesRequireTargetDocument($this->name, $mapping['fieldName']);

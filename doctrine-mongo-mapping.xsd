@@ -136,6 +136,7 @@
       <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0"/>
       <xs:element name="sort" type="odm:sort-map" minOccurs="0" />
       <xs:element name="criteria" type="odm:criteria-map" minOccurs="0" />
+      <xs:element name="redundant-fields" type="odm:redundant-field-list" minOccurs="0" />
     </xs:sequence>
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
@@ -157,6 +158,7 @@
       <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0"/>
       <xs:element name="sort" type="odm:sort-map" minOccurs="0" />
       <xs:element name="criteria" type="odm:criteria-map" minOccurs="0" />
+      <xs:element name="redundant-fields" type="odm:redundant-field-list" minOccurs="0" />
     </xs:sequence>
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="collection-class" type="xs:string" />
@@ -182,6 +184,16 @@
     <xs:sequence>
       <xs:element name="sort" type="odm:sort-type" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="redundant-field-list">
+    <xs:sequence>
+      <xs:element name="field" type="odm:redundant-field" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="redundant-field">
+    <xs:attribute name="name" type="xs:string" use="required"/>
   </xs:complexType>
 
   <xs:complexType name="criteria-type">

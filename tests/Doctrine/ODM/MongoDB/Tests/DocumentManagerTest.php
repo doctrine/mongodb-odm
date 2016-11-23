@@ -279,4 +279,7 @@ class ReferenceStoreAsDocument
 
     /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRefWithDb") */
     public $ref3;
+
+    /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRef", redundantFields={"username"}) */
+    public $ref4;
 }

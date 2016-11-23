@@ -338,6 +338,12 @@ class XmlDriver extends FileDriver
         if (isset($attributes['also-load'])) {
             $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
         }
+        if (isset($reference->{'redundant-fields'})) {
+            foreach ($reference->{'redundant-fields'}->{'field'} as $redundantField) {
+                $attr = $redundantField->attributes();
+                $mapping['redundantFields'][] = (string) $attr['name'];
+            }
+        }
         $this->addFieldMapping($class, $mapping);
     }
 

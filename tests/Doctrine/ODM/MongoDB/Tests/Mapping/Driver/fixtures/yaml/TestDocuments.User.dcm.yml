@@ -32,10 +32,12 @@ TestDocuments\User:
     account:
       targetDocument: Documents\Account
       cascade: all
+      redundantFields: [name]
   referenceMany:
     groups:
       targetDocument: Documents\Group
       cascade: all
+      redundantFields: [name]
   lifecycleCallbacks:
     prePersist: [doStuffOnPrePersist]
     postPersist: [doStuffOnPostPersist, doOtherStuffOnPostPersist]

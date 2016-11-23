@@ -192,6 +192,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'limit' => null,
             'skip' => null,
             'orphanRemoval' => false,
+            'redundantFields' => ['name'],
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
@@ -220,6 +221,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'limit' => null,
             'skip' => null,
             'orphanRemoval' => false,
+            'redundantFields' => ['name'],
         ), $classMetadata->fieldMappings['groups']);
 
         $this->assertEquals(

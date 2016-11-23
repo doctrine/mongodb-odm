@@ -304,6 +304,9 @@ class YamlDriver extends FileDriver
         if (isset($reference['criteria'])) {
             $mapping['criteria'] = $reference['criteria'];
         }
+        if (isset($reference['redundantFields'])) {
+            $mapping['redundantFields'] = (array) $reference['redundantFields'];
+        }
         $this->addFieldMapping($class, $mapping);
     }
 
