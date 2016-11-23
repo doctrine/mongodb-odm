@@ -244,6 +244,19 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertArrayHasKey('$db', $dbRef);
     }
 
+    public function testDbRefWithRedundantField()
+    {
+        $r = new \Documents\User();
+        $r->setUsername('foo');
+        $this->dm->persist($r);
+        $d = new ReferenceStoreAsDocument();
+        $class = $this->dm->getClassMetadata(get_class($d));
+
+        $dbRef = $this->dm->createDBRef($r, $class->associationMappings['ref4']);
+        $this->assertArrayHasKey('username', $dbRef);
+        $this->assertSame('foo', $dbRef['username']);
+    }
+
     private function getMockClassMetadataFactory()
     {
         return $this->createMock('Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory');

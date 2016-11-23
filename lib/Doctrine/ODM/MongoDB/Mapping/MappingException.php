@@ -265,6 +265,16 @@ class MappingException extends BaseMappingException
     }
 
     /**
+     * @param string $className
+     * @param string $fieldName
+     * @return MappingException
+     */
+    public static function redundantAssociationNotAllowed($className, $fieldName)
+    {
+        return new self("Association $className::$fieldName can not be stored as redundant field");
+    }
+
+    /**
      * @param string $strategy
      * @param string $className
      * @param string $fieldName

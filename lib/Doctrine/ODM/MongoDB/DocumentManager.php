@@ -28,6 +28,7 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
  * The DocumentManager class is the central access point for managing the
@@ -736,6 +737,23 @@ class DocumentManager implements ObjectManager
             }
 
             $dbRef[$discriminatorField] = $discriminatorValue;
+        }
+
+        if ($referenceMapping !== null && isset($referenceMapping['redundantFields'])) {
+            foreach ($referenceMapping['redundantFields'] as $fieldName) {
+                if ($class->hasAssociation($fieldName)) {
+                    throw MappingException::redundantAssociationNotAllowed(get_class($document), $fieldName);
+                }
+
+                if (! $class->hasField($fieldName)) {
+                    throw MappingException::mappingNotFound(get_class($document), $fieldName);
+                }
+
+                $mapping = $class->getFieldMapping($fieldName);
+                $value = $class->getFieldValue($document, $fieldName);
+
+                $dbRef[$fieldName] = Type::getType($mapping['type'])->convertToDatabaseValue($value);
+            }
         }
 
         return $dbRef;
