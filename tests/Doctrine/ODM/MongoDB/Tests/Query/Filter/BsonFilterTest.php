@@ -29,8 +29,6 @@ class BsonFilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
  
     public function testCreateMockOfFilter()
     {
-        $this->getMockBuilder('\Doctrine\ODM\MongoDB\Query\Filter\BsonFilter')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->createMock('\Doctrine\ODM\MongoDB\Query\Filter\BsonFilter');
     }
 }

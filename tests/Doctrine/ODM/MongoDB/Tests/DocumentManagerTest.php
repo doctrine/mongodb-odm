@@ -222,16 +222,12 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     private function getMockClassMetadataFactory()
     {
-        return $this->getMockBuilder('Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory')
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock('Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory');
     }
 
     private function getMockCollection()
     {
-        return $this->getMockBuilder('Doctrine\MongoDB\Collection')
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock('Doctrine\MongoDB\Collection');
     }
 }
 
