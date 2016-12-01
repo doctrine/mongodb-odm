@@ -1097,13 +1097,15 @@ method to be registered.
 
     <?php
 
+    use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
+
     /** @Document @HasLifecycleCallbacks */
     class Article
     {
         // ...
     
         /** @PreLoad */
-        public function preLoad(array &$data)
+        public function preLoad(PreLoadEventArgs $eventArgs)
         {
             // ...
         }
