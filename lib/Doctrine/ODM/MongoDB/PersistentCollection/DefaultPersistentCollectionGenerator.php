@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
+use Doctrine\Common\Proxy\Exception\UnexpectedValueException;
 use Doctrine\ODM\MongoDB\Configuration;
 
 /**
@@ -189,7 +190,7 @@ CODE;
     /**
      * {@inheritDoc}
      */
-    public function {$method->name}($parametersString)
+    public function {$method->name}($parametersString){$this->getMethodReturnType($method)}
     {
         \$this->initialize();
         if (\$this->needsSchedulingForDirtyCheck()) {
@@ -296,5 +297,66 @@ CODE;
             },
             $parameters
         );
+    }
+
+    /**
+     * @Param \ReflectionMethod $method
+     *
+     * @return string
+     *
+     * @see \Doctrine\Common\Proxy\ProxyGenerator::getMethodReturnType()
+     */
+    private function getMethodReturnType(\ReflectionMethod $method)
+    {
+        if ( ! method_exists($method, 'hasReturnType') || ! $method->hasReturnType()) {
+            return '';
+        }
+        return ': ' . $this->formatType($method->getReturnType(), $method);
+    }
+
+    /**
+     * @param \ReflectionType $type
+     * @param \ReflectionMethod $method
+     * @param \ReflectionParameter|null $parameter
+     *
+     * @return string
+     *
+     * @see \Doctrine\Common\Proxy\ProxyGenerator::formatType()
+     */
+    private function formatType(
+        \ReflectionType $type,
+        \ReflectionMethod $method,
+        \ReflectionParameter $parameter = null
+    ) {
+        $name = method_exists($type, 'getName') ? $type->getName() : (string) $type;
+        $nameLower = strtolower($name);
+        if ('self' === $nameLower) {
+            $name = $method->getDeclaringClass()->getName();
+        }
+        if ('parent' === $nameLower) {
+            $name = $method->getDeclaringClass()->getParentClass()->getName();
+        }
+        if ( ! $type->isBuiltin() && ! class_exists($name) && ! interface_exists($name)) {
+            if (null !== $parameter) {
+                throw UnexpectedValueException::invalidParameterTypeHint(
+                    $method->getDeclaringClass()->getName(),
+                    $method->getName(),
+                    $parameter->getName()
+                );
+            }
+            throw UnexpectedValueException::invalidReturnTypeHint(
+                $method->getDeclaringClass()->getName(),
+                $method->getName()
+            );
+        }
+        if ( ! $type->isBuiltin()) {
+            $name = '\\' . $name;
+        }
+        if ($type->allowsNull()
+            && (null === $parameter || ! $parameter->isDefaultValueAvailable() || null !== $parameter->getDefaultValue())
+        ) {
+            $name = '?' . $name;
+        }
+        return $name;
     }
 }
