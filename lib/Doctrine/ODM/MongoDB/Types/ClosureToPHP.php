@@ -19,7 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Types;
 
-trait CustomType
+trait ClosureToPHP
 {
     /**
      * @return string Redirects to the method convertToPHPValue from child class

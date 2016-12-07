@@ -3,7 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Types\CustomType;
+use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -43,7 +43,7 @@ class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 class DateCollectionType
 {
-    use CustomType;
+    use ClosureToPHP;
 
     // Note: this method is called by PersistenceBuilder
     public function convertToDatabaseValue($value)
