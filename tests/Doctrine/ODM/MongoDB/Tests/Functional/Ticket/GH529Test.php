@@ -8,9 +8,9 @@ class GH529Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testAutoIdWithConsistentValues()
     {
-        $mongoId = new \MongoId();
+        $identifier = new \MongoDB\BSON\ObjectId();
         $doc = new GH529AutoIdDocument();
-        $doc->id = $mongoId;
+        $doc->id = $identifier;
 
         $this->dm->persist($doc);
         $this->dm->flush();
@@ -19,7 +19,7 @@ class GH529Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
         $this->assertNotNull($doc);
-        $this->assertEquals($mongoId, $doc->id);
+        $this->assertEquals($identifier, $doc->id);
     }
 
     public function testCustomIdType()

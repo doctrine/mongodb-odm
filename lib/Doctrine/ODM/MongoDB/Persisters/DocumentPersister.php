@@ -473,8 +473,8 @@ class DocumentPersister
     /**
      * Finds a document by a set of criteria.
      *
-     * If a scalar or MongoId is provided for $criteria, it will be used to
-     * match an _id value.
+     * If a scalar or MongoDB\BSON\ObjectId is provided for $criteria, it will
+     * be used to match an _id value.
      *
      * @param mixed   $criteria Query criteria
      * @param object  $document Document to load the data into. If not specified, a new document is created.
@@ -488,7 +488,7 @@ class DocumentPersister
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = null)
     {
         // TODO: remove this
-        if ($criteria === null || is_scalar($criteria) || $criteria instanceof \MongoId) {
+        if ($criteria === null || is_scalar($criteria) || $criteria instanceof \MongoDB\BSON\ObjectId) {
             $criteria = array('_id' => $criteria);
         }
 
@@ -729,8 +729,8 @@ class DocumentPersister
 
         foreach ($collection->getMongoData() as $key => $reference) {
             $className = $this->uow->getClassNameForAssociation($mapping, $reference);
-            $mongoId = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
-            $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
+            $identifier = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
+            $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($identifier);
 
             // create a reference to the class and id
             $reference = $this->dm->getReference($className, $id);
@@ -746,7 +746,7 @@ class DocumentPersister
 
             // only query for the referenced object if it is not already initialized or the collection is sorted
             if (($reference instanceof Proxy && ! $reference->__isInitialized__) || $sorted) {
-                $groupedIds[$className][] = $mongoId;
+                $groupedIds[$className][] = $identifier;
             }
         }
         foreach ($groupedIds as $className => $ids) {
@@ -1060,7 +1060,7 @@ class DocumentPersister
                 return [[$fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value)]];
             }
 
-            if (! empty($mapping['reference']) && is_object($value) && ! ($value instanceof \MongoId)) {
+            if (! empty($mapping['reference']) && is_object($value) && ! ($value instanceof \MongoDB\BSON\ObjectId)) {
                 try {
                     return $this->prepareReference($fieldName, $value, $mapping, $inNewObj);
                 } catch (MappingException $e) {

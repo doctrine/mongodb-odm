@@ -108,9 +108,9 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertInstanceOf('Doctrine\MongoDB\CursorInterface', $results);
 
         $targetClass = $this->dm->getClassMetadata('Documents\Functional\SameCollection2');
-        $mongoId1 = $targetClass->getDatabaseIdentifierValue($ids[1]);
+        $identifier1 = $targetClass->getDatabaseIdentifierValue($ids[1]);
 
-        $this->assertEquals($mongoId1, $debug['_id']['$in'][1]);
+        $this->assertEquals($identifier1, $debug['_id']['$in'][1]);
 
 
         $this->assertEquals(2, $results->count(true));
@@ -147,7 +147,7 @@ class PersistenceBuilderTest extends BaseTest
 
         $expectedData = array(
             'article' => array(
-                '$id' => new \MongoId($article->id),
+                '$id' => new \MongoDB\BSON\ObjectId($article->id),
                 '$ref' => 'CmsArticle'
             )
         );
@@ -171,7 +171,7 @@ class PersistenceBuilderTest extends BaseTest
 
         $expectedData = array(
             'article' => array(
-                '$id' => new \MongoId($article->id),
+                '$id' => new \MongoDB\BSON\ObjectId($article->id),
                 '$ref' => 'CmsArticle'
             )
         );
@@ -200,10 +200,10 @@ class PersistenceBuilderTest extends BaseTest
                 'topic' => 'test',
                 'text' => 'text',
                 'article' => array(
-                    '$id' => new \MongoId($article->id),
+                    '$id' => new \MongoDB\BSON\ObjectId($article->id),
                     '$ref' => 'CmsArticle'
                 ),
-                '_id' => new \MongoId($comment->id),
+                '_id' => new \MongoDB\BSON\ObjectId($comment->id),
             )
         );
         $this->assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
@@ -237,7 +237,7 @@ class PersistenceBuilderTest extends BaseTest
     {
         foreach ($preparedData as $key => $value) {
             if ($key === '_id') {
-                $this->assertInstanceOf('MongoId', $value);
+                $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $value);
                 continue;
             }
             $this->assertEquals($expectedData[$key], $value);

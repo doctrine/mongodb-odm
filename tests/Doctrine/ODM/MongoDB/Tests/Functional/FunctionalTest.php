@@ -36,9 +36,9 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function provideUpsertObjects()
     {
         return array(
-            array('Documents\\UserUpsert', new \MongoId('4f18f593acee41d724000005'), 'user'),
+            array('Documents\\UserUpsert', new \MongoDB\BSON\ObjectId('4f18f593acee41d724000005'), 'user'),
             array('Documents\\UserUpsertIdStrategyNone', 'jwage', 'user'),
-            array('Documents\\UserUpsertChild', new \MongoId('4f18f593acee41d724000005'), 'child')
+            array('Documents\\UserUpsertChild', new \MongoDB\BSON\ObjectId('4f18f593acee41d724000005'), 'child')
         );
     }
 

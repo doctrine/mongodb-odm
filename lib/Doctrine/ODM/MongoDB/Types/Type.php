@@ -164,7 +164,7 @@ abstract class Type
         if (is_object($variable)) {
             if ($variable instanceof \DateTimeInterface) {
                 return self::getType('date');
-            } elseif ($variable instanceof \MongoId) {
+            } elseif ($variable instanceof \MongoDB\BSON\ObjectId) {
                 return self::getType('id');
             }
         } else {

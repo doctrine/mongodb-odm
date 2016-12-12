@@ -9,7 +9,7 @@ class GH816Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPersistAfterDetachWithIdSet()
     {
         $d=new GH816Document();
-        $d->_id=new \MongoId();
+        $d->_id=new \MongoDB\BSON\ObjectId();
         $this->assertEmpty($this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);

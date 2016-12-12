@@ -26,7 +26,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$in'][0]);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$in'][0]);
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$in'][0]);
     }
 
@@ -40,7 +40,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$all'][0]);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$all'][0]);
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$all'][0]);
     }
 
@@ -54,7 +54,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne']);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$ne']);
         $this->assertEquals($id, (string) $debug['groups.$id']['$ne']);
     }
 
@@ -68,7 +68,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$nin'][0]);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$nin'][0]);
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$nin'][0]);
     }
 
@@ -83,7 +83,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf('MongoId', $debug['$and'][0]['groups.$id']['$in'][0]);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['$and'][0]['groups.$id']['$in'][0]);
         $this->assertEquals($ids[0], (string) $debug['$and'][0]['groups.$id']['$in'][0]);
     }
 
@@ -98,7 +98,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf('MongoId', $debug['$or'][0]['groups.$id']['$in'][0]);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['$or'][0]['groups.$id']['$in'][0]);
         $this->assertEquals($ids[0], (string) $debug['$or'][0]['groups.$id']['$in'][0]);
     }
 
@@ -118,13 +118,13 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$all'][0]);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$all'][0]);
         $this->assertEquals($all[0], (string) $debug['groups.$id']['$all'][0]);
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$in'][0]);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$in'][0]);
         $this->assertEquals($in[0], (string) $debug['groups.$id']['$in'][0]);
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$ne']);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$ne']);
         $this->assertEquals($ne, (string) $debug['groups.$id']['$ne']);
-        $this->assertInstanceOf('MongoId', $debug['groups.$id']['$nin'][0]);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$nin'][0]);
         $this->assertEquals($nin[0], (string) $debug['groups.$id']['$nin'][0]);
     }
 

@@ -8,7 +8,7 @@ class GH611Test extends BaseTest
 {
     public function testPreparationofEmbeddedDocumentValues()
     {
-        $documentId = (string) (new \MongoId());
+        $documentId = (string) (new \MongoDB\BSON\ObjectId());
 
         $document = new GH611Document();
         $document->id = $documentId;

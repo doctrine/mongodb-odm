@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 class ReadOnlyDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -21,7 +22,7 @@ class ReadOnlyDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testCanBeUpserted()
     {
         $rod = new ReadOnlyDocument('yay');
-        $rod->id = new \MongoId();
+        $rod->id = new ObjectId();
         $this->dm->persist($rod);
         $this->dm->flush();
         $this->dm->clear();

@@ -9,7 +9,7 @@ class GH774Test extends BaseTest
 {
     public function testUpsert()
     {
-        $id = (string) new \MongoId();
+        $id = (string) new \MongoDB\BSON\ObjectId();
 
         $thread = new GH774Thread();
         $thread->id = $id;
@@ -26,7 +26,7 @@ class GH774Test extends BaseTest
 
     public function testUpsertSingleFlush()
     {
-        $id = (string) new \MongoId();
+        $id = (string) new \MongoDB\BSON\ObjectId();
 
         $thread = new GH774Thread();
         $thread->id = $id;

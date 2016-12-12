@@ -194,7 +194,7 @@ This list explains some of the less obvious mapping types:
 -  ``collection``: numerically indexed array to MongoDB array
 -  ``date``: DateTime to MongoDate
 -  ``hash``: associative array to MongoDB object
--  ``id``: string to MongoId by default, but other formats are possible
+-  ``id``: string to ObjectId by default, but other formats are possible
 -  ``timestamp``: string to MongoTimestamp
 -  ``raw``: any type
 
@@ -259,10 +259,10 @@ Here is an example:
               type: id
               id: true
 
-You can configure custom ID strategies if you don't want to use the default MongoId.
-The available strategies are:
+You can configure custom ID strategies if you don't want to use the default
+object ID. The available strategies are:
 
-- ``AUTO`` - Uses the native generated MongoId.
+- ``AUTO`` - Uses the native generated ObjectId.
 - ``ALNUM`` - Generates an alpha-numeric string (based on an incrementing value).
 - ``CUSTOM`` - Defers generation to a AbstractIdGenerator implementation specified in the ``class`` option.
 - ``INCREMENT`` - Uses another collection to auto increment an integer identifier.

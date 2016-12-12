@@ -68,7 +68,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testAtomicUpsert()
     {
         $user = new AtomicSetUser('Maciej');
-        $user->id = new \MongoId();
+        $user->id = new \MongoDB\BSON\ObjectId();
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();

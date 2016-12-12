@@ -68,7 +68,7 @@ class QueryTest extends BaseTest
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
             'bestFriend.$ref' => 'people',
-            'bestFriend.$id' => new \MongoId($jon->id),
+            'bestFriend.$id' => new \MongoDB\BSON\ObjectId($jon->id),
             'bestFriend.$db' => DOCTRINE_MONGODB_DATABASE,
         ), $queryArray);
 
@@ -95,7 +95,7 @@ class QueryTest extends BaseTest
 
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
-            'bestFriendSimple' => new \MongoId($jon->id),
+            'bestFriendSimple' => new \MongoDB\BSON\ObjectId($jon->id),
         ), $queryArray);
 
         $query = $qb->getQuery();
@@ -122,7 +122,7 @@ class QueryTest extends BaseTest
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
             'bestFriendPartial.$ref' => 'people',
-            'bestFriendPartial.$id' => new \MongoId($jon->id),
+            'bestFriendPartial.$id' => new \MongoDB\BSON\ObjectId($jon->id),
         ), $queryArray);
 
         $query = $qb->getQuery();
@@ -151,7 +151,7 @@ class QueryTest extends BaseTest
             'friends' => array(
                 '$elemMatch' => array(
                     '$ref' => 'people',
-                    '$id' => new \MongoId($kris->id),
+                    '$id' => new \MongoDB\BSON\ObjectId($kris->id),
                     '$db' => DOCTRINE_MONGODB_DATABASE,
                 ),
             ),
@@ -183,7 +183,7 @@ class QueryTest extends BaseTest
 
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
-            'friendsSimple' =>  new \MongoId($kris->id)
+            'friendsSimple' =>  new \MongoDB\BSON\ObjectId($kris->id)
         ), $queryArray);
 
         $query = $qb->getQuery();
@@ -212,7 +212,7 @@ class QueryTest extends BaseTest
             'friendsPartial' => array(
                 '$elemMatch' => array(
                     '$ref' => 'people',
-                    '$id' => new \MongoId($kris->id)
+                    '$id' => new \MongoDB\BSON\ObjectId($kris->id)
                 ),
             ),
         ), $queryArray);
@@ -230,8 +230,8 @@ class QueryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $mongoId = new \MongoId($user->getId());
-        $ids = array($mongoId);
+        $identifier = new \MongoDB\BSON\ObjectId($user->getId());
+        $ids = array($identifier);
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('_id')->in($ids);
@@ -262,7 +262,7 @@ class QueryTest extends BaseTest
         );
         $query = $qb->getQuery();
 
-        $expectedQuery = array('phonenumbers' => array('$elemMatch' => array('lastCalledBy.$id' => new \MongoId($refId))));
+        $expectedQuery = array('phonenumbers' => array('$elemMatch' => array('lastCalledBy.$id' => new \MongoDB\BSON\ObjectId($refId))));
         $this->assertEquals($expectedQuery, $query->debug('query'));
     }
 
@@ -277,16 +277,16 @@ class QueryTest extends BaseTest
 
     public function testQueryWithMultipleEmbeddedDocumentsAndReference()
     {
-        $mongoId = new \MongoId();
+        $identifier = new \MongoDB\BSON\ObjectId();
 
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\EmbedTest')
             ->find()
-            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals((string) $mongoId);
+            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals((string) $identifier);
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
         $this->assertArrayHasKey('eO.eO.e1.eO.eP.pO._id', $debug);
-        $this->assertEquals($mongoId, $debug['eO.eO.e1.eO.eP.pO._id']);
+        $this->assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO._id']);
     }
 
     public function testSelectVsSingleCollectionInheritance()

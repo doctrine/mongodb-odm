@@ -12,6 +12,7 @@ use Documents\Group;
 use Documents\Phonenumber;
 use Documents\SubProject;
 use Documents\User;
+use MongoDB\BSON\ObjectId;
 
 class DocumentRepositoryTest extends BaseTest
 {
@@ -47,7 +48,7 @@ class DocumentRepositoryTest extends BaseTest
             ->getUnitOfWork()
             ->getDocumentPersister(User::class)
             ->prepareQueryOrNewObj(['account' => $account]);
-        $expectedQuery = ['account.$id' => new \MongoId($account->getId())];
+        $expectedQuery = ['account.$id' => new \MongoDB\BSON\ObjectId($account->getId())];
         $this->assertEquals($expectedQuery, $query);
 
         $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['account' => $account]));
@@ -68,7 +69,7 @@ class DocumentRepositoryTest extends BaseTest
             ->prepareQueryOrNewObj(['user' => $user]);
         $expectedQuery = [
             'user.$ref' => 'users',
-            'user.$id' => new \MongoId($user->getId()),
+            'user.$id' => new \MongoDB\BSON\ObjectId($user->getId()),
             'user.$db' => DOCTRINE_MONGODB_DATABASE
         ];
         $this->assertEquals($expectedQuery, $query);
@@ -91,7 +92,7 @@ class DocumentRepositoryTest extends BaseTest
             ->prepareQueryOrNewObj(['userDbRef' => $user]);
         $expectedQuery = [
             'userDbRef.$ref' => 'users',
-            'userDbRef.$id' => new \MongoId($user->getId())
+            'userDbRef.$id' => new ObjectId($user->getId())
         ];
         $this->assertEquals($expectedQuery, $query);
 
@@ -110,7 +111,7 @@ class DocumentRepositoryTest extends BaseTest
             ->getUnitOfWork()
             ->getDocumentPersister(Developer::class)
             ->prepareQueryOrNewObj(['projects' => $project]);
-        $expectedQuery = ['projects' => ['$elemMatch' => ['$id' => new \MongoId($project->getId())]]];
+        $expectedQuery = ['projects' => ['$elemMatch' => ['$id' => new \MongoDB\BSON\ObjectId($project->getId())]]];
         $this->assertEquals($expectedQuery, $query);
 
         $this->assertSame($developer, $this->dm->getRepository(Developer::class)->findOneBy(['projects' => $project]));
@@ -155,7 +156,7 @@ class DocumentRepositoryTest extends BaseTest
         $expectedQuery = [
             'groups' => [
                 '$elemMatch' => [
-                    '$id' => new \MongoId($group->getId()),
+                    '$id' => new \MongoDB\BSON\ObjectId($group->getId()),
                 ],
             ],
         ];

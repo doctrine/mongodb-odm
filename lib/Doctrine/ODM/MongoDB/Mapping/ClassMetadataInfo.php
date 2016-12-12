@@ -45,7 +45,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 {
     /* The Id generator types. */
     /**
-     * AUTO means Doctrine will automatically create a new \MongoId instance for us.
+     * AUTO means Doctrine will automatically create a new \MongoDB\BSON\ObjectId instance for us.
      */
     const GENERATOR_TYPE_AUTO = 1;
 
@@ -1782,7 +1782,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param object $document
      *
-     * @return \MongoId $id The MongoID object.
+     * @return \MongoDB\BSON\ObjectId $id The ObjectId
      */
     public function getIdentifierObject($document)
     {
@@ -1981,7 +1981,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Checks whether the class will generate a new \MongoId instance for us.
+     * Checks whether the class will generate a new \MongoDB\BSON\ObjectId instance for us.
      *
      * @return boolean TRUE if the class uses the AUTO generator, FALSE otherwise.
      */

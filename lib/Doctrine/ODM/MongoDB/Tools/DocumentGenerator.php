@@ -892,7 +892,7 @@ public function <methodName>()
         if (isset($fieldMapping['id']) && $fieldMapping['id']) {
             $fieldMapping['strategy'] = isset($fieldMapping['strategy']) ? $fieldMapping['strategy'] : ClassMetadataInfo::GENERATOR_TYPE_AUTO;
             if ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_AUTO) {
-                $lines[] = $this->spaces . ' * @var MongoId $' . $fieldMapping['fieldName'];
+                $lines[] = $this->spaces . ' * @var MongoDB\BSON\ObjectId $' . $fieldMapping['fieldName'];
             } elseif ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_INCREMENT) {
                 $lines[] = $this->spaces . ' * @var integer $' . $fieldMapping['fieldName'];
             } elseif ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_UUID) {

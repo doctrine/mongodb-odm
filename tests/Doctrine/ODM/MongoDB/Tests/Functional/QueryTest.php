@@ -58,7 +58,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\User');
         $embeddedQb = $this->dm->createQueryBuilder('Documents\Phonenumber');
 
-        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('lastCalledBy.$id')->equals(new \MongoId($user1->getId())));
+        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('lastCalledBy.$id')->equals(new \MongoDB\BSON\ObjectId($user1->getId())));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertNotNull($user);
@@ -386,7 +386,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testQueryWhereInReferenceId()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User');
-        $choices = array(new \MongoId(), new \MongoId());
+        $choices = array(new \MongoDB\BSON\ObjectId(), new \MongoDB\BSON\ObjectId());
         $qb->field('account.$id')->in($choices);
         $expected = array(
             'account.$id' => array(

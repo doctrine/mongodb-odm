@@ -76,7 +76,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetPartialReference()
     {
-        $id = new \MongoId();
+        $id = new \MongoDB\BSON\ObjectId();
         $user = $this->dm->getPartialReference('Documents\CmsUser', $id);
         $this->assertTrue($this->dm->contains($user));
         $this->assertEquals($id, $user->id);
@@ -232,7 +232,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = $this->dm->getClassMetadata(get_class($d));
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref1']);
-        $this->assertInstanceOf('MongoId', $dbRef);
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $dbRef);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref2']);
         $this->assertCount(2, $dbRef);

@@ -8,12 +8,12 @@ class GH385Test extends BaseTest
 {
     public function testQueryBuilderShouldPrepareUnmappedFields()
     {
-        $mongoId = new \MongoId();
+        $identifier = new \MongoDB\BSON\ObjectId();
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->upsert()
             ->update()
-            ->field('id')->equals($mongoId)
+            ->field('id')->equals($identifier)
             ->field('foo.bar.level3a')->inc(1)
             ->field('foo.bar.level3b')->inc(1);
 
@@ -23,7 +23,7 @@ class GH385Test extends BaseTest
 
         $qb->getQuery()->execute();
 
-        $check = $this->dm->getDocumentCollection('Documents\User')->findOne(array('_id' => $mongoId));
+        $check = $this->dm->getDocumentCollection('Documents\User')->findOne(array('_id' => $identifier));
         $this->assertNotNull($check);
         $this->assertTrue(isset($check['foo']['bar']['level3a']));
         $this->assertTrue(isset($check['foo']['bar']['level3b']));

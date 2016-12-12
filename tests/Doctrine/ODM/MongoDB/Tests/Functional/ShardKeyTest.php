@@ -57,7 +57,7 @@ class ShardKeyTest extends BaseTest
     public function testUpsert()
     {
         $o = new ShardedOne();
-        $o->id = new \MongoId();
+        $o->id = new \MongoDB\BSON\ObjectId();
         $this->dm->persist($o);
         $this->dm->flush();
 

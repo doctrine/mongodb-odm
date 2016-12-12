@@ -52,7 +52,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testExistsReturnsFalseForNonexistentDocuments()
     {
         $document = new DocumentPersisterTestDocument();
-        $document->id = new \MongoId();
+        $document->id = new \MongoDB\BSON\ObjectId();
 
         $this->assertFalse($this->documentPersister->exists($document));
     }
@@ -196,7 +196,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $id = new \MongoId();
+        $id = new \MongoDB\BSON\ObjectId();
 
         $value = array('simpleRef' => (string) $id);
         $expected = array('simpleRef' => $id);
@@ -273,7 +273,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $id = new \MongoId();
+        $id = new \MongoDB\BSON\ObjectId();
 
         $value = array('complexRef.id' => (string) $id);
         $expected = array('complexRef.$id' => $id);
@@ -350,7 +350,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $id = new \MongoId();
+        $id = new \MongoDB\BSON\ObjectId();
 
         $value = array('embeddedRef.id' => (string) $id);
         $expected = array('embeddedRef.id' => $id);
@@ -491,7 +491,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $testDocument = new $class();
-        $testDocument->id = new \MongoId();
+        $testDocument->id = new \MongoDB\BSON\ObjectId();
         $this->dm->persist($testDocument);
         $this->dm->flush();
     }

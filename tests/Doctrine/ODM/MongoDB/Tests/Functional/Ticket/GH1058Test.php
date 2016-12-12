@@ -90,7 +90,7 @@ class GH1058UpsertDocument
     public final function generateId()
     {
         if (!isset($this->id)) {
-            $this->id = (string) new \MongoId();
+            $this->id = (string) new \MongoDB\BSON\ObjectId();
         }
     }
 

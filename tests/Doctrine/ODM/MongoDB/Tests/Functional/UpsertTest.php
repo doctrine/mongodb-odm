@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MongoId;
 
 class UpsertTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -15,10 +14,10 @@ class UpsertTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUpsertEmbedManyDoesNotCreateObject()
     {
         $test = new UpsertTestUser();
-        $test->id = (string) new MongoId();
+        $test->id = (string) new \MongoDB\BSON\ObjectId();
 
         $embedded = new UpsertTestUserEmbedded();
-        $embedded->id = (string) new MongoId();
+        $embedded->id = (string) new \MongoDB\BSON\ObjectId();
         $embedded->test = 'test';
 
         $test->embedMany[] = $embedded;

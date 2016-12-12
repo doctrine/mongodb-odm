@@ -498,8 +498,8 @@ annotation will cause Doctrine to ignore the callbacks.
 ---
 
 The annotated instance variable will be marked as the document identifier. The
-default behavior is to store a `MongoId`_ instance, but you may customize this
-via the :ref:`strategy <basic_mapping_identifiers>` attribute.
+default behavior is to store an `MongoDB\BSON\ObjectId`_ instance, but you may
+customize this via the :ref:`strategy <basic_mapping_identifiers>` attribute.
 
 .. code-block:: php
 
@@ -1111,6 +1111,6 @@ versioned parent document.
 .. _geoNear command: https://docs.mongodb.com/manual/reference/command/geoNear/
 .. _GridFS: https://docs.mongodb.com/manual/core/gridfs/
 .. _MongoGridFSFile: http://php.net/manual/en/class.mongogridfsfile.php
-.. _MongoId: http://php.net/manual/en/class.mongoid.php
+.. _MongoDB\BSON\ObjectId: https://secure.php.net/manual/en/class.mongodb-bson-objectid.php
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>

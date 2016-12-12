@@ -232,7 +232,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function getTestIdTypesAndStrategiesData()
     {
-        $mongoId = new \MongoId();
+        $identifier = new \MongoDB\BSON\ObjectId();
 
         return array(
             // boolean
@@ -268,7 +268,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('custom_id', 'increment', null, 1, 'integer'),
 
             // object_id
-            array('object_id', 'none', (string) $mongoId, (string) $mongoId, 'MongoId'),
+            array('object_id', 'none', (string) $identifier, (string) $identifier, \MongoDB\BSON\ObjectId::class),
 
             // date
             array('date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), 'MongoDate'),
@@ -330,7 +330,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\TestIdTypesIdAutoUser uses AUTO identifier generation strategy but provided identifier is not valid MongoId.
+     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\TestIdTypesIdAutoUser uses AUTO identifier generation strategy but provided identifier is not a valid ObjectId.
      */
     public function testStrategyAutoWithNotValidIdThrowsException()
     {

@@ -1096,9 +1096,10 @@ class UnitOfWork implements PropertyChangedListener
                 ));
             }
 
-            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! \MongoId::isValid($idValue)) {
+            // @todo NG: Replace MongoId::isValid
+            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null) {// && ! \MongoId::isValid($idValue)) {
                 throw new \InvalidArgumentException(sprintf(
-                    '%s uses AUTO identifier generation strategy but provided identifier is not valid MongoId.',
+                    '%s uses AUTO identifier generation strategy but provided identifier is not a valid ObjectId.',
                     get_class($document)
                 ));
             }
@@ -2829,8 +2830,8 @@ class UnitOfWork implements PropertyChangedListener
      * Registers a document as managed.
      *
      * TODO: This method assumes that $id is a valid PHP identifier for the
-     * document class. If the class expects its database identifier to be a
-     * MongoId, and an incompatible $id is registered (e.g. an integer), the
+     * document class. If the class expects its database identifier to be an
+     * ObjectId, and an incompatible $id is registered (e.g. an integer), the
      * document identifiers map will become inconsistent with the identity map.
      * In the future, we may want to round-trip $id through a PHP and database
      * conversion and throw an exception if it's inconsistent.

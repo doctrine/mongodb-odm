@@ -57,7 +57,7 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function provideTypesForIdempotent()
     {
         return array(
-            array(Type::getType(Type::ID), new \MongoId()),
+            array(Type::getType(Type::ID), new \MongoDB\BSON\ObjectId()),
             array(Type::getType(Type::DATE), new \MongoDate()),
             array(Type::getType(Type::TIMESTAMP), new \MongoTimestamp()),
             array(Type::getType(Type::BINDATA), new MongoBinData('foobarbaz', 0)),
@@ -67,7 +67,7 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array(Type::getType(Type::BINDATAUUIDRFC4122), new MongoBinData(str_repeat('a', 16), 4)),
             array(Type::getType(Type::BINDATAMD5), new MongoBinData(md5('ODM'), MongoBinData::MD5)),
             array(Type::getType(Type::BINDATACUSTOM), new MongoBinData('foobarbaz', MongoBinData::CUSTOM)),
-            array(Type::getType(Type::OBJECTID), new \MongoId()),
+            array(Type::getType(Type::OBJECTID), new \MongoDB\BSON\ObjectId()),
         );
     }
 
