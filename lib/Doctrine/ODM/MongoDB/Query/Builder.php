@@ -264,11 +264,37 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     /**
      * @param string $documentName
      * @return $this
+     *
+     * @deprecated Deprecated in version 1.2 - use updateOne or updateMany instead
      */
     public function update($documentName = null)
     {
         $this->setDocumentName($documentName);
         parent::update();
+
+        return $this;
+    }
+
+    /**
+     * @param string $documentName
+     * @return $this
+     */
+    public function updateOne($documentName = null)
+    {
+        $this->setDocumentName($documentName);
+        parent::updateOne();
+
+        return $this;
+    }
+
+    /**
+     * @param string $documentName
+     * @return $this
+     */
+    public function updateMany($documentName = null)
+    {
+        $this->setDocumentName($documentName);
+        parent::updateMany();
 
         return $this;
     }
