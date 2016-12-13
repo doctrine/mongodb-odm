@@ -52,10 +52,10 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         return array(
             array(new \DateTime('1985-09-01 00:00:00'), new \DateTime('1985-09-01 00:00:00')),
             array(new \DateTime('2012-07-11T14:55:14-04:00'), new \DateTime('2012-07-11T19:55:14+01:00')),
-            array(new \DateTime('@1342033881'), new \MongoDate(1342033881)),
-            array(\DateTime::createFromFormat('U.u', '100000000.123'), new \MongoDate(100000000, 123000)),
-            array(\DateTime::createFromFormat('U.u', '100000000.123000'), new \MongoDate(100000000, 123000)),
-            array(new \MongoDate(100000000, 123000), \DateTime::createFromFormat('U.u', '100000000.123')),
+            array(new \DateTime('@1342033881'), new \MongoDB\BSON\UTCDateTime(1342033881000)),
+            array(\DateTime::createFromFormat('U.u', '100000000.123'), new \MongoDB\BSON\UTCDateTime(100000000123)),
+            array(\DateTime::createFromFormat('U.u', '100000000.123000'), new \MongoDB\BSON\UTCDateTime(100000000123)),
+            array(new \MongoDB\BSON\UTCDateTime(100000000123), \DateTime::createFromFormat('U.u', '100000000.123')),
         );
     }
 

@@ -58,7 +58,7 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         return array(
             array(Type::getType(Type::ID), new \MongoDB\BSON\ObjectId()),
-            array(Type::getType(Type::DATE), new \MongoDate()),
+            array(Type::getType(Type::DATE), new \MongoDB\BSON\UTCDateTime()),
             array(Type::getType(Type::TIMESTAMP), new \MongoTimestamp()),
             array(Type::getType(Type::BINDATA), new MongoBinData('foobarbaz', 0)),
             array(Type::getType(Type::BINDATAFUNC), new MongoBinData('foobarbaz', MongoBinData::FUNC)),
@@ -87,6 +87,6 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $date = new \DateTimeImmutable('now');
 
-        $this->assertInstanceOf('\MongoDate', Type::convertPHPToDatabaseValue($date));
+        $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, Type::convertPHPToDatabaseValue($date));
     }
 }

@@ -22,7 +22,6 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\MongoDB\CursorInterface;
-use Doctrine\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
@@ -243,7 +242,7 @@ class DocumentPersister
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 } elseif ($versionMapping['type'] === 'date') {
                     $nextVersionDateTime = new \DateTime();
-                    $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
+                    $nextVersion = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
                 }
                 $data[$versionMapping['name']] = $nextVersion;
@@ -321,7 +320,7 @@ class DocumentPersister
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             } elseif ($versionMapping['type'] === 'date') {
                 $nextVersionDateTime = new \DateTime();
-                $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
+                $nextVersion = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
             }
             $data['$set'][$versionMapping['name']] = $nextVersion;
@@ -401,8 +400,8 @@ class DocumentPersister
                 $query[$versionMapping['name']] = $currentVersion;
             } elseif ($versionMapping['type'] === 'date') {
                 $nextVersion = new \DateTime();
-                $update['$set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
-                $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
+                $update['$set'][$versionMapping['name']] = Type::convertPHPToDatabaseValue($nextVersion);
+                $query[$versionMapping['name']] = Type::convertPHPToDatabaseValue($currentVersion);
             }
         }
 

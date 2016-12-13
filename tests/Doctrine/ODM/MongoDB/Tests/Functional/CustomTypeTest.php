@@ -87,7 +87,8 @@ class DateCollectionType
     // Note: this method is never called
     public function closureToMongo()
     {
-        return '$return = array_map(function($v) { if ($v instanceof \DateTime) { $v = $v->getTimestamp(); } else if (is_string($v)) { $v = strtotime($v); } return new \MongoDate($v); }, $value);';
+        // todo: microseconds o.O
+        return '$return = array_map(function($v) { if ($v instanceof \MongoDB\BSON\UTCDateTime) { $v = $v->getTimestamp(); } else if (is_string($v)) { $v = strtotime($v); } return new \MongoDB\BSON\UTCDateTime($v); }, $value);';
     }
 }
 

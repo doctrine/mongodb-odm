@@ -28,9 +28,9 @@ class RawTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 			array(1),
 			array(0),
 			array(array('test' => 'test')),
-			array(new \MongoDate()),
+			array(new \MongoDB\BSON\UTCDateTime()),
 			array(true),
-			array(array('date' => new \MongoDate())),
+			array(array('date' => new \MongoDB\BSON\UTCDateTime())),
 			array(new \MongoDB\BSON\ObjectId())
 		);
 	}

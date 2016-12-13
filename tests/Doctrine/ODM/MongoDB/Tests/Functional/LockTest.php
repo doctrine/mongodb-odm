@@ -128,7 +128,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         // Manually change the version so the next code will cause an exception
-        $this->dm->getDocumentCollection(get_class($article))->update(array('_id' => new \MongoDB\BSON\ObjectId($article->id)), array('$set' => array('version' => new \MongoDate(time() + 600))));
+        $this->dm->getDocumentCollection(get_class($article))->update(array('_id' => new \MongoDB\BSON\ObjectId($article->id)), array('$set' => array('version' => new \MongoDB\BSON\UTCDateTime(time() * 1000 + 600))));
 
         // Now lets change a property and try and save it again
         $article->title = 'ok';

@@ -48,7 +48,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $this->assertInstanceOf('MongoBinData', $shardKeyQuery['bin']);
         $this->assertSame($o->bin, $shardKeyQuery['bin']->bin);
 
-        $this->assertInstanceOf('MongoDate', $shardKeyQuery['date']);
+        $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, $shardKeyQuery['date']);
         $this->assertSame($o->date->getTimestamp(), $shardKeyQuery['date']->sec);
 
         $microseconds = (int)floor(((int)$o->date->format('u')) / 1000) * 1000;

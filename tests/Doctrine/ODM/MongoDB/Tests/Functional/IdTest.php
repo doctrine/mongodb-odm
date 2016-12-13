@@ -271,7 +271,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('object_id', 'none', (string) $identifier, (string) $identifier, \MongoDB\BSON\ObjectId::class),
 
             // date
-            array('date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), 'MongoDate'),
+            array('date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), \MongoDB\BSON\UTCDateTime::class),
 
             // bin
             array('bin', 'none', 'test-data', 'test-data', 'MongoBinData'),

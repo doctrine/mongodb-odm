@@ -812,7 +812,7 @@ class UnitOfWork implements PropertyChangedListener
                     $dbOrgValue = $dateType->convertToDatabaseValue($orgValue);
                     $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
 
-                    if ($dbOrgValue instanceof \MongoDate && $dbActualValue instanceof \MongoDate && $dbOrgValue == $dbActualValue) {
+                    if ($dbOrgValue instanceof \MongoDB\BSON\UTCDateTime && $dbActualValue instanceof \MongoDB\BSON\UTCDateTime && $dbOrgValue == $dbActualValue) {
                         continue;
                     }
                 }

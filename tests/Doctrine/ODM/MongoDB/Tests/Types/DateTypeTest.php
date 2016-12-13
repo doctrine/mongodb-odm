@@ -15,7 +15,7 @@ class DateTypeTest extends TestCase
         $dateTime = $type->getDateTime($timestamp);
         $this->assertEquals($timestamp, $dateTime->format('U.u'));
 
-        $mongoDate = new \MongoDate(100000000, 1000);
+        $mongoDate = new \MongoDB\BSON\UTCDateTime(100000000001);
         $dateTime = $type->getDateTime($mongoDate);
         $this->assertEquals($timestamp, $dateTime->format('U.u'));
     }
@@ -26,12 +26,12 @@ class DateTypeTest extends TestCase
 
         $this->assertNull($type->convertToDatabaseValue(null), 'null is not converted');
 
-        $mongoDate = new \MongoDate();
+        $mongoDate = new \MongoDB\BSON\UTCDateTime();
         $this->assertSame($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are not converted');
 
         $timestamp = 100000000.123;
         $dateTime = \DateTime::createFromFormat('U.u', $timestamp);
-        $mongoDate = new \MongoDate(100000000, 123000);
+        $mongoDate = new \MongoDB\BSON\UTCDateTime(100000000123);
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTime), 'DateTime objects are converted to MongoDate objects');
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($timestamp), 'Numeric timestamps are converted to MongoDate objects');
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue('' . $timestamp), 'String dates are converted to MongoDate objects');
@@ -48,7 +48,7 @@ class DateTypeTest extends TestCase
         $type = Type::getType(Type::DATE);
 
         $timestamp = 100000000.123;
-        $mongoDate = new \MongoDate(100000000, 123000);
+        $mongoDate = new \MongoDB\BSON\UTCDateTime(100000000123);
 
         $dateTimeImmutable = \DateTimeImmutable::createFromFormat('U.u', $timestamp);
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTimeImmutable), 'DateTimeImmutable objects are converted to MongoDate objects');
@@ -122,7 +122,7 @@ class DateTypeTest extends TestCase
     public function provideDatabaseToPHPValues()
     {
         $yesterday = strtotime('yesterday');
-        $mongoDate = new \MongoDate($yesterday);
+        $mongoDate = new \MongoDB\BSON\UTCDateTime($yesterday);
         $dateTime = new \DateTime('@' . $yesterday);
 
         return array(
@@ -130,7 +130,7 @@ class DateTypeTest extends TestCase
             array($mongoDate, $dateTime),
             array($yesterday, $dateTime),
             array(date('c', $yesterday), $dateTime),
-            array(new \MongoDate(100000000, 123000), \DateTime::createFromFormat('U.u', '100000000.123')),
+            array(new \MongoDB\BSON\UTCDateTime(100000000123), \DateTime::createFromFormat('U.u', '100000000.123')),
         );
     }
 
@@ -153,8 +153,8 @@ class DateTypeTest extends TestCase
             $type = Type::getType(Type::DATE);
             $return = $type->convertToDatabaseValue('1900-01-01');
 
-            $this->assertInstanceOf('MongoDate', $return);
-            $this->assertEquals(new \MongoDate(strtotime('1900-01-01')), $return);
+            $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, $return);
+            $this->assertEquals(new \MongoDB\BSON\UTCDateTime(strtotime('1900-01-01') * 1000), $return);
         } else {
             $this->markTestSkipped("Platform is not 64-bit");
         }

@@ -67,7 +67,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ],
             [
                 '$replaceRoot' => [
-                    'isToday' => ['$eq' => ['$createdAt', new \MongoDate($dateTime->format('U'), $dateTime->format('u'))]],
+                    'isToday' => ['$eq' => ['$createdAt', new \MongoDB\BSON\UTCDateTime((int) $dateTime->format('Uv'))]],
                 ]
             ]
         ];

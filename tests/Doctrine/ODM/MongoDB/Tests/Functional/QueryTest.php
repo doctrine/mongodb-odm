@@ -327,8 +327,8 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $qb->field('createdAt')->range(
-            new \MongoDate(strtotime('1985-09-01 01:00:00')),
-            new \MongoDate(strtotime('1985-09-04'))
+            new \MongoDB\BSON\UTCDateTime(strtotime('1985-09-01 01:00:00') * 1000),
+            new \MongoDB\BSON\UTCDateTime(strtotime('1985-09-04') * 1000)
         );
         $query = $qb->getQuery();
         $articles = array_values($query->execute()->toArray());
