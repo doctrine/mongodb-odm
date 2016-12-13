@@ -52,7 +52,7 @@ A document instance can be characterized as being NEW, MANAGED, DETACHED or REMO
    identity that is associated with a DocumentManager and whose
    persistence is thus managed.
 -  A DETACHED document instance is an instance with a persistent
-   identity that is not (or no longer) associated with an
+   identity that is not (or no longer) associated with a
    DocumentManager and a UnitOfWork.
 -  A REMOVED document instance is an instance with a persistent
    identity, associated with a DocumentManager, that will be removed
