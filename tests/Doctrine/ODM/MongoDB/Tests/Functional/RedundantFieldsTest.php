@@ -45,6 +45,31 @@ class RedundantFieldsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertCount(1, $result);
     }
+
+    public function testStoringFieldWorksWithProxy()
+    {
+        $blog = new Blog('my-blog');
+        $this->dm->persist($blog);
+        $this->dm->flush();
+
+        $this->dm->clear();
+        $blog = $this->dm->getReference(Blog::class, $blog->getId());
+
+        $post = new Post($blog, 'My first post');
+        $this->dm->persist($post);
+        $this->dm->flush();
+
+        $rawPost = $this->dm->createQueryBuilder(Post::class)
+            ->find()
+            ->field('id')
+            ->equals($post->getId())
+            ->hydrate(false)
+            ->getQuery()
+            ->getSingleResult();
+
+        $this->assertSame('my-blog', $rawPost['blog']['title']);
+        $this->assertInstanceOf(\MongoDate::class, $rawPost['blog']['creationDate']);
+    }
 }
 
 /**
