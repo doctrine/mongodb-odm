@@ -11,26 +11,28 @@ env:
   global:
     - DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017"
     - KEY_SERVER="hkp://keyserver.ubuntu.com:80"
-    - MONGO_REPO_URI="https://repo.mongodb.com/apt/ubuntu"
-    - MONGO_REPO_TYPE="precise/mongodb-enterprise/"
+    - MONGO_REPO_URI="https://repo.mongodb.org/apt/ubuntu"
+    - MONGO_REPO_TYPE="precise/mongodb-org/"
     - SOURCES_LOC="/etc/apt/sources.list.d/mongodb.list"
     - DRIVER_VERSION="stable"
     - ADAPTER_VERSION="^1.0.0"
-    - SERVER_VERSION="3.2"
+    - SERVER_VERSION="3.4"
+    - KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6"
 
 matrix:
   include:
     - php: 5.6
-      env: DRIVER_VERSION="1.5.8" SERVER_VERSION="2.6" COMPOSER_FLAGS="--prefer-lowest"
+      env: DRIVER_VERSION="1.5.8" SERVER_VERSION="3.0" COMPOSER_FLAGS="--prefer-lowest" KEY_ID="7F0CEB10"
+    - php: 5.6
+      env: DRIVER_VERSION="stable" SERVER_VERSION="3.2" KEY_ID="EA312927"
 
 before_install:
-  - sudo apt-key adv --keyserver ${KEY_SERVER} --recv 7F0CEB10
-  - sudo apt-key adv --keyserver ${KEY_SERVER} --recv EA312927
+  - sudo apt-key adv --keyserver ${KEY_SERVER} --recv ${KEY_ID}
   - echo "deb ${MONGO_REPO_URI} ${MONGO_REPO_TYPE}${SERVER_VERSION} multiverse" | sudo tee ${SOURCES_LOC}
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get install mongodb-enterprise
+  - sudo apt-get install mongodb-org
   - if nc -z localhost 27017; then sudo service mongod stop; fi
   - sudo pip install mongo-orchestration
   - sudo mongo-orchestration start
