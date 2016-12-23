@@ -31,7 +31,7 @@ class KeyType extends Type
         if ($value === null) {
             return null;
         }
-        return $value ? new \MongoMaxKey : new \MongoMinKey;
+        return $value ? new \MongoDB\BSON\MaxKey : new \MongoDB\BSON\MinKey;
     }
 
     public function convertToPHPValue($value)
@@ -39,6 +39,6 @@ class KeyType extends Type
         if ($value === null) {
             return null;
         }
-        return $value instanceof \MongoMaxKey ? 1 : 0;
+        return $value instanceof \MongoDB\BSON\MinKey ? 1 : 0;
     }
 }
