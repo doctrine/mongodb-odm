@@ -93,8 +93,8 @@ PHP driver directly:
 
     $db = $mongoClient->selectDB('my_db');
 
-    $map = new MongoCode('function() { emit(this.user.$id, 1); }');
-    $reduce = new MongoCode('function(k, vals) {
+    $map = new MongoDB\BSON\Javascript('function() { emit(this.user.$id, 1); }');
+    $reduce = new MongoDB\BSON\Javascript('function(k, vals) {
         var sum = 0;
         for (var i in vals) {
             sum += vals[i]; 
