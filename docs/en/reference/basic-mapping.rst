@@ -185,12 +185,12 @@ You can read more about the available MongoDB types on `php.net <http://us.php.n
 Generally, the name of each built-in mapping type hints as to how the value will be converted.
 This list explains some of the less obvious mapping types:
 
--  ``bin``: string to MongoBinData instance with a "generic" type (default)
--  ``bin_bytearray``: string to MongoBinData instance with a "byte array" type
--  ``bin_custom``: string to MongoBinData instance with a "custom" type
--  ``bin_func``: string to MongoBinData instance with a "function" type
--  ``bin_md5``: string to MongoBinData instance with a "md5" type
--  ``bin_uuid``: string to MongoBinData instance with a "uuid" type
+-  ``bin``: string to MongoDB\BSON\Binary instance with a "generic" type (default)
+-  ``bin_bytearray``: string to MongoDB\BSON\Binary instance with a "byte array" type
+-  ``bin_custom``: string to MongoDB\BSON\Binary instance with a "custom" type
+-  ``bin_func``: string to MongoDB\BSON\Binary instance with a "function" type
+-  ``bin_md5``: string to MongoDB\BSON\Binary instance with a "md5" type
+-  ``bin_uuid``: string to MongoDB\BSON\Binary instance with a "uuid" type
 -  ``collection``: numerically indexed array to MongoDB array
 -  ``date``: DateTime to ``MongoDB\BSON\UTCDateTime``
 -  ``hash``: associative array to MongoDB object

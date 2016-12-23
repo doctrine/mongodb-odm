@@ -86,12 +86,11 @@ class GH852Test extends BaseTest
 
     public function provideIdGenerators()
     {
-        // MongoBinData::GENERIC may not be defined for driver versions before 1.5.0
-        $binDataType = defined('MongoBinData::GENERIC') ? \MongoBinData::GENERIC : 0;
+        $binDataType = \MongoDB\BSON\Binary::TYPE_GENERIC;
 
         return array(
             array(function($id) { return array('foo' => $id); }),
-            array(function($id) use ($binDataType) { return new \MongoBinData($id, $binDataType); }),
+            array(function($id) use ($binDataType) { return new \MongoDB\BSON\Binary($id, $binDataType); }),
         );
     }
 }

@@ -420,7 +420,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(get_class($test));
 
-        $invalidBinData = new \MongoBinData('testbindata', \MongoBinData::BYTE_ARRAY);
+        $invalidBinData = new \MongoDB\BSON\Binary('testbindata', \MongoDB\BSON\Binary::TYPE_OLD_BINARY);
 
         $collection->update(
             array('_id' => new \MongoDB\BSON\ObjectId($test->id)),

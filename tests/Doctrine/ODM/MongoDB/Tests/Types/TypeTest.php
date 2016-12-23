@@ -4,7 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use Doctrine\MongoDB\GridFSFile;
 use Doctrine\ODM\MongoDB\Types\Type;
-use MongoBinData;
 
 class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -60,13 +59,13 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array(Type::getType(Type::ID), new \MongoDB\BSON\ObjectId()),
             array(Type::getType(Type::DATE), new \MongoDB\BSON\UTCDateTime()),
             array(Type::getType(Type::TIMESTAMP), new \MongoTimestamp()),
-            array(Type::getType(Type::BINDATA), new MongoBinData('foobarbaz', 0)),
-            array(Type::getType(Type::BINDATAFUNC), new MongoBinData('foobarbaz', MongoBinData::FUNC)),
-            array(Type::getType(Type::BINDATABYTEARRAY), new MongoBinData('foobarbaz', MongoBinData::BYTE_ARRAY)),
-            array(Type::getType(Type::BINDATAUUID), new MongoBinData("7f1c6d80-3e0b-11e5-b8ed-0002a5d5c51b", MongoBinData::UUID)),
-            array(Type::getType(Type::BINDATAUUIDRFC4122), new MongoBinData(str_repeat('a', 16), 4)),
-            array(Type::getType(Type::BINDATAMD5), new MongoBinData(md5('ODM'), MongoBinData::MD5)),
-            array(Type::getType(Type::BINDATACUSTOM), new MongoBinData('foobarbaz', MongoBinData::CUSTOM)),
+            array(Type::getType(Type::BINDATA), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_GENERIC)),
+            array(Type::getType(Type::BINDATAFUNC), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_FUNCTION)),
+            array(Type::getType(Type::BINDATABYTEARRAY), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_OLD_BINARY)),
+            array(Type::getType(Type::BINDATAUUID), new \MongoDB\BSON\Binary("7f1c6d80-3e0b-11e5-b8ed-0002a5d5c51b", \MongoDB\BSON\Binary::TYPE_OLD_UUID)),
+            array(Type::getType(Type::BINDATAUUIDRFC4122), new \MongoDB\BSON\Binary(str_repeat('a', 16), \MongoDB\BSON\Binary::TYPE_UUID)),
+            array(Type::getType(Type::BINDATAMD5), new \MongoDB\BSON\Binary(md5('ODM'), \MongoDB\BSON\Binary::TYPE_MD5)),
+            array(Type::getType(Type::BINDATACUSTOM), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_USER_DEFINED)),
             array(Type::getType(Type::OBJECTID), new \MongoDB\BSON\ObjectId()),
         );
     }

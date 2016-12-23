@@ -27,17 +27,12 @@ namespace Doctrine\ODM\MongoDB\Types;
 class BinDataType extends Type
 {
     /**
-     * MongoBinData type
-     *
-     * The default subtype for BSON binary values is 0, but we cannot use a
-     * constant here because it is not available in all versions of the PHP
-     * driver.
+     * Data type for binary data
      *
      * @var integer
-     * @see http://php.net/manual/en/mongobindata.construct.php
      * @see http://bsonspec.org/#/specification
      */
-    protected $binDataType = 0;
+    protected $binDataType = \MongoDB\BSON\Binary::TYPE_GENERIC;
 
     public function convertToDatabaseValue($value)
     {
@@ -45,12 +40,12 @@ class BinDataType extends Type
             return null;
         }
 
-        if ( ! $value instanceof \MongoBinData) {
-            return new \MongoBinData($value, $this->binDataType);
+        if ( ! $value instanceof \MongoDB\BSON\Binary) {
+            return new \MongoDB\BSON\Binary($value, $this->binDataType);
         }
 
-        if ($value->type !== $this->binDataType) {
-            return new \MongoBinData($value->bin, $this->binDataType);
+        if ($value->getType() !== $this->binDataType) {
+            return new \MongoDB\BSON\Binary($value->getData(), $this->binDataType);
         }
 
         return $value;
@@ -58,16 +53,16 @@ class BinDataType extends Type
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? ($value instanceof \MongoBinData ? $value->bin : $value) : null;
+        return $value !== null ? ($value instanceof \MongoDB\BSON\Binary ? $value->getData() : $value) : null;
     }
 
     public function closureToMongo()
     {
-        return sprintf('$return = $value !== null ? new \MongoBinData($value, %d) : null;', $this->binDataType);
+        return sprintf('$return = $value !== null ? new \MongoDB\BSON\Binary($value, %d) : null;', $this->binDataType);
     }
 
     public function closureToPHP()
     {
-        return '$return = $value !== null ? ($value instanceof \MongoBinData ? $value->bin : $value) : null;';
+        return '$return = $value !== null ? ($value instanceof \MongoDB\BSON\Binary ? $value->getData() : $value) : null;';
     }
 }

@@ -29,5 +29,5 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class BinDataByteArrayType extends BinDataType
 {
-    protected $binDataType = \MongoBinData::BYTE_ARRAY;
+    protected $binDataType = \MongoDB\BSON\Binary::TYPE_OLD_BINARY;
 }
