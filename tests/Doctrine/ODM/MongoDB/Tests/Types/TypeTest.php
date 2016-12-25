@@ -79,7 +79,7 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $expectedDate = clone $date;
 
         $cleanMicroseconds = (int) floor(((int) $date->format('u')) / 1000) * 1000;
-        $expectedDate->modify($date->format('H:i:s') . '.' . $cleanMicroseconds);
+        $expectedDate->modify($date->format('H:i:s') . '.' . str_pad($cleanMicroseconds, 6, '0', STR_PAD_LEFT));
 
         $type = Type::getType(Type::DATE);
         $this->assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
