@@ -19,7 +19,6 @@
 
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
-use Doctrine\Common\Proxy\Exception\UnexpectedValueException;
 use Doctrine\ODM\MongoDB\Configuration;
 
 /**
@@ -300,7 +299,7 @@ CODE;
     }
 
     /**
-     * @Param \ReflectionMethod $method
+     * @param \ReflectionMethod $method
      *
      * @return string
      *
@@ -338,13 +337,13 @@ CODE;
         }
         if ( ! $type->isBuiltin() && ! class_exists($name) && ! interface_exists($name)) {
             if (null !== $parameter) {
-                throw UnexpectedValueException::invalidParameterTypeHint(
+                throw PersistentCollectionException::invalidParameterTypeHint(
                     $method->getDeclaringClass()->getName(),
                     $method->getName(),
                     $parameter->getName()
                 );
             }
-            throw UnexpectedValueException::invalidReturnTypeHint(
+            throw PersistentCollectionException::invalidReturnTypeHint(
                 $method->getDeclaringClass()->getName(),
                 $method->getName()
             );
