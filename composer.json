@@ -32,7 +32,10 @@
         "symfony/yaml": "Enables the YAML metadata mapping driver"
     },
     "autoload": {
-        "psr-0": { "Doctrine\\ODM\\MongoDB": "lib/" }
+        "psr-4": { "Doctrine\\ODM\\MongoDB\\": "lib/Doctrine/ODM/MongoDB/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Doctrine\\ODM\\MongoDB\\Tests\\": "tests/Doctrine/ODM/MongoDB/Tests/" }
     },
     "extra": {
         "branch-alias": {
