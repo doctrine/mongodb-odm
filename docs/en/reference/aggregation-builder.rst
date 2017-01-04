@@ -348,7 +348,7 @@ to be considered when looking up one-to-one relationships:
     <?php
 
     /**
-     * @ReferenceMany(
+     * @ReferenceOne(
      *     targetDocument="Documents\Item",
      *     cascade="all",
      *     storeAs="id"

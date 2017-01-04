@@ -6,7 +6,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testLookupStage()
     {
-        $this->requireMongoDB32();
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
         $this->insertTestData();
 
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
@@ -36,7 +36,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLookupStageWithClassName()
     {
-        $this->requireMongoDB32();
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
         $this->insertTestData();
 
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
@@ -68,7 +68,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLookupStageWithCollectionName()
     {
-        $this->requireMongoDB32();
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
         $this->insertTestData();
 
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
@@ -99,7 +99,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLookupStageReferenceMany()
     {
-        $this->requireMongoDB32();
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
         $this->insertTestData();
 
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
@@ -133,9 +133,10 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame('malarzm', $result[1]['users'][0]['username']);
     }
 
-    public function testLookupStageReferenceManyWithoutUnwind()
+    public function testLookupStageReferenceManyWithoutUnwindMongoDB32()
     {
-        $this->requireMongoDB32();
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
+        $this->skipOnMongoDB34('$lookup tests without unwind will not work on MongoDB 3.4.0');
         $this->insertTestData();
 
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
@@ -162,9 +163,40 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(0, $result[0]['users']);
     }
 
+    public function testLookupStageReferenceManyWithoutUnwindMongoDB34()
+    {
+        $this->requireMongoDB34('$lookup tests with unwind require at least MongoDB 3.4.0');
+        $this->insertTestData();
+
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
+        $builder
+            ->lookup('users')
+                ->alias('users');
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'users',
+                    'localField' => 'users',
+                    'foreignField' => '_id',
+                    'as' => 'users',
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+
+        $result = $builder->execute()->toArray();
+
+        $this->assertCount(1, $result);
+        $this->assertCount(2, $result[0]['users']);
+        $this->assertSame('alcaeus', $result[0]['users'][0]['username']);
+        $this->assertSame('malarzm', $result[0]['users'][1]['username']);
+    }
+
     public function testLookupStageReferenceOneInverse()
     {
-        $this->requireMongoDB32();
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
         $this->insertTestData();
 
         $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
@@ -199,7 +231,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLookupStageReferenceManyInverse()
     {
-        $this->requireMongoDB32();
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
         $this->insertTestData();
 
         $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
@@ -238,6 +270,8 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user1->setUsername('alcaeus');
         $user2 = new \Documents\User();
         $user2->setUsername('malarzm');
+        $user3 = new \Documents\User();
+        $user3->setUsername('jmikola');
 
         $this->dm->persist($user1);
         $this->dm->persist($user2);
@@ -249,13 +283,5 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->persist($simpleReferenceUser);
         $this->dm->flush();
-    }
-
-    private function requireMongoDB32()
-    {
-        $mongoDbVersion = $this->dm->getConnection()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(['serverStatus' => true]);
-        if (version_compare($mongoDbVersion['version'], '3.2.0', '<')) {
-            $this->markTestSkipped('$lookup tests require at least MongoDB 3.2.0');
-        }
     }
 }

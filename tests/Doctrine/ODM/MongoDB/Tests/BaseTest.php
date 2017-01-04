@@ -97,4 +97,26 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('Test skipped because server does not support sharding');
         }
     }
+
+    protected function requireVersion($installedVersion, $requiredVersion, $operator, $message)
+    {
+        if (version_compare($installedVersion, $requiredVersion, $operator)) {
+            $this->markTestSkipped($message);
+        }
+    }
+
+    protected function requireMongoDB32($message)
+    {
+        $this->requireVersion($this->getServerVersion(), '3.2.0', '<', $message);
+    }
+
+    protected function skipOnMongoDB34($message)
+    {
+        $this->requireVersion($this->getServerVersion(), '3.4.0', '>=', $message);
+    }
+
+    protected function requireMongoDB34($message)
+    {
+        $this->requireVersion($this->getServerVersion(), '3.4.0', '<', $message);
+    }
 }
