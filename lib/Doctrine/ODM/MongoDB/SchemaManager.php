@@ -585,7 +585,7 @@ class SchemaManager
     public function enableShardingForDbByDocumentName($documentName)
     {
         $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
-        $adminDb = $this->dm->getConnection()->selectDatabase('admin');
+        $adminDb = $this->dm->getClient()->selectDatabase('admin');
         $result = $adminDb->command(array('enableSharding' => $dbName));
 
         // Error code is only available with MongoDB 3.2. MongoDB 3.0 only returns a message
@@ -607,7 +607,7 @@ class SchemaManager
         $class = $this->dm->getClassMetadata($documentName);
         $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
         $shardKey = $class->getShardKey();
-        $adminDb = $this->dm->getConnection()->selectDatabase('admin');
+        $adminDb = $this->dm->getClient()->selectDatabase('admin');
 
         $result = $adminDb->command(
             array(

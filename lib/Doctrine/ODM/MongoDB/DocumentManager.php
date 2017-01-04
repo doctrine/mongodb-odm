@@ -22,13 +22,15 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
+use MongoDB\Client;
+use MongoDB\Collection;
+use MongoDB\Database;
 
 /**
  * The DocumentManager class is the central access point for managing the
@@ -46,9 +48,9 @@ class DocumentManager implements ObjectManager
     /**
      * The Doctrine MongoDB connection instance.
      *
-     * @var \Doctrine\MongoDB\Connection
+     * @var Client
      */
-    private $connection;
+    private $client;
 
     /**
      * The used Configuration.
@@ -138,15 +140,15 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      *
-     * @param \Doctrine\MongoDB\Connection|null $conn
+     * @param Client|null $client
      * @param Configuration|null $config
      * @param \Doctrine\Common\EventManager|null $eventManager
      */
-    protected function __construct(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
+    protected function __construct(Client $client = null, Configuration $config = null, EventManager $eventManager = null)
     {
         $this->config = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
-        $this->connection = $conn ?: new Connection(null, array(), $this->config, $this->eventManager);
+        $this->client = $client ?: new Client();
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
@@ -192,14 +194,14 @@ class DocumentManager implements ObjectManager
      * and uses the given Configuration.
      *
      * @static
-     * @param \Doctrine\MongoDB\Connection|null $conn
+     * @param Client|null $client
      * @param Configuration|null $config
      * @param \Doctrine\Common\EventManager|null $eventManager
      * @return DocumentManager
      */
-    public static function create(Connection $conn = null, Configuration $config = null, EventManager $eventManager = null)
+    public static function create(Client $client = null, Configuration $config = null, EventManager $eventManager = null)
     {
-        return new static($conn, $config, $eventManager);
+        return new static($client, $config, $eventManager);
     }
 
     /**
@@ -213,13 +215,13 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Gets the PHP Mongo instance that this DocumentManager wraps.
+     * Gets the MongoDB client instance that this DocumentManager wraps.
      *
-     * @return \Doctrine\MongoDB\Connection
+     * @return Client
      */
-    public function getConnection()
+    public function getClient()
     {
-        return $this->connection;
+        return $this->client;
     }
 
     /**
@@ -291,7 +293,7 @@ class DocumentManager implements ObjectManager
      * Returns the MongoDB instance for a class.
      *
      * @param string $className The class name.
-     * @return \Doctrine\MongoDB\Database
+     * @return Database
      */
     public function getDocumentDatabase($className)
     {
@@ -305,7 +307,7 @@ class DocumentManager implements ObjectManager
         $db = $metadata->getDatabase();
         $db = $db ?: $this->config->getDefaultDB();
         $db = $db ?: 'doctrine';
-        $this->documentDatabases[$className] = $this->connection->selectDatabase($db);
+        $this->documentDatabases[$className] = $this->client->selectDatabase($db);
 
         return $this->documentDatabases[$className];
     }
@@ -313,7 +315,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the array of instantiated document database instances.
      *
-     * @return array
+     * @return Database[]
      */
     public function getDocumentDatabases()
     {
@@ -325,7 +327,7 @@ class DocumentManager implements ObjectManager
      *
      * @param string $className The class name.
      * @throws MongoDBException When the $className param is not mapped to a collection
-     * @return \Doctrine\MongoDB\Collection
+     * @return Collection
      */
     public function getDocumentCollection($className)
     {
@@ -342,7 +344,7 @@ class DocumentManager implements ObjectManager
             $db = $this->getDocumentDatabase($className);
 
             $this->documentCollections[$className] = $metadata->isFile()
-                ? $db->getGridFS($collectionName)
+                ? $db->selectGridFSBucket(['bucketName' => $collectionName])
                 : $db->selectCollection($collectionName);
         }
 
@@ -362,7 +364,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the array of instantiated document collection instances.
      *
-     * @return array
+     * @return Collection[]
      */
     public function getDocumentCollections()
     {
@@ -721,7 +723,7 @@ class DocumentManager implements ObjectManager
                 $reference = [
                     '$ref' => $class->getCollection(),
                     '$id'  => $class->getDatabaseIdentifierValue($id),
-                    '$db'  => $this->getDocumentDatabase($class->name)->getName(),
+                    '$db'  => $this->getDocumentDatabase($class->name)->getDatabaseName(),
                 ];
                 break;
 

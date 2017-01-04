@@ -5,8 +5,8 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use MongoDB\Client;
 use PHPUnit\Framework\TestCase;
 
 abstract class BaseTest extends TestCase
@@ -31,13 +31,13 @@ abstract class BaseTest extends TestCase
         // Check if the database exists. Calling listCollections on a non-existing
         // database in a sharded setup will cause an invalid command cursor to be
         // returned
-        $databases = $this->dm->getConnection()->listDatabases();
+        $databases = $this->dm->getClient()->listDatabases();
         $databaseNames = array_map(function ($database) { return $database['name']; }, $databases['databases']);
         if (! in_array(DOCTRINE_MONGODB_DATABASE, $databaseNames)) {
             return;
         }
 
-        $collections = $this->dm->getConnection()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
+        $collections = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
 
         foreach ($collections as $collection) {
             $collection->drop();
@@ -71,18 +71,14 @@ abstract class BaseTest extends TestCase
     protected function createTestDocumentManager()
     {
         $config = $this->getConfiguration();
-        $conn = new Connection(
-            getenv("DOCTRINE_MONGODB_SERVER") ?: DOCTRINE_MONGODB_SERVER,
-            array(),
-            $config
-        );
+        $conn = new Client(getenv("DOCTRINE_MONGODB_SERVER") ?: DOCTRINE_MONGODB_SERVER);
 
         return DocumentManager::create($conn, $config);
     }
 
     protected function getServerVersion()
     {
-        $result = $this->dm->getConnection()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(array('buildInfo' => 1));
+        $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(array('buildInfo' => 1));
 
         return $result['version'];
     }

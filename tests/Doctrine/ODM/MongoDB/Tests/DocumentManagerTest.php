@@ -26,7 +26,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetConnection()
     {
-        $this->assertInstanceOf('\Doctrine\MongoDB\Connection', $this->dm->getConnection());
+        $this->assertInstanceOf('\Doctrine\MongoDB\Connection', $this->dm->getClient());
     }
 
     public function testGetMetadataFactory()

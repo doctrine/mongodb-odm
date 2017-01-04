@@ -21,7 +21,6 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Connection;
-use Doctrine\MongoDB\CursorInterface;
 use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
@@ -41,9 +40,9 @@ use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 class Cursor implements CursorInterface
 {
     /**
-     * The Doctrine\MongoDB\Cursor instance being wrapped.
+     * The cursor instance being wrapped.
      *
-     * @var CursorInterface
+     * @var \MongoDB\Driver\Cursor
      */
     private $baseCursor;
 
