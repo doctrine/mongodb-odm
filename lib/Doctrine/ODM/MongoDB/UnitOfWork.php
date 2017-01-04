@@ -746,6 +746,15 @@ class UnitOfWork implements PropertyChangedListener
                         $this->scheduleOrphanRemoval($orgValue);
                     }
 
+                    if ($actualValue !== null) {
+                        list(, $knownParent, ) = $this->getParentAssociation($actualValue);
+                        if ($knownParent && $knownParent !== $document) {
+                            $actualValue = clone $actualValue;
+                            $class->setFieldValue($document, $class->fieldMappings[$propName]['fieldName'], $actualValue);
+                            $this->setOriginalDocumentProperty(spl_object_hash($document), $class->fieldMappings[$propName]['fieldName'], $actualValue);
+                        }
+                    }
+
                     $changeSet[$propName] = array($orgValue, $actualValue);
                     continue;
                 }
@@ -2184,11 +2193,6 @@ class UnitOfWork implements PropertyChangedListener
                 }
             } elseif ($relatedDocuments !== null) {
                 if ( ! empty($mapping['embedded'])) {
-                    list(, $knownParent, ) = $this->getParentAssociation($relatedDocuments);
-                    if ($knownParent && $knownParent !== $document) {
-                        $relatedDocuments = clone $relatedDocuments;
-                        $class->setFieldValue($document, $mapping['fieldName'], $relatedDocuments);
-                    }
                     $this->setParentAssociation($relatedDocuments, $mapping, $document, $mapping['fieldName']);
                 }
                 $this->doPersist($relatedDocuments, $visited);

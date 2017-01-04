@@ -21,7 +21,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 /**
  * @Annotation
- * @deprecated This class will be removed in ODM 2.0
+ * @deprecated This class will be removed in ODM 2.0. Use `@ODM\Field(type="bin")` instead.
  */
 final class Bin extends AbstractField
 {
