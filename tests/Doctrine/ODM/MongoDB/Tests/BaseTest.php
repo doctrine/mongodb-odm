@@ -75,9 +75,9 @@ abstract class BaseTest extends TestCase
     protected function createTestDocumentManager()
     {
         $config = $this->getConfiguration();
-        $conn = new Client(getenv("DOCTRINE_MONGODB_SERVER") ?: DOCTRINE_MONGODB_SERVER);
+        $client = new Client(getenv("DOCTRINE_MONGODB_SERVER") ?: DOCTRINE_MONGODB_SERVER, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 
-        return DocumentManager::create($conn, $config);
+        return DocumentManager::create($client, $config);
     }
 
     protected function getServerVersion()

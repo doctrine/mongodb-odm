@@ -148,7 +148,7 @@ class DocumentManager implements ObjectManager
     {
         $this->config = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
-        $this->client = $client ?: new Client();
+        $this->client = $client ?: new Client('mongodb://127.0.0.1', [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
