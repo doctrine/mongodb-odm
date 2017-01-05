@@ -423,7 +423,7 @@ class DocumentPersister
 
             $result = $this->collection->updateOne($query, $update, $options);
 
-            if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
+            if (($this->class->isVersioned || $this->class->isLockable) && $result->getModifiedCount() !== 1) {
                 throw LockException::lockFailed($document);
             } elseif ($this->class->isVersioned) {
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
@@ -588,10 +588,10 @@ class DocumentPersister
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
      *
-     * @param CursorInterface $baseCursor
+     * @param \MongoDB\Driver\Cursor $baseCursor
      * @return Cursor
      */
-    private function wrapCursor(CursorInterface $baseCursor)
+    private function wrapCursor(\MongoDB\Driver\Cursor $baseCursor)
     {
         return new Cursor($baseCursor, $this->dm->getUnitOfWork(), $this->class);
     }
@@ -757,22 +757,26 @@ class DocumentPersister
             );
             $criteria = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
             $cursor = $mongoCollection->find($criteria);
+
+            $options = [];
             if (isset($mapping['sort'])) {
+                // @todo convert
+                $options['sort'] = $mapping['sort'];
                 $cursor->sort($mapping['sort']);
             }
             if (isset($mapping['limit'])) {
+                $options['limit'] = $mapping['limit'];
                 $cursor->limit($mapping['limit']);
             }
             if (isset($mapping['skip'])) {
+                $options['skip'] = $mapping['skip'];
                 $cursor->skip($mapping['skip']);
             }
-            if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-                $cursor->slaveOkay(true);
-            }
-            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-                $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
-            }
-            $documents = $cursor->toArray(false);
+            // @todo Convert read preference
+//            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+//                $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+//            }
+            $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById($documentData['_id'], $class);
                 if ($document instanceof Proxy && ! $document->__isInitialized()) {
@@ -790,7 +794,7 @@ class DocumentPersister
     private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection)
     {
         $query = $this->createReferenceManyInverseSideQuery($collection);
-        $documents = $query->execute()->toArray(false);
+        $documents = $query->execute()->toArray();
         foreach ($documents as $key => $document) {
             $collection->add($document);
         }

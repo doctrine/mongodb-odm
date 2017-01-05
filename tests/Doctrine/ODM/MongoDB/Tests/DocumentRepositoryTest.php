@@ -25,16 +25,6 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $repository->matching($criteria));
     }
 
-    public function testFindWithOptimisticLockAndNoDocumentFound()
-    {
-        $invalidId = 'test';
-
-        $repository = $this->dm->getRepository('Documents\VersionedDocument');
-
-        $document = $repository->find($invalidId, LockMode::OPTIMISTIC);
-        $this->assertNull($document);
-    }
-
     public function testFindByRefOneFull()
     {
         $user = new User();

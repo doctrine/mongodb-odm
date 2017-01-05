@@ -303,7 +303,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         }
 
         // @TODO: wrap around a specialized Collection for efficient count on large collections
-        return new ArrayCollection($queryBuilder->getQuery()->execute()->toArray(false));
+        return new ArrayCollection($queryBuilder->getQuery()->execute()->toArray());
     }
 
     protected function getDocumentPersister()

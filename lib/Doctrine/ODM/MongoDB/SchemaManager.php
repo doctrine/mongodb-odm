@@ -337,9 +337,11 @@ class SchemaManager
 
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
-            $class->getCollectionCapped(),
-            $class->getCollectionSize(),
-            $class->getCollectionMax()
+            [
+                'capped' => $class->getCollectionCapped(),
+                'size' => $class->getCollectionSize(),
+                'max' => $class->getCollectionMax(),
+            ]
         );
     }
 

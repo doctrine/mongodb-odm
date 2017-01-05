@@ -57,7 +57,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                 '$group' => [
                     '_id' => [
                         '$cond' => [
-                            'if' => ['$lt' => ['$createdAt', new \MongoDate($dateTime->format('U'), $dateTime->format('u'))]],
+                            'if' => ['$lt' => ['$createdAt', new \MongoDB\BSON\UTCDateTime((int) $dateTime->format('Uv'))]],
                             'then' => true,
                             'else' => false,
                         ]
@@ -179,7 +179,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder
             ->out('sampleCollection');
 
-        $result = $builder->execute();
+        $result = $builder->execute()->toArray();
         $this->assertCount(0, $result);
     }
 

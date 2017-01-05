@@ -9,7 +9,7 @@ class MatchTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder('Documents\User');
 
         $date = new \DateTime();
-        $mongoDate = new \MongoDate($date->format('U'), $date->format('u'));
+        $mongoDate = new \MongoDB\BSON\UTCDateTime((int) $date->format('Uv'));
         $stage = $builder
             ->match()
                 ->field('createdAt')

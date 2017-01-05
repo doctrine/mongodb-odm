@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use Documents\CmsPhonenumber;
+use MongoDB\Client;
 
 class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -26,7 +27,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetConnection()
     {
-        $this->assertInstanceOf('\Doctrine\MongoDB\Connection', $this->dm->getClient());
+        $this->assertInstanceOf(Client::class, $this->dm->getClient());
     }
 
     public function testGetMetadataFactory()

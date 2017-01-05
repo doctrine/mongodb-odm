@@ -82,7 +82,7 @@ abstract class BaseTest extends TestCase
 
     protected function getServerVersion()
     {
-        $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(array('buildInfo' => 1));
+        $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(array('buildInfo' => 1))->toArray()[0];
 
         return $result['version'];
     }
