@@ -21,8 +21,8 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\MappingException;
-use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\Cursor;
+use Doctrine\ODM\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
@@ -38,6 +38,7 @@ use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use MongoDB\Collection;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -84,7 +85,7 @@ class DocumentPersister
     /**
      * The MongoCollection instance for this document.
      *
-     * @var \MongoCollection
+     * @var Collection
      */
     private $collection;
 
@@ -248,12 +249,12 @@ class DocumentPersister
                 $data[$versionMapping['name']] = $nextVersion;
             }
 
-            $inserts[$oid] = $data;
+            $inserts[] = $data;
         }
 
         if ($inserts) {
             try {
-                $this->collection->batchInsert($inserts, $options);
+                $this->collection->insertMany($inserts, $options);
             } catch (\MongoException $e) {
                 $this->queuedInserts = array();
                 throw $e;
@@ -354,7 +355,7 @@ class DocumentPersister
         }
 
         try {
-            $this->collection->update($criteria, $data, $options);
+            $this->collection->updateOne($criteria, $data, $options);
             return;
         } catch (\MongoCursorException $e) {
             if (empty($retry) || strpos($e->getMessage(), 'Mod on _id not allowed') === false) {
@@ -362,7 +363,7 @@ class DocumentPersister
             }
         }
 
-        $this->collection->update($criteria, array('$set' => new \stdClass), $options);
+        $this->collection->updateOne($criteria, array('$set' => new \stdClass), $options);
     }
 
     /**
@@ -420,7 +421,7 @@ class DocumentPersister
 
             $options = $this->getWriteOptions($options);
 
-            $result = $this->collection->update($query, $update, $options);
+            $result = $this->collection->updateOne($query, $update, $options);
 
             if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
                 throw LockException::lockFailed($document);
@@ -449,7 +450,7 @@ class DocumentPersister
 
         $options = $this->getWriteOptions($options);
 
-        $result = $this->collection->remove($query, $options);
+        $result = $this->collection->deleteOne($query, $options);
 
         if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
             throw LockException::lockFailed($document);
@@ -495,13 +496,11 @@ class DocumentPersister
         $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
         $criteria = $this->addFilterToPreparedQuery($criteria);
 
-        $cursor = $this->collection->find($criteria);
-
+        $options = [];
         if (null !== $sort) {
-            $cursor->sort($this->prepareSortOrProjection($sort));
+            $options['sort'] = $this->prepareSortOrProjection($sort);
         }
-
-        $result = $cursor->getSingleResult();
+        $result = $this->collection->findOne($criteria, $options);
 
         if ($this->class->isLockable) {
             $lockMapping = $this->class->fieldMappings[$this->class->lockField];
@@ -620,7 +619,7 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $criteria = array('_id' => $this->class->getDatabaseIdentifierValue($id));
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-        $this->collection->update($criteria, array('$set' => array($lockMapping['name'] => $lockMode)));
+        $this->collection->updateOne($criteria, array('$set' => array($lockMapping['name'] => $lockMode)));
         $this->class->reflFields[$this->class->lockField]->setValue($document, $lockMode);
     }
 
@@ -634,7 +633,7 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $criteria = array('_id' => $this->class->getDatabaseIdentifierValue($id));
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-        $this->collection->update($criteria, array('$unset' => array($lockMapping['name'] => true)));
+        $this->collection->updateOne($criteria, array('$unset' => array($lockMapping['name'] => true)));
         $this->class->reflFields[$this->class->lockField]->setValue($document, null);
     }
 

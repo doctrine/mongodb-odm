@@ -10,7 +10,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $builder = $this->dm->createAggregationBuilder(\Documents\BlogPost::class);
 
-        $aggregationResult = $builder
+        $resultCursor = $builder
             ->hydrate(\Documents\BlogTagAggregation::class)
             ->unwind('$tags')
             ->group()
@@ -21,11 +21,11 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->sort('numPosts', 'desc')
             ->execute();
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\CommandCursor', $aggregationResult);
-        $this->assertCount(2, $aggregationResult);
+        $this->assertInstanceOf(\Doctrine\ODM\MongoDB\Cursor::class, $resultCursor);
 
-        $results = $aggregationResult->toArray();
-        $this->assertInstanceOf('Documents\BlogTagAggregation', $results[0]);
+        $results = $resultCursor->toArray();
+        $this->assertCount(2, $results);
+        $this->assertInstanceOf(\Documents\BlogTagAggregation::class, $results[0]);
 
         $this->assertSame('baseball', $results[0]->tag->name);
         $this->assertSame(3, $results[0]->numPosts);

@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Client;
+use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 
 abstract class BaseTest extends TestCase
@@ -31,16 +32,19 @@ abstract class BaseTest extends TestCase
         // Check if the database exists. Calling listCollections on a non-existing
         // database in a sharded setup will cause an invalid command cursor to be
         // returned
-        $databases = $this->dm->getClient()->listDatabases();
-        $databaseNames = array_map(function ($database) { return $database['name']; }, $databases['databases']);
+        $client = $this->dm->getClient();
+        $databases = iterator_to_array($client->listDatabases());
+        $databaseNames = array_map(function (DatabaseInfo $database) {
+            return $database->getName();
+        }, $databases);
         if (! in_array(DOCTRINE_MONGODB_DATABASE, $databaseNames)) {
             return;
         }
 
-        $collections = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
+        $collections = $client->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
 
         foreach ($collections as $collection) {
-            $collection->drop();
+            $client->selectCollection(DOCTRINE_MONGODB_DATABASE, $collection->getName())->drop();
         }
     }
 

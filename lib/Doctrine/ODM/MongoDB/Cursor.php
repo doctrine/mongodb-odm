@@ -27,17 +27,9 @@ use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 
 /**
- * Wrapper for the Doctrine\MongoDB\Cursor class.
- *
- * This class composes a Doctrine\MongoDB\Cursor instance and wraps its methods
- * in order to return results as hydrated document class instances. Hydration
- * behavior may be controlled with the {@link Cursor::hydrate()} method.
- *
- * For compatibility, this class also extends Doctrine\MongoDB\Cursor.
- *
- * @since  1.0
+ * @todo Reference priming is currently disabled since a cursor can only be iterated once
  */
-class Cursor implements CursorInterface
+class Cursor implements \Iterator
 {
     /**
      * The cursor instance being wrapped.
@@ -76,6 +68,11 @@ class Cursor implements CursorInterface
     private $unitOfWorkHints = array();
 
     /**
+     * @var \Generator
+     */
+    private $iterator;
+
+    /**
      * ReferencePrimer object for priming references
      *
      * @var ReferencePrimer
@@ -99,58 +96,15 @@ class Cursor implements CursorInterface
     /**
      * Constructor.
      *
-     * @param CursorInterface $baseCursor  Cursor instance being wrapped
-     * @param UnitOfWork      $unitOfWork  UnitOfWork for result hydration and query preparation
-     * @param ClassMetadata   $class       ClassMetadata for the document class being queried
+     * @param \MongoDB\Driver\Cursor $baseCursor Cursor instance being wrapped
+     * @param UnitOfWork $unitOfWork UnitOfWork for result hydration and query preparation
+     * @param ClassMetadata $class ClassMetadata for the document class being queried
      */
-    public function __construct(CursorInterface $baseCursor, UnitOfWork $unitOfWork, ClassMetadata $class)
+    public function __construct(\MongoDB\Driver\Cursor $baseCursor, UnitOfWork $unitOfWork, ClassMetadata $class)
     {
         $this->baseCursor = $baseCursor;
         $this->unitOfWork = $unitOfWork;
         $this->class = $class;
-    }
-
-    /**
-     * Return the wrapped Doctrine\MongoDB\Cursor instance.
-     *
-     * @return CursorInterface
-     */
-    public function getBaseCursor()
-    {
-        return $this->baseCursor;
-    }
-
-    /**
-     * Return the database connection for this cursor.
-     *
-     * @see \Doctrine\MongoDB\Cursor::getConnection()
-     * @return Connection
-     */
-    public function getConnection()
-    {
-        return $this->baseCursor->getCollection()->getDatabase()->getConnection();
-    }
-
-    /**
-     * Return the collection for this cursor.
-     *
-     * @see CursorInterface::getCollection()
-     * @return Collection
-     */
-    public function getCollection()
-    {
-        return $this->baseCursor->getCollection();
-    }
-
-    /**
-     * Return the selected fields (projection).
-     *
-     * @see CursorInterface::getFields()
-     * @return array
-     */
-    public function getFields()
-    {
-        return $this->baseCursor->getFields();
     }
 
     /**
@@ -174,57 +128,26 @@ class Cursor implements CursorInterface
     }
 
     /**
-     * Return the query criteria.
-     *
-     * @see CursorInterface::getQuery()
-     * @return array
+     * @return \Generator
      */
-    public function getQuery()
+    private function ensureIterator()
     {
-        return $this->baseCursor->getQuery();
+        if ($this->iterator === null) {
+            $this->iterator = $this->wrapTraversable($this->baseCursor);
+        }
+
+        return $this->iterator;
     }
 
     /**
-     * Wrapper method for MongoCursor::addOption().
-     *
-     * @see CursorInterface::addOption()
-     * @see http://php.net/manual/en/mongocursor.addoption.php
-     * @param string $key
-     * @param mixed $value
-     * @return $this
+     * @param \Traversable $traversable
+     * @return \Generator
      */
-    public function addOption($key, $value)
+    private function wrapTraversable(\Traversable $traversable)
     {
-        $this->baseCursor->addOption($key, $value);
-        return $this;
-    }
-
-    /**
-     * Wrapper method for MongoCursor::batchSize().
-     *
-     * @see CursorInterface::batchSize()
-     * @see http://php.net/manual/en/mongocursor.batchsize.php
-     * @param integer $num
-     * @return $this
-     */
-    public function batchSize($num)
-    {
-        $this->baseCursor->batchSize($num);
-        return $this;
-    }
-
-    /**
-     * Wrapper method for MongoCursor::count().
-     *
-     * @see CursorInterface::count()
-     * @see http://php.net/manual/en/countable.count.php
-     * @see http://php.net/manual/en/mongocursor.count.php
-     * @param boolean $foundOnly
-     * @return integer
-     */
-    public function count($foundOnly = false)
-    {
-        return $this->baseCursor->count($foundOnly);
+        foreach ($traversable as $key => $value) {
+            yield $key => $value;
+        }
     }
 
     /**
@@ -239,93 +162,15 @@ class Cursor implements CursorInterface
      */
     public function current()
     {
-        $this->primeReferences();
-
-        return $this->hydrateDocument($this->baseCursor->current());
+        return $this->hydrateDocument($this->ensureIterator()->current());
     }
 
     /**
-     * Wrapper method for MongoCursor::dead().
-     *
-     * @see CursorInterface::dead()
-     * @see http://php.net/manual/en/mongocursor.dead.php
      * @return boolean
      */
-    public function dead()
+    public function isDead()
     {
-        return $this->baseCursor->dead();
-    }
-
-    /**
-     * Wrapper method for MongoCursor::explain().
-     *
-     * @see CursorInterface::explain()
-     * @see http://php.net/manual/en/mongocursor.explain.php
-     * @return array
-     */
-    public function explain()
-    {
-        return $this->baseCursor->explain();
-    }
-
-    /**
-     * Wrapper method for MongoCursor::fields().
-     *
-     * @param array $f Fields to return (or not return).
-     *
-     * @see CursorInterface::fields()
-     * @see http://php.net/manual/en/mongocursor.fields.php
-     * @return $this
-     */
-    public function fields(array $f)
-    {
-        $this->baseCursor->fields($f);
-        return $this;
-    }
-
-    /**
-     * Wrapper method for MongoCursor::getNext().
-     *
-     * If configured, the result may be a hydrated document class instance.
-     *
-     * @see CursorInterface::getNext()
-     * @see http://php.net/manual/en/mongocursor.getnext.php
-     * @return array|object|null
-     */
-    public function getNext()
-    {
-        $this->primeReferences();
-
-        return $this->hydrateDocument($this->baseCursor->getNext());
-    }
-
-    /**
-     * Wrapper method for MongoCursor::getReadPreference().
-     *
-     * @see CursorInterface::getReadPreference()
-     * @see http://php.net/manual/en/mongocursor.getreadpreference.php
-     * @return array
-     */
-    public function getReadPreference()
-    {
-        return $this->baseCursor->getReadPreference();
-    }
-
-    /**
-     * Wrapper method for MongoCursor::setReadPreference().
-     *
-     * @see CursorInterface::setReadPreference()
-     * @see http://php.net/manual/en/mongocursor.setreadpreference.php
-     * @param string $readPreference
-     * @param array  $tags
-     * @return $this
-     */
-    public function setReadPreference($readPreference, array $tags = null)
-    {
-        $this->baseCursor->setReadPreference($readPreference, $tags);
-        $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE] = $readPreference;
-        $this->unitOfWorkHints[Query::HINT_READ_PREFERENCE_TAGS] = $tags;
-        return $this;
+        return $this->baseCursor->isDead();
     }
 
     /**
@@ -339,53 +184,10 @@ class Cursor implements CursorInterface
      */
     public function getSingleResult()
     {
-        $document = $this->hydrateDocument($this->baseCursor->getSingleResult());
+        $document = $this->hydrateDocument($this->ensureIterator()->current());
         $this->primeReferencesForSingleResult($document);
 
         return $document;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getUseIdentifierKeys()
-    {
-        return $this->baseCursor->getUseIdentifierKeys();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setUseIdentifierKeys($useIdentifierKeys)
-    {
-        $this->baseCursor->setUseIdentifierKeys($useIdentifierKeys);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function hasNext()
-    {
-        return $this->baseCursor->hasNext();
-    }
-
-    /**
-     * Wrapper method for MongoCursor::hint().
-     *
-     * This method is intended for setting MongoDB query hints, which are
-     * unrelated to UnitOfWork hints.
-     *
-     * @see CursorInterface::hint()
-     * @see http://php.net/manual/en/mongocursor.hint.php
-     * @param array|string $keyPattern
-     * @return $this
-     */
-    public function hint($keyPattern)
-    {
-        $this->baseCursor->hint($keyPattern);
-        return $this;
     }
 
     /**
@@ -414,32 +216,6 @@ class Cursor implements CursorInterface
     }
 
     /**
-     * Wrapper method for MongoCursor::immortal().
-     *
-     * @see CursorInterface::immortal()
-     * @see http://php.net/manual/en/mongocursor.immortal.php
-     * @param boolean $liveForever
-     * @return $this
-     */
-    public function immortal($liveForever = true)
-    {
-        $this->baseCursor->immortal($liveForever);
-        return $this;
-    }
-
-    /**
-     * Wrapper method for MongoCursor::info().
-     *
-     * @see CursorInterface::info()
-     * @see http://php.net/manual/en/mongocursor.info.php
-     * @return array
-     */
-    public function info()
-    {
-        return $this->baseCursor->info();
-    }
-
-    /**
      * Wrapper method for MongoCursor::key().
      *
      * @see CursorInterface::key()
@@ -449,21 +225,7 @@ class Cursor implements CursorInterface
      */
     public function key()
     {
-        return $this->baseCursor->key();
-    }
-
-    /**
-     * Wrapper method for MongoCursor::limit().
-     *
-     * @see CursorInterface::limit()
-     * @see http://php.net/manual/en/mongocursor.limit.php
-     * @param integer $num
-     * @return $this
-     */
-    public function limit($num)
-    {
-        $this->baseCursor->limit($num);
-        return $this;
+        return $this->ensureIterator()->key();
     }
 
     /**
@@ -475,17 +237,7 @@ class Cursor implements CursorInterface
      */
     public function next()
     {
-        $this->baseCursor->next();
-    }
-
-    /**
-     * Recreates the internal MongoCursor.
-     *
-     * @see CursorInterface::recreate()
-     */
-    public function recreate()
-    {
-        $this->baseCursor->recreate();
+        $this->ensureIterator()->next();
     }
 
     /**
@@ -504,169 +256,31 @@ class Cursor implements CursorInterface
     }
 
     /**
-     * Wrapper method for MongoCursor::reset().
-     *
-     * @see CursorInterface::reset()
-     * @see http://php.net/manual/en/iterator.reset.php
-     * @see http://php.net/manual/en/mongocursor.reset.php
-     */
-    public function reset()
-    {
-        $this->baseCursor->reset();
-    }
-
-    /**
-     * Wrapper method for MongoCursor::rewind().
-     *
-     * @see CursorInterface::rewind()
      * @see http://php.net/manual/en/iterator.rewind.php
-     * @see http://php.net/manual/en/mongocursor.rewind.php
      */
     public function rewind()
     {
-        $this->baseCursor->rewind();
-    }
-
-    /**
-     * Wrapper method for MongoCursor::skip().
-     *
-     * @see CursorInterface::skip()
-     * @see http://php.net/manual/en/mongocursor.skip.php
-     * @param integer $num
-     * @return $this
-     */
-    public function skip($num)
-    {
-        $this->baseCursor->skip($num);
-        return $this;
-    }
-
-    /**
-     * Wrapper method for MongoCursor::slaveOkay().
-     *
-     * @see CursorInterface::slaveOkay()
-     * @see http://php.net/manual/en/mongocursor.slaveokay.php
-     * @param boolean $ok
-     * @return $this
-     *
-     * @deprecated in version 1.2 - use setReadPreference on the query instead.
-     */
-    public function slaveOkay($ok = true)
-    {
-        $ok = (boolean) $ok;
-        if ($ok) {
-            @trigger_error(
-                sprintf('%s was deprecated in version 1.2 - use setReadPreference on the query instead.', __METHOD__),
-                E_USER_DEPRECATED
-            );
-        }
-
-        $this->baseCursor->slaveOkay($ok);
-        $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
-        return $this;
-    }
-
-    /**
-     * Wrapper method for MongoCursor::snapshot().
-     *
-     * @see CursorInterface::snapshot()
-     * @see http://php.net/manual/en/mongocursor.snapshot.php
-     * @return $this
-     */
-    public function snapshot()
-    {
-        $this->baseCursor->snapshot();
-        return $this;
-    }
-
-    /**
-     * Wrapper method for MongoCursor::sort().
-     *
-     * Field names will be prepared according to the document mapping.
-     *
-     * @see CursorInterface::sort()
-     * @see http://php.net/manual/en/mongocursor.sort.php
-     * @param array $fields
-     * @return $this
-     */
-    public function sort($fields)
-    {
-        $fields = $this->unitOfWork
-            ->getDocumentPersister($this->class->name)
-            ->prepareSortOrProjection($fields);
-
-        $this->baseCursor->sort($fields);
-        return $this;
-    }
-
-    /**
-     * Wrapper method for MongoCursor::tailable().
-     *
-     * @see CursorInterface::tailable()
-     * @see http://php.net/manual/en/mongocursor.tailable.php
-     * @param boolean $tail
-     * @return $this
-     */
-    public function tailable($tail = true)
-    {
-        $this->baseCursor->tailable($tail);
-        return $this;
-    }
-
-    /**
-     * Wrapper method for MongoCursor::timeout().
-     *
-     * @see CursorInterface::timeout()
-     * @see http://php.net/manual/en/mongocursor.timeout.php
-     * @param integer $ms
-     * @return $this
-     */
-    public function timeout($ms)
-    {
-        $this->baseCursor->timeout($ms);
-        return $this;
+        $this->ensureIterator()->rewind();
     }
 
     /**
      * Return the cursor's results as an array.
      *
-     * If documents in the result set use BSON objects for their "_id", the
-     * $useKeys parameter may be set to false to avoid errors attempting to cast
-     * arrays (i.e. BSON objects) to string keys.
-     *
      * @see Iterator::toArray()
-     * @param boolean $useIdentifierKeys
      * @return array
      */
-    public function toArray($useIdentifierKeys = null)
+    public function toArray()
     {
-        $originalUseIdentifierKeys = $this->getUseIdentifierKeys();
-        $useIdentifierKeys = isset($useIdentifierKeys) ? (boolean) $useIdentifierKeys : $this->baseCursor->getUseIdentifierKeys();
-
-        /* Let iterator_to_array() decide to use keys or not. This will avoid
-         * superfluous MongoCursor::info() from the key() method until the
-         * cursor position is tracked internally.
-         */
-        $this->setUseIdentifierKeys(true);
-
-        $results = iterator_to_array($this, $useIdentifierKeys);
-
-        $this->setUseIdentifierKeys($originalUseIdentifierKeys);
-
-        return $results;
+        return iterator_to_array($this);
     }
 
     /**
-     * Wrapper method for MongoCursor::valid().
-     *
-     * @see CursorInterface::valid()
      * @see http://php.net/manual/en/iterator.valid.php
-     * @see http://php.net/manual/en/mongocursor.valid.php
      * @return boolean
      */
     public function valid()
     {
-        return $this->baseCursor->valid();
+        return $this->ensureIterator()->valid();
     }
 
     /**

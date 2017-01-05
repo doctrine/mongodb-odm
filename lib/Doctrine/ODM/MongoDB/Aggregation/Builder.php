@@ -21,8 +21,8 @@ namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use Doctrine\MongoDB\Aggregation\Builder as BaseBuilder;
 use Doctrine\MongoDB\Aggregation\Stage\GeoNear;
-use Doctrine\MongoDB\CommandCursor as BaseCommandCursor;
-use Doctrine\ODM\MongoDB\CommandCursor;
+use MongoDB\Driver\Cursor as BaseCursor;
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
 
@@ -241,18 +241,18 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * @param BaseCommandCursor $cursor
+     * @param BaseCursor $cursor
      *
-     * @return CommandCursor
+     * @return Cursor
      */
-    private function prepareCursor(BaseCommandCursor $cursor)
+    private function prepareCursor(BaseCursor $cursor)
     {
         $class = null;
         if ($this->hydrationClass) {
             $class = $this->dm->getClassMetadata($this->hydrationClass);
         }
 
-        return new CommandCursor($cursor, $this->dm->getUnitOfWork(), $class);
+        return new Cursor($cursor, $this->dm->getUnitOfWork(), $class);
     }
 
     /**

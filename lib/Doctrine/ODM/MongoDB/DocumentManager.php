@@ -111,14 +111,14 @@ class DocumentManager implements ObjectManager
     /**
      * Array of cached document database instances that are lazily loaded.
      *
-     * @var array
+     * @var Database[]
      */
     private $documentDatabases = array();
 
     /**
      * Array of cached document collection instances that are lazily loaded.
      *
-     * @var array
+     * @var Collection[]
      */
     private $documentCollections = array();
 

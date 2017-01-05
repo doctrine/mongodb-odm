@@ -2840,7 +2840,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param array $id The identifier values.
      * @param array $data The original document data.
      */
-    public function registerManaged($document, $id, array $data)
+    public function registerManaged($document, $id, $data)
     {
         $oid = spl_object_hash($document);
         $class = $this->dm->getClassMetadata(get_class($document));
