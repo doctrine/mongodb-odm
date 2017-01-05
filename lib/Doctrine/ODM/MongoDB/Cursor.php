@@ -100,11 +100,12 @@ class Cursor implements \Iterator
      * @param UnitOfWork $unitOfWork UnitOfWork for result hydration and query preparation
      * @param ClassMetadata $class ClassMetadata for the document class being queried
      */
-    public function __construct(\MongoDB\Driver\Cursor $baseCursor, UnitOfWork $unitOfWork, ClassMetadata $class)
+    public function __construct(\MongoDB\Driver\Cursor $baseCursor, UnitOfWork $unitOfWork, ClassMetadata $class = null)
     {
         $this->baseCursor = $baseCursor;
         $this->unitOfWork = $unitOfWork;
         $this->class = $class;
+        $this->hydrate = $class !== null;
     }
 
     /**
@@ -198,6 +199,10 @@ class Cursor implements \Iterator
      */
     public function hydrate($hydrate = true)
     {
+        if ($hydrate && $this->class === null) {
+            throw new \RuntimeException('Cannot enable hydration when no class was given');
+        }
+
         $this->hydrate = (boolean) $hydrate;
         return $this;
     }
@@ -208,7 +213,7 @@ class Cursor implements \Iterator
      */
     private function hydrateDocument($document)
     {
-        if ($document !== null && $this->hydrate) {
+        if ($document !== null && $this->hydrate && $this->class) {
             return $this->unitOfWork->getOrCreateDocument($this->class->name, $document, $this->unitOfWorkHints);
         }
 
