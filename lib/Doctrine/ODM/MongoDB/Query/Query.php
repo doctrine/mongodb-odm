@@ -194,6 +194,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
             return $results;
         }
 
+        if ($results instanceof \MongoDB\Driver\Cursor) {
+            $results = $this->makeCursor($results);
+        }
+
         $uow = $this->dm->getUnitOfWork();
 
         /* A geoNear command returns an ArrayIterator, where each result is an
@@ -236,6 +240,20 @@ class Query extends \Doctrine\MongoDB\Query\Query
         return $results;
     }
 
+    protected function makeCursor(\MongoDB\Driver\Cursor $cursor)
+    {
+        $cursor = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
+        $cursor->hydrate($this->hydrate);
+        $cursor->setHints($this->unitOfWorkHints);
+
+        if ( ! empty($this->primers)) {
+            $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
+            $cursor->enableReferencePriming($this->primers, $referencePrimer);
+        }
+
+        return $cursor;
+    }
+
     /**
      * Prepare the Cursor returned by {@link Query::execute()}.
      *
@@ -244,16 +262,15 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * to any preparation done by the base Query class.
      *
      * @see \Doctrine\MongoDB\Cursor::prepareCursor()
-     * @param BaseCursor $cursor
-     * @return CursorInterface
+     * @param \MongoDB\Driver\Cursor $cursor
+     * @return Cursor
      */
-    protected function prepareCursor(BaseCursor $cursor)
+    protected function prepareCursor(\MongoDB\Driver\Cursor $cursor)
     {
         $cursor = parent::prepareCursor($cursor);
 
         // Convert the base Cursor into an ODM Cursor
-        $cursorClass = ( ! empty($this->query['eagerCursor'])) ? EagerCursor::class : Cursor::class;
-        $cursor = new $cursorClass($cursor, $this->dm->getUnitOfWork(), $this->class);
+        $cursor = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
 
         $cursor->hydrate($this->hydrate);
         $cursor->setHints($this->unitOfWorkHints);
