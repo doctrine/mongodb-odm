@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Types;
 
+use MongoDB\Driver\Exception\InvalidArgumentException;
+
 /**
  * The Id type.
  *
@@ -34,7 +36,7 @@ class IdType extends Type
         if ( ! $value instanceof \MongoDB\BSON\ObjectId) {
             try {
                 $value = new \MongoDB\BSON\ObjectId($value);
-            } catch (\MongoException $e) {
+            } catch (InvalidArgumentException $e) {
                 $value = new \MongoDB\BSON\ObjectId();
             }
         }
