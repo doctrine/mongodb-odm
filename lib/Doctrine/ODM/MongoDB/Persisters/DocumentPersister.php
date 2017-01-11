@@ -527,20 +527,21 @@ class DocumentPersister
         $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
         $criteria = $this->addFilterToPreparedQuery($criteria);
 
-        $baseCursor = $this->collection->find($criteria);
-        $cursor = $this->wrapCursor($baseCursor);
-
+        $options = [];
         if (null !== $sort) {
-            $cursor->sort($sort);
+            $options['sort'] = $this->prepareSortOrProjection($sort);
         }
 
         if (null !== $limit) {
-            $cursor->limit($limit);
+            $options['limit'] = $limit;
         }
 
         if (null !== $skip) {
-            $cursor->skip($skip);
+            $options['skip'] = $skip;
         }
+
+        $baseCursor = $this->collection->find($criteria, $options);
+        $cursor = $this->wrapCursor($baseCursor);
 
         return $cursor;
     }
