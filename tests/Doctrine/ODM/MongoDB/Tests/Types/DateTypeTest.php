@@ -122,7 +122,7 @@ class DateTypeTest extends TestCase
     public function provideDatabaseToPHPValues()
     {
         $yesterday = strtotime('yesterday');
-        $mongoDate = new \MongoDB\BSON\UTCDateTime($yesterday);
+        $mongoDate = new \MongoDB\BSON\UTCDateTime($yesterday * 1000);
         $dateTime = new \DateTime('@' . $yesterday);
 
         return array(
@@ -149,15 +149,15 @@ class DateTypeTest extends TestCase
 
     public function test64bit1900Date()
     {
-        if (PHP_INT_SIZE === 8) {
-            $type = Type::getType(Type::DATE);
-            $return = $type->convertToDatabaseValue('1900-01-01');
-
-            $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, $return);
-            $this->assertEquals(new \MongoDB\BSON\UTCDateTime(strtotime('1900-01-01') * 1000), $return);
-        } else {
+        if (PHP_INT_SIZE !== 8) {
             $this->markTestSkipped("Platform is not 64-bit");
         }
+
+        $type = Type::getType(Type::DATE);
+        $return = $type->convertToDatabaseValue('1900-01-01');
+
+        $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, $return);
+        $this->assertEquals(new \MongoDB\BSON\UTCDateTime(strtotime('1900-01-01') * 1000), $return);
     }
 
     private function assertTimestampEquals(\DateTime $expected, \DateTime $actual)
