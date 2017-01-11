@@ -39,6 +39,6 @@ class KeyType extends Type
         if ($value === null) {
             return null;
         }
-        return $value instanceof \MongoDB\BSON\MinKey ? 1 : 0;
+        return $value instanceof \MongoDB\BSON\MaxKey ? 1 : 0;
     }
 }
