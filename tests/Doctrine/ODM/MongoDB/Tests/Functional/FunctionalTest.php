@@ -30,6 +30,7 @@ use Documents\Functional\SameCollection3;
 use Documents\Album;
 use Documents\Song;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -496,10 +497,11 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection = $this->dm->getDocumentCollection('Documents\Functional\NotSaved');
         $collection->drop();
         $test = array(
+            '_id' => new ObjectId(),
             'name' => 'Jonathan Wage',
-            'notSaved' => 'test'
+            'notSaved' => 'test',
         );
-        $collection->insert($test);
+        $collection->insertOne($test);
         $notSaved = $this->dm->find('Documents\Functional\NotSaved', $test['_id']);
         $this->assertEquals('Jonathan Wage', $notSaved->name);
         $this->assertEquals('test', $notSaved->notSaved);
@@ -698,7 +700,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'Documents\Functional\SameCollection2')
         );
         $q = $qb->getQuery();
-        $test = $q->execute();
+        $test = $q->execute()->toArray();
         $this->assertCount(3, $test);
 
         $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findAll();
@@ -706,7 +708,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
         $query = $qb->getQuery();
-        $test = $query->execute();
+        $test = $query->execute()->toArray();
         $this->assertCount(2, $test);
     }
 

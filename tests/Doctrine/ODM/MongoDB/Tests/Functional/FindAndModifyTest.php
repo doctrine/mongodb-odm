@@ -10,7 +10,7 @@ class FindAndModifyTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $coll = $this->dm->getDocumentCollection('Documents\User');
         $docs = array(array('count' => 0), array('count' => 0));
-        $coll->batchInsert($docs);
+        $coll->insertMany($docs);
 
         // test update findAndModify
         $q = $this->dm->createQueryBuilder()

@@ -89,7 +89,7 @@ abstract class BaseTest extends TestCase
 
     protected function skipTestIfNotSharded($className)
     {
-        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true]);
+        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];
         if (!$result['ok']) {
             $this->markTestSkipped('Could not check whether server supports sharding');
         }

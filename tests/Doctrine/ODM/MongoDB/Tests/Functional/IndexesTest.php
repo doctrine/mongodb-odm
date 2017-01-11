@@ -170,7 +170,8 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoCursorException
+     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
+     * @expectedExceptionMessage duplicate key error collection
      */
     public function testUniqueIndexOnField()
     {
@@ -178,7 +179,8 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoCursorException
+     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
+     * @expectedExceptionMessage duplicate key error collection
      */
     public function testUniqueIndexOnDocument()
     {
@@ -186,7 +188,8 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoCursorException
+     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
+     * @expectedExceptionMessage duplicate key error collection
      */
     public function testIndexesOnDocument()
     {
@@ -194,7 +197,8 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoCursorException
+     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
+     * @expectedExceptionMessage duplicate key error collection
      */
     public function testMultipleFieldsUniqueIndexOnDocument()
     {
@@ -202,7 +206,8 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoCursorException
+     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
+     * @expectedExceptionMessage duplicate key error collection
      */
     public function testMultipleFieldIndexes()
     {
