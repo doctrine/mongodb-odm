@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MongoDB\Operation\FindOneAndUpdate;
 
 /**
  * IncrementGenerator is responsible for generating auto increment identifiers. It uses
@@ -61,40 +62,34 @@ class IncrementGenerator extends AbstractIdGenerator
         $className = get_class($document);
         $db = $dm->getDocumentDatabase($className);
 
-        $coll = $this->collection ?: 'doctrine_increment_ids';
-        $key = $this->key ?: $dm->getDocumentCollection($className)->getName();
+        $key = $this->key ?: $dm->getDocumentCollection($className)->getCollectionName();
+        $collectionName = $this->collection ?: 'doctrine_increment_ids';
+        $collection = $db->selectCollection($collectionName);
 
         /*
          * Unable to use '$inc' and '$setOnInsert' together due to known bug.
          * @see https://jira.mongodb.org/browse/SERVER-10711
          * Results in error: Cannot update 'current_id' and 'current_id' at the same time
          */
-        $command = [
-            'findAndModify' => $coll,
-            'query' => ['_id' => $key, 'current_id' => ['$exists' => true]],
-            'update' => ['$inc' => ['current_id' => 1]],
-            'upsert' => false,
-            'new' => true,
-        ];
-        $result = $db->command($command);
+        $query = ['_id' => $key, 'current_id' => ['$exists' => true]];
+        $update = ['$inc' => ['current_id' => 1]];
+        $options = ['upsert' => false, 'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER];
+        $result = $collection->findOneAndUpdate($query, $update, $options);
 
         /*
          * Updated nothing - counter doesn't exist, creating new counter.
          * Not bothering with {$exists: false} in the criteria as that won't avoid
          * an exception during a possible race condition.
          */
-        if (array_key_exists('value', $result) && ! isset($result['value'])) {
-            $command = [
-                'findAndModify' => $coll,
-                'query' => ['_id' => $key],
-                'update' => ['$inc' => ['current_id' => $this->startingId]],
-                'upsert' => true,
-                'new' => true,
-            ];
-            $db->command($command);
+        if ($result === null) {
+            $query = ['_id' => $key];
+            $update = ['$inc' => ['current_id' => $this->startingId]];
+            $options = ['upsert' => true, 'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER];
+            $collection->findOneAndUpdate($query, $update, $options);
+
             return $this->startingId;
         }
 
-        return $result['value']['current_id'];
+        return $result['current_id'];
     }
 }
