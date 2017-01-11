@@ -112,14 +112,14 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')->equals('distinct_test');
         $q = $qb->getQuery();
         $results = $q->execute();
-        $this->assertEquals(array(1, 2, 3), $results->toArray());
+        $this->assertEquals(array(1, 2, 3), $results);
 
         $results = $this->dm->createQueryBuilder('Documents\User')
             ->distinct('count')
             ->field('username')->equals('distinct_test')
             ->getQuery()
             ->execute();
-        $this->assertEquals(array(1, 2, 3), $results->toArray());
+        $this->assertEquals(array(1, 2, 3), $results);
     }
 
     public function testDistinctWithDifferentDbName()
@@ -139,7 +139,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->distinct('authorIp')
             ->getQuery()
             ->execute();
-        $this->assertEquals(array("127.0.0.1", "192.168.0.1"), $results->toArray());
+        $this->assertEquals(array("127.0.0.1", "192.168.0.1"), $results);
     }
 
     public function testFindQuery()
