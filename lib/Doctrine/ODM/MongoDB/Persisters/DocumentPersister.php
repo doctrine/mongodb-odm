@@ -452,7 +452,7 @@ class DocumentPersister
 
         $result = $this->collection->deleteOne($query, $options);
 
-        if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
+        if (($this->class->isVersioned || $this->class->isLockable) && ! $result->getDeletedCount()) {
             throw LockException::lockFailed($document);
         }
     }
@@ -761,17 +761,13 @@ class DocumentPersister
 
             $options = [];
             if (isset($mapping['sort'])) {
-                // @todo convert
-                $options['sort'] = $mapping['sort'];
-                $cursor->sort($mapping['sort']);
+                $options['sort'] = $this->prepareSortOrProjection($mapping['sort']);
             }
             if (isset($mapping['limit'])) {
                 $options['limit'] = $mapping['limit'];
-                $cursor->limit($mapping['limit']);
             }
             if (isset($mapping['skip'])) {
                 $options['skip'] = $mapping['skip'];
-                $cursor->skip($mapping['skip']);
             }
             // @todo Convert read preference
 //            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
@@ -851,7 +847,7 @@ class DocumentPersister
     {
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
         $mapping = $collection->getMapping();
-        $documents = $cursor->toArray(false);
+        $documents = $cursor->toArray();
         foreach ($documents as $key => $obj) {
             if (CollectionHelper::isHash($mapping['strategy'])) {
                 $collection->set($key, $obj);

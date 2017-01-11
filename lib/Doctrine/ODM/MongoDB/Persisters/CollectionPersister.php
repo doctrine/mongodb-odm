@@ -280,7 +280,7 @@ class CollectionPersister
         }
         $collection = $this->dm->getDocumentCollection($className);
         $result = $collection->updateOne($query, $newObj, $options);
-        if ($class->isVersioned && ! $result['n']) {
+        if ($class->isVersioned && ! $result->getModifiedCount()) {
             throw LockException::lockFailed($document);
         }
     }
