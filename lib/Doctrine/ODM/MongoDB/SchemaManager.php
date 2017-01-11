@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use MongoDB\Driver\WriteConcern;
 
 class SchemaManager
 {
@@ -267,7 +268,12 @@ class SchemaManager
                     $options['timeout'] = $timeout;
                 }
 
-                $collection->ensureIndex($keys, $options);
+                if (isset($options['w'])) {
+                    $options['writeConcern'] = new WriteConcern($options['w'], $options['wtimeout'] ?? 0);
+                    unset($options['w'], $options['wtimeout']);
+                }
+
+                $collection->createIndex($keys, $options);
             }
         }
     }
