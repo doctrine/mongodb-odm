@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 use Documents\Ecommerce\Currency;
@@ -93,7 +94,7 @@ class PersistenceBuilderTest extends BaseTest
         /**
          * @var \Doctrine\ODM\MongoDB\Query\Builder $qb
          */
-        $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection2');
+        $qb = $this->dm->createQueryBuilder(SameCollection2::class);
         $qb
             ->field('id')->in($ids)
             ->select('id')->hydrate(false);
@@ -105,15 +106,14 @@ class PersistenceBuilderTest extends BaseTest
         $debug = $query->debug('query');
         $results = $query->execute();
 
-        $this->assertInstanceOf('Doctrine\MongoDB\CursorInterface', $results);
+        $this->assertInstanceOf(Cursor::class, $results);
 
-        $targetClass = $this->dm->getClassMetadata('Documents\Functional\SameCollection2');
+        $targetClass = $this->dm->getClassMetadata(SameCollection2::class);
         $identifier1 = $targetClass->getDatabaseIdentifierValue($ids[1]);
 
         $this->assertEquals($identifier1, $debug['_id']['$in'][1]);
 
-
-        $this->assertEquals(2, $results->count(true));
+        $this->assertCount(2, $results->toArray());
     }
 
     public function testPrepareUpdateDataDoesNotIncludeId()
@@ -281,16 +281,16 @@ class PersistenceBuilderTest extends BaseTest
         $query = $qb->getQuery();
         $results = $query->execute();
 
-        $this->assertInstanceOf('Doctrine\MongoDB\CursorInterface', $results);
+        $this->assertInstanceOf(Cursor::class, $results);
 
         $singleResult = $results->getSingleResult();
-        $this->assertInstanceOf('Documents\CmsComment', $singleResult);
+        $this->assertInstanceOf(CmsComment::class, $singleResult);
 
         $this->assertEquals($commentId, $singleResult->id);
 
-        $this->assertInstanceOf('Documents\CmsArticle', $singleResult->article);
+        $this->assertInstanceOf(CmsArticle::class, $singleResult->article);
 
         $this->assertEquals($articleId, $singleResult->article->id);
-        $this->assertEquals(1, $results->count(true));
+        $this->assertCount(1, $results->toArray());
     }
 }

@@ -43,16 +43,18 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $shardKeyQuery = $method->invoke($persister, $o);
 
         $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $shardKeyQuery['oid']);
-        $this->assertSame($o->oid, $shardKeyQuery['oid']->{'$id'});
+        $this->assertSame($o->oid, (string) $shardKeyQuery['oid']);
 
         $this->assertInstanceOf(\MongoDB\BSON\Binary::class, $shardKeyQuery['bin']);
         $this->assertSame($o->bin, $shardKeyQuery['bin']->getData());
 
         $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, $shardKeyQuery['date']);
-        $this->assertSame($o->date->getTimestamp(), $shardKeyQuery['date']->sec);
+        $this->assertEquals($o->date->getTimestamp(), $shardKeyQuery['date']->toDateTime()->getTimestamp());
 
-        $microseconds = (int)floor(((int)$o->date->format('u')) / 1000) * 1000;
-        $this->assertSame($microseconds, $shardKeyQuery['date']->usec);
+        $this->assertSame(
+            (int) $o->date->format('v'),
+            (int) $shardKeyQuery['date']->toDateTime()->format('v')
+        );
     }
 
     public function testShardById()
