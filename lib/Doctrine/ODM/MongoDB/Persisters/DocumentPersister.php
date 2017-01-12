@@ -498,7 +498,7 @@ class DocumentPersister
 
         $options = [];
         if (null !== $sort) {
-            $options['sort'] = $this->prepareSortOrProjection($sort);
+            $options['sort'] = $this->prepareSort($sort);
         }
         $result = $this->collection->findOne($criteria, $options);
 
@@ -529,7 +529,7 @@ class DocumentPersister
 
         $options = [];
         if (null !== $sort) {
-            $options['sort'] = $this->prepareSortOrProjection($sort);
+            $options['sort'] = $this->prepareSort($sort);
         }
 
         if (null !== $limit) {
@@ -761,7 +761,7 @@ class DocumentPersister
 
             $options = [];
             if (isset($mapping['sort'])) {
-                $options['sort'] = $this->prepareSortOrProjection($mapping['sort']);
+                $options['sort'] = $this->prepareSort($mapping['sort']);
             }
             if (isset($mapping['limit'])) {
                 $options['limit'] = $mapping['limit'];
@@ -905,13 +905,13 @@ class DocumentPersister
     }
 
     /**
-     * Prepare a sort or projection array by converting keys, which are PHP
-     * property names, to MongoDB field names.
+     * Prepare a projection array by converting keys, which are PHP property
+     * names, to MongoDB field names.
      *
      * @param array $fields
      * @return array
      */
-    public function prepareSortOrProjection(array $fields)
+    public function prepareProjection(array $fields)
     {
         $preparedFields = array();
 
@@ -920,6 +920,41 @@ class DocumentPersister
         }
 
         return $preparedFields;
+    }
+
+    /**
+     * @param $sort
+     * @return int
+     */
+    private function getSortDirection($sort)
+    {
+        switch (strtolower($sort)) {
+            case 'desc':
+                return -1;
+
+            case 'asc':
+                return 1;
+        }
+
+        return $sort;
+    }
+
+    /**
+     * Prepare a sort specification array by converting keys to MongoDB field
+     * names and changing direction strings to int.
+     *
+     * @param array $fields
+     * @return array
+     */
+    public function prepareSort(array $fields)
+    {
+        $sortFields = [];
+
+        foreach ($fields as $key => $value) {
+            $sortFields[$this->prepareFieldName($key)] = $this->getSortDirection($value);
+        }
+
+        return $sortFields;
     }
 
     /**
