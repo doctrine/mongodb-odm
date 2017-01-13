@@ -195,7 +195,7 @@ This list explains some of the less obvious mapping types:
 -  ``date``: DateTime to ``MongoDB\BSON\UTCDateTime``
 -  ``hash``: associative array to MongoDB object
 -  ``id``: string to ObjectId by default, but other formats are possible
--  ``timestamp``: string to MongoTimestamp
+-  ``timestamp``: string to ``MongoDB\BSON\Timestamp``
 -  ``raw``: any type
 
 .. note::
