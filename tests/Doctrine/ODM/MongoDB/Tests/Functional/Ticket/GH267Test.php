@@ -40,7 +40,8 @@ class GH267Test extends BaseTest
             ->field('_id')->equals($user1Id);
 
         $query = $qb->getQuery();
-        $dbUser = $query->execute()->getNext();
+        $result = $query->execute();
+        $dbUser = $result->current();
 
         // Assert user name
         $this->assertEquals('Tom Petty', $dbUser->getName());

@@ -30,8 +30,8 @@ class GH1294Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQueryArray();
 
         $this->assertInstanceOf(\MongoDB\BSON\Regex::class, $res['_id']);
-        $this->assertEquals('^bbb.*$', $res['_id']->regex);
-        $this->assertEquals('i', $res['_id']->flags);
+        $this->assertEquals('^bbb.*$', $res['_id']->getPattern());
+        $this->assertEquals('i', $res['_id']->getFlags());
     }
 }
 

@@ -3,15 +3,17 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 class MODM46Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testTest()
     {
         $a = array(
+            '_id' => new ObjectId(),
             'c' => array('value' => 'value')
         );
-        $this->dm->getDocumentCollection(__NAMESPACE__.'\MODM46A')->insert($a);
+        $this->dm->getDocumentCollection(__NAMESPACE__.'\MODM46A')->insertOne($a);
 
         $a = $this->dm->find(__NAMESPACE__.'\MODM46A', $a['_id']);
 
