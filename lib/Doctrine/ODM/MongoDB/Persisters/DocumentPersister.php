@@ -757,7 +757,6 @@ class DocumentPersister
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
             );
             $criteria = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
-            $cursor = $mongoCollection->find($criteria);
 
             $options = [];
             if (isset($mapping['sort'])) {
@@ -773,6 +772,8 @@ class DocumentPersister
 //            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
 //                $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
 //            }
+
+            $cursor = $mongoCollection->find($criteria, $options);
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById($documentData['_id'], $class);
