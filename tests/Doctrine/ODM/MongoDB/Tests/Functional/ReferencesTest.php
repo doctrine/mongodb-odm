@@ -41,9 +41,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $groups = $query->execute();
 
-        $count = $groups->count();
-
-        $this->assertEquals(0, $count);
+        $this->assertCount(0, $groups->toArray());
     }
 
     public function testLazyLoadReference()
@@ -361,7 +359,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(get_class($test));
 
-        $collection->update(
+        $collection->updateOne(
             array('_id' => new \MongoDB\BSON\ObjectId($test->id)),
             array('$set' => array(
                 'referenceOne.$id' => array('identifier' => 2),
@@ -391,7 +389,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $invalidId = new \MongoDB\BSON\ObjectId('abcdefabcdefabcdefabcdef');
 
-        $collection->update(
+        $collection->updateOne(
             array('_id' => new \MongoDB\BSON\ObjectId($user->getId())),
             array('$set' => array(
                 'profile.$id' => $invalidId,
@@ -422,7 +420,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $invalidBinData = new \MongoDB\BSON\Binary('testbindata', \MongoDB\BSON\Binary::TYPE_OLD_BINARY);
 
-        $collection->update(
+        $collection->updateOne(
             array('_id' => new \MongoDB\BSON\ObjectId($test->id)),
             array('$set' => array(
                 'referenceOne.$id' => $invalidBinData,
@@ -448,7 +446,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $invalidId = new \MongoDB\BSON\ObjectId('abcdefabcdefabcdefabcdef');
 
-        $collection->update(
+        $collection->updateOne(
             array('_id' => new \MongoDB\BSON\ObjectId($user->getId())),
             array('$set' => array(
                 'profile.$id' => $invalidId,
