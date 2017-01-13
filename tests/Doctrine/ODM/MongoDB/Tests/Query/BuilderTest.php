@@ -135,6 +135,54 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('conflictMany')->includesReferenceTo($f)
             ->getQuery();
     }
+
+    /**
+     * @dataProvider provideArrayUpdateOperatorsOnReferenceMany
+     */
+    public function testArrayUpdateOperatorsOnReferenceMany($class, $field)
+    {
+        $f = new Feature('Smarter references');
+        $this->dm->persist($f);
+
+        $q1 = $this->dm->createQueryBuilder($class)
+            ->findAndUpdate()
+            ->field($field)->addToSet($f)
+            ->getQuery()->debug();
+
+        $expected = $this->dm->createDBRef($f, $this->dm->getClassMetadata($class)->fieldMappings[$field]);
+        $this->assertEquals($expected, $q1['newObj']['$addToSet'][$field]);
+    }
+
+    public function provideArrayUpdateOperatorsOnReferenceMany()
+    {
+        yield [ChildA::class, 'featureFullMany'];
+        yield [ChildB::class, 'featureSimpleMany'];
+        yield [ChildC::class, 'featurePartialMany'];
+    }
+
+    /**
+     * @dataProvider provideArrayUpdateOperatorsOnReferenceOne
+     */
+    public function testArrayUpdateOperatorsOnReferenceOne($class, $field)
+    {
+        $f = new Feature('Smarter references');
+        $this->dm->persist($f);
+
+        $q1 = $this->dm->createQueryBuilder($class)
+            ->findAndUpdate()
+            ->field($field)->set($f)
+            ->getQuery()->debug();
+
+        $expected = $this->dm->createDBRef($f, $this->dm->getClassMetadata($class)->fieldMappings[$field]);
+        $this->assertEquals($expected, $q1['newObj']['$set'][$field]);
+    }
+
+    public function provideArrayUpdateOperatorsOnReferenceOne()
+    {
+        yield [ChildA::class, 'featureFull'];
+        yield [ChildB::class, 'featureSimple'];
+        yield [ChildC::class, 'featurePartial'];
+    }
 }
 
 /**

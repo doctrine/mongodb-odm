@@ -664,7 +664,14 @@ method:
 Update Queries
 ~~~~~~~~~~~~~~
 
-Doctrine also supports executing atomic update queries using the `Query\Builder` object. You can use the conditional operations in combination with the ability to change document field values atomically. You have several modifier operations available to you that make it easy to update documents in Mongo:
+Doctrine also supports executing atomic update queries using the `Query\Builder`
+object. You can use the conditional operations in combination with the ability to
+change document field values atomically. Additionally if you are modifying a field
+that is a reference you can pass managed document to the Builder and let ODM build
+``DBRef`` object for you.
+
+You have several modifier operations
+available to you that make it easy to update documents in Mongo:
 
 * ``set($name, $value, $atomic = true)``
 * ``setNewObj($newObj)``
