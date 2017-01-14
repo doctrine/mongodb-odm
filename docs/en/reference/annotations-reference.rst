@@ -930,8 +930,6 @@ Optional attributes:
     targetDocument - A |FQCN| of the target document. A ``targetDocument`` is
     required when using ``storeAs: id``.
 -
-    simple - deprecated (use ``storeAs: id``)
--
     storeAs - Indicates how to store the reference. ``id`` stores the identifier,
     ``ref`` an embedded object containing the ``id`` field and (optionally) a
     discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_ object and
@@ -1005,8 +1003,6 @@ Optional attributes:
 -
     targetDocument - A |FQCN| of the target document. A ``targetDocument`` is
     required when using ``storeAs: id``.
--
-    simple - deprecated (use ``storeAs: id``)
 -
     storeAs - Indicates how to store the reference. ``id`` stores the identifier,
     ``ref`` an embedded object containing the ``id`` field and (optionally) a
