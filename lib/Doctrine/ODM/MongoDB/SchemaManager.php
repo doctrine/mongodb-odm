@@ -55,7 +55,7 @@ class SchemaManager
     public function ensureIndexes($timeout = null)
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
             $this->ensureDocumentIndexes($class->name, $timeout);
@@ -73,7 +73,7 @@ class SchemaManager
     public function updateIndexes($timeout = null)
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
             $this->updateDocumentIndexes($class->name, $timeout);
@@ -94,8 +94,8 @@ class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot update document indexes for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            throw new \InvalidArgumentException('Cannot update document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
 
         $documentIndexes = $this->getDocumentIndexes($documentName);
@@ -247,8 +247,8 @@ class SchemaManager
     public function ensureDocumentIndexes($documentName, $timeout = null)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot create document indexes for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            throw new \InvalidArgumentException('Cannot create document indexes for mapped super classes, embedded documents or query result documents.');
         }
         if ($indexes = $this->getDocumentIndexes($documentName)) {
             $collection = $this->dm->getDocumentCollection($class->name);
@@ -281,7 +281,7 @@ class SchemaManager
     public function deleteIndexes()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
             $this->deleteDocumentIndexes($class->name);
@@ -297,8 +297,8 @@ class SchemaManager
     public function deleteDocumentIndexes($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
         $this->dm->getDocumentCollection($documentName)->deleteIndexes();
     }
@@ -309,7 +309,7 @@ class SchemaManager
     public function createCollections()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
             $this->createDocumentCollection($class->name);
@@ -326,8 +326,8 @@ class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot create document collection for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            throw new \InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or query result documents.');
         }
 
         if ($class->isFile()) {
@@ -351,7 +351,7 @@ class SchemaManager
     public function dropCollections()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
             $this->dropDocumentCollection($class->name);
@@ -367,8 +367,8 @@ class SchemaManager
     public function dropDocumentCollection($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
         $this->dm->getDocumentCollection($documentName)->drop();
     }
@@ -379,7 +379,7 @@ class SchemaManager
     public function dropDatabases()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
             $this->dropDocumentDatabase($class->name);
@@ -395,19 +395,21 @@ class SchemaManager
     public function dropDocumentDatabase($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot drop document database for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            throw new \InvalidArgumentException('Cannot drop document database for mapped super classes, embedded documents or query result documents.');
         }
         $this->dm->getDocumentDatabase($documentName)->drop();
     }
 
     /**
      * Create all the mapped document databases in the metadata factory.
+     *
+     * @deprecated Databases are created automatically by MongoDB (>= 3.0). Deprecated since ODM 1.2, to be removed in ODM 2.0.
      */
     public function createDatabases()
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
             $this->createDocumentDatabase($class->name);
@@ -419,13 +421,16 @@ class SchemaManager
      *
      * @param string $documentName
      * @throws \InvalidArgumentException
+     *
+     * @deprecated A database is created automatically by MongoDB (>= 3.0). Deprecated since ODM 1.2, to be removed in ODM 2.0.
      */
     public function createDocumentDatabase($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument) {
-            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes or embedded documents.');
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            throw new \InvalidArgumentException('Cannot create databases for mapped super classes, embedded documents or query result documents.');
         }
+
         $this->dm->getDocumentDatabase($documentName)->execute('function() { return true; }');
     }
 

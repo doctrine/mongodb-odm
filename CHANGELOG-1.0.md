@@ -12,11 +12,21 @@ the older and newer versions, respectively.
 To generate a changelog summary since the last version, run
 `git log --no-merges --oneline XXX...HEAD`
 
+1.0.8 (2016-10-07)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.0.8 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.8).
+
+* [#1468](https://github.com/doctrine/mongodb-odm/pull/1468) fixes dropping of GridFS collections when calling `dropCollections()` on the SchemaManager
+* [#1500](https://github.com/doctrine/mongodb-odm/pull/1500) fixes orphanRemoval when clearing an uninitialized collection
+* [#1503](https://github.com/doctrine/mongodb-odm/pull/1503) fixes an error with `createDbRef` not working for objects with an ID that evaluated to false (e.g. empty string, 0)
+
 1.0.7 (2016-07-27)
 ------------------
 
 All issues and pull requests in this release may be found under the
-[1.0.0 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.7).
+[1.0.7 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.0.7).
 
 * [#1461](https://github.com/doctrine/mongodb-odm/pull/1461) fixes overwriting data of documents contained in sorted collection
 * [#1466](https://github.com/doctrine/mongodb-odm/pull/1466) fixes hydrating `null` value when field is nullable

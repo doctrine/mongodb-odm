@@ -75,7 +75,8 @@ You can easily create a new ``Query\Builder`` object with the
     $qb = $dm->createQueryBuilder('User');
 
 The first and only argument is optional, you can specify it later
-with the ``find()``, ``update()`` or ``remove()`` method:
+with the ``find()``, ``update()`` (deprecated), ``updateOne()``,
+``updateMany()`` or ``remove()`` method:
 
 .. code-block:: php
 
@@ -99,7 +100,7 @@ You can execute a query by getting a ``Query`` through the ``getQuery()`` method
     $qb = $dm->createQueryBuilder('User');
     $query = $qb->getQuery();
 
-Now you can ``execute()`` that query and it will return a cursor for you to iterator over the results:
+Now you can ``execute()`` that query and it will return a cursor for you to iterate over the results:
 
 .. code-block:: php
 
@@ -682,19 +683,23 @@ Doctrine also supports executing atomic update queries using the `Query\Builder`
 Updating multiple documents
 ---------------------------
 
-By default only one document is updated. You need to pass ``true`` to the ``multiple()`` method to update all documents matched by the query.
+By default Mongo updates only one document unless ``multi`` option is provided and true.
+In ODM the distinction is done by explicitly calling ``updateMany()`` method of the builder:
 
 .. code-block:: php
 
     <?php
 
     $dm->createQueryBuilder('User')
-        ->update()
-        ->multiple(true)
+        ->updateMany()
         ->field('someField')->set('newValue')
         ->field('username')->equals('sgoettschkes')
         ->getQuery()
         ->execute();
+
+.. note::
+    ``updateMany()`` and  ``updateOne()`` methods were introduced in version 1.2. If you're
+    using one of previous version you need to use ``update()`` combined with ``multiple(true)``.
 
 Modifier Operations
 -------------------
@@ -706,7 +711,7 @@ Change a users password:
     <?php
 
     $dm->createQueryBuilder('User')
-        ->update()
+        ->updateOne()
         ->field('password')->set('newpassword')
         ->field('username')->equals('jwage')
         ->getQuery()
@@ -721,7 +726,7 @@ tell it the update is not an atomic one:
     <?php
 
     $dm->createQueryBuilder('User')
-        ->update()
+        ->updateOne()
         ->field('username')->set('jwage', false)
         ->field('password')->set('password', false)
         // ... set other remaining fields
@@ -773,7 +778,7 @@ exists:
     <?php
 
     $dm->createQueryBuilder('User')
-        ->update()
+        ->updateMany()
         ->field('login')->unsetField()->exists(true)
         ->getQuery()
         ->execute();
@@ -789,7 +794,7 @@ Append new tag to the tags array:
     <?php
 
     $dm->createQueryBuilder('Article')
-        ->update()
+        ->updateOne()
         ->field('tags')->push('tag5')
         ->field('id')->equals('theid')
         ->getQuery()
@@ -806,7 +811,7 @@ Append new tags to the tags array:
     <?php
 
     $dm->createQueryBuilder('Article')
-        ->update()
+        ->updateOne()
         ->field('tags')->pushAll(array('tag6', 'tag7'))
         ->field('id')->equals('theid')
         ->getQuery()
@@ -823,7 +828,7 @@ Add value to array only if its not in the array already:
     <?php
 
     $dm->createQueryBuilder('Article')
-        ->update()
+        ->updateOne()
         ->field('tags')->addToSet('tag1')
         ->field('id')->equals('theid')
         ->getQuery()
@@ -841,7 +846,7 @@ already:
     <?php
 
     $dm->createQueryBuilder('Article')
-        ->update()
+        ->updateOne()
         ->field('tags')->addManyToSet(array('tag6', 'tag7'))
         ->field('id')->equals('theid')
         ->getQuery()
@@ -858,7 +863,7 @@ Remove first element in an array:
     <?php
 
     $dm->createQueryBuilder('Article')
-        ->update()
+        ->updateOne()
         ->field('tags')->popFirst()
         ->field('id')->equals('theid')
         ->getQuery()
@@ -871,7 +876,7 @@ Remove last element in an array:
     <?php
 
     $dm->createQueryBuilder('Article')
-        ->update()
+        ->updateOne()
         ->field('tags')->popLast()
         ->field('id')->equals('theid')
         ->getQuery()
@@ -888,7 +893,7 @@ Remove all occurrences of value from array:
     <?php
 
     $dm->createQueryBuilder('Article')
-        ->update()
+        ->updateMany()
         ->field('tags')->pull('tag1')
         ->getQuery()
         ->execute();
@@ -902,7 +907,7 @@ in the Mongo docs.
     <?php
 
     $dm->createQueryBuilder('Article')
-        ->update()
+        ->updateMany()
         ->field('tags')->pullAll(array('tag1', 'tag2'))
         ->getQuery()
         ->execute();

@@ -361,18 +361,6 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         ));
     }
 
-    public function testIncrementTypeAutomaticallyAssumesIncrementStrategy()
-    {
-        $cm = new ClassMetadataInfo('stdClass');
-        $cm->mapField([
-            'fieldName' => 'incrementField',
-            'type' => 'increment',
-        ]);
-
-        $mapping = $cm->fieldMappings['incrementField'];
-        $this->assertSame(ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT, $mapping['strategy']);
-    }
-
     public function testSetShardKeyForClassWithoutInheritance()
     {
         $cm = new ClassMetadataInfo('stdClass');

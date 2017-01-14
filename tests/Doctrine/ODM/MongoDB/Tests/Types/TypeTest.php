@@ -28,7 +28,6 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array(Type::getType(Type::INTEGER), 42),
             array(Type::getType(Type::FLOAT), 3.14),
             array(Type::getType(Type::STRING), 'ohai'),
-            array(Type::getType(Type::DATE), new \DateTime()),
             array(Type::getType(Type::KEY), 0),
             array(Type::getType(Type::KEY), 1),
             array(Type::getType(Type::TIMESTAMP), time()),
@@ -42,8 +41,6 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array(Type::getType(Type::FILE), new GridFSFile()),
             array(Type::getType(Type::HASH), array('foo' => 'bar')),
             array(Type::getType(Type::COLLECTION), array('foo', 'bar')),
-            array(Type::getType(Type::INCREMENT), 1),
-            array(Type::getType(Type::INCREMENT), 1.1),
             array(Type::getType(Type::OBJECTID), "507f1f77bcf86cd799439011"),
             array(Type::getType(Type::RAW), (object) array('foo' => 'bar')),
        );
@@ -72,6 +69,18 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array(Type::getType(Type::BINDATACUSTOM), new MongoBinData('foobarbaz', MongoBinData::CUSTOM)),
             array(Type::getType(Type::OBJECTID), new \MongoId()),
         );
+    }
+
+    public function testConvertDatePreservesMilliseconds()
+    {
+        $date = new \DateTime();
+        $expectedDate = clone $date;
+
+        $cleanMicroseconds = (int) floor(((int) $date->format('u')) / 1000) * 1000;
+        $expectedDate->modify($date->format('H:i:s') . '.' . str_pad($cleanMicroseconds, 6, '0', STR_PAD_LEFT));
+
+        $type = Type::getType(Type::DATE);
+        $this->assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
     }
 
     public function testConvertImmutableDate()

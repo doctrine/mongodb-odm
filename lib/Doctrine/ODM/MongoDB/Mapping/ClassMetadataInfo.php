@@ -226,13 +226,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $shardKey;
 
     /**
-     * READ-ONLY: Whether or not queries on this document should require indexes.
-     *
-     * @deprecated property was deprecated in 1.2 and will be removed in 2.0
-     */
-    public $requireIndexes = false;
-
-    /**
      * READ-ONLY: The name of the document class.
      */
     public $name;
@@ -403,6 +396,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $isEmbeddedDocument = false;
 
     /**
+     * READ-ONLY: Whether this class describes the mapping of an aggregation result document.
+     *
+     * @var boolean
+     */
+    public $isQueryResultDocument = false;
+
+    /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
      *
      * @var integer
@@ -548,7 +548,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
-        if ($this->isEmbeddedDocument) {
+        if ($this->isEmbeddedDocument || $this->isQueryResultDocument) {
             return;
         }
 
@@ -803,18 +803,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             }, $keys),
             'options' => $options
         );
-    }
-
-    /**
-     * Set whether or not queries on this document should require indexes.
-     *
-     * @param bool $requireIndexes
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public function setRequireIndexes($requireIndexes)
-    {
-        $this->requireIndexes = $requireIndexes;
     }
 
     /**
@@ -1264,9 +1252,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['type']) && $mapping['type'] === 'file') {
             $mapping['file'] = true;
         }
-        if (isset($mapping['type']) && $mapping['type'] === 'increment') {
-            $mapping['strategy'] = self::STORAGE_STRATEGY_INCREMENT;
-        }
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
             $mapping['name'] = 'file';
@@ -1399,7 +1384,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         switch (true) {
             case $mapping['type'] == 'int':
             case $mapping['type'] == 'float':
-            case $mapping['type'] == 'increment':
                 $defaultStrategy = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
                 break;

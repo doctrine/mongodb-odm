@@ -38,9 +38,10 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 class AnnotationDriver extends AbstractAnnotationDriver
 {
     protected $entityAnnotationClasses = array(
-        ODM\Document::class         => 1,
-        ODM\MappedSuperclass::class => 2,
-        ODM\EmbeddedDocument::class => 3,
+        ODM\Document::class            => 1,
+        ODM\MappedSuperclass::class    => 2,
+        ODM\EmbeddedDocument::class    => 3,
+        ODM\QueryResultDocument::class => 4,
     );
 
     /**
@@ -85,14 +86,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\InheritanceType) {
                 $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_'.$annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
-                // $fieldName property is deprecated, but fall back for BC
-                if (isset($annot->value)) {
-                    $class->setDiscriminatorField($annot->value);
-                } elseif (isset($annot->name)) {
-                    $class->setDiscriminatorField($annot->name);
-                } elseif (isset($annot->fieldName)) {
-                    $class->setDiscriminatorField($annot->fieldName);
-                }
+                $class->setDiscriminatorField($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorMap) {
                 $class->setDiscriminatorMap($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
@@ -117,6 +111,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $class->isMappedSuperclass = true;
         } elseif ($documentAnnot instanceof ODM\EmbeddedDocument) {
             $class->isEmbeddedDocument = true;
+        } elseif ($documentAnnot instanceof ODM\QueryResultDocument) {
+            $class->isQueryResultDocument = true;
         }
         if (isset($documentAnnot->db)) {
             $class->setDatabase($documentAnnot->db);
@@ -124,7 +120,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($documentAnnot->collection)) {
             $class->setCollection($documentAnnot->collection);
         }
-        if (isset($documentAnnot->repositoryClass) && !$class->isEmbeddedDocument) {
+        if (isset($documentAnnot->repositoryClass)) {
             $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
         }
         if (isset($documentAnnot->writeConcern)) {
@@ -134,9 +130,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             foreach ($documentAnnot->indexes as $index) {
                 $this->addIndex($class, $index);
             }
-        }
-        if (isset($documentAnnot->requireIndexes)) {
-            $class->setRequireIndexes($documentAnnot->requireIndexes);
         }
         if (isset($documentAnnot->slaveOkay)) {
             $class->setSlaveOkay($documentAnnot->slaveOkay);

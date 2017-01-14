@@ -27,6 +27,15 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
+        // Check if the database exists. Calling listCollections on a non-existing
+        // database in a sharded setup will cause an invalid command cursor to be
+        // returned
+        $databases = $this->dm->getConnection()->listDatabases();
+        $databaseNames = array_map(function ($database) { return $database['name']; }, $databases['databases']);
+        if (! in_array(DOCTRINE_MONGODB_DATABASE, $databaseNames)) {
+            return;
+        }
+
         $collections = $this->dm->getConnection()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
 
         foreach ($collections as $collection) {
@@ -87,5 +96,27 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         if (!array_key_exists('shardCollection', $result['commands'])) {
             $this->markTestSkipped('Test skipped because server does not support sharding');
         }
+    }
+
+    protected function requireVersion($installedVersion, $requiredVersion, $operator, $message)
+    {
+        if (version_compare($installedVersion, $requiredVersion, $operator)) {
+            $this->markTestSkipped($message);
+        }
+    }
+
+    protected function requireMongoDB32($message)
+    {
+        $this->requireVersion($this->getServerVersion(), '3.2.0', '<', $message);
+    }
+
+    protected function skipOnMongoDB34($message)
+    {
+        $this->requireVersion($this->getServerVersion(), '3.4.0', '>=', $message);
+    }
+
+    protected function requireMongoDB34($message)
+    {
+        $this->requireVersion($this->getServerVersion(), '3.4.0', '<', $message);
     }
 }

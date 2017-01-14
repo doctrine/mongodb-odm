@@ -18,6 +18,7 @@
         <xs:element name="document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="embedded-document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="mapped-superclass" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="query-result-document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -27,6 +28,10 @@
   </xs:complexType>
 
   <xs:complexType name="mapped-superclass">
+    <xs:attribute name="name" type="xs:NMTOKEN" />
+  </xs:complexType>
+
+  <xs:complexType name="query-result-document">
     <xs:attribute name="name" type="xs:NMTOKEN" />
   </xs:complexType>
 
@@ -55,7 +60,6 @@
     <xs:attribute name="repository-class" type="xs:string"/>
     <xs:attribute name="inheritance-type" type="odm:inheritance-type"/>
     <xs:attribute name="change-tracking-policy" type="odm:change-tracking-policy" />
-    <xs:attribute name="require-indexes" type="xs:boolean" />
     <xs:attribute name="slave-okay" type="xs:boolean" />
   </xs:complexType>
 

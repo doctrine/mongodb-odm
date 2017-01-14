@@ -577,8 +577,6 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($test1);
         $this->dm->persist($test2);
 
-        $this->assertNotSame($test1->embed, $test2->embed);
-
         $this->dm->flush();
 
         $this->assertNotSame($test1->embed, $test2->embed);

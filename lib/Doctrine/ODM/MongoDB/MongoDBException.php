@@ -95,22 +95,7 @@ class MongoDBException extends \Exception
      */
     public static function cannotPersistMappedSuperclass($className)
     {
-        return new self('Cannot persist an embedded document or mapped superclass ' . $className);
-    }
-
-    /**
-     * @param string $className
-     * @param string $unindexedFields
-     * @return MongoDBException
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public static function queryNotIndexed($className, $unindexedFields)
-    {
-        return new self(sprintf('Cannot execute unindexed queries on %s. Unindexed fields: %s',
-            $className,
-            implode(', ', $unindexedFields)
-        ));
+        return new self('Cannot persist an embedded document, aggregation result document or mapped superclass ' . $className);
     }
 
     /**

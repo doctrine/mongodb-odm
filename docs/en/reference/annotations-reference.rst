@@ -396,9 +396,6 @@ Optional attributes:
 -
    indexes - Specifies an array of indexes for this document.
 -
-   requireIndexes - Specifies whether or not queries for this document should
-   require indexes by default. This may also be specified per query.
--
    writeConcern - Specifies the write concern for this document that overwrites
    the default write concern specified in the configuration. It does not overwrite
    a write concern given as :ref:`option <flush_options>` to the ``flush``
@@ -415,17 +412,13 @@ Optional attributes:
      *     repositoryClass="MyProject\UserRepository",
      *     indexes={
      *         @Index(keys={"username"="desc"}, options={"unique"=true})
-     *     },
-     *     requireIndexes=true
+     *     }
      * )
      */
     class User
     {
         //...
     }
-
-.. note::
-    Requiring Indexes was deprecated in 1.2 and will be removed in 2.0.
 
 @EmbedMany
 ----------
@@ -725,53 +718,6 @@ via the :ref:`strategy <basic_mapping_identifiers>` attribute.
         /** @Id */
         protected $id;
     }
-
-@Increment
-----------
-
-The increment type is just like an integer field, except that it will be updated
-using the ``$inc`` operator instead of ``$set``:
-
-.. code-block:: php
-
-    <?php
-
-    class Package
-    {
-        /** @Increment */
-        private $downloads = 0;
-
-        public function incrementDownloads()
-        {
-            $this->downloads++;
-        }
-
-        // ...
-    }
-
-Now, update a Package instance like so:
-
-.. code-block:: php
-
-    <?php
-
-    $package->incrementDownloads();
-    $dm->flush();
-
-The query sent to Mongo would resemble the following:
-
-.. code-block:: json
-
-    { "$inc": { "downloads": 1 } }
-
-The field will be incremented by the difference between the new and old values.
-This is useful if many requests are attempting to update the field concurrently.
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "int" or "float" and use the "increment"
-    strategy.
 
 @Index
 ------
@@ -1097,13 +1043,15 @@ method to be registered.
 
     <?php
 
+    use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
+
     /** @Document @HasLifecycleCallbacks */
     class Article
     {
         // ...
     
         /** @PreLoad */
-        public function preLoad(array &$data)
+        public function preLoad(PreLoadEventArgs $eventArgs)
         {
             // ...
         }

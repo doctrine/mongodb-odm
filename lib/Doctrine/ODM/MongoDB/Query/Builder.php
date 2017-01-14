@@ -74,13 +74,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     private $primers = array();
 
     /**
-     * Whether or not to require indexes.
-     *
-     * @var bool
-     */
-    private $requireIndexes;
-
-    /**
      * Whether or not to register documents in UnitOfWork.
      *
      * @var bool
@@ -100,20 +93,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         if ($documentName !== null) {
             $this->setDocumentName($documentName);
         }
-    }
-
-    /**
-     * Set whether or not to require indexes.
-     *
-     * @param bool $requireIndexes
-     * @return $this
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public function requireIndexes($requireIndexes = true)
-    {
-        $this->requireIndexes = $requireIndexes;
-        return $this;
     }
 
     /**
@@ -264,11 +243,37 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     /**
      * @param string $documentName
      * @return $this
+     *
+     * @deprecated Deprecated in version 1.2 - use updateOne or updateMany instead
      */
     public function update($documentName = null)
     {
         $this->setDocumentName($documentName);
         parent::update();
+
+        return $this;
+    }
+
+    /**
+     * @param string $documentName
+     * @return $this
+     */
+    public function updateOne($documentName = null)
+    {
+        $this->setDocumentName($documentName);
+        parent::updateOne();
+
+        return $this;
+    }
+
+    /**
+     * @param string $documentName
+     * @return $this
+     */
+    public function updateMany($documentName = null)
+    {
+        $this->setDocumentName($documentName);
+        parent::updateMany();
 
         return $this;
     }
@@ -377,7 +382,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $this->hydrate,
             $this->refresh,
             $this->primers,
-            $this->requireIndexes,
             $this->readOnly
         );
     }

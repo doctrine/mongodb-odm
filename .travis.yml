@@ -1,29 +1,49 @@
+sudo: required
+
 language: php
 
 php:
   - 7.0
+  - 7.1
 
 env:
   global:
-    - DOCTRINE_MONGODB_SERVER=mongodb://localhost:27017
+    - DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017"
+    - KEY_SERVER="hkp://keyserver.ubuntu.com:80"
+    - MONGO_REPO_URI="https://repo.mongodb.org/apt/ubuntu"
+    - MONGO_REPO_TYPE="precise/mongodb-org/"
+    - SOURCES_LOC="/etc/apt/sources.list.d/mongodb.list"
+    - DRIVER_VERSION="stable"
     - ADAPTER_VERSION="^1.0.0"
-    - MONGODB_VERSION=stable
+    - SERVER_VERSION="3.4"
+    - KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6"
 
-services: mongodb
+matrix:
+  include:
+    - php: 7.0
+      env: DRIVER_VERSION="stable" SERVER_VERSION="3.0" COMPOSER_FLAGS="--prefer-lowest"
 
-before_script:
-  - sudo service mongodb stop
+before_install:
+  - sudo apt-key adv --keyserver ${KEY_SERVER} --recv ${KEY_ID}
+  - echo "deb ${MONGO_REPO_URI} ${MONGO_REPO_TYPE}${SERVER_VERSION} multiverse" | sudo tee ${SOURCES_LOC}
+  - sudo apt-get update -qq
+
+install:
+  - sudo apt-get install mongodb-org
+  - if nc -z localhost 27017; then sudo service mongod stop; fi
   - sudo pip install mongo-orchestration
   - sudo mongo-orchestration start
+
+before_script:
   - curl -XPUT http://localhost:8889/v1/sharded_clusters/myCluster --data @tests/sharded.json | python -m json.tool
   - composer self-update
-  - pecl install -f mongodb-${MONGODB_VERSION}
+  - pecl install -f mongodb-${DRIVER_VERSION}
   - composer require "alcaeus/mongo-php-adapter=${ADAPTER_VERSION}" --ignore-platform-reqs
-  - composer install --dev
+  - composer update ${COMPOSER_FLAGS}
 
 script:
-    - ./vendor/bin/phpunit --coverage-clover=coverage.clover
+  - ./vendor/bin/phpunit --coverage-clover=coverage.clover
 
 after_script:
-    - wget https://scrutinizer-ci.com/ocular.phar
-    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover

@@ -376,6 +376,17 @@ class DocumentManager implements ObjectManager
     }
 
     /**
+     * Creates a new aggregation builder instance for a class.
+     *
+     * @param string $documentName The document class name.
+     * @return Aggregation\Builder
+     */
+    public function createAggregationBuilder($documentName)
+    {
+        return new Aggregation\Builder($this, $documentName);
+    }
+
+    /**
      * Tells the DocumentManager to make an instance managed and persistent.
      *
      * The document will be entered into the database at or before transaction
@@ -673,7 +684,7 @@ class DocumentManager implements ObjectManager
         $class = $this->getClassMetadata(get_class($document));
         $id = $this->unitOfWork->getDocumentIdentifier($document);
 
-        if ( ! $id) {
+        if ($id === null) {
             throw new \RuntimeException(
                 sprintf('Cannot create a DBRef for class %s without an identifier. Have you forgotten to persist/merge the document first?', $class->name)
             );

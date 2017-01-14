@@ -19,31 +19,15 @@
 
 namespace Doctrine\ODM\MongoDB\Types;
 
-/**
- * The Increment type.
- *
- * @since       1.0
- * @deprecated This type will be removed in ODM 2.0. Please use int or float instead
- */
-class IncrementType extends Type
+trait ClosureToPHP
 {
-    public function convertToDatabaseValue($value)
+    /**
+     * @return string Redirects to the method convertToPHPValue from child class
+     */
+    final public function closureToPHP()
     {
-        return $value !== null ? (is_float($value) ? (float) $value : (int) $value) : null;
-    }
-
-    public function convertToPHPValue($value)
-    {
-        return $value !== null ? (is_float($value) ? (float) $value : (int) $value) : null;
-    }
-
-    public function closureToMongo()
-    {
-        return '$return = is_float($value) ? (float) $value : (int) $value;';
-    }
-
-    public function closureToPHP()
-    {
-        return '$return = is_float($value) ? (float) $value : (int) $value;';
+        return sprintf('
+            $type = \%s::getType($typeIdentifier);
+            $return = $type->convertToPHPValue($value);', Type::class);
     }
 }

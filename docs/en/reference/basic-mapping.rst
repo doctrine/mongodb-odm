@@ -459,7 +459,7 @@ as follows:
 
         <field fieldName="name" name="db_name" />
 
-    -- code-block:: yaml
+    .. code-block:: yaml
 
         name:
           name: db_name
@@ -472,7 +472,7 @@ handy when you're missing a specific mapping type or when you want
 to replace the existing implementation of a mapping type.
 
 In order to create a new mapping type you need to subclass
-``Doctrine\ODM\MongoDB\Mapping\Types\Type`` and implement/override
+``Doctrine\ODM\MongoDB\Types\Type`` and implement/override
 the methods. Here is an example skeleton of such a custom type
 class:
 
@@ -482,7 +482,7 @@ class:
 
     namespace My\Project\Types;
 
-    use Doctrine\ODM\MongoDB\Mapping\Types\Type;
+    use Doctrine\ODM\MongoDB\Types\Type;
 
     /**
      * My custom datatype.
@@ -521,7 +521,7 @@ Restrictions to keep in mind:
 
 When you have implemented the type you still need to let Doctrine
 know about it. This can be achieved through the
-``Doctrine\ODM\MongoDB\Mapping\Types#registerType($name, $class)``
+``Doctrine\ODM\MongoDB\Types\Type#registerType($name, $class)``
 method.
 
 Here is an example:

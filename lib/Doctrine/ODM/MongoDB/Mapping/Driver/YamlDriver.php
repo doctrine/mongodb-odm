@@ -76,6 +76,8 @@ class YamlDriver extends FileDriver
             $class->isMappedSuperclass = true;
         } elseif ($element['type'] === 'embeddedDocument') {
             $class->isEmbeddedDocument = true;
+        } elseif ($element['type'] === 'queryResultDocument') {
+            $class->isQueryResultDocument = true;
         }
         if (isset($element['indexes'])) {
             foreach($element['indexes'] as $index) {
@@ -99,9 +101,6 @@ class YamlDriver extends FileDriver
         }
         if (isset($element['changeTrackingPolicy'])) {
             $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_' . strtoupper($element['changeTrackingPolicy'])));
-        }
-        if (isset($element['requireIndexes'])) {
-            $class->setRequireIndexes($element['requireIndexes']);
         }
         if (isset($element['slaveOkay'])) {
             $class->setSlaveOkay($element['slaveOkay']);

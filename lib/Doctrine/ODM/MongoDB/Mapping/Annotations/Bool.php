@@ -21,7 +21,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 /**
  * @Annotation
- * @deprecated This class will be removed in ODM 2.0
+ * @deprecated This class will be removed in ODM 2.0. Use `@ODM\Field(type="bool")` instead.
  */
 final class Bool extends AbstractField
 {
