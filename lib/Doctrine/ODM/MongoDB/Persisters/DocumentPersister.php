@@ -831,12 +831,12 @@ class DocumentPersister
         if (isset($mapping['skip'])) {
             $qb->skip($mapping['skip']);
         }
-        if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-            $qb->slaveOkay(true);
-        }
-        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-            $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
-        }
+
+        // @todo Convert read preference
+//        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+//            $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+//        }
+
         foreach ($mapping['prime'] as $field) {
             $qb->field($field)->prime(true);
         }
@@ -865,41 +865,13 @@ class DocumentPersister
      */
     public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection)
     {
-        $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $repositoryMethod = $mapping['repositoryMethod'];
         $cursor = $this->dm->getRepository($mapping['targetDocument'])
             ->$repositoryMethod($collection->getOwner());
 
-        if ( ! $cursor instanceof CursorInterface) {
-            throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return a CursorInterface");
-        }
-
-        if (!empty($mapping['prime'])) {
-            if (!$cursor instanceof Cursor) {
-                throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return a Cursor to allow for priming");
-            }
-
-            $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
-            $primers = array_combine($mapping['prime'], array_fill(0, count($mapping['prime']), true));
-
-            $cursor->enableReferencePriming($primers, $referencePrimer);
-        }
-
-        if (isset($mapping['sort'])) {
-            $cursor->sort($mapping['sort']);
-        }
-        if (isset($mapping['limit'])) {
-            $cursor->limit($mapping['limit']);
-        }
-        if (isset($mapping['skip'])) {
-            $cursor->skip($mapping['skip']);
-        }
-        if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-            $cursor->slaveOkay(true);
-        }
-        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-            $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+        if ( ! $cursor instanceof \Iterable) {
+            throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return an iterable object");
         }
 
         return $cursor;
