@@ -160,7 +160,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     {
         return $this->dm->getUnitOfWork()
             ->getDocumentPersister($this->class->name)
-            ->prepareQueryOrNewObj($this->newObj);
+            ->prepareQueryOrNewObj($this->newObj, true);
     }
 
     /**

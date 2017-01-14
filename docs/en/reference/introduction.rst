@@ -324,7 +324,7 @@ its dependencies. The easiest way to do this is with `Composer`_:
 
 ::
 
-    $ composer require "doctrine/mongodb-odm=~1.0"
+    $ composer require "doctrine/mongodb-odm"
 
 Once ODM and its dependencies have been downloaded, we can begin by creating a
 ``bootstrap.php`` file in our project's root directory, where Composer's
@@ -456,6 +456,37 @@ The final ``bootstrap.php`` file should look like this:
     $dm = DocumentManager::create($connection, $config);
 
 That is it! Your ``DocumentManager`` instance is ready to be used!
+
+Using PHP 7
+-----------
+
+You can use Doctrine MongoDB ODM with PHP 7, but there are a few extra steps during
+the installation. Since the legacy driver (referred to as ``ext-mongo``) is not
+available on PHP 7, you will need the new driver (``ext-mongodb``) installed and
+use a polyfill to provide the API of the legacy driver.
+
+To do this, you have to require ``alcaeus/mongo-php-adapter`` before adding a composer
+dependency to ODM. To do this, run the following command:
+
+::
+
+    $ composer require "alcaeus/mongo-php-adapter"
+
+Next, manually add a ``provide`` section to your ``composer.json``:
+
+.. code-block:: json
+
+    "provide": {
+        "ext-mongo": "1.6.14"
+    }
+
+This section needs to be added to work around a composer issue with libraries
+providing platform packages (such as ``ext-mongo``). Now, you may install ODM as
+described above:
+
+::
+
+    $ composer require "doctrine/mongodb-odm"
 
 .. _MongoDB: https://www.mongodb.com/
 .. _10gen: http://www.10gen.com

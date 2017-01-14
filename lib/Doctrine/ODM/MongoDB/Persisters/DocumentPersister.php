@@ -968,9 +968,10 @@ class DocumentPersister
      * PHP field names and types will be converted to those used by MongoDB.
      *
      * @param array $query
+     * @param bool $isNewObj
      * @return array
      */
-    public function prepareQueryOrNewObj(array $query)
+    public function prepareQueryOrNewObj(array $query, $isNewObj = false)
     {
         $preparedQuery = array();
 
@@ -978,17 +979,17 @@ class DocumentPersister
             // Recursively prepare logical query clauses
             if (in_array($key, array('$and', '$or', '$nor')) && is_array($value)) {
                 foreach ($value as $k2 => $v2) {
-                    $preparedQuery[$key][$k2] = $this->prepareQueryOrNewObj($v2);
+                    $preparedQuery[$key][$k2] = $this->prepareQueryOrNewObj($v2, $isNewObj);
                 }
                 continue;
             }
 
             if (isset($key[0]) && $key[0] === '$' && is_array($value)) {
-                $preparedQuery[$key] = $this->prepareQueryOrNewObj($value);
+                $preparedQuery[$key] = $this->prepareQueryOrNewObj($value, $isNewObj);
                 continue;
             }
 
-            $preparedQueryElements = $this->prepareQueryElement($key, $value, null, true);
+            $preparedQueryElements = $this->prepareQueryElement($key, $value, null, true, $isNewObj);
             foreach ($preparedQueryElements as list($preparedKey, $preparedValue)) {
                 $preparedQuery[$preparedKey] = is_array($preparedValue)
                     ? array_map('\Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $preparedValue)
@@ -1008,10 +1009,11 @@ class DocumentPersister
      * @param string $fieldName
      * @param mixed $value
      * @param ClassMetadata $class        Defaults to $this->class
-     * @param boolean $prepareValue Whether or not to prepare the value
+     * @param bool $prepareValue Whether or not to prepare the value
+     * @param bool $inNewObj Whether or not newObj is being prepared
      * @return array An array of tuples containing prepared field names and values
      */
-    private function prepareQueryElement($fieldName, $value = null, $class = null, $prepareValue = true)
+    private function prepareQueryElement($fieldName, $value = null, $class = null, $prepareValue = true, $inNewObj = false)
     {
         $class = isset($class) ? $class : $this->class;
 
@@ -1034,7 +1036,7 @@ class DocumentPersister
 
             if (! empty($mapping['reference']) && is_object($value) && ! ($value instanceof \MongoId)) {
                 try {
-                    return $this->prepareDbRefElement($fieldName, $value, $mapping);
+                    return $this->prepareDbRefElement($fieldName, $value, $mapping, $inNewObj);
                 } catch (MappingException $e) {
                     // do nothing in case passed object is not mapped document
                 }
@@ -1397,11 +1399,15 @@ class DocumentPersister
      * @param string $fieldName
      * @param mixed $value
      * @param array $mapping
+     * @param bool $inNewObj
      * @return array
      */
-    private function prepareDbRefElement($fieldName, $value, array $mapping)
+    private function prepareDbRefElement($fieldName, $value, array $mapping, $inNewObj)
     {
         $dbRef = $this->dm->createDBRef($value, $mapping);
+        if ($inNewObj) {
+            return [[$fieldName, $dbRef]];
+        }
         $keys = ['$ref' => true, '$id' => true, '$db' => true];
         if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
             unset($keys['$db']);
