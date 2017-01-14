@@ -416,11 +416,15 @@ more paths) and register the annotations for the driver:
 
     <?php
 
+    use Doctrine\Common\Annotations\AnnotationRegistry;
+
     // ...
 
     $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/Documents'));
 
-    AnnotationDriver::registerAnnotationClasses();
+    $loader = require_once('path/to/vendor/autoload.php');
+
+    AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
 At this point, we have everything necessary to construct a ``DocumentManager``:
 
@@ -438,6 +442,7 @@ The final ``bootstrap.php`` file should look like this:
 
     <?php
 
+    use Doctrine\Common\Annotations\AnnotationRegistry;
     use Doctrine\MongoDB\Connection;
     use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\DocumentManager;
@@ -450,6 +455,8 @@ The final ``bootstrap.php`` file should look like this:
     $loader = require_once $file;
     $loader->add('Documents', __DIR__);
 
+    AnnotationRegistry::registerLoader([$loader, 'loadClass']);
+
     $connection = new Connection();
 
     $config = new Configuration();
@@ -459,8 +466,6 @@ The final ``bootstrap.php`` file should look like this:
     $config->setHydratorNamespace('Hydrators');
     $config->setDefaultDB('doctrine_odm');
     $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/Documents'));
-
-    AnnotationDriver::registerAnnotationClasses();
 
     $dm = DocumentManager::create($connection, $config);
 
