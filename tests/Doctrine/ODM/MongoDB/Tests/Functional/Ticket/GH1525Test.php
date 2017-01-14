@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH1525Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testEmbedClone()
+    public function testEmbedCloneTwoFlushesPerDocument()
     {
         $embedded = new GH1525Embedded('embedded');
 
@@ -38,6 +38,56 @@ class GH1525Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->assertSame($test->embedMany[0]->name, $embedMany->name);
         }
     }
+
+    public function testEmbedCloneWithIdStrategyNoneOnParentAndEarlyPersist()
+    {
+        $uuidGen = new \Doctrine\ODM\MongoDB\Id\UuidGenerator();
+        $embedded = new GH1525Embedded('embedded');
+
+        $count = 2;
+        for ($i = 0; $i < $count; ++$i) {
+            $parent = new GH1525DocumentIdStrategyNone($uuidGen->generateV4(), 'test' . $i);
+            $this->dm->persist($parent);
+            $parent->embedded = $embedded;
+            $this->dm->flush();
+        }
+
+        $this->dm->clear();
+
+        for ($i = 0; $i < $count; ++$i) {
+            $test = $this->dm->getRepository(GH1525DocumentIdStrategyNone::class)->findOneBy(array('name' => 'test' . $i));
+
+            $this->assertInstanceOf(GH1525DocumentIdStrategyNone::class, $test);
+
+            $this->assertInstanceOf(GH1525Embedded::class, $test->embedded);
+            $this->assertSame($test->embedded->name, $embedded->name);
+        }
+    }
+
+    public function testEmbedCloneWithIdStrategyNoneOnParentAndLatePersist()
+    {
+        $uuidGen = new \Doctrine\ODM\MongoDB\Id\UuidGenerator();
+        $embedded = new GH1525Embedded('embedded');
+
+        $count = 2;
+        for ($i = 0; $i < $count; ++$i) {
+            $parent = new GH1525DocumentIdStrategyNone($uuidGen->generateV4(), 'test' . $i);
+            $parent->embedded = $embedded;
+            $this->dm->persist($parent);
+            $this->dm->flush();
+        }
+
+        $this->dm->clear();
+
+        for ($i = 0; $i < $count; ++$i) {
+            $test = $this->dm->getRepository(GH1525DocumentIdStrategyNone::class)->findOneBy(array('name' => 'test' . $i));
+
+            $this->assertInstanceOf(GH1525DocumentIdStrategyNone::class, $test);
+
+            $this->assertInstanceOf(GH1525Embedded::class, $test->embedded);
+            $this->assertSame($test->embedded->name, $embedded->name);
+        }
+    }
 }
 
 /** @ODM\Document(collection="document_test") */
@@ -62,6 +112,24 @@ class GH1525Document
     }
 }
 
+/** @ODM\Document(collection="document_test_with_auto_ids") */
+class GH1525DocumentIdStrategyNone
+{
+    /** @ODM\Id(strategy="NONE") */
+    public $id;
+
+    /** @ODM\Field(type="string") */
+    public $name;
+
+    /** @ODM\EmbedOne(targetDocument="GH1525Embedded") */
+    public $embedded;
+
+    public function __construct($id, $name)
+    {
+        $this->id = $id;
+        $this->name = $name;
+    }
+}
 
 /** @ODM\EmbeddedDocument */
 class GH1525Embedded

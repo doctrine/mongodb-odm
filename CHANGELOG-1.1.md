@@ -5,6 +5,18 @@ This changelog references the relevant changes done in 1.1 minor versions. If up
 1.0.x branch, please review
 [Upgrade Path](https://github.com/doctrine/mongodb-odm/blob/master/CHANGELOG-1.1.md#upgrade-path).
 
+1.1.3 (2017-01-14)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.1.3 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.1.3).
+
+* [#1551](https://github.com/doctrine/mongodb-odm/pull/1551) fixes modifying reference fields with Query Builder
+* [#1550](https://github.com/doctrine/mongodb-odm/pull/1550) fixes reusing embedded documents with multiple flushes
+* [#1543](https://github.com/doctrine/mongodb-odm/pull/1543) provides support for nullable return types in custom collections
+* [#1540](https://github.com/doctrine/mongodb-odm/pull/1540) ensures compatibility with MongoDB 3.4
+* [#1544](https://github.com/doctrine/mongodb-odm/pull/1544) ensures compatibility with PHP 7.1
+
 1.1.2 (2016-10-07)
 ------------------
 
