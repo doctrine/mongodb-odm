@@ -175,12 +175,15 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
 
     <?php
 
+    use Doctrine\Common\Annotations\AnnotationRegistry;
     use Doctrine\MongoDB\Connection;
     use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\DocumentManager;
     use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
-    AnnotationDriver::registerAnnotationClasses();
+    $loader = require_once('path/to/vendor/autoload.php');
+
+    AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
     $config = new Configuration();
     $config->setProxyDir('/path/to/generate/proxies');

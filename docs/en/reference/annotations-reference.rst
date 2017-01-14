@@ -38,156 +38,6 @@ will be invoked with the first value found as its single argument.
 For additional information on using `@AlsoLoad`_, see
 :doc:`Migrations <migrating-schemas>`.
 
-@Bin
-----
-
-Alias of `@Field`_, with "type" attribute set to "bin". Converts value to
-`MongoBinData`_ with ``MongoBinData::GENERIC`` sub-type.
-
-.. code-block:: php
-
-    <?php
-
-    /** @Bin */
-    private $data;
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "bin".
-
-@BinCustom
-----------
-
-Alias of `@Field`_, with "type" attribute set to "bin\_custom". Converts
-value to `MongoBinData`_ with ``MongoBinData::CUSTOM`` sub-type.
-
-.. code-block:: php
-
-    <?php
-
-    /** @BinCustom */
-    private $data;
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "bin\_custom".
-
-@BinFunc
---------
-
-Alias of `@Field`_, with "type" attribute set to "bin\_func". Converts value to
-`MongoBinData`_ with ``MongoBinData::FUNC`` sub-type.
-
-.. code-block:: php
-
-    <?php
-
-    /** @BinFunc */
-    private $data;
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "bin\_func".
-
-@BinMD5
--------
-
-Alias of `@Field`_, with "type" attribute set to "bin\_md5". Converts value to
-`MongoBinData`_ with ``MongoBinData::MD5`` sub-type.
-
-.. code-block:: php
-
-    <?php
-
-    /** @BinMD5 */
-    private $password;
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "bin\_md5".
-
-@BinUUID
---------
-
-Alias of `@Field`_, with "type" attribute set to "bin\_uuid". Converts value to
-`MongoBinData`_ with ``MongoBinData::UUID`` sub-type.
-
-.. code-block:: php
-
-    <?php
-
-    /** @BinUUID */
-    private $uuid;
-
-.. note::
-
-    Per the `BSON specification`_, this sub-type is deprecated in favor of the
-    RFC 4122 UUID sub-type. Consider using `@BinUUIDRFC4122`_ instead.
-
-@BinUUIDRFC4122
----------------
-
-Alias of `@Field`_, with "type" attribute set to "bin\_uuid\_rfc4122". Converts
-value to `MongoBinData`_ with ``MongoBinData::UUID_RFC4122`` sub-type.
-
-.. code-block:: php
-
-    <?php
-
-    /** @BinUUIDRFC4122 */
-    private $uuid;
-
-.. note::
-
-    RFC 4122 UUIDs must be 16 bytes. The PHP driver will throw an exception if
-    the binary data's size is invalid.
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "bin\_uuid\_rfc4122".
-
-@Bool
------
-
-Alias of `@Field`_, with "type" attribute set to "bool". Internally it uses
-exactly same logic as `@Boolean`_ annotation and "boolean" type.
-
-.. code-block:: php
-
-    <?php
-
-    /** @Bool */
-    private $active;
-
-.. note::
-
-    This annotation is deprecated because it uses a keyword that was reserved in
-    PHP 7. It will be removed in ODM 2.0. Please use the `@Field`_ annotation
-    with type "bool".
-
-
-@Boolean
---------
-
-Alias of `@Field`_, with "type" attribute set to "boolean".
-
-.. code-block:: php
-
-    <?php
-
-    /** @Boolean */
-    private $active;
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "bool".
-
 @ChangeTrackingPolicy
 ---------------------
 
@@ -207,44 +57,6 @@ This annotation is used to change the change tracking policy for a document:
     }
 
 For a list of available policies, read the section on :ref:`change tracking policies <change_tracking_policies>`.
-
-
-@Collection
------------
-
-Alias of `@Field`_, with "type" attribute set to "collection". Stores and
-retrieves the value as a numerically indexed array.
-
-.. code-block:: php
-
-    <?php
-
-    /** @Collection */
-    private $tags = array();
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "collection".
-
-@Date
------
-
-Alias of `@Field`_, with "type" attribute set to "date". Values of any type
-(e.g. integer, string, DateTime) will be converted to `MongoDate`_ for storage
-in MongoDB. The property will be a DateTime when loaded from the database.
-
-.. code-block:: php
-
-    <?php
-
-    /** @Date */
-    private $createdAt;
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "date".
 
 @DefaultDiscriminatorValue
 --------------------------
@@ -660,18 +472,6 @@ that created the file.
     /** @ReferenceOne(targetDocument="Documents\User") */
     private $uploadedBy;
 
-@Float
-------
-
-Alias of `@Field`_, with "type" attribute set to "float".
-
-.. note::
-
-    This annotation is deprecated because it uses a keyword that was reserved in
-    PHP 7. It will be removed in ODM 2.0. Please use the `@Field`_ annotation
-    with type "float".
-
-
 .. _haslifecyclecallbacks:
 
 @HasLifecycleCallbacks
@@ -693,17 +493,6 @@ annotation will cause Doctrine to ignore the callbacks.
         /** @PostPersist */
         public function sendWelcomeEmail() {}
     }
-
-@Hash
------
-
-Alias of `@Field`_, with "type" attribute set to "hash". Stores and retrieves
-the value as an associative array.
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "hash".
 
 @Id
 ---
@@ -827,61 +616,6 @@ Examples:
     {
         // ...
     }
-
-@Int
-----
-
-Alias of `@Field`_, with "type" attribute set to "int".
-
-.. code-block:: php
-
-    <?php
-
-    /** @Int */
-    private $columns;
-
-.. note::
-
-    This annotation is deprecated because it uses a keyword that was reserved in
-    PHP 7. It will be removed in ODM 2.0. Please use the `@Field`_ annotation
-    with type "int".
-
-@Integer
---------
-
-Alias of `@Field`_, with "type" attribute set to "integer". Internally it uses
-exactly same logic as `@Int`_ annotation and "int" type.
-
-.. code-block:: php
-
-    <?php
-
-    /** @Integer */
-    private $columns;
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "int".
-
-@Key
-----
-
-Alias of `@Field`_, with "type" attribute set to "key". The value will be
-converted to `MongoMaxKey`_ or `MongoMinKey`_ if it is true or false,
-respectively.
-
-.. note::
-
-    The BSON MaxKey and MinKey types are internally used by MongoDB for indexing
-    and sharding. There is generally no reason to use these in an application.
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "key".
-
-.. _annotations_reference_lock:
 
 @Lock
 -----
@@ -1341,43 +1075,6 @@ for sharding the document collection.
         //...
     }
 
-
-@String
--------
-
-Alias of `@Field`_, with "type" attribute set to "string".
-
-.. code-block:: php
-
-    <?php
-
-    /** @String */
-    private $username;
-
-.. note::
-
-    This annotation is deprecated because it uses a keyword that was reserved in
-    PHP 7. It will be removed in ODM 2.0. Please use the `@Field`_ annotation
-    with type "string".
-
-
-@Timestamp
-----------
-
-Alias of `@Field`_, with "type" attribute set to "timestamp". The value will be
-converted to `MongoTimestamp`_ for storage in MongoDB.
-
-.. note::
-
-    The BSON timestamp type is an internal type used for MongoDB's replication
-    and sharding. If you need to store dates in your application, you should use
-    the "date" type instead.
-
-.. note::
-
-    This annotation is deprecated and will be removed in ODM 2.0. Please use the
-    `@Field`_ annotation with type "timestamp".
-
 @UniqueIndex
 ------------
 
@@ -1417,12 +1114,7 @@ versioned parent document.
 .. _DBRef: https://docs.mongodb.com/manual/reference/database-references/#dbrefs
 .. _geoNear command: https://docs.mongodb.com/manual/reference/command/geoNear/
 .. _GridFS: https://docs.mongodb.com/manual/core/gridfs/
-.. _MongoBinData: http://php.net/manual/en/class.mongobindata.php
-.. _MongoDate: http://php.net/manual/en/class.mongodate.php
 .. _MongoGridFSFile: http://php.net/manual/en/class.mongogridfsfile.php
 .. _MongoId: http://php.net/manual/en/class.mongoid.php
-.. _MongoMaxKey: http://php.net/manual/en/class.mongomaxkey.php
-.. _MongoMinKey: http://php.net/manual/en/class.mongominkey.php
-.. _MongoTimestamp: http://php.net/manual/en/class.mongotimestamp.php
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>
