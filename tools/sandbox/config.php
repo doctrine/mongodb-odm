@@ -1,5 +1,6 @@
 <?php
 
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -11,6 +12,7 @@ if (!file_exists($file = __DIR__.'/../../vendor/autoload.php')) {
 
 $loader = require_once $file;
 $loader->add('Documents', __DIR__);
+AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
 $connection = new Connection();
 
@@ -23,7 +25,5 @@ $config->setDefaultDB('doctrine_odm_sandbox');
 // $config->setLoggerCallable(function(array $log) { print_r($log); });
 // $config->setMetadataCacheImpl(new Doctrine\Common\Cache\ApcCache());
 $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/Documents'));
-
-AnnotationDriver::registerAnnotationClasses();
 
 $dm = DocumentManager::create($connection, $config);
