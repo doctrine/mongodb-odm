@@ -41,7 +41,7 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
     protected $groups;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", simple=true, cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument="Group", storeAs="id", cascade={"all"}) */
     protected $groupsSimple;
 
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}, strategy="addToSet") */
@@ -56,7 +56,7 @@ class User extends BaseDocument
     /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
     protected $account;
 
-    /** @ODM\ReferenceOne(targetDocument="Account", simple=true, cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument="Account", storeAs="id", cascade={"all"}) */
     protected $accountSimple;
 
     /** @ODM\Field(type="int") */

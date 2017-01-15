@@ -231,7 +231,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-            'simple' => true,
+            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
         ));
     }
 
@@ -247,7 +247,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-            'simple' => 'true',
+            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
         ));
     }
 
@@ -319,7 +319,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-            'simple' => true,
+            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
         );
 
         $cm->addInheritedAssociationMapping($mapping);

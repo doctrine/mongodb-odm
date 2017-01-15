@@ -107,7 +107,7 @@ class GH602User
     /** @ODM\Field(name="user_deleted", type="bool") */
     public $deleted = false;
 
-    /** @ODM\ReferenceMany(targetDocument="GH602Thing", inversedBy="likedBy", simple=true) */
+    /** @ODM\ReferenceMany(targetDocument="GH602Thing", inversedBy="likedBy", storeAs="id") */
     public $likes;
 
     public function __construct()
