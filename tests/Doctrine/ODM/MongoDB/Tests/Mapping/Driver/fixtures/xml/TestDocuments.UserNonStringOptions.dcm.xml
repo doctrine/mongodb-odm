@@ -7,7 +7,7 @@
 
     <document name="TestDocuments\UserNonStringOptions" slave-okay="false">
         <field name="id" id="true" />
-        <reference-one target-document="Documents\Profile" field="profile" simple="true" orphan-removal="true" />
-        <reference-many target-document="Documents\Group" field="groups" simple="false" orphan-removal="" limit="0" skip="2" />
+        <reference-one target-document="Documents\Profile" field="profile" store-as="id" orphan-removal="true" />
+        <reference-many target-document="Documents\Group" field="groups" orphan-removal="" limit="0" skip="2" />
     </document>
 </doctrine-mongo-mapping>
