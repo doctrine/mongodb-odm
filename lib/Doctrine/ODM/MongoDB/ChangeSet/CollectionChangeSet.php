@@ -27,7 +27,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
  * CollectionChangeSet::getOldValue and CollectionChangeSet::getNewValue will return same instance of collection
  * since only its value was changed.
  */
-final class CollectionChangeSet implements \ArrayAccess, ChangedValue
+final class CollectionChangeSet implements ChangedValue
 {
     /**
      * @var PersistentCollectionInterface
@@ -106,34 +106,5 @@ final class CollectionChangeSet implements \ArrayAccess, ChangedValue
     public function getOldValue()
     {
         return $this->collection;
-    }
-
-    /** ArrayAccess implementation for backward compatibility */
-
-    /** {@inheritdoc} */
-    public function offsetExists($offset)
-    {
-        return in_array($offset, [0, 1]);
-    }
-
-    /** {@inheritdoc} */
-    public function offsetGet($offset)
-    {
-        if (! $this->offsetExists($offset)) {
-            throw new \OutOfBoundsException();
-        }
-        return $this->collection;
-    }
-
-    /** {@inheritdoc} */
-    public function offsetSet($offset, $value)
-    {
-        throw new \BadMethodCallException('Not allowed.');
-    }
-
-    /** {@inheritdoc} */
-    public function offsetUnset($offset)
-    {
-        throw new \BadMethodCallException('Not allowed.');
     }
 }
