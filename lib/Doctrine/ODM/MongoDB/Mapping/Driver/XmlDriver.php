@@ -294,7 +294,6 @@ class XmlDriver extends FileDriver
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
             'type'             => $type,
             'reference'        => true,
-            'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false, // deprecated
             'storeAs'          => isset($attributes['store-as']) ? (string) $attributes['store-as'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'collectionClass'  => isset($attributes['collection-class']) ? (string) $attributes['collection-class'] : null,

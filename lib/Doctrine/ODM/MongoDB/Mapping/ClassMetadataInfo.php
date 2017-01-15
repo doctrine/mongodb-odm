@@ -1378,16 +1378,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             $mapping['nullable'] = false;
         }
 
-        // Synchronize the "simple" and "storeAs" mapping information for backwards compatibility
-        if (isset($mapping['simple']) && ($mapping['simple'] === true || $mapping['simple'] === 'true')) {
-            $mapping['storeAs'] = ClassMetadataInfo::REFERENCE_STORE_AS_ID;
-            @trigger_error('"simple" attribute of a reference is deprecated - use storeAs="id" instead.', E_USER_DEPRECATED);
-        }
-        // Provide the correct value for the "simple" field for backwards compatibility
-        if (isset($mapping['storeAs'])) {
-            $mapping['simple'] = $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID;
-        }
-
         if (isset($mapping['reference'])
             && isset($mapping['storeAs'])
             && $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID
