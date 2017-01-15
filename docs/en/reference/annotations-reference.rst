@@ -883,8 +883,6 @@ Optional attributes:
 -
     targetDocument - A |FQCN| of the target document.
 -
-    simple - deprecated (use ``storeAs: id``)
--
     storeAs - Indicates how to store the reference. ``id`` uses ``MongoId``,
     ``dbRef`` uses a `DBRef`_ without ``$db`` value and ``dbRefWithDb`` stores
     a full `DBRef`_ (``$ref``, ``$id``, and ``$db``). Note that ``id``
@@ -952,8 +950,6 @@ Optional attributes:
 
 -
     targetDocument - A |FQCN| of the target document.
--
-    simple - deprecated (use ``storeAs: id``)
 -
     storeAs - Indicates how to store the reference. ``id`` uses ``MongoId``,
     ``dbRef`` uses a `DBRef`_ without ``$db`` value and ``dbRefWithDb`` stores
