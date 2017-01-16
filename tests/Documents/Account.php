@@ -13,7 +13,7 @@ class Account
     /** @ODM\Field */
     private $name;
 
-    /** @ODM\ReferenceOne */
+    /** @ODM\ReferenceOne(storeAs="dbRefWithDb") */
     protected $user;
 
     public function getId()
