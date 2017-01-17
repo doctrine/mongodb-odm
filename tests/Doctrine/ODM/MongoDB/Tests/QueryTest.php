@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\QueryBuilder;
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class QueryTest extends BaseTest
@@ -46,8 +46,8 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $users = $query->execute();
 
-        $this->assertInstanceOf('Doctrine\MongoDB\CursorInterface', $users);
-        $this->assertCount(2, $users);
+        $this->assertInstanceOf(Cursor::class, $users);
+        $this->assertCount(2, $users->toArray());
     }
 
     public function testReferences()
@@ -74,7 +74,7 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($kris, $query->getSingleResult());
     }
 
@@ -100,7 +100,7 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($kris, $query->getSingleResult());
     }
 
@@ -127,7 +127,7 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($kris, $query->getSingleResult());
     }
 
@@ -159,7 +159,7 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($jon, $query->getSingleResult());
     }
 
@@ -188,7 +188,7 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($jon, $query->getSingleResult());
     }
 
@@ -219,7 +219,7 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($jon, $query->getSingleResult());
     }
 

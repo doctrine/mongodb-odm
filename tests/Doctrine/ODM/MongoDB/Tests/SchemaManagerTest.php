@@ -44,6 +44,7 @@ class SchemaManagerTest extends TestCase
 
     public function setUp()
     {
+        $this->markTestSkipped('Tests need to be rewritten without mocks');
         $this->dm = $this->getMockDocumentManager();
 
         $cmf = new ClassMetadataFactory();
