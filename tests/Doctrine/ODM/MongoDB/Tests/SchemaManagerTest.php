@@ -2,11 +2,13 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\MongoDB\ArrayIterator;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\TestCase;
 
 class SchemaManagerTest extends TestCase
@@ -122,8 +124,8 @@ class SchemaManagerTest extends TestCase
 
         $collection = $this->documentCollections[\Documents\CmsArticle::class];
         $collection->expects($this->once())
-            ->method('getIndexInfo')
-            ->will($this->returnValue(array()));
+            ->method('listIndexes')
+            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator([]))));
         $collection->expects($this->once())
             ->method('ensureIndex');
         $collection->expects($this->any())
@@ -143,13 +145,14 @@ class SchemaManagerTest extends TestCase
             }));
 
         $collection = $this->documentCollections[\Documents\CmsArticle::class];
+        $indexes = [[
+            'v' => 1,
+            'key' => array('topic' => -1),
+            'name' => 'topic_-1'
+        ]];
         $collection->expects($this->once())
             ->method('getIndexInfo')
-            ->will($this->returnValue(array(array(
-                'v' => 1,
-                'key' => array('topic' => -1),
-                'name' => 'topic_-1'
-            ))));
+            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator($indexes))));
         $collection->expects($this->once())
             ->method('ensureIndex');
         $collection->expects($this->any())

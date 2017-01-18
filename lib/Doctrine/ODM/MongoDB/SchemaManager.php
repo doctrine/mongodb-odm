@@ -23,6 +23,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use MongoDB\Driver\WriteConcern;
+use MongoDB\Model\IndexInfo;
 
 class SchemaManager
 {
@@ -101,13 +102,13 @@ class SchemaManager
 
         $documentIndexes = $this->getDocumentIndexes($documentName);
         $collection = $this->dm->getDocumentCollection($documentName);
-        $mongoIndexes = $collection->getIndexInfo();
+        $mongoIndexes = iterator_to_array($collection->listIndexes());
 
         /* Determine which Mongo indexes should be deleted. Exclude the ID index
          * and those that are equivalent to any in the class metadata.
          */
         $self = $this;
-        $mongoIndexes = array_filter($mongoIndexes, function ($mongoIndex) use ($documentIndexes, $self) {
+        $mongoIndexes = array_filter($mongoIndexes, function (IndexInfo $mongoIndex) use ($documentIndexes, $self) {
             if ('_id_' === $mongoIndex['name']) {
                 return false;
             }
@@ -123,15 +124,11 @@ class SchemaManager
 
         // Delete indexes that do not exist in class metadata
         foreach ($mongoIndexes as $mongoIndex) {
-            if (isset($mongoIndex['name'])) {
-                /* Note: MongoCollection::deleteIndex() cannot delete
-                 * custom-named indexes, so use the deleteIndexes command.
-                 */
-                $collection->getDatabase()->command(array(
-                    'deleteIndexes' => $collection->getCollectionName(),
-                    'index' => $mongoIndex['name'],
-                ));
+            if (! isset($mongoIndex['name'])) {
+                continue;
             }
+
+            $collection->dropIndex($mongoIndex['name']);
         }
 
         $this->ensureDocumentIndexes($documentName, $timeout);
@@ -466,7 +463,7 @@ class SchemaManager
      * the unique index. Additionally, the background option is only
      * relevant to index creation and is not considered.
      *
-     * @param array $mongoIndex Mongo index data.
+     * @param array|IndexInfo $mongoIndex Mongo index data.
      * @param array $documentIndex Document index data.
      * @return bool True if the indexes are equivalent, otherwise false.
      */
