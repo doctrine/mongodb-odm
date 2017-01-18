@@ -426,7 +426,6 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->createQueryBuilder(User::class)
             ->field('account')->prime($primer)
             ->field('groups')->prime($primer)
-            ->slaveOkay(true)
             ->getQuery()
             ->toArray();
 
