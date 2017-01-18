@@ -128,7 +128,7 @@ class SchemaManager
                  * custom-named indexes, so use the deleteIndexes command.
                  */
                 $collection->getDatabase()->command(array(
-                    'deleteIndexes' => $collection->getName(),
+                    'deleteIndexes' => $collection->getCollectionName(),
                     'index' => $mongoIndex['name'],
                 ));
             }
@@ -592,9 +592,9 @@ class SchemaManager
      */
     public function enableShardingForDbByDocumentName($documentName)
     {
-        $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
+        $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $adminDb = $this->dm->getClient()->selectDatabase('admin');
-        $result = $adminDb->command(array('enableSharding' => $dbName));
+        $result = $adminDb->command(array('enableSharding' => $dbName))->toArray()[0];
 
         // Error code is only available with MongoDB 3.2. MongoDB 3.0 only returns a message
         // Thus, check code if it exists and fall back on error message
@@ -613,7 +613,7 @@ class SchemaManager
     private function runShardCollectionCommand($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
+        $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $shardKey = $class->getShardKey();
         $adminDb = $this->dm->getClient()->selectDatabase('admin');
 
@@ -622,7 +622,7 @@ class SchemaManager
                 'shardCollection' => $dbName . '.' . $class->getCollection(),
                 'key'             => $shardKey['keys']
             )
-        );
+        )->toArray()[0];
 
         return $result;
     }
