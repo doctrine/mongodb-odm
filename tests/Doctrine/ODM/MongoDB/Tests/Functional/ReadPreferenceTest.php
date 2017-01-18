@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Documents\Group;
 use Documents\User;
+use MongoDB\Driver\ReadPreference;
 
 class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -45,7 +46,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $cursor = $this->dm->getRepository('Documents\User')
             ->createQueryBuilder()
-            ->setReadPreference($readPreference, $tags)
+            ->setReadPreference(new ReadPreference($readPreference, $tags))
             ->getQuery()
             ->execute();
 
