@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\Driver\Exception\BulkWriteException;
 
 class GH580Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -32,8 +33,8 @@ class GH580Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         try {
             $this->dm->flush();
-            $this->fail('Expected MongoCursorException for duplicate value');
-        } catch (\MongoCursorException $e) {
+            $this->fail('Expected BulkWriteException for duplicate value');
+        } catch (BulkWriteException $e) {
         }
 
         $this->dm->clear($class);

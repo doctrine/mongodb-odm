@@ -39,6 +39,7 @@ use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Collection;
+use MongoDB\Driver\Exception\Exception as DriverException;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -255,7 +256,7 @@ class DocumentPersister
         if ($inserts) {
             try {
                 $this->collection->insertMany($inserts, $options);
-            } catch (\MongoException $e) {
+            } catch (DriverException $e) {
                 $this->queuedInserts = array();
                 throw $e;
             }
