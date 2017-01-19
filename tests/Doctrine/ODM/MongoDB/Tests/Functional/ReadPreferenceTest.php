@@ -117,9 +117,9 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function provideReadPreferenceHints()
     {
         return array(
-            array('primary', null),
-            array('secondaryPreferred', array()),
-            array('secondary', array(array('dc' => 'east'), array())),
+            array(ReadPreference::RP_PRIMARY, null),
+            array(ReadPreference::RP_SECONDARY_PREFERRED, array()),
+            array(ReadPreference::RP_SECONDARY, array(array('dc' => 'east'), array())),
         );
     }
 
