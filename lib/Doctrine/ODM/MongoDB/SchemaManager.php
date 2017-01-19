@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\Model\IndexInfo;
 
@@ -591,15 +592,14 @@ class SchemaManager
     {
         $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $adminDb = $this->dm->getClient()->selectDatabase('admin');
-        $result = $adminDb->command(array('enableSharding' => $dbName))->toArray()[0];
 
-        // Error code is only available with MongoDB 3.2. MongoDB 3.0 only returns a message
-        // Thus, check code if it exists and fall back on error message
-        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == 23) || $result['errmsg'] == 'already enabled') {
-            return;
+        try {
+            $adminDb->command(array('enableSharding' => $dbName));
+        } catch (RuntimeException $e) {
+            if ($e->getCode() !== 23 || $e->getMessage() === 'already enabled') {
+                throw MongoDBException::failedToEnableSharding($dbName, $e->getMessage());
+            }
         }
-
-        throw MongoDBException::failedToEnableSharding($dbName, $result['errmsg']);
     }
 
     /**
