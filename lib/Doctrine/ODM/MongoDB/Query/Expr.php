@@ -90,7 +90,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                 }
 
                 foreach ($keys as $key => $value) {
-                    $this->query[$this->currentField . '.$' . $key] = $dbRef['$' . $key];
+                    $this->query[$mapping['name'] . '.$' . $key] = $dbRef['$' . $key];
                 }
             }
         } else {
@@ -128,7 +128,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                 }
 
                 foreach ($keys as $key => $value) {
-                    $this->query[$this->currentField]['$elemMatch']['$' . $key] = $dbRef['$' . $key];
+                    $this->query[$mapping['name']]['$elemMatch']['$' . $key] = $dbRef['$' . $key];
                 }
             }
         } else {
