@@ -203,19 +203,6 @@ class SchemaManagerTest extends TestCase
         $this->schemaManager->createDocumentCollection(\Documents\CmsArticle::class);
     }
 
-    public function testCreateGridFSCollection()
-    {
-        $database = $this->documentDatabases[\Documents\File::class];
-        $database->expects($this->at(0))
-            ->method('createCollection')
-            ->with('File.files');
-        $database->expects($this->at(1))
-            ->method('createCollection')
-            ->with('File.chunks');
-
-        $this->schemaManager->createDocumentCollection(\Documents\File::class);
-    }
-
     public function testCreateCollections()
     {
         foreach ($this->documentDatabases as $class => $database) {

@@ -28,7 +28,6 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->setCustomRepositoryClass("UserRepository");
         $cm->setDiscriminatorField('disc');
         $cm->mapOneEmbedded(array('fieldName' => 'phonenumbers', 'targetDocument' => 'Bar'));
-        $cm->setFile('customFileProperty');
         $cm->setDistance('customDistanceProperty');
         $cm->setSlaveOkay(true);
         $cm->setShardKey(array('_id' => '1'));
@@ -55,7 +54,6 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInternalType('array', $cm->getFieldMapping('phonenumbers'));
         $this->assertCount(1, $cm->fieldMappings);
         $this->assertCount(1, $cm->associationMappings);
-        $this->assertEquals('customFileProperty', $cm->file);
         $this->assertEquals('customDistanceProperty', $cm->distance);
         $this->assertTrue($cm->slaveOkay);
         $this->assertEquals(array('keys' => array('_id' => 1), 'options' => array()), $cm->getShardKey());

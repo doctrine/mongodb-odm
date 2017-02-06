@@ -48,7 +48,6 @@ abstract class Type
     const BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
     const BINDATAMD5 = 'bin_md5';
     const BINDATACUSTOM = 'bin_custom';
-    const FILE = 'file';
     const HASH = 'hash';
     const COLLECTION = 'collection';
     const OBJECTID = 'object_id';
@@ -78,7 +77,6 @@ abstract class Type
         self::BINDATAUUIDRFC4122 => Types\BinDataUUIDRFC4122Type::class,
         self::BINDATAMD5 => Types\BinDataMD5Type::class,
         self::BINDATACUSTOM => Types\BinDataCustomType::class,
-        self::FILE => Types\FileType::class,
         self::HASH => Types\HashType::class,
         self::COLLECTION => Types\CollectionType::class,
         self::OBJECTID => Types\ObjectIdType::class,

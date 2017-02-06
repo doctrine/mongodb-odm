@@ -13,9 +13,6 @@ class File
     /** @ODM\Field(type="string") */
     private $name;
 
-    /** @ODM\File */
-    private $file;
-
     /** @ODM\Field(type="string") */
     private $filename;
 
@@ -41,16 +38,6 @@ class File
     public function getName()
     {
         return $this->name;
-    }
-
-    public function getFile()
-    {
-        return $this->file;
-    }
-
-    public function setFile($file)
-    {
-        $this->file = $file;
     }
 
     public function setFilename($filename)

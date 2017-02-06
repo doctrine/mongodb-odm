@@ -332,13 +332,6 @@ class SchemaManager
             throw new \InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or query result documents.');
         }
 
-        if ($class->isFile()) {
-            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection() . '.files');
-            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection() . '.chunks');
-
-            return;
-        }
-
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
             [

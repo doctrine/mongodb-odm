@@ -343,9 +343,7 @@ class DocumentManager implements ObjectManager
         if ( ! isset($this->documentCollections[$className])) {
             $db = $this->getDocumentDatabase($className);
 
-            $this->documentCollections[$className] = $metadata->isFile()
-                ? $db->selectGridFSBucket(['bucketName' => $collectionName])
-                : $db->selectCollection($collectionName);
+            $this->documentCollections[$className] = $db->selectCollection($collectionName);
         }
 
         $collection = $this->documentCollections[$className];

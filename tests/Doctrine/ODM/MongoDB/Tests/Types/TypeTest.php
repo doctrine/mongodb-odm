@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
-use Doctrine\MongoDB\GridFSFile;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -37,7 +36,6 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'binDataUuidRFC4122' => array(Type::getType(Type::BINDATAUUIDRFC4122), str_repeat('a', 16)),
             'binDataMD5' => array(Type::getType(Type::BINDATAMD5), md5('ODM')),
             'binDataCustom' => array(Type::getType(Type::BINDATACUSTOM), 'foobarbaz'),
-            'file' => array(Type::getType(Type::FILE), new GridFSFile()),
             'hash' => array(Type::getType(Type::HASH), array('foo' => 'bar')),
             'collection' => array(Type::getType(Type::COLLECTION), array('foo', 'bar')),
             'objectId' => array(Type::getType(Type::OBJECTID), "507f1f77bcf86cd799439011"),

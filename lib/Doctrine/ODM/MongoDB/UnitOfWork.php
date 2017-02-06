@@ -24,7 +24,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
-use Doctrine\MongoDB\GridFSFile;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
@@ -627,11 +626,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $value = $refProp->getValue($document);
-            if (isset($mapping['file']) && ! $value instanceof GridFSFile) {
-                $value = new GridFSFile($value);
-                $class->reflFields[$name]->setValue($document, $value);
-                $actualData[$name] = $value;
-            } elseif ((isset($mapping['association']) && $mapping['type'] === 'many')
+            if ((isset($mapping['association']) && $mapping['type'] === 'many')
                 && $value !== null && ! ($value instanceof PersistentCollectionInterface)) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
                 if ( ! $value instanceof Collection) {
@@ -745,13 +740,12 @@ class UnitOfWork implements PropertyChangedListener
 
                 // skip if value has not changed
                 if ($orgValue === $actualValue) {
-                    if ($actualValue instanceof PersistentCollectionInterface) {
-                        if (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue)) {
-                            // consider dirty collections as changed as well
-                            continue;
-                        }
-                    } elseif ( ! (isset($class->fieldMappings[$propName]['file']) && $actualValue->isDirty())) {
-                        // but consider dirty GridFSFile instances as changed
+                    if (!$actualValue instanceof PersistentCollectionInterface) {
+                        continue;
+                    }
+
+                    if (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue)) {
+                        // consider dirty collections as changed as well
                         continue;
                     }
                 }

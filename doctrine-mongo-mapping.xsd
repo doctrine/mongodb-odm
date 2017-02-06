@@ -82,7 +82,6 @@
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="set" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
     <xs:attribute name="embed" type="xs:boolean" />
-    <xs:attribute name="file" type="xs:boolean" />
     <xs:attribute name="distance" type="xs:boolean" />
     <xs:attribute name="reference" type="xs:boolean" />
     <xs:attribute name="version" type="xs:boolean" />

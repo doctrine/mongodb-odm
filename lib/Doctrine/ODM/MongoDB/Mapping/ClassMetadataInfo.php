@@ -211,12 +211,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $identifier;
 
     /**
-     * READ-ONLY: The field that stores a file reference and indicates the
-     * document is a file and should be stored on the MongoGridFS.
-     */
-    public $file;
-
-    /**
      * READ-ONLY: The field that stores the calculated distance when performing geo spatial
      * queries.
      */
@@ -1219,36 +1213,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Returns TRUE if this Document is a file to be stored on the MongoGridFS FALSE otherwise.
-     *
-     * @return boolean
-     */
-    public function isFile()
-    {
-        return $this->file ? true : false;
-    }
-
-    /**
-     * Returns the file field name.
-     *
-     * @return string $file The file field name.
-     */
-    public function getFile()
-    {
-        return $this->file;
-    }
-
-    /**
-     * Set the field name that stores the grid file.
-     *
-     * @param string $file
-     */
-    public function setFile($file)
-    {
-        $this->file = $file;
-    }
-
-    /**
      * Returns the distance field name.
      *
      * @return string $distance The distance field name.
@@ -1343,13 +1307,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         $mapping['isCascadeMerge'] = in_array('merge', $cascades);
         $mapping['isCascadeDetach'] = in_array('detach', $cascades);
 
-        if (isset($mapping['type']) && $mapping['type'] === 'file') {
-            $mapping['file'] = true;
-        }
-        if (isset($mapping['file']) && $mapping['file'] === true) {
-            $this->file = $mapping['fieldName'];
-            $mapping['name'] = 'file';
-        }
         if (isset($mapping['distance']) && $mapping['distance'] === true) {
             $this->distance = $mapping['fieldName'];
         }
@@ -1506,18 +1463,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
             throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
         }
-    }
-
-    /**
-     * Map a MongoGridFSFile.
-     *
-     * @param array $mapping The mapping information.
-     */
-    public function mapFile(array $mapping)
-    {
-        $mapping['file'] = true;
-        $mapping['type'] = 'file';
-        $this->mapField($mapping);
     }
 
     /**
