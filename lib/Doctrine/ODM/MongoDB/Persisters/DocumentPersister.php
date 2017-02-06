@@ -769,10 +769,9 @@ class DocumentPersister
             if (isset($mapping['skip'])) {
                 $options['skip'] = $mapping['skip'];
             }
-            // @todo Convert read preference
-//            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-//                $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
-//            }
+            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+                $options['readPreference'] = $hints[Query::HINT_READ_PREFERENCE];
+            }
 
             $cursor = $mongoCollection->find($criteria, $options);
             $documents = $cursor->toArray();
@@ -833,10 +832,9 @@ class DocumentPersister
             $qb->skip($mapping['skip']);
         }
 
-        // @todo Convert read preference
-//        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-//            $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
-//        }
+        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+            $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE]);
+        }
 
         foreach ($mapping['prime'] as $field) {
             $qb->field($field)->prime(true);

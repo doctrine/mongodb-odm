@@ -39,7 +39,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /** @deprecated */
     const HINT_SLAVE_OKAY = 2;
     const HINT_READ_PREFERENCE = 3;
-    const HINT_READ_PREFERENCE_TAGS = 4;
     const HINT_READ_ONLY = 5;
 
     /**
@@ -119,7 +118,6 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
         if (isset($query['readPreference'])) {
             $this->unitOfWorkHints[self::HINT_READ_PREFERENCE] = $query['readPreference'];
-            $this->unitOfWorkHints[self::HINT_READ_PREFERENCE_TAGS] = $query['readPreferenceTags'];
         }
     }
 

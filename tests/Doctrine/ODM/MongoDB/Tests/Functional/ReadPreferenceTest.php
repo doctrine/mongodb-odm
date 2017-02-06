@@ -29,20 +29,18 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->execute();
 
         $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $cursor->getHints());
-        $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE_TAGS, $cursor->getHints());
 
         $user = $cursor->getSingleResult();
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->getGroups());
         $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $user->getGroups()->getHints());
-        $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE_TAGS, $user->getGroups()->getHints());
     }
 
     /**
      * @group replication_lag
      * @dataProvider provideReadPreferenceHints
      */
-    public function testHintIsSetOnQuery($readPreference, array $tags = null)
+    public function testHintIsSetOnQuery($readPreference, array $tags = [])
     {
         $cursor = $this->dm->getRepository('Documents\User')
             ->createQueryBuilder()
@@ -64,7 +62,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      * @group replication_lag
      * @dataProvider provideReadPreferenceHints
      */
-    public function testHintIsSetOnCursor($readPreference, array $tags = null)
+    public function testHintIsSetOnCursor($readPreference, array $tags = [])
     {
         $cursor = $this->dm->getRepository('Documents\User')
             ->createQueryBuilder()
@@ -72,8 +70,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->execute();
 
         $cursor->setHints(array(
-            Query::HINT_READ_PREFERENCE => $readPreference,
-            Query::HINT_READ_PREFERENCE_TAGS => $tags,
+            Query::HINT_READ_PREFERENCE => new ReadPreference($readPreference, $tags),
         ));
 
         $this->assertReadPreferenceHint($readPreference, $cursor->getHints());
@@ -90,7 +87,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      * @group replication_lag
      * @dataProvider provideReadPreferenceHints
      */
-    public function testHintIsSetOnPersistentCollection($readPreference, array $tags = null)
+    public function testHintIsSetOnPersistentCollection($readPreference, array $tags = [])
     {
         $cursor = $this->dm->getRepository('Documents\User')
             ->createQueryBuilder()
@@ -98,7 +95,6 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->execute();
 
         $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $cursor->getHints());
-        $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE_TAGS, $cursor->getHints());
 
         $user = $cursor->getSingleResult();
         $groups = $user->getGroups();
@@ -106,8 +102,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $groups);
 
         $groups->setHints(array(
-            Query::HINT_READ_PREFERENCE => $readPreference,
-            Query::HINT_READ_PREFERENCE_TAGS => $tags,
+            Query::HINT_READ_PREFERENCE => new ReadPreference($readPreference, $tags),
         ));
 
         $this->assertReadPreferenceHint($readPreference, $user->getGroups()->getHints());
@@ -116,11 +111,11 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function provideReadPreferenceHints()
     {
-        return array(
-            array(ReadPreference::RP_PRIMARY, null),
-            array(ReadPreference::RP_SECONDARY_PREFERRED, array()),
-            array(ReadPreference::RP_SECONDARY, array(array('dc' => 'east'), array())),
-        );
+        return [
+            [ReadPreference::RP_PRIMARY, []],
+            [ReadPreference::RP_SECONDARY_PREFERRED, []],
+            [ReadPreference::RP_SECONDARY, [['dc' => 'east'], []]],
+        ];
     }
 
     public function testDocumentLevelReadPreferenceIsSetInCollection()
@@ -165,12 +160,14 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     private function assertReadPreferenceHint($readPreference, $hints)
     {
-        $this->assertEquals($readPreference, $hints[Query::HINT_READ_PREFERENCE]);
+        $this->assertInstanceOf(ReadPreference::class, $hints[Query::HINT_READ_PREFERENCE]);
+        $this->assertEquals($readPreference, $hints[Query::HINT_READ_PREFERENCE]->getMode());
     }
 
-    private function assertReadPreferenceTagsHint(array $tags = null, $hints)
+    private function assertReadPreferenceTagsHint(array $tags = [], $hints)
     {
-        $this->assertEquals($tags, $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+        $this->assertInstanceOf(ReadPreference::class, $hints[Query::HINT_READ_PREFERENCE]);
+        $this->assertEquals($tags, $hints[Query::HINT_READ_PREFERENCE]->getTagSets());
     }
 }
 
