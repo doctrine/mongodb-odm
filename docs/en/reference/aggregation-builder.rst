@@ -1,6 +1,9 @@
 Aggregation builder
 ===================
 
+.. note::
+    This feature is introduced in version 1.2
+
 The aggregation framework provides an easy way to process records and return
 computed results. The aggregation builder helps to build complex aggregation
 pipelines.
