@@ -406,10 +406,15 @@ Query for active administrator users:
 .. code-block:: php
 
     <?php
-
+    
     $qb = $dm->createQueryBuilder('User')
         ->field('type')->equals('admin')
         ->field('active')->equals(true);
+    
+    // Or using addAnd()
+    $qb = $dm->createQueryBuilder('User');
+    $qb->addAnd($qb->expr()->field('type')->equals('admin'));
+    $qb->addAnd($qb->expr()->field('active')->equals(true));
 
 Query for articles that have some tags:
 
@@ -556,7 +561,7 @@ in the Mongo docs.
     <?php
 
     $qb = $dm->createQueryBuilder('Transaction')
-        ->field('field')->mod('field', array(10, 1));
+        ->field('field')->mod(10, 1);
 
 Read more about the
 `$mod operator <https://docs.mongodb.com/manual/reference/operator/query/mod/>`_ in the Mongo docs.
