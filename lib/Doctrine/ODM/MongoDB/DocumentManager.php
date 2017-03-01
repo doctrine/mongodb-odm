@@ -698,13 +698,15 @@ class DocumentManager implements ObjectManager
             return $class->getDatabaseIdentifierValue($id);
         }
 
+        $prefix = ClassMetadataInfo::getReferencePrefix($referenceMapping['storeAs']);
+
         $dbRef = array(
-            '$ref' => $class->getCollection(),
-            '$id'  => $class->getDatabaseIdentifierValue($id),
+            $prefix . 'ref' => $class->getCollection(),
+            $prefix . 'id'  => $class->getDatabaseIdentifierValue($id),
         );
 
-        if ($referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
-            $dbRef['$db'] = $this->getDocumentDatabase($class->name)->getName();
+        if ($referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB || $referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_REF_WITH_DB) {
+            $dbRef[$prefix . 'db'] = $this->getDocumentDatabase($class->name)->getName();
         }
 
         /* If the class has a discriminator (field and value), use it. A child
