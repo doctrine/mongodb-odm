@@ -203,9 +203,10 @@ listeners:
 
 - 
    Lifecycle Callbacks are methods on the document classes that are
-   called when the event is triggered. They receive absolutely no
-   arguments and are specifically designed to allow changes inside the
-   document classes state.
+   called when the event is triggered. They receive instances
+   of ``Doctrine\ODM\MongoDB\Event\LifecycleEventArgs`` (see relevant 
+   examples below) as arguments and are specifically designed to allow 
+   changes inside the document classes state.
 - 
    Lifecycle Event Listeners are classes with specific callback
    methods that receives some kind of ``EventArgs`` instance which
