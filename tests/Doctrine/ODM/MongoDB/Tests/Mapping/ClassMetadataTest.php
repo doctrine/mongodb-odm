@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Documents\CmsUser;
 
 class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -204,5 +205,38 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $cm = new ClassMetadata('Documents\CmsUser');
         $cm->mapField(array('fieldName' => 'namee', 'columnName' => 'name', 'type' => 'string'));
+    }
+
+    /**
+     * @param ClassMetadata $cm
+     * @dataProvider dataProviderMetadataClasses
+     */
+    public function testEmbeddedDocumentWithDiscriminator(ClassMetadata $cm)
+    {
+        $cm->setDiscriminatorField('discriminator');
+        $cm->setDiscriminatorValue('discriminatorValue');
+
+        $serialized = serialize($cm);
+        $cm = unserialize($serialized);
+
+        $this->assertSame('discriminator', $cm->discriminatorField);
+        $this->assertSame('discriminatorValue', $cm->discriminatorValue);
+    }
+
+    public static function dataProviderMetadataClasses()
+    {
+        $document = new ClassMetadata(CmsUser::class);
+
+        $embeddedDocument = new ClassMetadata(CmsUser::class);
+        $embeddedDocument->isEmbeddedDocument = true;
+
+        $mappedSuperclass = new ClassMetadata(CmsUser::class);
+        $mappedSuperclass->isMappedSuperclass = true;
+
+        return [
+            'document' => [$document],
+            'mappedSuperclass' => [$mappedSuperclass],
+            'embeddedDocument' => [$embeddedDocument],
+        ];
     }
 }
