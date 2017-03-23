@@ -445,8 +445,8 @@ trait PersistentCollectionTrait
         if ($this->mapping['isInverseSide'] && ! $this->initialized) {
             $documentPersister = $this->uow->getDocumentPersister(get_class($this->owner));
             $count += empty($this->mapping['repositoryMethod'])
-                ? $documentPersister->createReferenceManyInverseSideQuery($this)->count()
-                : $documentPersister->createReferenceManyWithRepositoryMethodCursor($this)->count();
+                ? $documentPersister->createReferenceManyInverseSideQuery($this)->count(true)
+                : $documentPersister->createReferenceManyWithRepositoryMethodCursor($this)->count(true);
         }
 
         return $count + ($this->initialized ? 0 : count($this->mongoData));
