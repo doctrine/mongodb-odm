@@ -5,6 +5,16 @@ This changelog references the relevant changes done in 1.1 minor versions. If up
 1.0.x branch, please review
 [Upgrade Path](https://github.com/doctrine/mongodb-odm/blob/master/CHANGELOG-1.1.md#upgrade-path).
 
+1.1.4 (2017-03-27)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.1.4 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.1.4).
+
+* [#1572](https://github.com/doctrine/mongodb-odm/pull/1572) fixes calling `count()` on an inverse persistent collection with `limit` or `skip` in the mapping
+* [#1556](https://github.com/doctrine/mongodb-odm/pull/1556) fixes an issue where inheritance mapping wasn't always properly serialized
+* [#1554](https://github.com/doctrine/mongodb-odm/pull/1554) fixes field name translation for references in query builder
+
 1.1.3 (2017-01-14)
 ------------------
 
