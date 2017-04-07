@@ -123,7 +123,7 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'customRepositoryClassName';
         }
 
-        if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE) {
+        if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE || $this->discriminatorField !== null) {
             $serialized[] = 'inheritanceType';
             $serialized[] = 'discriminatorField';
             $serialized[] = 'discriminatorValue';

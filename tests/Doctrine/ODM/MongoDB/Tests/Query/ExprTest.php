@@ -206,11 +206,11 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($expected));
         $class->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('targetDocument' => 'Foo')));
+            ->will($this->returnValue(array('targetDocument' => 'Foo', 'name' => 'foo')));
 
         $expr = new Expr($dm);
         $expr->setClassMetadata($class);
-        $expr->field('foo')->references(new \stdClass());
+        $expr->field('bar')->references(new \stdClass());
 
         $this->assertEquals($expected, $expr->getQuery(), '->references() uses just $id if a targetDocument is set');
     }
@@ -239,11 +239,11 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($expected));
         $class->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue(array('name' => 'foo')));
 
         $expr = new Expr($dm);
         $expr->setClassMetadata($class);
-        $expr->field('foo')->references(new \stdClass());
+        $expr->field('bar')->references(new \stdClass());
 
         $this->assertEquals($expected, $expr->getQuery(), '->references() uses all keys if no targetDocument is set');
     }
@@ -272,11 +272,11 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($expected));
         $class->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF)));
+            ->will($this->returnValue(array('storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, 'name' => 'foo')));
 
         $expr = new Expr($dm);
         $expr->setClassMetadata($class);
-        $expr->field('foo')->references(new \stdClass());
+        $expr->field('bar')->references(new \stdClass());
 
         $this->assertEquals($expected, $expr->getQuery(), '->references() uses some keys if storeAs=dbRef is set');
     }
