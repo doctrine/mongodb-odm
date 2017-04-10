@@ -4,9 +4,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use TestDocuments\PrimedCollectionDocument;
 
 require_once 'fixtures/InvalidPartialFilterDocument.php';
 require_once 'fixtures/PartialFilterDocument.php';
+require_once 'fixtures/PrimedCollectionDocument.php';
 require_once 'fixtures/User.php';
 require_once 'fixtures/EmbeddedDocument.php';
 require_once 'fixtures/QueryResultDocument.php';
@@ -164,6 +166,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'limit' => null,
             'skip' => null,
             'orphanRemoval' => true,
+            'prime' => [],
         ), $classMetadata->fieldMappings['profile']);
 
         $this->assertEquals(array(
@@ -192,6 +195,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'limit' => null,
             'skip' => null,
             'orphanRemoval' => false,
+            'prime' => [],
         ), $classMetadata->fieldMappings['account']);
 
         $this->assertEquals(array(
@@ -220,6 +224,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'limit' => null,
             'skip' => null,
             'orphanRemoval' => false,
+            'prime' => [],
         ), $classMetadata->fieldMappings['groups']);
 
         $this->assertEquals(
@@ -324,5 +329,69 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ], $classMetadata->getIndexes());
+    }
+
+    public function testCollectionPrimers()
+    {
+        $classMetadata = new ClassMetadata(PrimedCollectionDocument::class);
+        $this->driver->loadMetadataForClass(PrimedCollectionDocument::class, $classMetadata);
+
+        $this->assertEquals([
+            'association' => 2,
+            'fieldName' => 'references',
+            'name' => 'references',
+            'type' => 'many',
+            'reference' => true,
+            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'simple' => false,
+            'targetDocument' => PrimedCollectionDocument::class,
+            'collectionClass' => null,
+            'cascade' => [],
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => false,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'inversedBy' => null,
+            'mappedBy' => null,
+            'repositoryMethod' => null,
+            'limit' => null,
+            'skip' => null,
+            'orphanRemoval' => false,
+            'prime' => [],
+        ], $classMetadata->fieldMappings['references']);
+
+        $this->assertEquals([
+            'association' => 2,
+            'fieldName' => 'inverseMappedBy',
+            'name' => 'inverseMappedBy',
+            'type' => 'many',
+            'reference' => true,
+            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'simple' => false,
+            'targetDocument' => PrimedCollectionDocument::class,
+            'collectionClass' => null,
+            'cascade' => [],
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => true,
+            'isOwningSide' => false,
+            'nullable' => false,
+            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'inversedBy' => null,
+            'mappedBy' => 'references',
+            'repositoryMethod' => null,
+            'limit' => null,
+            'skip' => null,
+            'orphanRemoval' => false,
+            'prime' => ['references'],
+        ], $classMetadata->fieldMappings['inverseMappedBy']);
     }
 }

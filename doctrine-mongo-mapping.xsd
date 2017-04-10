@@ -157,6 +157,7 @@
       <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0"/>
       <xs:element name="sort" type="odm:sort-map" minOccurs="0" />
       <xs:element name="criteria" type="odm:criteria-map" minOccurs="0" />
+      <xs:element name="prime" type="odm:primers" minOccurs="0" />
     </xs:sequence>
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="collection-class" type="xs:string" />
@@ -193,6 +194,16 @@
     <xs:sequence>
       <xs:element name="criteria" type="odm:criteria-type" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="primers">
+    <xs:sequence>
+      <xs:element name="field" type="odm:primer-field" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="primer-field">
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
   </xs:complexType>
 
   <xs:complexType name="emptyType"/>

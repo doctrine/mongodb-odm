@@ -270,7 +270,7 @@ class YamlDriver extends FileDriver
     {
         $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
-            'cascade'          => isset($reference['cascade']) ? $reference['cascade'] : null,
+            'cascade'          => isset($reference['cascade']) ? $reference['cascade'] : [],
             'orphanRemoval'    => isset($reference['orphanRemoval']) ? $reference['orphanRemoval'] : false,
             'type'             => $type,
             'reference'        => true,
@@ -285,6 +285,7 @@ class YamlDriver extends FileDriver
             'repositoryMethod' => isset($reference['repositoryMethod']) ? (string) $reference['repositoryMethod'] : null,
             'limit'            => isset($reference['limit']) ? (integer) $reference['limit'] : null,
             'skip'             => isset($reference['skip']) ? (integer) $reference['skip'] : null,
+            'prime'            => isset($reference['prime']) ? $reference['prime'] : [],
         );
         if (isset($reference['name'])) {
             $mapping['name'] = $reference['name'];

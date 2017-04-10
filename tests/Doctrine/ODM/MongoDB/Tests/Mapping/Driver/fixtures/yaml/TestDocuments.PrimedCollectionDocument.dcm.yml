@@ -1,0 +1,15 @@
+TestDocuments\PrimedCollectionDocument:
+  db: documents
+  collection: primed_collection
+  fields:
+    id:
+      fieldName: id
+      id: true
+  referenceMany:
+    references:
+      targetDocument: TestDocuments\PrimedCollectionDocument
+    inverseMappedBy:
+      targetDocument: TestDocuments\PrimedCollectionDocument
+      mappedBy: references
+      prime:
+        - references

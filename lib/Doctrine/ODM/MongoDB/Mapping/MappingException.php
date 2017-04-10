@@ -385,4 +385,15 @@ class MappingException extends BaseMappingException
     {
         return new self("Cannot use class '$className' as collection for out stage. Sharded collections are not allowed.");
     }
+
+    /**
+     * @param string $className
+     * @param string $fieldName
+     *
+     * @return MappingException
+     */
+    public static function referencePrimersOnlySupportedForInverseReferenceMany($className, $fieldName)
+    {
+        return new self("Cannot use reference priming on '$fieldName' in class '$className'. Reference priming is only supported for inverse references");
+    }
 }
