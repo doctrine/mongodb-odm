@@ -538,4 +538,88 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf(Proxy::class, $currency);
         $this->assertTrue($currency->__isInitialized());
     }
+
+    public function testPrimeReferencesInReferenceMany()
+    {
+        $commentAuthor = new User();
+        $this->dm->persist($commentAuthor);
+
+        $postAuthor = new User();
+        $this->dm->persist($postAuthor);
+
+        $comment = new Comment('foo', new \DateTime());
+        $comment->author = $commentAuthor;
+        $this->dm->persist($comment);
+
+        $post = new BlogPost('foo');
+        $post->setUser($postAuthor);
+        $post->addComment($comment);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var BlogPost $post */
+        $post = $this->dm->find(BlogPost::class, $post->id);
+        $this->assertInstanceOf(BlogPost::class, $post);
+
+        $comment = $post->comments->first();
+        $this->assertInstanceOf(Proxy::class, $comment->author);
+        $this->assertTrue($comment->author->__isInitialized());
+    }
+
+    public function testPrimeReferencesInReferenceManyWithRepositoryMethodThrowsException()
+    {
+        $commentAuthor = new User();
+        $this->dm->persist($commentAuthor);
+
+        $postAuthor = new User();
+        $this->dm->persist($postAuthor);
+
+        $comment = new Comment('foo', new \DateTime());
+        $comment->author = $commentAuthor;
+        $this->dm->persist($comment);
+
+        $post = new BlogPost('foo');
+        $post->setUser($postAuthor);
+        $post->addComment($comment);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var BlogPost $post */
+        $post = $this->dm->find(BlogPost::class, $post->id);
+        $this->assertInstanceOf(BlogPost::class, $post);
+
+        $this->expectException(\BadMethodCallException::class);
+
+        $post->repoCommentsWithPrimer->first();
+    }
+
+    public function testPrimeReferencesInReferenceManyWithRepositoryMethodEager()
+    {
+        $commentAuthor = new User();
+        $this->dm->persist($commentAuthor);
+
+        $postAuthor = new User();
+        $this->dm->persist($postAuthor);
+
+        $comment = new Comment('foo', new \DateTime());
+        $comment->author = $commentAuthor;
+        $this->dm->persist($comment);
+
+        $post = new BlogPost('foo');
+        $post->setUser($postAuthor);
+        $post->addComment($comment);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var BlogPost $post */
+        $post = $this->dm->find(BlogPost::class, $post->id);
+        $this->assertInstanceOf(BlogPost::class, $post);
+
+        $comment = $post->repoCommentsEager->first();
+        $this->assertInstanceOf(Proxy::class, $comment->author);
+        $this->assertTrue($comment->author->__isInitialized());
+    }
 }

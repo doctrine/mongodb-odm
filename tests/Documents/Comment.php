@@ -14,6 +14,9 @@ class Comment
     /** @ODM\Field(type="string") */
     public $text;
 
+    /** @ODM\ReferenceOne(targetDocument="User", cascade={"all"}) */
+    public $author;
+
     /** @ODM\ReferenceOne(targetDocument="BlogPost", inversedBy="comments", cascade={"all"}) */
     public $parent;
 
