@@ -1238,6 +1238,10 @@ Optional attributes:
 -
     collectionClass - A |FQCN| of class that implements ``Collection`` interface
     and is used to hold documents. Doctrine's ``ArrayCollection`` is used by default
+-
+    prime - A list of references contained in the target document that will be
+    initialized when the collection is loaded. Only allowed for inverse
+    references.
 
 .. code-block:: php
 

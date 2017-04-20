@@ -78,7 +78,7 @@ builder's ``prime()`` method allows us to do just that.
 
 In this case, priming will allow us to load all users and referenced accounts in
 two database queries. If the accounts had used an
-:ref:`inhertiance mapping <inheritance_mapping>`, priming might require several
+:ref:`inheritance mapping <inheritance_mapping>`, priming might require several
 queries (one per discriminated class name).
 
 .. note::
@@ -92,6 +92,40 @@ queries (one per discriminated class name).
     Hydration must be enabled in the query builder for priming to work properly.
     Disabling hydration will cause the DBRef to be returned for a referenced
     document instead of the hydrated document object.
+
+Inverse references
+------------------
+
+.. note::
+
+    This feature was added in version 1.2.
+
+When using inverse references (references mapped using ``mappedBy`` or
+``repositoryMethod``) you can also enable primers on one-to-many references by
+specifying them in the mapping:
+
+.. code-block:: php
+
+    <?php
+
+    /** @Document */
+    class User
+    {
+        /** @ReferenceMany(targetDocument="Account", prime={"user"}) */
+        private $accounts;
+    }
+
+When the collection is initialized, the configured primers are automatically
+added to the query.
+
+.. note::
+
+    When using inverse references with ``repositoryMethod``, be sure to return
+    an eager cursor from the repository method if you want to rely on primers
+    defined in the mapping. If the result is not an eager cursor, an exception
+    will be thrown and the collection won't be loaded. Also, any primers you
+    might have added in the ``repositoryMethod`` are overwritten with those
+    specified in the mapping.
 
 Primer Callback
 ---------------
