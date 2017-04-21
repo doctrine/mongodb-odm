@@ -1382,6 +1382,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             }
         }
 
+        if (!empty($mapping['prime']) && ($mapping['association'] !== self::REFERENCE_MANY || !$mapping['isInverseSide'])) {
+            throw MappingException::referencePrimersOnlySupportedForInverseReferenceMany($this->name, $mapping['fieldName']);
+        }
+
         $this->applyStorageStrategy($mapping);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;

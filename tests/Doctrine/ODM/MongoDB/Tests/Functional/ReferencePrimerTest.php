@@ -4,9 +4,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Documents\Account;
 use Documents\Agent;
+use Documents\BlogPost;
+use Documents\Comment;
 use Documents\Functional\EmbeddedWhichReferences;
 use Documents\Functional\EmbedNamed;
 use Documents\Functional\FavoritesUser;
@@ -37,7 +40,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->dm->createQueryBuilder('Documents\User')
+        $this->dm->createQueryBuilder(User::class)
             ->field('username')->prime(true)
             ->getQuery()
             ->toArray();
@@ -54,7 +57,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->dm->createQueryBuilder('Documents\User')
+        $this->dm->createQueryBuilder(User::class)
             ->field('simpleReferenceOneInverse')->prime(true)
             ->getQuery()
             ->toArray();
@@ -62,7 +65,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPrimeImpliesEagerCursor()
     {
-        $query = $this->dm->createQueryBuilder('Documents\User')
+        $query = $this->dm->createQueryBuilder(User::class)
             ->field('account')
             ->prime(true)
             ->getQuery()
@@ -77,7 +80,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testPrimeForbidsLazyCursor()
     {
-        $this->dm->createQueryBuilder('Documents\User')
+        $this->dm->createQueryBuilder(User::class)
             ->field('account')
             ->prime(true)
             ->eagerCursor(false);
@@ -85,7 +88,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testFieldPrimingCanBeToggled()
     {
-        $this->dm->createQueryBuilder('Documents\User')
+        $this->dm->createQueryBuilder(User::class)
             ->field('account')
             ->prime(true)
             ->prime(false)
@@ -97,7 +100,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testLazyCursorForbidsPrime()
     {
-        $this->dm->createQueryBuilder('Documents\User')
+        $this->dm->createQueryBuilder(User::class)
             ->eagerCursor(false)
             ->field('account')
             ->prime(true);
@@ -114,12 +117,12 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('account')->prime(true)
             ->field('groups')->prime(true);
 
         foreach ($qb->getQuery() as $user) {
-            $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user->getAccount());
+            $this->assertInstanceOf(Proxy::class, $user->getAccount());
             $this->assertTrue($user->getAccount()->__isInitialized());
 
             $this->assertCount(2, $user->getGroups());
@@ -128,8 +131,8 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
              * initialized, they will not be hydrated as proxy objects.
              */
             foreach ($user->getGroups() as $group) {
-                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $group);
-                $this->assertInstanceOf('Documents\Group', $group);
+                $this->assertNotInstanceOf(Proxy::class, $group);
+                $this->assertInstanceOf(Group::class, $group);
             }
         }
     }
@@ -152,19 +155,19 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\SimpleReferenceUser')
+        $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class)
             ->field('user')->prime(true)
             ->field('users')->prime(true);
 
         foreach ($qb->getQuery() as $simpleUser) {
-            $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $simpleUser->getUser());
+            $this->assertInstanceOf(Proxy::class, $simpleUser->getUser());
             $this->assertTrue($simpleUser->getUser()->__isInitialized());
 
             $this->assertCount(2, $simpleUser->getUsers());
 
             foreach ($simpleUser->getUsers() as $user) {
-                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user);
-                $this->assertInstanceOf('Documents\User', $user);
+                $this->assertNotInstanceOf(Proxy::class, $user);
+                $this->assertInstanceOf(User::class, $user);
             }
         }
     }
@@ -208,7 +211,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\Functional\EmbedNamed')
+        $qb = $this->dm->createQueryBuilder(EmbedNamed::class)
             ->field('embeddedDoc.referencedDoc')->prime(true)
             ->field('embeddedDoc.referencedDocs')->prime(true)
             ->field('embeddedDocs.referencedDoc')->prime(true)
@@ -216,21 +219,21 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         ;
 
         foreach ($qb->getQuery() as $root) {
-            $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $root->embeddedDoc);
-            $this->assertInstanceOf('Documents\Functional\EmbeddedWhichReferences', $root->embeddedDoc);
+            $this->assertNotInstanceOf(Proxy::class, $root->embeddedDoc);
+            $this->assertInstanceOf(EmbeddedWhichReferences::class, $root->embeddedDoc);
 
             $this->assertCount(2, $root->embeddedDocs);
             foreach ($root->embeddedDocs as $embeddedDoc) {
-                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $embeddedDoc);
-                $this->assertInstanceOf('Documents\Functional\EmbeddedWhichReferences', $embeddedDoc);
+                $this->assertNotInstanceOf(Proxy::class, $embeddedDoc);
+                $this->assertInstanceOf(EmbeddedWhichReferences::class, $embeddedDoc);
 
-                $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $embeddedDoc->referencedDoc);
+                $this->assertInstanceOf(Proxy::class, $embeddedDoc->referencedDoc);
                 $this->assertTrue($embeddedDoc->referencedDoc->__isInitialized());
 
                 $this->assertCount(2, $embeddedDoc->referencedDocs);
                 foreach ($embeddedDoc->referencedDocs as $referencedDoc) {
-                    $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $referencedDoc);
-                    $this->assertInstanceOf('Documents\Functional\Reference', $referencedDoc);
+                    $this->assertNotInstanceOf(Proxy::class, $referencedDoc);
+                    $this->assertInstanceOf(Reference::class, $referencedDoc);
                 }
             }
         }
@@ -268,7 +271,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\ReferenceUser')
+        $qb = $this->dm->createQueryBuilder(ReferenceUser::class)
             ->field('user')->prime(true)
             ->field('users')->prime(true)
             ->field('parentUser')->prime(true)
@@ -279,36 +282,36 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         /** @var ReferenceUser $referenceUser */
         foreach ($qb->getQuery() as $referenceUser) {
             // storeAs=id reference
-            $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $referenceUser->getUser());
+            $this->assertInstanceOf(Proxy::class, $referenceUser->getUser());
             $this->assertTrue($referenceUser->getUser()->__isInitialized());
 
             $this->assertCount(1, $referenceUser->getUsers());
 
             foreach ($referenceUser->getUsers() as $user) {
-                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user);
-                $this->assertInstanceOf('Documents\User', $user);
+                $this->assertNotInstanceOf(Proxy::class, $user);
+                $this->assertInstanceOf(User::class, $user);
             }
 
             // storeAs=dbRef reference
-            $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $referenceUser->getParentUser());
+            $this->assertInstanceOf(Proxy::class, $referenceUser->getParentUser());
             $this->assertTrue($referenceUser->getParentUser()->__isInitialized());
 
             $this->assertCount(1, $referenceUser->getParentUsers());
 
             foreach ($referenceUser->getParentUsers() as $user) {
-                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user);
-                $this->assertInstanceOf('Documents\User', $user);
+                $this->assertNotInstanceOf(Proxy::class, $user);
+                $this->assertInstanceOf(User::class, $user);
             }
 
             // storeAs=dbRefWithDb reference
-            $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $referenceUser->getOtherUser());
+            $this->assertInstanceOf(Proxy::class, $referenceUser->getOtherUser());
             $this->assertTrue($referenceUser->getOtherUser()->__isInitialized());
 
             $this->assertCount(1, $referenceUser->getOtherUsers());
 
             foreach ($referenceUser->getOtherUsers() as $user) {
-                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user);
-                $this->assertInstanceOf('Documents\User', $user);
+                $this->assertNotInstanceOf(Proxy::class, $user);
+                $this->assertInstanceOf(User::class, $user);
             }
         }
     }
@@ -328,17 +331,17 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\Functional\FavoritesUser')
+        $qb = $this->dm->createQueryBuilder(FavoritesUser::class)
             ->field('favorites')->prime(true);
 
         foreach ($qb->getQuery() as $user) {
             $favorites = $user->getFavorites()->toArray();
 
-            $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $favorites[0]);
-            $this->assertInstanceOf('Documents\Group', $favorites[0]);
+            $this->assertNotInstanceOf(Proxy::class, $favorites[0]);
+            $this->assertInstanceOf(Group::class, $favorites[0]);
 
-            $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $favorites[1]);
-            $this->assertInstanceOf('Documents\Project', $favorites[1]);
+            $this->assertNotInstanceOf(Proxy::class, $favorites[1]);
+            $this->assertInstanceOf(Project::class, $favorites[1]);
         }
     }
 
@@ -352,11 +355,11 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\Agent')
+        $qb = $this->dm->createQueryBuilder(Agent::class)
             ->field('server')->prime(true);
 
         foreach ($qb->getQuery() as $agent) {
-            $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $agent->server);
+            $this->assertInstanceOf(Proxy::class, $agent->server);
             $this->assertTrue($agent->server->__isInitialized());
         }
     }
@@ -371,22 +374,22 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->dm->createQueryBuilder('Documents\Group')->getQuery()->toArray();
+        $this->dm->createQueryBuilder(Group::class)->getQuery()->toArray();
 
         $invoked = 0;
         $primer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
             $invoked++;
         };
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('groups')->prime($primer);
 
         foreach ($qb->getQuery() as $user) {
             $this->assertCount(2, $user->getGroups());
 
             foreach ($user->getGroups() as $group) {
-                $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $group);
-                $this->assertInstanceOf('Documents\Group', $group);
+                $this->assertNotInstanceOf(Proxy::class, $group);
+                $this->assertInstanceOf(Group::class, $group);
             }
         }
 
@@ -416,7 +419,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $invokedArgs[] = func_get_args();
         };
 
-        $this->dm->createQueryBuilder('Documents\User')
+        $this->dm->createQueryBuilder(User::class)
             ->field('account')->prime($primer)
             ->field('groups')->prime($primer)
             ->slaveOkay(true)
@@ -447,7 +450,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->findAndUpdate()
             ->returnNew(true)
             ->field('groups')->push($groupDBRef)->prime(true);
@@ -457,8 +460,8 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $user->getGroups());
 
         foreach ($user->getGroups() as $group) {
-            $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $group);
-            $this->assertInstanceOf('Documents\Group', $group);
+            $this->assertNotInstanceOf(Proxy::class, $group);
+            $this->assertInstanceOf(Group::class, $group);
         }
     }
 
@@ -477,7 +480,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('username')->equals('SomeName')
             ->field('phonenumbers.lastCalledBy')->prime(true);
 
@@ -488,8 +491,8 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $phonenumber = $phonenumbers->current();
 
-        $this->assertNotInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $phonenumber);
-        $this->assertInstanceOf('Documents\Phonenumber', $phonenumber);
+        $this->assertNotInstanceOf(Proxy::class, $phonenumber);
+        $this->assertInstanceOf(Phonenumber::class, $phonenumber);
     }
 
     public function testPrimeEmbeddedReferenceTwoLevelsDeep()
@@ -513,7 +516,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\Ecommerce\ConfigurableProduct')
+        $qb = $this->dm->createQueryBuilder(ConfigurableProduct::class)
             ->field('name')->equals('Bundle')
             ->field('options.money.currency')->prime(true);
 
@@ -532,7 +535,91 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         /** @var Currency $currency */
         $currency = $money->getCurrency();
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $currency);
+        $this->assertInstanceOf(Proxy::class, $currency);
         $this->assertTrue($currency->__isInitialized());
+    }
+
+    public function testPrimeReferencesInReferenceMany()
+    {
+        $commentAuthor = new User();
+        $this->dm->persist($commentAuthor);
+
+        $postAuthor = new User();
+        $this->dm->persist($postAuthor);
+
+        $comment = new Comment('foo', new \DateTime());
+        $comment->author = $commentAuthor;
+        $this->dm->persist($comment);
+
+        $post = new BlogPost('foo');
+        $post->setUser($postAuthor);
+        $post->addComment($comment);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var BlogPost $post */
+        $post = $this->dm->find(BlogPost::class, $post->id);
+        $this->assertInstanceOf(BlogPost::class, $post);
+
+        $comment = $post->comments->first();
+        $this->assertInstanceOf(Proxy::class, $comment->author);
+        $this->assertTrue($comment->author->__isInitialized());
+    }
+
+    public function testPrimeReferencesInReferenceManyWithRepositoryMethodThrowsException()
+    {
+        $commentAuthor = new User();
+        $this->dm->persist($commentAuthor);
+
+        $postAuthor = new User();
+        $this->dm->persist($postAuthor);
+
+        $comment = new Comment('foo', new \DateTime());
+        $comment->author = $commentAuthor;
+        $this->dm->persist($comment);
+
+        $post = new BlogPost('foo');
+        $post->setUser($postAuthor);
+        $post->addComment($comment);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var BlogPost $post */
+        $post = $this->dm->find(BlogPost::class, $post->id);
+        $this->assertInstanceOf(BlogPost::class, $post);
+
+        $this->expectException(\BadMethodCallException::class);
+
+        $post->repoCommentsWithPrimer->first();
+    }
+
+    public function testPrimeReferencesInReferenceManyWithRepositoryMethodEager()
+    {
+        $commentAuthor = new User();
+        $this->dm->persist($commentAuthor);
+
+        $postAuthor = new User();
+        $this->dm->persist($postAuthor);
+
+        $comment = new Comment('foo', new \DateTime());
+        $comment->author = $commentAuthor;
+        $this->dm->persist($comment);
+
+        $post = new BlogPost('foo');
+        $post->setUser($postAuthor);
+        $post->addComment($comment);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var BlogPost $post */
+        $post = $this->dm->find(BlogPost::class, $post->id);
+        $this->assertInstanceOf(BlogPost::class, $post);
+
+        $comment = $post->repoCommentsEager->first();
+        $this->assertInstanceOf(Proxy::class, $comment->author);
+        $this->assertTrue($comment->author->__isInitialized());
     }
 }

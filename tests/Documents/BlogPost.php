@@ -17,7 +17,7 @@ class BlogPost
     /** @ODM\ReferenceMany(targetDocument="Tag", inversedBy="blogPosts", cascade={"all"}) */
     public $tags = array();
 
-    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", cascade={"all"}, prime={"author"}) */
     public $comments = array();
 
     /** @ODM\ReferenceOne(targetDocument="Comment", mappedBy="parent", sort={"date"="asc"}) */
@@ -38,13 +38,16 @@ class BlogPost
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyComments") */
     public $repoComments;
 
+    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyComments", prime={"author"}) */
+    public $repoCommentsWithPrimer;
+
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", strategy="set", repositoryMethod="findManyComments") */
     public $repoCommentsSet;
 
     /** @ODM\ReferenceMany(targetDocument="Comment", repositoryMethod="findManyComments") */
     public $repoCommentsWithoutMappedBy;
 
-    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyCommentsEager") */
+    /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyCommentsEager", prime={"author"}) */
     public $repoCommentsEager;
 
     /** @ODM\ReferenceOne(targetDocument="User", inversedBy="posts", nullable=true) */

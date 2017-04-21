@@ -302,6 +302,7 @@ class XmlDriver extends FileDriver
             'repositoryMethod' => isset($attributes['repository-method']) ? (string) $attributes['repository-method'] : null,
             'limit'            => isset($attributes['limit']) ? (integer) $attributes['limit'] : null,
             'skip'             => isset($attributes['skip']) ? (integer) $attributes['skip'] : null,
+            'prime'            => [],
         );
 
         if (isset($attributes['fieldName'])) {
@@ -338,6 +339,13 @@ class XmlDriver extends FileDriver
         if (isset($attributes['also-load'])) {
             $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
         }
+        if (isset($reference->{'prime'})) {
+            foreach ($reference->{'prime'}->{'field'} as $field) {
+                $attr = $field->attributes();
+                $mapping['prime'][] = (string) $attr['name'];
+            }
+        }
+
         $this->addFieldMapping($class, $mapping);
     }
 
