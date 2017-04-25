@@ -177,6 +177,7 @@ Doctrine:
     $manager->setName('Manager');
     $manager->setSalary(100000);
     $manager->setStarted(new DateTime());
+    $manager->addProject($project);
 
     $dm->persist($employee);
     $dm->persist($address);
