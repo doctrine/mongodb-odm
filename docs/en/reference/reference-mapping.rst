@@ -80,7 +80,7 @@ Reference one document:
 
     .. code-block:: yaml
 
-        User:
+        Product:
           type: document
           referenceOne:
             shipping:
