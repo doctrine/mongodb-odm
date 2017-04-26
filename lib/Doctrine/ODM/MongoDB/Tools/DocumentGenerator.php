@@ -702,6 +702,16 @@ public function <methodName>()
 
         return implode("\n\n", $methods);
     }
+    
+    /**
+     * @param array $fieldMapping
+     *
+     * @return bool
+     */
+    protected function isAssociationNullable($fieldMapping)
+    {
+        return isset($fieldMapping['nullable']) && $fieldMapping['nullable'];
+    }
 
     /**
      * @param array $fieldMapping
