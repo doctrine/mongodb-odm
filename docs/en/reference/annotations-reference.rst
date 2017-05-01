@@ -1395,7 +1395,7 @@ Alias of `@Index`_, with the ``unique`` option set by default.
 
 The annotated instance variable will be used to store version information, which
 is used for pessimistic and optimistic locking. This is only compatible with
-integer and date field types, and cannot be combined with `@Id`_.
+``int`` and ``date`` field types, and cannot be combined with `@Id`_.
 
 .. code-block:: php
 
@@ -1411,6 +1411,20 @@ encouraged to use the :ref:`atomicSet <atomic_set>` or
 :ref:`atomicSetArray <atomic_set_array>` strategies for such collections, which
 will ensure that collections are updated in the same write operation as the
 versioned document.
+
+@Lock
+-----
+
+The annotated instance variable will be used to store lock information, which
+is used for pessimistic locking. This is only compatible with
+``int`` type, and cannot be combined with `@Id`_.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Field(type="int") @Lock */
+    private $lock;
 
 .. _BSON specification: http://bsonspec.org/spec.html
 .. _DBRef: https://docs.mongodb.com/manual/reference/database-references/#dbrefs
