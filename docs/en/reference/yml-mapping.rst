@@ -178,7 +178,7 @@ Version
 ^^^^^^^
 
 The field with the ``version`` property will be used to store version information, which
-is used for pessimistic and optimistic locking. This is only compatible with
+is used for optimistic locking. This is only compatible with
 ``int`` and ``date`` field types, and cannot be combined with ``id: true``.
 
 .. code-block:: yaml
