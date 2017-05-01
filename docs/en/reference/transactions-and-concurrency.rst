@@ -286,3 +286,20 @@ You can use pessimistic locks in two different scenarios:
    ``DocumentManager#lock($document, \Doctrine\ODM\MongoDB\LockMode::PESSIMISTIC_WRITE)``
    or
    ``DocumentManager#lock($document, \Doctrine\ODM\MongoDB\LockMode::PESSIMISTIC_READ)``
+
+.. warning::
+
+    | A few things could go wrong:
+    |
+    | If your script fails to complete, for example because of an exception, you might end up with stale locks.
+    | Said locks would then have to be manually released.
+    | Or you would have to devise a strategy to automatically do so.
+    | For PHP exceptions, to prevent the problem, you might want to try / catch your code to handle exceptions gracefully, making sure you unlock your documents before your script ends.
+    |
+    | You could also create `deadlocks <https://en.wikipedia.org/wiki/Deadlock>`_.
+    | Say that you have a P1 process that needs a R1 resource and has locked a R2 resource.
+    | You also have a P2 process that has locked the R1 resource but also needs the R2 resource.
+    | If both processes keep waiting for resources, processing is stuck.
+    | When loading a document, the ODM immediately throws an exception if it is already locked.
+    | If you try / catch the ``LockException``, you could create a deadlock by retrying to acquire the lock an infinite number of times in both processes.
+    | One way to avoid this situation would be to implement a maximum number of retries and automatically release possessed locks when script ends, which would allow one of the processes to end gracefully and the other to complete its task.
