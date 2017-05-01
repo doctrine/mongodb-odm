@@ -147,3 +147,40 @@ Be aware that class-names specified in the XML files should be fully qualified.
     ``field-name`` is the name of **property in your object** while ``name`` specifies
     name of the field **in the database**. Specifying latter is optional and defaults to
     ``field-name`` if not set explicitly.
+
+Reference
+---------
+
+Version
+^^^^^^^
+
+The field with the ``version`` attribute will be used to store version information, which
+is used for pessimistic and optimistic locking. This is only compatible with
+``int`` and ``date`` field types, and cannot be combined with ``id="true"``.
+
+.. code-block:: xml
+
+    <doctrine-mongo-mapping>
+        <field fieldName="version" version="true" type="int" />
+    </doctrine-mongo-mapping>
+
+By default, Doctrine ODM processes updates :ref:`embed-many <embed_many>` and
+:ref:`reference-many <reference_many>` collections in separate write operations,
+which do not bump the document version. Users employing document versioning are
+encouraged to use the :ref:`atomicSet <atomic_set>` or
+:ref:`atomicSetArray <atomic_set_array>` strategies for such collections, which
+will ensure that collections are updated in the same write operation as the
+versioned document.
+
+Lock
+^^^^
+
+The field with the ``lock`` attribute will be used to store lock information, which
+is used for pessimistic locking. This is only compatible with
+``int`` field type, and cannot be combined with ``id="true"``.
+
+.. code-block:: xml
+
+    <doctrine-mongo-mapping>
+        <field fieldName="lock" lock="true" type="int" />
+    </doctrine-mongo-mapping>
