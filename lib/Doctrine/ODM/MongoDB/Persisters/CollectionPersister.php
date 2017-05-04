@@ -268,7 +268,7 @@ class CollectionPersister
         $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
         $query = array('_id' => $id);
         if ($class->isVersioned) {
-            $query[$class->versionField] = $class->reflFields[$class->versionField]->getValue($document);
+            $query[$class->fieldMappings[$class->versionField]['name']] = $class->reflFields[$class->versionField]->getValue($document);
         }
         $collection = $this->dm->getDocumentCollection($className);
         $result = $collection->update($query, $newObj, $options);
