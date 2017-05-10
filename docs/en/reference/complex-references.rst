@@ -90,7 +90,7 @@ administrators:
      * @ReferenceMany(
      *      targetDocument="Comment",
      *      mappedBy="blogPost",
-     *      criteria={"isByAdmin" : true}
+     *      criteria={"isByAdmin"=true}
      * )
      */
     private $commentsByAdmin;
