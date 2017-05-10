@@ -340,7 +340,12 @@ EOF
             \$embeddedDocument = \$data['%1\$s'];
             \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$embeddedDocument);
             \$embeddedMetadata = \$this->dm->getClassMetadata(\$className);
-            \$return = \$embeddedMetadata->newInstance();
+            \$current = \$this->class->reflFields['%2\$s']->getValue(\$document);
+            if (\$current instanceof \$className) {
+                \$return = \$current;
+            } else {
+                \$return = \$embeddedMetadata->newInstance();
+            }
 
             \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
 
