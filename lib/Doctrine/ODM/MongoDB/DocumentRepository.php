@@ -243,6 +243,14 @@ class DocumentRepository implements ObjectRepository, Selectable
     }
 
     /**
+     * @return string
+     */
+    public function getClassName()
+    {
+        return $this->getDocumentName();
+    }
+
+    /**
      * @return DocumentManager
      */
     public function getDocumentManager()
