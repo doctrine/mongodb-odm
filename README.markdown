@@ -1,5 +1,7 @@
 # Doctrine MongoDB Object Document Mapper
 
+[![Join the chat at https://gitter.im/doctrine/mongodb-odm](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/doctrine/mongodb-odm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://secure.travis-ci.org/doctrine/mongodb-odm.png?branch=master)](http://travis-ci.org/doctrine/mongodb-odm)
 [![Code Coverage](https://scrutinizer-ci.com/g/doctrine/mongodb-odm/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/doctrine/mongodb-odm/?branch=master)
 
