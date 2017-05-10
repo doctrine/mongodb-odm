@@ -178,12 +178,13 @@ the ``select()`` method:
     <?php
 
     $qb = $dm->createQueryBuilder('User')
+        ->hydrate(false)
         ->select('username', 'password');
     $query = $qb->getQuery();
     $users = $query->execute();
 
 In the results only the data from the username and password will be
-returned.
+returned (disabling hydration is mandatory, otherwise your select() will be ignored).
 
 Selecting Distinct Values
 ~~~~~~~~~~~~~~~~~~~~~~~~~
