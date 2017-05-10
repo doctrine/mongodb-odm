@@ -499,7 +499,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Simulate another PHP request which loads this record.
         $this->dm->clear();
+        $this->ql->clear();
         $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $this->assertCount(1, $this->ql, 'Getting a book should require one query');
 
         // Modify the chapter's name.
         $book->chapters->first()->name = "First chapter A";
