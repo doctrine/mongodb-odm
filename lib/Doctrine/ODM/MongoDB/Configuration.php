@@ -458,15 +458,11 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Add a filter to the list of possible filters.
      *
      * @param string $name       The name of the filter.
-     * @param string $className  The class name of the filter.
      * @param array  $parameters The parameters for the filter.
      */
-    public function addFilter($name, $className, array $parameters = array())
+    public function addFilter($name, array $parameters = array())
     {
-        $this->attributes['filters'][$name] = array(
-            'class' => $className,
-            'parameters' => $parameters
-        );
+        $this->attributes['filters'][$name] = $parameters;
     }
 
     /**
@@ -493,9 +489,36 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getFilterParameters($name)
     {
         return isset($this->attributes['filters'][$name])
-            ? $this->attributes['filters'][$name]['parameters']
+            ? $this->attributes['filters'][$name]
             : null;
     }
+
+    /**
+     * Gets the options for a given filter name.
+     *
+     * @param string $name The name of the filter.
+     *
+     * @return array|null The filter options, or null if it is undefined
+     */
+    public function getFilterOptions($name)
+    {
+        return isset($this->attributes['filters'][$name]['options'])
+            ? $this->attributes['filters'][$name]['options']
+            : null;
+    }
+
+    /**
+     * Gets a list of possible filters.
+     *
+     * @return array List of possible filters
+     */
+    public function getFilters()
+    {
+        return isset($this->attributes['filters'])
+            ? $this->attributes['filters']
+            : array();
+    }
+
 
     /**
      * Sets default repository class.
