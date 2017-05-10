@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
+
 /**
  * EagerCursor wraps a Cursor instance and fetches all of its results upon
  * initialization.
@@ -28,4 +30,18 @@ namespace Doctrine\ODM\MongoDB;
  */
 class EagerCursor extends Cursor
 {
+    /**
+     * Workaround to use base cursor of \Doctrine\MongoDB\EagerCursor count method
+     * since \Doctrine\MongoDB\EagerCursor::count() method does not support $foundOnly = false flag
+     * {@inheritdoc}
+     */
+    public function count($foundOnly = false)
+    {
+        if (false === $foundOnly && $this->getBaseCursor() instanceof BaseEagerCursor) {
+            return $this->getBaseCursor()->getCursor()->count($foundOnly);
+        } else {
+            return parent::count($foundOnly);
+        }
+    }
+
 }
