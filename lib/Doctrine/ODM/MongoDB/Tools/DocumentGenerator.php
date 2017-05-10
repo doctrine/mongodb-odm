@@ -20,6 +20,8 @@
 namespace Doctrine\ODM\MongoDB\Tools;
 
 use Doctrine\Common\Inflector\Inflector;
+use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Types\Type;
 
@@ -40,10 +42,17 @@ use Doctrine\ODM\MongoDB\Types\Type;
  */
 class DocumentGenerator
 {
+
+
     /**
      * @var bool
      */
     private $backupExisting = true;
+
+    /**
+     * @var \Doctrine\ODM\MongoDB\Configuration
+     */
+    private $config;
 
     /** The extension to use for written php files */
     private $extension = '.php';
@@ -292,6 +301,10 @@ public function <methodName>()
     public function setGenerateAnnotations($bool)
     {
         $this->generateAnnotations = $bool;
+    }
+
+    public function setConfig(Configuration $config){
+        $this->config = $config;
     }
 
     /**
@@ -662,7 +675,10 @@ public function <methodName>()
     {
         $methods = array();
 
+
+
         foreach ($metadata->fieldMappings as $fieldMapping) {
+
             if (isset($fieldMapping['id'])) {
                 if ($metadata->generatorType == ClassMetadataInfo::GENERATOR_TYPE_NONE) {
                     if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
@@ -791,8 +807,27 @@ public function <methodName>()
         $description = ucfirst($type) . ' ' . $variableName;
 
         $types = Type::getTypesMap();
-        $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
-        $variableType = $typeHint ? $typeHint . ' ' : null;
+
+       // $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
+
+        if($typeHint && ! isset($types[$typeHint])){
+            if(strpos($typeHint, ':')!==false && $this->config){
+                list($alias, $className) = explode(':', $typeHint);
+                $typeHint = $this->config->getDocumentNamespace($alias) . '\\' . $className;
+            }
+            $path = explode('\\',trim(str_replace('\\\\','\\', $typeHint), '\\'));
+            $classHint = array_pop($path);
+            if($metadata->getNamespace() == implode('\\', $path)){
+                $methodTypeHint = $classHint;
+            }else{
+                $methodTypeHint = '\\' . $typeHint;
+            }
+            $methodTypeHint .= ' ';
+        }else{
+            $methodTypeHint = null;
+        }
+
+        $variableType = $typeHint ? '\\' . $typeHint . ' ' : null;
 
         $replacements = array(
             '<description>'         => $description,

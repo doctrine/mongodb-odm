@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console;
@@ -106,6 +107,9 @@ EOT
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
+        /**
+         * @var DocumentManager $dm
+         */
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         
         $cmf = new DisconnectedClassMetadataFactory();
@@ -130,6 +134,8 @@ EOT
         if (count($metadatas)) {
             // Create DocumentGenerator
             $documentGenerator = new DocumentGenerator();
+
+            $documentGenerator->setConfig($dm->getConfiguration());
 
             $documentGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
             $documentGenerator->setGenerateStubMethods($input->getOption('generate-methods'));

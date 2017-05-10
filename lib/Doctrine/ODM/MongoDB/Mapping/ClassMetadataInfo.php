@@ -1222,7 +1222,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if ($this->discriminatorField !== null && $this->discriminatorField == $mapping['name']) {
             throw MappingException::discriminatorFieldConflict($this->name, $this->discriminatorField);
         }
-        if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
+        if (isset($mapping['targetDocument'])
+            && strpos($mapping['targetDocument'], '\\') === false
+            && strpos($mapping['targetDocument'], ':') === false
+            && strlen($this->namespace)) {
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
         }
         if (isset($mapping['collectionClass'])) {
