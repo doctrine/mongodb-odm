@@ -1278,6 +1278,18 @@ class UnitOfWork implements PropertyChangedListener
         $this->documentUpserts[$oid] = $document;
         $this->documentIdentifiers[$oid] = $class->getIdentifierValue($document);
         $this->addToIdentityMap($document);
+        
+        // Allows to insert new documents with user-defined id
+        $actualData = $this->getDocumentActualData($document);
+        $isNewDocument = ! isset($this->originalDocumentData[$oid]);
+        if ($isNewDocument) {
+            $this->originalDocumentData[$oid] = $actualData;
+            $changeSet = array();
+            foreach ($actualData as $propName => $actualValue) {
+                $changeSet[$propName] = array(null, $actualValue);
+            }
+            $this->documentChangeSets[$oid] = $changeSet;
+        }
     }
 
     /**
