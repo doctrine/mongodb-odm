@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Documents\Account;
 use Documents\CustomUser;
 use Documents\User;
+use Documents\UserIdGenerator;
 
 class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -144,5 +145,58 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertNull($this->dm->find('Documents\User', 'userId'));
         $this->assertNull($this->dm->find('Documents\CustomUser', 'asd'));
+    }
+    
+    public function testCustomIdGenerator()
+    {
+        $username = uniqid();
+
+        $user1 = new UserIdGenerator();
+        $user1->setUsername($username);
+        
+        $this->dm->persist($user1);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user1);
+
+        $users = $this->dm->getRepository("Documents\UserIdGenerator")->findAll();
+
+        $this->assertCount(1, $users);
+        
+        foreach($users as $user){
+            $this->assertEquals(md5($username), $user->getId());
+        }
+    }
+    
+    public function testUpsertCustomIdGenerator()
+    {
+        $username = uniqid();
+
+        $user1 = new UserIdGenerator();
+        $user1->setUsername($username);
+        
+        $this->dm->persist($user1);
+        $this->dm->flush();
+        $this->dm->clear();
+        
+        unset($user1);
+
+        $user2 = new UserIdGenerator();
+        $user2->setUsername($username);
+
+        $this->dm->persist($user2);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        unset($user2);
+
+        $users = $this->dm->getRepository("Documents\UserIdGenerator")->findAll();
+
+        $this->assertCount(1, $users);
+        
+        foreach($users as $user){
+            $this->assertEquals(md5($username), $user->getId());
+        }
     }
 }
