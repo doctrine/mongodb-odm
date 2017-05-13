@@ -5,6 +5,14 @@ This changelog references the relevant changes done in 1.1 minor versions. If up
 1.0.x branch, please review
 [Upgrade Path](https://github.com/doctrine/mongodb-odm/blob/master/CHANGELOG-1.1.md#upgrade-path).
 
+1.1.5 (2017-05-13)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.1.5 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.1.5).
+
+* [#1588](https://github.com/doctrine/mongodb-odm/pull/1588) fixes field name translation for lock fields with a different name in the database.
+
 1.1.4 (2017-03-27)
 ------------------
 

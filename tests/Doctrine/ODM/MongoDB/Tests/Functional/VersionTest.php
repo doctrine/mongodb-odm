@@ -47,7 +47,7 @@ class VersionedDocument
     /** @ODM\Id */
     public $id;
     
-    /** @ODM\Field(type="int") @ODM\Version */
+    /** @ODM\Field(type="int", name="_version") @ODM\Version */
     public $version = 1;
     
     /** @ODM\Field(type="string") */
