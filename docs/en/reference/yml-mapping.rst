@@ -179,7 +179,7 @@ Reference
 Lock
 ^^^^
 
-The field with the ``lock`` property will be used to store lock information for pessimistic locking.
+The field with the ``lock`` property will be used to store lock information for :ref:`pessimistic locking <transactions_and_concurrency_pessimistic_locking>`.
 This is only compatible with the ``int`` field type, and cannot be combined with ``id: true``.
 
 .. code-block:: yaml
@@ -193,7 +193,7 @@ This is only compatible with the ``int`` field type, and cannot be combined with
 Version
 ^^^^^^^
 
-The field with the ``version`` property will be used to store version information for optimistic locking.
+The field with the ``version`` property will be used to store version information for :ref:`optimistic locking <transactions_and_concurrency_optimistic_locking>`.
 This is only compatible with ``int`` and ``date`` field types, and cannot be combined with ``id: true``.
 
 .. code-block:: yaml

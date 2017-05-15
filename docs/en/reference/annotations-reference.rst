@@ -936,7 +936,7 @@ respectively.
 @Lock
 -----
 
-The annotated instance variable will be used to store lock information for pessimistic locking.
+The annotated instance variable will be used to store lock information for :ref:`pessimistic locking <transactions_and_concurrency_pessimistic_locking>`.
 This is only compatible with the ``int`` type, and cannot be combined with `@Id`_.
 
 .. code-block:: php
@@ -1408,7 +1408,7 @@ Alias of `@Index`_, with the ``unique`` option set by default.
 @Version
 --------
 
-The annotated instance variable will be used to store version information for optimistic locking.
+The annotated instance variable will be used to store version information for :ref:`optimistic locking <transactions_and_concurrency_optimistic_locking>`.
 This is only compatible with ``int`` and ``date`` field types, and cannot be combined with `@Id`_.
 
 .. code-block:: php
