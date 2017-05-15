@@ -9,13 +9,12 @@ Transactions
 As per the `documentation <https://docs.mongodb.com/manual/core/write-operations-atomicity/#atomicity-and-transactions>`_, MongoDB
 write operations are "atomic on the level of a single document".
 
-Even when updating multiple documents with a single write operation,
+Even when updating multiple documents within a single write operation,
 though the modification of each document is atomic,
-the operation as a whole is not, and other operations may interleave.
+the operation as a whole is not and other operations may interleave.
 
-Simply put, quoting the `FAQ <https://docs.mongodb.com/manual/faq/fundamentals/#does-mongodb-support-transactions>`_: "MongoDB does not support multi-document transactions".
-
-Neither does Doctrine MongoDB ODM.
+As stated in the `FAQ <https://docs.mongodb.com/manual/faq/fundamentals/#does-mongodb-support-transactions>`_,
+"MongoDB does not support multi-document transactions" and neither does Doctrine MongoDB ODM.
 
 Limitation
 ~~~~~~~~~~
@@ -23,15 +22,13 @@ At the moment, Doctrine MongoDB ODM does not provide any native strategy to emul
 
 Workaround
 ~~~~~~~~~~
-To work around this limitation, one could perform `two phase commits <https://docs.mongodb.com/manual/tutorial/perform-two-phase-commits/>`_.
+To work around this limitation, one can utilize `two phase commits <https://docs.mongodb.com/manual/tutorial/perform-two-phase-commits/>`_.
 
 Concurrency
 -----------
 
-Doctrine MongoDB ODM offers support for Pessimistic- and Optimistic-locking
-strategies natively. This allows to take very fine-grained control
-over what kind of locking is required for your Documents in your
-application.
+Doctrine MongoDB ODM offers native support for pessimistic and optimistic locking strategies.
+This allows for very fine-grained control over what kind of locking is required for documents in your application.
 
 Optimistic Locking
 ~~~~~~~~~~~~~~~~~~
@@ -43,17 +40,16 @@ Doctrine has integrated support for automatic optimistic locking
 via a ``version`` field. Any document that should be
 protected against concurrent modifications during long-running
 business transactions gets a ``version`` field that is either a simple
-number (mapping type: ``int``) or a date (mapping type:
-``date``).
-When changes are persisted at the end of a long-running conversation,
-the version of the document is added to the query. If no document has been updated by the operation,
-a ``LockException`` is thrown, indicating that the document has already been modified by another query.
+number (mapping type: ``int``) or a date (mapping type: ``date``).
+When changes to the document are persisted,
+the expected version and version increment are incorporated into the update criteria and modifiers, respectively.
+If this results in no document being modified by the update (i.e. expected version did not match),
+a ``LockException`` is thrown, which indicates that the document was already modified by another query.
 
-Document configuration
+Document Configuration
 ^^^^^^^^^^^^^^^^^^^^^^
 
-You designate a version field in a document as follows. In this
-example we'll use an integer (``int`` type).
+The following example designates a version field using the ``int`` type:
 
 .. configuration-block::
 
@@ -74,7 +70,7 @@ example we'll use an integer (``int`` type).
           version: true
 
 
-Alternatively ``date`` type can be used:
+Alternatively, the ``date`` type may be used:
 
 .. configuration-block::
 
@@ -94,12 +90,11 @@ Alternatively ``date`` type can be used:
           type: date
           version: true
 
-Choosing the field type
+Choosing the Field Type
 """""""""""""""""""""""
 
-When using ``date`` type in a highly concurrent environment, multiple documents could be created with the same version
-and create a conflict.
-This cause of conflict can be avoided by using ``int`` type.
+When using the ``date`` type in a high-concurrency environment, it is still possible to create multiple documents
+with the same version and cause a conflict. This can be avoided by using the ``int`` type.
 
 Usage
 """""
@@ -110,13 +105,13 @@ This exception can be caught and handled. Potential responses to a
 ``LockException`` are to present the conflict to the user or
 to refresh or reload objects and then retry the update.
 
-With PHP promoting a share-nothing architecture, the time between
-showing an update form and actually modifying the document can in the
-worst scenario be as long as your applications session timeout. If
-changes happen to the document in that time frame you want to know
-directly when retrieving the document that you will hit a locking exception.
+With PHP promoting a share-nothing architecture,
+the worst case scenario for a delay between rendering an update form (with existing document data)
+and modifying the document after a form submission may be your application's session timeout.
+If the document is changed within that time frame by some other request,
+it may be preferable to encounter a ``LockException`` when retrieving the document instead of executing the update.
 
-You can verify the version of a document during a request either when calling ``DocumentManager#find()``:
+You can specify the expected version of a document during a query with ``DocumentManager#find()``:
 
 .. code-block:: php
 
@@ -140,7 +135,7 @@ You can verify the version of a document during a request either when calling ``
         echo "Sorry, but someone else has already changed this document. Please apply the changes again!";
     }
 
-Or you can use ``DocumentManager#lock()`` to find out:
+Alternatively, an expected version may be specified for an existing document with ``DocumentManager#lock()``:
 
 .. code-block:: php
 
@@ -185,19 +180,18 @@ hypothetical blog post:
 -  Alice updates the headline to "Baz", ... (POST Request of a
    Form)
 
-Now at the last stage of this scenario the blog post has to be read
+At the last stage of this scenario the blog post has to be read
 again from the database before Alice's headline can be applied. At
 this point you will want to check if the blog post is still at
 version 1 (which it is not in this scenario).
 
-Using optimistic locking correctly, you *have* to add the version
-as an additional hidden field (or into the SESSION for more
-safety). Otherwise you cannot verify the version is still the one
-being originally read from the database when Alice performed her
-GET request for the blog post. If this happens you might see lost
-updates you wanted to prevent with Optimistic Locking.
+In order to correctly utilize optimistic locking, you *must* add the version as hidden form field or,
+for more security, session attribute.
+Otherwise, you cannot verify that the version at the time of update is the same as what was originally read
+from the database when Alice performed her original GET request for the blog post.
+Without correlating the version across form submissions, the application could lose updates.
 
-Example code
+Example Code
 """"""""""""
 
 The form (GET Request):
@@ -232,16 +226,13 @@ And the change headline action (POST Request):
 Pessimistic Locking
 ~~~~~~~~~~~~~~~~~~~
 
-Doctrine MongoDB ODM supports Pessimistic Locking.
-There is no native MongoDB support for pessimistic locking.
-The Doctrine implementation uses a ``lock`` field, that you have to configure if you wish to use pessimistic locking.
+Doctrine MongoDB ODM also supports pessimistic locking via a configurable ``lock`` field.
+This functionality is implemented entirely by Doctrine; MongoDB has no native support for pessimistic locking.
 
-Document configuration
+Document Configuration
 ^^^^^^^^^^^^^^^^^^^^^^
 
-For pessimistic locking to work, a lock field must be configured.
-The lock field must be of type ``int``.
-You designate a lock field in a document as follows.
+Pessimistic locking requires a document to designate a lock field using the ``int`` type:
 
 .. configuration-block::
 
@@ -261,15 +252,15 @@ You designate a lock field in a document as follows.
           type: int
           lock: true
 
-Lock modes
+Lock Modes
 ^^^^^^^^^^
 
 Doctrine MongoDB ODM currently supports two pessimistic lock modes:
 
 -  Pessimistic Write
-   (``\Doctrine\ODM\MongoDB\LockMode::PESSIMISTIC_WRITE``), locks the
-   underlying document for concurrent Read and Write operations.
--  Pessimistic Read (``\Doctrine\ODM\MongoDB\LockMode::PESSIMISTIC_READ``),
+   (``\Doctrine\ODM\MongoDB\LockMode::PESSIMISTIC_WRITE``): locks the
+   underlying document for concurrent read and write operations.
+-  Pessimistic Read (``\Doctrine\ODM\MongoDB\LockMode::PESSIMISTIC_READ``):
    locks other concurrent requests that attempt to update or lock documents
    in write mode.
 
@@ -291,15 +282,17 @@ You can use pessimistic locks in two different scenarios:
 
     | A few things could go wrong:
     |
-    | If your script fails to complete, for example because of an exception, you might end up with stale locks.
-    | Said locks would then have to be manually released.
-    | Or you would have to devise a strategy to automatically do so.
-    | For PHP exceptions, to prevent the problem, you might want to try / catch your code to handle exceptions gracefully, making sure you unlock your documents before your script ends.
+    | If a request fails to complete (e.g. unhandled exception), you may end up with stale locks.
+      Said locks would need to be manually released or you would need to devise a strategy to automatically do so.
+      One way to mitigate stale locks after an application error would be to gracefully catch the exception
+      and ensure that relevant documents are unlocked before the request ends.
     |
-    | You could also create `deadlocks <https://en.wikipedia.org/wiki/Deadlock>`_.
-    | Say that you have a P1 process that needs a R1 resource and has locked a R2 resource.
-    | You also have a P2 process that has locked the R1 resource but also needs the R2 resource.
-    | If both processes keep waiting for resources, processing is stuck.
-    | When loading a document, the ODM immediately throws an exception if it is already locked.
-    | If you try / catch the ``LockException``, you could create a deadlock by retrying to acquire the lock an infinite number of times in both processes.
-    | One way to avoid this situation would be to implement a maximum number of retries and automatically release possessed locks when script ends, which would allow one of the processes to end gracefully and the other to complete its task.
+    | `Deadlock <https://en.wikipedia.org/wiki/Deadlock>`_ situations are also possible.
+      Suppose process P1 needs resource R1 and has locked resource R2
+      and that another process P2 has locked resource R1 but also needs resource R2.
+      If both processes continue waiting for the respective resources, the application will be stuck.
+      When loading a document, Doctrine can immediately throw an exception if it is already locked.
+      A deadlock could be created by endlessly retrying attempts to acquire the lock.
+      One can avoid a possible deadlock by designating a maximum number of retry attempts
+      and automatically releasing any active locks with the request ends,
+      thereby allowing a process to end gracefully while another completes its task.
