@@ -174,6 +174,8 @@ Be aware that class-names specified in the YAML files should be fully qualified.
 Reference
 ---------
 
+.. _yml_reference_lock:
+
 Lock
 ^^^^
 
@@ -185,6 +187,8 @@ This is only compatible with the ``int`` field type, and cannot be combined with
     lock:
       type: int
       lock: true
+
+.. _yml_reference_version:
 
 Version
 ^^^^^^^

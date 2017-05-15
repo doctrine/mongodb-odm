@@ -151,6 +151,8 @@ Be aware that class-names specified in the XML files should be fully qualified.
 Reference
 ---------
 
+.. _xml_reference_lock:
+
 Lock
 ^^^^
 
@@ -162,6 +164,8 @@ This is only compatible with the ``int`` field type, and cannot be combined with
     <doctrine-mongo-mapping>
         <field fieldName="lock" lock="true" type="int" />
     </doctrine-mongo-mapping>
+
+.. _xml_reference_version:
 
 Version
 ^^^^^^^

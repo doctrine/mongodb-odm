@@ -931,6 +931,8 @@ respectively.
     This annotation is deprecated and will be removed in ODM 2.0. Please use the
     `@Field`_ annotation with type "key".
 
+.. _annotations_reference_lock:
+
 @Lock
 -----
 
