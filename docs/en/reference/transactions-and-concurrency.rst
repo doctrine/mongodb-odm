@@ -30,6 +30,8 @@ Concurrency
 Doctrine MongoDB ODM offers native support for pessimistic and optimistic locking strategies.
 This allows for very fine-grained control over what kind of locking is required for documents in your application.
 
+.. _transactions_and_concurrency_optimistic_locking:
+
 Optimistic Locking
 ~~~~~~~~~~~~~~~~~~
 
@@ -222,6 +224,8 @@ And the change headline action (POST Request):
     $postVersion = (int)$_POST['version'];
 
     $post = $dm->find('BlogPost', $postId, LockMode::OPTIMISTIC, $postVersion);
+
+.. _transactions_and_concurrency_pessimistic_locking:
 
 Pessimistic Locking
 ~~~~~~~~~~~~~~~~~~~
