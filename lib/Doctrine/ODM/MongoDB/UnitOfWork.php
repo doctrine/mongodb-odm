@@ -1171,7 +1171,15 @@ class UnitOfWork implements PropertyChangedListener
             $this->lifecycleEventManager->preUpdate($class, $document);
 
             if ( ! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document)) {
-                $persister->update($document, $options);
+                try {
+                    $persister->update($document, $options);
+                } catch (\MongoException $e) {
+                    unset($this->documentUpdates[$oid]);
+                    throw $e;
+                } catch (LockException $e) {
+                    unset($this->documentUpdates[$oid]);
+                    throw $e;
+                }
             }
 
             unset($this->documentUpdates[$oid]);
