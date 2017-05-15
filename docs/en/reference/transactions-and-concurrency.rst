@@ -48,6 +48,10 @@ the expected version and version increment are incorporated into the update crit
 If this results in no document being modified by the update (i.e. expected version did not match),
 a ``LockException`` is thrown, which indicates that the document was already modified by another query.
 
+.. note::
+
+    | Versioning can only be used on *root* (top-level) documents.
+
 Document Configuration
 ^^^^^^^^^^^^^^^^^^^^^^
 
