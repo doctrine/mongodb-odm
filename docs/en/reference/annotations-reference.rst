@@ -931,6 +931,20 @@ respectively.
     This annotation is deprecated and will be removed in ODM 2.0. Please use the
     `@Field`_ annotation with type "key".
 
+@Lock
+-----
+
+The annotated instance variable will be used to store lock information, which
+is used for pessimistic locking. This is only compatible with
+``int`` type, and cannot be combined with `@Id`_.
+
+.. code-block:: php
+
+    <?php
+
+    /** @Field(type="int") @Lock */
+    private $lock;
+
 @MappedSuperclass
 -----------------
 
@@ -1411,20 +1425,6 @@ encouraged to use the :ref:`atomicSet <atomic_set>` or
 :ref:`atomicSetArray <atomic_set_array>` strategies for such collections, which
 will ensure that collections are updated in the same write operation as the
 versioned document.
-
-@Lock
------
-
-The annotated instance variable will be used to store lock information, which
-is used for pessimistic locking. This is only compatible with
-``int`` type, and cannot be combined with `@Id`_.
-
-.. code-block:: php
-
-    <?php
-
-    /** @Field(type="int") @Lock */
-    private $lock;
 
 .. _BSON specification: http://bsonspec.org/spec.html
 .. _DBRef: https://docs.mongodb.com/manual/reference/database-references/#dbrefs

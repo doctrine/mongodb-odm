@@ -174,6 +174,19 @@ Be aware that class-names specified in the YAML files should be fully qualified.
 Reference
 ---------
 
+Lock
+^^^^
+
+The field with the ``lock`` property will be used to store lock information, which
+is used for pessimistic locking. This is only compatible with
+``int`` field type, and cannot be combined with ``id: true``.
+
+.. code-block:: yaml
+
+    lock:
+      type: int
+      lock: true
+
 Version
 ^^^^^^^
 
@@ -194,16 +207,3 @@ encouraged to use the :ref:`atomicSet <atomic_set>` or
 :ref:`atomicSetArray <atomic_set_array>` strategies for such collections, which
 will ensure that collections are updated in the same write operation as the
 versioned document.
-
-Lock
-^^^^
-
-The field with the ``lock`` property will be used to store lock information, which
-is used for pessimistic locking. This is only compatible with
-``int`` field type, and cannot be combined with ``id: true``.
-
-.. code-block:: yaml
-
-    lock:
-      type: int
-      lock: true
