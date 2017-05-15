@@ -177,9 +177,8 @@ Reference
 Lock
 ^^^^
 
-The field with the ``lock`` property will be used to store lock information, which
-is used for pessimistic locking. This is only compatible with
-``int`` field type, and cannot be combined with ``id: true``.
+The field with the ``lock`` property will be used to store lock information for pessimistic locking.
+This is only compatible with the ``int`` field type, and cannot be combined with ``id: true``.
 
 .. code-block:: yaml
 
@@ -190,9 +189,8 @@ is used for pessimistic locking. This is only compatible with
 Version
 ^^^^^^^
 
-The field with the ``version`` property will be used to store version information, which
-is used for optimistic locking. This is only compatible with
-``int`` and ``date`` field types, and cannot be combined with ``id: true``.
+The field with the ``version`` property will be used to store version information for optimistic locking.
+This is only compatible with ``int`` and ``date`` field types, and cannot be combined with ``id: true``.
 
 .. code-block:: yaml
 
@@ -200,10 +198,10 @@ is used for optimistic locking. This is only compatible with
       type: int
       version: true
 
-By default, Doctrine ODM processes updates :ref:`embed-many <embed_many>` and
+By default, Doctrine ODM updates :ref:`embed-many <embed_many>` and
 :ref:`reference-many <reference_many>` collections in separate write operations,
 which do not bump the document version. Users employing document versioning are
 encouraged to use the :ref:`atomicSet <atomic_set>` or
 :ref:`atomicSetArray <atomic_set_array>` strategies for such collections, which
 will ensure that collections are updated in the same write operation as the
-versioned document.
+versioned parent document.
