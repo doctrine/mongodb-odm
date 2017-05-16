@@ -74,6 +74,9 @@ Advanced Topics
   :doc:`Custom Collections <reference/custom-collections>` |
   :doc:`Sharded setups <reference/sharding>`
 
+* **Transactions and Concurrency**:
+  :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
+
 * **Best Practices**:
   :doc:`Best Practices <reference/best-practices>`
 
