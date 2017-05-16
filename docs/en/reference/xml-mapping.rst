@@ -147,3 +147,42 @@ Be aware that class-names specified in the XML files should be fully qualified.
     ``field-name`` is the name of **property in your object** while ``name`` specifies
     name of the field **in the database**. Specifying latter is optional and defaults to
     ``field-name`` if not set explicitly.
+
+Reference
+---------
+
+.. _xml_reference_lock:
+
+Lock
+^^^^
+
+The field with the ``lock`` attribute will be used to store lock information for :ref:`pessimistic locking <transactions_and_concurrency_pessimistic_locking>`.
+This is only compatible with the ``int`` field type, and cannot be combined with ``id="true"``.
+
+.. code-block:: xml
+
+    <doctrine-mongo-mapping>
+        <field fieldName="lock" lock="true" type="int" />
+    </doctrine-mongo-mapping>
+
+.. _xml_reference_version:
+
+Version
+^^^^^^^
+
+The field with the ``version`` attribute will be used to store version information for :ref:`optimistic locking <transactions_and_concurrency_optimistic_locking>`.
+This is only compatible with ``int`` and ``date`` field types, and cannot be combined with ``id="true"``.
+
+.. code-block:: xml
+
+    <doctrine-mongo-mapping>
+        <field fieldName="version" version="true" type="int" />
+    </doctrine-mongo-mapping>
+
+By default, Doctrine ODM updates :ref:`embed-many <embed_many>` and
+:ref:`reference-many <reference_many>` collections in separate write operations,
+which do not bump the document version. Users employing document versioning are
+encouraged to use the :ref:`atomicSet <atomic_set>` or
+:ref:`atomicSetArray <atomic_set_array>` strategies for such collections, which
+will ensure that collections are updated in the same write operation as the
+versioned parent document.

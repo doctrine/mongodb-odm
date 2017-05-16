@@ -170,3 +170,42 @@ Be aware that class-names specified in the YAML files should be fully qualified.
     The ``name`` property is an optional setting to change  name of the field
     **in the database**. Specifying it is optional and defaults to the name
     of mapped field.
+
+Reference
+---------
+
+.. _yml_reference_lock:
+
+Lock
+^^^^
+
+The field with the ``lock`` property will be used to store lock information for :ref:`pessimistic locking <transactions_and_concurrency_pessimistic_locking>`.
+This is only compatible with the ``int`` field type, and cannot be combined with ``id: true``.
+
+.. code-block:: yaml
+
+    lock:
+      type: int
+      lock: true
+
+.. _yml_reference_version:
+
+Version
+^^^^^^^
+
+The field with the ``version`` property will be used to store version information for :ref:`optimistic locking <transactions_and_concurrency_optimistic_locking>`.
+This is only compatible with ``int`` and ``date`` field types, and cannot be combined with ``id: true``.
+
+.. code-block:: yaml
+
+    version:
+      type: int
+      version: true
+
+By default, Doctrine ODM updates :ref:`embed-many <embed_many>` and
+:ref:`reference-many <reference_many>` collections in separate write operations,
+which do not bump the document version. Users employing document versioning are
+encouraged to use the :ref:`atomicSet <atomic_set>` or
+:ref:`atomicSetArray <atomic_set_array>` strategies for such collections, which
+will ensure that collections are updated in the same write operation as the
+versioned parent document.
