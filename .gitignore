@@ -5,5 +5,4 @@ tests/Proxies/*
 tests/Hydrators/*
 tests/PersistentCollections/*
 phpunit.xml
-composer.lock
 vendor/
