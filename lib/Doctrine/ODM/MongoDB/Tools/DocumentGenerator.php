@@ -697,6 +697,9 @@ public function <methodName>()
                 if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], '\Doctrine\Common\Collections\Collection')) {
                     $methods[] = $code;
                 }
+                if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], 'Doctrine\Common\Collections\Collection')) {
+                    $methods[] = $code;
+                }
             }
         }
 
