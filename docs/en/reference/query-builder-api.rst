@@ -185,6 +185,25 @@ the ``select()`` method:
 In the results only the data from the username and password will be
 returned.
 
+Index hints
+~~~~~~~~~~~
+
+You can force MongoDB to use a specific index for a query with the ``hint()`` method (see `hint <https://docs.mongodb.com/manual/reference/operator/meta/hint/>`_)
+
+.. code-block:: php
+
+    <?php
+
+    $qb = $dm->createQueryBuilder('User')
+        ->hint('user_pass_idx');
+    $query = $qb->getQuery();
+    $users = $query->execute();
+
+.. note::
+
+    Combining ``select()`` and  ``hint()`` on appropriate indexes can result in very fast
+    `covered queries <https://docs.mongodb.com/manual/core/query-optimization/#covered-query>`_
+
 Selecting Distinct Values
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
