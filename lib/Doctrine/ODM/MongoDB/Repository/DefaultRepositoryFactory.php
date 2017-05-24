@@ -21,15 +21,16 @@ class DefaultRepositoryFactory implements RepositoryFactory
      */
     public function getRepository(DocumentManager $documentManager, $documentName)
     {
-        $documentName = ltrim($documentName, '\\');
+        $metadata = $documentManager->getClassMetadata($documentName);
+        $hashKey = $metadata->getName() . spl_object_hash($documentManager);
 
-        if (isset($this->repositoryList[$documentName])) {
-            return $this->repositoryList[$documentName];
+        if (isset($this->repositoryList[$hashKey])) {
+            return $this->repositoryList[$hashKey];
         }
 
-        $repository = $this->createRepository($documentManager, $documentName);
+        $repository = $this->createRepository($documentManager, ltrim($documentName, '\\'));
 
-        $this->repositoryList[$documentName] = $repository;
+        $this->repositoryList[$hashKey] = $repository;
 
         return $repository;
     }
