@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Documents\User;
 
@@ -25,6 +26,20 @@ class RepositoryFactoryTest extends BaseTest
         $this->assertSame(
             $this->dm->getRepository(User::class),
             $this->dm->getRepository(\Proxies\__CG__\Documents\User::class)
+        );
+    }
+
+    public function testRepositoriesAreDifferentForDifferentDms()
+    {
+        $conf = $this->getConfiguration();
+        $conf->setRepositoryFactory(new DefaultRepositoryFactory());
+
+        $dm1 = DocumentManager::create(null, $conf);
+        $dm2 = DocumentManager::create(null, $conf);
+
+        $this->assertNotSame(
+            $dm1->getRepository(User::class),
+            $dm2->getRepository(User::class)
         );
     }
 }
