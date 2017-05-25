@@ -70,14 +70,11 @@ class UuidGenerator extends AbstractIdGenerator
     /**
      * Generates a new UUID
      *
-     * @param DocumentManager $dm Not used.
-     * @param object $document Not used.
      * @return string UUID
      */
-    public function generate(DocumentManager $dm, $document)
+    public function generate()
     {
-        $uuid = $this->generateV4();
-        return $this->generateV5($uuid, $this->salt ?: php_uname('n'));
+        return $this->generateV5($this->generateV4(), $this->salt ?: php_uname('n'));
     }
 
     /**
