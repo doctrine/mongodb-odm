@@ -24,8 +24,10 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * This factory is used to create default repository objects for entities at runtime.
+ *
+ * @todo make the default implementation final in 2.0
  */
-class DefaultRepositoryFactory extends AbstractRepositoryFactory
+/* final */ class DefaultRepositoryFactory extends AbstractRepositoryFactory
 {
     /**
      * {@inheritdoc}
