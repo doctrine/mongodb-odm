@@ -1,20 +1,21 @@
 <?php
 
-namespace Doctrine\ODM\MongoDB\Tests;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH267Test extends BaseTest
 {
     public function testNestedReferences()
     {
         // Users
-        $user1 = new User('Tom Petty');
-        $user2 = new User('Grateful Dead');
-        $user3 = new User('Neil Young');
+        $user1 = new GH267User('Tom Petty');
+        $user2 = new GH267User('Grateful Dead');
+        $user3 = new GH267User('Neil Young');
 
         // Company
-        $company = new BuyerCompany();
+        $company = new GH267BuyerCompany();
 
         $user1->setCompany($company);
         $user2->setCompany($company);
@@ -35,7 +36,7 @@ class GH267Test extends BaseTest
         // Clear out DM and read from DB afresh
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\User')
+        $qb = $this->dm->createQueryBuilder(GH267User::class)
             ->field('_id')->equals($user1Id);
 
         $query = $qb->getQuery();
@@ -55,7 +56,7 @@ class GH267Test extends BaseTest
 /**
  * @ODM\Document(collection="users")
  */
-class User
+class GH267User
 {   
     /** @ODM\Id */
     protected $id;
@@ -64,7 +65,7 @@ class User
     protected $name;
 
     /**
-     * @ODM\ReferenceOne(name="company", targetDocument="Company", discriminatorMap={"seller"="SellerCompany", "buyer"="BuyerCompany"}, inversedBy="users")
+     * @ODM\ReferenceOne(name="company", targetDocument="GH267Company", discriminatorMap={"seller"="SellerCompany", "buyer"="BuyerCompany"}, inversedBy="users")
      */
     protected $company;
 
@@ -108,15 +109,15 @@ class User
  * @ODM\Document(collection="companies")
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"seller"="SellerCompany", "buyer"="BuyerCompany"}) 
+ * @ODM\DiscriminatorMap({"seller"="GH267SellerCompany", "buyer"="GH267BuyerCompany"})
  */
-class Company
+class GH267Company
 {   
     /** @ODM\Id */
     protected $id;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="User", mappedBy="company")
+     * @ODM\ReferenceMany(targetDocument="GH267User", mappedBy="company")
      */
     protected $users;
 
@@ -144,7 +145,7 @@ class Company
 /**
  * @ODM\Document(collection="companies")
  */
-class BuyerCompany extends Company
+class GH267BuyerCompany extends GH267Company
 {   
 
 }
@@ -152,7 +153,7 @@ class BuyerCompany extends Company
 /**
  * @ODM\Document(collection="companies")
  */
-class SellerCompany extends Company
+class GH267SellerCompany extends GH267Company
 {   
 
 }
