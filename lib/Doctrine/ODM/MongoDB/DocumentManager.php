@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -512,7 +513,7 @@ class DocumentManager implements ObjectManager
      * Gets the repository for a document class.
      *
      * @param string $documentName  The name of the Document.
-     * @return DocumentRepository  The repository.
+     * @return ObjectRepository  The repository.
      */
     public function getRepository($documentName)
     {

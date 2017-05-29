@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Repository;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
@@ -32,7 +33,7 @@ interface RepositoryFactory
      * @param DocumentManager $documentManager The DocumentManager instance.
      * @param string          $documentName    The name of the document.
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository
+     * @return ObjectRepository
      */
     public function getRepository(DocumentManager $documentManager, $documentName);
 }

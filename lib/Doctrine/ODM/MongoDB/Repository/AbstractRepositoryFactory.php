@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Repository;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
@@ -32,7 +33,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * The list of DocumentRepository instances.
      *
-     * @var array<\Doctrine\Common\Persistence\ObjectRepository>
+     * @var ObjectRepository[]
      */
     private $repositoryList = array();
 
@@ -61,7 +62,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      * @param DocumentManager $documentManager The DocumentManager instance.
      * @param string          $documentName    The name of the document.
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository
+     * @return ObjectRepository
      */
     protected function createRepository(DocumentManager $documentManager, $documentName)
     {
@@ -77,7 +78,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      * @param string $repositoryClassName
      * @param DocumentManager $documentManager
      * @param ClassMetadata $metadata
-     * @return \Doctrine\Common\Persistence\ObjectRepository
+     * @return ObjectRepository
      */
     abstract protected function instantiateRepository($repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata);
 }
