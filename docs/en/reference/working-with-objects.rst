@@ -105,10 +105,9 @@ Example:
 
 .. caution::
 
-    The \_id of a document is guaranteed to be available
-    after the next successful flush operation that involves the
-    document in question. You can not rely on a generated identifier to
-    be available directly after invoking ``persist``.
+    If not provided upfront the \_id of a document is generated
+    during ``persist``. You can not rely on a generated identifier to
+    be available during ``prePersist`` event.
 
 The semantics of the persist operation, applied on a document X,
 are as follows:
