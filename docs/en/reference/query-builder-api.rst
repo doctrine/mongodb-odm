@@ -946,6 +946,13 @@ Here is an example where we remove users who have never logged in:
 Group Queries
 -------------
 
+.. note::
+
+    Due to deprecation of ``group`` command in MongoDB 3.4 the ODM
+    also deprecates its usage through Query Builder in 1.2. Please
+    use :ref:`$group stage <aggregation_builder_group>` of the
+    Aggregation Builder instead.
+
 The last type of supported query is a group query. It performs an
 operation similar to SQL's GROUP BY command.
 

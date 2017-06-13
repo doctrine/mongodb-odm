@@ -281,6 +281,8 @@ You can also use fields defined in previous stages:
             ->field('purchaseYear')
             ->equals(2016);
 
+.. _aggregation_builder_group:
+
 $group
 ~~~~~~
 

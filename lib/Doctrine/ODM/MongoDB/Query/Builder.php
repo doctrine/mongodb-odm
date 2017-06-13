@@ -344,6 +344,19 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     }
 
     /**
+     * @inheritdoc
+     * @deprecated Deprecated in version 1.2 - use Aggregation Builder's group stage instead.
+     */
+    public function group($keys, array $initial, $reduce = null, array $options = [])
+    {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 - use Aggregation Builder\'s group stage instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+        return parent::group($keys, $initial, $reduce, $options);
+    }
+
+    /**
      * Gets the Query executable.
      *
      * @param array $options
