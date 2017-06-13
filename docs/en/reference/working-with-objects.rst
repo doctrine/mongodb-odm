@@ -533,6 +533,10 @@ examples are equivalent:
     // A single user by its nickname (__call magic)
     $user = $dm->getRepository('User')->findOneByNickname('romanb');
 
+.. note::
+
+    You can learn more about Repositories in a :ref:`dedicated chapter <document_repositories>`.
+
 By Lazy Loading
 ~~~~~~~~~~~~~~~
 
@@ -585,47 +589,3 @@ To find documents with a ReferenceMany association that includes a certain docum
     $users = $dm->createQueryBuilder('User')
         ->field('groups')->includesReferenceTo($group)
         ->getQuery()->execute();
-
-Custom Repositories
-~~~~~~~~~~~~~~~~~~~
-
-By default the DocumentManager returns a default implementation of
-``Doctrine\ODM\MongoDB\DocumentRepository`` when you call
-``DocumentManager#getRepository($documentClass)``. You can override
-this behavior by specifying the class name of your own Document
-Repository in the Annotation, XML or YAML metadata. In large
-applications that require lots of specialized DQL queries using a
-custom repository is one recommended way of grouping these queries
-in a central location.
-
-.. code-block:: php
-
-    <?php
-
-    use Doctrine\ODM\MongoDB\DocumentRepository;
-    
-    /**
-     * @Document(repositoryClass="UserRepository")
-     */
-    class User
-    {
-    
-    }
-    
-    class UserRepository extends DocumentRepository
-    {
-        public function getAllAdminUsers()
-        {
-            return $this->createQueryBuilder()
-                ->field('status')->equals('admin')
-                ->getQuery()->execute();
-        }
-    }
-
-You can access your repository now by calling:
-
-.. code-block:: php
-
-    <?php
-
-    $admins = $dm->getRepository('User')->getAllAdminUsers();
