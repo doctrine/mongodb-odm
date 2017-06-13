@@ -128,23 +128,6 @@ are as follows:
 
     Do not pass detached documents to the persist operation.
 
-Flushing single documents
--------------------------
-
-You can flush a single document by passing the document object to the
-``flush`` method.
-
-Example:
-
-.. code-block:: php
-
-    <?php
-
-    $user = $dm->getRepository('User')->find($userId);
-    // ...
-    $user->setPassword('changeme');
-    $dm->flush($user);
-
 .. _flush_options:
 
 Flush Options
