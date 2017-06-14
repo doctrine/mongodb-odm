@@ -197,6 +197,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function getFieldsInQuery()
     {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 and will be removed altogether in 2.0.', __METHOD__),
+            E_USER_DEPRECATED
+        );
         $query = isset($this->query['query']) ? $this->query['query'] : array();
         $sort = isset($this->query['sort']) ? $this->query['sort'] : array();
 
@@ -213,6 +217,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function isIndexed()
     {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 and will be removed altogether in 2.0.', __METHOD__),
+            E_USER_DEPRECATED
+        );
         $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {
             if ( ! $this->collection->isFieldIndexed($field)) {
@@ -231,6 +239,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function getUnindexedFields()
     {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 and will be removed altogether in 2.0.', __METHOD__),
+            E_USER_DEPRECATED
+        );
         $unindexedFields = array();
         $fields = $this->getFieldsInQuery();
         foreach ($fields as $field) {

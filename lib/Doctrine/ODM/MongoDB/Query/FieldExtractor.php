@@ -34,6 +34,10 @@ class FieldExtractor
 
     public function __construct(array $query, array $sort = array())
     {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 and will be removed altogether in 2.0.', __CLASS__),
+            E_USER_DEPRECATED
+        );
         $this->query = $query;
         $this->sort = $sort;
     }

@@ -19,6 +19,9 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\MongoDB\CursorInterface;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+
 /**
  * EagerCursor wraps a Cursor instance and fetches all of its results upon
  * initialization.
@@ -28,4 +31,12 @@ namespace Doctrine\ODM\MongoDB;
  */
 class EagerCursor extends Cursor
 {
+    public function __construct(CursorInterface $baseCursor, UnitOfWork $unitOfWork, ClassMetadata $class)
+    {
+        @trigger_error(
+            sprintf('%s is deprecated - use %s instead.', __CLASS__, Cursor::class),
+            E_USER_DEPRECATED
+        );
+        parent::__construct($baseCursor, $unitOfWork, $class);
+    }
 }
