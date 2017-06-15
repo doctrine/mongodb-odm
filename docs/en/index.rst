@@ -51,6 +51,7 @@ Working with Objects
 
 * **Basic Reference**:
   :doc:`Documents <reference/working-with-objects>` |
+  :doc:`Repositories <reference/document-repositories>` |
   :doc:`Events <reference/events>` |
   :doc:`Migrations <reference/migrating-schemas>`
 
