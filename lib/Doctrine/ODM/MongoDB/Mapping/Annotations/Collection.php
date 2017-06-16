@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Collection extends AbstractField
 {
     public $type = 'collection';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

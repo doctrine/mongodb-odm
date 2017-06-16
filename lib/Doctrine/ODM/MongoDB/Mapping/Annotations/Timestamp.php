@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Timestamp extends AbstractField
 {
     public $type = 'timestamp';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

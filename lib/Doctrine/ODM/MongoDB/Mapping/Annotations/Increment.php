@@ -28,4 +28,9 @@ final class Increment extends AbstractField
 {
     public $type = 'increment';
     public $strategy = 'increment';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

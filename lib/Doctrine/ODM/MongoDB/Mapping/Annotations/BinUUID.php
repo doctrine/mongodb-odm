@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class BinUUID extends AbstractField
 {
     public $type = 'bin_uuid';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

@@ -821,6 +821,10 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setRequireIndexes($requireIndexes)
     {
+        @trigger_error(
+            'requireIndexes was deprecated in version 1.2 and will be removed altogether in 2.0.',
+            E_USER_DEPRECATED
+        );
         $this->requireIndexes = $requireIndexes;
     }
 
@@ -1309,6 +1313,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         // Synchronize the "simple" and "storeAs" mapping information for backwards compatibility
         if (isset($mapping['simple']) && ($mapping['simple'] === true || $mapping['simple'] === 'true')) {
             $mapping['storeAs'] = ClassMetadataInfo::REFERENCE_STORE_AS_ID;
+            @trigger_error('"simple" attribute of a reference is deprecated - use storeAs="id" instead.', E_USER_DEPRECATED);
         }
         // Provide the correct value for the "simple" field for backwards compatibility
         if (isset($mapping['storeAs'])) {

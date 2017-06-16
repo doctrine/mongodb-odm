@@ -408,6 +408,10 @@ class SchemaManager
      */
     public function createDatabases()
     {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 - databases are created automatically by MongoDB (>= 3.0).', __METHOD__),
+            E_USER_DEPRECATED
+        );
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
@@ -426,6 +430,10 @@ class SchemaManager
      */
     public function createDocumentDatabase($documentName)
     {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 - databases are created automatically by MongoDB (>= 3.0).', __METHOD__),
+            E_USER_DEPRECATED
+        );
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new \InvalidArgumentException('Cannot create databases for mapped super classes, embedded documents or query result documents.');

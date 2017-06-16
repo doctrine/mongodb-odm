@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Float extends AbstractField
 {
     public $type = 'float';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

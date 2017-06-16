@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Bin extends AbstractField
 {
     public $type = 'bin';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

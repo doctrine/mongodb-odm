@@ -29,11 +29,19 @@ class IncrementType extends Type
 {
     public function convertToDatabaseValue($value)
     {
+        @trigger_error(
+            'Increment type was deprecated in version 1.1 - use int or float with increment storage strategy instead.',
+            E_USER_DEPRECATED
+        );
         return $value !== null ? (is_float($value) ? (float) $value : (int) $value) : null;
     }
 
     public function convertToPHPValue($value)
     {
+        @trigger_error(
+            'Increment type was deprecated in version 1.1 - use int or float with increment storage strategy instead.',
+            E_USER_DEPRECATED
+        );
         return $value !== null ? (is_float($value) ? (float) $value : (int) $value) : null;
     }
 

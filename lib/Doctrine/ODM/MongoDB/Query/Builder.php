@@ -112,6 +112,10 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     public function requireIndexes($requireIndexes = true)
     {
+        @trigger_error(
+            'requireIndexes was deprecated in version 1.2 and will be removed altogether in 2.0.',
+            E_USER_DEPRECATED
+        );
         $this->requireIndexes = $requireIndexes;
         return $this;
     }
@@ -269,6 +273,10 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     public function update($documentName = null)
     {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 - use updateOne or updateMany instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
         $this->setDocumentName($documentName);
         parent::update();
 
