@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Int extends AbstractField
 {
     public $type = 'int';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

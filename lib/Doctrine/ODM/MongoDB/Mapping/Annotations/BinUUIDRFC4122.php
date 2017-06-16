@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class BinUUIDRFC4122 extends AbstractField
 {
     public $type = 'bin_uuid_rfc4122';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

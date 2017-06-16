@@ -167,6 +167,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             foreach ($this->reader->getPropertyAnnotations($property) as $annot) {
                 if ($annot instanceof ODM\AbstractField) {
                     $fieldAnnot = $annot;
+                    if ($annot->isDeprecated()) {
+                        @trigger_error($annot->getDeprecationMessage(), E_USER_DEPRECATED);
+                    }
                 }
                 if ($annot instanceof ODM\AbstractIndex) {
                     $indexes[] = $annot;

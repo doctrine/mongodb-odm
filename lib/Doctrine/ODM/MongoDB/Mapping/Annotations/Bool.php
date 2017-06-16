@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Bool extends AbstractField
 {
     public $type = 'bool';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

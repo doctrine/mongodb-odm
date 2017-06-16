@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Hash extends AbstractField
 {
     public $type = 'hash';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

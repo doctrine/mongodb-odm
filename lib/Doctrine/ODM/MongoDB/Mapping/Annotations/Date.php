@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Date extends AbstractField
 {
     public $type = 'date';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

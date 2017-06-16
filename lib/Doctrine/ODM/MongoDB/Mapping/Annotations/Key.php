@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class Key extends AbstractField
 {
     public $type = 'key';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

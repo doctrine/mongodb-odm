@@ -26,4 +26,9 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class ObjectId extends AbstractField
 {
     public $type = 'object_id';
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }
