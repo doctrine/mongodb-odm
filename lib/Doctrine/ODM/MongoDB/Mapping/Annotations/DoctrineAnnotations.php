@@ -17,6 +17,11 @@
  * <http://www.doctrine-project.org>.
  */
 
+@trigger_error(
+    sprintf('Loading annotations with %s is deprecated - register class loader through AnnotationRegistry::registerLoader instead.', __FILE__),
+    E_USER_DEPRECATED
+);
+
 require_once __DIR__ . '/AbstractDocument.php';
 require_once __DIR__ . '/Document.php';
 require_once __DIR__ . '/EmbeddedDocument.php';
