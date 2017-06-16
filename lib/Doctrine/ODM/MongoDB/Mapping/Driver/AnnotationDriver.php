@@ -48,9 +48,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * Registers annotation classes to the common registry.
      *
      * This method should be called when bootstrapping your application.
+     *
+     * @deprecated method was deprecated in 1.2 and will be removed in 2.0. Register class loader through AnnotationRegistry::registerLoader instead.
      */
     public static function registerAnnotationClasses()
     {
+        @trigger_error(
+            sprintf('%s is deprecated - register class loader through AnnotationRegistry::registerLoader instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
         AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
     }
 
