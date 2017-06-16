@@ -46,6 +46,11 @@ with Doctrine's Criteria API.
 
     All above methods will include additional criteria specified by :ref:`Filters <filters>`.
 
+.. note::
+
+    Magic ``findBy`` and ``findOneBy`` calls described below are deprecated in 1.2 and
+    will be removed in 2.0.
+
 Additional methods that are not defined explicitly in the repository class may also be
 used if they follow a specific naming convention:
 

@@ -206,9 +206,15 @@ class DocumentRepository implements ObjectRepository, Selectable
      *                                 or no find* method at all and therefore an invalid
      *                                 method call.
      * @return array|object The found document/documents.
+     *
+     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
      */
     public function __call($method, $arguments)
     {
+        @trigger_error(
+            'Using magic findBy and findOneBy calls was deprecated in version 1.2 and will be removed altogether in 2.0.',
+            E_USER_DEPRECATED
+        );
         if (strpos($method, 'findBy') === 0) {
             $by = substr($method, 6, strlen($method));
             $method = 'findBy';
