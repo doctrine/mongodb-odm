@@ -37,6 +37,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 class Query extends \Doctrine\MongoDB\Query\Query
 {
     const HINT_REFRESH = 1;
+    /** @deprecated */
     const HINT_SLAVE_OKAY = 2;
     const HINT_READ_PREFERENCE = 3;
     const HINT_READ_PREFERENCE_TAGS = 4;

@@ -1,6 +1,11 @@
 Slave Okay Queries
 ==================
 
+.. note::
+
+    ``slaveOkay`` was deprecated in 1.2 - please use `Read Preference <http://php.net/manual/en/mongo.readpreferences.php>`_
+    instead.
+
 Documents
 ~~~~~~~~~
 

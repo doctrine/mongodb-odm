@@ -33,6 +33,7 @@ final class Document extends AbstractDocument
     /** @deprecated */
     public $requireIndexes = false;
     public $shardKey;
+    /** @deprecated */
     public $slaveOkay;
     public $writeConcern;
 }
