@@ -549,9 +549,15 @@ class Cursor implements CursorInterface
      * @see http://php.net/manual/en/mongocursor.slaveokay.php
      * @param boolean $ok
      * @return $this
+     *
+     * @deprecated in version 1.2 - use setReadPreference on the query instead.
      */
     public function slaveOkay($ok = true)
     {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 - use setReadPreference on the query instead.'),
+            E_USER_DEPRECATED
+        );
         $ok = (boolean) $ok;
         $this->baseCursor->slaveOkay($ok);
         $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;

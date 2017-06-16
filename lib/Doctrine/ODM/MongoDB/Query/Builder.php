@@ -365,6 +365,20 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * @deprecated in version 1.2 - use setReadPreference instead.
+     */
+    public function slaveOkay($bool = true)
+    {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 - use setReadPreference instead.'),
+            E_USER_DEPRECATED
+        );
+        return parent::slaveOkay($bool);
+    }
+
+    /**
      * Gets the Query executable.
      *
      * @param array $options

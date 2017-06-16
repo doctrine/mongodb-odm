@@ -212,6 +212,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
     /**
      * READ-ONLY: Whether or not reads for this class are okay to read from a slave.
+     *
+     * @deprecated in version 1.2 and will be removed in 2.0.
      */
     public $slaveOkay;
 
@@ -779,9 +781,15 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * Sets the slaveOkay option applied to collections for this class.
      *
      * @param boolean|null $slaveOkay
+     *
+     * @deprecated in version 1.2 and will be removed in 2.0.
      */
     public function setSlaveOkay($slaveOkay)
     {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 and will be removed in 2.0.'),
+            E_USER_DEPRECATED
+        );
         $this->slaveOkay = $slaveOkay === null ? null : (boolean) $slaveOkay;
     }
 
