@@ -24,9 +24,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Inflector\Inflector;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
+use Doctrine\ODM\MongoDB\Repository\Repository;
 
 /**
  * A DocumentRepository serves as a repository for documents with generic as well as
@@ -37,7 +37,7 @@ use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
  *
  * @since       1.0
  */
-class DocumentRepository implements ObjectRepository, Selectable
+class DocumentRepository implements Repository
 {
     /**
      * @var string
@@ -194,6 +194,19 @@ class DocumentRepository implements ObjectRepository, Selectable
     public function findOneBy(array $criteria)
     {
         return $this->getDocumentPersister()->load($criteria);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function get($id, $lockMode = LockMode::NONE, $lockVersion = null)
+    {
+        $document = $this->find($id, $lockMode, $lockVersion);
+        if ($document === null) {
+            throw DocumentNotFoundException::documentNotFound($this->getClassName(), $id);
+        }
+
+        return $document;
     }
 
     /**

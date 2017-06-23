@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ODM\MongoDB\Repository\Repository;
 use Documents\Account;
 use Documents\Address;
 use Documents\Phonenumber;
@@ -10,6 +11,12 @@ use Documents\User;
 
 class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    /** @var Repository */
+    private $repository;
+
+    /** @var User */
+    private $user;
+
     public function setUp()
     {
         parent::setUp();
@@ -58,5 +65,20 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $users = $this->repository->matching(new Criteria($expr));
         $this->assertCount(1, $users);
+    }
+
+    public function testGet()
+    {
+        $user2 = $this->repository->get($this->user->getId());
+        $this->assertTrue($this->user === $user2);
+    }
+
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     * @expectedExceptionMessage The "Documents\User" document with identifier {"$id":"507f1f77bcf86cd799439011"} could not be found.
+     */
+    public function testGetThrowsExceptionOnMiss()
+    {
+        $this->repository->get(new \MongoId("507f1f77bcf86cd799439011"));
     }
 }
