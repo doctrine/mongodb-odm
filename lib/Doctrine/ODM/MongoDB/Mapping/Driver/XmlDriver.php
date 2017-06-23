@@ -129,6 +129,9 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot['slave-okay'])) {
             $class->setSlaveOkay('true' === (string) $xmlRoot['slave-okay']);
         }
+        if (isset($xmlRoot['read-only']) && 'true' === (string) $xmlRoot['read-only']) {
+            $class->markReadOnly();
+        }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
                 $mapping = array();

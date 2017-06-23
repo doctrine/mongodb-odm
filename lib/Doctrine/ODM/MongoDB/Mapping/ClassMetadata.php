@@ -172,6 +172,10 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'collectionMax';
         }
 
+        if ($this->isReadOnly) {
+            $serialized[] = 'isReadOnly';
+        }
+
         return $serialized;
     }
 

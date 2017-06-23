@@ -108,6 +108,9 @@ class YamlDriver extends FileDriver
         if (isset($element['slaveOkay'])) {
             $class->setSlaveOkay($element['slaveOkay']);
         }
+        if (! empty($element['readOnly'])) {
+            $class->markReadOnly();
+        }
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $fieldName => $mapping) {
                 if (is_string($mapping)) {

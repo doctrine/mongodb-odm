@@ -62,6 +62,7 @@
     <xs:attribute name="change-tracking-policy" type="odm:change-tracking-policy" />
     <xs:attribute name="require-indexes" type="xs:boolean" />
     <xs:attribute name="slave-okay" type="xs:boolean" />
+    <xs:attribute name="read-only" type="xs:boolean" />
   </xs:complexType>
 
   <xs:complexType name="field">
