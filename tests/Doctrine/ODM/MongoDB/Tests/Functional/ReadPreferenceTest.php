@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Documents\Group;
 use Documents\User;
@@ -121,6 +122,46 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         );
     }
 
+    public function testDocumentLevelReadPreferenceIsSetInCollection()
+    {
+        $coll = $this->dm->getDocumentCollection(DocumentWithReadPreference::class);
+
+        $this->assertEquals([
+            'type' => 'nearest',
+            'tagsets' => [ ['dc' => 'east'] ],
+        ], $coll->getReadPreference());
+    }
+
+    public function testDocumentLevelReadPreferenceIsAppliedInQueryBuilder()
+    {
+        $cursor = $this->dm->getRepository(DocumentWithReadPreference::class)
+            ->createQueryBuilder()
+            ->getQuery()
+            ->execute();
+
+        $this->assertReadPreferenceHint("nearest", $cursor->getHints());
+        $this->assertReadPreferenceTagsHint([ ['dc' => 'east'] ], $cursor->getHints());
+        $this->assertEquals([
+            'type' => 'nearest',
+            'tagsets' => [ ['dc' => 'east'] ],
+        ], $cursor->getReadPreference());
+    }
+
+    public function testDocumentLevelReadPreferenceCanBeOverriddenInQueryBuilder()
+    {
+        $cursor = $this->dm->getRepository(DocumentWithReadPreference::class)
+            ->createQueryBuilder()
+            ->setReadPreference("secondary", [])
+            ->getQuery()
+            ->execute();
+
+        $this->assertReadPreferenceHint("secondary", $cursor->getHints());
+        $this->assertReadPreferenceTagsHint([], $cursor->getHints());
+        $this->assertEquals([
+            'type' => 'secondary',
+        ], $cursor->getReadPreference());
+    }
+
     private function assertReadPreferenceHint($readPreference, $hints)
     {
         $this->assertEquals($readPreference, $hints[Query::HINT_READ_PREFERENCE]);
@@ -130,4 +171,14 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->assertEquals($tags, $hints[Query::HINT_READ_PREFERENCE_TAGS]);
     }
+}
+
+/**
+ * @ODM\Document()
+ * @ODM\ReadPreference("nearest", tags={ { "dc"="east" } })
+ */
+class DocumentWithReadPreference
+{
+    /** @ODM\Id() */
+    public $id;
 }

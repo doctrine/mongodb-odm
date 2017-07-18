@@ -190,6 +190,17 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $collectionMax;
 
     /**
+     * READ-ONLY Describes how MongoDB clients route read operations to the members of a replica set.
+     */
+    public $readPreference;
+
+    /**
+     * READ-ONLY Associated with readPreference Allows to specify criteria so that your application can target read
+     * operations to specific members, based on custom parameters.
+     */
+    public $readPreferenceTags;
+
+    /**
      * READ-ONLY: Describes the level of acknowledgement requested from MongoDB for write operations.
      */
     public $writeConcern;
@@ -979,6 +990,18 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isSharded()
     {
         return $this->shardKey ? true : false;
+    }
+
+    /**
+     * Sets the read preference used by this class.
+     *
+     * @param string $readPreference
+     * @param array|null $tags
+     */
+    public function setReadPreference($readPreference, $tags)
+    {
+        $this->readPreference = $readPreference;
+        $this->readPreferenceTags = $tags;
     }
 
     /**

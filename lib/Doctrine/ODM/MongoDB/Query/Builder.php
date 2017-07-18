@@ -432,6 +432,11 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
             $query['slaveOkay'] = $this->class->slaveOkay;
         }
 
+        if ($this->class->readPreference && ! array_key_exists('readPreference', $query)) {
+            $query['readPreference'] = $this->class->readPreference;
+            $query['readPreferenceTags'] = $this->class->readPreferenceTags;
+        }
+
         return new Query(
             $this->dm,
             $this->class,

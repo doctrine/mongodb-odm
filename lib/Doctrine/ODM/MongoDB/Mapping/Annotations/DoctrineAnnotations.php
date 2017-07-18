@@ -87,3 +87,4 @@ require_once __DIR__ . '/PostLoad.php';
 require_once __DIR__ . '/PreFlush.php';
 require_once __DIR__ . '/HasLifecycleCallbacks.php';
 require_once __DIR__ . '/ShardKey.php';
+require_once __DIR__ . '/ReadPreference.php';

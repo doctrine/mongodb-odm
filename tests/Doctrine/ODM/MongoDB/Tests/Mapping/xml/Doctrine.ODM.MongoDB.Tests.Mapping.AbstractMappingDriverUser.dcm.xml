@@ -11,6 +11,15 @@
             <discriminator-mapping value="default" class="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" />
         </discriminator-map>
         <default-discriminator-value value="default" />
+        <read-preference mode="primaryPreferred">
+            <tag-set>
+                <tag name="dc" value="east"/>
+            </tag-set>
+            <tag-set>
+                <tag name="dc" value="west"/>
+            </tag-set>
+            <tag-set />
+        </read-preference>
         <field fieldName="id" id="true" />
         <field fieldName="version" version="true" type="int" />
         <field fieldName="lock" lock="true" type="int" />

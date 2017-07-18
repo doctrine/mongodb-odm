@@ -49,6 +49,7 @@
       <xs:element name="also-load-methods" type="odm:also-load-methods" minOccurs="0"/>
       <xs:element name="indexes" type="odm:indexes" minOccurs="0"/>
       <xs:element name="shard-key" type="odm:shard-key" minOccurs="0"/>
+      <xs:element name="read-preference" type="odm:read-preference" minOccurs="0" maxOccurs="1"/>
     </xs:sequence>
     <xs:attribute name="db" type="xs:NMTOKEN" />
     <xs:attribute name="name" type="xs:string" />
@@ -63,6 +64,13 @@
     <xs:attribute name="require-indexes" type="xs:boolean" />
     <xs:attribute name="slave-okay" type="xs:boolean" />
     <xs:attribute name="read-only" type="xs:boolean" />
+  </xs:complexType>
+
+  <xs:complexType name="read-preference">
+    <xs:sequence>
+      <xs:element name="tag-set" type="odm:read-preference-tag-set" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="mode" type="odm:read-preference-values"/>
   </xs:complexType>
 
   <xs:complexType name="field">
@@ -371,6 +379,27 @@
     <xs:sequence>
       <xs:element name="also-load-method" type="odm:also-load-method" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="read-preference-values">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="primary" />
+      <xs:enumeration value="primaryPreferred" />
+      <xs:enumeration value="secondary" />
+      <xs:enumeration value="secondaryPreferred" />
+      <xs:enumeration value="nearest" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="read-preference-tag-set">
+    <xs:sequence>
+      <xs:element name="tag" type="read-preference-tag" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="read-preference-tag">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="value" type="xs:string" use="required" />
   </xs:complexType>
 
 </xs:schema>

@@ -67,6 +67,14 @@ class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(isset($class2->reflFields['mapped2']));
         $this->assertTrue(isset($class2->reflFields['mappedRelated1']));
     }
+
+    public function testReadPreferenceIsInherited()
+    {
+        $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
+
+        $this->assertSame("secondary", $class->readPreference);
+        $this->assertEquals([ ['dc' => 'east'] ], $class->readPreferenceTags);
+    }
 }
 
 class TransientBaseClass
@@ -85,7 +93,10 @@ class DocumentSubClass extends TransientBaseClass
     private $name;
 }
 
-/** @ODM\MappedSuperclass */
+/**
+ * @ODM\MappedSuperclass
+ * @ODM\ReadPreference("secondary", tags={ { "dc"="east" } })
+ */
 class MappedSuperclassBase
 {
     /** @ODM\Field(type="string") */
