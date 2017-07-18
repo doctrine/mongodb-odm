@@ -1219,8 +1219,8 @@ Optional attributes:
     simple - deprecated (use ``storeAs: id``)
 -
     storeAs - Indicates how to store the reference. ``id`` uses ``MongoId``,
-    ``dbRef`` uses a `DBRef`_ without ``$db`` value and ``dbRefWithDb`` stores
-    a full `DBRef`_ (``$ref``, ``$id``, and ``$db``). Note that ``id``
+    ``ref`` stores fields ``id`` and ``ref`` (similar to DBRef without $ prefix) value and ``refWithDb`` stores
+    a additionally db as parameter. ``dbRef`` and ``dbRefWithDb`` use ``DBRef``, they are deprecated in favor of ref and refWithDb. Note that ``id``
     references are not compatible with the discriminators.
 -
     cascade - Cascade Option
@@ -1293,8 +1293,8 @@ Optional attributes:
     simple - deprecated (use ``storeAs: id``)
 -
     storeAs - Indicates how to store the reference. ``id`` uses ``MongoId``,
-    ``dbRef`` uses a `DBRef`_ without ``$db`` value and ``dbRefWithDb`` stores
-    a full `DBRef`_ (``$ref``, ``$id``, and ``$db``). Note that ``id``
+    ``ref`` stores fields ``id`` and ``ref`` (similar to DBRef without $ prefix) value and ``refWithDb`` stores
+    a additionally db as parameter. ``dbRef`` and ``dbRefWithDb`` use ``DBRef``, they are deprecated in favor of ref and refWithDb. Note that ``id``
     references are not compatible with the discriminators.
 -
     cascade - Cascade Option

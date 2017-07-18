@@ -81,7 +81,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
             } else {
                 $keys = array('ref' => true, 'id' => true, 'db' => true);
 
-                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF || $storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_REF_WITH_DB) {
                     unset($keys['db']);
                 }
 
@@ -89,8 +89,10 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                     unset($keys['ref'], $keys['db']);
                 }
 
+                $prefix = ClassMetadataInfo::getReferencePrefix($storeAs);
+
                 foreach ($keys as $key => $value) {
-                    $this->query[$mapping['name'] . '.$' . $key] = $dbRef['$' . $key];
+                    $this->query[$mapping['name'] . '.' . $prefix . $key] = $dbRef[$prefix . $key];
                 }
             }
         } else {
@@ -119,7 +121,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
             } else {
                 $keys = array('ref' => true, 'id' => true, 'db' => true);
 
-                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF || $storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_REF) {
                     unset($keys['db']);
                 }
 
@@ -127,8 +129,10 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                     unset($keys['ref'], $keys['db']);
                 }
 
+                $prefix = ClassMetadataInfo::getReferencePrefix($storeAs);
+
                 foreach ($keys as $key => $value) {
-                    $this->query[$mapping['name']]['$elemMatch']['$' . $key] = $dbRef['$' . $key];
+                    $this->query[$mapping['name']]['$elemMatch'][$prefix . $key] = $dbRef[$prefix . $key];
                 }
             }
         } else {
