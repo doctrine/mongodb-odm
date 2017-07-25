@@ -133,18 +133,7 @@ class XmlDriver extends FileDriver
             $class->markReadOnly();
         }
         if (isset($xmlRoot->{'read-preference'})) {
-            $tags = null;
-            if (isset($xmlRoot->{'read-preference'}->{'tag-set'})) {
-                $tags = [];
-                foreach ($xmlRoot->{'read-preference'}->{'tag-set'} as $tagSet) {
-                    $set = [];
-                    foreach ($tagSet->tag as $tag) {
-                        $set[(string) $tag['name']] = (string) $tag['value'];
-                    }
-                    $tags[] = $set;
-                }
-            }
-            $class->setReadPreference((string) $xmlRoot->{'read-preference'}['mode'], $tags);
+            $class->setReadPreference(...$this->transformReadPreference($xmlRoot->{'read-preference'}));
         }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
@@ -507,6 +496,30 @@ class XmlDriver extends FileDriver
         }
 
         $class->setShardKey($keys, $options);
+    }
+
+    /**
+     * Parses <read-preference> to a format suitable for the underlying driver.
+     *
+     * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
+     *
+     * @param \SimpleXMLElement $xmlReadPreference
+     * @return array
+     */
+    private function transformReadPreference($xmlReadPreference)
+    {
+        $tags = null;
+        if (isset($xmlReadPreference->{'tag-set'})) {
+            $tags = [];
+            foreach ($xmlReadPreference->{'tag-set'} as $tagSet) {
+                $set = [];
+                foreach ($tagSet->tag as $tag) {
+                    $set[(string) $tag['name']] = (string) $tag['value'];
+                }
+                $tags[] = $set;
+            }
+        }
+        return [(string) $xmlReadPreference['mode'], $tags];
     }
 
     /**
