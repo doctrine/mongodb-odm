@@ -723,7 +723,7 @@ class DocumentPersister
                 $mongoId = $reference;
             } else {
                 $className = $this->uow->getClassNameForAssociation($mapping, $reference);
-                $mongoId = $reference['$id'];
+                $mongoId = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
             }
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
 
@@ -806,7 +806,12 @@ class DocumentPersister
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping = isset($targetClass->fieldMappings[$mapping['mappedBy']]) ? $targetClass->fieldMappings[$mapping['mappedBy']] : array();
-        $mappedByFieldName = isset($mappedByMapping['storeAs']) && $mappedByMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID ? $mapping['mappedBy'] : $mapping['mappedBy'] . '.$id';
+        if (isset($mappedByMapping['storeAs']) && $mappedByMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
+            $mappedByFieldName = $mapping['mappedBy'];
+        } else {
+            $mappedByFieldName = $mapping['mappedBy'] . '.' . ClassMetadataInfo::getReferencePrefix(isset($mappedByMapping['storeAs']) ? $mappedByMapping['storeAs'] : null) . 'id';
+        }
+
         $criteria = $this->cm->merge(
             array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
@@ -1178,7 +1183,7 @@ class DocumentPersister
 
         // Prepare DBRef identifiers or the mapped field's property path
         $fieldName = ($objectPropertyIsId && ! empty($mapping['reference']) && $mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID)
-            ? $e[0] . '.$id'
+            ? $e[0] . '.' . ClassMetadataInfo::getReferencePrefix($mapping['storeAs']) . 'id'
             : $e[0] . '.' . $objectPropertyPrefix . $targetMapping['name'];
 
         // Process targetDocument identifier fields
@@ -1425,20 +1430,25 @@ class DocumentPersister
     private function prepareDbRefElement($fieldName, $value, array $mapping, $inNewObj)
     {
         $dbRef = $this->dm->createDBRef($value, $mapping);
-        if ($inNewObj) {
+        if ($inNewObj || $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
             return [[$fieldName, $dbRef]];
-        }
-        $keys = ['$ref' => true, '$id' => true, '$db' => true];
-        if ($mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
-            unset($keys['$db']);
-        }
-        if (isset($mapping['targetDocument'])) {
-            unset($keys['$ref'], $keys['$db']);
         }
 
-        if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-            return [[$fieldName, $dbRef]];
-        } elseif ($mapping['type'] === 'many') {
+        if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_REF) {
+            $keys = ['id' => true];
+        } else {
+            $keys = ['$ref' => true, '$id' => true, '$db' => true];
+
+            if ($mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
+                unset($keys['$db']);
+            }
+
+            if (isset($mapping['targetDocument'])) {
+                unset($keys['$ref'], $keys['$db']);
+            }
+        }
+
+        if ($mapping['type'] === 'many') {
             return [[$fieldName, ['$elemMatch' => array_intersect_key($dbRef, $keys)]]];
         } else {
             return array_map(

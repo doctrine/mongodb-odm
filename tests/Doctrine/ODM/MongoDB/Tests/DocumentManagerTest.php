@@ -242,6 +242,10 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertArrayHasKey('$ref', $dbRef);
         $this->assertArrayHasKey('$id', $dbRef);
         $this->assertArrayHasKey('$db', $dbRef);
+
+        $dbRef = $this->dm->createDBRef($r, $class->associationMappings['ref4']);
+        $this->assertCount(1, $dbRef);
+        $this->assertArrayHasKey('id', $dbRef);
     }
 
     private function getMockClassMetadataFactory()
@@ -279,4 +283,7 @@ class ReferenceStoreAsDocument
 
     /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRefWithDb") */
     public $ref3;
+
+    /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="ref") */
+    public $ref4;
 }

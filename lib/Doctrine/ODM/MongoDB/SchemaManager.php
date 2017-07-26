@@ -195,7 +195,7 @@ class SchemaManager
                         if ($key == $fieldMapping['name']) {
                             $key = $fieldMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID
                                 ? $key
-                                : $key . '.$id';
+                                : $key . '.' . ClassMetadataInfo::getReferencePrefix($fieldMapping['storeAs']) . 'id';
                         }
                         $newKeys[$key] = $v;
                     }

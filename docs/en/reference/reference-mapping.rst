@@ -360,6 +360,7 @@ The ``storeAs`` option has three possible values:
 
 - **dbRefWithDb**: Uses a `DBRef`_ with ``$ref``, ``$id``, and ``$db`` fields (this is the default)
 - **dbRef**: Uses a `DBRef`_ with ``$ref`` and ``$id``
+- **ref**: Uses a custom embedded object with an ``id`` field
 - **id**: Uses a ``MongoId``
 
 .. note::

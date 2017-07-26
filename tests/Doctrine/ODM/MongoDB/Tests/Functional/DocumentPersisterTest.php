@@ -345,6 +345,83 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
+    public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithNormalIdType()
+    {
+        $class = DocumentPersisterTestHashIdDocument::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $id = new \MongoId();
+
+        $value = array('embeddedRef.id' => (string) $id);
+        $expected = array('embeddedRef.id' => $id);
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('embeddedRef.id' => array('$exists' => true));
+        $expected = array('embeddedRef.id' => array('$exists' => true));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('embeddedRef.id' => array('$elemMatch' => (string) $id));
+        $expected = array('embeddedRef.id' => array('$elemMatch' => $id));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('embeddedRef.id' => array('$in' => array((string) $id)));
+        $expected = array('embeddedRef.id' => array('$in' => array($id)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('embeddedRef.id' => array('$not' => array('$elemMatch' => (string) $id)));
+        $expected = array('embeddedRef.id' => array('$not' => array('$elemMatch' => $id)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('embeddedRef.id' => array('$not' => array('$in' => array((string) $id))));
+        $expected = array('embeddedRef.id' => array('$not' => array('$in' => array($id))));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
+    /**
+     * @dataProvider provideHashIdentifiers
+     */
+    public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithHashIdType($hashId)
+    {
+        $class = DocumentPersisterTestDocument::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $value = array('embeddedRef.id' => $hashId);
+        $expected = array('embeddedRef.id' => (object) $hashId);
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('embeddedRef.id' => array('$exists' => true));
+        $expected = array('embeddedRef.id' => array('$exists' => true));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('embeddedRef.id' => array('$elemMatch' => $hashId));
+        $expected = array('embeddedRef.id' => array('$elemMatch' => (object) $hashId));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('embeddedRef.id' => array('$in' => array($hashId)));
+        $expected = array('embeddedRef.id' => array('$in' => array((object) $hashId)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('embeddedRef.id' => array('$not' => array('$elemMatch' => $hashId)));
+        $expected = array('embeddedRef.id' => array('$not' => array('$elemMatch' => (object) $hashId)));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $value = array('embeddedRef.id' => array('$not' => array('$in' => array($hashId))));
+        $expected = array('embeddedRef.id' => array('$not' => array('$in' => array((object) $hashId))));
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
     /**
      * @return array
      */
@@ -547,6 +624,9 @@ class DocumentPersisterTestDocument
 
     /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", storeAs="dbRefWithDb") */
     public $complexRef;
+
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", storeAs="ref") */
+    public $embeddedRef;
 }
 
 /** @ODM\Document */
@@ -628,6 +708,9 @@ class DocumentPersisterTestHashIdDocument
 
     /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", storeAs="dbRefWithDb") */
     public $complexRef;
+
+    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", storeAs="ref") */
+    public $embeddedRef;
 }
 
 /** @ODM\Document(writeConcern="majority") */

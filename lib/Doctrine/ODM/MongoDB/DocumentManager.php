@@ -691,20 +691,28 @@ class DocumentManager implements ObjectManager
             );
         }
 
-        if ($referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-            if ($class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
-                throw MappingException::simpleReferenceMustNotTargetDiscriminatedDocument($referenceMapping['targetDocument']);
-            }
-            return $class->getDatabaseIdentifierValue($id);
-        }
+        switch ($referenceMapping['storeAs']) {
+            case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+                if ($class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+                    throw MappingException::simpleReferenceMustNotTargetDiscriminatedDocument($referenceMapping['targetDocument']);
+                }
 
-        $dbRef = array(
-            '$ref' => $class->getCollection(),
-            '$id'  => $class->getDatabaseIdentifierValue($id),
-        );
+                return $class->getDatabaseIdentifierValue($id);
+                break;
 
-        if ($referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
-            $dbRef['$db'] = $this->getDocumentDatabase($class->name)->getName();
+
+            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                $dbRef = ['id' => $class->getDatabaseIdentifierValue($id)];
+                break;
+
+            default:
+                $dbRef = [
+                    '$ref' => $class->getCollection(),
+                    '$id'  => $class->getDatabaseIdentifierValue($id),
+                ];
+                if ($referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
+                    $dbRef['$db'] = $this->getDocumentDatabase($class->name)->getName();
+                }
         }
 
         /* If the class has a discriminator (field and value), use it. A child

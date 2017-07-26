@@ -59,6 +59,20 @@ class ReferenceUser
     public $otherUsers = array();
 
     /**
+     * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="ref")
+     *
+     * @var User
+     */
+    public $referencedUser;
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="Documents\User", storeAs="ref")
+     *
+     * @var User[]
+     */
+    public $referencedUsers = array();
+
+    /**
      * @ODM\Field(type="string")
      *
      * @var string
@@ -159,6 +173,38 @@ class ReferenceUser
     public function getOtherUsers()
     {
         return $this->otherUsers;
+    }
+
+    /**
+     * @param User $referencedUser
+     */
+    public function setReferencedUser(User $referencedUser)
+    {
+        $this->referencedUser = $referencedUser;
+    }
+
+    /**
+     * @return User
+     */
+    public function getreferencedUser()
+    {
+        return $this->referencedUser;
+    }
+
+    /**
+     * @param User $referencedUser
+     */
+    public function addReferencedUser(User $referencedUser)
+    {
+        $this->referencedUsers[] = $referencedUser;
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getReferencedUsers()
+    {
+        return $this->referencedUsers;
     }
 
     /**

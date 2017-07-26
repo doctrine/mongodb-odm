@@ -260,7 +260,7 @@ EOF
                 \$mongoId = \$reference;
             } else {
                 \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$reference);
-                \$mongoId = \$reference['\$id'];
+                \$mongoId = \$reference[ClassMetadataInfo::getReferencePrefix(\$this->class->fieldMappings['%2\$s']['storeAs']) . 'id'];
             }
             \$targetMetadata = \$this->dm->getClassMetadata(\$className);
             \$id = \$targetMetadata->getPHPIdentifierValue(\$mongoId);
@@ -296,7 +296,7 @@ EOF
         \$className = \$mapping['targetDocument'];
         \$targetClass = \$this->dm->getClassMetadata(\$mapping['targetDocument']);
         \$mappedByMapping = \$targetClass->fieldMappings[\$mapping['mappedBy']];
-        \$mappedByFieldName = isset(\$mappedByMapping['storeAs']) && \$mappedByMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID ? \$mapping['mappedBy'] : \$mapping['mappedBy'].'.\$id';
+        \$mappedByFieldName = isset(\$mappedByMapping['storeAs']) && \$mappedByMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID ? \$mapping['mappedBy'] : \$mapping['mappedBy'].'.'.ClassMetadataInfo::getReferencePrefix(\$mappedByMapping['storeAs']).'id';
         \$criteria = array_merge(
             array(\$mappedByFieldName => \$data['_id']),
             isset(\$this->class->fieldMappings['%2\$s']['criteria']) ? \$this->class->fieldMappings['%2\$s']['criteria'] : array()

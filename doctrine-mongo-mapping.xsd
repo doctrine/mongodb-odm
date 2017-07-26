@@ -124,6 +124,7 @@
   <xs:simpleType name="reference-store-as">
     <xs:restriction base="xs:token">
       <xs:enumeration value="id"/>
+      <xs:enumeration value="ref"/>
       <xs:enumeration value="dbRef"/>
       <xs:enumeration value="dbRefWithDb"/>
     </xs:restriction>

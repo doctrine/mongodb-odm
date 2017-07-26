@@ -79,18 +79,22 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
             if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 $this->query[$mapping['name']] = $dbRef;
             } else {
-                $keys = array('ref' => true, 'id' => true, 'db' => true);
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_REF) {
+                    $keys = ['id' => true];
+                } else {
+                    $keys = ['$ref' => true, '$id' => true, '$db' => true];
 
-                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
-                    unset($keys['db']);
-                }
+                    if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                        unset($keys['$db']);
+                    }
 
-                if (isset($mapping['targetDocument'])) {
-                    unset($keys['ref'], $keys['db']);
+                    if (isset($mapping['targetDocument'])) {
+                        unset($keys['$ref'], $keys['$db']);
+                    }
                 }
 
                 foreach ($keys as $key => $value) {
-                    $this->query[$mapping['name'] . '.$' . $key] = $dbRef['$' . $key];
+                    $this->query[$mapping['name'] . '.' . $key] = $dbRef[$key];
                 }
             }
         } else {
@@ -117,18 +121,22 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
             if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 $this->query[$mapping['name']] = $dbRef;
             } else {
-                $keys = array('ref' => true, 'id' => true, 'db' => true);
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_REF) {
+                    $keys = ['id' => true];
+                } else {
+                    $keys = ['$ref' => true, '$id' => true, '$db' => true];
 
-                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
-                    unset($keys['db']);
-                }
+                    if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                        unset($keys['$db']);
+                    }
 
-                if (isset($mapping['targetDocument'])) {
-                    unset($keys['ref'], $keys['db']);
+                    if (isset($mapping['targetDocument'])) {
+                        unset($keys['$ref'], $keys['$db']);
+                    }
                 }
 
                 foreach ($keys as $key => $value) {
-                    $this->query[$mapping['name']]['$elemMatch']['$' . $key] = $dbRef['$' . $key];
+                    $this->query[$mapping['name']]['$elemMatch'][$key] = $dbRef[$key];
                 }
             }
         } else {

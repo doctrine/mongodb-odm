@@ -255,6 +255,7 @@ class ReferencePrimer
     {
         $mapping = $persistentCollection->getMapping();
 
+
         if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
             $className = $mapping['targetDocument'];
             $class = $this->dm->getClassMetadata($className);
@@ -264,7 +265,7 @@ class ReferencePrimer
             if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 $id = $reference;
             } else {
-                $id = $reference['$id'];
+                $id = $reference[ClassMetadataInfo::getReferencePrefix($mapping['storeAs']) . 'id'];
                 $className = $this->uow->getClassNameForAssociation($mapping, $reference);
                 $class = $this->dm->getClassMetadata($className);
             }

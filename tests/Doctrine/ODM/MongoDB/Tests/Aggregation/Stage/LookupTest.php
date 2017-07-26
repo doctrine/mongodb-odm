@@ -133,6 +133,42 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame('malarzm', $result[1]['users'][0]['username']);
     }
 
+    public function testLookupStageReferenceManyStoreAsRef()
+    {
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
+        $this->insertTestData();
+
+        $builder = $this->dm->createAggregationBuilder(\Documents\ReferenceUser::class);
+        $builder
+            ->unwind('$referencedUsers')
+            ->lookup('referencedUsers')
+                ->alias('users');
+
+        $expectedPipeline = [
+            [
+                '$unwind' => '$referencedUsers',
+            ],
+            [
+                '$lookup' => [
+                    'from' => 'users',
+                    'localField' => 'referencedUsers.id',
+                    'foreignField' => '_id',
+                    'as' => 'users',
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+
+        $result = $builder->execute()->toArray();
+
+        $this->assertCount(2, $result);
+        $this->assertCount(1, $result[0]['users']);
+        $this->assertSame('alcaeus', $result[0]['users'][0]['username']);
+        $this->assertCount(1, $result[1]['users']);
+        $this->assertSame('malarzm', $result[1]['users'][0]['username']);
+    }
+
     public function testLookupStageReferenceManyWithoutUnwindMongoDB32()
     {
         $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
@@ -264,6 +300,76 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $result[0]['simpleReferenceManyInverse']);
     }
 
+    public function testLookupStageReferenceOneInverseStoreAsRef()
+    {
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
+        $this->insertTestData();
+
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
+        $builder
+            ->match()
+                ->field('username')
+                ->equals('alcaeus')
+            ->lookup('embeddedReferenceOneInverse')
+                ->alias('embeddedReferenceOneInverse');
+
+        $expectedPipeline = [
+            [
+                '$match' => ['username' => 'alcaeus']
+            ],
+            [
+                '$lookup' => [
+                    'from' => 'ReferenceUser',
+                    'localField' => '_id',
+                    'foreignField' => 'referencedUser.id',
+                    'as' => 'embeddedReferenceOneInverse',
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+
+        $result = $builder->execute()->toArray();
+
+        $this->assertCount(1, $result);
+        $this->assertCount(1, $result[0]['embeddedReferenceOneInverse']);
+    }
+
+    public function testLookupStageReferenceManyInverseStoreAsRef()
+    {
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
+        $this->insertTestData();
+
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
+        $builder
+            ->match()
+                ->field('username')
+                ->equals('alcaeus')
+            ->lookup('embeddedReferenceManyInverse')
+                ->alias('embeddedReferenceManyInverse');
+
+        $expectedPipeline = [
+            [
+                '$match' => ['username' => 'alcaeus']
+            ],
+            [
+                '$lookup' => [
+                    'from' => 'ReferenceUser',
+                    'localField' => '_id',
+                    'foreignField' => 'referencedUsers.id',
+                    'as' => 'embeddedReferenceManyInverse',
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+
+        $result = $builder->execute()->toArray();
+
+        $this->assertCount(1, $result);
+        $this->assertCount(1, $result[0]['embeddedReferenceManyInverse']);
+    }
+
     private function insertTestData()
     {
         $user1 = new \Documents\User();
@@ -281,7 +387,13 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $simpleReferenceUser->addUser($user1);
         $simpleReferenceUser->addUser($user2);
 
+        $referenceUser = new \Documents\ReferenceUser();
+        $referenceUser->setReferencedUser($user1);
+        $referenceUser->addReferencedUser($user1);
+        $referenceUser->addReferencedUser($user2);
+
         $this->dm->persist($simpleReferenceUser);
+        $this->dm->persist($referenceUser);
         $this->dm->flush();
     }
 }
