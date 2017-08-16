@@ -391,6 +391,7 @@ class DocumentPersister
         // Include versioning logic to set the new version value in the database
         // and to ensure the version has not changed since this document object instance
         // was fetched from the database
+        $nextVersion = null;
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
             $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
@@ -398,12 +399,10 @@ class DocumentPersister
                 $nextVersion = $currentVersion + 1;
                 $update['$inc'][$versionMapping['name']] = 1;
                 $query[$versionMapping['name']] = $currentVersion;
-                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             } elseif ($versionMapping['type'] === 'date') {
                 $nextVersion = new \DateTime();
                 $update['$set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
                 $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
-                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             }
         }
 
@@ -426,6 +425,8 @@ class DocumentPersister
 
             if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
                 throw LockException::lockFailed($document);
+            } elseif ($this->class->isVersioned) {
+                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             }
         }
 
@@ -695,7 +696,7 @@ class DocumentPersister
                 $id = $embeddedMetadata->identifier && isset($data[$embeddedMetadata->identifier])
                     ? $data[$embeddedMetadata->identifier]
                     : null;
-                
+
                 if (empty($collection->getHints()[Query::HINT_READ_ONLY])) {
                     $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
                 }

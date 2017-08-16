@@ -466,6 +466,55 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($testDocument);
         $this->dm->flush();
     }
+
+    public function testVersionIncrementOnUpdateSuccess()
+    {
+        $class = DocumentPersisterTestDocumentWithVersion::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->createMock(\MongoCollection::class);
+        $collection->expects($this->any())
+            ->method('update')
+            ->will($this->returnValue(array('n' => 1)));
+
+        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $testDocument = new $class();
+        $testDocument->id = 12345;
+        $this->uow->registerManaged($testDocument, 12345, array('id' => 12345));
+        $testDocument->name = 'test';
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+
+        $this->assertEquals(2, $testDocument->revision);
+    }
+
+    public function testNoVersionIncrementOnUpdateFailure()
+    {
+        $class = DocumentPersisterTestDocumentWithVersion::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->createMock(\MongoCollection::class);
+        $collection->expects($this->any())
+            ->method('update')
+            ->will($this->returnValue(array('n' => 0)));
+
+        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $testDocument = new $class();
+        $testDocument->id = 12345;
+        $this->uow->registerManaged($testDocument, 12345, array('id' => 12345));
+        $this->setExpectedException(\Doctrine\ODM\MongoDB\LockException::class);
+        $testDocument->name = 'test';
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+
+        $this->assertEquals(1, $testDocument->revision);
+    }
 }
 
 /** @ODM\Document */
@@ -498,6 +547,20 @@ class DocumentPersisterTestDocument
 
     /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", storeAs="dbRefWithDb") */
     public $complexRef;
+}
+
+/** @ODM\Document */
+class DocumentPersisterTestDocumentWithVersion
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\Field(name="dbName", type="string") */
+    public $name;
+
+    /** @ODM\Version @ODM\Field(type="int") */
+    public $revision = 1;
+
 }
 
 /**
