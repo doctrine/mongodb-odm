@@ -123,7 +123,7 @@ class CreateCommand extends AbstractCommand
     {
         $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
 
-        if (!$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass) {
+        if (!$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass && !$classMetadata->isQueryResultDocument) {
             $this->getDocumentManager()->getProxyFactory()->generateProxyClasses(array($classMetadata));
         }
     }
@@ -131,7 +131,7 @@ class CreateCommand extends AbstractCommand
     protected function processProxy(SchemaManager $sm)
     {
         $classes = array_filter($this->getMetadataFactory()->getAllMetadata(), function (ClassMetadata $classMetadata) {
-            return !$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass;
+            return !$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass && !$classMetadata->isQueryResultDocument;
         });
 
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($classes);

@@ -64,7 +64,7 @@ EOT
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         
         $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), function (ClassMetadata $classMetadata) {
-            return !$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass;
+            return !$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass && !$classMetadata->isQueryResultDocument;
         });
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
 
