@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -116,11 +117,19 @@ class CreateCommand extends AbstractCommand
 
     protected function processDocumentProxy(SchemaManager $sm, $document)
     {
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses(array($this->getMetadataFactory()->getMetadataFor($document)));
+        $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
+
+        if (!$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass) {
+            $this->getDocumentManager()->getProxyFactory()->generateProxyClasses(array($classMetadata));
+        }
     }
 
     protected function processProxy(SchemaManager $sm)
     {
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($this->getMetadataFactory()->getAllMetadata());
+        $classes = array_filter($this->getMetadataFactory()->getAllMetadata(), function (ClassMetadata $classMetadata) {
+            return !$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass;
+        });
+
+        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($classes);
     }
 }

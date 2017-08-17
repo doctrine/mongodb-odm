@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console;
@@ -62,7 +63,9 @@ EOT
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         
-        $metadatas = $dm->getMetadataFactory()->getAllMetadata();
+        $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), function (ClassMetadata $classMetadata) {
+            return !$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass;
+        });
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
 
         // Process destination directory
