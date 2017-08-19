@@ -5,6 +5,16 @@ This changelog references the relevant changes done in 1.1 minor versions. If up
 1.0.x branch, please review
 [Upgrade Path](https://github.com/doctrine/mongodb-odm/blob/master/CHANGELOG-1.1.md#upgrade-path).
 
+1.1.6 (2017-08-19)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.1.6 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.1.6).
+
+* [#1630](https://github.com/doctrine/mongodb-odm/pull/1630) fixes an error where the revision of a versioned document would be increased even if the update failed.
+* [#1629](https://github.com/doctrine/mongodb-odm/pull/1629) prevents generation of proxy classes for embedded documents, mapped superclasses and query result documents, allowing them to be `final`.
+* [#1598](https://github.com/doctrine/mongodb-odm/pull/1598) fixes the handling of repositories for proxy objects in the default repository factory.
+
 1.1.5 (2017-05-13)
 ------------------
 
