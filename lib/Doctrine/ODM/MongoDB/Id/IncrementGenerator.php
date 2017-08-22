@@ -38,6 +38,7 @@ class IncrementGenerator extends AbstractIdGenerator
 {
     protected $collection = null;
     protected $key = null;
+    protected $startingId = 1;
 
     public function setCollection($collection)
     {
@@ -47,6 +48,11 @@ class IncrementGenerator extends AbstractIdGenerator
     public function setKey($key)
     {
         $this->key = $key;
+    }
+    
+    public function setStartingId($startingId)
+    {
+        $this->startingId = $startingId;
     }
 
     /** @inheritDoc */
@@ -59,7 +65,7 @@ class IncrementGenerator extends AbstractIdGenerator
         $key = $this->key ?: $dm->getDocumentCollection($className)->getName();
 
         $query = array('_id' => $key);
-        $newObj = array('$inc' => array('current_id' => 1));
+        $newObj = array('$inc' => array('current_id' => $this->startingId));
 
         $command = array();
         $command['findandmodify'] = $coll;
