@@ -64,16 +64,31 @@ class IncrementGenerator extends AbstractIdGenerator
         $coll = $this->collection ?: 'doctrine_increment_ids';
         $key = $this->key ?: $dm->getDocumentCollection($className)->getName();
 
-        $query = array('_id' => $key);
-        $newObj = array('$inc' => array('current_id' => $this->startingId));
-
-        $command = array();
-        $command['findandmodify'] = $coll;
-        $command['query'] = $query;
-        $command['update'] = $newObj;
-        $command['upsert'] = true;
-        $command['new'] = true;
+        /*
+         * Unable to use '$inc' and '$setOnInsert' together due to known bug.
+         * @see https://jira.mongodb.org/browse/SERVER-10711
+         * Results in error: Cannot update 'current_id' and 'current_id' at the same time
+         */
+        $command = array(
+            'findandmodify' => $coll,
+            'query' => array('_id' => $key),
+            'update' => array('$inc' => array('current_id' => 1)),
+            'new' => true,
+        );
         $result = $db->command($command);
+
+        /*
+         * Updated nothing - counter doesn't exist, creating new counter.
+         */
+        if(array_key_exists('value', $result) && !isset($result['value'])) {
+            $command = array(
+                'insert' => $coll,
+                'documents' => array(array('_id' => $key, 'current_id' => $this->startingId))
+            );
+            $result = $db->command($command);
+            return $this->startingId;
+        }
+
         return $result['value']['current_id'];
     }
 }
