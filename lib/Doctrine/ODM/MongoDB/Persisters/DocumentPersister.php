@@ -1413,7 +1413,7 @@ class DocumentPersister
             return [[$fieldName, $dbRef]];
         }
         $keys = ['$ref' => true, '$id' => true, '$db' => true];
-        if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
+        if ($mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
             unset($keys['$db']);
         }
         if (isset($mapping['targetDocument'])) {
