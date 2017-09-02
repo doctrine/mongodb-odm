@@ -58,7 +58,7 @@ class Lookup extends BaseStage\Lookup
 
     /**
      * @param string $from
-     * @return $this
+     * @return Lookup|BaseStage\Lookup
      */
     public function from($from)
     {
