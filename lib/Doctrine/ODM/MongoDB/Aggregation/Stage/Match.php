@@ -20,12 +20,18 @@
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\MongoDB\Aggregation\Stage as BaseStage;
+use Doctrine\ODM\MongoDB\Query\Expr;
 
 /**
  * Fluent interface for building aggregation pipelines.
  */
 class Match extends BaseStage\Match
 {
+    /**
+     * @var Expr
+     */
+    protected $query;
+
     /**
      * @param object $document
      * @return $this
