@@ -257,7 +257,7 @@ class DocumentManager implements ObjectManager
      * Gets the Hydrator factory used by the DocumentManager to generate and get hydrators
      * for each type of document.
      *
-     * @return \Doctrine\ODM\MongoDB\Hydrator\HydratorInterface
+     * @return HydratorFactory
      */
     public function getHydratorFactory()
     {
