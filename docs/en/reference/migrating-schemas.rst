@@ -214,6 +214,6 @@ The :ref:`haslifecyclecallbacks` annotation must be present on the class in
 which the method is declared for the lifecycle callback to be registered.
 
 .. _`$rename`: https://docs.mongodb.com/manual/reference/operator/update/rename/
-.. _`Objectify`: http://code.google.com/p/objectify-appengine/
-.. _`Objectify schema migration`: http://code.google.com/p/objectify-appengine/wiki/SchemaMigration
+.. _`Objectify`: https://github.com/objectify/objectify
+.. _`Objectify schema migration`: https://github.com/objectify/objectify/wiki/SchemaMigration
 .. _`$or`: https://docs.mongodb.com/manual/reference/operator/query/or/
