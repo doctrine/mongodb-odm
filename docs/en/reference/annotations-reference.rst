@@ -1218,25 +1218,26 @@ documents.
 Optional attributes:
 
 -
-    targetDocument - A |FQCN| of the target document.
+    targetDocument - A |FQCN| of the target document. A ``targetDocument`` is
+    required when using ``storeAs: id``.
 -
     simple - deprecated (use ``storeAs: id``)
 -
     storeAs - Indicates how to store the reference. ``id`` stores the identifier,
     ``ref`` an embedded object containing the ``id`` field and (optionally) a
-    discriminator. ``dbRef`` and ``dbRefWithDb`` store a ``DBRef`` object. They
+    discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_ object. They
     are deprecated in favor of ``ref``. Note that ``id`` references are not
     compatible with the discriminators.
 -
     cascade - Cascade Option
 -
     discriminatorField - The field name to store the discriminator value within
-    the `DBRef`_ object.
+    the reference object.
 -
     discriminatorMap - Map of discriminator values to class names.
 -
     defaultDiscriminatorValue - A default value for discriminatorField if no value
-    has been set in the embedded document.
+    has been set in the referenced document.
 -
     inversedBy - The field name of the inverse side. Only allowed on owning side.
 -
@@ -1293,24 +1294,26 @@ Defines an instance variable holds a related document instance.
 Optional attributes:
 
 -
-    targetDocument - A |FQCN| of the target document.
+    targetDocument - A |FQCN| of the target document. A ``targetDocument`` is
+    required when using ``storeAs: id``.
 -
     simple - deprecated (use ``storeAs: id``)
 -
-    storeAs - Indicates how to store the reference. ``id`` uses ``MongoId``,
-    ``ref`` stores fields ``id`` and ``ref`` (similar to DBRef without $ prefix) value and ``refWithDb`` stores
-    a additionally db as parameter. ``dbRef`` and ``dbRefWithDb`` use ``DBRef``, they are deprecated in favor of ref and refWithDb. Note that ``id``
-    references are not compatible with the discriminators.
+    storeAs - Indicates how to store the reference. ``id`` stores the identifier,
+    ``ref`` an embedded object containing the ``id`` field and (optionally) a
+    discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_ object. They
+    are deprecated in favor of ``ref``. Note that ``id`` references are not
+    compatible with the discriminators.
 -
     cascade - Cascade Option
 -
     discriminatorField - The field name to store the discriminator value within
-    the `DBRef`_ object.
+    the reference object.
 -
     discriminatorMap - Map of discriminator values to class names.
 -
     defaultDiscriminatorValue - A default value for discriminatorField if no value
-    has been set in the embedded document.
+    has been set in the referenced document.
 -
     inversedBy - The field name of the inverse side. Only allowed on owning side.
 -
