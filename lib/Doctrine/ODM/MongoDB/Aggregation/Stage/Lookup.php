@@ -98,11 +98,8 @@ class Lookup extends BaseStage\Lookup
         if ($referenceMapping['isOwningSide']) {
             switch ($referenceMapping['storeAs']) {
                 case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                    $referencedFieldName = $referenceMapping['name'];
-                    break;
-
                 case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                    $referencedFieldName = $referenceMapping['name'] . '.id';
+                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($referenceMapping['storeAs'], $referenceMapping['name']);
                     break;
 
                 default:
@@ -120,11 +117,8 @@ class Lookup extends BaseStage\Lookup
             $mappedByMapping = $targetMapping->getFieldMapping($referenceMapping['mappedBy']);
             switch ($mappedByMapping['storeAs']) {
                 case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                    $referencedFieldName = $mappedByMapping['name'];
-                    break;
-
                 case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                    $referencedFieldName = $mappedByMapping['name'] . '.id';
+                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($mappedByMapping['storeAs'], $mappedByMapping['name']);
                     break;
 
                 default:

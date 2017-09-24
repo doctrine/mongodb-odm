@@ -193,9 +193,7 @@ class SchemaManager
                     $newKeys = array();
                     foreach ($index['keys'] as $key => $v) {
                         if ($key == $fieldMapping['name']) {
-                            $key = $fieldMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID
-                                ? $key
-                                : $key . '.' . ClassMetadataInfo::getReferencePrefix($fieldMapping['storeAs']) . 'id';
+                            $key = ClassMetadataInfo::getReferenceFieldName($fieldMapping['storeAs'], $key);
                         }
                         $newKeys[$key] = $v;
                     }

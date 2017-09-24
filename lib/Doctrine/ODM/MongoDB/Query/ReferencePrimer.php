@@ -255,17 +255,15 @@ class ReferencePrimer
     {
         $mapping = $persistentCollection->getMapping();
 
-
         if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
             $className = $mapping['targetDocument'];
             $class = $this->dm->getClassMetadata($className);
         }
 
         foreach ($persistentCollection->getMongoData() as $reference) {
-            if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-                $id = $reference;
-            } else {
-                $id = $reference[ClassMetadataInfo::getReferencePrefix($mapping['storeAs']) . 'id'];
+            $id = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
+
+            if ($mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 $className = $this->uow->getClassNameForAssociation($mapping, $reference);
                 $class = $this->dm->getClassMetadata($className);
             }

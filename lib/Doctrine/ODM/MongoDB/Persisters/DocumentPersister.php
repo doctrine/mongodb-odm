@@ -718,13 +718,8 @@ class DocumentPersister
         $sorted = isset($mapping['sort']) && $mapping['sort'];
 
         foreach ($collection->getMongoData() as $key => $reference) {
-            if (isset($mapping['storeAs']) && $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-                $className = $mapping['targetDocument'];
-                $mongoId = $reference;
-            } else {
-                $className = $this->uow->getClassNameForAssociation($mapping, $reference);
-                $mongoId = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
-            }
+            $className = $this->uow->getClassNameForAssociation($mapping, $reference);
+            $mongoId = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
 
             // create a reference to the class and id
@@ -806,11 +801,7 @@ class DocumentPersister
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping = isset($targetClass->fieldMappings[$mapping['mappedBy']]) ? $targetClass->fieldMappings[$mapping['mappedBy']] : array();
-        if (isset($mappedByMapping['storeAs']) && $mappedByMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-            $mappedByFieldName = $mapping['mappedBy'];
-        } else {
-            $mappedByFieldName = $mapping['mappedBy'] . '.' . ClassMetadataInfo::getReferencePrefix(isset($mappedByMapping['storeAs']) ? $mappedByMapping['storeAs'] : null) . 'id';
-        }
+        $mappedByFieldName = ClassMetadataInfo::getReferenceFieldName(isset($mappedByMapping['storeAs']) ? $mappedByMapping['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, $mapping['mappedBy']);
 
         $criteria = $this->cm->merge(
             array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
@@ -1061,7 +1052,7 @@ class DocumentPersister
 
             if (! empty($mapping['reference']) && is_object($value) && ! ($value instanceof \MongoId)) {
                 try {
-                    return $this->prepareDbRefElement($fieldName, $value, $mapping, $inNewObj);
+                    return $this->prepareReference($fieldName, $value, $mapping, $inNewObj);
                 } catch (MappingException $e) {
                     // do nothing in case passed object is not mapped document
                 }
@@ -1183,7 +1174,7 @@ class DocumentPersister
 
         // Prepare DBRef identifiers or the mapped field's property path
         $fieldName = ($objectPropertyIsId && ! empty($mapping['reference']) && $mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID)
-            ? $e[0] . '.' . ClassMetadataInfo::getReferencePrefix($mapping['storeAs']) . 'id'
+            ? ClassMetadataInfo::getReferenceFieldName($mapping['storeAs'], $e[0])
             : $e[0] . '.' . $objectPropertyPrefix . $targetMapping['name'];
 
         // Process targetDocument identifier fields
@@ -1427,7 +1418,7 @@ class DocumentPersister
      * @param bool $inNewObj
      * @return array
      */
-    private function prepareDbRefElement($fieldName, $value, array $mapping, $inNewObj)
+    private function prepareReference($fieldName, $value, array $mapping, $inNewObj)
     {
         $dbRef = $this->dm->createReference($value, $mapping);
         if ($inNewObj || $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
