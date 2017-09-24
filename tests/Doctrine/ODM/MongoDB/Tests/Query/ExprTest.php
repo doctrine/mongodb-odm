@@ -192,7 +192,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $expected = array('foo.$id' => '1234');
 
         $dm->expects($this->once())
-            ->method('createDBRef')
+            ->method('createReference')
             ->will($this->returnValue(array('$ref' => 'coll', '$id' => '1234', '$db' => 'db')));
         $dm->expects($this->once())
             ->method('getUnitOfWork')
@@ -225,7 +225,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $expected = array('foo.$ref' => 'coll', 'foo.$id' => '1234', 'foo.$db' => 'db');
 
         $dm->expects($this->once())
-            ->method('createDBRef')
+            ->method('createReference')
             ->will($this->returnValue(array('$ref' => 'coll', '$id' => '1234', '$db' => 'db')));
         $dm->expects($this->once())
             ->method('getUnitOfWork')
@@ -258,7 +258,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $expected = array('foo.$ref' => 'coll', 'foo.$id' => '1234');
 
         $dm->expects($this->once())
-            ->method('createDBRef')
+            ->method('createReference')
             ->will($this->returnValue(array('$ref' => 'coll', '$id' => '1234')));
         $dm->expects($this->once())
             ->method('getUnitOfWork')

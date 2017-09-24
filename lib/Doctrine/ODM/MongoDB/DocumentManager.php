@@ -668,15 +668,15 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Returns a DBRef array for the supplied document.
+     * Returns a reference to the supplied document.
      *
-     * @param mixed $document A document object
+     * @param object $document A document object
      * @param array $referenceMapping Mapping for the field that references the document
      *
      * @throws \InvalidArgumentException
-     * @return array A DBRef array
+     * @return mixed The reference for the document in question, according to the desired mapping
      */
-    public function createDBRef($document, array $referenceMapping = null)
+    public function createReference($document, array $referenceMapping)
     {
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException('Cannot create a DBRef, the document is not an object');
@@ -691,7 +691,8 @@ class DocumentManager implements ObjectManager
             );
         }
 
-        switch ($referenceMapping['storeAs']) {
+        $storeAs = isset($referenceMapping['storeAs']) ? $referenceMapping['storeAs'] : null;
+        switch ($storeAs) {
             case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
                 if ($class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
                     throw MappingException::simpleReferenceMustNotTargetDiscriminatedDocument($referenceMapping['targetDocument']);
@@ -710,7 +711,7 @@ class DocumentManager implements ObjectManager
                     '$ref' => $class->getCollection(),
                     '$id'  => $class->getDatabaseIdentifierValue($id),
                 ];
-                if ($referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
                     $dbRef['$db'] = $this->getDocumentDatabase($class->name)->getName();
                 }
         }
@@ -728,7 +729,7 @@ class DocumentManager implements ObjectManager
         /* Add a discriminator value if the referenced document is not mapped
          * explicitly to a targetDocument class.
          */
-        if ($referenceMapping !== null && ! isset($referenceMapping['targetDocument'])) {
+        if (! isset($referenceMapping['targetDocument'])) {
             $discriminatorField = $referenceMapping['discriminatorField'];
             $discriminatorValue = isset($referenceMapping['discriminatorMap'])
                 ? array_search($class->name, $referenceMapping['discriminatorMap'])
@@ -748,6 +749,27 @@ class DocumentManager implements ObjectManager
         }
 
         return $dbRef;
+    }
+
+    /**
+     * Returns a DBRef array for the supplied document.
+     *
+     * @param mixed $document A document object
+     * @param array $referenceMapping Mapping for the field that references the document
+     *
+     * @throws \InvalidArgumentException
+     * @return array A DBRef array
+     * @deprecated Deprecated in favor of createReference; will be removed in 2.0
+     */
+    public function createDBRef($document, array $referenceMapping = null)
+    {
+        @trigger_error('The ' . __METHOD__ . ' method has been deprecated and will be removed in ODM 2.0. Use createReference() instead.', E_USER_DEPRECATED);
+
+        if (!isset($referenceMapping['storeAs'])) {
+            $referenceMapping['storeAs'] = ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF;
+        }
+
+        return $this->createReference($document, $referenceMapping);
     }
 
     /**

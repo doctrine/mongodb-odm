@@ -73,7 +73,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     {
         if ($this->currentField) {
             $mapping = $this->getReferenceMapping();
-            $dbRef = $this->dm->createDBRef($document, $mapping);
+            $dbRef = $this->dm->createReference($document, $mapping);
             $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
             if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
@@ -98,7 +98,9 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                 }
             }
         } else {
-            $dbRef = $this->dm->createDBRef($document);
+            @trigger_error('Calling ' . __METHOD__ . ' without a current field set will no longer be possible in ODM 2.0.', E_USER_DEPRECATED);
+
+            $dbRef = $this->dm->createReference($document);
             $this->query = $dbRef;
         }
 
@@ -115,7 +117,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     {
         if ($this->currentField) {
             $mapping = $this->getReferenceMapping();
-            $dbRef = $this->dm->createDBRef($document, $mapping);
+            $dbRef = $this->dm->createReference($document, $mapping);
             $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
             if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
@@ -140,7 +142,9 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                 }
             }
         } else {
-            $dbRef = $this->dm->createDBRef($document);
+            @trigger_error('Calling ' . __METHOD__ . ' without a current field set will no longer be possible in ODM 2.0.', E_USER_DEPRECATED);
+
+            $dbRef = $this->dm->createReference($document);
             $this->query['$elemMatch'] = $dbRef;
         }
 

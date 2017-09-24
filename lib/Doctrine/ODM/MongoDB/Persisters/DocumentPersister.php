@@ -1429,7 +1429,7 @@ class DocumentPersister
      */
     private function prepareDbRefElement($fieldName, $value, array $mapping, $inNewObj)
     {
-        $dbRef = $this->dm->createDBRef($value, $mapping);
+        $dbRef = $this->dm->createReference($value, $mapping);
         if ($inNewObj || $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
             return [[$fieldName, $dbRef]];
         }

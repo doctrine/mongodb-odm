@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+use Documents\CmsPhonenumber;
 
 class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -195,16 +196,16 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testCannotCreateDbRefWithoutId()
     {
         $d = new \Documents\User();
-        $this->dm->createDBRef($d);
+        $this->dm->createReference($d, ['storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF]);
     }
 
     public function testCreateDbRefWithNonNullEmptyId()
     {
-        $phonenumber = new \Documents\CmsPhonenumber();
+        $phonenumber = new CmsPhonenumber();
         $phonenumber->phonenumber = 0;
         $this->dm->persist($phonenumber);
 
-        $dbRef = $this->dm->createDBRef($phonenumber);
+        $dbRef = $this->dm->createReference($phonenumber, ['storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, 'targetDocument' => CmsPhonenumber::class]);
 
         $this->assertSame(array('$ref' => 'CmsPhonenumber', '$id' => 0), $dbRef);
     }
@@ -219,7 +220,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $r = new \Documents\Tournament\ParticipantSolo('Maciej');
         $this->dm->persist($r);
         $class = $this->dm->getClassMetadata(get_class($d));
-        $this->dm->createDBRef($r, $class->associationMappings['ref']);
+        $this->dm->createReference($r, $class->associationMappings['ref']);
     }
 
     public function testDifferentStoreAsDbReferences()
@@ -229,21 +230,21 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $d = new ReferenceStoreAsDocument();
         $class = $this->dm->getClassMetadata(get_class($d));
 
-        $dbRef = $this->dm->createDBRef($r, $class->associationMappings['ref1']);
+        $dbRef = $this->dm->createReference($r, $class->associationMappings['ref1']);
         $this->assertInstanceOf('MongoId', $dbRef);
 
-        $dbRef = $this->dm->createDBRef($r, $class->associationMappings['ref2']);
+        $dbRef = $this->dm->createReference($r, $class->associationMappings['ref2']);
         $this->assertCount(2, $dbRef);
         $this->assertArrayHasKey('$ref', $dbRef);
         $this->assertArrayHasKey('$id', $dbRef);
 
-        $dbRef = $this->dm->createDBRef($r, $class->associationMappings['ref3']);
+        $dbRef = $this->dm->createReference($r, $class->associationMappings['ref3']);
         $this->assertCount(3, $dbRef);
         $this->assertArrayHasKey('$ref', $dbRef);
         $this->assertArrayHasKey('$id', $dbRef);
         $this->assertArrayHasKey('$db', $dbRef);
 
-        $dbRef = $this->dm->createDBRef($r, $class->associationMappings['ref4']);
+        $dbRef = $this->dm->createReference($r, $class->associationMappings['ref4']);
         $this->assertCount(1, $dbRef);
         $this->assertArrayHasKey('id', $dbRef);
     }
