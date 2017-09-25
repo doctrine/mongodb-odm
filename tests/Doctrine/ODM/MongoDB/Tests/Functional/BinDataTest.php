@@ -29,7 +29,7 @@ class BinDataTest extends BaseTest
             array('bin', 'test', \MongoBinData::GENERIC),
             array('binFunc', 'test', \MongoBinData::FUNC),
             array('binByteArray', 'test', \MongoBinData::BYTE_ARRAY),
-            array('binUUID', 'test', \MongoBinData::UUID),
+            array('binUUID', 'testtesttesttest', \MongoBinData::UUID),
             array('binUUIDRFC4122', '1234567890ABCDEF', \MongoBinData::UUID_RFC4122),
             array('binMD5', 'test', \MongoBinData::MD5),
             array('binCustom', 'test', \MongoBinData::CUSTOM),
