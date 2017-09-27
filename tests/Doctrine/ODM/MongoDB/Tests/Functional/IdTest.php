@@ -264,7 +264,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('bin', 'uuid', null, null, 'MongoBinData'),
             array('bin_func', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
             array('bin_bytearray', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
-            array('bin_uuid', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
+            array('bin_uuid', 'none', 'TestTestTestTest', 'TestTestTestTest', 'MongoBinData'),
             array('bin_md5', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
             array('bin_custom', 'none', 'ABRWTIFGPEeSFf69fISAOA==', 'ABRWTIFGPEeSFf69fISAOA==', 'MongoBinData'),
 
@@ -276,12 +276,12 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     /**
      * @dataProvider getTestBinIdsData
      */
-    public function testBinIds($type, $expectedMongoBinDataType)
+    public function testBinIds($type, $expectedMongoBinDataType, $id)
     {
         $className = $this->createIdTestClass($type, 'none');
 
         $object = new $className();
-        $object->id = 'ABRWTIFGPEeSFf69fISAOA==';
+        $object->id = $id;
 
         $this->dm->persist($object);
         $this->dm->flush();
@@ -296,12 +296,12 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function getTestBinIdsData()
     {
         return array(
-            array('bin', 0),
-            array('bin_func', \MongoBinData::FUNC),
-            array('bin_bytearray', \MongoBinData::BYTE_ARRAY),
-            array('bin_uuid', \MongoBinData::UUID),
-            array('bin_md5', \MongoBinData::MD5),
-            array('bin_custom', \MongoBinData::CUSTOM),
+            array('bin', 0, 'ABRWTIFGPEeSFf69fISAOA=='),
+            array('bin_func', \MongoBinData::FUNC, 'ABRWTIFGPEeSFf69fISAOA=='),
+            array('bin_bytearray', \MongoBinData::BYTE_ARRAY, 'ABRWTIFGPEeSFf69fISAOA=='),
+            array('bin_uuid', \MongoBinData::UUID, 'testtesttesttest'),
+            array('bin_md5', \MongoBinData::MD5, 'ABRWTIFGPEeSFf69fISAOA=='),
+            array('bin_custom', \MongoBinData::CUSTOM, 'ABRWTIFGPEeSFf69fISAOA=='),
         );
     }
 
