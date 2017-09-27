@@ -22,7 +22,7 @@ env:
 matrix:
   include:
     - php: 5.6
-      env: DRIVER_VERSION="1.5.8" SERVER_VERSION="3.0" COMPOSER_FLAGS="--prefer-lowest" KEY_ID="7F0CEB10"
+      env: DRIVER_VERSION="1.6.3" SERVER_VERSION="3.0" COMPOSER_FLAGS="--prefer-lowest" KEY_ID="7F0CEB10"
     - php: 5.6
       env: DRIVER_VERSION="stable" SERVER_VERSION="3.2" KEY_ID="EA312927"
 
