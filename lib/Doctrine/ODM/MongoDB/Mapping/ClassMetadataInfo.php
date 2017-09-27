@@ -477,7 +477,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
     /**
      * Helper method to get reference id of ref* type references
-     * @param array  $reference
+     * @param mixed  $reference
      * @param string $storeAs
      * @return mixed
      * @internal

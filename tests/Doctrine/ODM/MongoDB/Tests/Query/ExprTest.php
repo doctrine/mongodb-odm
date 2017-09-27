@@ -206,7 +206,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($expected));
         $class->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('targetDocument' => 'Foo', 'name' => 'foo')));
+            ->will($this->returnValue(array('targetDocument' => 'Foo', 'name' => 'foo', 'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB)));
 
         $expr = new Expr($dm);
         $expr->setClassMetadata($class);
@@ -239,7 +239,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($expected));
         $class->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('name' => 'foo')));
+            ->will($this->returnValue(array('name' => 'foo', 'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB)));
 
         $expr = new Expr($dm);
         $expr->setClassMetadata($class);

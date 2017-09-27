@@ -703,17 +703,26 @@ class DocumentManager implements ObjectManager
 
 
             case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                $dbRef = ['id' => $class->getDatabaseIdentifierValue($id)];
+                $reference = ['id' => $class->getDatabaseIdentifierValue($id)];
                 break;
 
-            default:
-                $dbRef = [
+            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
+                $reference = [
                     '$ref' => $class->getCollection(),
                     '$id'  => $class->getDatabaseIdentifierValue($id),
                 ];
-                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
-                    $dbRef['$db'] = $this->getDocumentDatabase($class->name)->getName();
-                }
+                break;
+
+            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+                $reference = [
+                    '$ref' => $class->getCollection(),
+                    '$id'  => $class->getDatabaseIdentifierValue($id),
+                    '$db'  => $this->getDocumentDatabase($class->name)->getName(),
+                ];
+                break;
+
+            default:
+                throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
         }
 
         /* If the class has a discriminator (field and value), use it. A child
@@ -721,7 +730,7 @@ class DocumentManager implements ObjectManager
          * discriminator field and no value, so default to the full class name.
          */
         if (isset($class->discriminatorField)) {
-            $dbRef[$class->discriminatorField] = isset($class->discriminatorValue)
+            $reference[$class->discriminatorField] = isset($class->discriminatorValue)
                 ? $class->discriminatorValue
                 : $class->name;
         }
@@ -745,10 +754,10 @@ class DocumentManager implements ObjectManager
                 $discriminatorValue = $class->name;
             }
 
-            $dbRef[$discriminatorField] = $discriminatorValue;
+            $reference[$discriminatorField] = $discriminatorValue;
         }
 
-        return $dbRef;
+        return $reference;
     }
 
     /**

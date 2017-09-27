@@ -1225,7 +1225,7 @@ Optional attributes:
 -
     storeAs - Indicates how to store the reference. ``id`` stores the identifier,
     ``ref`` an embedded object containing the ``id`` field and (optionally) a
-    discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_ object. They
+    discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_ object and
     are deprecated in favor of ``ref``. Note that ``id`` references are not
     compatible with the discriminators.
 -
@@ -1301,7 +1301,7 @@ Optional attributes:
 -
     storeAs - Indicates how to store the reference. ``id`` stores the identifier,
     ``ref`` an embedded object containing the ``id`` field and (optionally) a
-    discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_ object. They
+    discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_ object and
     are deprecated in favor of ``ref``. Note that ``id`` references are not
     compatible with the discriminators.
 -

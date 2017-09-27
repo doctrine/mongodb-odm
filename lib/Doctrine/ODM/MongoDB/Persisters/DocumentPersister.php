@@ -1420,31 +1420,39 @@ class DocumentPersister
      */
     private function prepareReference($fieldName, $value, array $mapping, $inNewObj)
     {
-        $dbRef = $this->dm->createReference($value, $mapping);
+        $reference = $this->dm->createReference($value, $mapping);
         if ($inNewObj || $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-            return [[$fieldName, $dbRef]];
+            return [[$fieldName, $reference]];
         }
 
-        if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_REF) {
-            $keys = ['id' => true];
-        } else {
-            $keys = ['$ref' => true, '$id' => true, '$db' => true];
+        switch ($mapping['storeAs']) {
+            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                $keys = ['id' => true];
+                break;
 
-            if ($mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
-                unset($keys['$db']);
-            }
+            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
+            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+                $keys = ['$ref' => true, '$id' => true, '$db' => true];
 
-            if (isset($mapping['targetDocument'])) {
-                unset($keys['$ref'], $keys['$db']);
-            }
+            if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                    unset($keys['$db']);
+                }
+
+                if (isset($mapping['targetDocument'])) {
+                    unset($keys['$ref'], $keys['$db']);
+                }
+                break;
+
+            default:
+                throw new \InvalidArgumentException("Reference type {$mapping['storeAs']} is invalid.");
         }
 
         if ($mapping['type'] === 'many') {
-            return [[$fieldName, ['$elemMatch' => array_intersect_key($dbRef, $keys)]]];
+            return [[$fieldName, ['$elemMatch' => array_intersect_key($reference, $keys)]]];
         } else {
             return array_map(
-                function ($key) use ($dbRef, $fieldName) {
-                    return [$fieldName . '.' . $key, $dbRef[$key]];
+                function ($key) use ($reference, $fieldName) {
+                    return [$fieldName . '.' . $key, $reference[$key]];
                 },
                 array_keys($keys)
             );
