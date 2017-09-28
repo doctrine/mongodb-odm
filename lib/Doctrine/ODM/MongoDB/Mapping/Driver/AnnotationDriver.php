@@ -158,6 +158,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($documentAnnot->slaveOkay)) {
             $class->setSlaveOkay($documentAnnot->slaveOkay);
         }
+        if (! empty($documentAnnot->readOnly)) {
+            $class->markReadOnly();
+        }
 
         foreach ($reflClass->getProperties() as $property) {
             if (($class->isMappedSuperclass && ! $property->isPrivate())

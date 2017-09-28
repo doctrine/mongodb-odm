@@ -30,6 +30,7 @@ final class Document extends AbstractDocument
     public $collection;
     public $repositoryClass;
     public $indexes = array();
+    public $readOnly = false;
     /** @deprecated */
     public $requireIndexes = false;
     public $shardKey;

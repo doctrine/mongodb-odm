@@ -33,6 +33,17 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     }
 
     /**
+     * @depends testLoadMapping
+     * @param ClassMetadata $class
+     */
+    public function testDocumentMarkedAsReadOnly($class)
+    {
+        $this->assertTrue($class->isReadOnly);
+
+        return $class;
+    }
+
+    /**
      * @depends testDocumentCollectionNameAndInheritance
      * @param ClassMetadata $class
      */
@@ -354,7 +365,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 }
 
 /**
- * @ODM\Document(collection="cms_users", writeConcern=1)
+ * @ODM\Document(collection="cms_users", writeConcern=1, readOnly=true)
  * @ODM\DiscriminatorField("discr")
  * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser"})
  * @ODM\DefaultDiscriminatorValue("default")

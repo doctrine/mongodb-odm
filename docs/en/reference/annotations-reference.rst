@@ -396,6 +396,9 @@ Optional attributes:
 -
    indexes - Specifies an array of indexes for this document.
 -
+   readOnly - Prevents document from being updated: it can only be inserted,
+   upserted or removed.
+-
    requireIndexes - Specifies whether or not queries for this document should
    require indexes by default. This may also be specified per query.
 -
@@ -416,6 +419,7 @@ Optional attributes:
      *     indexes={
      *         @Index(keys={"username"="desc"}, options={"unique"=true})
      *     },
+     *     readOnly=true,
      *     requireIndexes=true
      * )
      */

@@ -709,6 +709,9 @@ class UnitOfWork implements PropertyChangedListener
             }
             $this->documentChangeSets[$oid] = $changeSet;
         } else {
+            if ($class->isReadOnly) {
+                return;
+            }
             // Document is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
             $originalData = $this->originalDocumentData[$oid];
@@ -1164,6 +1167,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeUpdates(ClassMetadata $class, array $documents, array $options = array())
     {
+        if ($class->isReadOnly) {
+            return;
+        }
+
         $className = $class->name;
         $persister = $this->getDocumentPersister($className);
 

@@ -456,6 +456,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $reflClass;
 
     /**
+     * READ_ONLY: A flag for whether or not this document is read-only.
+     *
+     * @var bool
+     */
+    public $isReadOnly;
+
+    /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
      *
@@ -2047,6 +2054,14 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function setLockField($lockField)
     {
         $this->lockField = $lockField;
+    }
+
+    /**
+     * Marks this class as read only, no change tracking is applied to it.
+     */
+    public function markReadOnly()
+    {
+        $this->isReadOnly = true;
     }
 
     /**
