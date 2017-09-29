@@ -71,19 +71,25 @@ class IncrementGenerator extends AbstractIdGenerator
          */
         $command = array(
             'findAndModify' => $coll,
-            'query' => array('_id' => $key),
-            'update' => array('$inc' => array('current_id' => 1)),
+            'query' => array('_id' => $key, 'current_id' => array('$exists' => true)),
+            'update' => array('$inc' => array('current_id' => $this->startingId)),
+            'upsert' => false,
             'new' => true,
         );
         $result = $db->command($command);
 
         /*
          * Updated nothing - counter doesn't exist, creating new counter.
+         * Not bothering with {$exists: false} in the criteria as that won't avoid
+         * an exception during a possible race condition.
          */
         if(array_key_exists('value', $result) && !isset($result['value'])) {
             $command = array(
-                'insert' => $coll,
-                'documents' => array(array('_id' => $key, 'current_id' => $this->startingId))
+                'findAndModify' => $coll,
+                'query' => array('_id' => $key),
+                'update' => array('$inc' => array('current_id' => $this->startingId)),
+                'upsert' => true,
+                'new' => true,
             );
             $result = $db->command($command);
             return $this->startingId;
