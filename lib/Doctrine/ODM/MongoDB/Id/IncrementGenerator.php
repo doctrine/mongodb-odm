@@ -70,7 +70,7 @@ class IncrementGenerator extends AbstractIdGenerator
          * Results in error: Cannot update 'current_id' and 'current_id' at the same time
          */
         $command = array(
-            'findandmodify' => $coll,
+            'findAndModify' => $coll,
             'query' => array('_id' => $key),
             'update' => array('$inc' => array('current_id' => 1)),
             'new' => true,
