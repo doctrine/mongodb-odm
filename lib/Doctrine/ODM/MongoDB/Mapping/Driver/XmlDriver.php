@@ -259,6 +259,9 @@ class XmlDriver extends FileDriver
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
         }
+        if (isset($attributes['fieldTypeName'])) {
+            $mapping['fieldTypeName'] = (string) $attributes['fieldTypeName'];
+        }
         if (isset($embed->{'discriminator-field'})) {
             $attr = $embed->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
@@ -310,6 +313,9 @@ class XmlDriver extends FileDriver
 
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
+        }
+        if (isset($attributes['fieldTypeName'])) {
+            $mapping['fieldTypeName'] = (string) $attributes['fieldTypeName'];
         }
         if (isset($reference->{'discriminator-field'})) {
             $attr = $reference->{'discriminator-field'};

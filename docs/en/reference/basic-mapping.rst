@@ -464,6 +464,51 @@ as follows:
         name:
           name: db_name
 
+The default field type generated in comments is taken from "type".
+To define a different or custom field type name (type in the 
+comments  of the field and get/set-Methods) you can use
+"fieldTypeName" as follows:
+
+.. code-block:: xml
+
+	<field fieldName="created_at" fieldTypeName="\DateTime" />
+
+.. code-block:: yaml
+
+	name:
+	  fieldTypeName: \DateTime
+
+This will give us the following code:
+
+.. code-block:: php
+	  
+	/**
+     * @var \DateTime $created_at
+     */
+    protected $created_at;
+
+	/**
+     * Get createdAt
+     *
+     * @return \DateTime $createdAt
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
+	/**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return self
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->created_at = $createdAt;
+        return $this;
+    }
+
 Custom Mapping Types
 --------------------
 

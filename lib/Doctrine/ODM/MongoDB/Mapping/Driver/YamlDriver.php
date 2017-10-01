@@ -257,6 +257,9 @@ class YamlDriver extends FileDriver
         if (isset($embed['name'])) {
             $mapping['name'] = $embed['name'];
         }
+        if (isset($embed['fieldTypeName'])) {
+            $mapping['fieldTypeName'] = $embed['fieldTypeName'];
+        }
         if (isset($embed['discriminatorField'])) {
             $mapping['discriminatorField'] = $this->parseDiscriminatorField($embed['discriminatorField']);
         }
@@ -292,6 +295,9 @@ class YamlDriver extends FileDriver
         );
         if (isset($reference['name'])) {
             $mapping['name'] = $reference['name'];
+        }
+        if (isset($reference['fieldTypeName'])) {
+            $mapping['fieldTypeName'] = $reference['fieldTypeName'];
         }
         if (isset($reference['discriminatorField'])) {
             $mapping['discriminatorField'] = $this->parseDiscriminatorField($reference['discriminatorField']);
