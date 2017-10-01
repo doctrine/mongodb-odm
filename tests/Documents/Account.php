@@ -16,6 +16,9 @@ class Account
     /** @ODM\ReferenceOne */
     protected $user;
 
+    /** @ODM\ReferenceOne(storeAs="dbRef") */
+    protected $userDbRef;
+
     public function getId()
     {
         return $this->id;
@@ -39,5 +42,15 @@ class Account
     public function getUser()
     {
         return $this->user;
+    }
+
+    public function setUserDbRef($userDbRef)
+    {
+        $this->userDbRef = $userDbRef;
+    }
+
+    public function getUserDbRef()
+    {
+        return $this->userDbRef;
     }
 }

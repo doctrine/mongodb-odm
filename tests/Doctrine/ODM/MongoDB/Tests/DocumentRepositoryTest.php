@@ -76,6 +76,28 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertSame($account, $this->dm->getRepository(Account::class)->findOneBy(['user' => $user]));
     }
 
+    public function testFindByRefOneWithoutTargetDocumentStoredAsDbRef()
+    {
+        $user = new User();
+        $account = new Account('name');
+        $account->setUserDbRef($user);
+        $this->dm->persist($user);
+        $this->dm->persist($account);
+        $this->dm->flush();
+
+        $query = $this->dm
+            ->getUnitOfWork()
+            ->getDocumentPersister(Account::class)
+            ->prepareQueryOrNewObj(['userDbRef' => $user]);
+        $expectedQuery = [
+            'userDbRef.$ref' => 'users',
+            'userDbRef.$id' => new \MongoId($user->getId())
+        ];
+        $this->assertEquals($expectedQuery, $query);
+
+        $this->assertSame($account, $this->dm->getRepository(Account::class)->findOneBy(['userDbRef' => $user]));
+    }
+
     public function testFindDiscriminatedByRefManyFull()
     {
         $project = new SubProject('mongodb-odm');
