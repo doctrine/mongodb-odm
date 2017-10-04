@@ -22,7 +22,7 @@
         "doctrine/cache": "~1.0",
         "doctrine/inflector": "~1.0",
         "doctrine/instantiator": "^1.0.1",
-        "doctrine/mongodb": "^1.4.0"
+        "doctrine/mongodb": "^1.6.1"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.4",
