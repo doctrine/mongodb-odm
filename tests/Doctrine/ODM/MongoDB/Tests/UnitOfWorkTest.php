@@ -635,6 +635,23 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array(), $this->uow->getDocumentChangeSet($user->getAvatar()));
     }
 
+    public function testCommitsInProgressIsUpdatedOnException()
+    {
+        $this->dm->getEventManager()->addEventSubscriber(
+            new \Doctrine\ODM\MongoDB\Tests\Mocks\ExceptionThrowingListenerMock()
+        );
+        $user = new \Documents\ForumUser();
+        $user->username = '12345';
+
+        $this->dm->persist($user);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('This should not happen');
+
+        $this->dm->flush();
+        $this->assertAttributeSame(0, 'commitsInProgress', $this->dm->getUnitOfWork());
+    }
+
 
     protected function getDocumentManager()
     {

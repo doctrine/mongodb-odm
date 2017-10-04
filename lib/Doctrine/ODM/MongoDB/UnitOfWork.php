@@ -261,6 +261,11 @@ class UnitOfWork implements PropertyChangedListener
     private $embeddedDocumentsRegistry = array();
 
     /**
+     * @var int
+     */
+    private $commitsInProgress = 0;
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
      *
      * @param DocumentManager $dm
@@ -407,54 +412,62 @@ class UnitOfWork implements PropertyChangedListener
             return; // Nothing to do.
         }
 
-        if ($this->orphanRemovals) {
-            foreach ($this->orphanRemovals as $removal) {
-                $this->remove($removal);
+        $this->commitsInProgress++;
+        if ($this->commitsInProgress > 1) {
+            @trigger_error('There is already a commit operation in progress. Calling flush in an event subscriber is deprecated and will be forbidden in 2.0.', E_USER_DEPRECATED);
+        }
+        try {
+            if ($this->orphanRemovals) {
+                foreach ($this->orphanRemovals as $removal) {
+                    $this->remove($removal);
+                }
             }
-        }
 
-        // Raise onFlush
-        if ($this->evm->hasListeners(Events::onFlush)) {
-            $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
-        }
+            // Raise onFlush
+            if ($this->evm->hasListeners(Events::onFlush)) {
+                $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
+            }
 
-        foreach ($this->getClassesForCommitAction($this->documentUpserts) as $classAndDocuments) {
-            list($class, $documents) = $classAndDocuments;
-            $this->executeUpserts($class, $documents, $options);
-        }
+            foreach ($this->getClassesForCommitAction($this->documentUpserts) as $classAndDocuments) {
+                list($class, $documents) = $classAndDocuments;
+                $this->executeUpserts($class, $documents, $options);
+            }
 
-        foreach ($this->getClassesForCommitAction($this->documentInsertions) as $classAndDocuments) {
-            list($class, $documents) = $classAndDocuments;
-            $this->executeInserts($class, $documents, $options);
-        }
+            foreach ($this->getClassesForCommitAction($this->documentInsertions) as $classAndDocuments) {
+                list($class, $documents) = $classAndDocuments;
+                $this->executeInserts($class, $documents, $options);
+            }
 
-        foreach ($this->getClassesForCommitAction($this->documentUpdates) as $classAndDocuments) {
-            list($class, $documents) = $classAndDocuments;
-            $this->executeUpdates($class, $documents, $options);
-        }
+            foreach ($this->getClassesForCommitAction($this->documentUpdates) as $classAndDocuments) {
+                list($class, $documents) = $classAndDocuments;
+                $this->executeUpdates($class, $documents, $options);
+            }
 
-        foreach ($this->getClassesForCommitAction($this->documentDeletions, true) as $classAndDocuments) {
-            list($class, $documents) = $classAndDocuments;
-            $this->executeDeletions($class, $documents, $options);
-        }
+            foreach ($this->getClassesForCommitAction($this->documentDeletions, true) as $classAndDocuments) {
+                list($class, $documents) = $classAndDocuments;
+                $this->executeDeletions($class, $documents, $options);
+            }
 
-        // Raise postFlush
-        if ($this->evm->hasListeners(Events::postFlush)) {
-            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->dm));
-        }
+            // Raise postFlush
+            if ($this->evm->hasListeners(Events::postFlush)) {
+                $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->dm));
+            }
 
-        // Clear up
-        $this->documentInsertions =
-        $this->documentUpserts =
-        $this->documentUpdates =
-        $this->documentDeletions =
-        $this->documentChangeSets =
-        $this->collectionUpdates =
-        $this->collectionDeletions =
-        $this->visitedCollections =
-        $this->scheduledForDirtyCheck =
-        $this->orphanRemovals =
-        $this->hasScheduledCollections = array();
+            // Clear up
+            $this->documentInsertions =
+            $this->documentUpserts =
+            $this->documentUpdates =
+            $this->documentDeletions =
+            $this->documentChangeSets =
+            $this->collectionUpdates =
+            $this->collectionDeletions =
+            $this->visitedCollections =
+            $this->scheduledForDirtyCheck =
+            $this->orphanRemovals =
+            $this->hasScheduledCollections = array();
+        } finally {
+            $this->commitsInProgress--;
+        }
     }
 
     /**
