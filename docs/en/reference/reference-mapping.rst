@@ -356,11 +356,12 @@ fields and as ``MongoId``, it is possible to save references as `DBRef`_ without
 the ``$db`` field. This solves problems when the database name changes (and also
 reduces the amount of storage used).
 
-The ``storeAs`` option has three possible values:
+The ``storeAs`` option has the following possible values:
 
 - **dbRefWithDb**: Uses a `DBRef`_ with ``$ref``, ``$id``, and ``$db`` fields (this is the default)
 - **dbRef**: Uses a `DBRef`_ with ``$ref`` and ``$id``
-- **id**: Uses a ``MongoId``
+- **ref**: Uses a custom embedded object with an ``id`` field
+- **id**: Uses the identifier of the referenced object
 
 .. note::
 

@@ -192,7 +192,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $expected = array('foo.$id' => '1234');
 
         $dm->expects($this->once())
-            ->method('createDBRef')
+            ->method('createReference')
             ->will($this->returnValue(array('$ref' => 'coll', '$id' => '1234', '$db' => 'db')));
         $dm->expects($this->once())
             ->method('getUnitOfWork')
@@ -206,7 +206,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($expected));
         $class->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('targetDocument' => 'Foo', 'name' => 'foo')));
+            ->will($this->returnValue(array('targetDocument' => 'Foo', 'name' => 'foo', 'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB)));
 
         $expr = new Expr($dm);
         $expr->setClassMetadata($class);
@@ -225,7 +225,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $expected = array('foo.$ref' => 'coll', 'foo.$id' => '1234', 'foo.$db' => 'db');
 
         $dm->expects($this->once())
-            ->method('createDBRef')
+            ->method('createReference')
             ->will($this->returnValue(array('$ref' => 'coll', '$id' => '1234', '$db' => 'db')));
         $dm->expects($this->once())
             ->method('getUnitOfWork')
@@ -239,7 +239,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($expected));
         $class->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('name' => 'foo')));
+            ->will($this->returnValue(array('name' => 'foo', 'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB)));
 
         $expr = new Expr($dm);
         $expr->setClassMetadata($class);
@@ -258,7 +258,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $expected = array('foo.$ref' => 'coll', 'foo.$id' => '1234');
 
         $dm->expects($this->once())
-            ->method('createDBRef')
+            ->method('createReference')
             ->will($this->returnValue(array('$ref' => 'coll', '$id' => '1234')));
         $dm->expects($this->once())
             ->method('getUnitOfWork')

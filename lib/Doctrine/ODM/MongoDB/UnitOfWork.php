@@ -2625,7 +2625,7 @@ class UnitOfWork implements PropertyChangedListener
                 : $discriminatorValue;
         }
 
-            $class = $this->dm->getClassMetadata($mapping['targetDocument']);
+        $class = $this->dm->getClassMetadata($mapping['targetDocument']);
 
         if (isset($class->discriminatorField, $data[$class->discriminatorField])) {
             $discriminatorValue = $data[$class->discriminatorField];

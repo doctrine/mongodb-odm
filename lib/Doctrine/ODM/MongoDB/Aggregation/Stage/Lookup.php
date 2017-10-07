@@ -96,26 +96,38 @@ class Lookup extends BaseStage\Lookup
         parent::from($targetMapping->getCollection());
 
         if ($referenceMapping['isOwningSide']) {
-            if ($referenceMapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-                throw MappingException::cannotLookupNonIdReference($this->class->name, $fieldName);
+            switch ($referenceMapping['storeAs']) {
+                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($referenceMapping['storeAs'], $referenceMapping['name']);
+                    break;
+
+                default:
+                   throw MappingException::cannotLookupNonIdReference($this->class->name, $fieldName);
             }
 
             $this
                 ->foreignField('_id')
-                ->localField($referenceMapping['name']);
+                ->localField($referencedFieldName);
         } else {
             if (isset($referenceMapping['repositoryMethod'])) {
                 throw MappingException::repositoryMethodLookupNotAllowed($this->class->name, $fieldName);
             }
 
             $mappedByMapping = $targetMapping->getFieldMapping($referenceMapping['mappedBy']);
-            if ($mappedByMapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-                throw MappingException::cannotLookupNonIdReference($this->class->name, $fieldName);
+            switch ($mappedByMapping['storeAs']) {
+                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($mappedByMapping['storeAs'], $mappedByMapping['name']);
+                    break;
+
+                default:
+                    throw MappingException::cannotLookupNonIdReference($this->class->name, $fieldName);
             }
 
             $this
                 ->localField('_id')
-                ->foreignField($mappedByMapping['name']);
+                ->foreignField($referencedFieldName);
         }
 
         return $this;

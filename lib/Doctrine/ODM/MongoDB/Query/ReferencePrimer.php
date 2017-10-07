@@ -261,10 +261,9 @@ class ReferencePrimer
         }
 
         foreach ($persistentCollection->getMongoData() as $reference) {
-            if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-                $id = $reference;
-            } else {
-                $id = $reference['$id'];
+            $id = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
+
+            if ($mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
                 $className = $this->uow->getClassNameForAssociation($mapping, $reference);
                 $class = $this->dm->getClassMetadata($className);
             }

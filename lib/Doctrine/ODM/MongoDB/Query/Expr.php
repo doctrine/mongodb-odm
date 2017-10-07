@@ -73,29 +73,43 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     {
         if ($this->currentField) {
             $mapping = $this->getReferenceMapping();
-            $dbRef = $this->dm->createDBRef($document, $mapping);
+            $reference = $this->dm->createReference($document, $mapping);
             $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
-            if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-                $this->query[$mapping['name']] = $dbRef;
-            } else {
-                $keys = array('ref' => true, 'id' => true, 'db' => true);
+            switch ($storeAs) {
+                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+                    $this->query[$mapping['name']] = $reference;
+                    return $this;
+                    break;
 
-                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
-                    unset($keys['db']);
-                }
+                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                    $keys = ['id' => true];
+                    break;
 
-                if (isset($mapping['targetDocument'])) {
-                    unset($keys['ref'], $keys['db']);
-                }
+                case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
+                case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+                    $keys = ['$ref' => true, '$id' => true, '$db' => true];
 
-                foreach ($keys as $key => $value) {
-                    $this->query[$mapping['name'] . '.$' . $key] = $dbRef['$' . $key];
-                }
+                    if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                        unset($keys['$db']);
+                    }
+
+                    if (isset($mapping['targetDocument'])) {
+                        unset($keys['$ref'], $keys['$db']);
+                    }
+                    break;
+
+                default:
+                    throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
+            }
+
+            foreach ($keys as $key => $value) {
+                $this->query[$mapping['name'] . '.' . $key] = $reference[$key];
             }
         } else {
-            $dbRef = $this->dm->createDBRef($document);
-            $this->query = $dbRef;
+            @trigger_error('Calling ' . __METHOD__ . ' without a current field set will no longer be possible in ODM 2.0.', E_USER_DEPRECATED);
+
+            $this->query = $this->dm->createDBRef($document);
         }
 
         return $this;
@@ -111,29 +125,43 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     {
         if ($this->currentField) {
             $mapping = $this->getReferenceMapping();
-            $dbRef = $this->dm->createDBRef($document, $mapping);
+            $reference = $this->dm->createReference($document, $mapping);
             $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
-            if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-                $this->query[$mapping['name']] = $dbRef;
-            } else {
-                $keys = array('ref' => true, 'id' => true, 'db' => true);
+            switch ($storeAs) {
+                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+                    $this->query[$mapping['name']] = $reference;
+                    return $this;
+                    break;
 
-                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
-                    unset($keys['db']);
-                }
+                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                    $keys = ['id' => true];
+                    break;
 
-                if (isset($mapping['targetDocument'])) {
-                    unset($keys['ref'], $keys['db']);
-                }
+                case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
+                case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+                    $keys = ['$ref' => true, '$id' => true, '$db' => true];
 
-                foreach ($keys as $key => $value) {
-                    $this->query[$mapping['name']]['$elemMatch']['$' . $key] = $dbRef['$' . $key];
-                }
+                    if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                        unset($keys['$db']);
+                    }
+
+                    if (isset($mapping['targetDocument'])) {
+                        unset($keys['$ref'], $keys['$db']);
+                    }
+                    break;
+
+                default:
+                    throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
+            }
+
+            foreach ($keys as $key => $value) {
+                $this->query[$mapping['name']]['$elemMatch'][$key] = $reference[$key];
             }
         } else {
-            $dbRef = $this->dm->createDBRef($document);
-            $this->query['$elemMatch'] = $dbRef;
+            @trigger_error('Calling ' . __METHOD__ . ' without a current field set will no longer be possible in ODM 2.0.', E_USER_DEPRECATED);
+
+            $this->query['$elemMatch'] = $this->dm->createDBRef($document);
         }
 
         return $this;

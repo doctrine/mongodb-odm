@@ -308,7 +308,7 @@ class PersistenceBuilder
      */
     public function prepareReferencedDocumentValue(array $referenceMapping, $document)
     {
-        return $this->dm->createDBRef($document, $referenceMapping);
+        return $this->dm->createReference($document, $referenceMapping);
     }
 
     /**

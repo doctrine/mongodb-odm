@@ -103,6 +103,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     const REFERENCE_STORE_AS_ID = 'id';
     const REFERENCE_STORE_AS_DB_REF = 'dbRef';
     const REFERENCE_STORE_AS_DB_REF_WITH_DB = 'dbRefWithDb';
+    const REFERENCE_STORE_AS_REF = 'ref';
 
     /* The inheritance mapping types */
     /**
@@ -472,6 +473,48 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         $this->name = $documentName;
         $this->rootDocumentName = $documentName;
+    }
+
+    /**
+     * Helper method to get reference id of ref* type references
+     * @param mixed  $reference
+     * @param string $storeAs
+     * @return mixed
+     * @internal
+     */
+    public static function getReferenceId($reference, $storeAs)
+    {
+        return $storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID ? $reference : $reference[ClassMetadataInfo::getReferencePrefix($storeAs) . 'id'];
+    }
+
+    /**
+     * Returns the reference prefix used for a reference
+     * @param string $storeAs
+     * @return string
+     */
+    private static function getReferencePrefix($storeAs)
+    {
+        if (!in_array($storeAs, [ClassMetadataInfo::REFERENCE_STORE_AS_REF, ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB])) {
+            throw new \LogicException('Can only get a reference prefix for DBRef and reference arrays');
+        }
+
+        return $storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_REF ? '' : '$';
+    }
+
+    /**
+     * Returns a fully qualified field name for a given reference
+     * @param string $storeAs
+     * @param string $pathPrefix The field path prefix
+     * @return string
+     * @internal
+     */
+    public static function getReferenceFieldName($storeAs, $pathPrefix = '')
+    {
+        if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
+            return $pathPrefix;
+        }
+
+        return ($pathPrefix ? $pathPrefix . '.' : '') . static::getReferencePrefix($storeAs) . 'id';
     }
 
     /**

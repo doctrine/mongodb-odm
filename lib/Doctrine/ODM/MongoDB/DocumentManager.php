@@ -668,15 +668,15 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Returns a DBRef array for the supplied document.
+     * Returns a reference to the supplied document.
      *
-     * @param mixed $document A document object
+     * @param object $document A document object
      * @param array $referenceMapping Mapping for the field that references the document
      *
      * @throws \InvalidArgumentException
-     * @return array A DBRef array
+     * @return mixed The reference for the document in question, according to the desired mapping
      */
-    public function createDBRef($document, array $referenceMapping = null)
+    public function createReference($document, array $referenceMapping)
     {
         if ( ! is_object($document)) {
             throw new \InvalidArgumentException('Cannot create a DBRef, the document is not an object');
@@ -691,20 +691,38 @@ class DocumentManager implements ObjectManager
             );
         }
 
-        if ($referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
-            if ($class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
-                throw MappingException::simpleReferenceMustNotTargetDiscriminatedDocument($referenceMapping['targetDocument']);
-            }
-            return $class->getDatabaseIdentifierValue($id);
-        }
+        $storeAs = isset($referenceMapping['storeAs']) ? $referenceMapping['storeAs'] : null;
+        switch ($storeAs) {
+            case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+                if ($class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+                    throw MappingException::simpleReferenceMustNotTargetDiscriminatedDocument($referenceMapping['targetDocument']);
+                }
 
-        $dbRef = array(
-            '$ref' => $class->getCollection(),
-            '$id'  => $class->getDatabaseIdentifierValue($id),
-        );
+                return $class->getDatabaseIdentifierValue($id);
+                break;
 
-        if ($referenceMapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB) {
-            $dbRef['$db'] = $this->getDocumentDatabase($class->name)->getName();
+
+            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                $reference = ['id' => $class->getDatabaseIdentifierValue($id)];
+                break;
+
+            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
+                $reference = [
+                    '$ref' => $class->getCollection(),
+                    '$id'  => $class->getDatabaseIdentifierValue($id),
+                ];
+                break;
+
+            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+                $reference = [
+                    '$ref' => $class->getCollection(),
+                    '$id'  => $class->getDatabaseIdentifierValue($id),
+                    '$db'  => $this->getDocumentDatabase($class->name)->getName(),
+                ];
+                break;
+
+            default:
+                throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
         }
 
         /* If the class has a discriminator (field and value), use it. A child
@@ -712,7 +730,7 @@ class DocumentManager implements ObjectManager
          * discriminator field and no value, so default to the full class name.
          */
         if (isset($class->discriminatorField)) {
-            $dbRef[$class->discriminatorField] = isset($class->discriminatorValue)
+            $reference[$class->discriminatorField] = isset($class->discriminatorValue)
                 ? $class->discriminatorValue
                 : $class->name;
         }
@@ -720,7 +738,7 @@ class DocumentManager implements ObjectManager
         /* Add a discriminator value if the referenced document is not mapped
          * explicitly to a targetDocument class.
          */
-        if ($referenceMapping !== null && ! isset($referenceMapping['targetDocument'])) {
+        if (! isset($referenceMapping['targetDocument'])) {
             $discriminatorField = $referenceMapping['discriminatorField'];
             $discriminatorValue = isset($referenceMapping['discriminatorMap'])
                 ? array_search($class->name, $referenceMapping['discriminatorMap'])
@@ -736,10 +754,31 @@ class DocumentManager implements ObjectManager
                 $discriminatorValue = $class->name;
             }
 
-            $dbRef[$discriminatorField] = $discriminatorValue;
+            $reference[$discriminatorField] = $discriminatorValue;
         }
 
-        return $dbRef;
+        return $reference;
+    }
+
+    /**
+     * Returns a DBRef array for the supplied document.
+     *
+     * @param mixed $document A document object
+     * @param array $referenceMapping Mapping for the field that references the document
+     *
+     * @throws \InvalidArgumentException
+     * @return array A DBRef array
+     * @deprecated Deprecated in favor of createReference; will be removed in 2.0
+     */
+    public function createDBRef($document, array $referenceMapping = null)
+    {
+        @trigger_error('The ' . __METHOD__ . ' method has been deprecated and will be removed in ODM 2.0. Use createReference() instead.', E_USER_DEPRECATED);
+
+        if (!isset($referenceMapping['storeAs'])) {
+            $referenceMapping['storeAs'] = ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF;
+        }
+
+        return $this->createReference($document, $referenceMapping);
     }
 
     /**

@@ -149,7 +149,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field($field)->addToSet($f)
             ->getQuery()->debug();
 
-        $expected = $this->dm->createDBRef($f, $this->dm->getClassMetadata($class)->fieldMappings[$field]);
+        $expected = $this->dm->createReference($f, $this->dm->getClassMetadata($class)->fieldMappings[$field]);
         $this->assertEquals($expected, $q1['newObj']['$addToSet'][$field]);
     }
 
@@ -173,7 +173,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field($field)->set($f)
             ->getQuery()->debug();
 
-        $expected = $this->dm->createDBRef($f, $this->dm->getClassMetadata($class)->fieldMappings[$field]);
+        $expected = $this->dm->createReference($f, $this->dm->getClassMetadata($class)->fieldMappings[$field]);
         $this->assertEquals($expected, $q1['newObj']['$set'][$field]);
     }
 
