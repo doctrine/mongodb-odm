@@ -138,6 +138,16 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * @param string|null $expression Optional. A replacement expression that
+     * resolves to a document.
+     * @return Stage\ReplaceRoot
+     */
+    public function replaceRoot($expression = null)
+    {
+        return $this->addStage(new Stage\ReplaceRoot($this, $this->dm, $this->class, $expression));
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function sort($fieldName, $order = null)
