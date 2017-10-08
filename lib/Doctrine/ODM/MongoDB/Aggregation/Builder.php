@@ -163,6 +163,14 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * @return Stage\SortByCount
+     */
+    public function sortByCount($expression)
+    {
+        return $this->addStage(new Stage\SortByCount($this, $expression, $this->dm, $this->class));
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function sort($fieldName, $order = null)
