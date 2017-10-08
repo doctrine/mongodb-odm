@@ -22,7 +22,6 @@ namespace Doctrine\ODM\MongoDB\Aggregation;
 use Doctrine\MongoDB\Aggregation\Builder as BaseBuilder;
 use Doctrine\MongoDB\Aggregation\Stage\GeoNear;
 use Doctrine\MongoDB\CommandCursor as BaseCommandCursor;
-use Doctrine\ODM\MongoDB\Aggregation\Stage\Match;
 use Doctrine\ODM\MongoDB\CommandCursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
@@ -109,6 +108,22 @@ class Builder extends BaseBuilder
     public function expr()
     {
         return new Expr($this->dm, $this->class);
+    }
+
+    /**
+     * @return Stage\Bucket
+     */
+    public function bucket()
+    {
+        return $this->addStage(new Stage\Bucket($this, $this->dm, $this->class));
+    }
+
+    /**
+     * @return Stage\BucketAuto
+     */
+    public function bucketAuto()
+    {
+        return $this->addStage(new Stage\BucketAuto($this, $this->dm, $this->class));
     }
 
     /**
