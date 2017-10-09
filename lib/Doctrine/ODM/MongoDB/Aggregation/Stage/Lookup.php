@@ -43,6 +43,11 @@ class Lookup extends BaseStage\Lookup
     private $class;
 
     /**
+     * @var ClassMetadata
+     */
+    private $targetClass;
+
+    /**
      * @param Builder $builder
      * @param string $from
      * @param DocumentManager $documentManager
@@ -73,11 +78,16 @@ class Lookup extends BaseStage\Lookup
 
         // Check if mapped class with given name exists
         try {
-            $targetMapping = $this->dm->getClassMetadata($from);
-            return parent::from($targetMapping->getCollection());
+            $this->targetClass = $this->dm->getClassMetadata($from);
         } catch (BaseMappingException $e) {
             return parent::from($from);
         }
+
+        if ($this->targetClass->isSharded()) {
+            throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
+        }
+
+        return parent::from($this->targetClass->getCollection());
     }
 
     /**
@@ -92,8 +102,12 @@ class Lookup extends BaseStage\Lookup
         }
 
         $referenceMapping = $this->class->getFieldMapping($fieldName);
-        $targetMapping = $this->dm->getClassMetadata($referenceMapping['targetDocument']);
-        parent::from($targetMapping->getCollection());
+        $this->targetClass = $this->dm->getClassMetadata($referenceMapping['targetDocument']);
+        if ($this->targetClass->isSharded()) {
+            throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
+        }
+
+        parent::from($this->targetClass->getCollection());
 
         if ($referenceMapping['isOwningSide']) {
             switch ($referenceMapping['storeAs']) {
@@ -114,7 +128,7 @@ class Lookup extends BaseStage\Lookup
                 throw MappingException::repositoryMethodLookupNotAllowed($this->class->name, $fieldName);
             }
 
-            $mappedByMapping = $targetMapping->getFieldMapping($referenceMapping['mappedBy']);
+            $mappedByMapping = $this->targetClass->getFieldMapping($referenceMapping['mappedBy']);
             switch ($mappedByMapping['storeAs']) {
                 case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
                 case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
@@ -131,5 +145,38 @@ class Lookup extends BaseStage\Lookup
         }
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function localField($localField)
+    {
+        return parent::localField($this->prepareFieldName($localField, $this->class));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function foreignField($foreignField)
+    {
+        return parent::foreignField($this->prepareFieldName($foreignField, $this->targetClass));
+    }
+
+    protected function prepareFieldName($fieldName, ClassMetadata $class = null)
+    {
+        if (!$class) {
+            return $fieldName;
+        }
+
+        return $this->getDocumentPersister($class)->prepareFieldName($fieldName);
+    }
+
+    /**
+     * @return \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
+     */
+    private function getDocumentPersister(ClassMetadata $class)
+    {
+        return $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
     }
 }

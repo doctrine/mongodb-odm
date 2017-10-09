@@ -388,6 +388,15 @@ class MappingException extends BaseMappingException
 
     /**
      * @param string $className
+     * @return MappingException
+     */
+    public static function cannotUseShardedCollectionInLookupStages($className)
+    {
+        return new self("Cannot use class '$className' as collection for lookup or graphLookup stage. Sharded collections are not allowed.");
+    }
+
+    /**
+     * @param string $className
      * @param string $fieldName
      *
      * @return MappingException

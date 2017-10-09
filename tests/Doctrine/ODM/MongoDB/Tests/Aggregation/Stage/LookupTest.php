@@ -2,6 +2,10 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Documents\CmsComment;
+use Documents\Sharded\ShardedOne;
+
 class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     /**
@@ -38,6 +42,29 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $result);
         $this->assertCount(1, $result[0]['user']);
         $this->assertSame('alcaeus', $result[0]['user'][0]['username']);
+    }
+
+    public function testLookupStageWithFieldNameTranslation()
+    {
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
+        $builder
+            ->lookup(CmsComment::class)
+                ->localField('id')
+                ->foreignField('authorIp')
+                ->alias('user');
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'CmsComment',
+                    'localField' => '_id',
+                    'foreignField' => 'ip',
+                    'as' => 'user',
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testLookupStageWithClassName()
@@ -347,6 +374,26 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertCount(1, $result);
         $this->assertCount(1, $result[0]['embeddedReferenceManyInverse']);
+    }
+
+    public function testLookupToShardedCollectionThrowsException()
+    {
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
+
+        $this->expectException(MappingException::class);
+        $builder
+            ->lookup(ShardedOne::class)
+                ->localField('id')
+                ->foreignField('id');
+    }
+
+    public function testLookupToShardedReferenceThrowsException()
+    {
+        $builder = $this->dm->createAggregationBuilder(ShardedOne::class);
+
+        $this->expectException(MappingException::class);
+        $builder
+            ->lookup('user');
     }
 
     private function insertTestData()
