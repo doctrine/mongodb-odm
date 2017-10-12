@@ -362,9 +362,9 @@ class MappingException extends BaseMappingException
      * @param string $fieldName
      * @return MappingException
      */
-    public static function cannotLookupNonIdReference($className, $fieldName)
+    public static function cannotLookupDbRefReference($className, $fieldName)
     {
-        return new self("Cannot use reference '$fieldName' in class '$className' for lookup. Only ID references are allowed in \$lookup stages.");
+        return new self("Cannot use reference '$fieldName' in class '$className' for lookup or graphLookup: dbRef references are not supported.");
     }
 
     /**
@@ -374,7 +374,7 @@ class MappingException extends BaseMappingException
      */
     public static function repositoryMethodLookupNotAllowed($className, $fieldName)
     {
-        return new self("Cannot use reference '$fieldName' in class '$className' for lookup. repositoryMethod is not supported in \$lookup stages.");
+        return new self("Cannot use reference '$fieldName' in class '$className' for lookup or graphLookup. repositoryMethod is not supported in \$lookup and \$graphLookup stages.");
     }
 
     /**
@@ -414,5 +414,10 @@ class MappingException extends BaseMappingException
     public static function canNotCombineReadPreferenceAndSlaveOkay($className)
     {
         return new self("Cannot use ReadPreference and SlaveOkay at the same time in class '$className'.");
+    }
+
+    public static function connectFromFieldMustReferenceSameDocument($fieldName)
+    {
+        return new self("Cannot use field '$fieldName' as connectFromField in \$graphLookup stage. Reference must target the document itself.");
     }
 }

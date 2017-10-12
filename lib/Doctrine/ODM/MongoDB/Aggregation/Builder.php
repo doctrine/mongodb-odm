@@ -127,6 +127,16 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * @param string $from
+     *
+     * @return Stage\GraphLookup
+     */
+    public function graphLookup($from)
+    {
+        return $this->addStage(new Stage\GraphLookup($this, $from, $this->dm, $this->class));
+    }
+
+    /**
      * @return Stage\Match
      */
     public function match()

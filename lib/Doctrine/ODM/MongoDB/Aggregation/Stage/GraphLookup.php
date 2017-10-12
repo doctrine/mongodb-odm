@@ -26,11 +26,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Types\Type;
 
-/**
- * Fluent interface for building aggregation pipelines.
- */
-class Lookup extends BaseStage\Lookup
+class GraphLookup extends BaseStage\GraphLookup
 {
     /**
      * @var DocumentManager
@@ -49,7 +47,8 @@ class Lookup extends BaseStage\Lookup
 
     /**
      * @param Builder $builder
-     * @param string $from
+     * @param string $from Target collection for the $graphLookup operation to
+     * search, recursively matching the connectFromField to the connectToField.
      * @param DocumentManager $documentManager
      * @param ClassMetadata $class
      */
@@ -90,6 +89,63 @@ class Lookup extends BaseStage\Lookup
         return parent::from($this->targetClass->getCollection());
     }
 
+    public function connectFromField($connectFromField)
+    {
+        // No targetClass mapping - simply use field name as is
+        if (!$this->targetClass) {
+            return parent::connectFromField($connectFromField);
+        }
+
+        // connectFromField doesn't have to be a reference - in this case, just convert the field name
+        if (!$this->targetClass->hasReference($connectFromField)) {
+            return parent::connectFromField($this->convertTargetFieldName($connectFromField));
+        }
+
+        // connectFromField is a reference - do a sanity check
+        $referenceMapping = $this->targetClass->getFieldMapping($connectFromField);
+        if ($referenceMapping['targetDocument'] !== $this->targetClass->name) {
+            throw MappingException::connectFromFieldMustReferenceSameDocument($connectFromField);
+        }
+
+        if ($referenceMapping['isOwningSide']) {
+            switch ($referenceMapping['storeAs']) {
+                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($referenceMapping['storeAs'], $referenceMapping['name']);
+                    break;
+
+                default:
+                    throw MappingException::cannotLookupDbRefReference($this->class->name, $connectFromField);
+            }
+
+            parent::connectFromField($referencedFieldName);
+        } else {
+            if (isset($referenceMapping['repositoryMethod'])) {
+                throw MappingException::repositoryMethodLookupNotAllowed($this->class->name, $connectFromField);
+            }
+
+            $mappedByMapping = $this->targetClass->getFieldMapping($referenceMapping['mappedBy']);
+            switch ($mappedByMapping['storeAs']) {
+                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($mappedByMapping['storeAs'], $mappedByMapping['name']);
+                    break;
+
+                default:
+                    throw MappingException::cannotLookupDbRefReference($this->class->name, $connectFromField);
+            }
+
+            parent::connectFromField($referencedFieldName);
+        }
+
+        return $this;
+    }
+
+    public function connectToField($connectToField)
+    {
+        return parent::connectToField($this->convertTargetFieldName($connectToField));
+    }
+
     /**
      * @param string $fieldName
      * @return $this
@@ -117,12 +173,17 @@ class Lookup extends BaseStage\Lookup
                     break;
 
                 default:
-                   throw MappingException::cannotLookupDbRefReference($this->class->name, $fieldName);
+                    throw MappingException::cannotLookupDbRefReference($this->class->name, $fieldName);
             }
 
             $this
-                ->foreignField('_id')
-                ->localField($referencedFieldName);
+                ->startWith('$' . $referencedFieldName)
+                ->connectToField('_id');
+
+            // A self-reference indicates that we can also fill the "connectFromField" accordingly
+            if ($this->targetClass->name === $this->class->name) {
+                $this->connectFromField($referencedFieldName);
+            }
         } else {
             if (isset($referenceMapping['repositoryMethod'])) {
                 throw MappingException::repositoryMethodLookupNotAllowed($this->class->name, $fieldName);
@@ -140,39 +201,44 @@ class Lookup extends BaseStage\Lookup
             }
 
             $this
-                ->localField('_id')
-                ->foreignField($referencedFieldName);
+                ->startWith('$' . $referencedFieldName)
+                ->connectToField('_id');
+
+            // A self-reference indicates that we can also fill the "connectFromField" accordingly
+            if ($this->targetClass->name === $this->class->name) {
+                $this->connectFromField($referencedFieldName);
+            }
         }
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function localField($localField)
+    protected function convertExpression($expression)
     {
-        return parent::localField($this->prepareFieldName($localField, $this->class));
+        if (is_array($expression)) {
+            return array_map([$this, 'convertExpression'], $expression);
+        } elseif (is_string($expression) && substr($expression, 0, 1) === '$') {
+            return '$' . $this->getDocumentPersister($this->class)->prepareFieldName(substr($expression, 1));
+        } else {
+            return Type::convertPHPToDatabaseValue(parent::convertExpression($expression));
+        }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function foreignField($foreignField)
+    protected function convertTargetFieldName($fieldName)
     {
-        return parent::foreignField($this->prepareFieldName($foreignField, $this->targetClass));
-    }
+        if (is_array($fieldName)) {
+            return array_map([$this, 'convertTargetFieldName'], $fieldName);
+        }
 
-    protected function prepareFieldName($fieldName, ClassMetadata $class = null)
-    {
-        if (!$class) {
+        if (!$this->targetClass) {
             return $fieldName;
         }
 
-        return $this->getDocumentPersister($class)->prepareFieldName($fieldName);
+        return $this->getDocumentPersister($this->targetClass)->prepareFieldName($fieldName);
     }
 
     /**
+     * @param ClassMetadata $class
      * @return \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
      */
     private function getDocumentPersister(ClassMetadata $class)
