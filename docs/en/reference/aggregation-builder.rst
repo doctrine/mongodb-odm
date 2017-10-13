@@ -431,6 +431,13 @@ used to resolve association graphs and flatten them into a single list.
     the very same document. The aggregation builder will throw an exception if
     you try to resolve a different document.
 
+.. note::
+
+    Due to a limitation in MongoDB, the ``$graphLookup`` stage can not be used
+    with references that are stored as DBRef. To use references in a
+    ``$graphLookup`` stage, store the reference as ID or ``ref``. This is
+    explained in the :doc:`Reference mapping <reference-mapping>` chapter.
+
 .. _aggregation_builder_group:
 
 $group
@@ -533,11 +540,10 @@ using the ``$unwind`` operator.
 
 .. note::
 
-    Due to a limitation in MongoDB, the ``$lookup`` stage can only be used with
-    references that are stored as ID (see example above). References stored with
-    a DbRef object can't be used. To use references in a $lookup stage, store
-    the references as ID. This is explained in the
-    :doc:`Reference mapping <reference-mapping>` chapter..
+    Due to a limitation in MongoDB, the ``$lookup`` stage can not be used with
+    references that are stored as DBRef. To use references in a ``$lookup``
+    stage, store the reference as ID or ``ref``. This is explained in the
+    :doc:`Reference mapping <reference-mapping>` chapter.
 
 You can also configure your lookup manually if you don't have it mapped in your
 document:
