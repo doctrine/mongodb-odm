@@ -209,7 +209,14 @@ Aggregation pipeline stages
 
 MongoDB provides the following aggregation pipeline stages:
 
+- `$addFields <https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/>`_
+- `$bucket <https://docs.mongodb.com/manual/reference/operator/aggregation/bucket/>`_
+- `$bucketAuto <https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/>`_
+- `$collStats <https://docs.mongodb.com/manual/reference/operator/aggregation/collStats/>`_
+- `$count <https://docs.mongodb.com/manual/reference/operator/aggregation/count/>`_
+- `$facet <https://docs.mongodb.com/manual/reference/operator/aggregation/facet/>`_
 - `$geoNear <https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/>`_
+- `$graphLookup <https://docs.mongodb.com/manual/reference/operator/aggregation/graphLookup/>`_
 - `$group <https://docs.mongodb.com/manual/reference/operator/aggregation/group/>`_
 - `$indexStats <https://docs.mongodb.com/manual/reference/operator/aggregation/indexStats/>`_
 - `$limit <https://docs.mongodb.com/manual/reference/operator/aggregation/limit/>`_
@@ -218,15 +225,162 @@ MongoDB provides the following aggregation pipeline stages:
 - `$out <https://docs.mongodb.com/manual/reference/operator/aggregation/out/>`_
 - `$project <https://docs.mongodb.com/manual/reference/operator/aggregation/project/>`_
 - `$redact <https://docs.mongodb.com/manual/reference/operator/aggregation/redact/>`_
+- `$replaceRoot <https://docs.mongodb.com/manual/reference/operator/aggregation/replaceRoot/>`_
 - `$sample <https://docs.mongodb.com/manual/reference/operator/aggregation/sample/>`_
 - `$skip <https://docs.mongodb.com/manual/reference/operator/aggregation/skip/>`_
 - `$sort <https://docs.mongodb.com/manual/reference/operator/aggregation/project/>`_
+- `$sortByCount <https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/>`_
 - `$unwind <https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/>`_
 
 .. note::
 
     The ``$lookup``, ``$sample`` and ``$indexStats`` stages were added in MongoDB
-    3.2.
+    3.2. The ``$addFields``, ``$bucket``, ``$bucketAuto``, ``$sortByCount``,
+    ``$replaceRoot``, ``$facet``, ``$graphLookup``, ``$coun`` and ``$collStats``
+    stages were added in MongoDB 3.4.
+
+$addFields
+~~~~~~~~~~
+
+Adds new fields to documents. ``$addFields`` outputs documents that contain all
+existing fields from the input documents and newly added fields.
+
+The ``$addFields`` stage is equivalent to a ``$project`` stage that explicitly
+specifies all existing fields in the input documents and adds the new fields.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->addFields()
+            ->field('purchaseYear')
+            ->year('$purchaseDate');
+
+$bucket
+~~~~~~~
+
+Categorizes incoming documents into groups, called buckets, based on a specified
+expression and bucket boundaries.
+
+Each bucket is represented as a document in the output. The document for each
+bucket contains an _id field, whose value specifies the inclusive lower bound of
+the bucket and a count field that contains the number of documents in the bucket.
+The count field is included by default when the output is not specified.
+
+``$bucket`` only produces output documents for buckets that contain at least one
+input document.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->bucket()
+            ->groupBy('$itemCount')
+            ->boundaries(1, 2, 3, 4, 5, '5+')
+            ->defaultBucket('5+')
+            ->output()
+                ->field('lowestValue')
+                ->min('$value')
+                ->field('highestValue')
+                ->max('$value')
+    ;
+
+$bucketAuto
+~~~~~~~~~~~
+
+Similar to ``$bucket``, except that boundaries are automatically determined in
+an attempt to evenly distribute the documents into the specified number of
+buckets.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->bucketAuto()
+            ->groupBy('$itemCount')
+            ->buckets(5)
+            ->output()
+                ->field('lowestValue')
+                ->min('$value')
+                ->field('highestValue')
+                ->max('$value')
+    ;
+
+$collStats
+~~~~~~~~~~
+
+The ``$collStats`` stage returns statistics regarding a collection or view.
+
+$count
+~~~~~~
+
+Returns a document that contains a count of the number of documents input to the
+stage.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->match()
+            ->field('itemCount')
+            ->eq(1)
+        ->count('numSingleItemOrders')
+    ;
+
+The example above returns a single document with the ``numSingleItemOrders``
+containing the number of orders found.
+
+$facet
+~~~~~~
+
+Processes multiple aggregation pipelines within a single stage on the same set
+of input documents. Each sub-pipeline has its own field in the output document
+where its results are stored as an array of documents.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->facet()
+            ->field('groupedByItemCount')
+            ->pipeline(
+                $dm->createAggregationBuilder(\Documents\Orders::class)->group()
+                    ->field('id')
+                    ->expression('$itemCount')
+                    ->field('lowestValue')
+                    ->min('$value')
+                    ->field('highestValue')
+                    ->max('$value')
+                    ->field('totalValue')
+                    ->sum('$value')
+                    ->field('averageValue')
+                    ->avg('$value')
+            )
+            ->field('groupedByYear')
+            ->pipeline(
+                $dm->createAggregationBuilder(\Documents\Orders::class)->group()
+                    ->field('id')
+                    ->year('purchaseDate')
+                    ->field('lowestValue')
+                    ->min('$value')
+                    ->field('highestValue')
+                    ->max('$value')
+                    ->field('totalValue')
+                    ->sum('$value')
+                    ->field('averageValue')
+                    ->avg('$value')
+            )
+    ;
 
 $geoNear
 ~~~~~~~~
@@ -235,6 +389,8 @@ The ``$geoNear`` stage finds and outputs documents in order of nearest to
 farthest from a specified point.
 
 .. code-block:: php
+
+    <?php
 
     $builder = $this->dm->createAggregationBuilder(\Documents\City::class);
     $builder
@@ -250,6 +406,30 @@ farthest from a specified point.
     collection must contain a single geospatial index. You must include the
     ``distanceField`` option for the stage to work.
 
+$graphLookup
+~~~~~~~~~~~~
+
+Performs a recursive search on a collection, with options for restricting the
+search by recursion depth and query filter. The ``$graphLookup`` stage can be
+used to resolve association graphs and flatten them into a single list.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $this->dm->createAggregationBuilder(\Documents\Traveller::class);
+    $builder
+        ->graphLookup('nearestAirport')
+            ->connectFromField('connections')
+            ->maxDepth(2)
+            ->depthField('numConnections')
+            ->alias('destinations');
+
+.. note::
+
+    The target document of the reference used in ``connectFromField`` must be
+    the very same document. The aggregation builder will throw an exception if
+    you try to resolve a different document.
 
 .. _aggregation_builder_group:
 
@@ -489,6 +669,8 @@ field on all document levels and evaluates it to grant or deny access:
 
 .. code-block:: php
 
+    <?php
+
     $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
     $builder
         ->redact()
@@ -497,6 +679,28 @@ field on all document levels and evaluates it to grant or deny access:
                 '$$PRUNE',
                 '$$DESCEND'
             )
+
+$replaceRoot
+~~~~~~~~~~~~
+
+Promotes a specified document to the top level and replaces all other fields.
+The operation replaces all existing fields in the input document, including the
+``_id`` field. You can promote an existing embedded document to the top level,
+or create a new document for promotion.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->replaceRoot('$embeddedField');
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->replaceRoot()
+            ->field('averagePricePerItem')
+            ->divide('$value', '$itemCount');
 
 $sample
 ~~~~~~~
@@ -511,6 +715,41 @@ $sort, $limit and $skip
 The ``$sort``, ``$limit`` and ``$skip`` stages behave like the corresponding
 query options, allowing you to control the order and subset of results returned
 by the aggregation pipeline.
+
+$sortByCount
+~~~~~~~~~~~~
+
+Groups incoming documents based on the value of a specified expression, then
+computes the count of documents in each distinct group.
+
+Each output document contains two fields: an _id field containing the distinct
+grouping value, and a count field containing the number of documents belonging
+to that grouping or category.
+
+The documents are sorted by count in descending order.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder->sortByCount('$items');
+
+The example above is equivalent to the following pipeline:
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->group()
+            ->field('_id')
+            ->expression('$items')
+            ->field('count')
+            ->sum(1)
+        ->sort(['count' => -1])
+    ;
 
 $unwind
 ~~~~~~~
@@ -536,6 +775,8 @@ To flatten the ``purchaseDates`` array, we would apply the following pipeline
 stage:
 
 .. code-block:: php
+
+    <?php
 
     $builder = $dm->createAggregationBuilder(\Documents\User::class);
     $builder->unwind('$purchaseDates');
