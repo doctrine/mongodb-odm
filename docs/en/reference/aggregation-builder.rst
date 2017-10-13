@@ -209,77 +209,47 @@ Aggregation pipeline stages
 
 MongoDB provides the following aggregation pipeline stages:
 
-- `$project <https://docs.mongodb.com/manual/reference/operator/aggregation/project/>`_
-- `$match <https://docs.mongodb.com/manual/reference/operator/aggregation/match/>`_
+- `$geoNear <https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/>`_
 - `$group <https://docs.mongodb.com/manual/reference/operator/aggregation/group/>`_
-- `$lookup <https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/>`_
-- `$unwind <https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/>`_
-- `$redact <https://docs.mongodb.com/manual/reference/operator/aggregation/redact/>`_
+- `$indexStats <https://docs.mongodb.com/manual/reference/operator/aggregation/indexStats/>`_
 - `$limit <https://docs.mongodb.com/manual/reference/operator/aggregation/limit/>`_
+- `$lookup <https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/>`_
+- `$match <https://docs.mongodb.com/manual/reference/operator/aggregation/match/>`_
+- `$out <https://docs.mongodb.com/manual/reference/operator/aggregation/out/>`_
+- `$project <https://docs.mongodb.com/manual/reference/operator/aggregation/project/>`_
+- `$redact <https://docs.mongodb.com/manual/reference/operator/aggregation/redact/>`_
+- `$sample <https://docs.mongodb.com/manual/reference/operator/aggregation/sample/>`_
 - `$skip <https://docs.mongodb.com/manual/reference/operator/aggregation/skip/>`_
 - `$sort <https://docs.mongodb.com/manual/reference/operator/aggregation/project/>`_
-- `$sample <https://docs.mongodb.com/manual/reference/operator/aggregation/sample/>`_
-- `$geoNear <https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/>`_
-- `$out <https://docs.mongodb.com/manual/reference/operator/aggregation/out/>`_
-- `$indexStats <https://docs.mongodb.com/manual/reference/operator/aggregation/indexStats/>`_
+- `$unwind <https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/>`_
 
 .. note::
 
-    The ``$lookup``, ``$sample`` and ``$indexStats`` stages were added in MongoDB 3.2.
+    The ``$lookup``, ``$sample`` and ``$indexStats`` stages were added in MongoDB
+    3.2.
 
-$project
+$geoNear
 ~~~~~~~~
 
-The ``$project`` stage lets you reshape the current document or define a completely
-new one:
+The ``$geoNear`` stage finds and outputs documents in order of nearest to
+farthest from a specified point.
 
 .. code-block:: php
 
-    <?php
-
-    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder = $this->dm->createAggregationBuilder(\Documents\City::class);
     $builder
-        ->project()
-            ->excludeIdField()
-            ->includeFields(['purchaseDate', 'user'])
-            ->field('purchaseYear')
-            ->year('$purchaseDate');
+        ->geoNear(120, 40)
+        ->spherical(true)
+        ->distanceField('distance')
+        // Convert radians to kilometers (use 3963.192 for miles)
+        ->distanceMultiplier(6378.137);
 
-$match
-~~~~~~
+.. note::
 
-The ``$match`` stage lets you filter documents according to certain criteria. It
-works just like the query builder:
+    The ``$geoNear`` stage must be the first stage in the pipeline and the
+    collection must contain a single geospatial index. You must include the
+    ``distanceField`` option for the stage to work.
 
-.. code-block:: php
-
-    <?php
-
-    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
-    $builder
-        ->match()
-            ->field('purchaseDate')
-            ->gte($from)
-            ->lt($to)
-            ->field('user')
-            ->references($user);
-
-You can also use fields defined in previous stages:
-
-.. code-block:: php
-
-    <?php
-
-    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
-    $builder
-        ->project()
-            ->excludeIdField()
-            ->includeFields(['purchaseDate', 'user'])
-            ->field('purchaseYear')
-            ->year('$purchaseDate')
-        ->match()
-            ->field('purchaseYear')
-            ->equals(2016);
 
 .. _aggregation_builder_group:
 
@@ -311,6 +281,12 @@ documents:
             ->sum(1)
             ->field('amount')
             ->sum('$amount');
+
+$indexStats
+~~~~~~~~~~~
+
+The ``$indexStats`` stage returns statistics regarding the use of each index for
+the collection. More information can be found in the `official Documentation <https://docs.mongodb.com/manual/reference/operator/aggregation/indexStats/>`_
 
 $lookup
 ~~~~~~~
@@ -397,59 +373,77 @@ document:
             ->foreignField('userId')
             ->alias('items');
 
-$unwind
-~~~~~~~
+$match
+~~~~~~
 
-The ``$unwind`` stage flattens an array in a document, returning a copy for each
-item. Take this sample document:
-
-.. code-block:: json
-
-    {
-        _id: {
-            month: 1,
-            year: 2016
-        },
-        purchaseDates: [
-            '2016-01-07',
-            '2016-03-10',
-            '2016-06-25'
-        ]
-    }
-
-To flatten the ``purchaseDates`` array, we would apply the following pipeline
-stage:
+The ``$match`` stage lets you filter documents according to certain criteria. It
+works just like the query builder:
 
 .. code-block:: php
 
-    $builder = $dm->createAggregationBuilder(\Documents\User::class);
-    $builder->unwind('$purchaseDates');
+    <?php
 
-The stage would return three documents, each containing a single purchase date:
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->match()
+            ->field('purchaseDate')
+            ->gte($from)
+            ->lt($to)
+            ->field('user')
+            ->references($user);
 
-.. code-block:: json
+You can also use fields defined in previous stages:
 
-    {
-        _id: {
-            month: 1,
-            year: 2016
-        },
-        purchaseDates: '2016-01-07'
-    },
-    {
-        _id: {
-            month: 1,
-            year: 2016
-        },
-        purchaseDates: '2016-03-10'
-    },
-    {
-        _id: {
-            month: 1,
-            year: 2016
-        },
-        purchaseDates: '2016-06-25'
-    }
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->project()
+            ->excludeIdField()
+            ->includeFields(['purchaseDate', 'user'])
+            ->field('purchaseYear')
+            ->year('$purchaseDate')
+        ->match()
+            ->field('purchaseYear')
+            ->equals(2016);
+
+$out
+~~~~
+
+The ``$out`` stage is used to store the result of the aggregation pipeline in a
+collection instead of returning an iterable cursor of results. This must be the
+last stage in an aggregation pipeline.
+
+If the collection specified by the ``$out`` operation already exists, then upon
+completion of the aggregation, the existing collection is atomically replaced.
+Any indexes that existed on the collection are left intact. If the aggregation
+fails, the ``$out`` operation does not remove the data from an existing
+collection.
+
+.. note::
+
+    The aggregation pipeline will fail to complete if the result would violate
+    any unique index constraints, including those on the ``id`` field.
+
+$project
+~~~~~~~~
+
+The ``$project`` stage lets you reshape the current document or define a completely
+new one:
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->project()
+            ->excludeIdField()
+            ->includeFields(['purchaseDate', 'user'])
+            ->field('purchaseYear')
+            ->year('$purchaseDate');
 
 $redact
 ~~~~~~~
@@ -504,13 +498,6 @@ field on all document levels and evaluates it to grant or deny access:
                 '$$DESCEND'
             )
 
-$sort, $limit and $skip
-~~~~~~~~~~~~~~~~~~~~~~~
-
-The ``$sort``, ``$limit`` and ``$skip`` stages behave like the corresponding
-query options, allowing you to control the order and subset of results returned
-by the aggregation pipeline.
-
 $sample
 ~~~~~~~
 
@@ -518,49 +505,63 @@ The sample stage can be used to randomly select a subset of documents in the
 aggregation pipeline. It behaves like the ``$limit`` stage, but instead of
 returning the first ``n`` documents it returns ``n`` random documents.
 
-$geoNear
-~~~~~~~~
+$sort, $limit and $skip
+~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``$geoNear`` stage finds and outputs documents in order of nearest to
-farthest from a specified point.
+The ``$sort``, ``$limit`` and ``$skip`` stages behave like the corresponding
+query options, allowing you to control the order and subset of results returned
+by the aggregation pipeline.
+
+$unwind
+~~~~~~~
+
+The ``$unwind`` stage flattens an array in a document, returning a copy for each
+item. Take this sample document:
+
+.. code-block:: json
+
+    {
+        _id: {
+            month: 1,
+            year: 2016
+        },
+        purchaseDates: [
+            '2016-01-07',
+            '2016-03-10',
+            '2016-06-25'
+        ]
+    }
+
+To flatten the ``purchaseDates`` array, we would apply the following pipeline
+stage:
 
 .. code-block:: php
 
-    $builder = $this->dm->createAggregationBuilder(\Documents\City::class);
-    $builder
-        ->geoNear(120, 40)
-        ->spherical(true)
-        ->distanceField('distance')
-        // Convert radians to kilometers (use 3963.192 for miles)
-        ->distanceMultiplier(6378.137);
+    $builder = $dm->createAggregationBuilder(\Documents\User::class);
+    $builder->unwind('$purchaseDates');
 
-.. note::
+The stage would return three documents, each containing a single purchase date:
 
-    The ``$geoNear`` stage must be the first stage in the pipeline and the
-    collection must contain a single geospatial index. You must include the
-    ``distanceField`` option for the stage to work.
+.. code-block:: json
 
-$out
-~~~~
-
-The ``$out`` stage is used to store the result of the aggregation pipeline in a
-collection instead of returning an iterable cursor of results. This must be the
-last stage in an aggregation pipeline.
-
-If the collection specified by the ``$out`` operation already exists, then upon
-completion of the aggregation, the existing collection is atomically replaced.
-Any indexes that existed on the collection are left intact. If the aggregation
-fails, the ``$out`` operation does not remove the data from an existing
-collection.
-
-.. note::
-
-    The aggregation pipeline will fail to complete if the result would violate
-    any unique index constraints, including those on the ``id`` field.
-
-
-$indexStats
-~~~~~~~~~~~
-
-The ``$indexStats`` stage returns statistics regarding the use of each index for
-the collection. More information can be found in the `official Documentation <https://docs.mongodb.com/manual/reference/operator/aggregation/indexStats/>`_
+    {
+        _id: {
+            month: 1,
+            year: 2016
+        },
+        purchaseDates: '2016-01-07'
+    },
+    {
+        _id: {
+            month: 1,
+            year: 2016
+        },
+        purchaseDates: '2016-03-10'
+    },
+    {
+        _id: {
+            month: 1,
+            year: 2016
+        },
+        purchaseDates: '2016-06-25'
+    }
