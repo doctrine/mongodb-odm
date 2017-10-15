@@ -1207,6 +1207,63 @@ the method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
+@ReadPreference
+---------------
+
+Specifies `Read Preference <https://docs.mongodb.com/manual/core/read-preference/>_`
+that will be applied when querying for the annotated document.
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        namespace Documents;
+
+        /**
+         * @Document
+         * @ODM\ReadPreference("primaryPreferred", tags={
+         *   { "dc"="east" },
+         *   { "dc"="west" },
+         *   {  }
+         * })
+         */
+        class User
+        {
+        }
+
+    .. code-block:: xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                          http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+            <document name="Documents\User">
+                <read-preference mode="primaryPreferred">
+                    <tag-set>
+                        <tag name="dc" value="east"/>
+                    </tag-set>
+                    <tag-set>
+                        <tag name="dc" value="west"/>
+                    </tag-set>
+                    <tag-set />
+                </read-preference>
+            </document>
+        </doctrine-mongo-mapping>
+
+    .. code-block:: yaml
+
+        Documents\User:
+          type: document
+          readPreference:
+            mode: primaryPreferred
+            tagSets:
+              - { dc: east }
+              - { dc: west }
+              - {  }
+
 .. _annotations_reference_reference_many:
 
 @ReferenceMany
