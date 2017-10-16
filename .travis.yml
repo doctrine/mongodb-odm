@@ -32,7 +32,7 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get install mongodb-org
+  - sudo apt-get --allow-unauthenticated install mongodb-org
   - if nc -z localhost 27017; then sudo service mongod stop; fi
   - sudo pip install mongo-orchestration
   - sudo mongo-orchestration start
