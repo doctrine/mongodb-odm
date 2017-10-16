@@ -22,9 +22,7 @@ env:
 matrix:
   include:
     - php: 5.6
-      env: DRIVER_VERSION="1.6.3" SERVER_VERSION="3.0" COMPOSER_FLAGS="--prefer-lowest" KEY_ID="7F0CEB10"
-    - php: 5.6
-      env: DRIVER_VERSION="stable" SERVER_VERSION="3.2" KEY_ID="EA312927"
+      env: DRIVER_VERSION="1.6.3" COMPOSER_FLAGS="--prefer-lowest" SERVER_VERSION="3.2" KEY_ID="EA312927"
 
 before_install:
   - sudo apt-key adv --keyserver ${KEY_SERVER} --recv ${KEY_ID}
@@ -32,7 +30,7 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get install mongodb-org
+  - sudo apt-get --allow-unauthenticated install mongodb-org
   - if nc -z localhost 27017; then sudo service mongod stop; fi
   - sudo pip install mongo-orchestration
   - sudo mongo-orchestration start
