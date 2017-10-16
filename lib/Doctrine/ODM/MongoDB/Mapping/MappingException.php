@@ -418,6 +418,6 @@ class MappingException extends BaseMappingException
 
     public static function connectFromFieldMustReferenceSameDocument($fieldName)
     {
-        return new self("Cannot use field '$fieldName' as connectFromField in \$graphLookup stage. Reference must target the document itself.");
+        return new self("Cannot use field '$fieldName' as connectFromField in a \$graphLookup stage. Reference must target the document itself.");
     }
 }

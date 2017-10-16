@@ -124,7 +124,7 @@ class Lookup extends BaseStage\Lookup
                 ->foreignField('_id')
                 ->localField($referencedFieldName);
         } else {
-            if (isset($referenceMapping['repositoryMethod'])) {
+            if (isset($referenceMapping['repositoryMethod']) || ! isset($referenceMapping['mappedBy'])) {
                 throw MappingException::repositoryMethodLookupNotAllowed($this->class->name, $fieldName);
             }
 
@@ -165,7 +165,7 @@ class Lookup extends BaseStage\Lookup
 
     protected function prepareFieldName($fieldName, ClassMetadata $class = null)
     {
-        if (!$class) {
+        if ( ! $class) {
             return $fieldName;
         }
 

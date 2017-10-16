@@ -92,12 +92,12 @@ class GraphLookup extends BaseStage\GraphLookup
     public function connectFromField($connectFromField)
     {
         // No targetClass mapping - simply use field name as is
-        if (!$this->targetClass) {
+        if ( ! $this->targetClass) {
             return parent::connectFromField($connectFromField);
         }
 
         // connectFromField doesn't have to be a reference - in this case, just convert the field name
-        if (!$this->targetClass->hasReference($connectFromField)) {
+        if ( ! $this->targetClass->hasReference($connectFromField)) {
             return parent::connectFromField($this->convertTargetFieldName($connectFromField));
         }
 
@@ -107,38 +107,7 @@ class GraphLookup extends BaseStage\GraphLookup
             throw MappingException::connectFromFieldMustReferenceSameDocument($connectFromField);
         }
 
-        if ($referenceMapping['isOwningSide']) {
-            switch ($referenceMapping['storeAs']) {
-                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($referenceMapping['storeAs'], $referenceMapping['name']);
-                    break;
-
-                default:
-                    throw MappingException::cannotLookupDbRefReference($this->class->name, $connectFromField);
-            }
-
-            parent::connectFromField($referencedFieldName);
-        } else {
-            if (isset($referenceMapping['repositoryMethod'])) {
-                throw MappingException::repositoryMethodLookupNotAllowed($this->class->name, $connectFromField);
-            }
-
-            $mappedByMapping = $this->targetClass->getFieldMapping($referenceMapping['mappedBy']);
-            switch ($mappedByMapping['storeAs']) {
-                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($mappedByMapping['storeAs'], $mappedByMapping['name']);
-                    break;
-
-                default:
-                    throw MappingException::cannotLookupDbRefReference($this->class->name, $connectFromField);
-            }
-
-            parent::connectFromField($referencedFieldName);
-        }
-
-        return $this;
+        return parent::connectFromField($this->getReferencedFieldName($connectFromField, $referenceMapping));
     }
 
     public function connectToField($connectToField)
@@ -153,7 +122,7 @@ class GraphLookup extends BaseStage\GraphLookup
      */
     private function fromReference($fieldName)
     {
-        if (! $this->class->hasReference($fieldName)) {
+        if ( ! $this->class->hasReference($fieldName)) {
             MappingException::referenceMappingNotFound($this->class->name, $fieldName);
         }
 
@@ -165,49 +134,21 @@ class GraphLookup extends BaseStage\GraphLookup
 
         parent::from($this->targetClass->getCollection());
 
+        $referencedFieldName = $this->getReferencedFieldName($fieldName, $referenceMapping);
+
         if ($referenceMapping['isOwningSide']) {
-            switch ($referenceMapping['storeAs']) {
-                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($referenceMapping['storeAs'], $referenceMapping['name']);
-                    break;
-
-                default:
-                    throw MappingException::cannotLookupDbRefReference($this->class->name, $fieldName);
-            }
-
             $this
                 ->startWith('$' . $referencedFieldName)
                 ->connectToField('_id');
-
-            // A self-reference indicates that we can also fill the "connectFromField" accordingly
-            if ($this->targetClass->name === $this->class->name) {
-                $this->connectFromField($referencedFieldName);
-            }
         } else {
-            if (isset($referenceMapping['repositoryMethod'])) {
-                throw MappingException::repositoryMethodLookupNotAllowed($this->class->name, $fieldName);
-            }
-
-            $mappedByMapping = $this->targetClass->getFieldMapping($referenceMapping['mappedBy']);
-            switch ($mappedByMapping['storeAs']) {
-                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($mappedByMapping['storeAs'], $mappedByMapping['name']);
-                    break;
-
-                default:
-                    throw MappingException::cannotLookupDbRefReference($this->class->name, $fieldName);
-            }
-
             $this
                 ->startWith('$' . $referencedFieldName)
                 ->connectToField('_id');
+        }
 
-            // A self-reference indicates that we can also fill the "connectFromField" accordingly
-            if ($this->targetClass->name === $this->class->name) {
-                $this->connectFromField($referencedFieldName);
-            }
+        // A self-reference indicates that we can also fill the "connectFromField" accordingly
+        if ($this->targetClass->name === $this->class->name) {
+            $this->connectFromField($referencedFieldName);
         }
 
         return $this;
@@ -230,7 +171,7 @@ class GraphLookup extends BaseStage\GraphLookup
             return array_map([$this, 'convertTargetFieldName'], $fieldName);
         }
 
-        if (!$this->targetClass) {
+        if ( ! $this->targetClass) {
             return $fieldName;
         }
 
@@ -244,5 +185,26 @@ class GraphLookup extends BaseStage\GraphLookup
     private function getDocumentPersister(ClassMetadata $class)
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
+    }
+
+    private function getReferencedFieldName($fieldName, array $mapping)
+    {
+        if ( ! $mapping['isOwningSide']) {
+            if (isset($mapping['repositoryMethod']) || ! isset($mapping['mappedBy'])) {
+                throw MappingException::repositoryMethodLookupNotAllowed($this->class->name, $fieldName);
+            }
+
+            $mapping = $this->targetClass->getFieldMapping($mapping['mappedBy']);
+        }
+
+        switch ($mapping['storeAs']) {
+            case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                return ClassMetadataInfo::getReferenceFieldName($mapping['storeAs'], $mapping['name']);
+                break;
+
+            default:
+                throw MappingException::cannotLookupDbRefReference($this->class->name, $fieldName);
+        }
     }
 }
