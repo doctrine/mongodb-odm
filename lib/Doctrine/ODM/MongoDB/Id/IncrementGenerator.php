@@ -38,6 +38,7 @@ class IncrementGenerator extends AbstractIdGenerator
 {
     protected $collection = null;
     protected $key = null;
+    protected $startingId = 1;
 
     public function setCollection($collection)
     {
@@ -47,6 +48,11 @@ class IncrementGenerator extends AbstractIdGenerator
     public function setKey($key)
     {
         $this->key = $key;
+    }
+    
+    public function setStartingId($startingId)
+    {
+        $this->startingId = $startingId;
     }
 
     /** @inheritDoc */
@@ -58,16 +64,37 @@ class IncrementGenerator extends AbstractIdGenerator
         $coll = $this->collection ?: 'doctrine_increment_ids';
         $key = $this->key ?: $dm->getDocumentCollection($className)->getName();
 
-        $query = array('_id' => $key);
-        $newObj = array('$inc' => array('current_id' => 1));
-
-        $command = array();
-        $command['findandmodify'] = $coll;
-        $command['query'] = $query;
-        $command['update'] = $newObj;
-        $command['upsert'] = true;
-        $command['new'] = true;
+        /*
+         * Unable to use '$inc' and '$setOnInsert' together due to known bug.
+         * @see https://jira.mongodb.org/browse/SERVER-10711
+         * Results in error: Cannot update 'current_id' and 'current_id' at the same time
+         */
+        $command = array(
+            'findAndModify' => $coll,
+            'query' => array('_id' => $key, 'current_id' => array('$exists' => true)),
+            'update' => array('$inc' => array('current_id' => $this->startingId)),
+            'upsert' => false,
+            'new' => true,
+        );
         $result = $db->command($command);
+
+        /*
+         * Updated nothing - counter doesn't exist, creating new counter.
+         * Not bothering with {$exists: false} in the criteria as that won't avoid
+         * an exception during a possible race condition.
+         */
+        if(array_key_exists('value', $result) && !isset($result['value'])) {
+            $command = array(
+                'findAndModify' => $coll,
+                'query' => array('_id' => $key),
+                'update' => array('$inc' => array('current_id' => $this->startingId)),
+                'upsert' => true,
+                'new' => true,
+            );
+            $result = $db->command($command);
+            return $this->startingId;
+        }
+
         return $result['value']['current_id'];
     }
 }
