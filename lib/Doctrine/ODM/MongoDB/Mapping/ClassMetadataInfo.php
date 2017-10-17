@@ -879,10 +879,13 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setRequireIndexes($requireIndexes)
     {
-        @trigger_error(
-            'requireIndexes was deprecated in version 1.2 and will be removed altogether in 2.0.',
-            E_USER_DEPRECATED
-        );
+        if ($requireIndexes) {
+            @trigger_error(
+                'requireIndexes was deprecated in version 1.2 and will be removed altogether in 2.0.',
+                E_USER_DEPRECATED
+            );
+        }
+
         $this->requireIndexes = $requireIndexes;
     }
 
