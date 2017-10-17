@@ -554,11 +554,14 @@ class Cursor implements CursorInterface
      */
     public function slaveOkay($ok = true)
     {
-        @trigger_error(
-            sprintf('%s was deprecated in version 1.2 - use setReadPreference on the query instead.'),
-            E_USER_DEPRECATED
-        );
         $ok = (boolean) $ok;
+        if ($ok) {
+            @trigger_error(
+                sprintf('%s was deprecated in version 1.2 - use setReadPreference on the query instead.', __METHOD__),
+                E_USER_DEPRECATED
+            );
+        }
+
         $this->baseCursor->slaveOkay($ok);
         $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
         return $this;
