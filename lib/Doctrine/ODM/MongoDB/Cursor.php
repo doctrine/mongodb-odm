@@ -555,7 +555,7 @@ class Cursor implements CursorInterface
     public function slaveOkay($ok = true)
     {
         @trigger_error(
-            sprintf('%s was deprecated in version 1.2 - use setReadPreference on the query instead.'),
+            sprintf('%s was deprecated in version 1.2 - use setReadPreference on the query instead.', __METHOD__),
             E_USER_DEPRECATED
         );
         $ok = (boolean) $ok;

@@ -372,7 +372,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function slaveOkay($bool = true)
     {
         @trigger_error(
-            sprintf('%s was deprecated in version 1.2 - use setReadPreference instead.'),
+            sprintf('%s was deprecated in version 1.2 - use setReadPreference instead.', __METHOD__),
             E_USER_DEPRECATED
         );
         return parent::slaveOkay($bool);
