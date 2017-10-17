@@ -105,9 +105,9 @@ Example:
 
 .. caution::
 
-    If not provided upfront the \_id of a document is generated
-    during ``persist``. You can not rely on a generated identifier to
-    be available during ``prePersist`` event.
+    The document identifier is generated during ``persist`` if not previously
+    specified. Users cannot rely on a document identifier being available during
+    the ``prePersist`` event.
 
 The semantics of the persist operation, applied on a document X,
 are as follows:
