@@ -1213,56 +1213,28 @@ See :ref:`lifecycle_events` for more information.
 Specifies `Read Preference <https://docs.mongodb.com/manual/core/read-preference/>_`
 that will be applied when querying for the annotated document.
 
-.. configuration-block::
+.. code-block:: php
 
-    .. code-block:: php
+    <?php
 
-        <?php
+    namespace Documents;
 
-        namespace Documents;
+    /**
+     * @Document
+     * @ODM\ReadPreference("primaryPreferred", tags={
+     *   { "dc"="east" },
+     *   { "dc"="west" },
+     *   {  }
+     * })
+     */
+    class User
+    {
+    }
 
-        /**
-         * @Document
-         * @ODM\ReadPreference("primaryPreferred", tags={
-         *   { "dc"="east" },
-         *   { "dc"="west" },
-         *   {  }
-         * })
-         */
-        class User
-        {
-        }
+.. note::
 
-    .. code-block:: xml
-
-        <?xml version="1.0" encoding="UTF-8"?>
-        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                          xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                          http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-            <document name="Documents\User">
-                <read-preference mode="primaryPreferred">
-                    <tag-set>
-                        <tag name="dc" value="east"/>
-                    </tag-set>
-                    <tag-set>
-                        <tag name="dc" value="west"/>
-                    </tag-set>
-                    <tag-set />
-                </read-preference>
-            </document>
-        </doctrine-mongo-mapping>
-
-    .. code-block:: yaml
-
-        Documents\User:
-          type: document
-          readPreference:
-            mode: primaryPreferred
-            tagSets:
-              - { dc: east }
-              - { dc: west }
-              - {  }
+    This annotation can not be combined with ``slaveOkay``, such combination will
+    produce a ``MappingException`` error.
 
 .. _annotations_reference_reference_many:
 

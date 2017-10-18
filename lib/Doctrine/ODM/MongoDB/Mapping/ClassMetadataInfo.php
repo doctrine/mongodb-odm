@@ -844,6 +844,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * @param boolean|null $slaveOkay
      *
      * @deprecated in version 1.2 and will be removed in 2.0.
+     *
+     * @throws MappingException
      */
     public function setSlaveOkay($slaveOkay)
     {
@@ -854,6 +856,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             );
         }
 
+        if ($this->readPreference) {
+            throw MappingException::canNotCombineReadPreferenceAndSlaveOkay($this->getName());
+        }
         $this->slaveOkay = $slaveOkay === null ? null : (boolean) $slaveOkay;
     }
 
@@ -997,9 +1002,14 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param string $readPreference
      * @param array|null $tags
+     *
+     * @throws MappingException
      */
     public function setReadPreference($readPreference, $tags)
     {
+        if ($this->slaveOkay) {
+            throw MappingException::canNotCombineReadPreferenceAndSlaveOkay($this->getName());
+        }
         $this->readPreference = $readPreference;
         $this->readPreferenceTags = $tags;
     }
