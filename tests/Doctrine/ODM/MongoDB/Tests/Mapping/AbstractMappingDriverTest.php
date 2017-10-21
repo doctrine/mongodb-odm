@@ -588,3 +588,8 @@ class AbstractMappingDriverUser
         $metadata->setShardKey(array('name' => 'asc'), array('unique' => true, 'numInitialChunks' => 4096));
     }
 }
+
+class PhonenumberCollection extends \Doctrine\Common\Collections\ArrayCollection
+{
+
+}
