@@ -81,8 +81,3 @@ class AbstractMappingDriverAlternateUser
     public $embeddedPhonenumber;
     public $otherPhonenumbers;
 }
-
-class PhonenumberCollection extends \Doctrine\Common\Collections\ArrayCollection
-{
-
-}

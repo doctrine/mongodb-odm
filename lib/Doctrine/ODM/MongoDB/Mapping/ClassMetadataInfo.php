@@ -190,6 +190,17 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $collectionMax;
 
     /**
+     * READ-ONLY Describes how MongoDB clients route read operations to the members of a replica set.
+     */
+    public $readPreference;
+
+    /**
+     * READ-ONLY Associated with readPreference Allows to specify criteria so that your application can target read
+     * operations to specific members, based on custom parameters.
+     */
+    public $readPreferenceTags;
+
+    /**
      * READ-ONLY: Describes the level of acknowledgement requested from MongoDB for write operations.
      */
     public $writeConcern;
@@ -833,6 +844,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * @param boolean|null $slaveOkay
      *
      * @deprecated in version 1.2 and will be removed in 2.0.
+     *
+     * @throws MappingException
      */
     public function setSlaveOkay($slaveOkay)
     {
@@ -843,6 +856,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             );
         }
 
+        if ($this->readPreference) {
+            throw MappingException::canNotCombineReadPreferenceAndSlaveOkay($this->getName());
+        }
         $this->slaveOkay = $slaveOkay === null ? null : (boolean) $slaveOkay;
     }
 
@@ -979,6 +995,23 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public function isSharded()
     {
         return $this->shardKey ? true : false;
+    }
+
+    /**
+     * Sets the read preference used by this class.
+     *
+     * @param string $readPreference
+     * @param array|null $tags
+     *
+     * @throws MappingException
+     */
+    public function setReadPreference($readPreference, $tags)
+    {
+        if ($this->slaveOkay) {
+            throw MappingException::canNotCombineReadPreferenceAndSlaveOkay($this->getName());
+        }
+        $this->readPreference = $readPreference;
+        $this->readPreferenceTags = $tags;
     }
 
     /**

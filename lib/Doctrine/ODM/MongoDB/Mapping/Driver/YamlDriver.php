@@ -62,6 +62,15 @@ class YamlDriver extends FileDriver
         if (isset($element['collection'])) {
             $class->setCollection($element['collection']);
         }
+        if (isset($element['readPreference'])) {
+            if (! isset($element['readPreference']['mode'])) {
+                throw new \InvalidArgumentException('"mode" is a required key for the readPreference setting.');
+            }
+            $class->setReadPreference(
+                $element['readPreference']['mode'],
+                isset($element['readPreference']['tagSets']) ? $element['readPreference']['tagSets'] : null
+            );
+        }
         if (isset($element['writeConcern'])) {
             $class->setWriteConcern($element['writeConcern']);
         }

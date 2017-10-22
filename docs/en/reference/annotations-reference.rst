@@ -1207,6 +1207,35 @@ the method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
+@ReadPreference
+---------------
+
+Specifies `Read Preference <https://docs.mongodb.com/manual/core/read-preference/>_`
+that will be applied when querying for the annotated document.
+
+.. code-block:: php
+
+    <?php
+
+    namespace Documents;
+
+    /**
+     * @Document
+     * @ODM\ReadPreference("primaryPreferred", tags={
+     *   { "dc"="east" },
+     *   { "dc"="west" },
+     *   {  }
+     * })
+     */
+    class User
+    {
+    }
+
+.. note::
+
+    This annotation can not be combined with ``slaveOkay``, such combination will
+    produce a ``MappingException`` error.
+
 .. _annotations_reference_reference_many:
 
 @ReferenceMany

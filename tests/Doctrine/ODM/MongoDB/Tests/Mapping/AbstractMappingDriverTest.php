@@ -47,6 +47,22 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      * @depends testDocumentCollectionNameAndInheritance
      * @param ClassMetadata $class
      */
+    public function testDocumentLevelReadPreference($class)
+    {
+        $this->assertEquals("primaryPreferred", $class->readPreference);
+        $this->assertEquals([
+            ['dc' => 'east'],
+            ['dc' => 'west'],
+            [],
+        ], $class->readPreferenceTags);
+
+        return $class;
+    }
+
+    /**
+     * @depends testDocumentCollectionNameAndInheritance
+     * @param ClassMetadata $class
+     */
     public function testDocumentLevelWriteConcern($class)
     {
         $this->assertEquals(1, $class->getWriteConcern());
@@ -372,6 +388,11 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
  * @ODM\HasLifecycleCallbacks
  * @ODM\Indexes(@ODM\Index(keys={"createdAt"="asc"},expireAfterSeconds=3600),@ODM\Index(keys={"lock"="asc"},partialFilterExpression={"version"={"$gt"=1},"discr"={"$eq"="default"}}))
  * @ODM\ShardKey(keys={"name"="asc"},unique=true,numInitialChunks=4096)
+ * @ODM\ReadPreference("primaryPreferred", tags={
+ *   { "dc"="east" },
+ *   { "dc"="west" },
+ *   {  }
+ * })
  */
 class AbstractMappingDriverUser
 {
@@ -566,4 +587,9 @@ class AbstractMappingDriverUser
         $metadata->addIndex(array('createdAt' => 'asc'), array('expireAfterSeconds' => 3600));
         $metadata->setShardKey(array('name' => 'asc'), array('unique' => true, 'numInitialChunks' => 4096));
     }
+}
+
+class PhonenumberCollection extends \Doctrine\Common\Collections\ArrayCollection
+{
+
 }

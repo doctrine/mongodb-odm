@@ -132,6 +132,9 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot['read-only']) && 'true' === (string) $xmlRoot['read-only']) {
             $class->markReadOnly();
         }
+        if (isset($xmlRoot->{'read-preference'})) {
+            $class->setReadPreference(...$this->transformReadPreference($xmlRoot->{'read-preference'}));
+        }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
                 $mapping = array();
@@ -493,6 +496,30 @@ class XmlDriver extends FileDriver
         }
 
         $class->setShardKey($keys, $options);
+    }
+
+    /**
+     * Parses <read-preference> to a format suitable for the underlying driver.
+     *
+     * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
+     *
+     * @param \SimpleXMLElement $xmlReadPreference
+     * @return array
+     */
+    private function transformReadPreference($xmlReadPreference)
+    {
+        $tags = null;
+        if (isset($xmlReadPreference->{'tag-set'})) {
+            $tags = [];
+            foreach ($xmlReadPreference->{'tag-set'} as $tagSet) {
+                $set = [];
+                foreach ($tagSet->tag as $tag) {
+                    $set[(string) $tag['name']] = (string) $tag['value'];
+                }
+                $tags[] = $set;
+            }
+        }
+        return [(string) $xmlReadPreference['mode'], $tags];
     }
 
     /**

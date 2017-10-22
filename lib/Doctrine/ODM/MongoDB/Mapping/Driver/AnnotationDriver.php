@@ -116,6 +116,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_'.$annot->value));
             } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
                 $class->setDefaultDiscriminatorValue($annot->value);
+            } elseif ($annot instanceof ODM\ReadPreference) {
+                $class->setReadPreference($annot->value, $annot->tags);
             }
 
         }
