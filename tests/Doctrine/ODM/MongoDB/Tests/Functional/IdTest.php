@@ -86,6 +86,20 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     }
 
+    public function testCollectionIdWithStartingId()
+    {
+        $user1 = new CollectionIdUserWithStartingId('Jonathan H. Wage');
+        $user2 = new CollectionIdUserWithStartingId('Jonathan H. Wage');
+
+        $this->dm->persist($user1);
+        $this->dm->persist($user2);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $this->assertEquals($user1->id, 10);
+        $this->assertEquals($user2->id, 11);
+    }
+
     public function testEmbeddedDocumentWithId()
     {
         $user1 = new CollectionIdUser('Jonathan H. Wage');
@@ -373,6 +387,27 @@ class UuidUser
 class CollectionIdUser
 {
     /** @ODM\Id(strategy="increment") */
+    public $id;
+
+    /** @ODM\Field(name="t", type="string") */
+    public $name;
+
+    /** @ODM\ReferenceOne(targetDocument="ReferencedCollectionId", cascade={"persist"}) */
+    public $reference;
+
+    /** @ODM\EmbedMany(targetDocument="EmbeddedCollectionId") */
+    public $embedded = array();
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+}
+
+/** @ODM\Document */
+class CollectionIdUserWithStartingId
+{
+    /** @ODM\Id(strategy="increment", options={"startingId"=10}) */
     public $id;
 
     /** @ODM\Field(name="t", type="string") */
