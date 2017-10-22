@@ -230,6 +230,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if (isset($idGenOptions['collection'])) {
                     $incrementGenerator->setCollection($idGenOptions['collection']);
                 }
+                if (isset($idGenOptions['startingId'])) {
+                    $incrementGenerator->setStartingId((int) $idGenOptions['startingId']);
+                }
                 $class->setIdGenerator($incrementGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:
