@@ -22,7 +22,6 @@ namespace Doctrine\ODM\MongoDB\Aggregation;
 use Doctrine\MongoDB\Aggregation\Builder as BaseBuilder;
 use Doctrine\MongoDB\Aggregation\Stage\GeoNear;
 use Doctrine\MongoDB\CommandCursor as BaseCommandCursor;
-use Doctrine\ODM\MongoDB\Aggregation\Stage\Match;
 use Doctrine\ODM\MongoDB\CommandCursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
@@ -112,6 +111,32 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * @return Stage\Bucket
+     */
+    public function bucket()
+    {
+        return $this->addStage(new Stage\Bucket($this, $this->dm, $this->class));
+    }
+
+    /**
+     * @return Stage\BucketAuto
+     */
+    public function bucketAuto()
+    {
+        return $this->addStage(new Stage\BucketAuto($this, $this->dm, $this->class));
+    }
+
+    /**
+     * @param string $from
+     *
+     * @return Stage\GraphLookup
+     */
+    public function graphLookup($from)
+    {
+        return $this->addStage(new Stage\GraphLookup($this, $from, $this->dm, $this->class));
+    }
+
+    /**
      * @return Stage\Match
      */
     public function match()
@@ -135,6 +160,24 @@ class Builder extends BaseBuilder
     public function out($from)
     {
         return $this->addStage(new Stage\Out($this, $from, $this->dm));
+    }
+
+    /**
+     * @param string|null $expression Optional. A replacement expression that
+     * resolves to a document.
+     * @return Stage\ReplaceRoot
+     */
+    public function replaceRoot($expression = null)
+    {
+        return $this->addStage(new Stage\ReplaceRoot($this, $this->dm, $this->class, $expression));
+    }
+
+    /**
+     * @return Stage\SortByCount
+     */
+    public function sortByCount($expression)
+    {
+        return $this->addStage(new Stage\SortByCount($this, $expression, $this->dm, $this->class));
     }
 
     /**

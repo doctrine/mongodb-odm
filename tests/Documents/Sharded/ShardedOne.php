@@ -18,4 +18,9 @@ class ShardedOne
 
     /** @ODM\Field(name="k", type="string") */
     public $key = 'testing';
+
+    /**
+     * @ODM\ReferenceOne(targetDocument=ShardedUser::class)
+     */
+    public $user;
 }

@@ -47,7 +47,10 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                         )
                 )
                 ->field('numPosts')
-                ->sum(1);
+                ->sum(1)
+            ->replaceRoot()
+                ->field('isToday')
+                ->eq('$createdAt', $dateTime);
 
         $expectedPipeline = [
             [
@@ -60,6 +63,11 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                         ]
                     ],
                     'numPosts' => ['$sum' => 1],
+                ]
+            ],
+            [
+                '$replaceRoot' => [
+                    'isToday' => ['$eq' => ['$createdAt', new \MongoDate($dateTime->format('U'), $dateTime->format('u'))]],
                 ]
             ]
         ];
@@ -77,7 +85,8 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->project()
                 ->includeFields(['authorIp'])
             ->unwind('authorIp')
-            ->sort('authorIp', 'asc');
+            ->sort('authorIp', 'asc')
+            ->replaceRoot('$authorIp');
 
         $expectedPipeline = [
             [
@@ -92,6 +101,9 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             [
                 '$sort' => ['ip' => 1],
             ],
+            [
+                '$replaceRoot' => '$ip',
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
