@@ -29,7 +29,8 @@
         "symfony/yaml": "~2.3|~3.0|^4.0"
     },
     "suggest": {
-        "symfony/yaml": "Enables the YAML metadata mapping driver"
+        "symfony/yaml": "Enables the YAML metadata mapping driver",
+        "alcaeus/mongo-php-adapter": "Allows usage of PHP 7"
     },
     "autoload": {
         "psr-0": { "Doctrine\\ODM\\MongoDB": "lib/" }

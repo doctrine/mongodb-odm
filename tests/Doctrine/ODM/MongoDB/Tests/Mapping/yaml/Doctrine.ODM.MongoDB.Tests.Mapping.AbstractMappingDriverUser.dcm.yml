@@ -8,7 +8,7 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
       - { dc: west }
       - {  }
   writeConcern: 1
-  readOnly: 1
+  readOnly: true
   discriminatorField:
     fieldName: discr
   discriminatorMap:
