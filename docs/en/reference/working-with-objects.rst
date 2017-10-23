@@ -105,10 +105,9 @@ Example:
 
 .. caution::
 
-    The \_id of a document is guaranteed to be available
-    after the next successful flush operation that involves the
-    document in question. You can not rely on a generated identifier to
-    be available directly after invoking ``persist``.
+    The document identifier is generated during ``persist`` if not previously
+    specified. Users cannot rely on a document identifier being available during
+    the ``prePersist`` event.
 
 The semantics of the persist operation, applied on a document X,
 are as follows:
@@ -127,23 +126,6 @@ are as follows:
 .. caution::
 
     Do not pass detached documents to the persist operation.
-
-Flushing single documents
--------------------------
-
-You can flush a single document by passing the document object to the
-``flush`` method.
-
-Example:
-
-.. code-block:: php
-
-    <?php
-
-    $user = $dm->getRepository('User')->find($userId);
-    // ...
-    $user->setPassword('changeme');
-    $dm->flush($user);
 
 .. _flush_options:
 
