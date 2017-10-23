@@ -15,7 +15,7 @@ All issues and pull requests in this release may be found under the
 * [#1636](https://github.com/doctrine/mongodb-odm/pull/1636) fixes reference preparation when using `storeAs=dbRef` with no `targetDocument`.
 * [#1646](https://github.com/doctrine/mongodb-odm/pull/1646) fixes invalid UUID data in tests with new driver versions.
 * [#1649](https://github.com/doctrine/mongodb-odm/pull/1649) fixes the version constraint for `doctrine/instantiator`, allowing newer versions to be installed.
-
+* [#1663](https://github.com/doctrine/mongodb-odm/pull/1663) allows installing ODM in projects using Symfony 4.
 
 1.1.6 (2017-08-19)
 ------------------
