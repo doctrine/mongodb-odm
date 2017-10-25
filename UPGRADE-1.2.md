@@ -103,12 +103,12 @@ To replace an existing `slaveOkay` mapping, you can apply a `readPreference` of
 When mapping references, ODM previously previously offered three options to 
 store a reference via the `storeAs` option:
 
- * `storeAs=id` (previously known as `simple` reference): this reference type
+ * `storeAs="id"` (previously known as `simple` reference): this reference type
    simply stores the identifier of the referenced document in the owning
    document.
- * `storeAs=dbRef`: this reference type creates a DBRef object, but doesn't
+ * `storeAs="dbRef"`: this reference type creates a DBRef object, but doesn't
    include a value for the `$db` field
- * `storeAs=dbRefWithDb`: similar to `dbRef`, but also writes the `$db` field
+ * `storeAs="dbRefWithDb"`: similar to `dbRef`, but also writes the `$db` field
 
 Since `id` can't be used with discriminated references and the two `dbRef` types
 may be incompatible with aggregation pipelines, there is a new reference type
